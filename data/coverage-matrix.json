@@ -30,17 +30,17 @@
       "unknown"
     ],
     "legend": {
-      "\u2705": "support=supported, docs=documented",
-      "\u26a0\ufe0f": "support=supported, docs=undocumented",
-      "\u274c": "support=not-supported, docs=not-applicable",
-      "\u2014": "support=not-applicable, docs=not-applicable",
+      "✅": "support=supported, docs=documented",
+      "⚠️": "support=supported, docs=undocumented",
+      "❌": "support=not-supported, docs=not-applicable",
+      "—": "support=not-applicable, docs=not-applicable",
       "?": "support=unknown, docs=unknown"
     }
   },
   "journeys": [
     {
       "slug": "read-full-table-scan",
-      "title": "Read \u2014 full table scan",
+      "title": "Read — full table scan",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -89,7 +89,7 @@
     },
     {
       "slug": "read-predicate-pushdown",
-      "title": "Read \u2014 predicate pushdown (filter)",
+      "title": "Read — predicate pushdown (filter)",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -138,7 +138,7 @@
     },
     {
       "slug": "read-projection-pushdown",
-      "title": "Read \u2014 projection pushdown (column pruning)",
+      "title": "Read — projection pushdown (column pruning)",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -187,7 +187,7 @@
     },
     {
       "slug": "read-partition-pruning",
-      "title": "Read \u2014 partition pruning",
+      "title": "Read — partition pruning",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -236,7 +236,7 @@
     },
     {
       "slug": "read-deletion-vector-support",
-      "title": "Read \u2014 deletion vector support",
+      "title": "Read — deletion vector support",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -285,7 +285,7 @@
     },
     {
       "slug": "write-create-table",
-      "title": "Write \u2014 create table",
+      "title": "Write — create table",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -334,7 +334,7 @@
     },
     {
       "slug": "write-append",
-      "title": "Write \u2014 append",
+      "title": "Write — append",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -383,7 +383,7 @@
     },
     {
       "slug": "write-overwrite-full-table",
-      "title": "Write \u2014 overwrite (full table)",
+      "title": "Write — overwrite (full table)",
       "category": "fundamentals",
       "priority": "P1",
       "engines": {
@@ -432,7 +432,7 @@
     },
     {
       "slug": "write-overwrite-predicate",
-      "title": "Write \u2014 overwrite (predicate / replaceWhere)",
+      "title": "Write — overwrite (predicate / replaceWhere)",
       "category": "fundamentals",
       "priority": "P1",
       "engines": {
@@ -481,7 +481,7 @@
     },
     {
       "slug": "write-dynamic-partition-overwrite",
-      "title": "Write \u2014 dynamic partition overwrite",
+      "title": "Write — dynamic partition overwrite",
       "category": "fundamentals",
       "priority": "P1",
       "engines": {
@@ -530,7 +530,7 @@
     },
     {
       "slug": "time-travel-by-version",
-      "title": "Time travel \u2014 by version number",
+      "title": "Time travel — by version number",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -579,7 +579,7 @@
     },
     {
       "slug": "time-travel-by-timestamp",
-      "title": "Time travel \u2014 by timestamp",
+      "title": "Time travel — by timestamp",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -677,7 +677,7 @@
     },
     {
       "slug": "storage-config-s3",
-      "title": "Storage config \u2014 S3",
+      "title": "Storage config — S3",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -726,7 +726,7 @@
     },
     {
       "slug": "storage-config-azure-adls",
-      "title": "Storage config \u2014 Azure ADLS",
+      "title": "Storage config — Azure ADLS",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -775,7 +775,7 @@
     },
     {
       "slug": "storage-config-gcs",
-      "title": "Storage config \u2014 GCS",
+      "title": "Storage config — GCS",
       "category": "fundamentals",
       "priority": "P0",
       "engines": {
@@ -1069,7 +1069,7 @@
     },
     {
       "slug": "merge-when-not-matched-by-source",
-      "title": "MERGE \u2014 WHEN NOT MATCHED BY SOURCE",
+      "title": "MERGE — WHEN NOT MATCHED BY SOURCE",
       "category": "table-operations",
       "priority": "P1",
       "engines": {
@@ -1118,7 +1118,7 @@
     },
     {
       "slug": "merge-schema-evolution",
-      "title": "MERGE \u2014 schema evolution",
+      "title": "MERGE — schema evolution",
       "category": "table-operations",
       "priority": "P0",
       "engines": {
@@ -1216,7 +1216,7 @@
     },
     {
       "slug": "schema-evolution-merge-add-columns",
-      "title": "Schema evolution \u2014 merge (add columns)",
+      "title": "Schema evolution — merge (add columns)",
       "category": "table-operations",
       "priority": "P0",
       "engines": {
@@ -1265,7 +1265,7 @@
     },
     {
       "slug": "schema-evolution-overwrite-replace",
-      "title": "Schema evolution \u2014 overwrite (replace schema)",
+      "title": "Schema evolution — overwrite (replace schema)",
       "category": "table-operations",
       "priority": "P1",
       "engines": {
@@ -1314,7 +1314,7 @@
     },
     {
       "slug": "schema-evolution-add-columns-alter",
-      "title": "Schema evolution \u2014 add columns via ALTER",
+      "title": "Schema evolution — add columns via ALTER",
       "category": "table-operations",
       "priority": "P1",
       "engines": {
@@ -1363,7 +1363,7 @@
     },
     {
       "slug": "schema-evolution-column-mapping",
-      "title": "Schema evolution \u2014 rename / drop columns (Column Mapping)",
+      "title": "Schema evolution — rename / drop columns (Column Mapping)",
       "category": "table-operations",
       "priority": "P0",
       "engines": {
@@ -1755,7 +1755,7 @@
     },
     {
       "slug": "optimize-bin-packing",
-      "title": "OPTIMIZE \u2014 bin-packing compaction",
+      "title": "OPTIMIZE — bin-packing compaction",
       "category": "table-operations",
       "priority": "P0",
       "engines": {
@@ -1804,7 +1804,7 @@
     },
     {
       "slug": "optimize-z-order",
-      "title": "OPTIMIZE \u2014 Z-Order",
+      "title": "OPTIMIZE — Z-Order",
       "category": "table-operations",
       "priority": "P0",
       "engines": {
@@ -2294,7 +2294,7 @@
     },
     {
       "slug": "deletion-vectors-enable",
-      "title": "Deletion Vectors \u2014 enable",
+      "title": "Deletion Vectors — enable",
       "category": "table-operations",
       "priority": "P0",
       "engines": {
@@ -2392,7 +2392,7 @@
     },
     {
       "slug": "concurrent-writes-s3-safety",
-      "title": "Concurrent writes \u2014 S3 safety (DynamoDB locking)",
+      "title": "Concurrent writes — S3 safety (DynamoDB locking)",
       "category": "table-operations",
       "priority": "P0",
       "engines": {
@@ -2539,7 +2539,7 @@
     },
     {
       "slug": "change-data-feed-enable",
-      "title": "Change Data Feed \u2014 enable on table",
+      "title": "Change Data Feed — enable on table",
       "category": "change-data-streaming",
       "priority": "P0",
       "engines": {
@@ -2588,7 +2588,7 @@
     },
     {
       "slug": "change-data-feed-batch-read",
-      "title": "Change Data Feed \u2014 batch read",
+      "title": "Change Data Feed — batch read",
       "category": "change-data-streaming",
       "priority": "P0",
       "engines": {
@@ -2637,7 +2637,7 @@
     },
     {
       "slug": "change-data-feed-streaming-read",
-      "title": "Change Data Feed \u2014 streaming read",
+      "title": "Change Data Feed — streaming read",
       "category": "change-data-streaming",
       "priority": "P0",
       "engines": {
@@ -2686,7 +2686,7 @@
     },
     {
       "slug": "change-data-feed-write",
-      "title": "Change Data Feed \u2014 write (emit change files during DML)",
+      "title": "Change Data Feed — write (emit change files during DML)",
       "category": "change-data-streaming",
       "priority": "P0",
       "engines": {
@@ -2833,7 +2833,7 @@
     },
     {
       "slug": "streaming-ignore-deletes-changes",
-      "title": "Streaming \u2014 ignoreDeletes / ignoreChanges",
+      "title": "Streaming — ignoreDeletes / ignoreChanges",
       "category": "change-data-streaming",
       "priority": "P1",
       "engines": {
@@ -2882,7 +2882,7 @@
     },
     {
       "slug": "streaming-starting-version-timestamp",
-      "title": "Streaming \u2014 startingVersion / startingTimestamp",
+      "title": "Streaming — startingVersion / startingTimestamp",
       "category": "change-data-streaming",
       "priority": "P1",
       "engines": {
@@ -2931,7 +2931,7 @@
     },
     {
       "slug": "streaming-schema-tracking",
-      "title": "Streaming \u2014 schema tracking (Column Mapping compat)",
+      "title": "Streaming — schema tracking (Column Mapping compat)",
       "category": "change-data-streaming",
       "priority": "P1",
       "engines": {
@@ -3029,7 +3029,7 @@
     },
     {
       "slug": "streaming-foreach-batch-merge",
-      "title": "Streaming \u2014 foreachBatch + merge pattern",
+      "title": "Streaming — foreachBatch + merge pattern",
       "category": "change-data-streaming",
       "priority": "P1",
       "engines": {
@@ -3323,7 +3323,7 @@
     },
     {
       "slug": "explanation-partitioning",
-      "title": "Partitioning \u2014 when and how",
+      "title": "Partitioning — when and how",
       "category": "explanation",
       "priority": "P0",
       "engines": {
@@ -3495,7 +3495,7 @@
         },
         "polars": {
           "support": "supported",
-          "docs": "undocumented"
+          "docs": "documented"
         },
         "daft": {
           "support": "supported",
@@ -3510,7 +3510,7 @@
         "flink": null,
         "clickhouse": null
       },
-      "gap_count": 4
+      "gap_count": 3
     }
   ]
 }

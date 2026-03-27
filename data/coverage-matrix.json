@@ -1394,6 +1394,25 @@
       },
       "gap_count": 4,
       "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "read-delta-table-local",
+      "title": "Read a Delta table from local storage",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "undocumented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": { "support": "supported", "docs": "undocumented" },
+        "trino":      { "support": "not-applicable", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-applicable", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "undocumented" },
+        "clickhouse": { "support": "not-applicable", "docs": "not-applicable" }
+      },
+      "gap_count": 5
     }
   ]
 }

@@ -3,7 +3,10 @@ name = "examples"
 version = "0.1.0"
 description = "Runnable code examples for open lakehouse content journeys"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+  "deltalake>=1.0",
+  "duckdb>=1.1.0",
+]
 
 [build-system]
 requires = ["hatchling"]

@@ -19,10 +19,32 @@ Or via the Makefile::
 
 from __future__ import annotations
 
+import importlib
 import pathlib
+import sys
 
 # Default fixture path — relative to the docs-factory repo root.
 _FIXTURE_DEFAULT = pathlib.Path(__file__).parents[2] / "fixtures" / "read-delta-table-local"
+
+
+def _import_polars():
+    """Import the real polars package, bypassing any self-shadowing.
+
+    When this file is run as a script, Python inserts the script's directory
+    at the front of sys.path, which would make ``import polars`` resolve to
+    this file instead of the installed package. We remove the shadowing entry
+    temporarily so the correct package is loaded.
+    """
+    script_dir = str(pathlib.Path(__file__).parent)
+    # Remove the script directory from sys.path while importing polars
+    filtered = [p for p in sys.path if p != script_dir]
+    original_path = sys.path[:]
+    sys.path[:] = filtered
+    try:
+        pl = importlib.import_module("polars")
+    finally:
+        sys.path[:] = original_path
+    return pl
 
 
 def run(table_path: str | pathlib.Path | None = None) -> None:
@@ -34,15 +56,14 @@ def run(table_path: str | pathlib.Path | None = None) -> None:
         Absolute or relative path to the root of a Delta table directory.
         Falls back to the bundled test fixture when ``None``.
     """
-    import polars as pl
+    pl = _import_polars()
 
     path = pathlib.Path(table_path) if table_path is not None else _FIXTURE_DEFAULT
 
     if not path.exists():
         raise FileNotFoundError(
             f"Delta table not found at {path!r}. "
-            "Run `python -m fixtures.create_read_delta_table_local` to create the test fixture, "
-            "or pass an explicit `table_path`."
+            "Create the test fixture first, or pass an explicit `table_path`."
         )
 
     table_uri = str(path)
@@ -56,7 +77,7 @@ def run(table_path: str | pathlib.Path | None = None) -> None:
 
     # Inspect the schema without triggering full I/O
     print("Schema (from LazyFrame):")
-    print(lazy.schema)
+    print(lazy.collect_schema())
     print()
 
     # Apply a filter and column projection lazily, then collect

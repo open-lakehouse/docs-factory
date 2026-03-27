@@ -1,0 +1,23 @@
+[project]
+name = "docs-factory"
+version = "0.1.0"
+description = "Docs-factory Python workspace — examples and tooling for the open lakehouse content pipeline"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv.workspace]
+members = ["examples"]
+
+[dependency-groups]
+dev = [
+    "ty>=0.0.1a6",
+    "pytest>=8.0",
+]
+
+[tool.ty]
+# Path configuration — checked in ty.toml at the root for workspace-wide settings
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

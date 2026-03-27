@@ -1,0 +1,44 @@
+name: examples-ci
+
+on:
+  push:
+    paths:
+      - "examples/**"
+      - "pyproject.toml"
+      - "ty.toml"
+      - ".github/workflows/examples-ci.yml"
+  pull_request:
+    paths:
+      - "examples/**"
+      - "pyproject.toml"
+      - "ty.toml"
+      - ".github/workflows/examples-ci.yml"
+
+jobs:
+  lint-and-test:
+    name: Lint (ty) + Test (pytest)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: ">=0.10"
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install
+
+      - name: Install dependencies
+        run: uv sync --group dev
+
+      - name: Type-check with ty
+        run: uv run ty check examples/
+
+      - name: Run tests with pytest
+        # No tests exist yet — pytest exits 0 on "no tests collected" with --ignore-glob guard.
+        # Remove --collect-only once real tests are present.
+        run: uv run pytest examples/ --collect-only -q

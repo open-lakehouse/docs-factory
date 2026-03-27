@@ -1,0 +1,22 @@
+# ty configuration for docs-factory
+# https://github.com/astral-sh/ty
+
+[environment]
+# Point ty at the uv-managed virtual environment
+python = ".venv"
+
+[rules]
+# Enable all rules by default; override below as needed
+# Uncomment to downgrade specific rules from error to warning:
+# possibly-unbound = "warn"
+
+[src]
+# Only type-check the examples package; exclude research/ and other non-Python dirs
+include = ["examples"]
+exclude = [
+    ".venv",
+    "__pycache__",
+    "*.egg-info",
+    ".git",
+    "research",
+]

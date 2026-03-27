@@ -1,0 +1,1399 @@
+{
+  "meta": {
+    "generated_from": [
+      "research/delta-lake/synthesis-coverage-matrix.md",
+      "research/delta-lake/synthesis-gap-analysis.md"
+    ],
+    "generated_date": "2026-03-27",
+    "engines": ["spark", "delta-rs", "duckdb", "polars", "daft", "datafusion", "trino", "prestodb", "flink", "clickhouse"],
+    "support_values": ["supported", "not-supported", "not-applicable", "unknown"],
+    "docs_values": ["documented", "undocumented", "not-applicable", "unknown"],
+    "legend": {
+      "✅": "support=supported, docs=documented",
+      "⚠️": "support=supported, docs=undocumented",
+      "❌": "support=not-supported, docs=not-applicable",
+      "—": "support=not-applicable, docs=not-applicable",
+      "?": "support=unknown, docs=unknown"
+    }
+  },
+  "journeys": [
+    {
+      "slug": "read-full-table-scan",
+      "title": "Read — full table scan",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "documented" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "read-predicate-pushdown",
+      "title": "Read — predicate pushdown (filter)",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "documented" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "read-projection-pushdown",
+      "title": "Read — projection pushdown (column pruning)",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "documented" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "read-partition-pruning",
+      "title": "Read — partition pruning",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "documented" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "read-deletion-vector-support",
+      "title": "Read — deletion vector support",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "supported", "docs": "undocumented" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "write-create-table",
+      "title": "Write — create table",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "write-append",
+      "title": "Write — append",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "supported", "docs": "undocumented" }
+      },
+      "gap_count": 2
+    },
+    {
+      "slug": "write-overwrite-full-table",
+      "title": "Write — overwrite (full table)",
+      "category": "fundamentals",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "write-overwrite-predicate",
+      "title": "Write — overwrite (predicate / replaceWhere)",
+      "category": "fundamentals",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "write-dynamic-partition-overwrite",
+      "title": "Write — dynamic partition overwrite",
+      "category": "fundamentals",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "time-travel-by-version",
+      "title": "Time travel — by version number",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "documented" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "time-travel-by-timestamp",
+      "title": "Time travel — by timestamp",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "documented" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "table-metadata-inspection",
+      "title": "Table metadata inspection (schema, history, detail)",
+      "category": "fundamentals",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "undocumented" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "supported", "docs": "undocumented" }
+      },
+      "gap_count": 4
+    },
+    {
+      "slug": "storage-config-s3",
+      "title": "Storage config — S3",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "documented" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "storage-config-azure-adls",
+      "title": "Storage config — Azure ADLS",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "supported", "docs": "documented" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "supported", "docs": "undocumented" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "storage-config-gcs",
+      "title": "Storage config — GCS",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "idempotent-writes",
+      "title": "Idempotent writes (txnAppId / txnVersion)",
+      "category": "fundamentals",
+      "priority": "P2",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "quickstart-getting-started",
+      "title": "Quick-start / getting-started tutorial",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "undocumented" },
+        "trino":      { "support": "supported", "docs": "undocumented" },
+        "prestodb":   { "support": "supported", "docs": "undocumented" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "supported", "docs": "undocumented" }
+      },
+      "gap_count": 5
+    },
+    {
+      "slug": "delete-row-level-predicate",
+      "title": "DELETE (row-level predicate)",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "update-row-level-predicate",
+      "title": "UPDATE (row-level predicate)",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "merge-upsert",
+      "title": "MERGE / upsert",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "merge-when-not-matched-by-source",
+      "title": "MERGE — WHEN NOT MATCHED BY SOURCE",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "merge-schema-evolution",
+      "title": "MERGE — schema evolution",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "undocumented" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 3
+    },
+    {
+      "slug": "schema-enforcement-on-write",
+      "title": "Schema enforcement on write",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-applicable", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "schema-evolution-merge-add-columns",
+      "title": "Schema evolution — merge (add columns)",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "undocumented" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "schema-evolution-overwrite-replace",
+      "title": "Schema evolution — overwrite (replace schema)",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "documented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "schema-evolution-add-columns-alter",
+      "title": "Schema evolution — add columns via ALTER",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "schema-evolution-column-mapping",
+      "title": "Schema evolution — rename / drop columns (Column Mapping)",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "generated-columns",
+      "title": "Generated columns",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "identity-columns",
+      "title": "Identity columns",
+      "category": "table-operations",
+      "priority": "P2",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "default-column-values",
+      "title": "Default column values",
+      "category": "table-operations",
+      "priority": "P2",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "not-null-constraint",
+      "title": "NOT NULL constraint",
+      "category": "table-operations",
+      "priority": "P2",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "check-constraint",
+      "title": "CHECK constraint",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "type-widening",
+      "title": "Type widening (manual / auto schema evolution)",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "vacuum",
+      "title": "VACUUM",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "optimize-bin-packing",
+      "title": "OPTIMIZE — bin-packing compaction",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "optimize-z-order",
+      "title": "OPTIMIZE — Z-Order",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "liquid-clustering",
+      "title": "Liquid Clustering (CLUSTER BY)",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "auto-compaction",
+      "title": "Auto Compaction",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "optimized-write",
+      "title": "Optimized Write",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "restore",
+      "title": "RESTORE",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 2
+    },
+    {
+      "slug": "shallow-clone",
+      "title": "SHALLOW CLONE / CLONE",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "convert-to-delta-from-parquet",
+      "title": "CONVERT TO DELTA (from Parquet)",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "undocumented" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "convert-to-delta-from-iceberg",
+      "title": "CONVERT TO DELTA (from Iceberg)",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "generate-manifest-files",
+      "title": "GENERATE (manifest files for external engines)",
+      "category": "table-operations",
+      "priority": "P2",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "reorg-table",
+      "title": "REORG TABLE (apply / purge)",
+      "category": "table-operations",
+      "priority": "P2",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "deletion-vectors-enable",
+      "title": "Deletion Vectors — enable",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "documented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "row-tracking",
+      "title": "Row Tracking",
+      "category": "table-operations",
+      "priority": "P2",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "concurrent-writes-s3-safety",
+      "title": "Concurrent writes — S3 safety (DynamoDB locking)",
+      "category": "table-operations",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "supported", "docs": "undocumented" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 3
+    },
+    {
+      "slug": "alter-table-drop-feature",
+      "title": "ALTER TABLE DROP FEATURE",
+      "category": "table-operations",
+      "priority": "P2",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "catalog-managed-tables",
+      "title": "Catalog-Managed Tables",
+      "category": "table-operations",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 2
+    },
+    {
+      "slug": "change-data-feed-enable",
+      "title": "Change Data Feed — enable on table",
+      "category": "change-data-streaming",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "change-data-feed-batch-read",
+      "title": "Change Data Feed — batch read",
+      "category": "change-data-streaming",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "supported", "docs": "documented" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "supported", "docs": "documented" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "change-data-feed-streaming-read",
+      "title": "Change Data Feed — streaming read",
+      "category": "change-data-streaming",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "change-data-feed-write",
+      "title": "Change Data Feed — write (emit change files during DML)",
+      "category": "change-data-streaming",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "delta-as-streaming-source",
+      "title": "Delta as streaming source (readStream)",
+      "category": "change-data-streaming",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "not-supported", "docs": "not-applicable" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "delta-as-streaming-sink",
+      "title": "Delta as streaming sink (writeStream)",
+      "category": "change-data-streaming",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-supported", "docs": "not-applicable" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "not-supported", "docs": "not-applicable" },
+        "datafusion": { "support": "not-supported", "docs": "not-applicable" },
+        "trino":      { "support": "not-supported", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-supported", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "not-supported", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "streaming-ignore-deletes-changes",
+      "title": "Streaming — ignoreDeletes / ignoreChanges",
+      "category": "change-data-streaming",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-applicable", "docs": "not-applicable" },
+        "daft":       { "support": "not-applicable", "docs": "not-applicable" },
+        "datafusion": { "support": "not-applicable", "docs": "not-applicable" },
+        "trino":      { "support": "not-applicable", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-applicable", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "not-applicable", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "streaming-starting-version-timestamp",
+      "title": "Streaming — startingVersion / startingTimestamp",
+      "category": "change-data-streaming",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-applicable", "docs": "not-applicable" },
+        "daft":       { "support": "not-applicable", "docs": "not-applicable" },
+        "datafusion": { "support": "not-applicable", "docs": "not-applicable" },
+        "trino":      { "support": "not-applicable", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-applicable", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "documented" },
+        "clickhouse": { "support": "not-applicable", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "streaming-schema-tracking",
+      "title": "Streaming — schema tracking (Column Mapping compat)",
+      "category": "change-data-streaming",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-applicable", "docs": "not-applicable" },
+        "daft":       { "support": "not-applicable", "docs": "not-applicable" },
+        "datafusion": { "support": "not-applicable", "docs": "not-applicable" },
+        "trino":      { "support": "not-applicable", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-applicable", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-applicable", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "idempotent-streaming-writes",
+      "title": "Idempotent streaming writes (txnAppId / txnVersion)",
+      "category": "change-data-streaming",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-applicable", "docs": "not-applicable" },
+        "daft":       { "support": "not-applicable", "docs": "not-applicable" },
+        "datafusion": { "support": "not-applicable", "docs": "not-applicable" },
+        "trino":      { "support": "not-applicable", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-applicable", "docs": "not-applicable" },
+        "flink":      { "support": "not-supported", "docs": "not-applicable" },
+        "clickhouse": { "support": "not-applicable", "docs": "not-applicable" }
+      },
+      "gap_count": 0
+    },
+    {
+      "slug": "streaming-foreach-batch-merge",
+      "title": "Streaming — foreachBatch + merge pattern",
+      "category": "change-data-streaming",
+      "priority": "P1",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "not-supported", "docs": "not-applicable" },
+        "duckdb":     { "support": "not-applicable", "docs": "not-applicable" },
+        "polars":     { "support": "not-applicable", "docs": "not-applicable" },
+        "daft":       { "support": "not-applicable", "docs": "not-applicable" },
+        "datafusion": { "support": "not-applicable", "docs": "not-applicable" },
+        "trino":      { "support": "not-applicable", "docs": "not-applicable" },
+        "prestodb":   { "support": "not-applicable", "docs": "not-applicable" },
+        "flink":      { "support": "supported", "docs": "undocumented" },
+        "clickhouse": { "support": "not-applicable", "docs": "not-applicable" }
+      },
+      "gap_count": 1
+    },
+    {
+      "slug": "explanation-delta-architecture",
+      "title": "Delta architecture / transaction log",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 3,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-acid-transactions",
+      "title": "ACID transactions explanation",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 3,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-file-skipping",
+      "title": "File skipping / data skipping",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "documented" },
+        "duckdb":     { "support": "supported", "docs": "documented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 1,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-concurrency-control",
+      "title": "Concurrency control (OCC / conflict matrix)",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 4,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-protocol-versioning",
+      "title": "Protocol versioning / feature flags",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 4,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-uniform-iceberg-interop",
+      "title": "UniForm / Iceberg interoperability",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 4,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-multi-engine-ecosystem",
+      "title": "Multi-engine ecosystem overview",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "undocumented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 5,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-partitioning",
+      "title": "Partitioning — when and how",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "documented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 3,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-z-order-vs-liquid-clustering",
+      "title": "Z-Order vs Liquid Clustering tradeoffs",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "undocumented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 5,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    },
+    {
+      "slug": "explanation-schema-enforcement-vs-evolution",
+      "title": "Schema enforcement vs. schema evolution",
+      "category": "explanation",
+      "priority": "P0",
+      "engines": {
+        "spark":      { "support": "supported", "docs": "documented" },
+        "delta-rs":   { "support": "supported", "docs": "undocumented" },
+        "duckdb":     { "support": "supported", "docs": "undocumented" },
+        "polars":     { "support": "supported", "docs": "undocumented" },
+        "daft":       { "support": "supported", "docs": "undocumented" },
+        "datafusion": null,
+        "trino":      null,
+        "prestodb":   null,
+        "flink":      null,
+        "clickhouse": null
+      },
+      "gap_count": 4,
+      "note": "Explanation section covers only: official docs, delta-rs docs, DuckDB docs, Polars docs, Daft docs"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+metadata_dir = "/tmp/garage/meta"
+data_dir = "/tmp/garage/data"
+db_engine = "sqlite"
+
+[s3_api]
+s3_region = "us-east-1"
+api_bind_addr = "0.0.0.0:3900"
+
+[admin]
+api_bind_addr = "0.0.0.0:3902"

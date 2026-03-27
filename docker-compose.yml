@@ -1,0 +1,14 @@
+services:
+  garage:
+    image: dxflrs/garage:v1.0.1
+    ports:
+      - "3900:3900"
+      - "3902:3902"
+    volumes:
+      - ./infra/garage.toml:/etc/garage.toml:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3900/health || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s

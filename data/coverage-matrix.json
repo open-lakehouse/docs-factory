@@ -3474,6 +3474,43 @@
         }
       },
       "gap_count": 4
+    },
+    {
+      "slug": "read-delta-table-s3",
+      "title": "Read a Delta table from S3",
+      "category": "fundamentals",
+      "priority": "P0",
+      "engines": {
+        "spark": {
+          "support": "supported",
+          "docs": "undocumented"
+        },
+        "delta-rs": {
+          "support": "supported",
+          "docs": "documented"
+        },
+        "duckdb": {
+          "support": "supported",
+          "docs": "documented"
+        },
+        "polars": {
+          "support": "supported",
+          "docs": "undocumented"
+        },
+        "daft": {
+          "support": "supported",
+          "docs": "undocumented"
+        },
+        "datafusion": {
+          "support": "supported",
+          "docs": "undocumented"
+        },
+        "trino": null,
+        "prestodb": null,
+        "flink": null,
+        "clickhouse": null
+      },
+      "gap_count": 4
     }
   ]
 }

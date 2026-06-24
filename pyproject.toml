@@ -11,13 +11,9 @@ members = ["examples"]
 
 [dependency-groups]
 dev = [
-    "ty>=0.0.1a6",
+    "ty>=0.0.50",
     "pytest>=8.0",
 ]
 
 [tool.ty]
 # Path configuration — checked in ty.toml at the root for workspace-wide settings
-
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"

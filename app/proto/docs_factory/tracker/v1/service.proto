@@ -1,0 +1,381 @@
+// RPC surface for the DevRel release tracker.
+//
+// `google.api.http` annotations declare the REST mapping trestle's codegen turns
+// into Axum routes + typed clients. Routes are FLAT (Unity Catalog style): every
+// resource has its own top-level collection (`/v1/releases`, `/v1/projects`, …).
+// Relationships live in the graph and are managed through AssociationService.
+syntax = "proto3";
+
+package docs_factory.tracker.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "docs_factory/tracker/v1/models.proto";
+
+// ---------------------------------------------------------------------------
+// Projects
+// ---------------------------------------------------------------------------
+service ProjectService {
+  option (google.api.default_host) = "localhost:8080";
+
+  rpc CreateProject(CreateProjectRequest) returns (Project) {
+    option (google.api.http) = {
+      post: "/v1/projects"
+      body: "project"
+    };
+  }
+  rpc GetProject(GetProjectRequest) returns (Project) {
+    option (google.api.http) = {get: "/v1/{name=projects/*}"};
+  }
+  rpc ListProjects(ListProjectsRequest) returns (ListProjectsResponse) {
+    option (google.api.http) = {get: "/v1/projects"};
+  }
+  rpc UpdateProject(UpdateProjectRequest) returns (Project) {
+    option (google.api.http) = {
+      patch: "/v1/{project.name=projects/*}"
+      body: "project"
+    };
+  }
+  rpc DeleteProject(DeleteProjectRequest) returns (DeleteProjectResponse) {
+    option (google.api.http) = {delete: "/v1/{name=projects/*}"};
+  }
+}
+
+message CreateProjectRequest {
+  Project project = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message GetProjectRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message ListProjectsRequest {
+  optional int32 max_results = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+message ListProjectsResponse {
+  repeated Project projects = 1;
+  optional string next_page_token = 2;
+}
+message UpdateProjectRequest {
+  Project project = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteProjectRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteProjectResponse {}
+
+// ---------------------------------------------------------------------------
+// Repositories
+// ---------------------------------------------------------------------------
+service RepositoryService {
+  option (google.api.default_host) = "localhost:8080";
+
+  rpc CreateRepository(CreateRepositoryRequest) returns (Repository) {
+    option (google.api.http) = {
+      post: "/v1/repositories"
+      body: "repository"
+    };
+  }
+  rpc GetRepository(GetRepositoryRequest) returns (Repository) {
+    option (google.api.http) = {get: "/v1/{name=repositories/*}"};
+  }
+  rpc ListRepositories(ListRepositoriesRequest) returns (ListRepositoriesResponse) {
+    option (google.api.http) = {get: "/v1/repositories"};
+  }
+  rpc UpdateRepository(UpdateRepositoryRequest) returns (Repository) {
+    option (google.api.http) = {
+      patch: "/v1/{repository.name=repositories/*}"
+      body: "repository"
+    };
+  }
+  rpc DeleteRepository(DeleteRepositoryRequest) returns (DeleteRepositoryResponse) {
+    option (google.api.http) = {delete: "/v1/{name=repositories/*}"};
+  }
+}
+
+message CreateRepositoryRequest {
+  Repository repository = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message GetRepositoryRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message ListRepositoriesRequest {
+  optional int32 max_results = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+message ListRepositoriesResponse {
+  repeated Repository repositories = 1;
+  optional string next_page_token = 2;
+}
+message UpdateRepositoryRequest {
+  Repository repository = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteRepositoryRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteRepositoryResponse {}
+
+// ---------------------------------------------------------------------------
+// Websites
+// ---------------------------------------------------------------------------
+service WebsiteService {
+  option (google.api.default_host) = "localhost:8080";
+
+  rpc CreateWebsite(CreateWebsiteRequest) returns (Website) {
+    option (google.api.http) = {
+      post: "/v1/websites"
+      body: "website"
+    };
+  }
+  rpc GetWebsite(GetWebsiteRequest) returns (Website) {
+    option (google.api.http) = {get: "/v1/{name=websites/*}"};
+  }
+  rpc ListWebsites(ListWebsitesRequest) returns (ListWebsitesResponse) {
+    option (google.api.http) = {get: "/v1/websites"};
+  }
+  rpc UpdateWebsite(UpdateWebsiteRequest) returns (Website) {
+    option (google.api.http) = {
+      patch: "/v1/{website.name=websites/*}"
+      body: "website"
+    };
+  }
+  rpc DeleteWebsite(DeleteWebsiteRequest) returns (DeleteWebsiteResponse) {
+    option (google.api.http) = {delete: "/v1/{name=websites/*}"};
+  }
+}
+
+message CreateWebsiteRequest {
+  Website website = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message GetWebsiteRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message ListWebsitesRequest {
+  optional int32 max_results = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+message ListWebsitesResponse {
+  repeated Website websites = 1;
+  optional string next_page_token = 2;
+}
+message UpdateWebsiteRequest {
+  Website website = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteWebsiteRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteWebsiteResponse {}
+
+// ---------------------------------------------------------------------------
+// Releases
+// ---------------------------------------------------------------------------
+service ReleaseService {
+  option (google.api.default_host) = "localhost:8080";
+
+  rpc CreateRelease(CreateReleaseRequest) returns (Release) {
+    option (google.api.http) = {
+      post: "/v1/releases"
+      body: "release"
+    };
+  }
+  rpc GetRelease(GetReleaseRequest) returns (Release) {
+    option (google.api.http) = {get: "/v1/{name=releases/*}"};
+  }
+  rpc ListReleases(ListReleasesRequest) returns (ListReleasesResponse) {
+    option (google.api.http) = {get: "/v1/releases"};
+  }
+  rpc UpdateRelease(UpdateReleaseRequest) returns (Release) {
+    option (google.api.http) = {
+      patch: "/v1/{release.name=releases/*}"
+      body: "release"
+    };
+  }
+  rpc DeleteRelease(DeleteReleaseRequest) returns (DeleteReleaseResponse) {
+    option (google.api.http) = {delete: "/v1/{name=releases/*}"};
+  }
+}
+
+message CreateReleaseRequest {
+  Release release = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message GetReleaseRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message ListReleasesRequest {
+  optional int32 max_results = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+message ListReleasesResponse {
+  repeated Release releases = 1;
+  optional string next_page_token = 2;
+}
+message UpdateReleaseRequest {
+  Release release = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteReleaseRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteReleaseResponse {}
+
+// ---------------------------------------------------------------------------
+// Artifacts
+// ---------------------------------------------------------------------------
+service ArtifactService {
+  option (google.api.default_host) = "localhost:8080";
+
+  rpc CreateArtifact(CreateArtifactRequest) returns (Artifact) {
+    option (google.api.http) = {
+      post: "/v1/artifacts"
+      body: "artifact"
+    };
+  }
+  rpc GetArtifact(GetArtifactRequest) returns (Artifact) {
+    option (google.api.http) = {get: "/v1/{name=artifacts/*}"};
+  }
+  rpc ListArtifacts(ListArtifactsRequest) returns (ListArtifactsResponse) {
+    option (google.api.http) = {get: "/v1/artifacts"};
+  }
+  rpc UpdateArtifact(UpdateArtifactRequest) returns (Artifact) {
+    option (google.api.http) = {
+      patch: "/v1/{artifact.name=artifacts/*}"
+      body: "artifact"
+    };
+  }
+  rpc DeleteArtifact(DeleteArtifactRequest) returns (DeleteArtifactResponse) {
+    option (google.api.http) = {delete: "/v1/{name=artifacts/*}"};
+  }
+}
+
+message CreateArtifactRequest {
+  Artifact artifact = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message GetArtifactRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message ListArtifactsRequest {
+  optional int32 max_results = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+message ListArtifactsResponse {
+  repeated Artifact artifacts = 1;
+  optional string next_page_token = 2;
+}
+message UpdateArtifactRequest {
+  Artifact artifact = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteArtifactRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteArtifactResponse {}
+
+// ---------------------------------------------------------------------------
+// Tasks
+// ---------------------------------------------------------------------------
+service TaskService {
+  option (google.api.default_host) = "localhost:8080";
+
+  rpc CreateTask(CreateTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      post: "/v1/tasks"
+      body: "task"
+    };
+  }
+  rpc GetTask(GetTaskRequest) returns (Task) {
+    option (google.api.http) = {get: "/v1/{name=tasks/*}"};
+  }
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {
+    option (google.api.http) = {get: "/v1/tasks"};
+  }
+  rpc UpdateTask(UpdateTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      patch: "/v1/{task.name=tasks/*}"
+      body: "task"
+    };
+  }
+  rpc DeleteTask(DeleteTaskRequest) returns (DeleteTaskResponse) {
+    option (google.api.http) = {delete: "/v1/{name=tasks/*}"};
+  }
+}
+
+message CreateTaskRequest {
+  Task task = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message GetTaskRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message ListTasksRequest {
+  optional int32 max_results = 1 [(google.api.field_behavior) = OPTIONAL];
+  optional string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+message ListTasksResponse {
+  repeated Task tasks = 1;
+  optional string next_page_token = 2;
+}
+message UpdateTaskRequest {
+  Task task = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteTaskRequest {
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+message DeleteTaskResponse {}
+
+// ---------------------------------------------------------------------------
+// Associations — the graph edges that make this a tracker, not a list.
+// ---------------------------------------------------------------------------
+//
+// `from`/`to` are resource names (e.g. "releases/{uuid}"). `label` is an
+// AssociationLabel value (e.g. "depends_on", "references", "child_of"). The
+// handler resolves names to object ids and maintains the inverse edge.
+service AssociationService {
+  option (google.api.default_host) = "localhost:8080";
+
+  rpc AddAssociation(AddAssociationRequest) returns (AddAssociationResponse) {
+    option (google.api.http) = {
+      post: "/v1/associations"
+      body: "*"
+    };
+  }
+  rpc RemoveAssociation(RemoveAssociationRequest) returns (RemoveAssociationResponse) {
+    option (google.api.http) = {
+      post: "/v1/associations:remove"
+      body: "*"
+    };
+  }
+  rpc ListAssociations(ListAssociationsRequest) returns (ListAssociationsResponse) {
+    option (google.api.http) = {get: "/v1/associations"};
+  }
+}
+
+// A directed edge between two resources.
+message Association {
+  string from = 1;
+  string label = 2;
+  string to = 3;
+}
+
+message AddAssociationRequest {
+  string from = 1 [(google.api.field_behavior) = REQUIRED];
+  string to = 2 [(google.api.field_behavior) = REQUIRED];
+  string label = 3 [(google.api.field_behavior) = REQUIRED];
+}
+message AddAssociationResponse {}
+
+message RemoveAssociationRequest {
+  string from = 1 [(google.api.field_behavior) = REQUIRED];
+  string to = 2 [(google.api.field_behavior) = REQUIRED];
+  string label = 3 [(google.api.field_behavior) = REQUIRED];
+}
+message RemoveAssociationResponse {}
+
+message ListAssociationsRequest {
+  // Source resource name, e.g. "releases/{uuid}".
+  string from = 1 [(google.api.field_behavior) = REQUIRED];
+  // Optional edge-label filter, e.g. "depends_on".
+  optional string label = 2 [(google.api.field_behavior) = OPTIONAL];
+  optional int32 max_results = 3 [(google.api.field_behavior) = OPTIONAL];
+  optional string page_token = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+message ListAssociationsResponse {
+  repeated Association associations = 1;
+  optional string next_page_token = 2;
+}

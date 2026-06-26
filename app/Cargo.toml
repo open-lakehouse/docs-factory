@@ -1,0 +1,54 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/common",
+  "crates/server",
+  "crates/client",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "Apache-2.0"
+authors = ["open-lakehouse"]
+repository = "https://github.com/open-lakehouse/docs-factory-app"
+
+[workspace.dependencies]
+axum = "0.8"
+tokio = { version = "1", features = ["full"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "trace", "fs"] }
+axum-extra = { version = "0.10", features = ["query"] }
+http = "1"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+url = "2"
+futures = "0.3"
+olai-http = "0.0.1"
+# Path dep to the sibling trestle checkout: the generated `labels.rs` is produced
+# by this same checkout's `olai-codegen`, so the store types it references
+# (ResourceTypeDescriptor/FieldRole/...) are guaranteed to match. Swap to a
+# published version once one matching the codegen is on the registry.
+olai-store = { path = "../../trestle/crates/olai-store" }
+strum = { version = "0.27", features = ["derive"] }
+# Optional; only compiled when the `sqlx` feature is enabled (future Postgres store).
+sqlx = { version = "0.8", default-features = false, features = ["postgres", "macros", "runtime-tokio-rustls"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+buffa = "0.7"
+buffa-types = "0.7"
+async-trait = "0.1"
+# PyO3 boundary conversions for the generated models (emitted as
+# `models/_gen/pyo3_impls.rs` when Python bindings are generated). Pulled in only
+# when the `common` crate's `python` feature is enabled, so non-Python consumers
+# never compile pyo3.
+pyo3 = "0.26"
+pythonize = "0.26"
+# ConnectRPC server runtime + the http-body trait its generated client refers to.
+connectrpc = { version = "0.7", features = ["server", "axum"] }
+http-body = "1"

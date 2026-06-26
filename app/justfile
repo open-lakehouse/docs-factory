@@ -1,0 +1,76 @@
+set dotenv-load := true
+set dotenv-filename := ".env.local"
+
+project := "docs-factory-app"
+
+# ------------------------------------------------------------------------------
+# Codegen
+# ------------------------------------------------------------------------------
+
+# Regenerate all code from proto: buf plugins (models + Connect facade),
+# then the trestle-generated server/client/TS.
+regen:
+    buf generate
+    buf build -o api.bin
+    trestle generate -c trestle.yaml
+
+
+
+# ------------------------------------------------------------------------------
+# Dev loop
+# ------------------------------------------------------------------------------
+
+# Run the server (and frontend, if enabled) in watch mode.
+
+dev:
+    docker compose --profile svc up -d
+    cargo run -p docs-factory-app-server
+
+# ------------------------------------------------------------------------------
+# Local stack (delegated to compose)
+# ------------------------------------------------------------------------------
+
+# Bring up the local platform stack (Postgres, MLflow, Envoy, ...).
+up profile="svc":
+    docker compose --profile {{profile}} up -d
+
+# Stop everything and wipe volumes.
+down:
+    docker compose down -v
+
+# Tail logs (e.g. `just logs mlflow`).
+logs svc:
+    docker compose logs -f {{svc}}
+
+# Print the active envoy route table.
+routes:
+    @sed -n '/match: { prefix:/p' docker/envoy/envoy.yaml
+
+# ------------------------------------------------------------------------------
+# Databricks Apps
+# ------------------------------------------------------------------------------
+
+# Validate the asset bundle (no deploy).
+bundle-validate:
+    databricks bundle validate
+
+# Deploy the bundle.
+deploy:
+    databricks bundle deploy
+    databricks bundle run docs_factory_app
+
+# ------------------------------------------------------------------------------
+# Quality
+# ------------------------------------------------------------------------------
+
+fmt:
+    cargo fmt --all
+
+
+lint:
+    cargo clippy --all-targets -- -D warnings
+    buf lint
+
+
+test:
+    cargo test --workspace --lib --tests

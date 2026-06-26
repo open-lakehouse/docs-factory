@@ -1,0 +1,14 @@
+/target
+api.bin
+
+# Local-stack scratch space.
+.env.local
+.data/
+.cache/
+
+# Generated artefacts. Re-derived from `proto/` by `trestle generate`; do NOT
+# edit by hand. Comment these out if you prefer to commit generated code.
+crates/common/src/models/_gen/
+crates/server/src/gen/
+crates/client/src/gen/
+crates/server/src/connect_gen/

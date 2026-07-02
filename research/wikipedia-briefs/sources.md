@@ -108,6 +108,19 @@ independent secondary (notability-bearing) · **(SP)** semi-independent
   https://paimon.apache.org/ (repo: https://github.com/apache/paimon) ·
   Apache XTable — https://xtable.apache.org/ (was OneTable)
 - **(P)** Apache Parquet — https://parquet.apache.org/
+- **(P)** Delta Lake protocol RFC #6640, *"Adopt the Iceberg v4 manifest tree as
+  Delta's native content metadata format"* — primary evidence for v3 data-layer
+  harmonization (Parquet + deletion vectors interchangeable) and the v4 metadata
+  proposal; states cross-community collaboration. **Open proposal — cite as
+  proposal, not fact.** https://github.com/delta-io/delta/issues/6640
+- **(P)** Apache Iceberg issue #16694, *"v4: add manifest write support"* —
+  primary evidence the v4 manifest-tree work exists ("root/leaf, co-located DVs").
+  **Open — proposal/in-progress.** https://github.com/apache/iceberg/issues/16694
+- **(P, related)** Delta RFC #6108 (closed) *"Iceberg V4 Adaptive Metadata Tree"*
+  and #6953 *"Delta on Iceberg V4 RFC Followup Improvements"* — supporting thread.
+- **(P, interested)** Databricks Data+AI Summit session *"Format Co-Evolution: How
+  Iceberg v4 and Delta 5.0 Share a Unified Metadata"* — vendor framing of the
+  convergence; attribute, do not state in WP voice.
 - **(P)** Lance format docs — https://lancedb.github.io/lance/format/ (LanceDB;
   attribute the "includes a table-format spec" claim)
 - **(S)** Dremio, *"Exploring the Evolving File Format Landscape in the AI Era:

@@ -52,9 +52,14 @@ concept distinct from any one format.
 3. **How they work (shared model)** — a metadata/manifest layer tracks which files
    constitute a table version; snapshots enable time travel; writers commit
    atomically. Keep vendor-neutral; defer per-format protocol detail.
-4. **Interoperability** — `Apache XTable` (formerly OneTable; omni-directional
-   metadata translation) and Delta **UniForm** (Delta emits Iceberg/Hudi-readable
-   metadata). Note the industry shift from "format war" toward interop.
+4. **Interoperability** — lead with **format-level convergence**, focused on
+   Iceberg↔Delta: Iceberg **v3** aligned the *data layer* (Parquet + deletion
+   vectors interchangeable without conversion); the **v4** proposals aim to align
+   the *metadata layer* too (Iceberg's "adaptive metadata tree" + the Delta RFC to
+   adopt it). **State v4 clearly as proposals**, not shipped — cite the GitHub RFCs
+   as evidence (`delta-io/delta#6640`, `apache/iceberg#16694`). Reduce translation
+   tools (UniForm, XTable) to a brief closing mention — they bridge where formats
+   have *not* yet converged. Note the "format war → convergence" shift (attribute).
 5. **Relation to catalogs and the lakehouse** — brief link to `Unity Catalog`,
    Iceberg REST Catalog, and `data lakehouse`.
 

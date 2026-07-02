@@ -71,6 +71,10 @@ ingestion, and later became an Apache Software Foundation project.<ref name="ube
 '''Apache Paimon''' began as Flink Table Store within the [[Apache Flink]]
 project and entered the Apache incubator in 2023, where it was renamed; it is
 designed as a streaming-first lake format.<ref name="paimonflink">{{cite web |title=What is Paimon (incubating) (formerly Flink Table Store)? |publisher=Apache Software Foundation |url=https://flink.apache.org/what-is-flink-table-store/}}</ref>
+Newer entrants target machine-learning and multimodal data; for example, Lance,
+introduced in 2022 and developed by the company LanceDB, is oriented toward
+vector search and random-access workloads and includes its own table-format
+specification alongside a columnar file format.<ref name="dremiolance">{{cite web |title=Exploring the Evolving File Format Landscape in the AI Era: Parquet, Lance, Nimble and Vortex |work=Dremio |url=https://www.dremio.com/blog/exploring-the-evolving-file-format-landscape-in-ai-era-parquet-lance-nimble-and-vortex-and-what-it-means-for-apache-iceberg/}}</ref><ref name="lancedocs">{{cite web |title=Lance format |publisher=LanceDB |url=https://lancedb.github.io/lance/format/}}</ref>
 
 == Interoperability ==
 

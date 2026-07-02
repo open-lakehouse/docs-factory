@@ -108,6 +108,12 @@ independent secondary (notability-bearing) · **(SP)** semi-independent
   https://paimon.apache.org/ (repo: https://github.com/apache/paimon) ·
   Apache XTable — https://xtable.apache.org/ (was OneTable)
 - **(P)** Apache Parquet — https://parquet.apache.org/
+- **(P)** Lance format docs — https://lancedb.github.io/lance/format/ (LanceDB;
+  attribute the "includes a table-format spec" claim)
+- **(S)** Dremio, *"Exploring the Evolving File Format Landscape in the AI Era:
+  Parquet, Lance, Nimble and Vortex…"* — independent framing of Lance as an
+  AI/vector-oriented newcomer (vendor-adjacent, corroborate).
+  https://www.dremio.com/blog/exploring-the-evolving-file-format-landscape-in-ai-era-parquet-lance-nimble-and-vortex-and-what-it-means-for-apache-iceberg/
 - **(P)** unitycatalog.io — https://unitycatalog.io/ · unitycatalog/unitycatalog —
   https://github.com/unitycatalog/unitycatalog
 - **(P)** LF AI & Data, *"Welcoming Unity Catalog…"* (2024-06-20).

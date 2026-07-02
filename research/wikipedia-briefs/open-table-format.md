@@ -43,6 +43,12 @@ concept distinct from any one format.
    Delta Lake (Databricks, 2019), Apache Iceberg (Netflix, 2017), Apache Hudi
    (Uber), Apache Paimon (from Flink Table Store, 2022→ASF 2023). Link out; do not
    duplicate their articles. Weight by coverage (Paimon lightest, per WP:DUE).
+   **Newer/specialized entrants** (Lance, from LanceDB — AI/multimodal, vector
+   search; includes a table-format spec) get a *one-sentence mention* grouped with
+   Paimon, not a full paragraph — mostly vendor/self-published coverage today, so
+   keep light per WP:DUE. Anchor the AI/vector framing on an independent source
+   (Dremio's "evolving file format landscape") and attribute the table-format-spec
+   claim to LanceDB's own docs.
 3. **How they work (shared model)** — a metadata/manifest layer tracks which files
    constitute a table version; snapshots enable time travel; writers commit
    atomically. Keep vendor-neutral; defer per-format protocol detail.

@@ -47,10 +47,15 @@ concept distinct from any one format.
 1. **Definition & motivation** — what problem they solve vs. plain files / Hive
    tables (atomic commits, consistent reads, evolving schemas); the file-format vs
    table-format distinction (explicitly bridge to `Apache Parquet`).
-2. **The major formats** — one short, *even-handed*, proportionate paragraph each:
-   Delta Lake (Databricks, 2019), Apache Iceberg (Netflix, 2017), Apache Hudi
-   (Uber), Apache Paimon (from Flink Table Store, 2022→ASF 2023). Link out; do not
+2. **The major formats** — one short, *even-handed*, proportionate paragraph each,
+   all the **same shape: origin (who/when) + one "known for" clause.** Keep it
+   consistent — don't give one format a technical detail and another a business
+   event. Delta Lake (Databricks, 2019; transaction log), Apache Iceberg (Netflix,
+   2017; hidden partitioning + evolution), Apache Hudi (Uber; upserts/incremental),
+   Apache Paimon (Flink Table Store→ASF 2023; streaming-first). Link out; do not
    duplicate their articles. Weight by coverage (Paimon lightest, per WP:DUE).
+   **The Tabular acquisition does NOT go here** — it's business/M&A, moved to
+   Interoperability as a marker of Iceberg↔Delta convergence.
    **Newer/specialized entrants** (Lance, from LanceDB — AI/multimodal, vector
    search; includes a table-format spec) get a *one-sentence mention* grouped with
    Paimon, not a full paragraph — mostly vendor/self-published coverage today, so
@@ -60,7 +65,9 @@ concept distinct from any one format.
 3. **How they work (shared model)** — a metadata/manifest layer tracks which files
    constitute a table version; snapshots enable time travel; writers commit
    atomically. Keep vendor-neutral; defer per-format protocol detail.
-4. **Interoperability** — lead with **format-level convergence**, focused on
+4. **Interoperability** — open with the convergence framing + the **Tabular
+   acquisition** (2024) as a business marker of it (moved here from Major formats).
+   Then lead with **format-level convergence**, focused on
    Iceberg↔Delta: Iceberg **v3** aligned the *data layer* (Parquet + deletion
    vectors interchangeable without conversion); the **v4** proposals aim to align
    the *metadata layer* too (Iceberg's "adaptive metadata tree" + the Delta RFC to

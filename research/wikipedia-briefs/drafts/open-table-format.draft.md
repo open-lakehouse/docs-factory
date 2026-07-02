@@ -59,13 +59,10 @@ processing.[^cidr2023][^isurvey]
 it was later contributed to the Linux Foundation. It stores table metadata in a
 transaction log kept alongside the Parquet data files.[^tc2019]
 
-**Apache Iceberg** was started at Netflix by Ryan Blue and Dan Weeks in 2017,
-donated to the Apache Software Foundation in November 2018, and became a
-top-level Apache project in May 2020.[^icebergasf][^icebergincubator] In June
-2024, Databricks acquired Tabular, a company founded by Iceberg's original
-creators, in a deal reported at over US$1 billion (later reported at about US$2
-billion), saying it wanted to move Delta Lake and Iceberg toward a common
-standard.[^cnbctabular][^tctabular2b]
+**Apache Iceberg** was started at Netflix by Ryan Blue and Dan Weeks in 2017 and
+became a top-level Apache Software Foundation project in 2020. It is known for
+hidden partitioning and schema and partition evolution that do not require
+rewriting existing data.[^icebergasf][^icebergincubator]
 
 **Apache Hudi** (from "Hadoop Upserts Deletes and Incrementals") originated at
 Uber around 2016 to support efficient row-level upserts and incremental data
@@ -82,7 +79,10 @@ format.[^dremiolance][^lancedocs]
 
 Because several formats coexist, interoperability between them has become an
 active area of development. By the mid-2020s, reporting on Delta Lake and Iceberg
-described the two formats as converging rather than competing.[^regcollide]
+described the two formats as converging rather than competing.[^regcollide] One
+marker of that convergence was Databricks' 2024 acquisition of Tabular, a company
+founded by Iceberg's original creators, after which Databricks said it aimed to
+move the two formats toward a common standard.[^cnbctabular]
 
 ### Format-level convergence
 
@@ -125,7 +125,6 @@ without rewriting the underlying data files.[^siunif]
 [^icebergasf]: "Apache Iceberg," Apache Software Foundation. <https://iceberg.apache.org/>
 [^icebergincubator]: "Apache Iceberg — Project Incubation Status," Apache Software Foundation. <https://incubator.apache.org/projects/iceberg.html>
 [^cnbctabular]: "Databricks is buying data optimization startup Tabular," *CNBC*, 2024-06-04. <https://www.cnbc.com/2024/06/04/databricks-is-buying-data-optimization-startup-tabular.html>
-[^tctabular2b]: "Databricks reportedly paid $2 billion in Tabular acquisition," *TechCrunch*, 2024-08-14. <https://techcrunch.com/2024/08/14/databricks-reportedly-paid-2-billion-in-tabular-acquisition/>
 [^uberhudi]: "Apache Hudi at Uber: Engineering for Trillion-Record-Scale Data Lake Operations," Uber Engineering Blog. <https://www.uber.com/en-US/blog/apache-hudi-at-uber/>
 [^paimonflink]: "What is Paimon (incubating) (formerly Flink Table Store)?," Apache Software Foundation. <https://flink.apache.org/what-is-flink-table-store/>
 [^dremiolance]: "Exploring the Evolving File Format Landscape in the AI Era: Parquet, Lance, Nimble and Vortex," Dremio. <https://www.dremio.com/blog/exploring-the-evolving-file-format-landscape-in-ai-era-parquet-lance-nimble-and-vortex-and-what-it-means-for-apache-iceberg/>

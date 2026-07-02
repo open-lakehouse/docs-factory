@@ -57,13 +57,10 @@ processing.<ref name="cidr2023" /><ref name="isurvey" />
 in 2019; it was later contributed to the [[Linux Foundation]]. It stores table
 metadata in a transaction log kept alongside the Parquet data files.<ref name="tc2019">{{cite web |last=Lardinois |first=Frederic |title=Databricks brings its Delta Lake open source project to the Linux Foundation |work=[[TechCrunch]] |date=2019-10-15 |url=https://techcrunch.com/2019/10/15/databricks-brings-its-delta-lake-open-source-project-to-the-linux-foundation/}}</ref>
 
-'''[[Apache Iceberg]]''' was started at [[Netflix]] by Ryan Blue and Dan Weeks
-in 2017, donated to the [[Apache Software Foundation]] in November 2018, and
-became a top-level Apache project in May 2020.<ref name="icebergasf">{{cite web |title=Apache Iceberg |publisher=Apache Software Foundation |url=https://iceberg.apache.org/}}</ref><ref name="icebergincubator">{{cite web |title=Apache Iceberg — Project Incubation Status |publisher=Apache Software Foundation |url=https://incubator.apache.org/projects/iceberg.html}}</ref>
-In June 2024, Databricks acquired Tabular, a company founded by Iceberg's
-original creators, in a deal reported at over US$1&nbsp;billion (later reported
-at about US$2&nbsp;billion), saying it wanted to move Delta Lake and Iceberg
-toward a common standard.<ref name="cnbctabular">{{cite web |title=Databricks is buying data optimization startup Tabular |work=[[CNBC]] |date=2024-06-04 |url=https://www.cnbc.com/2024/06/04/databricks-is-buying-data-optimization-startup-tabular.html}}</ref><ref name="tctabular2b">{{cite web |title=Databricks reportedly paid $2 billion in Tabular acquisition |work=[[TechCrunch]] |date=2024-08-14 |url=https://techcrunch.com/2024/08/14/databricks-reportedly-paid-2-billion-in-tabular-acquisition/}}</ref>
+'''[[Apache Iceberg]]''' was started at [[Netflix]] by Ryan Blue and Dan Weeks in
+2017 and became a top-level [[Apache Software Foundation]] project in 2020. It is
+known for hidden partitioning and schema and partition evolution that do not
+require rewriting existing data.<ref name="icebergasf">{{cite web |title=Apache Iceberg |publisher=Apache Software Foundation |url=https://iceberg.apache.org/}}</ref><ref name="icebergincubator">{{cite web |title=Apache Iceberg — Project Incubation Status |publisher=Apache Software Foundation |url=https://incubator.apache.org/projects/iceberg.html}}</ref>
 
 '''Apache Hudi''' (from "Hadoop Upserts Deletes and Incrementals") originated at
 [[Uber]] around 2016 to support efficient row-level upserts and incremental data
@@ -81,6 +78,9 @@ specification alongside a columnar file format.<ref name="dremiolance">{{cite we
 Because several formats coexist, interoperability between them has become an
 active area of development. By the mid-2020s, reporting on Delta Lake and Iceberg
 described the two formats as converging rather than competing.<ref name="regcollide">{{cite web |last=Clark |first=Lindsay |title=Delta Lake and Iceberg communities collide – in a good way |work=[[The Register]] |date=2025-04-15 |url=https://www.theregister.com/2025/04/15/iceberg_delta_lake_collab/}}</ref>
+One marker of that convergence was Databricks' 2024 acquisition of Tabular, a
+company founded by Iceberg's original creators, after which Databricks said it
+aimed to move the two formats toward a common standard.<ref name="cnbctabular">{{cite web |title=Databricks is buying data optimization startup Tabular |work=[[CNBC]] |date=2024-06-04 |url=https://www.cnbc.com/2024/06/04/databricks-is-buying-data-optimization-startup-tabular.html}}</ref>
 
 === Format-level convergence ===
 

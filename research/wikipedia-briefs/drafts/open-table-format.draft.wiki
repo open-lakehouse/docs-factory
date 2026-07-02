@@ -91,10 +91,10 @@ two formats aligned their data layer: Parquet data files and deletion vectors
 between them without conversion. Their metadata layers, however, remained
 separate.<ref name="delta6640">{{cite web |title=[PROTOCOL RFC] Adopt the Iceberg v4 manifest tree as Delta's native content metadata format |work=delta-io/delta issue #6640 |publisher=[[Linux Foundation]] |url=https://github.com/delta-io/delta/issues/6640}}</ref>
 
-A subsequent, and as of 2026 still unratified, set of proposals aims to align the
-metadata layer as well. Apache Iceberg's proposed version 4 introduces an
-"adaptive metadata tree" that restructures table metadata to reduce the cost of
-frequent, small commits.<ref name="iceberg16694">{{cite web |title=v4: add manifest write support |work=apache/iceberg issue #16694 |publisher=[[Apache Software Foundation]] |url=https://github.com/apache/iceberg/issues/16694}}</ref>
+More recent proposals, still unratified as of 2026, would align the metadata
+layer too. Apache Iceberg's proposed version 4 adds an "adaptive metadata tree"
+that restructures table metadata to make frequent, small commits
+cheaper.<ref name="iceberg16694">{{cite web |title=v4: add manifest write support |work=apache/iceberg issue #16694 |publisher=[[Apache Software Foundation]] |url=https://github.com/apache/iceberg/issues/16694}}</ref>
 A corresponding proposal in the Delta Lake project would adopt the Iceberg v4
 metadata tree as Delta's native metadata format, which its authors describe as
 work done "collaborating with the Iceberg community." Both remain proposals under

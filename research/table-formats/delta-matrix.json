@@ -1,0 +1,242 @@
+{
+  "$schema_description": "Delta Lake feature-by-engine support matrix. Parseable companion to report.md. Generated 2026-06-26 by the deep-research harness.",
+  "format": "delta-lake",
+  "generated": "2026-06-26",
+  "method": "deep-research harness: 25 sources fetched, 120 claims extracted, 25 adversarially verified (23 confirmed).",
+  "legend": {
+    "cell_status": {
+      "rw": "read and write",
+      "r": "read only",
+      "w_partial": "write supported but partial/append-only/blind-insert",
+      "rw_partial": "read full, write partial",
+      "none": "not supported / hard failure",
+      "unknown": "not confirmed by sources in this run"
+    },
+    "confidence": {
+      "verified": "survived 3-vote adversarial refutation (2/3 needed to kill)",
+      "source": "extracted from a fetched primary/secondary source, not independently re-verified",
+      "verified_med": "verified but single interested-party framing"
+    }
+  },
+  "protocol_mechanism": {
+    "scheme": "table-features",
+    "anchor": { "reader_version": 3, "writer_version": 7, "note": "final protocol versions; subsequent features via flags, not version bumps", "confidence": "verified" },
+    "version_ranges": { "minReaderVersion": [1, 2, 3], "minWriterVersion": [2, 3, 4, 5, 6, 7], "confidence": "verified" },
+    "negotiation_rule": "client may read iff table.readerFeatures is subset of client.supportedReaderFeatures; write iff writerFeatures subset of supportedWriterFeatures (writers also satisfy reader subset). Missing any one feature bars the client entirely.",
+    "introduced": "Databricks Runtime 12.2 LTS / OSS Delta 2.3.0",
+    "irreversibility": "Enabling a feature auto-upgrades the protocol; most upgrades irreversible and may break readers/writers/both. deletionVectors can be dropped (DBR 14.1+).",
+    "confidence": "verified",
+    "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md ; https://delta.io/blog/2023-07-27-delta-lake-table-features/ ; https://docs.databricks.com/aws/en/delta/feature-compatibility"
+  },
+  "features": [
+    { "name": "columnMapping", "class": "reader-writer", "legacy_reader": 2, "legacy_writer": 5, "confidence": "verified", "source": "https://docs.databricks.com/aws/en/delta/feature-compatibility" },
+    { "name": "deletionVectors", "class": "reader-writer", "legacy_reader": 3, "legacy_writer": 7, "risk": "high - soft-delete; non-DV-aware reader silently returns deleted rows; default-on in recent writers", "confidence": "verified", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "timestampNtz", "class": "reader-writer", "legacy_reader": 3, "legacy_writer": 7, "confidence": "verified", "source": "https://docs.databricks.com/aws/en/delta/feature-compatibility" },
+    { "name": "variantType", "class": "reader-writer", "legacy_reader": 3, "legacy_writer": 7, "note": "shares single binary encoding with Iceberg v3 VARIANT (Apache Parquet ratified)", "confidence": "verified", "source": "https://docs.databricks.com/aws/en/delta/feature-compatibility" },
+    { "name": "catalogManaged", "class": "reader-writer", "legacy_reader": 3, "legacy_writer": 7, "note": "catalog commits; convergence point with Iceberg REST catalog", "confidence": "verified", "source": "https://docs.databricks.com/aws/en/delta/feature-compatibility" },
+    { "name": "checkConstraints", "class": "writer-only", "legacy_writer": 3, "confidence": "verified", "source": "https://docs.databricks.com/aws/en/delta/feature-compatibility" },
+    { "name": "changeDataFeed", "class": "writer-only", "legacy_writer": 4, "confidence": "verified", "source": "https://docs.databricks.com/aws/en/delta/feature-compatibility" },
+    { "name": "identityColumns", "class": "writer-only", "legacy_writer": 6, "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "invariants", "class": "writer-only", "confidence": "source", "source": "https://delta.io/blog/2023-07-27-delta-lake-table-features/" },
+    { "name": "appendOnly", "class": "writer-only", "confidence": "source", "source": "https://delta.io/blog/2023-07-27-delta-lake-table-features/" },
+    { "name": "generatedColumns", "class": "writer-only", "confidence": "source", "source": "https://delta.io/blog/2023-07-27-delta-lake-table-features/" },
+    { "name": "allowColumnDefaults", "class": "writer-only", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "v2Checkpoint", "class": "reader-writer", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "typeWidening", "class": "reader-writer", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "rowTracking", "class": "writer-only", "note": "compatible with Iceberg v3 row lineage", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "domainMetadata", "class": "writer-only", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "icebergCompatV1", "class": "writer-only", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "icebergCompatV2", "class": "writer-only", "note": "UniForm", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "vacuumProtocolCheck", "class": "writer-only", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "inCommitTimestamp", "class": "writer-only", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "clustering", "class": "writer-only", "note": "liquid clustering", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" },
+    { "name": "collations", "class": "reader-writer", "confidence": "source", "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md" }
+  ],
+  "engines": {
+    "spark_databricks": {
+      "display_name": "Apache Spark / Databricks Runtime",
+      "role": "reference implementation",
+      "overall": "rw",
+      "kernel": "none (reference impl)",
+      "confidence": "source",
+      "notes": "Implements all features. Deletion vectors default-on in recent runtimes (the primary source of downstream-reader breakage).",
+      "source": "https://docs.databricks.com/aws/en/delta/deletion-vectors",
+      "features": {
+        "deletionVectors": { "status": "rw", "confidence": "source" },
+        "columnMapping": { "status": "rw", "confidence": "source" },
+        "variantType": { "status": "rw", "confidence": "source" },
+        "timestampNtz": { "status": "rw", "confidence": "source" },
+        "changeDataFeed": { "status": "rw", "confidence": "source" }
+      }
+    },
+    "trino": {
+      "display_name": "Trino (Delta Lake connector)",
+      "overall": "rw",
+      "kernel": "bespoke",
+      "confidence": "verified",
+      "notes": "Broadest verified non-Spark Delta coverage. DV read added 2023-09 (PR #17477); DV write release 454; MERGE release 469.",
+      "source": "https://trino.io/docs/current/connector/delta-lake.html",
+      "features": {
+        "deletionVectors": { "status": "rw", "confidence": "verified", "source": "https://trino.io/docs/current/connector/delta-lake.html" },
+        "columnMapping": { "status": "rw", "confidence": "verified", "note": "ID, NAME, NONE modes", "source": "https://trino.io/docs/current/connector/delta-lake.html" },
+        "typeWidening": { "status": "r", "confidence": "verified", "note": "read-only; write tracked in issue #22433", "source": "https://trino.io/docs/current/connector/delta-lake.html" },
+        "v2Checkpoint": { "status": "r", "confidence": "verified", "source": "https://trino.io/docs/current/connector/delta-lake.html" },
+        "icebergCompatV1": { "status": "r", "confidence": "source", "source": "https://trino.io/docs/current/connector/delta-lake.html" },
+        "icebergCompatV2": { "status": "r", "confidence": "source", "source": "https://trino.io/docs/current/connector/delta-lake.html" },
+        "changeDataFeed": { "status": "r", "confidence": "source", "note": "read via table_changes()", "source": "https://trino.io/docs/current/connector/delta-lake.html" }
+      },
+      "operations": { "append": "rw", "overwrite": "rw", "merge": "rw", "time_travel": "r" }
+    },
+    "delta_rs": {
+      "display_name": "delta-rs / Delta Lake (Rust + Python)",
+      "overall": "rw_partial",
+      "kernel": "delta-kernel-rs (Rust) - migrating",
+      "confidence": "source",
+      "notes": "JVM-free read/write/manage. CRITICAL: cannot open tables with DeletionVectors reader feature as of 0.26.2 (#3543, dup of #1094) - hard failure, not degraded read. Migrating to delta-kernel-rs as protocol layer.",
+      "source": "https://delta.io/blog/delta-lake-without-spark/",
+      "features": {
+        "deletionVectors": { "status": "none", "confidence": "source", "note": "hard refuse-to-open as of 0.26.2; long-standing gap", "source": "https://github.com/delta-io/delta-rs/issues/3543" },
+        "columnMapping": { "status": "rw", "confidence": "source", "source": "https://delta.io/blog/delta-lake-without-spark/" },
+        "checkConstraints": { "status": "rw", "confidence": "source", "source": "https://delta.io/blog/delta-lake-without-spark/" }
+      },
+      "operations": { "append": "rw", "overwrite": "rw", "merge": "rw", "time_travel": "r" }
+    },
+    "duckdb_delta": {
+      "display_name": "DuckDB (delta extension)",
+      "overall": "w_partial",
+      "kernel": "delta-kernel-rs (Rust)",
+      "confidence": "verified",
+      "notes": "Kernel-based, not bespoke. Full read incl. DV-enabled tables; VARIANT; data-skipping/projection pushdown. Write = blind insert (append) only; INSERT GA ~v1.5 (May 2026); UPDATE/MERGE/DELETE not yet supported.",
+      "source": "https://github.com/duckdb/duckdb-delta",
+      "features": {
+        "deletionVectors": { "status": "r", "confidence": "verified", "note": "scans DV tables correctly", "source": "https://github.com/duckdb/duckdb-delta" },
+        "variantType": { "status": "r", "confidence": "source", "source": "https://github.com/duckdb/duckdb-delta" }
+      },
+      "operations": { "append": "w_partial", "overwrite": "none", "merge": "none", "update": "none", "delete": "none", "time_travel": "r" }
+    },
+    "clickhouse": {
+      "display_name": "ClickHouse",
+      "overall": "rw_partial",
+      "kernel": "delta-kernel-rs (Rust)",
+      "confidence": "source",
+      "notes": "Adopted Rust kernel, replacing bespoke native impl. Writes partial: kernel coordinates transactional metadata, ClickHouse writes Parquet itself; cannot create empty Delta tables. CDF surfaced via kernel in 25.12 (_change_type, _commit_version). Kernel handles logical/physical schema reconciliation.",
+      "source": "https://delta.io/blog/2026-05-18-integrating-the-rust-delta-kernel-into-clickhouse/",
+      "features": {
+        "columnMapping": { "status": "r", "confidence": "source", "note": "kernel handles schema reconciliation", "source": "https://delta.io/blog/2026-05-18-integrating-the-rust-delta-kernel-into-clickhouse/" },
+        "changeDataFeed": { "status": "r", "confidence": "source", "note": "since 25.12", "source": "https://delta.io/blog/2026-05-18-integrating-the-rust-delta-kernel-into-clickhouse/" }
+      },
+      "operations": { "append": "w_partial", "create_table": "none", "time_travel": "unknown" }
+    },
+    "starrocks": {
+      "display_name": "StarRocks",
+      "overall": "r",
+      "kernel": "Java Delta Kernel",
+      "confidence": "verified",
+      "notes": "Java kernel integrated in Frontend; abstracts txn-log/metadata/schema. Uses minReaderVersion/readerFeatures for compatibility. Read-only Delta catalog. Reads DV-enabled tables (from v3.4.1).",
+      "source": "https://delta.io/blog/starrocks-kernel/",
+      "features": {
+        "deletionVectors": { "status": "r", "confidence": "verified", "note": "from v3.4.1", "source": "https://docs.starrocks.io/docs/data_source/catalog/deltalake_catalog/" }
+      },
+      "operations": { "read": "r", "write": "none" }
+    },
+    "flink": {
+      "display_name": "Apache Flink (Delta connector)",
+      "overall": "w_partial",
+      "kernel": "Java Delta Kernel (Sink, experimental in Delta 3.1, not default)",
+      "confidence": "source",
+      "notes": "Append-only DeltaSink; no overwrite or upsert. Experimental kernel integration cut pipeline init time 45x.",
+      "source": "https://delta.io/blog/delta-lake-without-spark/",
+      "operations": { "append": "w_partial", "overwrite": "none", "upsert": "none" }
+    },
+    "bigquery": {
+      "display_name": "Google BigQuery",
+      "overall": "r",
+      "kernel": "bespoke",
+      "confidence": "source",
+      "notes": "Reads Delta at reader v3 with deletion vectors and column mapping; cannot modify schema; no CDC.",
+      "source": "https://delta.io/blog/delta-lake-without-spark/",
+      "features": {
+        "deletionVectors": { "status": "r", "confidence": "source", "source": "https://delta.io/blog/delta-lake-without-spark/" },
+        "columnMapping": { "status": "r", "confidence": "source", "source": "https://delta.io/blog/delta-lake-without-spark/" }
+      }
+    },
+    "athena": {
+      "display_name": "AWS Athena (Delta connector)",
+      "overall": "r",
+      "kernel": "bespoke",
+      "confidence": "source",
+      "notes": "Read-only dedicated connector.",
+      "source": "https://delta.io/blog/delta-lake-without-spark/"
+    },
+    "prestodb": {
+      "display_name": "PrestoDB",
+      "overall": "r",
+      "kernel": "bespoke",
+      "confidence": "source",
+      "notes": "Read-only dedicated connector.",
+      "source": "https://delta.io/blog/delta-lake-without-spark/"
+    },
+    "hive": {
+      "display_name": "Apache Hive",
+      "overall": "r",
+      "kernel": "bespoke",
+      "confidence": "source",
+      "notes": "Read-only dedicated connector.",
+      "source": "https://delta.io/blog/delta-lake-without-spark/"
+    },
+    "druid": {
+      "display_name": "Apache Druid (v29)",
+      "overall": "r",
+      "kernel": "Java Delta Kernel",
+      "confidence": "source",
+      "notes": "Adopted Java kernel for read support, not bespoke.",
+      "source": "https://delta.io/blog/state-of-the-project-pt2/"
+    },
+    "polars": {
+      "display_name": "Polars",
+      "overall": "rw",
+      "kernel": "via delta-rs (delta-kernel-rs)",
+      "confidence": "source",
+      "notes": "Consumes Delta through delta-rs; inherits delta-rs feature coverage and limitations (incl. DV read gap).",
+      "source": "https://delta.io/blog/delta-lake-without-spark/"
+    },
+    "datafusion": {
+      "display_name": "DataFusion",
+      "overall": "rw",
+      "kernel": "via delta-rs (delta-kernel-rs)",
+      "confidence": "source",
+      "notes": "Consumes Delta through delta-rs; inherits delta-rs feature coverage and limitations.",
+      "source": "https://delta.io/blog/delta-lake-without-spark/"
+    },
+    "daft": {
+      "display_name": "Daft",
+      "overall": "unknown",
+      "kernel": "via delta-rs",
+      "confidence": "source",
+      "notes": "delta-rs lists Daft as compatible; precise feature coverage not confirmed in this run.",
+      "source": "https://delta.io/blog/delta-lake-without-spark/"
+    }
+  },
+  "unity_catalog": {
+    "managed_databricks": {
+      "delta": "read+write (Unity REST API, managed + external Delta tables)",
+      "iceberg_via_uniform": "read-only to Iceberg clients via IRC endpoint",
+      "iceberg_rest_endpoint": "/api/2.1/unity-catalog/iceberg-rest",
+      "credential_vending": "yes (AWS session tokens / Azure delegation SAS; not on Foreign Iceberg)",
+      "external_engines": ["Spark", "DuckDB", "Daft", "StarRocks", "Microsoft Fabric", "Trino (IRC)", "Dremio (IRC)"],
+      "confidence": "source",
+      "source": "https://www.databricks.com/blog/secure-external-access-unity-catalog-assets-open-apis ; https://docs.databricks.com/aws/en/external-access/iceberg"
+    },
+    "oss_unitycatalog_io": {
+      "delta": "read+write (managed + external tables)",
+      "iceberg": "via UniForm; implements Iceberg REST Catalog API",
+      "credential_vending": "yes",
+      "named_integrations": ["DuckDB", "Trino", "Spark"],
+      "confidence": "source",
+      "caveat": "OSS-UC managed-Iceberg write / v3 parity NOT confirmed in this run; treat as UniForm/read-oriented pending direct confirmation.",
+      "source": "https://www.databricks.com/blog/open-sourcing-unity-catalog"
+    }
+  },
+  "refuted_claims": [],
+  "caveats": "Cells without explicit per-feature entries reflect engine 'overall' capability only. Confidence 'source' = single primary/secondary source, not adversarially re-verified. delta-rs DV gap and DuckDB write expansion are time-sensitive (as of mid-2026)."
+}

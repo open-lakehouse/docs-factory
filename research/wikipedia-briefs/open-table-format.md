@@ -13,6 +13,14 @@ this article tightly as the **storage-layer table abstraction** (the metadata
 layer over open file formats), and let `Lakehouse` own the *architecture* and
 `Apache Parquet` own the *file format*. Cross-link rather than duplicate.
 
+**No infobox — deliberate.** This is a *concept/category* article, not a software
+product, so `{{Infobox software}}` (developer/license/repo/version) does not apply
+— same as `Data lakehouse`, `Data lake`, etc. The individual formats (`Delta Lake`,
+`Apache Iceberg`) carry software infoboxes; the hub does not. Adding one would be a
+category error and would reinforce the content-fork risk. Structured connective
+tissue, if wanted later, is a `{{Navbox}}` — defer until enough sibling articles
+exist to populate it (Hudi/Paimon don't yet).
+
 ## 2. Notability assessment
 
 Defensible. The concept has a recognized name used across independent trade press

@@ -35,8 +35,8 @@ schema, or reading a table while it was being written unreliable.<ref name="cidr
 
 An open table format addresses this by maintaining a separate metadata layer
 that records the exact set of files belonging to each version of a table. This
-allows engines to commit changes atomically, to present a consistent view of the
-table to concurrent readers, and to evolve a table's schema and partitioning
+lets engines commit changes atomically and read a consistent view of the table
+while it is being written. It also lets a table's schema and partitioning change
 over time without rewriting existing data. Because the specification and the
 data are both open, multiple independent engines can read and write the same
 table.<ref name="isurvey" /><ref name="cidr2023" />
@@ -62,8 +62,8 @@ in 2017, donated to the [[Apache Software Foundation]] in November 2018, and
 became a top-level Apache project in May 2020.<ref name="icebergasf">{{cite web |title=Apache Iceberg |publisher=Apache Software Foundation |url=https://iceberg.apache.org/}}</ref><ref name="icebergincubator">{{cite web |title=Apache Iceberg — Project Incubation Status |publisher=Apache Software Foundation |url=https://incubator.apache.org/projects/iceberg.html}}</ref>
 In June 2024, Databricks acquired Tabular, a company founded by Iceberg's
 original creators, in a deal reported at over US$1&nbsp;billion (later reported
-at about US$2&nbsp;billion), stating an intention to bring Delta Lake and Iceberg
-toward interoperability.<ref name="cnbctabular">{{cite web |title=Databricks is buying data optimization startup Tabular |work=[[CNBC]] |date=2024-06-04 |url=https://www.cnbc.com/2024/06/04/databricks-is-buying-data-optimization-startup-tabular.html}}</ref><ref name="tctabular2b">{{cite web |title=Databricks reportedly paid $2 billion in Tabular acquisition |work=[[TechCrunch]] |date=2024-08-14 |url=https://techcrunch.com/2024/08/14/databricks-reportedly-paid-2-billion-in-tabular-acquisition/}}</ref>
+at about US$2&nbsp;billion), saying it wanted to move Delta Lake and Iceberg
+toward a common standard.<ref name="cnbctabular">{{cite web |title=Databricks is buying data optimization startup Tabular |work=[[CNBC]] |date=2024-06-04 |url=https://www.cnbc.com/2024/06/04/databricks-is-buying-data-optimization-startup-tabular.html}}</ref><ref name="tctabular2b">{{cite web |title=Databricks reportedly paid $2 billion in Tabular acquisition |work=[[TechCrunch]] |date=2024-08-14 |url=https://techcrunch.com/2024/08/14/databricks-reportedly-paid-2-billion-in-tabular-acquisition/}}</ref>
 
 '''Apache Hudi''' (from "Hadoop Upserts Deletes and Incrementals") originated at
 [[Uber]] around 2016 to support efficient row-level upserts and incremental data
@@ -80,9 +80,8 @@ metadata among Hudi, Delta Lake, and Iceberg without rewriting the underlying
 data files.<ref name="siunif">{{cite web |title=Databricks' Delta Lake 3.0 bridges compatibility gaps with Apache Iceberg and Hudi |work=SiliconANGLE |date=2023-06-28 |url=https://siliconangle.com/2023/06/28/databricks-delta-lake-3-0-bridges-compatibility-gaps-apache-iceberg-hudi/}}</ref>
 Databricks' UniForm, introduced with Delta Lake 3.0 in 2023, lets a Delta table
 also expose Iceberg- and Hudi-compatible metadata over a single copy of the
-data.<ref name="siunif" /> Coverage of the field has increasingly framed the
-relationship between the formats as moving from competition toward
-interoperability.<ref name="regcollide">{{cite web |last=Clark |first=Lindsay |title=Delta Lake and Iceberg communities collide – in a good way |work=[[The Register]] |date=2025-04-15 |url=https://www.theregister.com/2025/04/15/iceberg_delta_lake_collab/}}</ref>
+data.<ref name="siunif" /> By the mid-2020s, some reporting described the formats
+as converging rather than competing.<ref name="regcollide">{{cite web |last=Clark |first=Lindsay |title=Delta Lake and Iceberg communities collide – in a good way |work=[[The Register]] |date=2025-04-15 |url=https://www.theregister.com/2025/04/15/iceberg_delta_lake_collab/}}</ref>
 
 == See also ==
 * [[Data lakehouse]]

@@ -58,9 +58,10 @@ governance. Clean GNG pass.
    (table-features mechanism → uneven feature support → a table written by one tool
    may be unreadable by another), then the **Delta Kernel** as the community's
    *ongoing* effort to encapsulate protocol semantics behind a stable API (Java +
-   Rust `delta-kernel-rs`; adopted by DuckDB, ClickHouse). **No hyperbole/marketing;
-   state plainly it is an ongoing effort.** Facts from `../table-formats/report.md`
-   §2/§5; cite table-features + delta-kernel sources.
+   Rust `delta-kernel-rs`; adopted by DuckDB, ClickHouse, and — since 2025 —
+   `delta-rs` itself, which is migrating to the kernel as its protocol layer).
+   **No hyperbole/marketing; state plainly it is an ongoing effort.** Facts from
+   `../table-formats/report.md` §2/§5; cite table-features + delta-kernel sources.
 5. **Relation to other formats** — `Open table format` (parent concept),
    `Apache Iceberg`, `Apache Hudi`; UniForm interop; note the Iceberg relationship
    and Tabular acquisition briefly (attributed, no "winner", no politics).

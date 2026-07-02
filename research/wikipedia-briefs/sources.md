@@ -114,6 +114,16 @@ independent secondary (notability-bearing) · **(SP)** semi-independent
 - **(P)** delta-incubator/delta-go, delta-incubator/delta-dotnet — community Go
   and .NET bindings. https://github.com/delta-incubator/delta-go ·
   https://github.com/delta-incubator/delta-dotnet
+- **(P)** delta.io, *"Delta Kernel: A Game-Changer for Customer-Facing Analytics"*
+  — StarRocks Delta Kernel (Java) integration. https://delta.io/blog/starrocks-kernel/
+- **(S)** Confluent, *"Tableflow for Delta Lake and Databricks Unity Catalog is Now
+  Generally Available"* — Tableflow built on Delta Kernel.
+  https://www.confluent.io/blog/tableflow-delta-lake-databricks-unity-catalog-ga/
+- **(P, deferred)** Further Delta Kernel adopters verified from public sources but
+  held back for WP:DUE: SpiceAI (delta-kernel-rs), PuppyGraph (Delta/UC graph
+  engine), StreamNative (Pulsar→Delta sink). Sourced from spiceai.org, docs.puppygraph.com,
+  streamnative.io. NOTE: originating internal email is NOT citable; Databricks
+  internal/pre-GA integrations excluded entirely.
 - **(P)** Databricks, UniForm / *"Announcing Delta Lake 3.0"* (2023-06-28).
   https://www.databricks.com/company/newsroom/press-releases/announcing-delta-lake-30-new-universal-format-offers-automatic
 - **(P)** Apache Iceberg — https://iceberg.apache.org/ · REST Catalog spec —

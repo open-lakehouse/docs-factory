@@ -58,10 +58,19 @@ governance. Clean GNG pass.
    (table-features mechanism → uneven feature support → a table written by one tool
    may be unreadable by another), then the **Delta Kernel** as the community's
    *ongoing* effort to encapsulate protocol semantics behind a stable API (Java +
-   Rust `delta-kernel-rs`; adopted by DuckDB, ClickHouse, and — since 2025 —
-   `delta-rs` itself, which is migrating to the kernel as its protocol layer).
-   **No hyperbole/marketing; state plainly it is an ongoing effort.** Facts from
-   `../table-formats/report.md` §2/§5; cite table-features + delta-kernel sources.
+   Rust `delta-kernel-rs`; adopted by DuckDB, ClickHouse, StarRocks, Confluent
+   Tableflow, and — since 2025 — `delta-rs` itself, which is migrating to the
+   kernel as its protocol layer). **No hyperbole/marketing; state plainly it is an
+   ongoing effort.** Facts from `../table-formats/report.md` §2/§5; cite
+   table-features + delta-kernel sources.
+   - **Kernel adopters — WP:DUE / sourcing note:** an internal email listed ~9
+     external + several Databricks-internal integrations. The **internal/pre-GA
+     rows are excluded** (unpublished + confidential + WP:COI/promo risk). External
+     ones were **verified against public sources** and included only as a
+     *representative sentence* (not a roster) to avoid overlinking small vendors
+     with no WP articles. Others (SpiceAI, PuppyGraph, StreamNative, delta-dotnet)
+     verify publicly but are deferred for proportionality; add later only if due
+     weight warrants. Visibility comes from accurate sourcing, not list length.
 5. **Relation to other formats** — `Open table format` (parent concept),
    `Apache Iceberg`, `Apache Hudi`; UniForm interop; note the Iceberg relationship
    and Tabular acquisition briefly (attributed, no "winner", no politics).

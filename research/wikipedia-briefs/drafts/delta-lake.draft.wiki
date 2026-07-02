@@ -100,8 +100,10 @@ that implements the protocol's semantics behind a stable [[API]], so an engine
 can support Delta tables without reimplementing the specification. It is
 developed in two implementations: a [[Java (programming language)|Java]] kernel
 and a [[Rust (programming language)|Rust]] kernel ({{code|delta-kernel-rs}}). By
-2025 several engines, including [[DuckDB]] and ClickHouse, consumed Delta tables
-through the kernel rather than through a bespoke implementation.<ref name="kernel">{{cite web |title=Delta Kernel |work=delta.io |url=https://delta.io/blog/delta-kernel/}}</ref><ref name="kernelrepo">{{cite web |title=delta-io/delta-kernel-rs |publisher=[[Linux Foundation]] |url=https://github.com/delta-io/delta-kernel-rs}}</ref>
+2025 a range of tools consumed Delta tables through the kernel rather than through
+a bespoke implementation, including the query engines [[DuckDB]] and ClickHouse,
+the analytics database StarRocks, and streaming-ingest tools such as Confluent
+Tableflow.<ref name="kernel">{{cite web |title=Delta Kernel |work=delta.io |url=https://delta.io/blog/delta-kernel/}}</ref><ref name="kernelrepo">{{cite web |title=delta-io/delta-kernel-rs |publisher=[[Linux Foundation]] |url=https://github.com/delta-io/delta-kernel-rs}}</ref><ref name="starrocks">{{cite web |title=Delta Kernel: A Game-Changer for Customer-Facing Analytics |work=delta.io |url=https://delta.io/blog/starrocks-kernel/}}</ref><ref name="tableflow">{{cite web |title=Tableflow for Delta Lake and Databricks Unity Catalog is Now Generally Available |work=Confluent |url=https://www.confluent.io/blog/tableflow-delta-lake-databricks-unity-catalog-ga/}}</ref>
 The {{code|delta-rs}} library also began adopting the Rust kernel as its protocol
 layer during 2025.<ref name="deltars" /><ref name="kernelrepo" />
 The kernel is an ongoing effort; as of 2025 its read interfaces were more mature

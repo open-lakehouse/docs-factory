@@ -81,14 +81,14 @@ As Delta Lake added optional capabilities over time, tables could use protocol
 features that a given engine did not implement. Delta uses a table-features
 mechanism in which a table declares the reader and writer features it requires; a
 client can read or write a table only if it supports all of the features the
-table declares.<ref name="tablefeatures" /><ref name="protocol" /> Because engines
-historically each reimplemented the protocol, support for newer features arrived
-unevenly across the ecosystem, so a table written by one tool could be unreadable
-by another.<ref name="tablefeatures" />
+table declares.<ref name="tablefeatures" /><ref name="protocol" /> Because each
+engine implemented the protocol separately, support for newer features arrived
+unevenly, and a table written by one tool could be unreadable by
+another.<ref name="tablefeatures" />
 
 To address this, the Delta Lake community developed the Delta Kernel, a library
-that encapsulates the protocol's semantics behind a stable [[API]] so that an
-engine can support Delta tables without reimplementing the specification. It is
+that implements the protocol's semantics behind a stable [[API]], so an engine
+can support Delta tables without reimplementing the specification. It is
 developed in two implementations: a [[Java (programming language)|Java]] kernel
 and a [[Rust (programming language)|Rust]] kernel ({{code|delta-kernel-rs}}). By
 2025 several engines, including [[DuckDB]] and ClickHouse, consumed Delta tables

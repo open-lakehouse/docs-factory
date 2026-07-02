@@ -117,3 +117,11 @@ list + URLs in [`sources.md`](./sources.md).
   and mostly vendor coverage — keep it light.
 - **"Format wars" framing** is vendor/blog language — describe the competition
   neutrally and attribute the "wars" characterization.
+- **v3/v4 convergence is sourced to primary GitHub RFCs by design, not oversight.**
+  The Iceberg↔Delta metadata convergence work is community-driven and very recent,
+  so no strong independent/analyst coverage exists yet; the canonical spec issues
+  (`delta-io/delta#6640`, `apache/iceberg#16694`) are the most authoritative
+  sources available. Acceptable on Wikipedia for *attributed* statements about
+  what the proposals say, provided they stay flagged as proposals (done). Revisit
+  with a secondary source only if one emerges; do not treat the current sourcing
+  as a gap to backfill.

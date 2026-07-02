@@ -2,6 +2,10 @@
 
 ## 1. Article status
 
+> **Baseline draft written:** [`drafts/delta-lake.draft.wiki`](./drafts/delta-lake.draft.wiki)
+> (wikitext, target title `Delta Lake (software)`). Lead + History, Architecture,
+> Governance & ecosystem, Relation to other formats. Deeper sections deferred.
+
 **New article.** No standalone article exists. Current state on en.wikipedia.org:
 `Delta Lake` is a **disambiguation page** (software + several geographic lakes);
 `Delta Lake (Software)` (capital S) is a **redirect to `Databricks`**;

@@ -1,0 +1,108 @@
+<!-- Draft article — baseline for AfC submission. Target title: Delta Lake (software).
+     Wikitext, not markdown. Scope: lead + core sections only; deeper sections
+     (table-features protocol, deletion vectors, kernels, engine matrix) deferred
+     per the brief. On submission: prepend {{subst:submit}} (AfC), update the
+     Delta Lake disambiguation page to point here, and add the paid-contribution
+     disclosure per WP:PAID. Cite-check every ref and confirm each URL resolves.
+     Prose hard-wrapped at ~80 cols; single newlines render as spaces, blank lines
+     separate paragraphs, no line begins with a space (which triggers <pre>).
+     TODO before submit: (1) confirm full VLDB 2020 author order/page numbers and
+     latest Delta release version; (2) the LF "launched October 2017" figure is
+     from the Databricks-authored LF release — kept attributed. -->
+
+
+{{Short description|Open-source storage framework and table format for data lakes}}
+{{Infobox software
+| name = Delta Lake
+| developer = [[Databricks]]; [[Linux Foundation]]
+| released = {{Start date and age|2019|04}}
+| latest release version = <!-- fill from delta.io releases at submission -->
+| repo = https://github.com/delta-io/delta
+| programming language = [[Scala (programming language)|Scala]], [[Java (programming language)|Java]], [[Rust (programming language)|Rust]], [[Python (programming language)|Python]]
+| license = [[Apache License|Apache License 2.0]]
+| genre = [[Open table format]], data storage
+}}
+
+'''Delta Lake''' is an open-source [[open table format]] and storage framework
+for [[data lake]]s. It adds [[ACID]] transactions, schema enforcement and
+evolution, and point-in-time ("time travel") queries to data stored as
+[[Apache Parquet]] files in [[cloud storage|object storage]], and it is one of
+the storage layers used to build a [[data lakehouse]] architecture.<ref name="ibm">{{cite web |title=What is Delta Lake? |work=IBM |url=https://www.ibm.com/think/topics/delta-lake}}</ref>
+Its central mechanism is an ordered transaction log, stored alongside the data
+files, that records every change to a table as an atomic commit.<ref name="vldb2020">{{cite journal |last1=Armbrust |first1=Michael |display-authors=etal |title=Delta Lake: High-Performance ACID Table Storage over Cloud Object Stores |journal=Proceedings of the VLDB Endowment |volume=13 |issue=12 |pages=3411–3424 |year=2020 |doi=10.14778/3415478.3415560}}</ref>
+
+Delta Lake was developed at [[Databricks]] and released as open source in 2019.
+Later that year it was contributed to the [[Linux Foundation]] under an open
+governance model, and in 2022 the remaining Databricks-only features were also
+released as open source.<ref name="tc2019">{{cite web |last=Lardinois |first=Frederic |title=Databricks brings its Delta Lake open source project to the Linux Foundation |work=[[TechCrunch]] |date=2019-10-15 |url=https://techcrunch.com/2019/10/15/databricks-brings-its-delta-lake-open-source-project-to-the-linux-foundation/}}</ref><ref name="iw2022">{{cite web |last=Ghoshal |first=Anirban |title=Databricks open sources its Delta Lake data lakehouse |work=[[InfoWorld]] |date=2022-06-28 |url=https://www.infoworld.com/article/2335877/databricks-open-sources-its-delta-lake-data-lake.html}}</ref>
+
+== History ==
+
+Delta Lake originated at [[Databricks]]. According to the Linux Foundation, the
+project was launched in October 2017; it was announced publicly and released as
+open source in 2019.<ref name="lfpress">{{cite press release |title=The Delta Lake Project Turns to Linux Foundation to Become the Open Standard for Data Lakes |publisher=[[Linux Foundation]] |date=2019-10-16 |url=https://www.linuxfoundation.org/press/press-release/the-delta-lake-project-turns-to-linux-foundation-to-become-the-open-standard-for-data-lakes}}</ref>
+
+On October 16, 2019, the Linux Foundation announced it would host Delta Lake
+under an open governance model. The foundation said the project had by then been
+adopted by organizations including Intel, Alibaba, and Booz Allen Hamilton, though
+[[TechCrunch]] noted these adoption figures came from Databricks and had not been
+independently verified.<ref name="lfpress" /><ref name="tc2019" />
+
+In June 2022, at the Data + AI Summit, Databricks released the remaining
+proprietary Delta Lake features as open source in Delta Lake 2.0, including
+performance features such as data skipping via Z-ordering and Change Data Feed.
+Chief executive [[Ali Ghodsi]] said there would be "no more proprietary Delta
+capabilities." Trade press described the move as a response to competitors,
+including [[Snowflake Inc.|Snowflake]], that had questioned whether Delta Lake was
+genuinely open.<ref name="iw2022" /><ref name="si2022">{{cite web |title=Databricks donates Delta Lake framework and MLflow operations platform entirely to open source |work=SiliconANGLE |date=2022-06-28 |url=https://siliconangle.com/2022/06/28/databricks-donates-delta-lake-framework-mlflow-operations-platform-entirely-open-source/}}</ref>
+
+== Architecture ==
+
+A Delta Lake table consists of Parquet data files together with a transaction
+log, conventionally stored in a {{code|_delta_log}} directory. Each change to the
+table, such as adding or removing files or changing the schema, is recorded as an
+atomic commit in the log. Reading a table means reconstructing its
+current state by replaying the log; because each commit is versioned, an engine
+can also read an earlier version of the table, which supports time-travel queries
+and rollback.<ref name="vldb2020" />
+
+The log design lets multiple readers and writers operate on the same table while
+seeing a consistent view, and it enforces the table's declared schema on writes.
+The 2020 paper describing Delta Lake reported that this approach improved
+performance and manageability compared with storing raw files directly, using the
+log to enable optimizations such as data skipping.<ref name="vldb2020" /> The log
+protocol is published as an open specification.<ref name="protocol">{{cite web |title=Delta Transaction Log Protocol (PROTOCOL.md) |work=delta-io/delta |publisher=[[Linux Foundation]] |url=https://github.com/delta-io/delta/blob/master/PROTOCOL.md}}</ref>
+
+== Governance and ecosystem ==
+
+Delta Lake is a project of the [[Linux Foundation]] and is licensed under the
+[[Apache License]] 2.0. Its reference implementation is developed in the public
+{{code|delta-io/delta}} repository, and it provides interfaces for [[Apache Spark]]
+and other engines including Trino, PrestoDB, [[Apache Flink]], and Apache Hive,
+as well as a separate Rust and Python implementation.<ref name="protocol" /><ref name="ibm" />
+
+== Relation to other table formats ==
+
+Delta Lake is one of several open table formats, alongside [[Apache Iceberg]] and
+Apache Hudi. To ease interoperability, Databricks introduced UniForm in 2023,
+which lets a Delta table also expose Iceberg- and Hudi-compatible metadata over a
+single copy of the data.<ref name="siunif">{{cite web |title=Databricks' Delta Lake 3.0 bridges compatibility gaps with Apache Iceberg and Hudi |work=SiliconANGLE |date=2023-06-28 |url=https://siliconangle.com/2023/06/28/databricks-delta-lake-3-0-bridges-compatibility-gaps-apache-iceberg-hudi/}}</ref>
+The relationship between Delta Lake and Iceberg has often been described as a
+rivalry; in 2024 Databricks acquired Tabular, a company founded by Iceberg's
+original creators, and said it aimed to move the two formats toward a common
+standard.<ref name="cnbctabular">{{cite web |title=Databricks is buying data optimization startup Tabular |work=[[CNBC]] |date=2024-06-04 |url=https://www.cnbc.com/2024/06/04/databricks-is-buying-data-optimization-startup-tabular.html}}</ref>
+
+== See also ==
+* [[Open table format]]
+* [[Data lakehouse]]
+* [[Apache Iceberg]]
+* [[Apache Parquet]]
+* [[Databricks]]
+
+== References ==
+{{Reflist}}
+
+[[Category:Data management]]
+[[Category:Cloud storage]]
+[[Category:Free software]]
+[[Category:Linux Foundation projects]]

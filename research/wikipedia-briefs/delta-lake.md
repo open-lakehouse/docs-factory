@@ -38,19 +38,26 @@ governance. Clean GNG pass.
 
 ## 4. Core sections (this iteration)
 
-1. **History** — developed at Databricks (say "open-sourced 2019"; treat
-   2016/2017 as *attributed* internal-development claims — sources disagree); LF
-   donation 2019; 2.0 full open-sourcing 2022. Cite TechCrunch/SiliconANGLE (2019),
-   InfoWorld/Datanami (2022), LF press release.
+1. **History** — keep **factual and brief**; developed at Databricks
+   (open-sourced 2019, 2017 launch attributed to LF); LF donation 2019; 2.0 (2022)
+   open-sourced remaining features; table-features + UniForm added later.
+   **Deliberately omit** the openness/proprietary controversy, the Ghodsi quote,
+   and the Snowflake competitive framing — company politics, out of scope per user.
 2. **Architecture / how it works** — transaction log (`_delta_log`), ACID commits,
    snapshots & time travel, schema enforcement/evolution. Anchor on the VLDB 2020
-   paper (attributed) + PROTOCOL.md; keep protocol-version/deletion-vector detail
-   for a later iteration (available in `../table-formats/report.md`).
+   paper (attributed) + PROTOCOL.md.
 3. **Governance & ecosystem** — Linux Foundation project; Apache-2.0; delta-io/delta;
-   engine ecosystem (Spark, Trino, Flink, delta-rs/Python). Attribute adopter lists.
-4. **Relation to other formats** — `Open table format` (parent concept),
-   `Apache Iceberg`, `Apache Hudi`; UniForm interop; the Iceberg "format war" and
-   convergence (attributed, no "winner").
+   engine ecosystem (Spark, Trino, Flink, delta-rs/Python).
+4. **Ecosystem fragmentation and the Delta Kernel** — state the *concern* neutrally
+   (table-features mechanism → uneven feature support → a table written by one tool
+   may be unreadable by another), then the **Delta Kernel** as the community's
+   *ongoing* effort to encapsulate protocol semantics behind a stable API (Java +
+   Rust `delta-kernel-rs`; adopted by DuckDB, ClickHouse). **No hyperbole/marketing;
+   state plainly it is an ongoing effort.** Facts from `../table-formats/report.md`
+   §2/§5; cite table-features + delta-kernel sources.
+5. **Relation to other formats** — `Open table format` (parent concept),
+   `Apache Iceberg`, `Apache Hudi`; UniForm interop; note the Iceberg relationship
+   and Tabular acquisition briefly (attributed, no "winner", no politics).
 
 ## 5. Deferred sections (later iterations)
 
@@ -89,17 +96,16 @@ URLs in [`sources.md`](./sources.md).
 
 ## 9. NPOV / COI cautions
 
+- **Company politics deliberately out of scope (user decision).** Do *not* cover
+  the openness/proprietary controversy, the "no more proprietary" quote, or the
+  Snowflake competitive framing. History stays factual and brief.
 - **Performance/"high-performance" claims** come from interested primaries (VLDB
   paper, delta.io) — attribute ("According to the 2020 VLDB paper…"), never assert
-  benchmark superiority in WP voice; note the Delta/Iceberg feature gap narrowed
-  since ~2023.
-- **"Open" vs Databricks-governance** — the most contested axis. State LF
-  governance and the 2022 full open-sourcing as facts; present the "who controls
-  it" question as attributed viewpoints (InfoWorld 2022 noted parts were
-  proprietary until 2.0; The Register 2024; Vanlightly "open vs closed" as
-  attributed opinion).
-- **Iceberg format-war framing** — high edit-war risk. Report dynamics with
-  multi-side sourcing; declare no winner. Note Databricks acquired Tabular
-  (Iceberg's creators, 2024) and frames its goal as convergence/interop.
-- **Adopter counts** — attribute; TechCrunch (2019) explicitly noted "no
-  independent verification" of adopter claims.
+  benchmark superiority in WP voice.
+- **Fragmentation/Kernel section must stay neutral** — state the fragmentation
+  *concern* as a technical problem (not blame), and the Delta Kernel as an
+  *ongoing* community effort, no marketing language ("solves", "revolutionary").
+  Kernel sources are delta.io/repo (interested primaries) — fine for describing
+  the effort, attributed; flag read>write maturity honestly.
+- **Iceberg relationship** — mention briefly, attributed, declare no winner, no
+  politics. Tabular acquisition stated as fact (independent press).

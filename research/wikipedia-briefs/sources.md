@@ -100,6 +100,13 @@ independent secondary (notability-bearing) · **(SP)** semi-independent
   (2019-10). https://www.linuxfoundation.org/press/press-release/the-delta-lake-project-turns-to-linux-foundation-to-become-the-open-standard-for-data-lakes
 - **(P)** Databricks, *"Delta Lake 2.0: Open Source Release"* (2022-06-30).
   https://www.databricks.com/blog/2022/06/30/open-sourcing-all-of-delta-lake.html
+- **(P)** delta.io, *"Delta Lake Table Features"* (2023-07-27) — table-features
+  mechanism + reader/writer feature negotiation (the fragmentation mechanism).
+  https://delta.io/blog/2023-07-27-delta-lake-table-features/
+- **(P)** delta.io, *"Delta Kernel"* — the shared-protocol-semantics library
+  (Java + Rust). https://delta.io/blog/delta-kernel/
+- **(P)** delta-io/delta-kernel-rs (Rust kernel repo) — implementation + maturity
+  (read APIs ahead of write). https://github.com/delta-io/delta-kernel-rs
 - **(P)** Databricks, UniForm / *"Announcing Delta Lake 3.0"* (2023-06-28).
   https://www.databricks.com/company/newsroom/press-releases/announcing-delta-lake-30-new-universal-format-offers-automatic
 - **(P)** Apache Iceberg — https://iceberg.apache.org/ · REST Catalog spec —

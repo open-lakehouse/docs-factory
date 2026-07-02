@@ -41,20 +41,14 @@ released as open source.<ref name="tc2019">{{cite web |last=Lardinois |first=Fre
 Delta Lake originated at [[Databricks]]. According to the Linux Foundation, the
 project was launched in October 2017; it was announced publicly and released as
 open source in 2019.<ref name="lfpress">{{cite press release |title=The Delta Lake Project Turns to Linux Foundation to Become the Open Standard for Data Lakes |publisher=[[Linux Foundation]] |date=2019-10-16 |url=https://www.linuxfoundation.org/press/press-release/the-delta-lake-project-turns-to-linux-foundation-to-become-the-open-standard-for-data-lakes}}</ref>
+On October 16, 2019, the Linux Foundation announced it would host the project
+under an open governance model.<ref name="lfpress" /><ref name="tc2019" />
 
-On October 16, 2019, the Linux Foundation announced it would host Delta Lake
-under an open governance model. The foundation said the project had by then been
-adopted by organizations including Intel, Alibaba, and Booz Allen Hamilton, though
-[[TechCrunch]] noted these adoption figures came from Databricks and had not been
-independently verified.<ref name="lfpress" /><ref name="tc2019" />
-
-In June 2022, at the Data + AI Summit, Databricks released the remaining
-proprietary Delta Lake features as open source in Delta Lake 2.0, including
-performance features such as data skipping via Z-ordering and Change Data Feed.
-Chief executive [[Ali Ghodsi]] said there would be "no more proprietary Delta
-capabilities." Trade press described the move as a response to competitors,
-including [[Snowflake Inc.|Snowflake]], that had questioned whether Delta Lake was
-genuinely open.<ref name="iw2022" /><ref name="si2022">{{cite web |title=Databricks donates Delta Lake framework and MLflow operations platform entirely to open source |work=SiliconANGLE |date=2022-06-28 |url=https://siliconangle.com/2022/06/28/databricks-donates-delta-lake-framework-mlflow-operations-platform-entirely-open-source/}}</ref>
+In June 2022, Databricks released the remaining Databricks-only Delta Lake
+features as open source in Delta Lake 2.0, including performance features such as
+data skipping via Z-ordering and Change Data Feed.<ref name="iw2022" /> Later
+releases added a table-features mechanism for enabling individual protocol
+capabilities, and the UniForm interoperability feature (2023).<ref name="tablefeatures">{{cite web |title=Delta Lake Table Features |work=delta.io |date=2023-07-27 |url=https://delta.io/blog/2023-07-27-delta-lake-table-features/}}</ref>
 
 == Architecture ==
 
@@ -80,6 +74,27 @@ Delta Lake is a project of the [[Linux Foundation]] and is licensed under the
 {{code|delta-io/delta}} repository, and it provides interfaces for [[Apache Spark]]
 and other engines including Trino, PrestoDB, [[Apache Flink]], and Apache Hive,
 as well as a separate Rust and Python implementation.<ref name="protocol" /><ref name="ibm" />
+
+== Ecosystem fragmentation and the Delta Kernel ==
+
+As Delta Lake added optional capabilities over time, tables could use protocol
+features that a given engine did not implement. Delta uses a table-features
+mechanism in which a table declares the reader and writer features it requires; a
+client can read or write a table only if it supports all of the features the
+table declares.<ref name="tablefeatures" /><ref name="protocol" /> Because engines
+historically each reimplemented the protocol, support for newer features arrived
+unevenly across the ecosystem, so a table written by one tool could be unreadable
+by another.<ref name="tablefeatures" />
+
+To address this, the Delta Lake community developed the Delta Kernel, a library
+that encapsulates the protocol's semantics behind a stable [[API]] so that an
+engine can support Delta tables without reimplementing the specification. It is
+developed in two implementations: a [[Java (programming language)|Java]] kernel
+and a [[Rust (programming language)|Rust]] kernel ({{code|delta-kernel-rs}}). By
+2025 several engines, including [[DuckDB]] and ClickHouse, consumed Delta tables
+through the kernel rather than through a bespoke implementation.<ref name="kernel">{{cite web |title=Delta Kernel |work=delta.io |url=https://delta.io/blog/delta-kernel/}}</ref><ref name="kernelrepo">{{cite web |title=delta-io/delta-kernel-rs |publisher=[[Linux Foundation]] |url=https://github.com/delta-io/delta-kernel-rs}}</ref>
+The kernel is an ongoing effort; as of 2025 its read interfaces were more mature
+than its write interfaces.<ref name="kernelrepo" />
 
 == Relation to other table formats ==
 

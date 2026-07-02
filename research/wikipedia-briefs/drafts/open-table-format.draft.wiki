@@ -1,0 +1,46 @@
+<!-- Draft article — baseline for AfC submission. Wikitext, not markdown.
+     Scope: lead + core sections only; deeper sections deferred per the brief.
+     On submission: prepend {{subst:submit}} (AfC) and add the paid-contribution
+     disclosure per WP:PAID. Cite-check every ref and confirm each URL resolves. -->
+
+{{Short description|Open specification for a metadata layer that turns files in object storage into a database-like table}}
+
+An '''open table format''' is an [[open standard|open specification]] for a metadata layer that organizes a collection of data files in [[cloud storage|object storage]] into a single logical table, adding database-like guarantees such as [[ACID]] transactions, [[schema evolution]], and point-in-time ("time travel") queries. Open table formats sit above open [[file format]]s such as [[Apache Parquet]] and below the query engines and [[data catalog]]s that read and write the data, and they are a foundational storage layer of the [[data lakehouse]] architecture.<ref name="isurvey">{{cite journal |title=Data Lakehouse: A survey and experimental study |journal=Information Systems |volume=127 |year=2024 |doi=10.1016/j.is.2024.102460}}</ref>
+
+The most widely used open table formats are [[Delta Lake]], [[Apache Iceberg]], and Apache Hudi, together with the more recent Apache Paimon. They emerged between roughly 2016 and 2020 to bring the reliability and management features of a [[data warehouse]] to the low-cost, open storage of a [[data lake]].<ref name="isurvey" /><ref name="cidr2023">{{cite conference |title=Analyzing and Comparing Lakehouse Storage Systems |conference=Conference on Innovative Data Systems Research (CIDR) |year=2023 |url=https://www.cidrdb.org/cidr2023/papers/p92-jain.pdf}}</ref>
+
+== Concept and motivation ==
+
+A [[data lake]] stores data as files in object storage, typically in open columnar formats such as [[Apache Parquet]] or ORC. A file format defines how the bytes of an individual file are laid out, but it does not define which files make up a table, nor does it coordinate concurrent readers and writers. Early conventions such as [[Apache Hive]] tables tracked table membership through directory layout, which made operations like updating rows, changing a table's schema, or reading a table while it was being written unreliable.<ref name="cidr2023" />
+
+An open table format addresses this by maintaining a separate metadata layer that records the exact set of files belonging to each version of a table. This allows engines to commit changes atomically, to present a consistent view of the table to concurrent readers, and to evolve a table's schema and partitioning over time without rewriting existing data. Because the specification and the data are both open, multiple independent engines can read and write the same table.<ref name="isurvey" /><ref name="cidr2023" />
+
+== How they work ==
+
+Although the formats differ in detail, they share a common model: a metadata layer tracks which data files constitute each committed version, or ''snapshot'', of a table. Reading a table means resolving the current snapshot to a list of files; writing means producing new data files and then atomically committing new metadata that points to them. Retaining older snapshots enables time-travel queries and rollback, and comparing snapshots supports incremental processing.<ref name="cidr2023" /><ref name="isurvey" />
+
+== Major formats ==
+
+'''[[Delta Lake]]''' was developed at [[Databricks]] and released as open source in 2019; it was later contributed to the [[Linux Foundation]]. It stores table metadata in a transaction log kept alongside the Parquet data files.<ref name="tc2019">{{cite web |last=Lardinois |first=Frederic |title=Databricks brings its Delta Lake open source project to the Linux Foundation |work=[[TechCrunch]] |date=2019-10-15 |url=https://techcrunch.com/2019/10/15/databricks-brings-its-delta-lake-open-source-project-to-the-linux-foundation/}}</ref>
+
+'''[[Apache Iceberg]]''' was started at [[Netflix]] by Ryan Blue and Dan Weeks in 2017, donated to the [[Apache Software Foundation]] in November 2018, and became a top-level Apache project in May 2020.<ref name="icebergasf">{{cite web |title=Apache Iceberg |publisher=Apache Software Foundation |url=https://iceberg.apache.org/}}</ref><ref name="icebergincubator">{{cite web |title=Apache Iceberg — Project Incubation Status |publisher=Apache Software Foundation |url=https://incubator.apache.org/projects/iceberg.html}}</ref> In June 2024, Databricks acquired Tabular, a company founded by Iceberg's original creators, in a deal reported at over US$1&nbsp;billion (later reported at about US$2&nbsp;billion), stating an intention to bring Delta Lake and Iceberg toward interoperability.<ref name="cnbctabular">{{cite web |title=Databricks is buying data optimization startup Tabular |work=[[CNBC]] |date=2024-06-04 |url=https://www.cnbc.com/2024/06/04/databricks-is-buying-data-optimization-startup-tabular.html}}</ref><ref name="tctabular2b">{{cite web |title=Databricks reportedly paid $2 billion in Tabular acquisition |work=[[TechCrunch]] |date=2024-08-14 |url=https://techcrunch.com/2024/08/14/databricks-reportedly-paid-2-billion-in-tabular-acquisition/}}</ref>
+
+'''Apache Hudi''' (from "Hadoop Upserts Deletes and Incrementals") originated at [[Uber]] around 2016 to support efficient row-level upserts and incremental data ingestion, and later became an Apache Software Foundation project.<ref name="uberhudi">{{cite web |title=Apache Hudi at Uber: Engineering for Trillion-Record-Scale Data Lake Operations |work=Uber Engineering Blog |url=https://www.uber.com/en-US/blog/apache-hudi-at-uber/}}</ref> '''Apache Paimon''' began as Flink Table Store within the [[Apache Flink]] project and entered the Apache incubator in 2023, where it was renamed; it is designed as a streaming-first lake format.<ref name="paimonflink">{{cite web |title=What is Paimon (incubating) (formerly Flink Table Store)? |publisher=Apache Software Foundation |url=https://flink.apache.org/what-is-flink-table-store/}}</ref>
+
+== Interoperability ==
+
+Because several formats coexist, tools have emerged to translate between them. Apache XTable (formerly OneTable) provides omni-directional translation of table metadata among Hudi, Delta Lake, and Iceberg without rewriting the underlying data files.<ref name="siunif">{{cite web |title=Databricks' Delta Lake 3.0 bridges compatibility gaps with Apache Iceberg and Hudi |work=SiliconANGLE |date=2023-06-28 |url=https://siliconangle.com/2023/06/28/databricks-delta-lake-3-0-bridges-compatibility-gaps-apache-iceberg-hudi/}}</ref> Databricks' UniForm, introduced with Delta Lake 3.0 in 2023, lets a Delta table also expose Iceberg- and Hudi-compatible metadata over a single copy of the data.<ref name="siunif" /> Coverage of the field has increasingly framed the relationship between the formats as moving from competition toward interoperability.<ref name="regcollide">{{cite web |last=Clark |first=Lindsay |title=Delta Lake and Iceberg communities collide – in a good way |work=[[The Register]] |date=2025-04-15 |url=https://www.theregister.com/2025/04/15/iceberg_delta_lake_collab/}}</ref>
+
+== See also ==
+* [[Data lakehouse]]
+* [[Data lake]]
+* [[Apache Parquet]]
+* [[Delta Lake]]
+* [[Apache Iceberg]]
+
+== References ==
+{{Reflist}}
+
+[[Category:Data management]]
+[[Category:Cloud storage]]
+[[Category:Open formats]]

@@ -71,9 +71,18 @@ protocol is published as an open specification.<ref name="protocol">{{cite web |
 
 Delta Lake is a project of the [[Linux Foundation]] and is licensed under the
 [[Apache License]] 2.0. Its reference implementation is developed in the public
-{{code|delta-io/delta}} repository, and it provides interfaces for [[Apache Spark]]
-and other engines including Trino, PrestoDB, [[Apache Flink]], and Apache Hive,
-as well as a separate Rust and Python implementation.<ref name="protocol" /><ref name="ibm" />
+{{code|delta-io/delta}} repository and integrates with [[Apache Spark]] and other
+JVM engines including Trino, PrestoDB, [[Apache Flink]], and Apache Hive.<ref name="protocol" /><ref name="ibm" />
+
+Beyond the JVM, a native Rust library, {{code|delta-rs}}, provides access to Delta
+tables without Spark. It is built on [[Apache Arrow]] and uses the DataFusion
+query engine for SQL, which lets it interoperate with Arrow-based tools such as
+[[pandas (software)|pandas]], [[Polars (software)|Polars]], and [[DuckDB]]. The
+project ships Python bindings (the {{code|deltalake}} package), which complement
+the [[Apache Spark|PySpark]] interface, and community-maintained Go and .NET
+bindings are developed in the {{code|delta-incubator}} organization.<ref name="deltars">{{cite web |title=delta-io/delta-rs: A native Rust library for Delta Lake, with bindings into Python |publisher=[[Linux Foundation]] |url=https://github.com/delta-io/delta-rs}}</ref><ref name="withoutspark">{{cite web |title=Delta Lake without Spark |work=delta.io |url=https://delta.io/blog/delta-lake-without-spark/}}</ref>
+Some engines, including DuckDB, reach Delta tables through the Delta Kernel
+(described below) rather than a bespoke implementation.<ref name="kernel" />
 
 == Ecosystem fragmentation and the Delta Kernel ==
 

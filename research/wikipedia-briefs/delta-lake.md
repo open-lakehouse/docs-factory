@@ -47,7 +47,13 @@ governance. Clean GNG pass.
    snapshots & time travel, schema enforcement/evolution. Anchor on the VLDB 2020
    paper (attributed) + PROTOCOL.md.
 3. **Governance & ecosystem** — Linux Foundation project; Apache-2.0; delta-io/delta;
-   engine ecosystem (Spark, Trino, Flink, delta-rs/Python).
+   JVM engines (Spark, Trino, PrestoDB, Flink, Hive). **Non-JVM ecosystem (be
+   specific but concise):** `delta-rs` (native Rust) is built on **Apache Arrow**
+   (link-out — has a WP article) and uses **DataFusion** for SQL (plain text — no
+   WP article), interoperating with Arrow tools (pandas, Polars, DuckDB, Daft).
+   Ships Python `deltalake` bindings (complementing PySpark); Go + .NET bindings in
+   the `delta-incubator` org. Note DuckDB reaches Delta *via the Kernel* (ties to
+   the fragmentation section). Cite `delta-io/delta-rs` + delta.io "without Spark".
 4. **Ecosystem fragmentation and the Delta Kernel** — state the *concern* neutrally
    (table-features mechanism → uneven feature support → a table written by one tool
    may be unreadable by another), then the **Delta Kernel** as the community's

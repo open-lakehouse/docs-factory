@@ -107,6 +107,13 @@ independent secondary (notability-bearing) · **(SP)** semi-independent
   (Java + Rust). https://delta.io/blog/delta-kernel/
 - **(P)** delta-io/delta-kernel-rs (Rust kernel repo) — implementation + maturity
   (read APIs ahead of write). https://github.com/delta-io/delta-kernel-rs
+- **(P)** delta-io/delta-rs — native Rust library + Python `deltalake` bindings;
+  built on Apache Arrow, uses DataFusion. https://github.com/delta-io/delta-rs
+- **(P)** delta.io, *"Delta Lake without Spark"* — engine/binding ecosystem
+  (pandas, Polars, DuckDB, Daft via delta-rs). https://delta.io/blog/delta-lake-without-spark/
+- **(P)** delta-incubator/delta-go, delta-incubator/delta-dotnet — community Go
+  and .NET bindings. https://github.com/delta-incubator/delta-go ·
+  https://github.com/delta-incubator/delta-dotnet
 - **(P)** Databricks, UniForm / *"Announcing Delta Lake 3.0"* (2023-06-28).
   https://www.databricks.com/company/newsroom/press-releases/announcing-delta-lake-30-new-universal-format-offers-automatic
 - **(P)** Apache Iceberg — https://iceberg.apache.org/ · REST Catalog spec —

@@ -1,0 +1,239 @@
+{
+  "$schema_description": "Apache Iceberg feature-by-engine support matrix. Parseable companion to report.md. Generated 2026-06-26 by the deep-research harness.",
+  "format": "apache-iceberg",
+  "generated": "2026-06-26",
+  "method": "deep-research harness: 25 sources fetched, 120 claims extracted, 25 adversarially verified (23 confirmed).",
+  "legend": {
+    "cell_status": {
+      "rw": "read and write",
+      "r": "read only",
+      "w_partial": "write supported but partial (e.g. INSERT only, no UPDATE/DELETE/MERGE)",
+      "none": "not supported",
+      "unknown": "not confirmed by sources in this run"
+    },
+    "confidence": {
+      "verified": "survived 3-vote adversarial refutation",
+      "source": "extracted from a fetched source, not independently re-verified",
+      "verified_med": "verified but single interested-party framing"
+    }
+  },
+  "format_versions": {
+    "v1": {
+      "summary": "Management of large analytic tables over immutable files (Parquet/Avro/ORC).",
+      "features": ["schema evolution", "hidden partitioning (partition specs/transforms)", "partition evolution", "sort orders", "snapshots / time travel"],
+      "confidence": "source",
+      "source": "https://iceberg.apache.org/spec/"
+    },
+    "v2": {
+      "summary": "Adds row-level updates and deletes for immutable files (merge-on-read foundation).",
+      "features": [
+        { "name": "position deletes", "desc": "delete by data file path + row position", "confidence": "verified" },
+        { "name": "equality deletes", "desc": "delete by column values, e.g. id=5", "confidence": "verified" }
+      ],
+      "confidence": "verified",
+      "source": "https://iceberg.apache.org/spec/"
+    },
+    "v3": {
+      "summary": "Extends types and metadata; deliberately aligned with Delta for interop.",
+      "features": [
+        { "name": "binary deletion vectors", "desc": "Puffin-based (content_offset / content_size_in_bytes)", "risk": "high - default-on in all v3 tables; non-DV-aware reader returns deleted rows", "confidence": "verified" },
+        { "name": "row lineage", "desc": "_row_id + _last_updated_sequence_number; compatible with Delta row tracking", "confidence": "verified", "interop_confidence": "verified_med" },
+        { "name": "VARIANT", "desc": "semi-structured; shares single binary encoding with Delta variantType (Apache Parquet ratified)", "confidence": "verified" },
+        { "name": "geometry / geography", "desc": "geospatial types (planar vs global)", "confidence": "verified" },
+        { "name": "nanosecond timestamp(tz)", "desc": "timestamp_ns / timestamptz_ns", "confidence": "verified" },
+        { "name": "unknown type", "confidence": "verified" },
+        { "name": "default column values", "desc": "initial-default / write-default", "confidence": "verified" }
+      ],
+      "default_on_note": "All Apache Iceberg v3 tables include deletion vectors by default.",
+      "confidence": "verified",
+      "source": "https://iceberg.apache.org/spec/ ; https://docs.databricks.com/aws/en/delta/deletion-vectors"
+    },
+    "compatibility": {
+      "rule": "Backward compatible: v1 files remain valid after upgrade to v2. Readers kept permissive; writers must follow stricter version-specific requirements.",
+      "confidence": "source",
+      "source": "https://iceberg.apache.org/spec/"
+    }
+  },
+  "libraries": {
+    "note": "Iceberg engine support flows through these libraries (the analog of Delta Kernel). Per-library feature coverage not independently verified in this run.",
+    "java_reference": "Java reference implementation (primary)",
+    "iceberg_rust": "iceberg-rust (Rust) + iceberg-datafusion",
+    "pyiceberg": "PyIceberg (Python)",
+    "iceberg_go": "iceberg-go (Go)",
+    "confidence": "source"
+  },
+  "engines": {
+    "spark": {
+      "display_name": "Apache Spark 3.5+",
+      "overall": "rw",
+      "format_version_support": "v1, v2, v3 (GA)",
+      "confidence": "source",
+      "notes": "Reference-grade. v3 deletion vectors and row lineage stable. VARIANT supported (without shredding in Databricks SQL).",
+      "source": "https://olake.io/iceberg/query-engine/ ; https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready",
+      "v3_features": { "deletion_vectors": "rw", "row_lineage": "rw", "variant": "rw_partial" }
+    },
+    "flink": {
+      "display_name": "Apache Flink",
+      "overall": "rw",
+      "format_version_support": "v1, v2, v3 (GA)",
+      "confidence": "source",
+      "notes": "Continuous streaming reads and writes plus batch. v3 DV/row-lineage stable.",
+      "source": "https://estuary.dev/blog/comparison-query-engines-for-apache-iceberg/ ; https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready"
+    },
+    "trino_oss": {
+      "display_name": "Trino (OSS, Iceberg connector)",
+      "overall": "rw",
+      "format_version_support": "v1, v2 (v3 NOT supported)",
+      "confidence": "source",
+      "notes": "INSERT / CREATE TABLE AS SELECT; reads+writes. No streaming ingestion. Does not yet support v3 spec.",
+      "source": "https://estuary.dev/blog/comparison-query-engines-for-apache-iceberg/ ; https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready"
+    },
+    "duckdb_iceberg": {
+      "display_name": "DuckDB (iceberg extension, v1.3+)",
+      "overall": "r",
+      "format_version_support": "v1/v2 read; v3 NOT supported",
+      "confidence": "source",
+      "notes": "Read-only, batch-oriented. Can only read copy-on-write tables WITHOUT delete files (no position deletes, equality deletes, or merge-on-read).",
+      "source": "https://olake.io/iceberg/query-engine/ ; https://estuary.dev/blog/comparison-query-engines-for-apache-iceberg/",
+      "features": { "position_deletes": "none", "equality_deletes": "none", "merge_on_read": "none", "write": "none" }
+    },
+    "clickhouse": {
+      "display_name": "ClickHouse (v25.4)",
+      "overall": "r",
+      "format_version_support": "v1/v2 read; v3 NOT supported (rejects DV tables)",
+      "confidence": "source",
+      "notes": "Read-only; no write/compaction (scheduled Q3 2025). Rejects v3 deletion-vector tables.",
+      "source": "https://olake.io/iceberg/query-engine/ ; https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready"
+    },
+    "snowflake": {
+      "display_name": "Snowflake",
+      "overall": "r",
+      "format_version_support": "v1/v2; v3 NOT supported",
+      "confidence": "source",
+      "notes": "Primarily read-oriented via external tables; time travel unavailable for external tables. Iceberg-only (consumes Delta only via UniForm-as-Iceberg).",
+      "source": "https://estuary.dev/blog/comparison-query-engines-for-apache-iceberg/ ; https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready"
+    },
+    "bigquery": {
+      "display_name": "Google BigQuery (BigLake)",
+      "overall": "r",
+      "format_version_support": "v1/v2; v3 NOT supported",
+      "confidence": "source",
+      "notes": "Read queries via external/BigLake tables; time travel unavailable in external tables.",
+      "source": "https://estuary.dev/blog/comparison-query-engines-for-apache-iceberg/ ; https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready"
+    },
+    "athena": {
+      "display_name": "AWS Athena",
+      "overall": "rw",
+      "format_version_support": "v1/v2; v3 NOT supported (no DV / row lineage / VARIANT)",
+      "confidence": "source",
+      "notes": "Read+write at v2; lacks v3 entirely.",
+      "source": "https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready ; https://olake.io/iceberg/query-engine/"
+    },
+    "starrocks": {
+      "display_name": "StarRocks (v3.2/3.3)",
+      "overall": "w_partial",
+      "format_version_support": "v1/v2; v3 NOT supported",
+      "confidence": "source",
+      "notes": "INSERT supported; no UPDATE/DELETE/MERGE.",
+      "source": "https://olake.io/iceberg/query-engine/ ; https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready",
+      "operations": { "insert": "w_partial", "update": "none", "delete": "none", "merge": "none" }
+    },
+    "impala": {
+      "display_name": "Apache Impala (v4.4+)",
+      "overall": "w_partial",
+      "format_version_support": "v1/v2",
+      "confidence": "source",
+      "notes": "Partial write/DML: supports position deletes but NOT equality deletes.",
+      "source": "https://olake.io/iceberg/query-engine/",
+      "features": { "position_deletes": "rw", "equality_deletes": "none" }
+    },
+    "dremio": {
+      "display_name": "Dremio",
+      "overall": "rw",
+      "format_version_support": "v1/v2; v3 NOT supported",
+      "confidence": "source",
+      "notes": "Exposes Iceberg V1/V2, not V3.",
+      "source": "https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready ; https://olake.io/iceberg/query-engine/"
+    },
+    "databricks_uniform": {
+      "display_name": "Databricks UniForm (Delta-as-Iceberg, DBR 14.3+)",
+      "overall": "r",
+      "format_version_support": "targets Iceberg spec v2 only (no v3 via this path)",
+      "confidence": "source",
+      "notes": "Exposes UniForm-enabled Delta tables to Iceberg clients as read-only. NOTE: distinct from UC managed-Iceberg v3 GA path, which IS v3.",
+      "source": "https://olake.io/iceberg/query-engine/"
+    },
+    "polars": { "display_name": "Polars", "overall": "unknown", "format_version_support": "unknown", "confidence": "source", "notes": "Iceberg support exists via libraries; coverage not confirmed in this run." },
+    "datafusion": { "display_name": "DataFusion (iceberg-rust / iceberg-datafusion)", "overall": "unknown", "format_version_support": "unknown", "confidence": "source", "notes": "Consumes Iceberg via iceberg-rust; coverage not confirmed in this run." },
+    "daft": { "display_name": "Daft", "overall": "unknown", "format_version_support": "unknown", "confidence": "source", "notes": "Coverage not confirmed in this run." }
+  },
+  "v3_engine_summary": {
+    "ga": ["Spark 3.5+", "Flink"],
+    "not_supported_or_roadmap": ["Trino (OSS)", "PrestoDB", "Snowflake", "BigQuery", "Athena", "Hive", "StarRocks", "Doris", "ClickHouse", "Impala", "Dremio"],
+    "verdict": "As of late 2025/early 2026, Iceberg v3 is NOT production-ready for most orgs because major engines (Athena, OSS Trino, Snowflake) lack v3. v3 DV + row lineage stable only in Spark/Flink; VARIANT only partial; geospatial types unavailable in most engines.",
+    "confidence": "source",
+    "time_sensitive": true,
+    "source": "https://www.ryft.io/blog/apache-iceberg-v3-is-it-ready ; https://olake.io/iceberg/query-engine/"
+  },
+  "unity_catalog": {
+    "managed_databricks": {
+      "iceberg_rest_endpoint": "/api/2.1/unity-catalog/iceberg-rest",
+      "managed_iceberg_tables": "read + write from Iceberg clients (plus optimize/govern/share, Predictive Optimization, Liquid Clustering)",
+      "foreign_iceberg": "read-only (no credential vending)",
+      "delta_iceberg_reads_enabled": "read-only to Iceberg clients",
+      "v3": "Iceberg v3 GA on UC (deletion vectors, row tracking, VARIANT across managed/foreign/UniForm)",
+      "iceberg_client_engines": ["Spark", "Flink", "Trino", "Snowflake", "PyIceberg"],
+      "confidence": "source",
+      "source": "https://docs.databricks.com/aws/en/external-access/iceberg ; https://www.databricks.com/blog/unity-catalog-and-next-era-apache-icebergtm"
+    },
+    "oss_unitycatalog_io": {
+      "iceberg": "implements Iceberg REST Catalog API (built leveraging Tabular expertise); Iceberg via UniForm",
+      "credential_vending": "yes",
+      "v3": "not confirmed in this run",
+      "confidence": "source",
+      "caveat": "OSS-UC managed-Iceberg write / v3 parity NOT confirmed; treat as UniForm/read-oriented pending direct confirmation.",
+      "source": "https://www.databricks.com/blog/open-sourcing-unity-catalog"
+    }
+  },
+  "cross_format_interop": {
+    "uniform": {
+      "direction": "one-directional (Delta as source -> Iceberg/Hudi metadata)",
+      "mechanism": "auto-generates Iceberg metadata alongside DeltaLog, colocated with Parquet; single copy of data",
+      "confidence": "source",
+      "source": "https://delta.io/blog/unifying-open-table/"
+    },
+    "xtable": {
+      "direction": "omni-directional (Hudi <-> Delta <-> Iceberg)",
+      "mechanism": "metadata-only translation; no data file rewrite; ASF incubating",
+      "confidence": "source",
+      "source": "https://xtable.apache.org/"
+    },
+    "iceberg_to_delta": {
+      "mechanism": "UniForm supports one-time zero-copy in-place conversion of Iceberg tables to Delta",
+      "confidence": "source",
+      "source": "https://delta.io/blog/state-of-the-project-pt2/"
+    },
+    "delta_iceberg_alignment": {
+      "row_lineage_vs_row_tracking": "compatible (Iceberg v3 _row_id+seq <-> Delta _metadata.row_id+row_commit_version)",
+      "variant_encoding": "single shared binary encoding (Apache Parquet ratified)",
+      "deletion_vector_encoding": "NOT shared - claim refuted in verification (see refuted_claims)",
+      "confidence": "verified_med",
+      "source": "https://www.databricks.com/blog/apache-icebergtm-v3-moving-ecosystem-towards-unification"
+    }
+  },
+  "refuted_claims": [
+    {
+      "claim": "Iceberg v3 deletion vectors use the same binary encoding as Delta Lake deletion vectors, enabling cross-format DV compatibility.",
+      "vote": "1-2 refuted",
+      "note": "Do NOT assert binary-level DV interop between the formats. VARIANT does share encoding; DVs do not.",
+      "source": "https://www.databricks.com/blog/apache-icebergtm-v3-moving-ecosystem-towards-unification"
+    },
+    {
+      "claim": "Iceberg v3 replaces v2 positional/equality deletes with deletion vectors, requiring a single DV per file at write time.",
+      "vote": "0-3 refuted",
+      "note": "v3 ADDS binary DVs but does not wholesale replace v2 delete files as described.",
+      "source": "https://www.databricks.com/blog/apache-icebergtm-v3-moving-ecosystem-towards-unification"
+    }
+  ],
+  "caveats": "Iceberg engine cells are coarser than Delta cells (the verified core under-covered Iceberg engines). All v3 cells are time-sensitive (GA rollout in progress 2025-2026). Confidence 'source' = single source, not adversarially re-verified."
+}

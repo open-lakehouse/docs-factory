@@ -1,0 +1,36 @@
+name: Spark (optional)
+
+# Heavy JVM job — kept off the default PR path. Runs on manual dispatch, when a PR
+# carries the `ci:spark` label, or when Spark example files change.
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled]
+    paths:
+      - "examples/spark/**"
+      - ".github/workflows/spark.yml"
+
+concurrency:
+  group: spark-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  spark:
+    # Only run on label or manual dispatch, not on every push to the paths above.
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      contains(github.event.pull_request.labels.*.name, 'ci:spark')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+      - uses: ./.github/actions/pypi-public
+      - run: uv sync --all-packages --extra spark
+      - name: Run Spark examples
+        run: uv run python examples/spark/read_delta_table.py

@@ -1,0 +1,16 @@
+# Rust workspace for docs-factory.
+#
+# Ties together the delta-rs example crate and the Rust seed helper so a single
+# `cargo` invocation covers both. This workspace is intentionally separate from
+# the uv (Python) workspace — the two toolchains do not share dependencies.
+[workspace]
+resolver = "2"
+members = [
+    "examples/rust",
+    "seed/rust",
+]
+
+[workspace.package]
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/open-lakehouse/docs-factory"

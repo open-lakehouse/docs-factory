@@ -1,0 +1,12 @@
+[package]
+name = "docs-factory-seed"
+version = "0.1.0"
+description = "Deterministic Delta table seeder for docs-factory Rust examples (stub)"
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+# delta-rs (the `deltalake` crate) will be wired in when the Rust examples are
+# built out. Kept dependency-free for now so `cargo build` is fast in CI.

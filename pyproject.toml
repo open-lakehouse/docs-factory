@@ -7,13 +7,15 @@ requires-python = ">=3.11"
 dependencies = []
 
 [tool.uv.workspace]
-members = ["examples"]
+members = ["examples", "tools/docsnip", "seed/python"]
+
+[tool.uv.sources]
+docs-factory-seed = { workspace = true }
+docsnip = { workspace = true }
 
 [dependency-groups]
 dev = [
     "ty>=0.0.50",
     "pytest>=8.0",
+    "ruff>=0.6",
 ]
-
-[tool.ty]
-# Path configuration — checked in ty.toml at the root for workspace-wide settings

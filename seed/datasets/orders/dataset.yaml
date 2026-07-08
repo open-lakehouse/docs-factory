@@ -1,0 +1,23 @@
+columns:
+- - order_id
+  - int64
+- - customer_id
+  - int64
+- - product
+  - string
+- - quantity
+  - int64
+- - amount
+  - double
+- - status
+  - string
+description: 'Synthetic orders table: a small, license-clean dataset with two Delta
+  commits (initial load, then a delete + update) so time-travel and change-data-feed
+  examples have version history.'
+name: orders
+rows: 1000
+seed: 42
+tags:
+- time-travel
+- change-data-feed
+versions: 2

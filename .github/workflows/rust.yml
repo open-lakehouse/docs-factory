@@ -1,0 +1,38 @@
+name: Rust
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "examples/rust/**"
+      - "seed/rust/**"
+      - "Cargo.toml"
+      - ".github/workflows/rust.yml"
+  pull_request:
+    paths:
+      - "examples/rust/**"
+      - "seed/rust/**"
+      - "Cargo.toml"
+      - ".github/workflows/rust.yml"
+
+concurrency:
+  group: rust-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Format check
+        run: cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Build examples
+        run: cargo build --examples
+      - name: Test
+        run: cargo test

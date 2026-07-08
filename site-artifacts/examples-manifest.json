@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "examples": [
+    {
+      "id": "python/time-travel-read",
+      "engine": "python",
+      "diataxis": "how-to",
+      "delta_features": [
+        "time-travel"
+      ],
+      "datasets": [
+        "orders"
+      ],
+      "source": "examples/python/time_travel_read.py",
+      "start": "docs-time-travel-read-start",
+      "end": "docs-time-travel-read-end",
+      "referenced_by": [
+        "content/delta/how-to/query-a-table-as-of-version.md"
+      ],
+      "tested": true,
+      "engine_status": "built"
+    },
+    {
+      "id": "python/read-delta-table",
+      "engine": "python",
+      "diataxis": "how-to",
+      "delta_features": [],
+      "datasets": [
+        "orders"
+      ],
+      "source": "examples/python/read_delta_table.py",
+      "start": "docs-read-delta-table-start",
+      "end": "docs-read-delta-table-end",
+      "referenced_by": [
+        "content/delta/how-to/read-a-delta-table.md"
+      ],
+      "tested": true,
+      "engine_status": "built"
+    },
+    {
+      "id": "polars/read-delta-table",
+      "engine": "polars",
+      "diataxis": "how-to",
+      "delta_features": [],
+      "datasets": [
+        "orders"
+      ],
+      "source": "examples/polars/read_delta_table.py",
+      "start": "docs-read-delta-table-start",
+      "end": "docs-read-delta-table-end",
+      "referenced_by": [
+        "content/delta/how-to/read-a-delta-table.md"
+      ],
+      "tested": false,
+      "engine_status": "stub"
+    },
+    {
+      "id": "duckdb/read-delta-table",
+      "engine": "duckdb",
+      "diataxis": "how-to",
+      "delta_features": [],
+      "datasets": [
+        "orders"
+      ],
+      "source": "examples/duckdb/read_delta_table.py",
+      "start": "docs-read-delta-table-start",
+      "end": "docs-read-delta-table-end",
+      "referenced_by": [
+        "content/delta/how-to/read-a-delta-table.md"
+      ],
+      "tested": false,
+      "engine_status": "stub"
+    }
+  ]
+}

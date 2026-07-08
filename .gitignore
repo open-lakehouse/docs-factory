@@ -26,6 +26,9 @@ htmlcov/
 .coverage
 coverage.xml
 
+# Rust
+/target/
+
 # OS
 .DS_Store
 Thumbs.db

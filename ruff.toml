@@ -1,0 +1,34 @@
+# Ruff configuration for docs-factory — lint + format for all Python packages.
+# Applies to examples/, tools/, and seed/python/; research/ and .venv are excluded.
+
+target-version = "py311"
+line-length = 88
+
+extend-exclude = [
+    ".venv",
+    "research",
+    "__pycache__",
+    "*.egg-info",
+]
+
+[lint]
+# A sensible, example-friendly rule set. Examples are teaching code, so we keep
+# the noise low while still catching real problems.
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort (import ordering)
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "W",   # pycodestyle warnings
+]
+ignore = [
+    "E501",  # line length is handled by the formatter
+]
+
+[lint.per-file-ignores]
+# Example snippets deliberately use print() and top-level demo code.
+"examples/**" = ["T201"]
+
+[format]
+docstring-code-format = true

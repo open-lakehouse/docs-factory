@@ -11,12 +11,15 @@ python = ".venv"
 # possibly-unbound = "warn"
 
 [src]
-# Only type-check the examples package; exclude research/ and other non-Python dirs
-include = ["examples"]
+# Type-check the workspace Python packages; exclude research/ and other non-Python dirs
+include = ["examples", "tools", "seed/python"]
 exclude = [
     ".venv",
     "__pycache__",
     "*.egg-info",
     ".git",
     "research",
+    # Spark examples import optional deps (pyspark, delta-spark) that are not in the
+    # default env; they are exercised only in the gated Spark CI job.
+    "examples/spark",
 ]

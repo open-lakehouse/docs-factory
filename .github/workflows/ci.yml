@@ -17,6 +17,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+      - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
       - name: Ruff lint
         run: uv run ruff check .
@@ -35,6 +36,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+      - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages --python ${{ matrix.python-version }}
       - name: Run Python example tests
         run: uv run --python ${{ matrix.python-version }} pytest examples/tests -v
@@ -46,6 +48,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+      - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
       - name: Validate frontmatter, snippets, and generated artifacts
         # `check` runs validate + snippetcheck + asserts site-artifacts/ is not stale.

@@ -1,0 +1,32 @@
+name: Rewrite uv.lock to public PyPI
+description: >
+  The committed uv.lock is generated behind the internal Databricks pypi-proxy
+  (the only index reachable from the corporate network), so every package URL
+  points at pypi-proxy.cloud.databricks.com. That host is unreachable from
+  GitHub-hosted runners, so before `uv sync` we rewrite the pinned URLs back to
+  their public upstreams. Hashes are unchanged, so the lock stays verified.
+    - /simple/   metadata  ->  pypi.org
+    - /packages/ files     ->  files.pythonhosted.org
+
+runs:
+  using: composite
+  steps:
+    - name: Point uv.lock at public PyPI
+      shell: bash
+      run: |
+        if ! grep -q 'pypi-proxy\.cloud\.databricks\.com' uv.lock; then
+          echo "uv.lock has no internal proxy URLs; nothing to rewrite."
+          exit 0
+        fi
+        # Order matters: the more specific /packages/ path maps to a different
+        # host than the /simple/ index, so rewrite it first.
+        sed -i \
+          -e 's#https://pypi-proxy\.cloud\.databricks\.com/packages/#https://files.pythonhosted.org/packages/#g' \
+          -e 's#https://pypi-proxy\.cloud\.databricks\.com/simple/#https://pypi.org/simple/#g' \
+          uv.lock
+        if grep -q 'pypi-proxy\.cloud\.databricks\.com' uv.lock; then
+          echo "::error::Unexpected internal proxy URLs remain in uv.lock after rewrite:"
+          grep -o 'https://pypi-proxy\.cloud\.databricks\.com/[a-z]*/' uv.lock | sort -u
+          exit 1
+        fi
+        echo "Rewrote uv.lock to public PyPI / files.pythonhosted.org."

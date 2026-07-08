@@ -30,6 +30,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+      - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages --extra spark
       - name: Run Spark examples
         run: uv run python examples/spark/read_delta_table.py

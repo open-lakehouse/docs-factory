@@ -1,0 +1,19 @@
+{
+  "name": "docs-factory-site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local Astro + Starlight preview of docs-factory content. Throwaway harness — the authoritative source is ../content, which stays builder-agnostic and is migrated into the delta.io / unitycatalog.io site repos.",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.41.2",
+    "astro": "^7.0.4",
+    "js-yaml": "^4.1.0"
+  }
+}

@@ -1,0 +1,221 @@
+/*
+ * Sleek structural theme for the docs-factory preview, layered on Starlight.
+ *
+ * This file is palette-independent: it imports one project palette (Delta for
+ * now) and then styles *structure* — typography, surfaces, sidebar, tabs, code.
+ * Swap the import below to re-skin the whole site for another project.
+ */
+@import "./themes/delta.css";
+
+/* -------------------------------------------------------------------------- */
+/* Typography — tighter, more editorial than Starlight's defaults.            */
+/* -------------------------------------------------------------------------- */
+:root {
+  --sl-text-h1: 2.6rem;
+  --sl-line-height: 1.75;
+  --sl-content-width: 48rem;
+  --df-radius: 12px;
+  --df-radius-sm: 8px;
+}
+
+.sl-markdown-content {
+  font-size: 1.02rem;
+}
+
+/* Gradient-tinted h1 for a modern hero feel. */
+.sl-markdown-content h1,
+h1#_top {
+  letter-spacing: -0.02em;
+  font-weight: 700;
+  background: linear-gradient(
+    120deg,
+    var(--sl-color-white),
+    var(--df-brand-bright)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  padding-bottom: 0.1em;
+}
+
+.sl-markdown-content h2 {
+  letter-spacing: -0.01em;
+  margin-top: 2.2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--df-border);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Page background — subtle brand glow behind the header/hero.                */
+/* -------------------------------------------------------------------------- */
+body {
+  background:
+    radial-gradient(
+      120% 60% at 50% -10%,
+      var(--df-hero-glow),
+      transparent 60%
+    ),
+    var(--df-bg);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header — glassy, translucent, sits over the glow.                          */
+/* -------------------------------------------------------------------------- */
+header.header {
+  background: color-mix(in srgb, var(--df-bg) 72%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--df-border);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Sidebar — quieter surface, pill-shaped active link.                        */
+/* -------------------------------------------------------------------------- */
+.sidebar {
+  background: transparent;
+}
+
+.sidebar a {
+  border-radius: var(--df-radius-sm);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.sidebar a[aria-current="page"] {
+  background: linear-gradient(
+    90deg,
+    var(--sl-color-accent-low),
+    transparent
+  );
+  color: var(--sl-color-accent-high);
+  font-weight: 600;
+  box-shadow: inset 2px 0 0 var(--sl-color-accent);
+}
+
+.sidebar a:hover {
+  background: color-mix(in srgb, var(--sl-color-accent-low) 55%, transparent);
+}
+
+/* Group headings in the sidebar: small, uppercase, tracked-out. */
+.sidebar .group-label,
+summary .large {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: var(--sl-color-gray-3);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Code blocks — elevated, rounded, subtle border.                            */
+/* -------------------------------------------------------------------------- */
+.sl-markdown-content .expressive-code,
+.sl-markdown-content pre {
+  border-radius: var(--df-radius);
+  border: 1px solid var(--df-border);
+  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+}
+
+.sl-markdown-content :not(pre) > code {
+  background: var(--df-surface);
+  border: 1px solid var(--df-border);
+  border-radius: 6px;
+  padding: 0.15em 0.4em;
+  color: var(--sl-color-accent-high);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Tabs (engine snippets) — real pill/segmented look.                         */
+/* -------------------------------------------------------------------------- */
+.sl-markdown-content starlight-tabs {
+  border: 1px solid var(--df-border);
+  border-radius: var(--df-radius);
+  overflow: hidden;
+  background: var(--df-bg-elevated);
+}
+
+.sl-markdown-content .tablist-wrapper ul[role="tablist"] {
+  background: var(--df-surface);
+  border-bottom: 1px solid var(--df-border);
+  padding: 0.35rem 0.35rem 0;
+  gap: 0.25rem;
+}
+
+.sl-markdown-content [role="tab"] {
+  border: none;
+  border-radius: var(--df-radius-sm) var(--df-radius-sm) 0 0;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  color: var(--sl-color-gray-2);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.sl-markdown-content [role="tab"][aria-selected="true"] {
+  background: var(--df-bg-elevated);
+  color: var(--sl-color-accent-high);
+  border-bottom: 2px solid var(--sl-color-accent);
+}
+
+.sl-markdown-content [role="tab"]:hover {
+  color: var(--sl-color-white);
+}
+
+.sl-markdown-content [role="tabpanel"] {
+  padding: 0.25rem 1rem 1rem;
+}
+
+/* Code inside a tab panel shouldn't double-border against the tab frame. */
+.sl-markdown-content [role="tabpanel"] .expressive-code,
+.sl-markdown-content [role="tabpanel"] pre {
+  box-shadow: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Links, tables, cards.                                                      */
+/* -------------------------------------------------------------------------- */
+.sl-markdown-content a:not(:where(.sl-markdown-content a[class])) {
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--sl-color-accent) 45%,
+    transparent
+  );
+}
+
+.sl-markdown-content table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid var(--df-border);
+  border-radius: var(--df-radius);
+  overflow: hidden;
+}
+.sl-markdown-content th {
+  background: var(--df-surface);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.78rem;
+}
+.sl-markdown-content tr:hover td {
+  background: color-mix(in srgb, var(--sl-color-accent-low) 30%, transparent);
+}
+
+/* -------------------------------------------------------------------------- */
+/* PREVIEW badge on the site title.                                           */
+/* -------------------------------------------------------------------------- */
+.site-title::after {
+  content: "PREVIEW";
+  margin-inline-start: 0.55rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.58em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  vertical-align: middle;
+  background: linear-gradient(
+    120deg,
+    var(--sl-color-accent),
+    var(--df-brand-bright)
+  );
+  color: var(--df-navy);
+}

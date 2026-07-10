@@ -1,0 +1,63 @@
+/*
+ * Delta Lake palette for the preview site.
+ *
+ * Built on Delta's brand signature — cyan #00ADD4 on deep navy #042436 — taken
+ * from the delta.io marketing site. Only *color* tokens live here; structural
+ * styling is in ../theme.css. To preview a different project (e.g. Unity
+ * Catalog) later, swap which palette file theme.css imports — nothing else
+ * changes.
+ */
+
+:root {
+  /* Brand anchors */
+  --df-brand: #00add4; /* Delta cyan */
+  --df-brand-bright: #3fd0f0;
+  --df-brand-deep: #0072a4; /* darker blue for links on light bg */
+  --df-navy: #042436; /* Delta deep navy */
+  --df-navy-2: #0a3350;
+
+  /* ---- Dark mode (default) ---- */
+  --sl-color-accent-low: #002d42;
+  --sl-color-accent: #00add4;
+  --sl-color-accent-high: #9fe6f8;
+
+  --sl-color-white: #f3f8fb;
+  --sl-color-gray-1: #dce6ec;
+  --sl-color-gray-2: #b3c2cc;
+  --sl-color-gray-3: #7d909c;
+  --sl-color-gray-4: #4a5b67;
+  --sl-color-gray-5: #2a3a46;
+  --sl-color-gray-6: #16242f;
+  --sl-color-gray-7: #0e1a22;
+  --sl-color-black: #071119;
+
+  /* Custom surfaces the structural theme reads */
+  --df-bg: #071119;
+  --df-bg-elevated: #0f1d27;
+  --df-surface: #13232f;
+  --df-border: #233a48;
+  --df-hero-glow: rgba(0, 173, 212, 0.16);
+}
+
+/* ---- Light mode ---- */
+:root[data-theme="light"] {
+  --sl-color-accent-low: #cdeef8;
+  --sl-color-accent: #0087b0;
+  --sl-color-accent-high: #033145;
+
+  --sl-color-white: #0a1a24;
+  --sl-color-gray-1: #12252f;
+  --sl-color-gray-2: #2c3f4b;
+  --sl-color-gray-3: #566772;
+  --sl-color-gray-4: #8497a1;
+  --sl-color-gray-5: #c2d0d8;
+  --sl-color-gray-6: #e6edf1;
+  --sl-color-gray-7: #f2f6f9;
+  --sl-color-black: #ffffff;
+
+  --df-bg: #ffffff;
+  --df-bg-elevated: #f5fafc;
+  --df-surface: #eef5f8;
+  --df-border: #d6e2e9;
+  --df-hero-glow: rgba(0, 173, 212, 0.1);
+}

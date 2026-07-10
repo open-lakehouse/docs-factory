@@ -24,7 +24,7 @@ export default defineConfig({
       title: "docs-factory preview",
       description:
         "Local preview of the delta.io / unitycatalog.io content source.",
-      customCss: ["./src/styles/preview.css"],
+      customCss: ["./src/styles/theme.css"],
       sidebar: buildSidebar(),
       // No edit links / social — this is a throwaway local harness.
       pagefind: true,

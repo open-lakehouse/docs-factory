@@ -15,13 +15,18 @@ preview: _site-deps
 preview-build: _site-deps
     cd site && npm run build
 
-# Install the site's npm dependencies if they're missing.
+# Install site deps and link them at the repo root so content/*.mdx can resolve
+# Starlight component imports (the .mdx files live outside site/).
 _site-deps:
     #!/usr/bin/env bash
     set -euo pipefail
     if [ ! -d site/node_modules ]; then
         echo "Installing site dependencies…"
-        cd site && npm install
+        (cd site && npm install)
+    fi
+    if [ ! -e node_modules ]; then
+        echo "Linking ./node_modules -> site/node_modules…"
+        ln -s site/node_modules node_modules
     fi
 
 # --- Content & examples ----------------------------------------------------

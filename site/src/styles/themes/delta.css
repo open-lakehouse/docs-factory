@@ -16,27 +16,27 @@
   --df-navy: #042436; /* Delta deep navy */
   --df-navy-2: #0a3350;
 
-  /* ---- Dark mode (default) ---- */
-  --sl-color-accent-low: #002d42;
-  --sl-color-accent: #00add4;
-  --sl-color-accent-high: #9fe6f8;
+  /* ---- Dark mode (default) — flat near-black, DevHub-style ---- */
+  --sl-color-accent-low: #06222c;
+  --sl-color-accent: #22c3e6; /* cyan, a touch brighter for sparse use on black */
+  --sl-color-accent-high: #8fe4f6;
 
-  --sl-color-white: #f3f8fb;
-  --sl-color-gray-1: #dce6ec;
-  --sl-color-gray-2: #b3c2cc;
-  --sl-color-gray-3: #7d909c;
-  --sl-color-gray-4: #4a5b67;
-  --sl-color-gray-5: #2a3a46;
-  --sl-color-gray-6: #16242f;
-  --sl-color-gray-7: #0e1a22;
-  --sl-color-black: #071119;
+  --sl-color-white: #f4f6f8;
+  --sl-color-gray-1: #e4e5e7;
+  --sl-color-gray-2: #b8bcc2;
+  --sl-color-gray-3: #8a8f98;
+  --sl-color-gray-4: #4d525b;
+  --sl-color-gray-5: #2a2d34;
+  --sl-color-gray-6: #17191e;
+  --sl-color-gray-7: #101216;
+  --sl-color-black: #040406;
 
-  /* Custom surfaces the structural theme reads */
-  --df-bg: #071119;
-  --df-bg-elevated: #0f1d27;
-  --df-surface: #13232f;
-  --df-border: #233a48;
-  --df-hero-glow: rgba(0, 173, 212, 0.16);
+  /* Flat surfaces — barely lifted from the background, no glow. */
+  --df-bg: #040406;
+  --df-bg-elevated: #0c0d11;
+  --df-surface: #111319;
+  --df-border: #26282f;
+  --df-hero-glow: transparent;
 }
 
 /* ---- Light mode ---- */

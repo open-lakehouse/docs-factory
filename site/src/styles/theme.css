@@ -1,131 +1,174 @@
 /*
- * Sleek structural theme for the docs-factory preview, layered on Starlight.
+ * Structural theme for the docs-factory preview, layered on Starlight.
  *
- * Palette-independent: this file styles *structure* — typography, surfaces,
- * sidebar, tabs, code — using the --df-* / --sl-color-* tokens that a palette
- * file provides. The active palette (themes/delta.css or themes/unitycatalog.css)
- * is chosen in astro.config.mjs from the DOCS_THEME env var and loaded before
- * this file, so `just preview` / `just preview unitycatalog` re-skins the site.
+ * Design language borrowed from developers.databricks.com (DevHub): flat
+ * near-black surfaces, no gradients or glow, plain high-contrast headings,
+ * monospace eyebrows / section labels / nav, thin hairline rules, sharp
+ * corners, and the brand accent used sparingly for links + active state.
+ *
+ * Palette-independent: this file uses the --df-* / --sl-color-* tokens a
+ * palette file provides. The active palette (themes/delta.css or
+ * themes/unitycatalog.css) is chosen in astro.config.mjs from DOCS_THEME and
+ * loaded before this file, so `just preview [theme]` re-skins the whole site.
  */
 
-/* -------------------------------------------------------------------------- */
-/* Typography — tighter, more editorial than Starlight's defaults.            */
-/* -------------------------------------------------------------------------- */
 :root {
-  --sl-text-h1: 2.6rem;
-  --sl-line-height: 1.75;
-  --sl-content-width: 48rem;
-  --df-radius: 12px;
-  --df-radius-sm: 8px;
+  --sl-text-h1: 2.75rem;
+  --sl-line-height: 1.7;
+  --sl-content-width: 46rem;
+  --df-radius: 6px;
+  --df-mono: var(--sl-font-mono, ui-monospace, "SFMono-Regular", Menlo, monospace);
 }
 
+/* -------------------------------------------------------------------------- */
+/* Flat background — no glow, no gradient.                                    */
+/* -------------------------------------------------------------------------- */
+body {
+  background: var(--df-bg);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Header — flat, hairline bottom rule, no blur.                              */
+/* -------------------------------------------------------------------------- */
+header.header {
+  background: var(--df-bg);
+  border-bottom: 1px solid var(--df-border);
+  box-shadow: none;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Typography — plain, heavy, high-contrast. No gradient headings.            */
+/* -------------------------------------------------------------------------- */
 .sl-markdown-content {
   font-size: 1.02rem;
 }
 
-/* Gradient-tinted h1 for a modern hero feel. */
 .sl-markdown-content h1,
 h1#_top {
-  letter-spacing: -0.02em;
   font-weight: 700;
-  background: linear-gradient(
-    120deg,
-    var(--sl-color-white),
-    var(--df-brand-bright)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  padding-bottom: 0.1em;
+  letter-spacing: -0.02em;
+  color: var(--sl-color-white);
 }
 
 .sl-markdown-content h2 {
+  font-weight: 650;
   letter-spacing: -0.01em;
-  margin-top: 2.2rem;
-  padding-top: 1.4rem;
-  border-top: 1px solid var(--df-border);
+  margin-top: 2.5rem;
+  color: var(--sl-color-white);
+}
+
+.sl-markdown-content h3 {
+  color: var(--sl-color-white);
+}
+
+/* Monospace eyebrow above the page title (Starlight breadcrumb / hero label). */
+.content-panel .sl-flex > p:first-child:not(:only-child),
+a.site-title {
+  font-family: var(--df-mono);
 }
 
 /* -------------------------------------------------------------------------- */
-/* Page background — subtle brand glow behind the header/hero.                */
-/* -------------------------------------------------------------------------- */
-body {
-  background:
-    radial-gradient(
-      120% 60% at 50% -10%,
-      var(--df-hero-glow),
-      transparent 60%
-    ),
-    var(--df-bg);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Header — glassy, translucent, sits over the glow.                          */
-/* -------------------------------------------------------------------------- */
-header.header {
-  background: color-mix(in srgb, var(--df-bg) 72%, transparent);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--df-border);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Sidebar — quieter surface, pill-shaped active link.                        */
+/* Sidebar — quiet, monospace group labels, red-style active text (no pills). */
 /* -------------------------------------------------------------------------- */
 .sidebar {
-  background: transparent;
+  background: var(--df-bg);
+}
+
+.sidebar-content {
+  border-inline-end: 1px solid var(--df-border);
+}
+
+/* Group headings: mono, uppercase, tracked-out — the DevHub "section" look. */
+.sidebar .group-label > span,
+summary .large {
+  font-family: var(--df-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--sl-color-gray-3);
 }
 
 .sidebar a {
-  border-radius: var(--df-radius-sm);
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  border-radius: 0;
+  transition: color 0.12s ease;
 }
 
+/* Active page: brand-accent text + a thin left rule. No filled pill. */
 .sidebar a[aria-current="page"] {
-  background: linear-gradient(
-    90deg,
-    var(--sl-color-accent-low),
-    transparent
-  );
-  color: var(--sl-color-accent-high);
+  color: var(--sl-color-accent);
   font-weight: 600;
+  background: transparent;
   box-shadow: inset 2px 0 0 var(--sl-color-accent);
 }
 
 .sidebar a:hover {
-  background: color-mix(in srgb, var(--sl-color-accent-low) 55%, transparent);
+  color: var(--sl-color-white);
+  background: transparent;
 }
 
-/* Group headings in the sidebar: small, uppercase, tracked-out. */
-.sidebar .group-label,
-summary .large {
+/* -------------------------------------------------------------------------- */
+/* Top nav / right TOC labels — monospace, uppercase.                         */
+/* -------------------------------------------------------------------------- */
+.right-sidebar-panel h2,
+mobile-starlight-toc h2 {
+  font-family: var(--df-mono);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   font-size: 0.72rem;
   color: var(--sl-color-gray-3);
 }
 
+.right-sidebar a[aria-current="true"] {
+  color: var(--sl-color-accent);
+}
+
 /* -------------------------------------------------------------------------- */
-/* Code blocks — elevated, rounded, subtle border.                            */
+/* Links — brand accent, subtle underline.                                    */
+/* -------------------------------------------------------------------------- */
+.sl-markdown-content a:not(:where(.sl-markdown-content a[class])) {
+  color: var(--sl-color-accent);
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--sl-color-accent) 40%,
+    transparent
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Blockquote — simple accent left bar, flat. (DevHub callout.)               */
+/* -------------------------------------------------------------------------- */
+.sl-markdown-content blockquote {
+  border-inline-start: 3px solid var(--sl-color-accent);
+  background: transparent;
+  padding-inline-start: 1.1rem;
+  color: var(--sl-color-gray-1);
+  font-style: normal;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Code — flat, sharp, hairline border, no shadow.                            */
 /* -------------------------------------------------------------------------- */
 .sl-markdown-content .expressive-code,
 .sl-markdown-content pre {
   border-radius: var(--df-radius);
   border: 1px solid var(--df-border);
-  box-shadow: 0 8px 24px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
+  background: var(--df-bg-elevated);
 }
 
 .sl-markdown-content :not(pre) > code {
+  font-family: var(--df-mono);
   background: var(--df-surface);
   border: 1px solid var(--df-border);
-  border-radius: 6px;
-  padding: 0.15em 0.4em;
-  color: var(--sl-color-accent-high);
+  border-radius: 4px;
+  padding: 0.12em 0.38em;
+  color: var(--sl-color-gray-1);
 }
 
 /* -------------------------------------------------------------------------- */
-/* Tabs (engine snippets) — real pill/segmented look.                         */
+/* Tabs (engine snippets) — flat segmented bar, mono labels, sharp.           */
 /* -------------------------------------------------------------------------- */
 .sl-markdown-content starlight-tabs {
   border: 1px solid var(--df-border);
@@ -135,26 +178,26 @@ summary .large {
 }
 
 .sl-markdown-content .tablist-wrapper ul[role="tablist"] {
-  background: var(--df-surface);
+  background: var(--df-bg);
   border-bottom: 1px solid var(--df-border);
-  padding: 0.35rem 0.35rem 0;
-  gap: 0.25rem;
+  padding: 0;
+  gap: 0;
 }
 
 .sl-markdown-content [role="tab"] {
+  font-family: var(--df-mono);
   border: none;
-  border-radius: var(--df-radius-sm) var(--df-radius-sm) 0 0;
-  padding: 0.5rem 0.9rem;
+  border-radius: 0;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  color: var(--sl-color-gray-2);
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  color: var(--sl-color-gray-3);
+  transition: color 0.12s ease;
 }
 
 .sl-markdown-content [role="tab"][aria-selected="true"] {
   background: var(--df-bg-elevated);
-  color: var(--sl-color-accent-high);
+  color: var(--sl-color-accent);
   border-bottom: 2px solid var(--sl-color-accent);
 }
 
@@ -163,60 +206,49 @@ summary .large {
 }
 
 .sl-markdown-content [role="tabpanel"] {
-  padding: 0.25rem 1rem 1rem;
+  padding: 0.5rem 1rem 1rem;
 }
 
 /* Code inside a tab panel shouldn't double-border against the tab frame. */
 .sl-markdown-content [role="tabpanel"] .expressive-code,
 .sl-markdown-content [role="tabpanel"] pre {
-  box-shadow: none;
+  border: none;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Links, tables, cards.                                                      */
+/* Tables — hairline rules, mono uppercase headers, no rounded box.           */
 /* -------------------------------------------------------------------------- */
-.sl-markdown-content a:not(:where(.sl-markdown-content a[class])) {
-  text-underline-offset: 0.2em;
-  text-decoration-color: color-mix(
-    in srgb,
-    var(--sl-color-accent) 45%,
-    transparent
-  );
-}
-
 .sl-markdown-content table {
-  border-collapse: separate;
-  border-spacing: 0;
-  border: 1px solid var(--df-border);
-  border-radius: var(--df-radius);
-  overflow: hidden;
+  border-collapse: collapse;
+  border: none;
+  border-radius: 0;
 }
 .sl-markdown-content th {
-  background: var(--df-surface);
+  font-family: var(--df-mono);
+  background: transparent;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
+  color: var(--sl-color-gray-2);
+  border-bottom: 1px solid var(--df-border);
+}
+.sl-markdown-content td {
+  border-bottom: 1px solid var(--df-border);
 }
 .sl-markdown-content tr:hover td {
-  background: color-mix(in srgb, var(--sl-color-accent-low) 30%, transparent);
+  background: var(--df-surface);
 }
 
 /* -------------------------------------------------------------------------- */
-/* PREVIEW badge on the site title.                                           */
+/* PREVIEW badge — flat, mono, bracketed (terminal style).                    */
 /* -------------------------------------------------------------------------- */
 .site-title::after {
-  content: "PREVIEW";
+  content: "[PREVIEW]";
   margin-inline-start: 0.55rem;
-  padding: 0.1rem 0.45rem;
-  border-radius: 999px;
-  font-size: 0.58em;
+  font-family: var(--df-mono);
+  font-size: 0.62em;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   vertical-align: middle;
-  background: linear-gradient(
-    120deg,
-    var(--sl-color-accent),
-    var(--df-brand-bright)
-  );
-  color: var(--df-navy);
+  color: var(--sl-color-accent);
 }

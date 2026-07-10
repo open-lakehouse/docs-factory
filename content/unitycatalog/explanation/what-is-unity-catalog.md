@@ -7,8 +7,6 @@ engines: []
 status: draft
 ---
 
-# What is Unity Catalog?
-
 > **Draft stub.** The unitycatalog content mirrors the Delta skeleton
 > (tutorials / how-to / reference / explanation). Built out after the Delta
 > vertical slice lands.

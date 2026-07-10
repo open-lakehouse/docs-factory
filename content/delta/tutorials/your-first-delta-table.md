@@ -12,8 +12,6 @@ prerequisites:
 status: draft
 ---
 
-# Your first Delta table
-
 > **Draft.** This tutorial is scaffolded but not yet written. A tutorial holds a
 > reader's hand along one happy path, so it uses a single default engine (Python)
 > and links out to the multi-engine [how-to guides](../how-to/read-a-delta-table.md)

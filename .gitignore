@@ -29,6 +29,10 @@ coverage.xml
 # Rust
 /target/
 
+# Node — the preview site (site/) is the only JS; this root symlink points at
+# site/node_modules so content/*.mdx can resolve Starlight component imports.
+/node_modules
+
 # OS
 .DS_Store
 Thumbs.db

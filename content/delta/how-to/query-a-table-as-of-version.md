@@ -17,8 +17,6 @@ snippets:
 status: published
 ---
 
-# Query a Delta table as of a version
-
 Every write to a Delta table produces a new **version**. Delta keeps the history,
 so you can read the table exactly as it was at an earlier version — this is
 called **time travel**. It's useful for reproducing a report, auditing a change,

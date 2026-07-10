@@ -1,0 +1,10 @@
+# Astro / Node build + install artifacts — this is a local preview harness.
+node_modules/
+dist/
+.astro/
+
+# npm lockfile: the site is generated locally against the corp npm-proxy and is
+# not built in CI, so we don't pin a lockfile that would bake in proxy URLs
+# (the same trap uv.lock fell into). Contributors resolve fresh from their own
+# registry. If the site ever gains a CI build, revisit this.
+package-lock.json

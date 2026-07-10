@@ -8,14 +8,16 @@ repo convention; it is **not** published to any docs site.
 The **authoritative content source** for the restructured `delta.io` and
 `unitycatalog.io` documentation. We author engine-neutral explanations and
 multi-engine, copy/paste-runnable, CI-tested examples here, then migrate them into
-the sites later. This repo is **builder-agnostic**: portable Markdown + frontmatter,
-no HTML, no static-site-generator coupling. It does **not** depend on the separate
+the sites later. Content targets **Astro + Starlight**: pages are Markdown
+(`.md`) or MDX (`.mdx`), and MDX pages may use Starlight components (e.g. `<Tabs>`
+for engine-tabbed snippets). The destination sites are expected to provide the
+same Starlight component set. It does **not** depend on the separate
 `delta-docs-factory` build orchestrator.
 
 ## Layout
 
 ```
-content/        Diátaxis-organized Markdown (tutorials / how-to / reference / explanation)
+content/        Diátaxis-organized Markdown/MDX (tutorials / how-to / reference / explanation)
 examples/       real, tested example source — the single source of truth for snippets
 seed/           docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
 tools/docsnip/  content tooling (frontmatter validate, snippet check, manifest, llms.txt)
@@ -29,8 +31,10 @@ proto/          existing trestle tracker API (leave alone)
 1. **Examples are the source of truth for docs code.** Docs never inline code;
    they reference example files via `remark-code-snippets` fences
    (`file=... start=... end=...`). The Astro build resolves them live; nothing is
-   copied into the `.md`, so there is nothing to drift. `docsnip snippetcheck`
-   enforces that every fence resolves to a unique region.
+   copied into the page, so there is nothing to drift. `docsnip snippetcheck`
+   enforces that every fence resolves to a unique region. Fences work the same in
+   `.md` and `.mdx` — including inside `<Tabs>`/`<TabItem>` (leave a blank line
+   around a fence inside a component so MDX parses it as a code block).
 
 2. **Region markers wrap only what the reader should see.** Put seeding, `main`
    wrappers, and asserts *outside* the `docs-...-start` / `docs-...-end` markers —

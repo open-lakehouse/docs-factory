@@ -8,8 +8,6 @@ delta_features: []
 status: published
 ---
 
-# What is Delta Lake?
-
 Delta Lake is an open **table format**: a specification for laying out data files
 (Parquet) plus a transaction log so that many engines can read and write the same
 tables with ACID guarantees. It is not tied to any single engine — Spark, the

@@ -19,6 +19,23 @@ ENGINES = {"python", "polars", "duckdb", "rust", "spark"}
 STATUSES = {"draft", "published"}
 
 
+# Content pages are Markdown (``.md``) or MDX (``.mdx``). MDX pages may embed
+# site components (e.g. ``<Tabs>``) but still carry the same YAML frontmatter and
+# snippet fences, so all tooling scans both extensions uniformly.
+CONTENT_SUFFIXES = (".md", ".mdx")
+
+
+def iter_content_files(content_root: Path):
+    """Yield every content page path (``*.md`` / ``*.mdx``), sorted, skipping READMEs."""
+    files = [
+        p
+        for suffix in CONTENT_SUFFIXES
+        for p in content_root.rglob(f"*{suffix}")
+        if p.name != "README.md"
+    ]
+    return sorted(files)
+
+
 @dataclasses.dataclass
 class Page:
     """A parsed content page: its path, frontmatter dict, and body text."""
@@ -84,12 +101,10 @@ def validate(page: Page) -> list[str]:
 
 
 def iter_pages(content_root: Path):
-    """Yield parsed :class:`Page` objects for every content ``*.md`` under ``content_root``.
+    """Yield parsed :class:`Page` objects for every content page under ``content_root``.
 
-    Navigational files (``README.md``) are skipped — only frontmatter-bearing
-    content pages are yielded.
+    Scans ``*.md`` and ``*.mdx``. Navigational files (``README.md``) are skipped —
+    only frontmatter-bearing content pages are yielded.
     """
-    for path in sorted(content_root.rglob("*.md")):
-        if path.name == "README.md":
-            continue
+    for path in iter_content_files(content_root):
         yield parse(path)

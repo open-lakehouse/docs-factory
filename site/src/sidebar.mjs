@@ -25,13 +25,13 @@ function loadMeta(project) {
   return yaml.load(readFileSync(metaPath, "utf8"));
 }
 
-/** All markdown slugs actually present in a bucket, minus README. */
+/** All content slugs (.md / .mdx) present in a bucket, minus README. */
 function bucketSlugs(project, bucket) {
   const dir = join(CONTENT_ROOT, project, bucket);
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
-    .filter((f) => f.endsWith(".md") && f.toLowerCase() !== "readme.md")
-    .map((f) => f.replace(/\.md$/, ""));
+    .filter((f) => /\.mdx?$/.test(f) && f.toLowerCase() !== "readme.md")
+    .map((f) => f.replace(/\.mdx?$/, ""));
 }
 
 /** Order declared slugs first (in _meta order), then any extras alphabetically. */

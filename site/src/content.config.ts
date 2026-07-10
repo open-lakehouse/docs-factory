@@ -44,7 +44,7 @@ export const collections = {
       // Resolved relative to the project root (site/), reaching the repo's
       // content dir. Skip READMEs and _meta.yaml (handled by the sidebar).
       base: "../content",
-      pattern: ["**/*.md", "!**/README.md"],
+      pattern: ["**/*.{md,mdx}", "!**/README.md"],
     }),
     schema: docsSchema({ extend: neutralFrontmatter }),
   }),

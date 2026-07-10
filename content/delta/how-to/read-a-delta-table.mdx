@@ -27,6 +27,8 @@ snippets:
 status: published
 ---
 
+import { Tabs, TabItem } from "@astrojs/starlight/components";
+
 # Read a Delta table
 
 Reading a Delta table means loading its current version into an in-memory
@@ -41,20 +43,26 @@ pip install docs-factory-seed
 docs-factory-seed orders   # prints the table path
 ```
 
-## Python (deltalake)
+<Tabs syncKey="engine">
+  <TabItem label="Python (deltalake)">
 
 ```python file=../../../examples/python/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
 ```
 
-## Polars
+  </TabItem>
+  <TabItem label="Polars">
 
 ```python file=../../../examples/polars/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
 ```
 
-## DuckDB
+  </TabItem>
+  <TabItem label="DuckDB">
 
 ```python file=../../../examples/duckdb/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
 ```
+
+  </TabItem>
+</Tabs>
 
 ## Related
 

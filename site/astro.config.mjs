@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
+import mdx from "@astrojs/mdx";
 import remarkCodeSnippets from "./src/plugins/remark-code-snippets.mjs";
 import { buildSidebar } from "./src/sidebar.mjs";
 
@@ -28,5 +29,8 @@ export default defineConfig({
       // No edit links / social — this is a throwaway local harness.
       pagefind: true,
     }),
+    // MDX so content pages can use Starlight components (e.g. <Tabs>) and still
+    // get the snippet-fence resolution from markdown.remarkPlugins above.
+    mdx(),
   ],
 });

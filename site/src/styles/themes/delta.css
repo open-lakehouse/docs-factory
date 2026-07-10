@@ -1,63 +1,84 @@
 /*
- * Delta Lake palette for the preview site.
+ * Delta Lake palette — DevHub design tokens with Delta's brand accent.
  *
- * Built on Delta's brand signature — cyan #00ADD4 on deep navy #042436 — taken
- * from the delta.io marketing site. Only *color* tokens live here; structural
- * styling is in ../theme.css. To preview a different project (e.g. Unity
- * Catalog) later, swap which palette file theme.css imports — nothing else
- * changes.
+ * Ports the dark palette of developers.databricks.com (navy-tinted surfaces,
+ * Databricks grey ramp, exact code-syntax colors) verbatim, swapping only the
+ * Databricks "lava" red accent for Delta cyan #00ADD4. Structural styling is
+ * shared in ../theme.css. To preview another project, point theme.css at a
+ * different palette file.
  */
 
 :root {
-  /* Brand anchors */
-  --df-brand: #00add4; /* Delta cyan */
-  --df-brand-bright: #3fd0f0;
-  --df-brand-deep: #0072a4; /* darker blue for links on light bg */
-  --df-navy: #042436; /* Delta deep navy */
-  --df-navy-2: #0a3350;
+  /* Brand accent — Delta cyan (replaces DevHub lava red) */
+  --df-accent: #22c3e6;
+  --df-accent-hover: #7de3f7;
+  --df-accent-deep: #0087b0;
 
-  /* ---- Dark mode (default) — flat near-black, DevHub-style ---- */
+  /* DevHub navy-tinted dark surfaces (verbatim). */
+  --df-bg: #111b20; /* --db-dark-bg */
+  --df-surface: #162027; /* --db-dark-surface */
+  --df-card: #182a32; /* --db-dark-card */
+  --df-border: #2a3f4a; /* --db-dark-border */
+  --df-navbar: #000000; /* DevHub navbar is pure black */
+
+  /* DevHub grey ramp (verbatim). */
+  --df-grey-90: #e3e4e9;
+  --df-grey-80: #c7c9d1;
+  --df-grey-70: #abaebb;
+  --df-grey-60: #9194a1;
+  --df-grey-50: #777a88;
+  --df-grey-40: #61646b;
+  --df-grey-30: #464853;
+  --df-grey-20: #2e3038;
+
+  /* DevHub code-syntax palette (verbatim). */
+  --df-code-bg: #09090b;
+  --df-code-surface: #242427;
+  --df-code-fg: #f9fafa;
+
+  /* ---- Starlight token mapping (dark) ---- */
   --sl-color-accent-low: #06222c;
-  --sl-color-accent: #22c3e6; /* cyan, a touch brighter for sparse use on black */
-  --sl-color-accent-high: #8fe4f6;
+  --sl-color-accent: var(--df-accent);
+  --sl-color-accent-high: var(--df-accent-hover);
 
-  --sl-color-white: #f4f6f8;
-  --sl-color-gray-1: #e4e5e7;
-  --sl-color-gray-2: #b8bcc2;
-  --sl-color-gray-3: #8a8f98;
-  --sl-color-gray-4: #4d525b;
-  --sl-color-gray-5: #2a2d34;
-  --sl-color-gray-6: #17191e;
-  --sl-color-gray-7: #101216;
-  --sl-color-black: #040406;
-
-  /* Flat surfaces — barely lifted from the background, no glow. */
-  --df-bg: #040406;
-  --df-bg-elevated: #0c0d11;
-  --df-surface: #111319;
-  --df-border: #26282f;
-  --df-hero-glow: transparent;
+  --sl-color-white: #f5f7f8;
+  --sl-color-gray-1: var(--df-grey-90);
+  --sl-color-gray-2: var(--df-grey-80);
+  --sl-color-gray-3: var(--df-grey-60);
+  --sl-color-gray-4: var(--df-grey-40);
+  --sl-color-gray-5: var(--df-grey-30);
+  --sl-color-gray-6: var(--df-surface);
+  --sl-color-gray-7: #0d1518;
+  --sl-color-black: var(--df-bg);
 }
 
-/* ---- Light mode ---- */
+/* ---- Light mode — DevHub "oat" off-white base. ---- */
 :root[data-theme="light"] {
+  --df-accent: #0087b0;
+  --df-accent-hover: #005f7d;
+  --df-accent-deep: #005f7d;
+
+  --df-bg: #f9f7f4; /* --db-bg (oat) */
+  --df-surface: #eeede9; /* --db-oat-medium */
+  --df-card: #ffffff;
+  --df-border: #dce0e2; /* --db-border */
+  --df-navbar: #000000;
+
+  --df-code-bg: #09090b;
+  --df-code-surface: #242427;
+  --df-code-fg: #f9fafa;
+
   --sl-color-accent-low: #cdeef8;
-  --sl-color-accent: #0087b0;
+  --sl-color-accent: var(--df-accent);
   --sl-color-accent-high: #033145;
 
-  --sl-color-white: #0a1a24;
-  --sl-color-gray-1: #12252f;
-  --sl-color-gray-2: #2c3f4b;
-  --sl-color-gray-3: #566772;
-  --sl-color-gray-4: #8497a1;
-  --sl-color-gray-5: #c2d0d8;
-  --sl-color-gray-6: #e6edf1;
-  --sl-color-gray-7: #f2f6f9;
+  --sl-color-white: #0b2026; /* db-navy */
+  --sl-color-gray-1: #1b3139;
+  --sl-color-gray-2: #3a4a52;
+  --sl-color-gray-3: #61646b;
+  --sl-color-gray-4: #9194a1;
+  --sl-color-gray-5: #c7c9d1;
+  --sl-color-gray-6: #eeede9;
+  --sl-color-gray-7: #f2f0ed;
   --sl-color-black: #ffffff;
-
-  --df-bg: #ffffff;
-  --df-bg-elevated: #f5fafc;
-  --df-surface: #eef5f8;
-  --df-border: #d6e2e9;
-  --df-hero-glow: rgba(0, 173, 212, 0.1);
 }

@@ -1,63 +1,82 @@
 /*
- * Unity Catalog palette for the preview site.
+ * Unity Catalog palette — DevHub design tokens with UC's brand accent.
  *
- * Built on UC's brand signature — "Wild Strawberry" magenta #f43ba6 (primary)
- * with a "Selective Yellow" #ffbc00 secondary, on a deep navy — taken from the
- * unitycatalog.io marketing site. Only *color* tokens live here; structural
- * styling is shared in ../theme.css. To preview Unity Catalog, point theme.css
- * at this file instead of delta.css.
+ * Same DevHub dark palette as delta.css (navy-tinted surfaces, Databricks grey
+ * ramp, exact code-syntax colors), swapping the accent for UC's "Wild
+ * Strawberry" magenta #f43ba6. Structural styling is shared in ../theme.css.
  */
 
 :root {
-  /* Brand anchors */
-  --df-brand: #f43ba6; /* UC Wild Strawberry (primary) */
-  --df-brand-bright: #fb6bc2;
-  --df-brand-deep: #c6106b; /* darker magenta for links on light bg */
-  --df-navy: #071a2e; /* UC deep navy */
-  --df-navy-2: #0c2740;
+  /* Brand accent — UC magenta (replaces DevHub lava red) */
+  --df-accent: #fb5cb8;
+  --df-accent-hover: #fdafdb;
+  --df-accent-deep: #c6106b;
 
-  /* ---- Dark mode (default) — flat near-black, DevHub-style ---- */
+  /* DevHub navy-tinted dark surfaces (verbatim). */
+  --df-bg: #111b20;
+  --df-surface: #162027;
+  --df-card: #182a32;
+  --df-border: #2a3f4a;
+  --df-navbar: #000000;
+
+  /* DevHub grey ramp (verbatim). */
+  --df-grey-90: #e3e4e9;
+  --df-grey-80: #c7c9d1;
+  --df-grey-70: #abaebb;
+  --df-grey-60: #9194a1;
+  --df-grey-50: #777a88;
+  --df-grey-40: #61646b;
+  --df-grey-30: #464853;
+  --df-grey-20: #2e3038;
+
+  /* DevHub code-syntax palette (verbatim). */
+  --df-code-bg: #09090b;
+  --df-code-surface: #242427;
+  --df-code-fg: #f9fafa;
+
+  /* ---- Starlight token mapping (dark) ---- */
   --sl-color-accent-low: #33082140;
-  --sl-color-accent: #fb5cb8; /* magenta, a touch brighter for sparse use on black */
-  --sl-color-accent-high: #fdafdb;
+  --sl-color-accent: var(--df-accent);
+  --sl-color-accent-high: var(--df-accent-hover);
 
-  --sl-color-white: #f6f4f5;
-  --sl-color-gray-1: #e6e4e6;
-  --sl-color-gray-2: #bdb8bc;
-  --sl-color-gray-3: #8f8890;
-  --sl-color-gray-4: #524b52;
-  --sl-color-gray-5: #2c282d;
-  --sl-color-gray-6: #191519;
-  --sl-color-gray-7: #110e11;
-  --sl-color-black: #050406;
-
-  /* Flat surfaces — barely lifted from the background, no glow. */
-  --df-bg: #050406;
-  --df-bg-elevated: #0e0c0f;
-  --df-surface: #141116;
-  --df-border: #2c262d;
-  --df-hero-glow: transparent;
+  --sl-color-white: #f5f7f8;
+  --sl-color-gray-1: var(--df-grey-90);
+  --sl-color-gray-2: var(--df-grey-80);
+  --sl-color-gray-3: var(--df-grey-60);
+  --sl-color-gray-4: var(--df-grey-40);
+  --sl-color-gray-5: var(--df-grey-30);
+  --sl-color-gray-6: var(--df-surface);
+  --sl-color-gray-7: #0d1518;
+  --sl-color-black: var(--df-bg);
 }
 
-/* ---- Light mode ---- */
+/* ---- Light mode — DevHub "oat" off-white base. ---- */
 :root[data-theme="light"] {
+  --df-accent: #d21a82;
+  --df-accent-hover: #a41059;
+  --df-accent-deep: #a41059;
+
+  --df-bg: #f9f7f4;
+  --df-surface: #eeede9;
+  --df-card: #ffffff;
+  --df-border: #dce0e2;
+  --df-navbar: #000000;
+
+  --df-code-bg: #09090b;
+  --df-code-surface: #242427;
+  --df-code-fg: #f9fafa;
+
   --sl-color-accent-low: #fdcdec;
-  --sl-color-accent: #d21a82;
+  --sl-color-accent: var(--df-accent);
   --sl-color-accent-high: #6b0839;
 
-  --sl-color-white: #1a0a12;
-  --sl-color-gray-1: #2a1620;
-  --sl-color-gray-2: #432c38;
-  --sl-color-gray-3: #6d5661;
-  --sl-color-gray-4: #9a8490;
-  --sl-color-gray-5: #d8c2ce;
-  --sl-color-gray-6: #f0e6ec;
-  --sl-color-gray-7: #f9f2f6;
+  --sl-color-white: #0b2026;
+  --sl-color-gray-1: #1b3139;
+  --sl-color-gray-2: #3a4a52;
+  --sl-color-gray-3: #61646b;
+  --sl-color-gray-4: #9194a1;
+  --sl-color-gray-5: #c7c9d1;
+  --sl-color-gray-6: #eeede9;
+  --sl-color-gray-7: #f2f0ed;
   --sl-color-black: #ffffff;
-
-  --df-bg: #ffffff;
-  --df-bg-elevated: #fdf5f9;
-  --df-surface: #f8eef4;
-  --df-border: #ecd8e4;
-  --df-hero-glow: rgba(244, 59, 166, 0.1);
 }

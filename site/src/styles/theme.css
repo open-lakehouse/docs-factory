@@ -1,230 +1,242 @@
 /*
  * Structural theme for the docs-factory preview, layered on Starlight.
  *
- * Design language borrowed from developers.databricks.com (DevHub): flat
- * near-black surfaces, no gradients or glow, plain high-contrast headings,
- * monospace eyebrows / section labels / nav, thin hairline rules, sharp
- * corners, and the brand accent used sparingly for links + active state.
+ * Faithful port of developers.databricks.com (DevHub)'s design language:
+ * Inter body / DM Sans headings / Geist Mono, navy-tinted dark surfaces,
+ * plain-weight h1, tight tracking, dash list markers, white-bar blockquotes,
+ * a pure-black navbar, and DevHub's exact code-syntax palette — with the
+ * Databricks lava-red accent replaced by each project's brand color.
  *
- * Palette-independent: this file uses the --df-* / --sl-color-* tokens a
- * palette file provides. The active palette (themes/delta.css or
- * themes/unitycatalog.css) is chosen in astro.config.mjs from DOCS_THEME and
- * loaded before this file, so `just preview [theme]` re-skins the whole site.
+ * Palette-independent: uses the --df-* / --sl-color-* tokens a palette file
+ * provides. The active palette (themes/delta.css or themes/unitycatalog.css)
+ * is chosen in astro.config.mjs from DOCS_THEME and loaded before this file.
  */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  --sl-text-h1: 2.75rem;
+  --sl-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --sl-font-mono: "Geist Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --df-font-heading: "DM Sans", var(--sl-font);
+
+  --sl-text-h1: 2.6rem;
   --sl-line-height: 1.7;
   --sl-content-width: 46rem;
-  --df-radius: 6px;
-  --df-mono: var(--sl-font-mono, ui-monospace, "SFMono-Regular", Menlo, monospace);
+  --df-radius: 0.625rem; /* DevHub --radius: 10px */
 }
 
 /* -------------------------------------------------------------------------- */
-/* Flat background — no glow, no gradient.                                    */
+/* Surfaces — flat navy, pure-black navbar.                                   */
 /* -------------------------------------------------------------------------- */
 body {
   background: var(--df-bg);
+  letter-spacing: -0.011em; /* DevHub tracking-tight */
 }
 
-/* -------------------------------------------------------------------------- */
-/* Header — flat, hairline bottom rule, no blur.                              */
-/* -------------------------------------------------------------------------- */
 header.header {
-  background: var(--df-bg);
+  background: var(--df-navbar);
   border-bottom: 1px solid var(--df-border);
   box-shadow: none;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Typography — plain, heavy, high-contrast. No gradient headings.            */
+/* Typography — DM Sans headings, plain-weight h1 (DevHub prose-h1:font-normal).*/
 /* -------------------------------------------------------------------------- */
-.sl-markdown-content {
-  font-size: 1.02rem;
+.sl-markdown-content h1,
+h1#_top,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4 {
+  font-family: var(--df-font-heading);
+  color: var(--sl-color-white);
+  letter-spacing: -0.02em;
 }
 
 .sl-markdown-content h1,
 h1#_top {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--sl-color-white);
+  font-weight: 400; /* plain weight, like DevHub */
 }
 
 .sl-markdown-content h2 {
-  font-weight: 650;
-  letter-spacing: -0.01em;
-  margin-top: 2.5rem;
-  color: var(--sl-color-white);
+  font-weight: 500;
+  margin-top: 3rem;
+  border: 0; /* DevHub h2 has no rule */
 }
 
 .sl-markdown-content h3 {
-  color: var(--sl-color-white);
+  font-weight: 500;
 }
 
-/* Monospace eyebrow above the page title (Starlight breadcrumb / hero label). */
-.content-panel .sl-flex > p:first-child:not(:only-child),
-a.site-title {
-  font-family: var(--df-mono);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Sidebar — quiet, monospace group labels, red-style active text (no pills). */
-/* -------------------------------------------------------------------------- */
-.sidebar {
-  background: var(--df-bg);
-}
-
-.sidebar-content {
-  border-inline-end: 1px solid var(--df-border);
-}
-
-/* Group headings: mono, uppercase, tracked-out — the DevHub "section" look. */
-.sidebar .group-label > span,
-summary .large {
-  font-family: var(--df-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--sl-color-gray-3);
-}
-
-.sidebar a {
-  border-radius: 0;
-  transition: color 0.12s ease;
-}
-
-/* Active page: brand-accent text + a thin left rule. No filled pill. */
-.sidebar a[aria-current="page"] {
-  color: var(--sl-color-accent);
-  font-weight: 600;
-  background: transparent;
-  box-shadow: inset 2px 0 0 var(--sl-color-accent);
-}
-
-.sidebar a:hover {
-  color: var(--sl-color-white);
-  background: transparent;
+.sl-markdown-content {
+  color: var(--df-grey-90, var(--sl-color-gray-1));
 }
 
 /* -------------------------------------------------------------------------- */
-/* Top nav / right TOC labels — monospace, uppercase.                         */
-/* -------------------------------------------------------------------------- */
-.right-sidebar-panel h2,
-mobile-starlight-toc h2 {
-  font-family: var(--df-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 0.72rem;
-  color: var(--sl-color-gray-3);
-}
-
-.right-sidebar a[aria-current="true"] {
-  color: var(--sl-color-accent);
-}
-
-/* -------------------------------------------------------------------------- */
-/* Links — brand accent, subtle underline.                                    */
+/* Links — rest at accent, brighten on hover (DevHub orange -> lava).         */
 /* -------------------------------------------------------------------------- */
 .sl-markdown-content a:not(:where(.sl-markdown-content a[class])) {
-  color: var(--sl-color-accent);
-  text-underline-offset: 0.2em;
-  text-decoration-color: color-mix(
-    in srgb,
-    var(--sl-color-accent) 40%,
-    transparent
-  );
+  color: var(--df-accent);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.sl-markdown-content a:not(:where(.sl-markdown-content a[class])):hover {
+  color: var(--df-accent-hover);
 }
 
 /* -------------------------------------------------------------------------- */
-/* Blockquote — simple accent left bar, flat. (DevHub callout.)               */
+/* Lists — DevHub dash marker (a short white bar), not disc bullets.          */
+/* -------------------------------------------------------------------------- */
+/* Prose lists only — exclude the tab list and any component <ul>. */
+.sl-markdown-content ul:not([role]) {
+  list-style: none;
+  padding-left: 1.5rem;
+}
+.sl-markdown-content ul:not([role]) > li {
+  position: relative;
+}
+.sl-markdown-content ul:not([role]) > li::before {
+  content: "";
+  position: absolute;
+  top: 0.7em;
+  left: -1.1rem;
+  width: 0.5rem;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--sl-color-white);
+}
+
+.sl-markdown-content strong {
+  font-weight: 500;
+  color: var(--sl-color-white);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Blockquote — white left bar, upright (DevHub border-l-2 border-white).     */
 /* -------------------------------------------------------------------------- */
 .sl-markdown-content blockquote {
-  border-inline-start: 3px solid var(--sl-color-accent);
+  border-inline-start: 2px solid var(--sl-color-white);
   background: transparent;
-  padding-inline-start: 1.1rem;
-  color: var(--sl-color-gray-1);
+  padding-inline-start: 1rem;
+  color: var(--sl-color-white);
   font-style: normal;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Code — flat, sharp, hairline border, no shadow.                            */
+/* Sidebar — quiet, mono uppercase group labels, accent active (no pill).     */
+/* -------------------------------------------------------------------------- */
+.sidebar {
+  background: var(--df-bg);
+}
+.sidebar-content {
+  border-inline-end: 1px solid var(--df-border);
+}
+.sidebar .group-label > span,
+summary .large {
+  font-family: var(--sl-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--sl-color-gray-3);
+}
+.sidebar a {
+  border-radius: var(--df-radius);
+  transition: color 0.12s ease, background 0.12s ease;
+}
+.sidebar a[aria-current="page"] {
+  color: var(--df-accent);
+  font-weight: 600;
+  background: color-mix(in srgb, var(--df-accent) 8%, transparent);
+}
+.sidebar a:hover {
+  color: var(--sl-color-white);
+  background: var(--df-surface);
+}
+
+/* Right TOC / section labels — mono uppercase. */
+.right-sidebar-panel h2,
+mobile-starlight-toc h2 {
+  font-family: var(--sl-font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  color: var(--sl-color-gray-3);
+}
+.right-sidebar a[aria-current="true"] {
+  color: var(--df-accent);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Code — DevHub near-black code surface, rounded, exact syntax palette.      */
 /* -------------------------------------------------------------------------- */
 .sl-markdown-content .expressive-code,
 .sl-markdown-content pre {
   border-radius: var(--df-radius);
   border: 1px solid var(--df-border);
   box-shadow: none;
-  background: var(--df-bg-elevated);
 }
-
+.sl-markdown-content .expressive-code .frame pre,
+.sl-markdown-content pre {
+  background: var(--df-code-bg) !important;
+}
 .sl-markdown-content :not(pre) > code {
-  font-family: var(--df-mono);
-  background: var(--df-surface);
+  font-family: var(--sl-font-mono);
+  background: var(--df-code-surface);
   border: 1px solid var(--df-border);
-  border-radius: 4px;
+  border-radius: 0.375rem;
   padding: 0.12em 0.38em;
-  color: var(--sl-color-gray-1);
+  color: var(--df-grey-90);
 }
 
 /* -------------------------------------------------------------------------- */
-/* Tabs (engine snippets) — flat segmented bar, mono labels, sharp.           */
+/* Tabs (engine snippets) — mono labels, accent active, rounded frame.        */
 /* -------------------------------------------------------------------------- */
 .sl-markdown-content starlight-tabs {
   border: 1px solid var(--df-border);
   border-radius: var(--df-radius);
   overflow: hidden;
-  background: var(--df-bg-elevated);
+  background: var(--df-card);
 }
-
 .sl-markdown-content .tablist-wrapper ul[role="tablist"] {
-  background: var(--df-bg);
+  background: var(--df-surface);
   border-bottom: 1px solid var(--df-border);
   padding: 0;
   gap: 0;
 }
-
 .sl-markdown-content [role="tab"] {
-  font-family: var(--df-mono);
+  font-family: var(--sl-font-mono);
   border: none;
   border-radius: 0;
   padding: 0.55rem 1rem;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
   color: var(--sl-color-gray-3);
   transition: color 0.12s ease;
 }
-
 .sl-markdown-content [role="tab"][aria-selected="true"] {
-  background: var(--df-bg-elevated);
-  color: var(--sl-color-accent);
-  border-bottom: 2px solid var(--sl-color-accent);
+  background: var(--df-card);
+  color: var(--df-accent);
+  border-bottom: 2px solid var(--df-accent);
 }
-
 .sl-markdown-content [role="tab"]:hover {
   color: var(--sl-color-white);
 }
-
 .sl-markdown-content [role="tabpanel"] {
   padding: 0.5rem 1rem 1rem;
 }
-
-/* Code inside a tab panel shouldn't double-border against the tab frame. */
 .sl-markdown-content [role="tabpanel"] .expressive-code,
 .sl-markdown-content [role="tabpanel"] pre {
   border: none;
 }
 
 /* -------------------------------------------------------------------------- */
-/* Tables — hairline rules, mono uppercase headers, no rounded box.           */
+/* Tables — hairline rules, mono uppercase headers.                           */
 /* -------------------------------------------------------------------------- */
 .sl-markdown-content table {
   border-collapse: collapse;
   border: none;
-  border-radius: 0;
 }
 .sl-markdown-content th {
-  font-family: var(--df-mono);
+  font-family: var(--sl-font-mono);
   background: transparent;
   text-transform: uppercase;
   letter-spacing: 0.04em;
@@ -240,15 +252,18 @@ mobile-starlight-toc h2 {
 }
 
 /* -------------------------------------------------------------------------- */
-/* PREVIEW badge — flat, mono, bracketed (terminal style).                    */
+/* PREVIEW badge — mono, bracketed, accent.                                   */
 /* -------------------------------------------------------------------------- */
+.site-title {
+  font-family: var(--sl-font-mono);
+}
 .site-title::after {
   content: "[PREVIEW]";
   margin-inline-start: 0.55rem;
-  font-family: var(--df-mono);
+  font-family: var(--sl-font-mono);
   font-size: 0.62em;
   font-weight: 700;
   letter-spacing: 0.04em;
   vertical-align: middle;
-  color: var(--sl-color-accent);
+  color: var(--df-accent);
 }

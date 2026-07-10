@@ -1,0 +1,63 @@
+/*
+ * Unity Catalog palette for the preview site.
+ *
+ * Built on UC's brand signature — "Wild Strawberry" magenta #f43ba6 (primary)
+ * with a "Selective Yellow" #ffbc00 secondary, on a deep navy — taken from the
+ * unitycatalog.io marketing site. Only *color* tokens live here; structural
+ * styling is shared in ../theme.css. To preview Unity Catalog, point theme.css
+ * at this file instead of delta.css.
+ */
+
+:root {
+  /* Brand anchors */
+  --df-brand: #f43ba6; /* UC Wild Strawberry (primary) */
+  --df-brand-bright: #fb6bc2;
+  --df-brand-deep: #c6106b; /* darker magenta for links on light bg */
+  --df-navy: #071a2e; /* UC deep navy */
+  --df-navy-2: #0c2740;
+
+  /* ---- Dark mode (default) ---- */
+  --sl-color-accent-low: #3d0a28;
+  --sl-color-accent: #f43ba6;
+  --sl-color-accent-high: #fdafdb;
+
+  --sl-color-white: #fbf5f9;
+  --sl-color-gray-1: #ece2e9;
+  --sl-color-gray-2: #ccbcc6;
+  --sl-color-gray-3: #96828e;
+  --sl-color-gray-4: #5c4a55;
+  --sl-color-gray-5: #372a32;
+  --sl-color-gray-6: #241a20;
+  --sl-color-gray-7: #191016;
+  --sl-color-black: #120a0f;
+
+  /* Custom surfaces the structural theme reads */
+  --df-bg: #120a0f;
+  --df-bg-elevated: #1d121a;
+  --df-surface: #241820;
+  --df-border: #3c2833;
+  --df-hero-glow: rgba(244, 59, 166, 0.16);
+}
+
+/* ---- Light mode ---- */
+:root[data-theme="light"] {
+  --sl-color-accent-low: #fdcdec;
+  --sl-color-accent: #d21a82;
+  --sl-color-accent-high: #6b0839;
+
+  --sl-color-white: #1a0a12;
+  --sl-color-gray-1: #2a1620;
+  --sl-color-gray-2: #432c38;
+  --sl-color-gray-3: #6d5661;
+  --sl-color-gray-4: #9a8490;
+  --sl-color-gray-5: #d8c2ce;
+  --sl-color-gray-6: #f0e6ec;
+  --sl-color-gray-7: #f9f2f6;
+  --sl-color-black: #ffffff;
+
+  --df-bg: #ffffff;
+  --df-bg-elevated: #fdf5f9;
+  --df-surface: #f8eef4;
+  --df-border: #ecd8e4;
+  --df-hero-glow: rgba(244, 59, 166, 0.1);
+}

@@ -1,11 +1,12 @@
 /*
  * Sleek structural theme for the docs-factory preview, layered on Starlight.
  *
- * This file is palette-independent: it imports one project palette (Delta for
- * now) and then styles *structure* — typography, surfaces, sidebar, tabs, code.
- * Swap the import below to re-skin the whole site for another project.
+ * Palette-independent: this file styles *structure* — typography, surfaces,
+ * sidebar, tabs, code — using the --df-* / --sl-color-* tokens that a palette
+ * file provides. The active palette (themes/delta.css or themes/unitycatalog.css)
+ * is chosen in astro.config.mjs from the DOCS_THEME env var and loaded before
+ * this file, so `just preview` / `just preview unitycatalog` re-skins the site.
  */
-@import "./themes/delta.css";
 
 /* -------------------------------------------------------------------------- */
 /* Typography — tighter, more editorial than Starlight's defaults.            */

@@ -7,12 +7,13 @@ default:
 
 # --- Preview site (Astro + Starlight, local only) --------------------------
 
-# Start the local preview site at http://localhost:4321 (installs deps first run).
+# Start the local preview at http://localhost:4321 (installs deps first run).
+# Pass a brand theme to skin it: `just preview` (delta) or `just preview unitycatalog`.
 # Stops any stale detached dev server first — `astro dev` daemonizes, so an old
 # instance (e.g. one started before your latest content changes) can otherwise
 # keep serving outdated pages.
-preview: _site-deps stop
-    cd site && npm run dev
+preview theme="delta": _site-deps stop
+    cd site && DOCS_THEME={{theme}} npm run dev
 
 # Stop any running (detached) preview dev server.
 stop:

@@ -1,0 +1,734 @@
+# Delta Lake documentation coverage tracker
+#
+# Machine-readable backlog: one entry per documentable topic, mapping each Delta
+# feature/concept to the Diataxis pages that should cover it and the examples that
+# should demonstrate it. See content/coverage/README.md for the workflow and the
+# source-of-truth policy.
+#
+# SOURCE POLICY: the `sources:` block cites the PUBLISHED upstream that defines the
+# topic (PROTOCOL.md / docs.delta.io / Databricks docs). The internal research
+# report (research/table-formats/*) is NOT authoritative and must not drive this
+# backlog; if an example `support` value is taken from it, tag it
+# support_source: "research-report (unverified)".
+#
+# Vocabularies:
+#   page/example status : todo | drafting | draft | published | partial | blocked | n/a
+#   feature_class        : reader-writer | writer-only | n/a
+#   example support      : rw | r | w_partial | none | unknown   (default: unknown)
+#   priority             : p0 (core) | p1 (common) | p2 (advanced)
+
+project: delta
+
+# --- upstream sources of truth (for reference; cited by id in each topic) --------
+source_refs:
+  protocol: "https://github.com/delta-io/delta/blob/master/PROTOCOL.md"
+  docs_delta_io: "https://docs.delta.io/latest/"
+  databricks_tables: "https://docs.databricks.com/aws/en/tables/"
+  databricks_feature_compat: "https://docs.databricks.com/aws/en/delta/feature-compatibility"
+
+topics:
+
+  # ============================================================================
+  # TIER 1 — Foundations (p0): concepts + getting started. Not table features,
+  # but the backbone the rest hangs off. Several already exist.
+  # ============================================================================
+
+  - id: what-is-delta-lake
+    feature: null
+    feature_class: n/a
+    title: What is Delta Lake?
+    priority: p0
+    sources:
+      docs_delta_io: "Introduction"
+      databricks: "Delta Lake overview"
+    pages:
+      explanation: { path: delta/explanation/what-is-delta-lake.md, status: published }
+      tutorial: null
+      how-to: null
+      reference: null
+    examples: {}
+    notes: "Already published. Landing page / redirect target."
+
+  - id: delta-kernel-architecture
+    feature: null
+    feature_class: n/a
+    title: Delta Kernel architecture
+    priority: p1
+    sources:
+      docs_delta_io: "Delta Kernel"
+      protocol: true
+    pages:
+      explanation: { path: delta/explanation/delta-kernel-architecture.md, status: published }
+      how-to: null
+      reference: null
+      tutorial: null
+    examples: {}
+    notes: "Already published. The consolidation story (shared kernel across engines)."
+
+  - id: transaction-log
+    feature: null
+    feature_class: n/a
+    title: The Delta transaction log (_delta_log)
+    priority: p0
+    sources:
+      protocol: "Delta Log Entries; Actions"
+      docs_delta_io: "Concurrency control"
+    pages:
+      explanation: { path: delta/explanation/transaction-log.md, status: todo }
+      how-to: null
+      reference: null
+      tutorial: null
+    examples:
+      python: { status: todo, support: unknown }
+    notes: "Covers protocol/metadata actions, add/remove file actions, commit provenance (commitInfo), transaction identifiers (txn)."
+
+  - id: acid-and-concurrency
+    feature: null
+    feature_class: n/a
+    title: ACID guarantees & optimistic concurrency
+    priority: p1
+    sources:
+      docs_delta_io: "Concurrency control"
+      protocol: true
+    pages:
+      explanation: { path: delta/explanation/acid-and-concurrency.md, status: todo }
+      how-to: null
+      reference: null
+      tutorial: null
+    examples: {}
+    notes: "Optimistic concurrency, conflict types, isolation levels."
+
+  - id: checkpoints
+    feature: v2Checkpoint
+    feature_class: writer-only
+    title: Checkpoints (incl. V2 checkpoints)
+    priority: p2
+    sources:
+      protocol: "Checkpoints; V2 Spec; Sidecar Files; Log Compaction Files"
+      docs_delta_io: true
+    pages:
+      explanation: { path: delta/explanation/checkpoints.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Classic + V2 (UUID-named, sidecar) checkpoints; log-compaction & checksum files."
+
+  - id: your-first-delta-table
+    feature: null
+    feature_class: n/a
+    title: Your first Delta table
+    priority: p0
+    sources:
+      docs_delta_io: "Quickstart"
+    pages:
+      tutorial: { path: delta/tutorials/your-first-delta-table.md, status: draft }
+      explanation: null
+      how-to: null
+      reference: null
+    examples:
+      python: { status: todo, support: unknown }
+    notes: "Existing draft stub. Single-engine happy path."
+
+  - id: read-a-delta-table
+    feature: null
+    feature_class: n/a
+    title: Read a Delta table
+    priority: p0
+    sources:
+      docs_delta_io: "Table batch reads and writes"
+    pages:
+      how-to: { path: delta/how-to/read-a-delta-table.mdx, status: published }
+      explanation: null
+      reference: null
+      tutorial: null
+    examples:
+      python: { status: published, support: rw, support_source: "examples/python/read_delta_table.py" }
+      polars: { status: draft, support: unknown }
+      duckdb: { status: draft, support: unknown }
+      spark: { status: draft, support: unknown }
+      rust: { status: draft, support: unknown }
+    notes: "Published, 3-engine Tabs. Only python promoted/tested today."
+
+  - id: write-a-delta-table
+    feature: null
+    feature_class: n/a
+    title: Write a Delta table (append / overwrite / replaceWhere)
+    priority: p0
+    sources:
+      docs_delta_io: "Table batch reads and writes"
+    pages:
+      how-to: { path: delta/how-to/write-a-delta-table.mdx, status: todo }
+      explanation: null
+      reference: null
+      tutorial: null
+    examples:
+      python: { status: todo, support: unknown }
+      polars: { status: todo, support: unknown }
+      duckdb: { status: todo, support: unknown }
+      spark: { status: todo, support: unknown }
+      rust: { status: todo, support: unknown }
+    notes: "Append, overwrite, replaceWhere, partitioned writes."
+
+  - id: time-travel
+    feature: null
+    feature_class: n/a
+    title: Time travel & versioning
+    priority: p0
+    sources:
+      docs_delta_io: "Table batch reads and writes (query older snapshot)"
+      databricks: "Delta time travel"
+    pages:
+      how-to: { path: delta/how-to/query-a-table-as-of-version.md, status: draft }
+      explanation: { path: delta/explanation/versioning.md, status: todo }
+      reference: null
+      tutorial: null
+    examples:
+      python: { status: published, support: rw, support_source: "examples/python/time_travel_read.py" }
+      polars: { status: todo, support: unknown }
+      duckdb: { status: todo, support: unknown }
+      spark: { status: todo, support: unknown }
+      rust: { status: todo, support: unknown }
+    notes: "Query as-of version / timestamp. python example exists + tested."
+
+  - id: merge-update-delete
+    feature: null
+    feature_class: n/a
+    title: MERGE, UPDATE, DELETE (row-level ops)
+    priority: p0
+    sources:
+      docs_delta_io: "Table deletes, updates, and merges"
+    pages:
+      how-to: { path: delta/how-to/merge-into-a-delta-table.mdx, status: todo }
+      explanation: null
+      reference: null
+      tutorial: null
+    examples:
+      python: { status: todo, support: unknown }
+      polars: { status: todo, support: unknown }
+      duckdb: { status: todo, support: unknown }
+      spark: { status: todo, support: unknown }
+      rust: { status: todo, support: unknown }
+    notes: "Upserts, conditional updates/deletes. Engine support varies widely (blind-append-only engines cannot MERGE)."
+
+  - id: streaming
+    feature: null
+    feature_class: n/a
+    title: Streaming reads & writes
+    priority: p1
+    sources:
+      docs_delta_io: "Table streaming reads and writes"
+    pages:
+      how-to: { path: delta/how-to/stream-from-a-delta-table.mdx, status: todo }
+      explanation: null
+      reference: null
+      tutorial: null
+    examples:
+      spark: { status: todo, support: unknown }
+    notes: "Delta as streaming source/sink; primarily Spark today."
+
+  - id: utility-commands
+    feature: null
+    feature_class: n/a
+    title: Utility commands (OPTIMIZE / VACUUM / HISTORY / RESTORE / CLONE)
+    priority: p1
+    sources:
+      docs_delta_io: "Table utility commands"
+    pages:
+      how-to: { path: delta/how-to/maintain-a-delta-table.mdx, status: todo }
+      reference: { path: delta/reference/utility-commands.md, status: todo }
+      explanation: null
+      tutorial: null
+    examples:
+      python: { status: todo, support: unknown }
+      spark: { status: todo, support: unknown }
+    notes: "OPTIMIZE (compaction/Z-order), VACUUM, DESCRIBE HISTORY, RESTORE, CLONE."
+
+  - id: feature-compatibility
+    feature: null
+    feature_class: n/a
+    title: Feature compatibility & the table-features mechanism
+    priority: p1
+    sources:
+      protocol: "Table Features; Reader/Writer Features"
+      docs_delta_io: "How does Delta Lake manage feature compatibility?"
+      databricks: "delta/feature-compatibility"
+    pages:
+      explanation: { path: delta/explanation/table-features-mechanism.md, status: todo }
+      reference: { path: delta/reference/table-features.md, status: draft }
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Reader v3 / writer v7 anchor; subset-negotiation rule. reference/table-features.md exists as draft stub and should render the feature matrix."
+
+  - id: drop-features
+    feature: null
+    feature_class: n/a
+    title: Drop Delta table features
+    priority: p2
+    sources:
+      docs_delta_io: "Drop Delta table features"
+      databricks: "delta/drop-feature"
+    pages:
+      how-to: { path: delta/how-to/drop-a-table-feature.md, status: todo }
+      explanation: null
+      reference: null
+      tutorial: null
+    examples: {}
+    notes: "Downgrading protocol / removing a feature to restore compatibility (e.g. deletionVectors, DBR 14.1+)."
+
+  # ============================================================================
+  # TIER 2 — Named table features (one topic per PROTOCOL.md feature).
+  # feature_class cross-checked against Databricks feature-compatibility page.
+  # ============================================================================
+
+  - id: column-mapping
+    feature: columnMapping
+    feature_class: reader-writer
+    title: Column mapping
+    priority: p1
+    sources:
+      protocol: "Column Mapping"
+      docs_delta_io: "Delta column mapping"
+      databricks: "delta/column-mapping"
+    pages:
+      explanation: { path: delta/explanation/column-mapping.md, status: todo }
+      how-to: { path: delta/how-to/enable-column-mapping.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      tutorial: null
+    examples:
+      python: { status: todo, support: unknown }
+      spark: { status: todo, support: unknown }
+      duckdb: { status: todo, support: unknown }
+      polars: { status: todo, support: unknown }
+      rust: { status: todo, support: unknown }
+    notes: "Rename/drop columns without rewriting data (physical name/id). Modes: id/name/none."
+
+  - id: deletion-vectors
+    feature: deletionVectors
+    feature_class: reader-writer
+    title: Deletion vectors
+    priority: p1
+    sources:
+      protocol: "Deletion Vectors; Deletion Vector Descriptor Schema"
+      docs_delta_io: "What are deletion vectors?"
+      databricks: "delta/deletion-vectors"
+    pages:
+      explanation: { path: delta/explanation/deletion-vectors.md, status: todo }
+      how-to: { path: delta/how-to/enable-deletion-vectors.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      tutorial: null
+    examples:
+      python: { status: todo, support: unknown }
+      spark: { status: todo, support: unknown }
+      duckdb: { status: todo, support: unknown }
+      polars: { status: todo, support: unknown }
+      rust: { status: todo, support: unknown }
+    notes: "High-impact: default-on in recent writers; non-DV-aware readers silently return deleted rows. Verify per-engine support against each engine's OWN docs before claiming an example."
+
+  - id: timestamp-ntz
+    feature: timestampNtz
+    feature_class: reader-writer
+    title: TimestampNTZ (timestamp without timezone)
+    priority: p2
+    sources:
+      protocol: "Timestamp without timezone (TimestampNtz)"
+      databricks: "delta/feature-compatibility (13.3 LTS)"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Type-support feature."
+
+  - id: variant-type
+    feature: variantType
+    feature_class: reader-writer
+    title: Variant data type
+    priority: p2
+    sources:
+      protocol: "Variant Data Type"
+      databricks: "delta/feature-compatibility (15.4 LTS)"
+    pages:
+      explanation: { path: delta/explanation/variant-type.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Semi-structured type; shares binary encoding with Iceberg v3 VARIANT (Apache Parquet ratified)."
+
+  - id: variant-shredding
+    feature: variantShredding
+    feature_class: reader-writer
+    title: Variant shredding
+    priority: p2
+    sources:
+      protocol: "Variant Shredding"
+      databricks: "delta/feature-compatibility (15.4 LTS)"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Optimizes Variant storage by extracting frequent fields into typed columns."
+
+  - id: type-widening
+    feature: typeWidening
+    feature_class: reader-writer
+    title: Type widening
+    priority: p2
+    sources:
+      protocol: "Type Widening"
+      docs_delta_io: "Delta type widening"
+      databricks: "delta/feature-compatibility (15.4 LTS)"
+    pages:
+      explanation: { path: delta/explanation/type-widening.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Widen a column's type (e.g. int->long) without rewriting data."
+
+  - id: liquid-clustering
+    feature: clustering
+    feature_class: reader-writer
+    title: Liquid clustering
+    priority: p1
+    sources:
+      protocol: "Clustered Table"
+      docs_delta_io: "Use liquid clustering for Delta tables"
+      databricks: "delta/clustering (13.3 LTS)"
+    pages:
+      explanation: { path: delta/explanation/liquid-clustering.md, status: todo }
+      how-to: { path: delta/how-to/cluster-a-delta-table.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      tutorial: null
+    examples:
+      spark: { status: todo, support: unknown }
+    notes: "Replaces hive-style partitioning + Z-order; CLUSTER BY."
+
+  - id: collations
+    feature: collations
+    feature_class: reader-writer
+    title: Collations
+    priority: p2
+    sources:
+      protocol: "Collations"
+      databricks: "delta/feature-compatibility (16.1)"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "String collation support."
+
+  - id: catalog-managed
+    feature: catalogManaged
+    feature_class: reader-writer
+    title: Catalog-managed tables (catalog commits)
+    priority: p1
+    sources:
+      protocol: "Catalog Managed; Staged/Inline/Published Commits"
+      docs_delta_io: "Use catalog-managed tables"
+      databricks: "delta/feature-compatibility (16.4 LTS)"
+    pages:
+      explanation: { path: delta/explanation/catalog-managed-tables.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Delegates commit coordination to a catalog (UC / IRC). Convergence point with Iceberg REST catalog."
+
+  - id: row-tracking
+    feature: rowTracking
+    feature_class: reader-writer
+    title: Row tracking (row IDs & commit versions)
+    priority: p2
+    sources:
+      protocol: "Row Tracking"
+      docs_delta_io: "Use row tracking for Delta tables"
+      databricks: "delta/feature-compatibility (14.3 LTS, listed writer-only)"
+    pages:
+      explanation: { path: delta/explanation/row-tracking.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "CLASS CONFLICT: PROTOCOL.md treats as reader-writer; Databricks feature-compat lists writer-only. Defer to PROTOCOL.md; document the nuance. Compatible with Iceberg v3 row lineage."
+
+  - id: check-constraints
+    feature: checkConstraints
+    feature_class: writer-only
+    title: CHECK constraints
+    priority: p1
+    sources:
+      protocol: "Check Constraints"
+      docs_delta_io: "Constraints"
+      databricks: "delta/constraints"
+    pages:
+      how-to: { path: delta/how-to/add-a-check-constraint.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      tutorial: null
+    examples:
+      python: { status: todo, support: unknown }
+      spark: { status: todo, support: unknown }
+    notes: "Also covers NOT NULL constraints (docs.delta.io groups them)."
+
+  - id: change-data-feed
+    feature: changeDataFeed
+    feature_class: writer-only
+    title: Change data feed (CDF)
+    priority: p1
+    sources:
+      protocol: "Change Data Files"
+      docs_delta_io: "Change data feed"
+      databricks: "delta/delta-change-data-feed"
+    pages:
+      explanation: { path: delta/explanation/change-data-feed.md, status: todo }
+      how-to: { path: delta/how-to/read-change-data-feed.mdx, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      tutorial: null
+    examples:
+      spark: { status: todo, support: unknown }
+    notes: "table_changes() / _change_type, _commit_version, _commit_timestamp."
+
+  - id: generated-columns
+    feature: generatedColumns
+    feature_class: writer-only
+    title: Generated columns
+    priority: p1
+    sources:
+      protocol: "Generated Columns"
+      databricks: "delta/generated-columns"
+    pages:
+      how-to: { path: delta/how-to/use-generated-columns.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      tutorial: null
+    examples:
+      spark: { status: todo, support: unknown }
+    notes: ""
+
+  - id: identity-columns
+    feature: identityColumns
+    feature_class: writer-only
+    title: Identity columns
+    priority: p2
+    sources:
+      protocol: "Identity Columns"
+      databricks: "delta/generated-columns#identity (writer-only)"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      how-to: null
+      explanation: null
+      tutorial: null
+    examples: {}
+    notes: "Auto-incrementing surrogate keys."
+
+  - id: invariants
+    feature: invariants
+    feature_class: writer-only
+    title: Column invariants
+    priority: p2
+    sources:
+      protocol: "Column Invariants"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      how-to: null
+      explanation: null
+      tutorial: null
+    examples: {}
+    notes: "Legacy invariant expressions; largely superseded by CHECK constraints."
+
+  - id: append-only
+    feature: appendOnly
+    feature_class: writer-only
+    title: Append-only tables
+    priority: p2
+    sources:
+      protocol: "Append-only Tables"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      how-to: null
+      explanation: null
+      tutorial: null
+    examples: {}
+    notes: "delta.appendOnly table property."
+
+  - id: default-column-values
+    feature: allowColumnDefaults
+    feature_class: writer-only
+    title: Default column values
+    priority: p2
+    sources:
+      protocol: "Default Columns (allowColumnDefaults)"
+      docs_delta_io: "Delta default column values"
+    pages:
+      how-to: { path: delta/how-to/set-default-column-values.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      tutorial: null
+    examples: {}
+    notes: "initial-default / write-default."
+
+  - id: iceberg-compat-v1
+    feature: icebergCompatV1
+    feature_class: writer-only
+    title: IcebergCompatV1
+    priority: p2
+    sources:
+      protocol: "IcebergCompatV1"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Underpins UniForm (Iceberg). See uniform topic for the user-facing story."
+
+  - id: iceberg-compat-v2
+    feature: icebergCompatV2
+    feature_class: writer-only
+    title: IcebergCompatV2 (UniForm)
+    priority: p1
+    sources:
+      protocol: "IcebergCompatV2"
+      docs_delta_io: "Universal Format (UniForm)"
+      databricks: "delta/uniform (13.3 LTS)"
+    pages:
+      explanation: { path: delta/explanation/uniform.md, status: todo }
+      how-to: { path: delta/how-to/enable-uniform.md, status: todo }
+      reference: { via: delta/reference/table-features.md, status: todo }
+      tutorial: null
+    examples: {}
+    notes: "UniForm: auto-generate Iceberg metadata alongside DeltaLog (one-directional, Delta as source)."
+
+  - id: in-commit-timestamp
+    feature: inCommitTimestamp
+    feature_class: writer-only
+    title: In-commit timestamps
+    priority: p2
+    sources:
+      protocol: "In-Commit Timestamps"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Monotonic commit timestamps for stable time-travel-by-timestamp."
+
+  - id: domain-metadata
+    feature: domainMetadata
+    feature_class: writer-only
+    title: Domain metadata
+    priority: p2
+    sources:
+      protocol: "Domain Metadata"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Custom metadata domains in the log; substrate for clustering, row-tracking, etc."
+
+  - id: vacuum-protocol-check
+    feature: vacuumProtocolCheck
+    feature_class: writer-only
+    title: Vacuum protocol check
+    priority: p2
+    sources:
+      protocol: "Vacuum Protocol Check"
+    pages:
+      reference: { via: delta/reference/table-features.md, status: todo }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Guards VACUUM against clients that don't understand newer features."
+
+  # ============================================================================
+  # TIER 3 — Interop / ecosystem (explanation-heavy). Grounded in published
+  # blogs/docs; the research report is a hint only.
+  # ============================================================================
+
+  - id: delta-sharing
+    feature: null
+    feature_class: n/a
+    title: Delta Sharing
+    priority: p2
+    sources:
+      docs_delta_io: "Read Delta Sharing Tables"
+      databricks: "delta-sharing"
+    pages:
+      explanation: { path: delta/explanation/delta-sharing.md, status: todo }
+      how-to: null
+      reference: null
+      tutorial: null
+    examples: {}
+    notes: "Open protocol for secure data sharing across orgs."
+
+  - id: delta-connect
+    feature: null
+    feature_class: n/a
+    title: Delta Connect (Spark Connect support)
+    priority: p2
+    sources:
+      docs_delta_io: "Delta Connect"
+    pages:
+      explanation: { path: delta/explanation/delta-connect.md, status: todo }
+      how-to: null
+      reference: null
+      tutorial: null
+    examples: {}
+    notes: ""
+
+  - id: storage-configuration
+    feature: null
+    feature_class: n/a
+    title: Storage configuration
+    priority: p2
+    sources:
+      docs_delta_io: "Storage configuration"
+    pages:
+      reference: { path: delta/reference/storage-configuration.md, status: todo }
+      how-to: null
+      explanation: null
+      tutorial: null
+    examples: {}
+    notes: "S3/ADLS/GCS backends and their consistency requirements."
+
+  - id: table-properties
+    feature: null
+    feature_class: n/a
+    title: Table properties reference
+    priority: p2
+    sources:
+      docs_delta_io: "Delta Table Properties Reference"
+    pages:
+      reference: { path: delta/reference/table-properties.md, status: todo }
+      how-to: null
+      explanation: null
+      tutorial: null
+    examples: {}
+    notes: "delta.* property catalog."
+
+  - id: engine-support-matrix
+    feature: null
+    feature_class: n/a
+    title: Engine support matrix
+    priority: p2
+    sources:
+      protocol: true
+    pages:
+      reference: { path: delta/reference/engine-support.md, status: todo }
+      how-to: null
+      explanation: null
+      tutorial: null
+    examples: {}
+    notes: "Which engines read/write which features. VERIFY every cell against each engine's OWN published docs. research/table-formats/delta-matrix.json is a starting hint only (unverified, do not publish its cells wholesale)."

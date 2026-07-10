@@ -18,6 +18,7 @@ same Starlight component set. It does **not** depend on the separate
 
 ```
 content/        Diátaxis-organized Markdown/MDX (tutorials / how-to / reference / explanation)
+content/coverage/ coverage tracker — backlog + per-page/example status (YAML, not published)
 examples/       real, tested example source — the single source of truth for snippets
 seed/           docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
 tools/docsnip/  content tooling (frontmatter validate, snippet check, manifest, llms.txt)
@@ -51,6 +52,15 @@ proto/          existing trestle tracker API (leave alone)
 5. **Every content page carries frontmatter.** Required: `title`, `diataxis`,
    `project`. Controlled vocabularies (diataxis / project / engines / status) are
    validated by `docsnip validate`.
+
+6. **`content/coverage/` is the backlog + status ledger.** `delta.yaml` (fully
+   enumerated) and `unitycatalog.yaml` (skeleton) map every feature/topic to its
+   planned Diátaxis pages and examples. It is planning metadata, not published
+   content, and does not render on the site. When a page or example lands or changes
+   status, update its entry in the *same PR*. Published upstream sources
+   (`PROTOCOL.md`, docs.delta.io, Databricks docs) are authoritative for what to
+   cover; `research/` is a hint only, never a source of truth. See
+   `content/coverage/README.md`.
 
 ## Common commands
 

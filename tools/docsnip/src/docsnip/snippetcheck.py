@@ -57,8 +57,10 @@ def check_page(md_path: Path) -> list[str]:
 
 
 def check_content(content_root: Path) -> list[str]:
-    """Check every ``*.md`` under ``content_root``; return all errors."""
+    """Check every content page (``*.md`` / ``*.mdx``) under ``content_root``."""
+    from .frontmatter import iter_content_files
+
     errors: list[str] = []
-    for md_path in sorted(content_root.rglob("*.md")):
+    for md_path in iter_content_files(content_root):
         errors.extend(check_page(md_path))
     return errors

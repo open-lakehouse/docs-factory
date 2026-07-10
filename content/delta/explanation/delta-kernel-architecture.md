@@ -8,8 +8,6 @@ delta_features: []
 status: published
 ---
 
-# Delta kernel architecture
-
 As more engines read and write Delta, each one reimplementing the protocol risks
 divergence — subtle disagreements about what a table contains. The **Delta kernel**
 addresses this: a shared library that implements the protocol once, so engines

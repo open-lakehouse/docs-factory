@@ -8,8 +8,6 @@ delta_features: [table-features]
 status: draft
 ---
 
-# Table features
-
 > **Draft stub.** Reference content is language-agnostic. This page will document
 > the table-features mechanism precisely; the authoritative facts and per-engine
 > support live in the research matrix at `research/table-formats/delta-matrix.json`

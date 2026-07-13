@@ -1,0 +1,42 @@
+// LOGICAL views — the abstract reference lakehouse and its governance model.
+// Deployment (concrete) views live in deployment-views.likec4; flows in flows.likec4.
+
+views {
+
+  // --- The reference lakehouse in context ----------------------------------
+  view referenceContext {
+    title "Reference Open Lakehouse — context"
+    description "The abstract, technology-agnostic lakehouse: its capabilities, the people who use it, and the OSS foundations & open table formats it assembles on."
+
+    include
+      practitioner, platformEngineer, agent,
+      lakehouse,
+      datafusion, delta, iceberg, cedar, openlineage, unitycatalog, lakekeeper,
+      sparkTrino
+    autoLayout LeftRight
+  }
+
+  // --- Capability map: inside the lakehouse --------------------------------
+  view capabilityMap of lakehouse {
+    title "Reference Open Lakehouse — capabilities"
+    description "The capability chain: query engine -> catalog -> table format -> object storage, with governance and lineage attaching at planning time. Delta & Iceberg are peer formats realizing the table-format capability."
+
+    include
+      *,
+      // show the concrete formats + engine against the capabilities
+      delta, iceberg, datafusion, unitycatalog, cedar, openlineage
+
+    // collapse the governance roles here (they get their own view)
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  // --- The zero-trust governance decomposition -----------------------------
+  view governanceModel of lakehouse.governance {
+    title "Governance — zero-trust decomposition (PAP / PDP / PEP / PIP / PA)"
+    description "The logical access-control points and how they relate. WHICH service plays each point is a deployment fact (see the deployment views). Amber = designed, not built."
+
+    include *
+    autoLayout LeftRight
+  }
+}

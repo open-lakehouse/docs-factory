@@ -1,0 +1,135 @@
+// Specification for the Open Lakehouse architecture model.
+//
+// The model is LAYERED:
+//   - LOGICAL (abstract): technology-agnostic capabilities + governance roles.
+//     The reference open lakehouse. No repo/service/infra names here.
+//   - DEPLOYMENT (concrete): our repos/services as deployment nodes that
+//     `instanceOf` the logical elements, across several trust-differentiated
+//     topologies.
+//
+// REF-FREE: names, roles, and edges only — never a commit SHA or release tag.
+// MATURITY-HONEST: everything designed-but-not-built carries #designed (or
+// #prototype); a global style renders those dashed/amber so the model never
+// overstates what exists.
+
+specification {
+
+  // --- Logical element kinds ----------------------------------------------
+
+  element person {
+    style {
+      shape person
+      color secondary
+    }
+  }
+
+  // A technology-agnostic capability of the reference lakehouse
+  // (catalog, query engine, table format, object storage, lineage, governance).
+  element capability {
+    style {
+      color primary
+    }
+  }
+
+  // A zero-trust governance role (PAP / PDP / PEP / PIP / PA). Lives inside the
+  // governance capability; realized by concrete services in each deployment.
+  element role {
+    notation "Governance role"
+    style {
+      shape rectangle
+      color indigo
+    }
+  }
+
+  // An external OSS technology the lakehouse assembles on, or a concrete open
+  // table format (Delta, Iceberg) realizing the tableFormat capability.
+  element foundation {
+    notation "OSS foundation / format"
+    style {
+      shape cylinder
+      color muted
+    }
+  }
+
+  // An external, untrusted query engine (Spark / Trino / notebook) — a consumer
+  // that can receive a vended credential but does not enforce FGAC.
+  element externalEngine {
+    notation "External engine (untrusted)"
+    style {
+      shape rectangle
+      color slate
+    }
+  }
+
+  // --- Deployment node kinds ----------------------------------------------
+
+  deploymentNode environment {
+    notation "Deployment topology"
+  }
+
+  // A deployed service/process (our repos manifest here).
+  deploymentNode service {
+    style {
+      icon tech:rust
+    }
+  }
+
+  // The single-port API gateway (Envoy) — where the platform manifests as one
+  // cohesive API surface. Central gateway, not per-service sidecars.
+  deploymentNode gateway {
+    notation "API gateway (Envoy)"
+    technology "Envoy"
+    style {
+      shape rectangle
+      color green
+    }
+  }
+
+  // A browser / client-side WASM runtime (untrusted).
+  deploymentNode browser {
+    notation "Browser / WASM runtime"
+    style {
+      shape browser
+      color sky
+    }
+  }
+
+  // A datastore backing a service (Postgres, object storage buckets).
+  deploymentNode datastore {
+    style {
+      shape storage
+      color muted
+    }
+  }
+
+  // --- Relationship kinds --------------------------------------------------
+
+  relationship flows                       // generic data/control flow
+  relationship realizes { line dotted }    // (reserved) concrete realizes abstract
+  relationship resolves                    // query engine resolves via catalog
+  relationship reads                       // reads bytes / files
+  relationship vends { color amber }       // catalog vends a scoped credential
+  relationship routes { color green }      // gateway routes traffic to a backend
+  // Zero-trust edges:
+  relationship administers                 // PAP administers policy for the PDP
+  relationship decides                     // PDP decides
+  relationship enforces                    // PEP enforces a PDP decision
+  relationship informs { line dashed }     // PIP informs the PDP with facts
+
+  // --- Tags ----------------------------------------------------------------
+
+  // Maturity (drives the global style — see globals.likec4).
+  tag built
+  tag designed { color #f59e0b }     // amber — designed, not built
+  tag prototype { color #f59e0b }    // amber — prototype / preview only
+
+  // Governance points (for filtering / coloring the zero-trust decomposition).
+  tag pap
+  tag pdp
+  tag pep
+  tag pip
+
+  // Trust posture of a deployment / node.
+  tag trusted
+  tag untrusted
+}

@@ -64,3 +64,33 @@ lint:
 # Compile the Rust example/seed stubs.
 rust:
     cargo build --examples
+
+# --- Architecture model (LikeC4, canonical source of architectural fact) ----
+
+# Interactive dev server for the architecture model (http://localhost:5173).
+arch-dev: _arch-deps
+    cd architecture && npm run dev
+
+# Validate the LikeC4 model (syntax + semantics). CI-gateable.
+arch-check: _arch-deps
+    cd architecture && npm run check
+
+# Build the self-contained interactive static site into architecture/dist/static.
+arch-build: _arch-deps
+    cd architecture && npm run build
+
+# Export the model to architecture/dist/model.json (agent / interactive-site input).
+arch-model: _arch-deps
+    cd architecture && npm run model
+
+# Validate + export JSON + build static site in one step. Run after any model edit.
+arch-refresh: arch-check arch-model arch-build
+
+# Install the LikeC4 tooling on first run.
+_arch-deps:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ ! -d architecture/node_modules ]; then
+        echo "Installing architecture (LikeC4) dependencies…"
+        (cd architecture && npm install)
+    fi

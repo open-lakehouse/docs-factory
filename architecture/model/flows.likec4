@@ -1,0 +1,59 @@
+// Dynamic (sequence) flows over the logical model. These read at the conceptual
+// altitude — the same abstract capabilities/roles the deployments realize — so
+// they never drift from the structure.
+
+views {
+
+  // --- Credential vending --------------------------------------------------
+  dynamic view credentialVending {
+    title "Flow — Credential vending"
+    description "The catalog issues a short-lived, scoped storage credential at table-resolution time; the query engine reads object storage with it (no long-lived keys)."
+
+    practitioner -> lakehouse.queryEngine "query table"
+    lakehouse.queryEngine -> lakehouse.catalog "resolve table"
+    lakehouse.catalog -> lakehouse.governance.pa "authorize + mint credential"
+    lakehouse.governance.pa -> lakehouse.governance.pdp "check verdict"
+    lakehouse.catalog -> lakehouse.queryEngine "scoped, short-lived credential"
+    lakehouse.queryEngine -> lakehouse.objectStorage "read data files"
+    lakehouse.queryEngine -> practitioner "results"
+  }
+
+  // --- Planning-time policy + lineage capture ------------------------------
+  dynamic view planningTimeCapture {
+    title "Flow — Planning-time policy + lineage"
+    description "Policy enforcement and lineage capture attach to the query plan before it runs — 'plug in, don't fork'."
+
+    practitioner -> lakehouse.queryEngine "submit query"
+    lakehouse.queryEngine -> lakehouse.governance.pep "govern the plan"
+    lakehouse.governance.pep -> lakehouse.governance.pdp "request decision"
+    lakehouse.governance.pdp -> lakehouse.governance.pip "gather facts"
+    lakehouse.governance.pdp -> lakehouse.governance.pep "allow + row/column constraints"
+    lakehouse.queryEngine -> lakehouse.lineage "emit column-level lineage"
+    lakehouse.queryEngine -> practitioner "governed results"
+  }
+
+  // --- The zero-trust decision cycle ---------------------------------------
+  dynamic view policyDecisionFlow {
+    title "Flow — Zero-trust decision (PAP → PDP → PEP → PIP)"
+    description "How the governance points interact for one access decision."
+
+    lakehouse.governance.pap -> lakehouse.governance.pdp "publish policy (OCI bundle)"
+    lakehouse.governance.pep -> lakehouse.governance.pdp "request decision for a request"
+    lakehouse.governance.pip -> lakehouse.governance.pdp "supply resource / identity / context facts"
+    lakehouse.governance.pdp -> lakehouse.governance.pep "verdict + constraints"
+    lakehouse.governance.pep -> lakehouse.queryEngine "apply (filters / masks / deny)"
+  }
+
+  // --- The FGAC bypass (the sharp point) -----------------------------------
+  dynamic view fgacBypass {
+    title "Flow — FGAC bypass (external engine)"
+    description "When the catalog vends a raw credential to an external engine, the query never flows through the enforcing engine — row filters and column masks are bypassed. The designed mitigation: refuse to vend a raw credential for a governed table."
+
+    practitioner -> sparkTrino "run query on external engine"
+    sparkTrino -> lakehouse.catalog "request storage credential"
+    lakehouse.catalog -> lakehouse.governance.pa "coarse authorize"
+    lakehouse.catalog -> sparkTrino "scoped credential (coarse only)"
+    sparkTrino -> lakehouse.objectStorage "read raw files — FGAC BYPASSED"
+    sparkTrino -> practitioner "unfiltered results"
+  }
+}

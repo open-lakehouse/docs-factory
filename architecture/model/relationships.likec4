@@ -1,9 +1,9 @@
 // LOGICAL LAYER — cross-capability relationships of the reference lakehouse.
 //
 // The core chain: queryEngine -> catalog -> tableFormat -> objectStorage, with
-// governance and lineage attaching at resolution/planning time. Foundations and
-// concrete formats realize the capabilities. Deployment-specific edges (gateway
-// routing, credential vending to external engines) live in deployments.likec4.
+// governance and lineage attaching at resolution / planning time. Foundations
+// and concrete formats realize the capabilities. Deployment-specific edges
+// (per-topology credential vending) live in deployments.likec4.
 
 model {
   extend lakehouse {
@@ -26,25 +26,16 @@ model {
 
   // --- Foundations realize the capabilities --------------------------------
 
-  lakehouse.queryEngine -[realizes]-> datafusion "built on"
+  datafusion -[realizes]-> lakehouse.queryEngine "built on"
   delta -[realizes]-> lakehouse.tableFormat "is an open table format"
   iceberg -[realizes]-> lakehouse.tableFormat "is an open table format"
-  lakehouse.catalog -[realizes]-> unitycatalog "builds / integrates with"
-  lakehouse.catalog -[flows]-> lakekeeper "Iceberg-REST interop (Delta API)" {
-    #designed
-  }
-  lakehouse.governance.pdp -[realizes]-> cedar "decisions computed by"
+  unitycatalog -[realizes]-> lakehouse.catalog "builds on / integrates with"
+
   lakehouse.lineage -[realizes]-> openlineage "speaks"
 
-  // --- People + external engines -------------------------------------------
+  // --- People --------------------------------------------------------------
 
   practitioner -[flows]-> lakehouse.queryEngine "queries + governs data"
   platformEngineer -[flows]-> lakehouse "builds + operates"
-  agent -[flows]-> lakehouse.lineage "investigates lineage (agent CLIs)"
-
-  // An external engine reads directly once a credential is vended — FGAC bypass.
-  lakehouse.catalog -[vends]-> sparkTrino "vends scoped credential to"
-  sparkTrino -[reads]-> lakehouse.objectStorage "reads raw files (FGAC bypassed)" {
-    #designed
-  }
+  agent -[flows]-> lakehouse.lineage "investigates"
 }

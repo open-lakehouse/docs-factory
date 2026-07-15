@@ -76,6 +76,7 @@ TABLE = os.environ.get("UC_TABLE", "events")  # created by read_write_delta_spar
 
 con = duckdb.connect()
 
+
 # [1] Extensions — prefer the latest development state (core_nightly) for both.
 #     `unity_catalog` is on core_nightly. `delta` is NOT (404 for stable DuckDB),
 #     so we try core_nightly and fall back to core, printing which source won.
@@ -116,7 +117,9 @@ con.execute(
 #     the list may momentarily come back empty before the catalog cache warms —
 #     that is a benign timing quirk, not the parse bug; step [4]'s read resolves
 #     the table regardless. Re-running lists all tables.)
-con.execute(f"ATTACH '{CATALOG}' AS {CATALOG} (TYPE unity_catalog, DEFAULT_SCHEMA 'default')")
+con.execute(
+    f"ATTACH '{CATALOG}' AS {CATALOG} (TYPE unity_catalog, DEFAULT_SCHEMA 'default')"
+)
 print("attach OK; listing tables (parses column metadata) ...")
 print("  SHOW ALL TABLES ->", con.sql("SHOW ALL TABLES").fetchall())
 

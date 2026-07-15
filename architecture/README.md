@@ -12,41 +12,43 @@ source-level implementation.
   layer of the concrete services that realize them. A deployment `service`
   `instanceOf`s the logical capabilities it plays; one service can play several.
   See [ADR-0003](./adr/ADR-0003-logical-abstract-deployment-concrete.md).
-- **Logical layer names no service, repo, or technology.** Those appear only in
-  the deployment layer. The logical layer is the reference architecture; the
+- **The logical layer names no service, repo, or technology.** Those appear only
+  in the deployment layer. The logical layer is the reference architecture; the
   deployment layer is one realization of it.
+- **Trust is a property of the deployment topology, not of a component.** The
+  same query engine is trusted inside the boundary (enforces FGAC in-plan) and
+  untrusted deployed outside it (gets a vended credential, reads storage
+  directly — FGAC bypassed). The two deployment topologies make that explicit.
 - **Maturity-honest.** Designed-but-not-built elements/edges carry `#designed`
   (or `#prototype`) and render amber, so the model never overstates what exists.
 - **Ref-free.** Names and edges only — never a commit SHA or release tag.
-  Downstream consumers pin at their own point of use.
 - **One model, many views.** Names and relationships are defined once and
   rendered through views. The `.likec4` files are the source of truth; `dist/` is
   generated.
 
-Narrative (the "why", framing arguments) lives in [`blogs/STORYLINE.md`](../blogs/STORYLINE.md)
-and references this model. If it's a fact about how the software is *structured*,
-it lives here; if it's about how we *argue or name* it, see the narrative side.
+Narrative (the "why", framing, naming) lives on the writing side and references
+this model. If it's a fact about how the software is *structured*, it lives here.
 
 ## Layout
 
 ```
 architecture/
   model/
-    specification.likec4      # element/deploymentNode/relationship kinds, tags, styles
+    specification.likec4      # element/deploymentNode/relationship kinds, tags
     landscape.likec4          # LOGICAL: capabilities + people + OSS foundations
     governance.likec4         # LOGICAL: the zero-trust roles + their edges
-    relationships.likec4      # LOGICAL: capability chain + realizes/vends/reads edges
+    relationships.likec4      # LOGICAL: capability chain + realizes/vends/reads
     deployments.likec4        # DEPLOYMENT: services instanceOf capabilities, per topology
     views.likec4              # logical views
     deployment-views.likec4   # one view per deployment topology
     flows.likec4              # dynamic/sequence views
     globals.likec4            # shared predicate groups
-  design/                     # architecture-focused prose (canonicalDoc link targets)
+  design/                     # architecture-focused prose (canonicalDoc targets)
   adr/                        # architecture decision records
   canonicals.yaml            # capability/service -> design-doc -> source-repo registry
-  estate.yml                 # ref-free repo facts (purpose, deps, patterns, story roles)
-  glossary.md                # canonical terminology for the estate
-  conflicts.md               # open-questions register (resolved items graduate to estate/storyline)
+  estate.yml                 # ref-free repo facts
+  glossary.md                # canonical terminology
+  conflicts.md               # open-questions register
   dist/                       # generated build artifact (model.json)
 ```
 

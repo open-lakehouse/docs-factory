@@ -6,13 +6,16 @@ views {
   // --- The reference lakehouse in context ----------------------------------
   view referenceContext {
     title "Reference Open Lakehouse — context"
-    description "The abstract, technology-agnostic lakehouse: its capabilities, the people who use it, and the OSS foundations & open table formats it assembles on."
+    description "The abstract, technology-agnostic lakehouse: its capabilities, the people who use it, and the OSS foundations & open table formats it assembles on. Foundations attach to the capability they realize (DataFusion <- query engine, Cedar <- PDP, ...), not to the lakehouse as a whole."
 
     include
       practitioner, platformEngineer, agent,
-      lakehouse,
-      datafusion, delta, iceberg, cedar, openlineage, unitycatalog, lakekeeper,
-      sparkTrino
+      // expand the lakehouse into its capabilities so foundation edges land on
+      // the right capability rather than rolling up to the parent box
+      lakehouse, lakehouse.*,
+      datafusion, delta, iceberg, cedar, openlineage, unitycatalog, lakekeeper
+    // the zero-trust roles get their own view; keep them collapsed here
+    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 

@@ -60,13 +60,6 @@
           "shape": "cylinder",
           "color": "muted"
         }
-      },
-      "externalEngine": {
-        "notation": "External engine (untrusted)",
-        "style": {
-          "shape": "rectangle",
-          "color": "slate"
-        }
       }
     },
     "relationships": {
@@ -87,11 +80,6 @@
       "vends": {
         "style": {
           "color": "amber"
-        }
-      },
-      "routes": {
-        "style": {
-          "color": "green"
         }
       },
       "administers": {
@@ -119,16 +107,8 @@
           "icon": "tech:rust"
         }
       },
-      "gateway": {
-        "technology": "Envoy",
-        "notation": "API gateway (Envoy)",
-        "style": {
-          "shape": "rectangle",
-          "color": "green"
-        }
-      },
       "browser": {
-        "notation": "Browser / WASM runtime",
+        "notation": "Browser runtime",
         "style": {
           "shape": "browser",
           "color": "sky"
@@ -143,8 +123,6 @@
     },
     "metadataKeys": [
       "canonicalDoc",
-      "note",
-      "projectName",
       "sourceRepo"
     ],
     "customColors": {}
@@ -156,11 +134,11 @@
       },
       "links": [
         {
-          "url": "https://github.com/open-lakehouse"
+          "url": "https://openlakehouse.io"
         }
       ],
       "description": {
-        "txt": "The reference architecture: warehouse-style governance and query over open table formats on object storage. Assembled from OSS foundations plus the connective tissue they don't ship."
+        "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
       },
       "title": "Open Lakehouse",
       "kind": "capability",
@@ -173,8 +151,11 @@
       "style": {
         "color": "primary"
       },
+      "summary": {
+        "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+      },
       "description": {
-        "txt": "Decides 'can this principal do this here?' and, when allowed, governs what they see (row filters, column masks). A cross-cutting zero-trust decomposition (PAP / PDP / PEP / PIP) whose points are realized by different services per deployment."
+        "txt": "Governance answers 'can this principal do this here?' and, when allowed,\ngoverns what they see — enforcing row filters and column masks.\n\nIt is a cross-cutting zero-trust decomposition (PAP / PDP / PEP / PIP /\nPA) whose points are realized by different services per deployment."
       },
       "title": "Governance",
       "kind": "capability",
@@ -213,7 +194,7 @@
         "built"
       ],
       "description": {
-        "txt": "Decides allow/deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central/hybrid topology is designed."
+        "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
       },
       "title": "PDP — decision point",
       "kind": "role",
@@ -233,7 +214,7 @@
         "built"
       ],
       "description": {
-        "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters/masks and short-circuits on deny. Realized as the engine PEP (in-plan) and, at the network edge, the gateway PEP (ext_authz). An agent-tool PEP is designed."
+        "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters / masks and short-circuits on deny. Realized in-plan by the query engine. An agent-tool PEP is designed."
       },
       "title": "PEP — enforcement point",
       "kind": "role",
@@ -252,7 +233,7 @@
         "pip"
       ],
       "description": {
-        "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network (in_trusted_environment) and session/lineage PIPs are designed."
+        "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
       },
       "title": "PIP — information point",
       "kind": "role",
@@ -271,7 +252,7 @@
         "built"
       ],
       "description": {
-        "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check. A guard making governed tables non-vendable to coarse-only consumers is designed."
+        "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check."
       },
       "title": "PA — administrator / vending",
       "kind": "role",
@@ -295,7 +276,7 @@
         "color": "secondary"
       },
       "description": {
-        "txt": "Builds and operates the lakehouse services; the primary audience for this model."
+        "txt": "Builds and operates the lakehouse: the services, their health, and smooth operation of the platform."
       },
       "title": "Platform engineer",
       "kind": "person",
@@ -307,7 +288,7 @@
         "color": "secondary"
       },
       "description": {
-        "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces. The 'and AI' half of open-lakehouse-and-ai."
+        "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
       },
       "title": "AI agent",
       "kind": "person",
@@ -326,7 +307,7 @@
       ],
       "technology": "Rust query engine",
       "description": {
-        "txt": "The shared query/compute core the query engine is built on. Policy and lineage plug in via its extension points."
+        "txt": "The shared query / compute core the query engine is built on."
       },
       "title": "Apache DataFusion",
       "kind": "foundation",
@@ -345,7 +326,7 @@
       ],
       "technology": "Delta Lake",
       "description": {
-        "txt": "An open table format (via delta-rs / delta-kernel-rs). Realizes the tableFormat capability."
+        "txt": "An open table format. Realizes the tableFormat capability."
       },
       "title": "Delta Lake",
       "kind": "foundation",
@@ -364,7 +345,7 @@
       ],
       "technology": "Apache Iceberg",
       "description": {
-        "txt": "An open table format. Realizes the tableFormat capability; reached in the estate via Iceberg-REST catalogs (e.g. Lakekeeper)."
+        "txt": "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
       },
       "title": "Apache Iceberg",
       "kind": "foundation",
@@ -385,7 +366,7 @@
       "description": {
         "txt": "The policy language and decision engine behind the governance PDP."
       },
-      "title": "AWS Cedar",
+      "title": "Cedar",
       "kind": "foundation",
       "id": "cedar"
     },
@@ -400,9 +381,9 @@
           "url": "https://openlineage.io"
         }
       ],
-      "technology": "OpenLineage / Marquez",
+      "technology": "OpenLineage",
       "description": {
-        "txt": "The lineage event standard the lineage capability emits and ingests. Marquez is the reference server it's inspired by."
+        "txt": "The lineage event standard the lineage capability emits and ingests."
       },
       "title": "OpenLineage",
       "kind": "foundation",
@@ -421,7 +402,7 @@
       ],
       "technology": "Unity Catalog",
       "description": {
-        "txt": "The governance API surface the catalog builds and integrates with — and explores ahead of — rather than competing with the official Java implementation."
+        "txt": "The governance API surface the catalog builds on and integrates with."
       },
       "title": "Unity Catalog OSS",
       "kind": "foundation",
@@ -440,27 +421,11 @@
       ],
       "technology": "Iceberg-REST catalog",
       "description": {
-        "txt": "An Iceberg-REST catalog. The catalog's Delta API can feed it (feasibility-stage interop) so Iceberg-REST consumers see the same tables."
+        "txt": "An Iceberg-REST catalog. The catalog can interoperate with it so Iceberg-REST consumers see the same tables."
       },
       "title": "Lakekeeper",
       "kind": "foundation",
       "id": "lakekeeper"
-    },
-    "sparkTrino": {
-      "metadata": {
-        "canonicalDoc": "design/deployments.md"
-      },
-      "notation": "External engine (untrusted)",
-      "style": {
-        "shape": "rectangle",
-        "color": "slate"
-      },
-      "description": {
-        "txt": "An external query engine that can receive a vended scoped storage credential and read raw files. Enforces only coarse access — FGAC (row filters / column masks) is bypassed when it reads directly."
-      },
-      "title": "Spark / Trino / notebook",
-      "kind": "externalEngine",
-      "id": "sparkTrino"
     },
     "lakehouse.catalog": {
       "metadata": {
@@ -469,8 +434,11 @@
       "style": {
         "color": "primary"
       },
+      "summary": {
+        "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+      },
       "description": {
-        "txt": "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
+        "txt": "A catalog is the metadata layer that records which tables and schemas\nexist, where their data lives, and who may touch it — the authoritative\nnamespace a query resolves a table name against before any bytes are read.\n\nIn the lakehouse it also brokers access: at resolution time it issues a\nshort-lived, scoped storage credential for exactly the data a query needs\n(credential vending), so raw storage keys are never handed out."
       },
       "title": "Catalog",
       "kind": "capability",
@@ -483,8 +451,11 @@
       "style": {
         "color": "primary"
       },
+      "summary": {
+        "txt": "Parses, plans, and executes queries over open table formats."
+      },
       "description": {
-        "txt": "Resolves tables through the catalog and executes over open table formats. Catalog-native: credentials, policy, and lineage attach at resolution/planning time."
+        "txt": "A query engine turns a declarative query into a plan of operations and\nexecutes it: it parses the query, resolves the tables it references,\noptimizes an execution plan, and runs it to produce results.\n\nHere it is catalog-native — it resolves tables through the catalog, and\ncredentials, policy enforcement, and lineage capture all attach to the\nplan at resolution / planning time rather than being bolted on after."
       },
       "title": "Query engine",
       "kind": "capability",
@@ -497,8 +468,11 @@
       "style": {
         "color": "primary"
       },
+      "summary": {
+        "txt": "A metadata layer that gives object-storage files ACID table semantics."
+      },
       "description": {
-        "txt": "Gives raw object-storage bytes table semantics — ACID transactions, schema, and snapshots. The technology-agnostic 'open table format' layer; Delta and Iceberg are peer concrete formats that realize it."
+        "txt": "An open table format is an open specification for a metadata layer over\ndata files in object storage. It tracks which files make up a table plus\ntheir schema and snapshots, giving a plain directory of files table\nsemantics — ACID transactions, schema evolution, and time travel.\n\nIt is technology-agnostic in the model: Delta Lake and Apache Iceberg are\npeer concrete formats that realize this capability."
       },
       "title": "Open table format",
       "kind": "capability",
@@ -511,8 +485,11 @@
       "style": {
         "color": "primary"
       },
+      "summary": {
+        "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+      },
       "description": {
-        "txt": "The byte container where table data files are written. Beneath the table format — the format is what makes these bytes a governed, transactional table."
+        "txt": "Object storage manages data as discrete objects (blobs) in a flat\nnamespace addressed by key, rather than as a file hierarchy or fixed\nblocks. It scales cheaply and horizontally, which is why it is the byte\ncontainer the lakehouse writes table data files into.\n\nIt sits beneath the table format: object storage holds the bytes; the\ntable format is what makes those bytes a governed, transactional table."
       },
       "title": "Object storage",
       "kind": "capability",
@@ -525,8 +502,11 @@
       "style": {
         "color": "primary"
       },
+      "summary": {
+        "txt": "Records where data came from and where it flows, down to the column."
+      },
       "description": {
-        "txt": "Captures dataset- and column-level provenance (OpenLineage) at query planning time — 'where did this data come from, and where does it flow'."
+        "txt": "Data lineage traces the origin and movement of data through the system —\nwhich inputs produced which outputs, dataset- and column-level.\n\nHere it is captured at query planning time, so provenance is derived from\nthe plan the engine is about to run rather than reconstructed after."
       },
       "title": "Lineage",
       "kind": "capability",
@@ -557,19 +537,8 @@
       "kind": "informs",
       "id": "1ayvbln"
     },
-    "1qi0gra": {
-      "title": "allow-deny + fine-grained constraints",
-      "source": {
-        "model": "lakehouse.governance.pdp"
-      },
-      "target": {
-        "model": "lakehouse.governance.pep"
-      },
-      "kind": "decides",
-      "id": "1qi0gra"
-    },
-    "196ffjt": {
-      "title": "requests a decision, applies the verdict",
+    "1g1bbjq": {
+      "title": "consults the PDP, then applies its verdict",
       "source": {
         "model": "lakehouse.governance.pep"
       },
@@ -577,9 +546,9 @@
         "model": "lakehouse.governance.pdp"
       },
       "kind": "enforces",
-      "id": "196ffjt"
+      "id": "1g1bbjq"
     },
-    "1rfmvsc": {
+    "e8usp9": {
       "title": "mints a credential only on a PDP verdict",
       "source": {
         "model": "lakehouse.governance.pa"
@@ -588,19 +557,19 @@
         "model": "lakehouse.governance.pdp"
       },
       "kind": "enforces",
-      "id": "1rfmvsc"
+      "id": "e8usp9"
     },
-    "w0cmls": {
+    "8w4yz4": {
       "line": "dotted",
       "title": "built on",
       "source": {
-        "model": "lakehouse.queryEngine"
-      },
-      "target": {
         "model": "datafusion"
       },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
       "kind": "realizes",
-      "id": "w0cmls"
+      "id": "8w4yz4"
     },
     "1wh06oa": {
       "line": "dotted",
@@ -628,7 +597,7 @@
     },
     "1vmfc2e": {
       "line": "dotted",
-      "title": "builds / integrates with",
+      "title": "builds on / integrates with",
       "source": {
         "model": "lakehouse.catalog"
       },
@@ -638,21 +607,7 @@
       "kind": "realizes",
       "id": "1vmfc2e"
     },
-    "qgitro": {
-      "title": "Iceberg-REST interop (Delta API)",
-      "tags": [
-        "designed"
-      ],
-      "source": {
-        "model": "lakehouse.catalog"
-      },
-      "target": {
-        "model": "lakekeeper"
-      },
-      "kind": "flows",
-      "id": "qgitro"
-    },
-    "138m0ji": {
+    "q6gvod": {
       "line": "dotted",
       "title": "decisions computed by",
       "source": {
@@ -662,9 +617,9 @@
         "model": "cedar"
       },
       "kind": "realizes",
-      "id": "138m0ji"
+      "id": "q6gvod"
     },
-    "1b89ee6": {
+    "14sh7z3": {
       "line": "dotted",
       "title": "speaks",
       "source": {
@@ -674,9 +629,9 @@
         "model": "openlineage"
       },
       "kind": "realizes",
-      "id": "1b89ee6"
+      "id": "14sh7z3"
     },
-    "g076c7": {
+    "1eyhfjs": {
       "title": "queries + governs data",
       "source": {
         "model": "practitioner"
@@ -685,9 +640,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "flows",
-      "id": "g076c7"
+      "id": "1eyhfjs"
     },
-    "1ovhwvg": {
+    "pjwb1": {
       "title": "builds + operates",
       "source": {
         "model": "platformEngineer"
@@ -696,10 +651,10 @@
         "model": "lakehouse"
       },
       "kind": "flows",
-      "id": "1ovhwvg"
+      "id": "pjwb1"
     },
-    "w3smh4": {
-      "title": "investigates lineage (agent CLIs)",
+    "1aqcxn4": {
+      "title": "investigates",
       "source": {
         "model": "agent"
       },
@@ -707,33 +662,7 @@
         "model": "lakehouse.lineage"
       },
       "kind": "flows",
-      "id": "w3smh4"
-    },
-    "1i86nq3": {
-      "color": "amber",
-      "title": "vends scoped credential to",
-      "source": {
-        "model": "lakehouse.catalog"
-      },
-      "target": {
-        "model": "sparkTrino"
-      },
-      "kind": "vends",
-      "id": "1i86nq3"
-    },
-    "11qrd7r": {
-      "title": "reads raw files (FGAC bypassed)",
-      "tags": [
-        "designed"
-      ],
-      "source": {
-        "model": "sparkTrino"
-      },
-      "target": {
-        "model": "lakehouse.objectStorage"
-      },
-      "kind": "reads",
-      "id": "11qrd7r"
+      "id": "1aqcxn4"
     },
     "lwdcta": {
       "title": "resolves tables through",
@@ -860,27 +789,13 @@
       },
       "edges": [
         {
-          "id": "59d51x",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "datafusion",
-          "label": "built on",
-          "relations": [
-            "w0cmls"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
           "id": "d5xsf0",
           "parent": null,
           "source": "lakehouse",
           "target": "cedar",
           "label": "decisions computed by",
           "relations": [
-            "138m0ji"
+            "q6gvod"
           ],
           "color": "gray",
           "line": "dotted",
@@ -894,7 +809,7 @@
           "target": "openlineage",
           "label": "speaks",
           "relations": [
-            "1b89ee6"
+            "14sh7z3"
           ],
           "color": "gray",
           "line": "dotted",
@@ -906,7 +821,7 @@
           "parent": null,
           "source": "lakehouse",
           "target": "unitycatalog",
-          "label": "builds / integrates with",
+          "label": "builds on / integrates with",
           "relations": [
             "1vmfc2e"
           ],
@@ -916,44 +831,13 @@
           "kind": "realizes"
         },
         {
-          "id": "165cps2",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "lakekeeper",
-          "label": "Iceberg-REST interop (Delta API)",
-          "relations": [
-            "qgitro"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows",
-          "tags": [
-            "designed"
-          ]
-        },
-        {
-          "id": "vjea8o",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "sparkTrino",
-          "label": "vends scoped credential to",
-          "relations": [
-            "1i86nq3"
-          ],
-          "color": "amber",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "vends"
-        },
-        {
           "id": "ttcejf",
           "parent": null,
           "source": "practitioner",
           "target": "lakehouse",
           "label": "queries + governs data",
           "relations": [
-            "g076c7"
+            "1eyhfjs"
           ],
           "color": "gray",
           "line": "dashed",
@@ -967,7 +851,7 @@
           "target": "lakehouse",
           "label": "builds + operates",
           "relations": [
-            "1ovhwvg"
+            "pjwb1"
           ],
           "color": "gray",
           "line": "dashed",
@@ -979,14 +863,28 @@
           "parent": null,
           "source": "agent",
           "target": "lakehouse",
-          "label": "investigates lineage (agent CLIs)",
+          "label": "investigates",
           "relations": [
-            "w3smh4"
+            "1aqcxn4"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "byeu7p",
+          "parent": null,
+          "source": "datafusion",
+          "target": "lakehouse",
+          "label": "built on",
+          "relations": [
+            "8w4yz4"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "p2nyt1",
@@ -1015,23 +913,6 @@
           "line": "dotted",
           "head": "normal",
           "kind": "realizes"
-        },
-        {
-          "id": "gezzlk",
-          "parent": null,
-          "source": "sparkTrino",
-          "target": "lakehouse",
-          "label": "reads raw files (FGAC bypassed)",
-          "relations": [
-            "11qrd7r"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "reads",
-          "tags": [
-            "designed"
-          ]
         }
       ],
       "nodes": [
@@ -1076,7 +957,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Builds and operates the lakehouse services; the primary audience for this model."
+            "txt": "Builds and operates the lakehouse: the services, their health, and smooth operation of the platform."
           },
           "tags": [],
           "kind": "person"
@@ -1099,10 +980,40 @@
             "size": "md"
           },
           "description": {
-            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces. The 'and AI' half of open-lakehouse-and-ai."
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
           },
           "tags": [],
           "kind": "person"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "byeu7p"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The shared query / compute core the query engine is built on."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "technology": "Rust query engine",
+          "kind": "foundation"
         },
         {
           "id": "delta",
@@ -1122,7 +1033,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "An open table format (via delta-rs / delta-kernel-rs). Realizes the tableFormat capability."
+            "txt": "An open table format. Realizes the tableFormat capability."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -1152,7 +1063,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "An open table format. Realizes the tableFormat capability; reached in the estate via Iceberg-REST catalogs (e.g. Lakekeeper)."
+            "txt": "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -1173,17 +1084,14 @@
             "ttcejf",
             "12g2j4b",
             "11of8s4",
+            "byeu7p",
             "p2nyt1",
-            "1jbc580",
-            "gezzlk"
+            "1jbc580"
           ],
           "outEdges": [
-            "59d51x",
             "d5xsf0",
             "3dth0",
-            "rvmyip",
-            "165cps2",
-            "vjea8o"
+            "rvmyip"
           ],
           "title": "Open Lakehouse",
           "modelRef": "lakehouse",
@@ -1194,46 +1102,16 @@
             "size": "md"
           },
           "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open table formats on object storage. Assembled from OSS foundations plus the connective tissue they don't ship."
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
           },
           "tags": [],
           "links": [
             {
-              "url": "https://github.com/open-lakehouse"
+              "url": "https://openlakehouse.io"
             }
           ],
           "kind": "capability",
           "navigateTo": "capabilityMap"
-        },
-        {
-          "id": "datafusion",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "59d51x"
-          ],
-          "outEdges": [],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The shared query/compute core the query engine is built on. Policy and lineage plug in via its extension points."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://datafusion.apache.org"
-            }
-          ],
-          "technology": "Rust query engine",
-          "kind": "foundation"
         },
         {
           "id": "cedar",
@@ -1244,7 +1122,7 @@
             "d5xsf0"
           ],
           "outEdges": [],
-          "title": "AWS Cedar",
+          "title": "Cedar",
           "modelRef": "cedar",
           "shape": "cylinder",
           "color": "muted",
@@ -1283,7 +1161,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The lineage event standard the lineage capability emits and ingests. Marquez is the reference server it's inspired by."
+            "txt": "The lineage event standard the lineage capability emits and ingests."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -1292,7 +1170,7 @@
               "url": "https://openlineage.io"
             }
           ],
-          "technology": "OpenLineage / Marquez",
+          "technology": "OpenLineage",
           "kind": "foundation"
         },
         {
@@ -1313,7 +1191,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The governance API surface the catalog builds and integrates with — and explores ahead of — rather than competing with the official Java implementation."
+            "txt": "The governance API surface the catalog builds on and integrates with."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -1330,9 +1208,7 @@
           "parent": null,
           "level": 0,
           "children": [],
-          "inEdges": [
-            "165cps2"
-          ],
+          "inEdges": [],
           "outEdges": [],
           "title": "Lakekeeper",
           "modelRef": "lakekeeper",
@@ -1343,7 +1219,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "An Iceberg-REST catalog. The catalog's Delta API can feed it (feasibility-stage interop) so Iceberg-REST consumers see the same tables."
+            "txt": "An Iceberg-REST catalog. The catalog can interoperate with it so Iceberg-REST consumers see the same tables."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -1354,35 +1230,6 @@
           ],
           "technology": "Iceberg-REST catalog",
           "kind": "foundation"
-        },
-        {
-          "id": "sparkTrino",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "vjea8o"
-          ],
-          "outEdges": [
-            "gezzlk"
-          ],
-          "title": "Spark / Trino / notebook",
-          "modelRef": "sparkTrino",
-          "shape": "rectangle",
-          "color": "slate",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "An external query engine that can receive a vended scoped storage credential and read raw files. Enforces only coarse access — FGAC (row filters / column masks) is bypassed when it reads directly."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/deployments.md"
-          },
-          "notation": "External engine (untrusted)",
-          "kind": "externalEngine"
         }
       ],
       "notation": {
@@ -1394,56 +1241,34 @@
             "kinds": [
               "foundation"
             ]
-          },
-          {
-            "title": "External engine (untrusted)",
-            "shape": "rectangle",
-            "color": "slate",
-            "kinds": [
-              "externalEngine"
-            ]
           }
         ]
       },
-      "hash": "qOrv0kUzFRJf2opqDyYbheWd5ZE8vQt9BZ7GGHn0uMY"
+      "hash": "MjQH88vPEAgO-tQ990XwEnTsZW-bt5vNcTIbCmDCWn4"
     },
-    "olaiNativeDeploy": {
+    "trustedComputeDeploy": {
       "_type": "deployment",
       "tags": null,
       "links": null,
       "_stage": "computed",
       "sourcePath": "deployment-views.likec4",
       "description": {
-        "txt": "The reference deployment: an Envoy gateway fronts the stack as ONE API surface; hydrofoil is the trusted query engine enforcing full FGAC in-plan (embedded PDP + engine PEP); mangrove is the catalog + resource PIP + credential-vending PA. Auth-on makes the gateway an edge PEP."
+        "txt": "The reference deployment, inside the trusted boundary: hydrofoil is the query engine enforcing full FGAC in-plan (embedded PDP + engine PEP); mangrove is the catalog + resource PIP + credential-vending PA; headwaters captures lineage."
       },
-      "title": "Deployment — olai-native (trusted compute)",
-      "id": "olaiNativeDeploy",
+      "title": "Deployment — trusted compute",
+      "id": "trustedComputeDeploy",
       "autoLayout": {
         "direction": "LR"
       },
       "edges": [
         {
-          "id": "14yejlp",
-          "parent": "olaiNative.hydrofoil",
-          "source": "olaiNative.hydrofoil.pdp",
-          "target": "olaiNative.hydrofoil.pep",
-          "label": "allow-deny + fine-grained constraints",
+          "id": "cvgyot",
+          "parent": "trustedCompute.hydrofoil",
+          "source": "trustedCompute.hydrofoil.pep",
+          "target": "trustedCompute.hydrofoil.pdp",
+          "label": "consults the PDP, then applies its verdict",
           "relations": [
-            "1qi0gra"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "decides"
-        },
-        {
-          "id": "138hhgd",
-          "parent": "olaiNative.hydrofoil",
-          "source": "olaiNative.hydrofoil.pep",
-          "target": "olaiNative.hydrofoil.pdp",
-          "label": "requests a decision, applies the verdict",
-          "relations": [
-            "196ffjt"
+            "1g1bbjq"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1451,10 +1276,10 @@
           "kind": "enforces"
         },
         {
-          "id": "zl1zra",
-          "parent": "olaiNative.mangrove",
-          "source": "olaiNative.mangrove.catalog",
-          "target": "olaiNative.mangrove.pip",
+          "id": "1gra0g6",
+          "parent": "trustedCompute.mangrove",
+          "source": "trustedCompute.mangrove.catalog",
+          "target": "trustedCompute.mangrove.pip",
           "label": "serves resource facts (identity, tags, locations)",
           "relations": [
             "1wt8s51"
@@ -1465,10 +1290,10 @@
           "kind": "flows"
         },
         {
-          "id": "nhekis",
+          "id": "6jwg4k",
           "parent": null,
-          "source": "olaiNative.hydrofoil.queryEngine",
-          "target": "olaiNative.mangrove.catalog",
+          "source": "trustedCompute.hydrofoil.queryEngine",
+          "target": "trustedCompute.mangrove.catalog",
           "label": "resolves tables through",
           "relations": [
             "lwdcta"
@@ -1479,10 +1304,10 @@
           "kind": "resolves"
         },
         {
-          "id": "1k9lifz",
+          "id": "3hah27",
           "parent": null,
-          "source": "olaiNative.hydrofoil.queryEngine",
-          "target": "olaiNative.headwaters.lineage",
+          "source": "trustedCompute.hydrofoil.queryEngine",
+          "target": "trustedCompute.headwaters.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
             "1j0fe4l"
@@ -1493,10 +1318,10 @@
           "kind": "flows"
         },
         {
-          "id": "15xp8u6",
+          "id": "x9fbsu",
           "parent": null,
-          "source": "olaiNative.mangrove.pip",
-          "target": "olaiNative.hydrofoil.pdp",
+          "source": "trustedCompute.mangrove.pip",
+          "target": "trustedCompute.hydrofoil.pdp",
           "label": "supplies resource / identity / context facts",
           "relations": [
             "1ayvbln"
@@ -1507,13 +1332,13 @@
           "kind": "informs"
         },
         {
-          "id": "17i2ldy",
+          "id": "1ang8li",
           "parent": null,
-          "source": "olaiNative.mangrove.pa",
-          "target": "olaiNative.hydrofoil.pdp",
+          "source": "trustedCompute.mangrove.pa",
+          "target": "trustedCompute.hydrofoil.pdp",
           "label": "mints a credential only on a PDP verdict",
           "relations": [
-            "1rfmvsc"
+            "e8usp9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1521,10 +1346,10 @@
           "kind": "enforces"
         },
         {
-          "id": "1fivjzv",
+          "id": "1f5oldn",
           "parent": null,
-          "source": "olaiNative.headwaters.pip",
-          "target": "olaiNative.hydrofoil.pdp",
+          "source": "trustedCompute.headwaters.pip",
+          "target": "trustedCompute.hydrofoil.pdp",
           "label": "supplies resource / identity / context facts",
           "relations": [
             "1ayvbln"
@@ -1535,10 +1360,10 @@
           "kind": "informs"
         },
         {
-          "id": "il2v9l",
+          "id": "1jfaefd",
           "parent": null,
-          "source": "olaiNative.cedarOci.pap",
-          "target": "olaiNative.hydrofoil.pdp",
+          "source": "trustedCompute.cedarOci.pap",
+          "target": "trustedCompute.hydrofoil.pdp",
           "label": "publishes policy set + schema (OCI bundle)",
           "relations": [
             "83x1rk"
@@ -1549,10 +1374,10 @@
           "kind": "administers"
         },
         {
-          "id": "1hxsncp",
+          "id": "sr6ids",
           "parent": null,
-          "source": "olaiNative.mangrove.catalog",
-          "target": "olaiNative.seaweedfs.objectStorage",
+          "source": "trustedCompute.mangrove.catalog",
+          "target": "trustedCompute.objstore.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
             "29leb5"
@@ -1561,84 +1386,27 @@
           "line": "dashed",
           "head": "normal",
           "kind": "vends"
-        },
-        {
-          "id": "fwzq37",
-          "parent": null,
-          "source": "olaiNative.envoy",
-          "target": "olaiNative.hydrofoil",
-          "label": "Flight SQL / ConnectRPC",
-          "relations": [
-            "1nl47qh"
-          ],
-          "color": "green",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "routes"
-        },
-        {
-          "id": "6scbi4",
-          "parent": null,
-          "source": "olaiNative.envoy",
-          "target": "olaiNative.mangrove",
-          "label": "UC REST (/api/2.1/unity-catalog)",
-          "relations": [
-            "14oxm95"
-          ],
-          "color": "green",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "routes"
-        },
-        {
-          "id": "18io5w9",
-          "parent": null,
-          "source": "olaiNative.envoy",
-          "target": "olaiNative.headwaters",
-          "label": "lineage read API",
-          "relations": [
-            "2wnc31"
-          ],
-          "color": "green",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "routes"
-        },
-        {
-          "id": "1cnqova",
-          "parent": null,
-          "source": "olaiNative.envoy",
-          "target": "olaiNative.seaweedfs",
-          "label": "object-store listener",
-          "relations": [
-            "g9h2qy"
-          ],
-          "color": "green",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "routes"
         }
       ],
       "nodes": [
         {
-          "id": "olaiNative.mangrove",
+          "id": "trustedCompute.mangrove",
           "parent": null,
           "level": 0,
           "children": [
-            "olaiNative.mangrove.pa",
-            "olaiNative.mangrove.catalog",
-            "olaiNative.mangrove.pip"
+            "trustedCompute.mangrove.pa",
+            "trustedCompute.mangrove.catalog",
+            "trustedCompute.mangrove.pip"
           ],
           "inEdges": [
-            "6scbi4",
-            "nhekis"
+            "6jwg4k"
           ],
           "outEdges": [
-            "15xp8u6",
-            "17i2ldy",
-            "1hxsncp"
+            "x9fbsu",
+            "1ang8li",
+            "sr6ids"
           ],
-          "deploymentRef": "olaiNative.mangrove",
+          "deploymentRef": "trustedCompute.mangrove",
           "title": "mangrove",
           "kind": "service",
           "links": [
@@ -1650,7 +1418,7 @@
           "shape": "rectangle",
           "icon": "tech:rust",
           "description": {
-            "txt": "The Unity Catalog server (unitycatalog-rs). Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check. Its Delta API can feed Lakekeeper for Iceberg-REST interop."
+            "txt": "The catalog server. Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
           },
           "tags": [
             "built"
@@ -1662,18 +1430,18 @@
           "depth": 1
         },
         {
-          "id": "olaiNative.mangrove.pa",
-          "parent": "olaiNative.mangrove",
+          "id": "trustedCompute.mangrove.pa",
+          "parent": "trustedCompute.mangrove",
           "level": 1,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "17i2ldy"
+            "1ang8li"
           ],
           "kind": "instance",
           "title": "PA — administrator / vending",
           "description": {
-            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check. A guard making governed tables non-vendable to coarse-only consumers is designed."
+            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check."
           },
           "tags": [
             "built"
@@ -1684,25 +1452,24 @@
             "opacity": 15,
             "size": "md"
           },
-          "deploymentRef": "olaiNative.mangrove.pa",
+          "deploymentRef": "trustedCompute.mangrove.pa",
           "modelRef": "lakehouse.governance.pa"
         },
         {
-          "id": "olaiNative.headwaters",
+          "id": "trustedCompute.headwaters",
           "parent": null,
           "level": 0,
           "children": [
-            "olaiNative.headwaters.pip",
-            "olaiNative.headwaters.lineage"
+            "trustedCompute.headwaters.pip",
+            "trustedCompute.headwaters.lineage"
           ],
           "inEdges": [
-            "18io5w9",
-            "1k9lifz"
+            "3hah27"
           ],
           "outEdges": [
-            "1fivjzv"
+            "1f5oldn"
           ],
-          "deploymentRef": "olaiNative.headwaters",
+          "deploymentRef": "trustedCompute.headwaters",
           "title": "headwaters",
           "kind": "service",
           "links": [
@@ -1714,7 +1481,7 @@
           "shape": "rectangle",
           "icon": "tech:rust",
           "description": {
-            "txt": "OpenLineage on DataFusion: captures column-level lineage at planning time and ingests events into a queryable store. A dynamic (taint) PIP."
+            "txt": "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capability is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
           },
           "tags": [
             "built"
@@ -1726,18 +1493,18 @@
           "depth": 1
         },
         {
-          "id": "olaiNative.headwaters.pip",
-          "parent": "olaiNative.headwaters",
+          "id": "trustedCompute.headwaters.pip",
+          "parent": "trustedCompute.headwaters",
           "level": 1,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1fivjzv"
+            "1f5oldn"
           ],
           "kind": "instance",
           "title": "PIP — information point",
           "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network (in_trusted_environment) and session/lineage PIPs are designed."
+            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
           },
           "tags": [
             "pip"
@@ -1748,21 +1515,21 @@
             "opacity": 15,
             "size": "md"
           },
-          "deploymentRef": "olaiNative.headwaters.pip",
+          "deploymentRef": "trustedCompute.headwaters.pip",
           "modelRef": "lakehouse.governance.pip"
         },
         {
-          "id": "olaiNative.cedarOci",
+          "id": "trustedCompute.cedarOci",
           "parent": null,
           "level": 0,
           "children": [
-            "olaiNative.cedarOci.pap"
+            "trustedCompute.cedarOci.pap"
           ],
           "inEdges": [],
           "outEdges": [
-            "il2v9l"
+            "1jfaefd"
           ],
-          "deploymentRef": "olaiNative.cedarOci",
+          "deploymentRef": "trustedCompute.cedarOci",
           "title": "cedar-oci bundle",
           "kind": "service",
           "color": "primary",
@@ -1782,44 +1549,13 @@
           "depth": 1
         },
         {
-          "id": "olaiNative.envoy",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "fwzq37",
-            "6scbi4",
-            "18io5w9",
-            "1cnqova"
-          ],
-          "deploymentRef": "olaiNative.envoy",
-          "title": "Envoy gateway",
-          "kind": "gateway",
-          "technology": "Envoy",
-          "notation": "API gateway (Envoy)",
-          "color": "green",
-          "shape": "rectangle",
-          "modelRef": "lakehouse.governance.pep",
-          "description": {
-            "txt": "Single-port API gateway. Path-multiplexes the backends onto one cohesive surface (+ a catch-all to the app). With ENVOY_AUTH on, wires an ext_authz/Authelia forward-auth edge PEP (fail-closed; strips client-forged identity headers)."
-          },
-          "tags": [
-            "built"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          }
-        },
-        {
-          "id": "olaiNative.cedarOci.pap",
-          "parent": "olaiNative.cedarOci",
+          "id": "trustedCompute.cedarOci.pap",
+          "parent": "trustedCompute.cedarOci",
           "level": 1,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "il2v9l"
+            "1jfaefd"
           ],
           "kind": "instance",
           "title": "PAP — administration point",
@@ -1835,30 +1571,29 @@
             "opacity": 15,
             "size": "md"
           },
-          "deploymentRef": "olaiNative.cedarOci.pap",
+          "deploymentRef": "trustedCompute.cedarOci.pap",
           "modelRef": "lakehouse.governance.pap"
         },
         {
-          "id": "olaiNative.hydrofoil",
+          "id": "trustedCompute.hydrofoil",
           "parent": null,
           "level": 0,
           "children": [
-            "olaiNative.hydrofoil.queryEngine",
-            "olaiNative.hydrofoil.pdp",
-            "olaiNative.hydrofoil.pep"
+            "trustedCompute.hydrofoil.pep",
+            "trustedCompute.hydrofoil.queryEngine",
+            "trustedCompute.hydrofoil.pdp"
           ],
           "inEdges": [
-            "fwzq37",
-            "15xp8u6",
-            "17i2ldy",
-            "1fivjzv",
-            "il2v9l"
+            "x9fbsu",
+            "1ang8li",
+            "1f5oldn",
+            "1jfaefd"
           ],
           "outEdges": [
-            "nhekis",
-            "1k9lifz"
+            "6jwg4k",
+            "3hah27"
           ],
-          "deploymentRef": "olaiNative.hydrofoil",
+          "deploymentRef": "trustedCompute.hydrofoil",
           "title": "hydrofoil",
           "kind": "service",
           "links": [
@@ -1870,7 +1605,7 @@
           "shape": "rectangle",
           "icon": "tech:rust",
           "description": {
-            "txt": "The catalog-native query engine (Flight SQL + ConnectRPC). Composes the catalog, policy, and lineage into one session and enforces full FGAC in-plan. Embeds the Cedar PDP and the engine PEP."
+            "txt": "The catalog-native query engine. Composes the catalog, policy, and lineage into one session and enforces full FGAC in-plan — it embeds the PDP (decide) and the PEP (enforce)."
           },
           "tags": [
             "built"
@@ -1882,211 +1617,18 @@
           "depth": 1
         },
         {
-          "id": "olaiNative.hydrofoil.queryEngine",
-          "parent": "olaiNative.hydrofoil",
+          "id": "trustedCompute.hydrofoil.pep",
+          "parent": "trustedCompute.hydrofoil",
           "level": 1,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "nhekis",
-            "1k9lifz"
-          ],
-          "kind": "instance",
-          "title": "Query engine",
-          "description": {
-            "txt": "Resolves tables through the catalog and executes over open table formats. Catalog-native: credentials, policy, and lineage attach at resolution/planning time."
-          },
-          "tags": [],
-          "color": "primary",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "olaiNative.hydrofoil.queryEngine",
-          "modelRef": "lakehouse.queryEngine"
-        },
-        {
-          "id": "olaiNative.mangrove.catalog",
-          "parent": "olaiNative.mangrove",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "nhekis"
-          ],
-          "outEdges": [
-            "zl1zra",
-            "1hxsncp"
-          ],
-          "kind": "instance",
-          "title": "Catalog",
-          "description": {
-            "txt": "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
-          },
-          "tags": [],
-          "color": "primary",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "olaiNative.mangrove.catalog",
-          "modelRef": "lakehouse.catalog"
-        },
-        {
-          "id": "olaiNative.headwaters.lineage",
-          "parent": "olaiNative.headwaters",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1k9lifz"
-          ],
-          "outEdges": [],
-          "kind": "instance",
-          "title": "Lineage",
-          "description": {
-            "txt": "Captures dataset- and column-level provenance (OpenLineage) at query planning time — 'where did this data come from, and where does it flow'."
-          },
-          "tags": [],
-          "color": "primary",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "olaiNative.headwaters.lineage",
-          "modelRef": "lakehouse.lineage"
-        },
-        {
-          "id": "olaiNative.mangrove.pip",
-          "parent": "olaiNative.mangrove",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "zl1zra"
-          ],
-          "outEdges": [
-            "15xp8u6"
-          ],
-          "kind": "instance",
-          "title": "PIP — information point",
-          "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network (in_trusted_environment) and session/lineage PIPs are designed."
-          },
-          "tags": [
-            "pip"
-          ],
-          "color": "indigo",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "olaiNative.mangrove.pip",
-          "modelRef": "lakehouse.governance.pip"
-        },
-        {
-          "id": "olaiNative.seaweedfs",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "olaiNative.seaweedfs.objectStorage"
-          ],
-          "inEdges": [
-            "1cnqova",
-            "1hxsncp"
-          ],
-          "outEdges": [],
-          "deploymentRef": "olaiNative.seaweedfs",
-          "title": "SeaweedFS / Azurite",
-          "kind": "datastore",
-          "color": "muted",
-          "shape": "storage",
-          "modelRef": "lakehouse.objectStorage",
-          "description": {
-            "txt": "S3-compatible object storage where table files are written (SeaweedFS locally; Azurite for the Azure provider)."
-          },
-          "tags": [
-            "built"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "depth": 1
-        },
-        {
-          "id": "olaiNative.hydrofoil.pdp",
-          "parent": "olaiNative.hydrofoil",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "138hhgd",
-            "15xp8u6",
-            "17i2ldy",
-            "1fivjzv",
-            "il2v9l"
-          ],
-          "outEdges": [
-            "14yejlp"
-          ],
-          "kind": "instance",
-          "title": "PDP — decision point",
-          "description": {
-            "txt": "Decides allow/deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central/hybrid topology is designed."
-          },
-          "tags": [
-            "pdp",
-            "built"
-          ],
-          "color": "indigo",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "olaiNative.hydrofoil.pdp",
-          "modelRef": "lakehouse.governance.pdp"
-        },
-        {
-          "id": "olaiNative.seaweedfs.objectStorage",
-          "parent": "olaiNative.seaweedfs",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1hxsncp"
-          ],
-          "outEdges": [],
-          "kind": "instance",
-          "title": "Object storage",
-          "description": {
-            "txt": "The byte container where table data files are written. Beneath the table format — the format is what makes these bytes a governed, transactional table."
-          },
-          "tags": [],
-          "color": "primary",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "olaiNative.seaweedfs.objectStorage",
-          "modelRef": "lakehouse.objectStorage"
-        },
-        {
-          "id": "olaiNative.hydrofoil.pep",
-          "parent": "olaiNative.hydrofoil",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "14yejlp"
-          ],
-          "outEdges": [
-            "138hhgd"
+            "cvgyot"
           ],
           "kind": "instance",
           "title": "PEP — enforcement point",
           "description": {
-            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters/masks and short-circuits on deny. Realized as the engine PEP (in-plan) and, at the network edge, the gateway PEP (ext_authz). An agent-tool PEP is designed."
+            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters / masks and short-circuits on deny. Realized in-plan by the query engine. An agent-tool PEP is designed."
           },
           "tags": [
             "pep",
@@ -2098,58 +1640,220 @@
             "opacity": 15,
             "size": "md"
           },
-          "deploymentRef": "olaiNative.hydrofoil.pep",
+          "deploymentRef": "trustedCompute.hydrofoil.pep",
           "modelRef": "lakehouse.governance.pep"
+        },
+        {
+          "id": "trustedCompute.hydrofoil.queryEngine",
+          "parent": "trustedCompute.hydrofoil",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "6jwg4k",
+            "3hah27"
+          ],
+          "kind": "instance",
+          "title": "Query engine",
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "color": "primary",
+          "shape": "rectangle",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "deploymentRef": "trustedCompute.hydrofoil.queryEngine",
+          "modelRef": "lakehouse.queryEngine"
+        },
+        {
+          "id": "trustedCompute.mangrove.catalog",
+          "parent": "trustedCompute.mangrove",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "6jwg4k"
+          ],
+          "outEdges": [
+            "1gra0g6",
+            "sr6ids"
+          ],
+          "kind": "instance",
+          "title": "Catalog",
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "color": "primary",
+          "shape": "rectangle",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "deploymentRef": "trustedCompute.mangrove.catalog",
+          "modelRef": "lakehouse.catalog"
+        },
+        {
+          "id": "trustedCompute.headwaters.lineage",
+          "parent": "trustedCompute.headwaters",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "3hah27"
+          ],
+          "outEdges": [],
+          "kind": "instance",
+          "title": "Lineage",
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "color": "primary",
+          "shape": "rectangle",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "deploymentRef": "trustedCompute.headwaters.lineage",
+          "modelRef": "lakehouse.lineage"
+        },
+        {
+          "id": "trustedCompute.mangrove.pip",
+          "parent": "trustedCompute.mangrove",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1gra0g6"
+          ],
+          "outEdges": [
+            "x9fbsu"
+          ],
+          "kind": "instance",
+          "title": "PIP — information point",
+          "description": {
+            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
+          },
+          "tags": [
+            "pip"
+          ],
+          "color": "indigo",
+          "shape": "rectangle",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "deploymentRef": "trustedCompute.mangrove.pip",
+          "modelRef": "lakehouse.governance.pip"
+        },
+        {
+          "id": "trustedCompute.objstore",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "trustedCompute.objstore.objectStorage"
+          ],
+          "inEdges": [
+            "sr6ids"
+          ],
+          "outEdges": [],
+          "deploymentRef": "trustedCompute.objstore",
+          "title": "Object storage",
+          "kind": "datastore",
+          "color": "muted",
+          "shape": "storage",
+          "modelRef": "lakehouse.objectStorage",
+          "description": {
+            "txt": "S3-compatible object storage where table files are written."
+          },
+          "tags": [
+            "built"
+          ],
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "depth": 1
+        },
+        {
+          "id": "trustedCompute.hydrofoil.pdp",
+          "parent": "trustedCompute.hydrofoil",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "cvgyot",
+            "x9fbsu",
+            "1ang8li",
+            "1f5oldn",
+            "1jfaefd"
+          ],
+          "outEdges": [],
+          "kind": "instance",
+          "title": "PDP — decision point",
+          "description": {
+            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
+          },
+          "tags": [
+            "pdp",
+            "built"
+          ],
+          "color": "indigo",
+          "shape": "rectangle",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "deploymentRef": "trustedCompute.hydrofoil.pdp",
+          "modelRef": "lakehouse.governance.pdp"
+        },
+        {
+          "id": "trustedCompute.objstore.objectStorage",
+          "parent": "trustedCompute.objstore",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "sr6ids"
+          ],
+          "outEdges": [],
+          "kind": "instance",
+          "title": "Object storage",
+          "description": {
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+          },
+          "tags": [],
+          "color": "primary",
+          "shape": "rectangle",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "deploymentRef": "trustedCompute.objstore.objectStorage",
+          "modelRef": "lakehouse.objectStorage"
         }
       ],
-      "notation": {
-        "nodes": [
-          {
-            "title": "API gateway (Envoy)",
-            "shape": "rectangle",
-            "color": "green",
-            "kinds": [
-              "gateway"
-            ]
-          }
-        ]
-      },
-      "hash": "LbX1KWxg-JNWH0EOuhZLnclwmpVHaTcBJW8a8BC2-H0"
+      "hash": "p2PASiXa1TvK2Qx9z6QmXrPdFyPMBK8IT37r3GSyT_U"
     },
-    "externalEngineDeploy": {
+    "externalComputeDeploy": {
       "_type": "deployment",
       "tags": null,
       "links": null,
       "_stage": "computed",
       "sourcePath": "deployment-views.likec4",
       "description": {
-        "txt": "The catalog vends a scoped credential to an external, untrusted engine (Spark/Trino/notebook), which then reads raw files. Only coarse access is enforced — row filters and column masks are BYPASSED. The non-vendable-governed-table guard (amber) is the designed mitigation."
+        "txt": "The same query-engine capability deployed OUTSIDE the trusted boundary: the catalog vends a scoped credential after a coarse check, and the engine reads raw files directly. Row filters and column masks are BYPASSED because the untrusted engine plays no PEP. The non-vendable-governed-table guard (amber) is the designed mitigation."
       },
-      "title": "Deployment — external engine (credential vending)",
-      "id": "externalEngineDeploy",
+      "title": "Deployment — external compute (FGAC bypass)",
+      "id": "externalComputeDeploy",
       "autoLayout": {
         "direction": "LR"
       },
       "edges": [
         {
-          "id": "fo7nj",
+          "id": "nyg6j3",
           "parent": null,
-          "source": "externalEngine.extMangrove.catalog",
-          "target": "externalEngine.extEngine.sparkTrino",
-          "label": "vends scoped credential to",
-          "relations": [
-            "1i86nq3"
-          ],
-          "color": "amber",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "vends"
-        },
-        {
-          "id": "u6gf6f",
-          "parent": null,
-          "source": "externalEngine.extMangrove.catalog",
-          "target": "externalEngine.extStore.objectStorage",
+          "source": "externalCompute.extCatalog.catalog",
+          "target": "externalCompute.extStore.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
             "29leb5"
@@ -2160,31 +1864,28 @@
           "kind": "vends"
         },
         {
-          "id": "1muykxg",
+          "id": "13hnygm",
           "parent": null,
-          "source": "externalEngine.extEngine.sparkTrino",
-          "target": "externalEngine.extStore.objectStorage",
-          "label": "reads raw files (FGAC bypassed)",
+          "source": "externalCompute.extEngine.queryEngine",
+          "target": "externalCompute.extCatalog.catalog",
+          "label": "resolves tables through",
           "relations": [
-            "11qrd7r"
+            "lwdcta"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "reads",
-          "tags": [
-            "designed"
-          ]
+          "kind": "resolves"
         },
         {
-          "id": "jmavfd",
+          "id": "1nah0h",
           "parent": null,
-          "source": "externalEngine.extMangrove",
-          "target": "externalEngine.extEngine",
+          "source": "externalCompute.extCatalog",
+          "target": "externalCompute.extEngine",
           "label": "[...]",
           "relations": [
-            "1020aee",
-            "mxku1s"
+            "1tjn58e",
+            "1wlqv08"
           ],
           "color": "amber",
           "line": "dashed",
@@ -2194,13 +1895,13 @@
           ]
         },
         {
-          "id": "1hpyfu5",
+          "id": "18bovot",
           "parent": null,
-          "source": "externalEngine.extEngine",
-          "target": "externalEngine.extStore",
+          "source": "externalCompute.extEngine",
+          "target": "externalCompute.extStore",
           "label": "reads raw files — FGAC BYPASSED",
           "relations": [
-            "q4zrp"
+            "1ih0uhh"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2210,19 +1911,77 @@
       ],
       "nodes": [
         {
-          "id": "externalEngine.extMangrove",
+          "id": "externalCompute.extEngine",
           "parent": null,
           "level": 0,
           "children": [
-            "externalEngine.extMangrove.catalog"
+            "externalCompute.extEngine.queryEngine"
           ],
+          "inEdges": [
+            "1nah0h"
+          ],
+          "outEdges": [
+            "13hnygm",
+            "18bovot"
+          ],
+          "deploymentRef": "externalCompute.extEngine",
+          "title": "Query engine (external)",
+          "kind": "service",
+          "color": "primary",
+          "shape": "rectangle",
+          "modelRef": "lakehouse.queryEngine",
+          "icon": "tech:rust",
+          "description": {
+            "txt": "A query engine deployed outside the trusted boundary (e.g. Spark, Trino, a raw-storage notebook). Receives a vended credential and reads raw files directly. It does not enforce FGAC — row filters and column masks are NOT applied."
+          },
+          "tags": [
+            "built"
+          ],
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "depth": 1
+        },
+        {
+          "id": "externalCompute.extEngine.queryEngine",
+          "parent": "externalCompute.extEngine",
+          "level": 1,
+          "children": [],
           "inEdges": [],
           "outEdges": [
-            "fo7nj",
-            "u6gf6f",
-            "jmavfd"
+            "13hnygm"
           ],
-          "deploymentRef": "externalEngine.extMangrove",
+          "kind": "instance",
+          "title": "Query engine",
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "color": "primary",
+          "shape": "rectangle",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "deploymentRef": "externalCompute.extEngine.queryEngine",
+          "modelRef": "lakehouse.queryEngine"
+        },
+        {
+          "id": "externalCompute.extCatalog",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "externalCompute.extCatalog.catalog"
+          ],
+          "inEdges": [
+            "13hnygm"
+          ],
+          "outEdges": [
+            "nyg6j3",
+            "1nah0h"
+          ],
+          "deploymentRef": "externalCompute.extCatalog",
           "title": "mangrove",
           "kind": "service",
           "links": [
@@ -2234,7 +1993,7 @@
           "shape": "rectangle",
           "icon": "tech:rust",
           "description": {
-            "txt": "The catalog vends a short-lived scoped credential to an external engine after a coarse authorize check."
+            "txt": "The catalog vends a short-lived scoped credential to an engine outside the trusted boundary after a coarse authorize check."
           },
           "tags": [
             "built"
@@ -2246,19 +2005,20 @@
           "depth": 1
         },
         {
-          "id": "externalEngine.extMangrove.catalog",
-          "parent": "externalEngine.extMangrove",
+          "id": "externalCompute.extCatalog.catalog",
+          "parent": "externalCompute.extCatalog",
           "level": 1,
           "children": [],
-          "inEdges": [],
+          "inEdges": [
+            "13hnygm"
+          ],
           "outEdges": [
-            "fo7nj",
-            "u6gf6f"
+            "nyg6j3"
           ],
           "kind": "instance",
           "title": "Catalog",
           "description": {
-            "txt": "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
           },
           "tags": [],
           "color": "primary",
@@ -2267,82 +2027,22 @@
             "opacity": 15,
             "size": "md"
           },
-          "deploymentRef": "externalEngine.extMangrove.catalog",
+          "deploymentRef": "externalCompute.extCatalog.catalog",
           "modelRef": "lakehouse.catalog"
         },
         {
-          "id": "externalEngine.extEngine",
+          "id": "externalCompute.extStore",
           "parent": null,
           "level": 0,
           "children": [
-            "externalEngine.extEngine.sparkTrino"
+            "externalCompute.extStore.objectStorage"
           ],
           "inEdges": [
-            "fo7nj",
-            "jmavfd"
-          ],
-          "outEdges": [
-            "1muykxg",
-            "1hpyfu5"
-          ],
-          "deploymentRef": "externalEngine.extEngine",
-          "title": "Spark / Trino / notebook",
-          "kind": "service",
-          "color": "primary",
-          "shape": "rectangle",
-          "icon": "tech:rust",
-          "description": {
-            "txt": "An external, untrusted engine. Receives a vended credential and reads raw files directly — it enforces only coarse access; row filters and column masks are NOT applied."
-          },
-          "tags": [
-            "built"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "depth": 1
-        },
-        {
-          "id": "externalEngine.extEngine.sparkTrino",
-          "parent": "externalEngine.extEngine",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "fo7nj"
-          ],
-          "outEdges": [
-            "1muykxg"
-          ],
-          "kind": "instance",
-          "title": "Spark / Trino / notebook",
-          "description": {
-            "txt": "An external query engine that can receive a vended scoped storage credential and read raw files. Enforces only coarse access — FGAC (row filters / column masks) is bypassed when it reads directly."
-          },
-          "tags": [],
-          "color": "slate",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "externalEngine.extEngine.sparkTrino",
-          "modelRef": "sparkTrino"
-        },
-        {
-          "id": "externalEngine.extStore",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "externalEngine.extStore.objectStorage"
-          ],
-          "inEdges": [
-            "u6gf6f",
-            "1muykxg",
-            "1hpyfu5"
+            "nyg6j3",
+            "18bovot"
           ],
           "outEdges": [],
-          "deploymentRef": "externalEngine.extStore",
+          "deploymentRef": "externalCompute.extStore",
           "title": "Object storage",
           "kind": "datastore",
           "color": "muted",
@@ -2358,19 +2058,18 @@
           "depth": 1
         },
         {
-          "id": "externalEngine.extStore.objectStorage",
-          "parent": "externalEngine.extStore",
+          "id": "externalCompute.extStore.objectStorage",
+          "parent": "externalCompute.extStore",
           "level": 1,
           "children": [],
           "inEdges": [
-            "u6gf6f",
-            "1muykxg"
+            "nyg6j3"
           ],
           "outEdges": [],
           "kind": "instance",
           "title": "Object storage",
           "description": {
-            "txt": "The byte container where table data files are written. Beneath the table format — the format is what makes these bytes a governed, transactional table."
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
           },
           "tags": [],
           "color": "primary",
@@ -2379,287 +2078,11 @@
             "opacity": 15,
             "size": "md"
           },
-          "deploymentRef": "externalEngine.extStore.objectStorage",
+          "deploymentRef": "externalCompute.extStore.objectStorage",
           "modelRef": "lakehouse.objectStorage"
         }
       ],
-      "hash": "P-l5QXTb_LR3xA1cuvv3QLjtavL64yUedIWMKqg_RR0"
-    },
-    "browserWasmDeploy": {
-      "_type": "deployment",
-      "tags": null,
-      "links": null,
-      "_stage": "computed",
-      "sourcePath": "deployment-views.likec4",
-      "description": {
-        "txt": "A client-side WASM query engine (axon) in the untrusted browser. The catalog issues signed URLs / proxies bytes rather than vending raw credentials — no raw cloud secrets reach the browser. Prototype."
-      },
-      "title": "Deployment — browser / WASM (client-side)",
-      "id": "browserWasmDeploy",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "edges": [
-        {
-          "id": "k88al0",
-          "parent": null,
-          "source": "browserWasm.axon.queryEngine",
-          "target": "browserWasm.proxyMangrove.catalog",
-          "label": "resolves tables through",
-          "relations": [
-            "lwdcta"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "resolves"
-        },
-        {
-          "id": "mmq15j",
-          "parent": null,
-          "source": "browserWasm.proxyMangrove.catalog",
-          "target": "browserWasm.proxyStore.objectStorage",
-          "label": "vends short-lived scoped credentials for",
-          "relations": [
-            "29leb5"
-          ],
-          "color": "amber",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "vends"
-        },
-        {
-          "id": "10cx21v",
-          "parent": null,
-          "source": "browserWasm.axon",
-          "target": "browserWasm.proxyMangrove",
-          "label": "requests signed URL (same-origin session)",
-          "relations": [
-            "6hanbz"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "185d8l3",
-          "parent": null,
-          "source": "browserWasm.axon",
-          "target": "browserWasm.proxyStore",
-          "label": "reads via signed URL (no raw secrets)",
-          "relations": [
-            "1mi7aa5"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "reads",
-          "tags": [
-            "prototype"
-          ]
-        },
-        {
-          "id": "pdkvs8",
-          "parent": null,
-          "source": "browserWasm.proxyMangrove",
-          "target": "browserWasm.proxyStore",
-          "label": "signed URL / byte proxy",
-          "relations": [
-            "1r2ptf"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "reads"
-        }
-      ],
-      "nodes": [
-        {
-          "id": "browserWasm.axon",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "browserWasm.axon.queryEngine"
-          ],
-          "inEdges": [],
-          "outEdges": [
-            "k88al0",
-            "10cx21v",
-            "185d8l3"
-          ],
-          "deploymentRef": "browserWasm.axon",
-          "title": "axon (WASM workbench)",
-          "kind": "browser",
-          "links": [
-            {
-              "url": "https://github.com/open-lakehouse/axon"
-            }
-          ],
-          "notation": "Browser / WASM runtime",
-          "color": "sky",
-          "shape": "browser",
-          "modelRef": "lakehouse.queryEngine",
-          "description": {
-            "txt": "A client-side WASM query engine in the browser. Reads through provider contracts; aligns to a signed-URL / byte-proxy posture — no raw cloud secrets are shipped to the browser."
-          },
-          "tags": [
-            "prototype"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "depth": 1
-        },
-        {
-          "id": "browserWasm.axon.queryEngine",
-          "parent": "browserWasm.axon",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "k88al0"
-          ],
-          "kind": "instance",
-          "title": "Query engine",
-          "description": {
-            "txt": "Resolves tables through the catalog and executes over open table formats. Catalog-native: credentials, policy, and lineage attach at resolution/planning time."
-          },
-          "tags": [],
-          "color": "primary",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "browserWasm.axon.queryEngine",
-          "modelRef": "lakehouse.queryEngine"
-        },
-        {
-          "id": "browserWasm.proxyMangrove",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "browserWasm.proxyMangrove.catalog"
-          ],
-          "inEdges": [
-            "k88al0",
-            "10cx21v"
-          ],
-          "outEdges": [
-            "mmq15j",
-            "pdkvs8"
-          ],
-          "deploymentRef": "browserWasm.proxyMangrove",
-          "title": "mangrove (proxy)",
-          "kind": "service",
-          "color": "primary",
-          "shape": "rectangle",
-          "modelRef": "lakehouse.catalog",
-          "icon": "tech:rust",
-          "description": {
-            "txt": "The catalog issues signed URLs / proxies bytes to the browser instead of vending raw credentials."
-          },
-          "tags": [
-            "prototype"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "depth": 1
-        },
-        {
-          "id": "browserWasm.proxyMangrove.catalog",
-          "parent": "browserWasm.proxyMangrove",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "k88al0"
-          ],
-          "outEdges": [
-            "mmq15j"
-          ],
-          "kind": "instance",
-          "title": "Catalog",
-          "description": {
-            "txt": "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
-          },
-          "tags": [],
-          "color": "primary",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "browserWasm.proxyMangrove.catalog",
-          "modelRef": "lakehouse.catalog"
-        },
-        {
-          "id": "browserWasm.proxyStore",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "browserWasm.proxyStore.objectStorage"
-          ],
-          "inEdges": [
-            "185d8l3",
-            "mmq15j",
-            "pdkvs8"
-          ],
-          "outEdges": [],
-          "deploymentRef": "browserWasm.proxyStore",
-          "title": "Object storage",
-          "kind": "datastore",
-          "color": "muted",
-          "shape": "storage",
-          "modelRef": "lakehouse.objectStorage",
-          "tags": [],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "depth": 1
-        },
-        {
-          "id": "browserWasm.proxyStore.objectStorage",
-          "parent": "browserWasm.proxyStore",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "mmq15j"
-          ],
-          "outEdges": [],
-          "kind": "instance",
-          "title": "Object storage",
-          "description": {
-            "txt": "The byte container where table data files are written. Beneath the table format — the format is what makes these bytes a governed, transactional table."
-          },
-          "tags": [],
-          "color": "primary",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "browserWasm.proxyStore.objectStorage",
-          "modelRef": "lakehouse.objectStorage"
-        }
-      ],
-      "notation": {
-        "nodes": [
-          {
-            "title": "Browser / WASM runtime",
-            "shape": "browser",
-            "color": "sky",
-            "kinds": [
-              "browser"
-            ]
-          }
-        ]
-      },
-      "hash": "Uogsyd4JSCY89aGtlhLeODaX2hWMdcpDXcoFEEXKaEs"
+      "hash": "_3qGPcgJjAFqHcWQkM4bvNrPc8nln1E_FsGpUFjpzo0"
     },
     "credentialVending": {
       "_type": "dynamic",
@@ -2725,7 +2148,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Resolves tables through the catalog and executes over open table formats. Catalog-native: credentials, policy, and lineage attach at resolution/planning time."
+            "txt": "Parses, plans, and executes queries over open table formats."
           },
           "tags": [],
           "metadata": {
@@ -2754,7 +2177,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
           },
           "tags": [],
           "metadata": {
@@ -2782,7 +2205,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check. A guard making governed tables non-vendable to coarse-only consumers is designed."
+            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check."
           },
           "tags": [
             "built"
@@ -2811,7 +2234,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Decides allow/deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central/hybrid topology is designed."
+            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
           },
           "tags": [
             "pdp",
@@ -2841,7 +2264,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The byte container where table data files are written. Beneath the table format — the format is what makes these bytes a governed, transactional table."
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
           },
           "tags": [],
           "metadata": {
@@ -2858,7 +2281,7 @@
           "target": "lakehouse.queryEngine",
           "label": "query table",
           "relations": [
-            "g076c7"
+            "1eyhfjs"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2903,7 +2326,7 @@
           "target": "lakehouse.governance.pdp",
           "label": "check verdict",
           "relations": [
-            "1rfmvsc"
+            "e8usp9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2966,7 +2389,7 @@
           }
         ]
       },
-      "hash": "HKtLUeVkuwmEx-r4NGuammOamszU9eZrhDF3lNglD9s"
+      "hash": "2LE0e4Iy-UfCRkxw4txQztF-Pv4NFh9WuuQr-kHP2_A"
     },
     "planningTimeCapture": {
       "_type": "dynamic",
@@ -3031,7 +2454,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Resolves tables through the catalog and executes over open table formats. Catalog-native: credentials, policy, and lineage attach at resolution/planning time."
+            "txt": "Parses, plans, and executes queries over open table formats."
           },
           "tags": [],
           "metadata": {
@@ -3060,7 +2483,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters/masks and short-circuits on deny. Realized as the engine PEP (in-plan) and, at the network edge, the gateway PEP (ext_authz). An agent-tool PEP is designed."
+            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters / masks and short-circuits on deny. Realized in-plan by the query engine. An agent-tool PEP is designed."
           },
           "tags": [
             "pep",
@@ -3093,7 +2516,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Decides allow/deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central/hybrid topology is designed."
+            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
           },
           "tags": [
             "pdp",
@@ -3123,7 +2546,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network (in_trusted_environment) and session/lineage PIPs are designed."
+            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
           },
           "tags": [
             "pip"
@@ -3152,7 +2575,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Captures dataset- and column-level provenance (OpenLineage) at query planning time — 'where did this data come from, and where does it flow'."
+            "txt": "Records where data came from and where it flows, down to the column."
           },
           "tags": [],
           "metadata": {
@@ -3169,7 +2592,7 @@
           "target": "lakehouse.queryEngine",
           "label": "submit query",
           "relations": [
-            "g076c7"
+            "1eyhfjs"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3198,7 +2621,7 @@
           "target": "lakehouse.governance.pdp",
           "label": "request decision",
           "relations": [
-            "196ffjt"
+            "1g1bbjq"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3225,15 +2648,12 @@
           "parent": null,
           "source": "lakehouse.governance.pdp",
           "target": "lakehouse.governance.pep",
-          "label": "allow + row/column constraints",
-          "relations": [
-            "1qi0gra"
-          ],
+          "label": "allow + row / column constraints",
+          "relations": [],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "tags": [],
-          "kind": "decides",
           "astPath": "/steps@4",
           "dir": "back"
         },
@@ -3280,7 +2700,7 @@
           }
         ]
       },
-      "hash": "Ho8QZMptKb9OLjy2wkrVV9hzaEoxOmfIpEu6gssicyc"
+      "hash": "sS0Xt0llm4Xa6CcIUbSYDBf05HGZoeF_1fqQL9XalX8"
     },
     "policyDecisionFlow": {
       "_type": "dynamic",
@@ -3348,7 +2768,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters/masks and short-circuits on deny. Realized as the engine PEP (in-plan) and, at the network edge, the gateway PEP (ext_authz). An agent-tool PEP is designed."
+            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters / masks and short-circuits on deny. Realized in-plan by the query engine. An agent-tool PEP is designed."
           },
           "tags": [
             "pep",
@@ -3378,7 +2798,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network (in_trusted_environment) and session/lineage PIPs are designed."
+            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
           },
           "tags": [
             "pip"
@@ -3411,7 +2831,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Decides allow/deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central/hybrid topology is designed."
+            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
           },
           "tags": [
             "pdp",
@@ -3441,7 +2861,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Resolves tables through the catalog and executes over open table formats. Catalog-native: credentials, policy, and lineage attach at resolution/planning time."
+            "txt": "Parses, plans, and executes queries over open table formats."
           },
           "tags": [],
           "metadata": {
@@ -3474,7 +2894,7 @@
           "target": "lakehouse.governance.pdp",
           "label": "request decision for a request",
           "relations": [
-            "196ffjt"
+            "1g1bbjq"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3505,14 +2925,11 @@
           "source": "lakehouse.governance.pdp",
           "target": "lakehouse.governance.pep",
           "label": "verdict + constraints",
-          "relations": [
-            "1qi0gra"
-          ],
+          "relations": [],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "tags": [],
-          "kind": "decides",
           "astPath": "/steps@3",
           "dir": "back"
         },
@@ -3542,277 +2959,7 @@
           }
         ]
       },
-      "hash": "598SU4LRqTwlLBgu_ke88l-zkVdt7EoJhNM1TftFV1E"
-    },
-    "fgacBypass": {
-      "_type": "dynamic",
-      "tags": null,
-      "links": null,
-      "_stage": "computed",
-      "sourcePath": "flows.likec4",
-      "description": {
-        "txt": "When the catalog vends a raw credential to an external engine, the query never flows through the enforcing engine — row filters and column masks are bypassed. The designed mitigation: refuse to vend a raw credential for a governed table."
-      },
-      "title": "Flow — FGAC bypass (external engine)",
-      "id": "fgacBypass",
-      "variant": "diagram",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "nodes": [
-        {
-          "id": "practitioner",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-06"
-          ],
-          "outEdges": [
-            "step-01"
-          ],
-          "title": "Data practitioner",
-          "modelRef": "practitioner",
-          "shape": "person",
-          "color": "secondary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
-          },
-          "tags": [],
-          "kind": "person"
-        },
-        {
-          "id": "sparkTrino",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-01",
-            "step-04"
-          ],
-          "outEdges": [
-            "step-02",
-            "step-05",
-            "step-06"
-          ],
-          "title": "Spark / Trino / notebook",
-          "modelRef": "sparkTrino",
-          "shape": "rectangle",
-          "color": "slate",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "An external query engine that can receive a vended scoped storage credential and read raw files. Enforces only coarse access — FGAC (row filters / column masks) is bypassed when it reads directly."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/deployments.md"
-          },
-          "notation": "External engine (untrusted)",
-          "kind": "externalEngine"
-        },
-        {
-          "id": "lakehouse.catalog",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-02"
-          ],
-          "outEdges": [
-            "step-03",
-            "step-04"
-          ],
-          "title": "Catalog",
-          "modelRef": "lakehouse.catalog",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
-          },
-          "kind": "capability"
-        },
-        {
-          "id": "lakehouse.governance.pa",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-03"
-          ],
-          "outEdges": [],
-          "title": "PA — administrator / vending",
-          "modelRef": "lakehouse.governance.pa",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check. A guard making governed tables non-vendable to coarse-only consumers is designed."
-          },
-          "tags": [
-            "built"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.objectStorage",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-05"
-          ],
-          "outEdges": [],
-          "title": "Object storage",
-          "modelRef": "lakehouse.objectStorage",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The byte container where table data files are written. Beneath the table format — the format is what makes these bytes a governed, transactional table."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        }
-      ],
-      "edges": [
-        {
-          "id": "step-01",
-          "parent": null,
-          "source": "practitioner",
-          "target": "sparkTrino",
-          "label": "run query on external engine",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@0"
-        },
-        {
-          "id": "step-02",
-          "parent": null,
-          "source": "sparkTrino",
-          "target": "lakehouse.catalog",
-          "label": "request storage credential",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@1"
-        },
-        {
-          "id": "step-03",
-          "parent": null,
-          "source": "lakehouse.catalog",
-          "target": "lakehouse.governance.pa",
-          "label": "coarse authorize",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@2"
-        },
-        {
-          "id": "step-04",
-          "parent": null,
-          "source": "lakehouse.catalog",
-          "target": "sparkTrino",
-          "label": "scoped credential (coarse only)",
-          "relations": [
-            "1i86nq3"
-          ],
-          "color": "amber",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "kind": "vends",
-          "astPath": "/steps@3",
-          "dir": "back"
-        },
-        {
-          "id": "step-05",
-          "parent": null,
-          "source": "sparkTrino",
-          "target": "lakehouse.objectStorage",
-          "label": "read raw files — FGAC BYPASSED",
-          "relations": [
-            "11qrd7r"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [
-            "designed"
-          ],
-          "kind": "reads",
-          "astPath": "/steps@4"
-        },
-        {
-          "id": "step-06",
-          "parent": null,
-          "source": "sparkTrino",
-          "target": "practitioner",
-          "label": "unfiltered results",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@5",
-          "dir": "back"
-        }
-      ],
-      "notation": {
-        "nodes": [
-          {
-            "title": "External engine (untrusted)",
-            "shape": "rectangle",
-            "color": "slate",
-            "kinds": [
-              "externalEngine"
-            ]
-          },
-          {
-            "title": "Governance role",
-            "shape": "rectangle",
-            "color": "indigo",
-            "kinds": [
-              "role"
-            ]
-          }
-        ]
-      },
-      "hash": "wyF816wGYKhKvsDFoc3XmkI7KwZAD2l8j49XXn-2d5o"
+      "hash": "cX_CvQHG8b9IVTDjJrlFW7oeF7jjwiT_ySSD40lMP-A"
     },
     "referenceContext": {
       "_type": "element",
@@ -3821,574 +2968,10 @@
       "_stage": "computed",
       "sourcePath": "views.likec4",
       "description": {
-        "txt": "The abstract, technology-agnostic lakehouse: its capabilities, the people who use it, and the OSS foundations & open table formats it assembles on."
+        "txt": "The abstract, technology-agnostic lakehouse: its capabilities, the people who use it, and the OSS foundations & open table formats it assembles on. Foundations attach to the capability they realize (DataFusion <- query engine, Cedar <- PDP, ...), not to the lakehouse as a whole."
       },
       "title": "Reference Open Lakehouse — context",
       "id": "referenceContext",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "edges": [
-        {
-          "id": "ttcejf",
-          "parent": null,
-          "source": "practitioner",
-          "target": "lakehouse",
-          "label": "queries + governs data",
-          "relations": [
-            "g076c7"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "12g2j4b",
-          "parent": null,
-          "source": "platformEngineer",
-          "target": "lakehouse",
-          "label": "builds + operates",
-          "relations": [
-            "1ovhwvg"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "11of8s4",
-          "parent": null,
-          "source": "agent",
-          "target": "lakehouse",
-          "label": "investigates lineage (agent CLIs)",
-          "relations": [
-            "w3smh4"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "59d51x",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "datafusion",
-          "label": "built on",
-          "relations": [
-            "w0cmls"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "p2nyt1",
-          "parent": null,
-          "source": "delta",
-          "target": "lakehouse",
-          "label": "is an open table format",
-          "relations": [
-            "1wh06oa"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "1jbc580",
-          "parent": null,
-          "source": "iceberg",
-          "target": "lakehouse",
-          "label": "is an open table format",
-          "relations": [
-            "zvuefi"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "d5xsf0",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "cedar",
-          "label": "decisions computed by",
-          "relations": [
-            "138m0ji"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "3dth0",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "openlineage",
-          "label": "speaks",
-          "relations": [
-            "1b89ee6"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "rvmyip",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "unitycatalog",
-          "label": "builds / integrates with",
-          "relations": [
-            "1vmfc2e"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "165cps2",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "lakekeeper",
-          "label": "Iceberg-REST interop (Delta API)",
-          "relations": [
-            "qgitro"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows",
-          "tags": [
-            "designed"
-          ]
-        },
-        {
-          "id": "vjea8o",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "sparkTrino",
-          "label": "vends scoped credential to",
-          "relations": [
-            "1i86nq3"
-          ],
-          "color": "amber",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "vends"
-        },
-        {
-          "id": "gezzlk",
-          "parent": null,
-          "source": "sparkTrino",
-          "target": "lakehouse",
-          "label": "reads raw files (FGAC bypassed)",
-          "relations": [
-            "11qrd7r"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "reads",
-          "tags": [
-            "designed"
-          ]
-        }
-      ],
-      "nodes": [
-        {
-          "id": "practitioner",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "ttcejf"
-          ],
-          "title": "Data practitioner",
-          "modelRef": "practitioner",
-          "shape": "person",
-          "color": "secondary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
-          },
-          "tags": [],
-          "kind": "person"
-        },
-        {
-          "id": "platformEngineer",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "12g2j4b"
-          ],
-          "title": "Platform engineer",
-          "modelRef": "platformEngineer",
-          "shape": "person",
-          "color": "secondary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Builds and operates the lakehouse services; the primary audience for this model."
-          },
-          "tags": [],
-          "kind": "person"
-        },
-        {
-          "id": "agent",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "11of8s4"
-          ],
-          "title": "AI agent",
-          "modelRef": "agent",
-          "shape": "person",
-          "color": "secondary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces. The 'and AI' half of open-lakehouse-and-ai."
-          },
-          "tags": [],
-          "kind": "person"
-        },
-        {
-          "id": "delta",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "p2nyt1"
-          ],
-          "title": "Delta Lake",
-          "modelRef": "delta",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "An open table format (via delta-rs / delta-kernel-rs). Realizes the tableFormat capability."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://delta.io"
-            }
-          ],
-          "technology": "Delta Lake",
-          "kind": "foundation"
-        },
-        {
-          "id": "iceberg",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1jbc580"
-          ],
-          "title": "Apache Iceberg",
-          "modelRef": "iceberg",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "An open table format. Realizes the tableFormat capability; reached in the estate via Iceberg-REST catalogs (e.g. Lakekeeper)."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://iceberg.apache.org"
-            }
-          ],
-          "technology": "Apache Iceberg",
-          "kind": "foundation"
-        },
-        {
-          "id": "lakehouse",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "ttcejf",
-            "12g2j4b",
-            "11of8s4",
-            "p2nyt1",
-            "1jbc580",
-            "gezzlk"
-          ],
-          "outEdges": [
-            "59d51x",
-            "d5xsf0",
-            "3dth0",
-            "rvmyip",
-            "165cps2",
-            "vjea8o"
-          ],
-          "title": "Open Lakehouse",
-          "modelRef": "lakehouse",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open table formats on object storage. Assembled from OSS foundations plus the connective tissue they don't ship."
-          },
-          "tags": [],
-          "links": [
-            {
-              "url": "https://github.com/open-lakehouse"
-            }
-          ],
-          "kind": "capability",
-          "navigateTo": "capabilityMap"
-        },
-        {
-          "id": "datafusion",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "59d51x"
-          ],
-          "outEdges": [],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The shared query/compute core the query engine is built on. Policy and lineage plug in via its extension points."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://datafusion.apache.org"
-            }
-          ],
-          "technology": "Rust query engine",
-          "kind": "foundation"
-        },
-        {
-          "id": "cedar",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "d5xsf0"
-          ],
-          "outEdges": [],
-          "title": "AWS Cedar",
-          "modelRef": "cedar",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The policy language and decision engine behind the governance PDP."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.cedarpolicy.com"
-            }
-          ],
-          "technology": "Cedar",
-          "kind": "foundation"
-        },
-        {
-          "id": "openlineage",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "3dth0"
-          ],
-          "outEdges": [],
-          "title": "OpenLineage",
-          "modelRef": "openlineage",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The lineage event standard the lineage capability emits and ingests. Marquez is the reference server it's inspired by."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://openlineage.io"
-            }
-          ],
-          "technology": "OpenLineage / Marquez",
-          "kind": "foundation"
-        },
-        {
-          "id": "unitycatalog",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "rvmyip"
-          ],
-          "outEdges": [],
-          "title": "Unity Catalog OSS",
-          "modelRef": "unitycatalog",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The governance API surface the catalog builds and integrates with — and explores ahead of — rather than competing with the official Java implementation."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "technology": "Unity Catalog",
-          "kind": "foundation"
-        },
-        {
-          "id": "lakekeeper",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "165cps2"
-          ],
-          "outEdges": [],
-          "title": "Lakekeeper",
-          "modelRef": "lakekeeper",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "An Iceberg-REST catalog. The catalog's Delta API can feed it (feasibility-stage interop) so Iceberg-REST consumers see the same tables."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://github.com/lakekeeper/lakekeeper"
-            }
-          ],
-          "technology": "Iceberg-REST catalog",
-          "kind": "foundation"
-        },
-        {
-          "id": "sparkTrino",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "vjea8o"
-          ],
-          "outEdges": [
-            "gezzlk"
-          ],
-          "title": "Spark / Trino / notebook",
-          "modelRef": "sparkTrino",
-          "shape": "rectangle",
-          "color": "slate",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "An external query engine that can receive a vended scoped storage credential and read raw files. Enforces only coarse access — FGAC (row filters / column masks) is bypassed when it reads directly."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/deployments.md"
-          },
-          "notation": "External engine (untrusted)",
-          "kind": "externalEngine"
-        }
-      ],
-      "notation": {
-        "nodes": [
-          {
-            "title": "OSS foundation / format",
-            "shape": "cylinder",
-            "color": "muted",
-            "kinds": [
-              "foundation"
-            ]
-          },
-          {
-            "title": "External engine (untrusted)",
-            "shape": "rectangle",
-            "color": "slate",
-            "kinds": [
-              "externalEngine"
-            ]
-          }
-        ]
-      },
-      "hash": "Dnjcu_S7jT4AQBgx01TvSd_Gxutyb4NAkT4ag8ZEA4Y"
-    },
-    "capabilityMap": {
-      "_type": "element",
-      "tags": null,
-      "links": null,
-      "viewOf": "lakehouse",
-      "_stage": "computed",
-      "sourcePath": "views.likec4",
-      "description": {
-        "txt": "The capability chain: query engine -> catalog -> table format -> object storage, with governance and lineage attaching at planning time. Delta & Iceberg are peer formats realizing the table-format capability."
-      },
-      "title": "Reference Open Lakehouse — capabilities",
-      "id": "capabilityMap",
       "autoLayout": {
         "direction": "LR"
       },
@@ -4400,7 +2983,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "g076c7"
+            "1eyhfjs"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4412,14 +2995,126 @@
           "parent": null,
           "source": "agent",
           "target": "lakehouse.lineage",
-          "label": "investigates lineage (agent CLIs)",
+          "label": "investigates",
           "relations": [
-            "w3smh4"
+            "1aqcxn4"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "y1w3b4",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.governance",
+          "label": "policy decided + enforced in-plan (planning-time)",
+          "relations": [
+            "13u6y6f"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "enforces"
+        },
+        {
+          "id": "1ko3ux0",
+          "parent": "lakehouse",
+          "source": "lakehouse.catalog",
+          "target": "lakehouse.tableFormat",
+          "label": "resolves a table to its format + location",
+          "relations": [
+            "1tl0x5y"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "qmrjf9",
+          "parent": "lakehouse",
+          "source": "lakehouse.catalog",
+          "target": "lakehouse.objectStorage",
+          "label": "vends short-lived scoped credentials for",
+          "relations": [
+            "29leb5"
+          ],
+          "color": "amber",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "vends"
+        },
+        {
+          "id": "1tnkhx9",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.catalog",
+          "label": "resolves tables through",
+          "relations": [
+            "lwdcta"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "resolves"
+        },
+        {
+          "id": "rdpg8j",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.tableFormat",
+          "label": "reads tables via the format",
+          "relations": [
+            "xd9n6a"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "tnia77",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.lineage",
+          "label": "emits column-level lineage (planning-time)",
+          "relations": [
+            "1j0fe4l"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "6usziz",
+          "parent": "lakehouse",
+          "source": "lakehouse.tableFormat",
+          "target": "lakehouse.objectStorage",
+          "label": "manifests as files in",
+          "relations": [
+            "tho3ej"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "ipwqn",
+          "parent": null,
+          "source": "datafusion",
+          "target": "lakehouse.queryEngine",
+          "label": "built on",
+          "relations": [
+            "8w4yz4"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "1y4ym12",
@@ -4450,21 +3145,645 @@
           "kind": "realizes"
         },
         {
-          "id": "5mdfx6",
+          "id": "r41cnr",
           "parent": null,
-          "source": "sparkTrino",
-          "target": "lakehouse.objectStorage",
-          "label": "reads raw files (FGAC bypassed)",
+          "source": "lakehouse.lineage",
+          "target": "openlineage",
+          "label": "speaks",
           "relations": [
-            "11qrd7r"
+            "14sh7z3"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "15f5rvg",
+          "parent": null,
+          "source": "lakehouse.catalog",
+          "target": "unitycatalog",
+          "label": "builds on / integrates with",
+          "relations": [
+            "1vmfc2e"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "12g2j4b",
+          "parent": null,
+          "source": "platformEngineer",
+          "target": "lakehouse",
+          "label": "builds + operates",
+          "relations": [
+            "pjwb1"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "reads",
-          "tags": [
-            "designed"
-          ]
+          "kind": "flows"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "practitioner",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "7v3snl"
+          ],
+          "title": "Data practitioner",
+          "modelRef": "practitioner",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
+          },
+          "tags": [],
+          "kind": "person"
+        },
+        {
+          "id": "agent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1o5tqxj"
+          ],
+          "title": "AI agent",
+          "modelRef": "agent",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
+          },
+          "tags": [],
+          "kind": "person"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "ipwqn"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The shared query / compute core the query engine is built on."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "technology": "Rust query engine",
+          "kind": "foundation"
+        },
+        {
+          "id": "delta",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1y4ym12"
+          ],
+          "title": "Delta Lake",
+          "modelRef": "delta",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "An open table format. Realizes the tableFormat capability."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://delta.io"
+            }
+          ],
+          "technology": "Delta Lake",
+          "kind": "foundation"
+        },
+        {
+          "id": "iceberg",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1fsmgn7"
+          ],
+          "title": "Apache Iceberg",
+          "modelRef": "iceberg",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org"
+            }
+          ],
+          "technology": "Apache Iceberg",
+          "kind": "foundation"
+        },
+        {
+          "id": "platformEngineer",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "12g2j4b"
+          ],
+          "title": "Platform engineer",
+          "modelRef": "platformEngineer",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Builds and operates the lakehouse: the services, their health, and smooth operation of the platform."
+          },
+          "tags": [],
+          "kind": "person"
+        },
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "lakehouse.queryEngine",
+            "lakehouse.governance",
+            "lakehouse.catalog",
+            "lakehouse.lineage",
+            "lakehouse.tableFormat",
+            "lakehouse.objectStorage"
+          ],
+          "inEdges": [
+            "12g2j4b",
+            "7v3snl",
+            "1o5tqxj",
+            "ipwqn",
+            "1y4ym12",
+            "1fsmgn7"
+          ],
+          "outEdges": [
+            "r41cnr",
+            "15f5rvg"
+          ],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "depth": 1,
+          "navigateTo": "capabilityMap"
+        },
+        {
+          "id": "lakehouse.queryEngine",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "7v3snl",
+            "ipwqn"
+          ],
+          "outEdges": [
+            "y1w3b4",
+            "1tnkhx9",
+            "rdpg8j",
+            "tnia77"
+          ],
+          "title": "Query engine",
+          "modelRef": "lakehouse.queryEngine",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.governance",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "y1w3b4"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability",
+          "navigateTo": "governanceModel"
+        },
+        {
+          "id": "lakehouse.catalog",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1tnkhx9"
+          ],
+          "outEdges": [
+            "1ko3ux0",
+            "qmrjf9",
+            "15f5rvg"
+          ],
+          "title": "Catalog",
+          "modelRef": "lakehouse.catalog",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/catalog-plane.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.lineage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1o5tqxj",
+            "tnia77"
+          ],
+          "outEdges": [
+            "r41cnr"
+          ],
+          "title": "Lineage",
+          "modelRef": "lakehouse.lineage",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/lineage-plane.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.tableFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1ko3ux0",
+            "rdpg8j",
+            "1y4ym12",
+            "1fsmgn7"
+          ],
+          "outEdges": [
+            "6usziz"
+          ],
+          "title": "Open table format",
+          "modelRef": "lakehouse.tableFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A metadata layer that gives object-storage files ACID table semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "cedar",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Cedar",
+          "modelRef": "cedar",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The policy language and decision engine behind the governance PDP."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://www.cedarpolicy.com"
+            }
+          ],
+          "technology": "Cedar",
+          "kind": "foundation"
+        },
+        {
+          "id": "unitycatalog",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "15f5rvg"
+          ],
+          "outEdges": [],
+          "title": "Unity Catalog OSS",
+          "modelRef": "unitycatalog",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The governance API surface the catalog builds on and integrates with."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "technology": "Unity Catalog",
+          "kind": "foundation"
+        },
+        {
+          "id": "openlineage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "r41cnr"
+          ],
+          "outEdges": [],
+          "title": "OpenLineage",
+          "modelRef": "openlineage",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The lineage event standard the lineage capability emits and ingests."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://openlineage.io"
+            }
+          ],
+          "technology": "OpenLineage",
+          "kind": "foundation"
+        },
+        {
+          "id": "lakehouse.objectStorage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "qmrjf9",
+            "6usziz"
+          ],
+          "outEdges": [],
+          "title": "Object storage",
+          "modelRef": "lakehouse.objectStorage",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakekeeper",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Lakekeeper",
+          "modelRef": "lakekeeper",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "An Iceberg-REST catalog. The catalog can interoperate with it so Iceberg-REST consumers see the same tables."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://github.com/lakekeeper/lakekeeper"
+            }
+          ],
+          "technology": "Iceberg-REST catalog",
+          "kind": "foundation"
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "OSS foundation / format",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "foundation"
+            ]
+          }
+        ]
+      },
+      "hash": "6BPw9NvvUsuGBaag7L4DWt_DcaWUkene9HSlqxal-6g"
+    },
+    "capabilityMap": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "viewOf": "lakehouse",
+      "_stage": "computed",
+      "sourcePath": "views.likec4",
+      "description": {
+        "txt": "The capability chain: query engine -> catalog -> table format -> object storage, with governance and lineage attaching at planning time. Delta & Iceberg are peer formats realizing the table-format capability."
+      },
+      "title": "Reference Open Lakehouse — capabilities",
+      "id": "capabilityMap",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "7v3snl",
+          "parent": null,
+          "source": "practitioner",
+          "target": "lakehouse.queryEngine",
+          "label": "queries + governs data",
+          "relations": [
+            "1eyhfjs"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "1o5tqxj",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse.lineage",
+          "label": "investigates",
+          "relations": [
+            "1aqcxn4"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "ipwqn",
+          "parent": null,
+          "source": "datafusion",
+          "target": "lakehouse.queryEngine",
+          "label": "built on",
+          "relations": [
+            "8w4yz4"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1y4ym12",
+          "parent": null,
+          "source": "delta",
+          "target": "lakehouse.tableFormat",
+          "label": "is an open table format",
+          "relations": [
+            "1wh06oa"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1fsmgn7",
+          "parent": null,
+          "source": "iceberg",
+          "target": "lakehouse.tableFormat",
+          "label": "is an open table format",
+          "relations": [
+            "zvuefi"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "y1w3b4",
@@ -4569,54 +3888,9 @@
           "parent": null,
           "source": "lakehouse.catalog",
           "target": "unitycatalog",
-          "label": "builds / integrates with",
+          "label": "builds on / integrates with",
           "relations": [
             "1vmfc2e"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "19jqylb",
-          "parent": null,
-          "source": "lakehouse.catalog",
-          "target": "lakekeeper",
-          "label": "Iceberg-REST interop (Delta API)",
-          "relations": [
-            "qgitro"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows",
-          "tags": [
-            "designed"
-          ]
-        },
-        {
-          "id": "7kzlvp",
-          "parent": null,
-          "source": "lakehouse.catalog",
-          "target": "sparkTrino",
-          "label": "vends scoped credential to",
-          "relations": [
-            "1i86nq3"
-          ],
-          "color": "amber",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "vends"
-        },
-        {
-          "id": "nfbyov",
-          "parent": null,
-          "source": "lakehouse.queryEngine",
-          "target": "datafusion",
-          "label": "built on",
-          "relations": [
-            "w0cmls"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4630,7 +3904,7 @@
           "target": "openlineage",
           "label": "speaks",
           "relations": [
-            "1b89ee6"
+            "14sh7z3"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4680,10 +3954,40 @@
             "size": "md"
           },
           "description": {
-            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces. The 'and AI' half of open-lakehouse-and-ai."
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
           },
           "tags": [],
           "kind": "person"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "ipwqn"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The shared query / compute core the query engine is built on."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "technology": "Rust query engine",
+          "kind": "foundation"
         },
         {
           "id": "delta",
@@ -4703,7 +4007,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "An open table format (via delta-rs / delta-kernel-rs). Realizes the tableFormat capability."
+            "txt": "An open table format. Realizes the tableFormat capability."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -4733,7 +4037,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "An open table format. Realizes the tableFormat capability; reached in the estate via Iceberg-REST catalogs (e.g. Lakekeeper)."
+            "txt": "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -4744,35 +4048,6 @@
           ],
           "technology": "Apache Iceberg",
           "kind": "foundation"
-        },
-        {
-          "id": "sparkTrino",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "7kzlvp"
-          ],
-          "outEdges": [
-            "5mdfx6"
-          ],
-          "title": "Spark / Trino / notebook",
-          "modelRef": "sparkTrino",
-          "shape": "rectangle",
-          "color": "slate",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "An external query engine that can receive a vended scoped storage credential and read raw files. Enforces only coarse access — FGAC (row filters / column masks) is bypassed when it reads directly."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/deployments.md"
-          },
-          "notation": "External engine (untrusted)",
-          "kind": "externalEngine"
         },
         {
           "id": "lakehouse",
@@ -4789,15 +4064,12 @@
           "inEdges": [
             "7v3snl",
             "1o5tqxj",
+            "ipwqn",
             "1y4ym12",
-            "1fsmgn7",
-            "5mdfx6"
+            "1fsmgn7"
           ],
           "outEdges": [
             "15f5rvg",
-            "19jqylb",
-            "7kzlvp",
-            "nfbyov",
             "r41cnr"
           ],
           "title": "Open Lakehouse",
@@ -4809,12 +4081,12 @@
             "size": "md"
           },
           "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open table formats on object storage. Assembled from OSS foundations plus the connective tissue they don't ship."
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
           },
           "tags": [],
           "links": [
             {
-              "url": "https://github.com/open-lakehouse"
+              "url": "https://openlakehouse.io"
             }
           ],
           "kind": "capability",
@@ -4826,14 +4098,14 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "7v3snl"
+            "7v3snl",
+            "ipwqn"
           ],
           "outEdges": [
             "y1w3b4",
             "1tnkhx9",
             "rdpg8j",
-            "tnia77",
-            "nfbyov"
+            "tnia77"
           ],
           "title": "Query engine",
           "modelRef": "lakehouse.queryEngine",
@@ -4844,7 +4116,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Resolves tables through the catalog and executes over open table formats. Catalog-native: credentials, policy, and lineage attach at resolution/planning time."
+            "txt": "Parses, plans, and executes queries over open table formats."
           },
           "tags": [],
           "metadata": {
@@ -4870,7 +4142,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Decides 'can this principal do this here?' and, when allowed, governs what they see (row filters, column masks). A cross-cutting zero-trust decomposition (PAP / PDP / PEP / PIP) whose points are realized by different services per deployment."
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
           },
           "tags": [],
           "metadata": {
@@ -4890,9 +4162,7 @@
           "outEdges": [
             "1ko3ux0",
             "qmrjf9",
-            "15f5rvg",
-            "19jqylb",
-            "7kzlvp"
+            "15f5rvg"
           ],
           "title": "Catalog",
           "modelRef": "lakehouse.catalog",
@@ -4903,7 +4173,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
           },
           "tags": [],
           "metadata": {
@@ -4932,71 +4202,13 @@
             "size": "md"
           },
           "description": {
-            "txt": "Captures dataset- and column-level provenance (OpenLineage) at query planning time — 'where did this data come from, and where does it flow'."
+            "txt": "Records where data came from and where it flows, down to the column."
           },
           "tags": [],
           "metadata": {
             "canonicalDoc": "design/lineage-plane.md"
           },
           "kind": "capability"
-        },
-        {
-          "id": "cedar",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "AWS Cedar",
-          "modelRef": "cedar",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The policy language and decision engine behind the governance PDP."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.cedarpolicy.com"
-            }
-          ],
-          "technology": "Cedar",
-          "kind": "foundation"
-        },
-        {
-          "id": "datafusion",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "nfbyov"
-          ],
-          "outEdges": [],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The shared query/compute core the query engine is built on. Policy and lineage plug in via its extension points."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://datafusion.apache.org"
-            }
-          ],
-          "technology": "Rust query engine",
-          "kind": "foundation"
         },
         {
           "id": "lakehouse.tableFormat",
@@ -5021,13 +4233,41 @@
             "size": "md"
           },
           "description": {
-            "txt": "Gives raw object-storage bytes table semantics — ACID transactions, schema, and snapshots. The technology-agnostic 'open table format' layer; Delta and Iceberg are peer concrete formats that realize it."
+            "txt": "A metadata layer that gives object-storage files ACID table semantics."
           },
           "tags": [],
           "metadata": {
             "canonicalDoc": "design/reference-architecture.md"
           },
           "kind": "capability"
+        },
+        {
+          "id": "cedar",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Cedar",
+          "modelRef": "cedar",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The policy language and decision engine behind the governance PDP."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://www.cedarpolicy.com"
+            }
+          ],
+          "technology": "Cedar",
+          "kind": "foundation"
         },
         {
           "id": "unitycatalog",
@@ -5047,7 +4287,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The governance API surface the catalog builds and integrates with — and explores ahead of — rather than competing with the official Java implementation."
+            "txt": "The governance API surface the catalog builds on and integrates with."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -5057,36 +4297,6 @@
             }
           ],
           "technology": "Unity Catalog",
-          "kind": "foundation"
-        },
-        {
-          "id": "lakekeeper",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "19jqylb"
-          ],
-          "outEdges": [],
-          "title": "Lakekeeper",
-          "modelRef": "lakekeeper",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "An Iceberg-REST catalog. The catalog's Delta API can feed it (feasibility-stage interop) so Iceberg-REST consumers see the same tables."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://github.com/lakekeeper/lakekeeper"
-            }
-          ],
-          "technology": "Iceberg-REST catalog",
           "kind": "foundation"
         },
         {
@@ -5107,7 +4317,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The lineage event standard the lineage capability emits and ingests. Marquez is the reference server it's inspired by."
+            "txt": "The lineage event standard the lineage capability emits and ingests."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -5116,7 +4326,7 @@
               "url": "https://openlineage.io"
             }
           ],
-          "technology": "OpenLineage / Marquez",
+          "technology": "OpenLineage",
           "kind": "foundation"
         },
         {
@@ -5125,7 +4335,6 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "5mdfx6",
             "qmrjf9",
             "6usziz"
           ],
@@ -5139,7 +4348,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "The byte container where table data files are written. Beneath the table format — the format is what makes these bytes a governed, transactional table."
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
           },
           "tags": [],
           "metadata": {
@@ -5157,18 +4366,10 @@
             "kinds": [
               "foundation"
             ]
-          },
-          {
-            "title": "External engine (untrusted)",
-            "shape": "rectangle",
-            "color": "slate",
-            "kinds": [
-              "externalEngine"
-            ]
           }
         ]
       },
-      "hash": "P9F8t71PrmyacYtWgMNt9KNqbB03v3pDvhpe0Gc25rY"
+      "hash": "bHr3kPJ5m7TR6_ccopJUgicvoHUHfq2hq2vY5p8tpsg"
     },
     "governanceModel": {
       "_type": "element",
@@ -5215,27 +4416,13 @@
           "kind": "administers"
         },
         {
-          "id": "k6zp57",
-          "parent": "lakehouse.governance",
-          "source": "lakehouse.governance.pdp",
-          "target": "lakehouse.governance.pep",
-          "label": "allow-deny + fine-grained constraints",
-          "relations": [
-            "1qi0gra"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "decides"
-        },
-        {
           "id": "1x0zxuz",
           "parent": "lakehouse.governance",
           "source": "lakehouse.governance.pep",
           "target": "lakehouse.governance.pdp",
-          "label": "requests a decision, applies the verdict",
+          "label": "consults the PDP, then applies its verdict",
           "relations": [
-            "196ffjt"
+            "1g1bbjq"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5263,7 +4450,7 @@
           "target": "lakehouse.governance.pdp",
           "label": "mints a credential only on a PDP verdict",
           "relations": [
-            "1rfmvsc"
+            "e8usp9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5277,7 +4464,7 @@
           "target": "cedar",
           "label": "decisions computed by",
           "relations": [
-            "138m0ji"
+            "q6gvod"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5304,7 +4491,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
           },
           "tags": [],
           "metadata": {
@@ -5319,9 +4506,9 @@
           "children": [
             "lakehouse.governance.pip",
             "lakehouse.governance.pap",
+            "lakehouse.governance.pep",
             "lakehouse.governance.pa",
-            "lakehouse.governance.pdp",
-            "lakehouse.governance.pep"
+            "lakehouse.governance.pdp"
           ],
           "inEdges": [
             "1r14os0"
@@ -5338,7 +4525,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Decides 'can this principal do this here?' and, when allowed, governs what they see (row filters, column masks). A cross-cutting zero-trust decomposition (PAP / PDP / PEP / PIP) whose points are realized by different services per deployment."
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
           },
           "tags": [],
           "metadata": {
@@ -5367,7 +4554,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network (in_trusted_environment) and session/lineage PIPs are designed."
+            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
           },
           "tags": [
             "pip"
@@ -5408,6 +4595,36 @@
           "kind": "role"
         },
         {
+          "id": "lakehouse.governance.pep",
+          "parent": "lakehouse.governance",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1x0zxuz"
+          ],
+          "title": "PEP — enforcement point",
+          "modelRef": "lakehouse.governance.pep",
+          "shape": "rectangle",
+          "color": "indigo",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters / masks and short-circuits on deny. Realized in-plan by the query engine. An agent-tool PEP is designed."
+          },
+          "tags": [
+            "pep",
+            "built"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "notation": "Governance role",
+          "kind": "role"
+        },
+        {
           "id": "lakehouse.governance.pa",
           "parent": "lakehouse.governance",
           "level": 1,
@@ -5425,7 +4642,7 @@
             "size": "md"
           },
           "description": {
-            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check. A guard making governed tables non-vendable to coarse-only consumers is designed."
+            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check."
           },
           "tags": [
             "built"
@@ -5448,7 +4665,6 @@
             "1p2e44f"
           ],
           "outEdges": [
-            "k6zp57",
             "bmwqd2"
           ],
           "title": "PDP — decision point",
@@ -5460,42 +4676,10 @@
             "size": "md"
           },
           "description": {
-            "txt": "Decides allow/deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central/hybrid topology is designed."
+            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
           },
           "tags": [
             "pdp",
-            "built"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.governance.pep",
-          "parent": "lakehouse.governance",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "k6zp57"
-          ],
-          "outEdges": [
-            "1x0zxuz"
-          ],
-          "title": "PEP — enforcement point",
-          "modelRef": "lakehouse.governance.pep",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters/masks and short-circuits on deny. Realized as the engine PEP (in-plan) and, at the network edge, the gateway PEP (ext_authz). An agent-tool PEP is designed."
-          },
-          "tags": [
-            "pep",
             "built"
           ],
           "metadata": {
@@ -5513,7 +4697,7 @@
             "bmwqd2"
           ],
           "outEdges": [],
-          "title": "AWS Cedar",
+          "title": "Cedar",
           "modelRef": "cedar",
           "shape": "cylinder",
           "color": "muted",
@@ -5555,70 +4739,38 @@
           }
         ]
       },
-      "hash": "SsJvjKnY3fNXLCCrnE9nPEhZoKPzWAq2LvHFy9NwCmI"
+      "hash": "gtq_Hb0FggJ1IZI6IscfFmCFbyfZOuzK6iTnMcKnzQU"
     }
   },
   "deployments": {
     "elements": {
-      "olaiNative": {
+      "trustedCompute": {
         "notation": "Deployment topology",
         "style": {},
         "kind": "environment",
         "tags": [
           "trusted"
         ],
-        "title": "olaiNative",
-        "id": "olaiNative"
+        "title": "trustedCompute",
+        "id": "trustedCompute"
       },
-      "externalEngine": {
+      "externalCompute": {
         "notation": "Deployment topology",
         "style": {},
         "kind": "environment",
         "tags": [
           "untrusted"
         ],
-        "title": "externalEngine",
-        "id": "externalEngine"
+        "title": "externalCompute",
+        "id": "externalCompute"
       },
-      "browserWasm": {
-        "notation": "Deployment topology",
-        "style": {},
-        "kind": "environment",
-        "tags": [
-          "untrusted",
-          "prototype"
-        ],
-        "title": "browserWasm",
-        "id": "browserWasm"
-      },
-      "olaiNative.envoy": {
-        "technology": "Envoy",
-        "notation": "API gateway (Envoy)",
-        "style": {
-          "shape": "rectangle",
-          "color": "green"
-        },
-        "kind": "gateway",
-        "description": {
-          "txt": "Single-port API gateway. Path-multiplexes the backends onto one cohesive surface (+ a catch-all to the app). With ENVOY_AUTH on, wires an ext_authz/Authelia forward-auth edge PEP (fail-closed; strips client-forged identity headers)."
-        },
-        "tags": [
-          "built"
-        ],
-        "metadata": {
-          "sourceRepo": "open-lakehouse/trestle (crates/stack-topology)",
-          "note": "Envoy config + compose generated by olai-stack-topology; auth is opt-in via ENVOY_AUTH."
-        },
-        "title": "Envoy gateway",
-        "id": "olaiNative.envoy"
-      },
-      "olaiNative.hydrofoil": {
+      "trustedCompute.hydrofoil": {
         "style": {
           "icon": "tech:rust"
         },
         "kind": "service",
         "description": {
-          "txt": "The catalog-native query engine (Flight SQL + ConnectRPC). Composes the catalog, policy, and lineage into one session and enforces full FGAC in-plan. Embeds the Cedar PDP and the engine PEP."
+          "txt": "The catalog-native query engine. Composes the catalog, policy, and lineage into one session and enforces full FGAC in-plan — it embeds the PDP (decide) and the PEP (enforce)."
         },
         "tags": [
           "built"
@@ -5629,19 +4781,18 @@
           }
         ],
         "metadata": {
-          "sourceRepo": "open-lakehouse/hydrofoil",
-          "note": "breakwater is embedded here as a library (decide/enforce). Depends on personal forks — never presented as shipped/stable."
+          "sourceRepo": "open-lakehouse/hydrofoil"
         },
         "title": "hydrofoil",
-        "id": "olaiNative.hydrofoil"
+        "id": "trustedCompute.hydrofoil"
       },
-      "olaiNative.mangrove": {
+      "trustedCompute.mangrove": {
         "style": {
           "icon": "tech:rust"
         },
         "kind": "service",
         "description": {
-          "txt": "The Unity Catalog server (unitycatalog-rs). Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check. Its Delta API can feed Lakekeeper for Iceberg-REST interop."
+          "txt": "The catalog server. Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
         },
         "tags": [
           "built"
@@ -5652,19 +4803,18 @@
           }
         ],
         "metadata": {
-          "sourceRepo": "open-lakehouse/mangrove",
-          "projectName": "unitycatalog-rs"
+          "sourceRepo": "open-lakehouse/mangrove"
         },
         "title": "mangrove",
-        "id": "olaiNative.mangrove"
+        "id": "trustedCompute.mangrove"
       },
-      "olaiNative.headwaters": {
+      "trustedCompute.headwaters": {
         "style": {
           "icon": "tech:rust"
         },
         "kind": "service",
         "description": {
-          "txt": "OpenLineage on DataFusion: captures column-level lineage at planning time and ingests events into a queryable store. A dynamic (taint) PIP."
+          "txt": "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capability is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
         },
         "tags": [
           "built"
@@ -5678,9 +4828,9 @@
           "sourceRepo": "open-lakehouse/headwaters"
         },
         "title": "headwaters",
-        "id": "olaiNative.headwaters"
+        "id": "trustedCompute.headwaters"
       },
-      "olaiNative.cedarOci": {
+      "trustedCompute.cedarOci": {
         "style": {
           "icon": "tech:rust"
         },
@@ -5692,30 +4842,27 @@
           "built"
         ],
         "metadata": {
-          "sourceRepo": "open-lakehouse/breakwater (olai-cedar-oci)"
+          "sourceRepo": "open-lakehouse/breakwater"
         },
         "title": "cedar-oci bundle",
-        "id": "olaiNative.cedarOci"
+        "id": "trustedCompute.cedarOci"
       },
-      "olaiNative.seaweedfs": {
+      "trustedCompute.objstore": {
         "style": {
           "shape": "storage",
           "color": "muted"
         },
         "kind": "datastore",
         "description": {
-          "txt": "S3-compatible object storage where table files are written (SeaweedFS locally; Azurite for the Azure provider)."
+          "txt": "S3-compatible object storage where table files are written."
         },
         "tags": [
           "built"
         ],
-        "metadata": {
-          "sourceRepo": "open-lakehouse/trestle (local-stack)"
-        },
-        "title": "SeaweedFS / Azurite",
-        "id": "olaiNative.seaweedfs"
+        "title": "Object storage",
+        "id": "trustedCompute.objstore"
       },
-      "olaiNative.postgres": {
+      "trustedCompute.postgres": {
         "style": {
           "shape": "storage",
           "color": "muted"
@@ -5728,15 +4875,15 @@
           "built"
         ],
         "title": "Postgres",
-        "id": "olaiNative.postgres"
+        "id": "trustedCompute.postgres"
       },
-      "externalEngine.extMangrove": {
+      "externalCompute.extCatalog": {
         "style": {
           "icon": "tech:rust"
         },
         "kind": "service",
         "description": {
-          "txt": "The catalog vends a short-lived scoped credential to an external engine after a coarse authorize check."
+          "txt": "The catalog vends a short-lived scoped credential to an engine outside the trusted boundary after a coarse authorize check."
         },
         "tags": [
           "built"
@@ -5750,23 +4897,23 @@
           "sourceRepo": "open-lakehouse/mangrove"
         },
         "title": "mangrove",
-        "id": "externalEngine.extMangrove"
+        "id": "externalCompute.extCatalog"
       },
-      "externalEngine.extEngine": {
+      "externalCompute.extEngine": {
         "style": {
           "icon": "tech:rust"
         },
         "kind": "service",
         "description": {
-          "txt": "An external, untrusted engine. Receives a vended credential and reads raw files directly — it enforces only coarse access; row filters and column masks are NOT applied."
+          "txt": "A query engine deployed outside the trusted boundary (e.g. Spark, Trino, a raw-storage notebook). Receives a vended credential and reads raw files directly. It does not enforce FGAC — row filters and column masks are NOT applied."
         },
         "tags": [
           "built"
         ],
-        "title": "Spark / Trino / notebook",
-        "id": "externalEngine.extEngine"
+        "title": "Query engine (external)",
+        "id": "externalCompute.extEngine"
       },
-      "externalEngine.extStore": {
+      "externalCompute.extStore": {
         "style": {
           "shape": "storage",
           "color": "muted"
@@ -5776,275 +4923,116 @@
           "built"
         ],
         "title": "Object storage",
-        "id": "externalEngine.extStore"
+        "id": "externalCompute.extStore"
       },
-      "browserWasm.axon": {
-        "notation": "Browser / WASM runtime",
-        "style": {
-          "shape": "browser",
-          "color": "sky"
-        },
-        "kind": "browser",
-        "description": {
-          "txt": "A client-side WASM query engine in the browser. Reads through provider contracts; aligns to a signed-URL / byte-proxy posture — no raw cloud secrets are shipped to the browser."
-        },
-        "tags": [
-          "prototype"
-        ],
-        "links": [
-          {
-            "url": "https://github.com/open-lakehouse/axon"
-          }
-        ],
-        "metadata": {
-          "sourceRepo": "open-lakehouse/axon"
-        },
-        "title": "axon (WASM workbench)",
-        "id": "browserWasm.axon"
-      },
-      "browserWasm.proxyMangrove": {
-        "style": {
-          "icon": "tech:rust"
-        },
-        "kind": "service",
-        "description": {
-          "txt": "The catalog issues signed URLs / proxies bytes to the browser instead of vending raw credentials."
-        },
-        "tags": [
-          "prototype"
-        ],
-        "metadata": {
-          "sourceRepo": "open-lakehouse/mangrove"
-        },
-        "title": "mangrove (proxy)",
-        "id": "browserWasm.proxyMangrove"
-      },
-      "browserWasm.proxyStore": {
-        "style": {
-          "shape": "storage",
-          "color": "muted"
-        },
-        "kind": "datastore",
-        "title": "Object storage",
-        "id": "browserWasm.proxyStore"
-      },
-      "olaiNative.envoy.pep": {
-        "id": "olaiNative.envoy.pep",
-        "element": "lakehouse.governance.pep",
-        "style": {}
-      },
-      "olaiNative.hydrofoil.queryEngine": {
-        "id": "olaiNative.hydrofoil.queryEngine",
+      "trustedCompute.hydrofoil.queryEngine": {
+        "id": "trustedCompute.hydrofoil.queryEngine",
         "element": "lakehouse.queryEngine",
         "style": {}
       },
-      "olaiNative.hydrofoil.pdp": {
-        "id": "olaiNative.hydrofoil.pdp",
+      "trustedCompute.hydrofoil.pdp": {
+        "id": "trustedCompute.hydrofoil.pdp",
         "element": "lakehouse.governance.pdp",
         "style": {}
       },
-      "olaiNative.hydrofoil.pep": {
-        "id": "olaiNative.hydrofoil.pep",
+      "trustedCompute.hydrofoil.pep": {
+        "id": "trustedCompute.hydrofoil.pep",
         "element": "lakehouse.governance.pep",
         "style": {}
       },
-      "olaiNative.mangrove.catalog": {
-        "id": "olaiNative.mangrove.catalog",
+      "trustedCompute.mangrove.catalog": {
+        "id": "trustedCompute.mangrove.catalog",
         "element": "lakehouse.catalog",
         "style": {}
       },
-      "olaiNative.mangrove.pip": {
-        "id": "olaiNative.mangrove.pip",
+      "trustedCompute.mangrove.pip": {
+        "id": "trustedCompute.mangrove.pip",
         "element": "lakehouse.governance.pip",
         "style": {}
       },
-      "olaiNative.mangrove.pa": {
-        "id": "olaiNative.mangrove.pa",
+      "trustedCompute.mangrove.pa": {
+        "id": "trustedCompute.mangrove.pa",
         "element": "lakehouse.governance.pa",
         "style": {}
       },
-      "olaiNative.headwaters.lineage": {
-        "id": "olaiNative.headwaters.lineage",
+      "trustedCompute.headwaters.lineage": {
+        "id": "trustedCompute.headwaters.lineage",
         "element": "lakehouse.lineage",
         "style": {}
       },
-      "olaiNative.headwaters.pip": {
-        "id": "olaiNative.headwaters.pip",
+      "trustedCompute.headwaters.pip": {
+        "id": "trustedCompute.headwaters.pip",
         "element": "lakehouse.governance.pip",
         "style": {}
       },
-      "olaiNative.cedarOci.pap": {
-        "id": "olaiNative.cedarOci.pap",
+      "trustedCompute.cedarOci.pap": {
+        "id": "trustedCompute.cedarOci.pap",
         "element": "lakehouse.governance.pap",
         "style": {}
       },
-      "olaiNative.seaweedfs.objectStorage": {
-        "id": "olaiNative.seaweedfs.objectStorage",
+      "trustedCompute.objstore.objectStorage": {
+        "id": "trustedCompute.objstore.objectStorage",
         "element": "lakehouse.objectStorage",
         "style": {}
       },
-      "externalEngine.extMangrove.catalog": {
-        "id": "externalEngine.extMangrove.catalog",
+      "externalCompute.extCatalog.catalog": {
+        "id": "externalCompute.extCatalog.catalog",
         "element": "lakehouse.catalog",
         "style": {}
       },
-      "externalEngine.extMangrove.pa": {
-        "id": "externalEngine.extMangrove.pa",
+      "externalCompute.extCatalog.pa": {
+        "id": "externalCompute.extCatalog.pa",
         "element": "lakehouse.governance.pa",
         "style": {}
       },
-      "externalEngine.extEngine.sparkTrino": {
-        "id": "externalEngine.extEngine.sparkTrino",
-        "element": "sparkTrino",
-        "style": {}
-      },
-      "externalEngine.extEngine.pep": {
-        "id": "externalEngine.extEngine.pep",
-        "element": "lakehouse.governance.pep",
-        "style": {}
-      },
-      "externalEngine.extStore.objectStorage": {
-        "id": "externalEngine.extStore.objectStorage",
-        "element": "lakehouse.objectStorage",
-        "style": {}
-      },
-      "browserWasm.axon.queryEngine": {
-        "id": "browserWasm.axon.queryEngine",
+      "externalCompute.extEngine.queryEngine": {
+        "id": "externalCompute.extEngine.queryEngine",
         "element": "lakehouse.queryEngine",
         "style": {}
       },
-      "browserWasm.proxyMangrove.catalog": {
-        "id": "browserWasm.proxyMangrove.catalog",
-        "element": "lakehouse.catalog",
-        "style": {}
-      },
-      "browserWasm.proxyStore.objectStorage": {
-        "id": "browserWasm.proxyStore.objectStorage",
+      "externalCompute.extStore.objectStorage": {
+        "id": "externalCompute.extStore.objectStorage",
         "element": "lakehouse.objectStorage",
         "style": {}
       }
     },
     "relations": {
-      "1nl47qh": {
-        "color": "green",
-        "title": "Flight SQL / ConnectRPC",
-        "source": {
-          "deployment": "olaiNative.envoy"
-        },
-        "target": {
-          "deployment": "olaiNative.hydrofoil"
-        },
-        "kind": "routes",
-        "id": "1nl47qh"
-      },
-      "14oxm95": {
-        "color": "green",
-        "title": "UC REST (/api/2.1/unity-catalog)",
-        "source": {
-          "deployment": "olaiNative.envoy"
-        },
-        "target": {
-          "deployment": "olaiNative.mangrove"
-        },
-        "kind": "routes",
-        "id": "14oxm95"
-      },
-      "2wnc31": {
-        "color": "green",
-        "title": "lineage read API",
-        "source": {
-          "deployment": "olaiNative.envoy"
-        },
-        "target": {
-          "deployment": "olaiNative.headwaters"
-        },
-        "kind": "routes",
-        "id": "2wnc31"
-      },
-      "g9h2qy": {
-        "color": "green",
-        "title": "object-store listener",
-        "source": {
-          "deployment": "olaiNative.envoy"
-        },
-        "target": {
-          "deployment": "olaiNative.seaweedfs"
-        },
-        "kind": "routes",
-        "id": "g9h2qy"
-      },
-      "1020aee": {
+      "1tjn58e": {
         "color": "amber",
         "title": "vends scoped credential (coarse gate only)",
         "source": {
-          "deployment": "externalEngine.extMangrove"
+          "deployment": "externalCompute.extCatalog"
         },
         "target": {
-          "deployment": "externalEngine.extEngine"
+          "deployment": "externalCompute.extEngine"
         },
         "kind": "vends",
-        "id": "1020aee"
+        "id": "1tjn58e"
       },
-      "q4zrp": {
+      "1ih0uhh": {
         "title": "reads raw files — FGAC BYPASSED",
         "source": {
-          "deployment": "externalEngine.extEngine"
+          "deployment": "externalCompute.extEngine"
         },
         "target": {
-          "deployment": "externalEngine.extStore"
+          "deployment": "externalCompute.extStore"
         },
         "kind": "reads",
-        "id": "q4zrp"
+        "id": "1ih0uhh"
       },
-      "mxku1s": {
+      "1wlqv08": {
         "title": "non-vendable-governed-table guard",
         "tags": [
           "designed"
         ],
         "source": {
-          "deployment": "externalEngine.extMangrove"
+          "deployment": "externalCompute.extCatalog"
         },
         "target": {
-          "deployment": "externalEngine.extEngine"
+          "deployment": "externalCompute.extEngine"
         },
         "kind": "flows",
-        "id": "mxku1s"
-      },
-      "6hanbz": {
-        "title": "requests signed URL (same-origin session)",
-        "source": {
-          "deployment": "browserWasm.axon"
-        },
-        "target": {
-          "deployment": "browserWasm.proxyMangrove"
-        },
-        "kind": "flows",
-        "id": "6hanbz"
-      },
-      "1r2ptf": {
-        "title": "signed URL / byte proxy",
-        "source": {
-          "deployment": "browserWasm.proxyMangrove"
-        },
-        "target": {
-          "deployment": "browserWasm.proxyStore"
-        },
-        "kind": "reads",
-        "id": "1r2ptf"
-      },
-      "1mi7aa5": {
-        "title": "reads via signed URL (no raw secrets)",
-        "tags": [
-          "prototype"
-        ],
-        "source": {
-          "deployment": "browserWasm.axon"
-        },
-        "target": {
-          "deployment": "browserWasm.proxyStore"
-        },
-        "kind": "reads",
-        "id": "1mi7aa5"
+        "id": "1wlqv08"
       }
     }
   },

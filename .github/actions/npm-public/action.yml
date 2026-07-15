@@ -1,0 +1,39 @@
+name: Rewrite bun.lock to public npm
+description: >
+  The committed bun.lock files are generated behind the internal Databricks
+  npm-proxy (the only registry reachable from the corporate network), so every
+  resolved tarball URL points at npm-proxy.cloud.databricks.com. bun installs
+  directly from those locked URLs (a registry override does NOT redirect them),
+  and that host is unreachable from GitHub-hosted runners — so `bun install`
+  hangs. Before `bun install` we rewrite the pinned URLs back to their public
+  upstream. The host-only rewrite leaves integrity hashes unchanged, so the
+  lock stays verified. Mirrors .github/actions/pypi-public for uv.lock.
+
+runs:
+  using: composite
+  steps:
+    - name: Point bun.lock at public npm
+      shell: bash
+      run: |
+        locks=(site/bun.lock architecture/bun.lock emit/bun.lock)
+        rewrote=0
+        for lock in "${locks[@]}"; do
+          [ -f "$lock" ] || continue
+          if ! grep -q 'npm-proxy\.cloud\.databricks\.com' "$lock"; then
+            echo "$lock has no internal proxy URLs; nothing to rewrite."
+            continue
+          fi
+          sed -i \
+            -e 's#https://npm-proxy\.cloud\.databricks\.com/#https://registry.npmjs.org/#g' \
+            "$lock"
+          if grep -q 'npm-proxy\.cloud\.databricks\.com' "$lock"; then
+            echo "::error::Unexpected internal proxy URLs remain in $lock after rewrite:"
+            grep -o 'https://npm-proxy\.cloud\.databricks\.com/[^\"]*' "$lock" | sort -u
+            exit 1
+          fi
+          echo "Rewrote $lock to registry.npmjs.org."
+          rewrote=1
+        done
+        if [ "$rewrote" -eq 0 ]; then
+          echo "No lockfiles needed rewriting."
+        fi

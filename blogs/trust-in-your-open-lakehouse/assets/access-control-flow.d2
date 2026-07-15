@@ -1,0 +1,37 @@
+direction: right
+
+# Actors
+client: Client {
+  shape: person
+}
+
+# Trusted system boundary
+trusted: Trusted System {
+  style.stroke-dash: 4
+  style.fill: "#f0f4ff"
+
+  pep: PEP {
+    label: "PEP\nPolicy Enforcement Point"
+    style.fill: "#dbeafe"
+  }
+
+  pdp: PDP {
+    label: "PDP\nPolicy Decision Point"
+    style.fill: "#ede9fe"
+  }
+
+  pip: PIP {
+    label: "PIP\nPolicy Information Point"
+    style.fill: "#dcfce7"
+  }
+
+  resource: Protected Resource {
+    shape: cylinder
+  }
+}
+
+# Access request flow
+client -> trusted.pep
+trusted.pep <-> trusted.pdp
+trusted.pdp <-> trusted.pip
+trusted.pep <-> trusted.resource

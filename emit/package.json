@@ -1,0 +1,24 @@
+{
+  "name": "writing-emit",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Deterministic emitter core for the writing repo's blog drafts. Resolves a canonical, portable draft.md (inlining file= snippets, regenerating LikeC4 PNGs) and FLATTENS its rich constructs (::::journey, :::callouts, likec4= images) into target-flavored Markdown, so a self-contained dist/<slug>.md can be delivered to a downstream target (Google Docs today). Reuses the two target-agnostic remark plugins from ../preview/src/plugins/ verbatim — one implementation of the snippet extraction and the prose guard. NEVER edits draft.md.",
+  "bin": {
+    "emit": "./emit.mjs"
+  },
+  "scripts": {
+    "emit": "node emit.mjs"
+  },
+  "dependencies": {
+    "mdast-util-directive": "3.1.0",
+    "mdast-util-to-markdown": "2.1.2",
+    "remark-directive": "4.0.0",
+    "remark-frontmatter": "5.0.0",
+    "remark-gfm": "4.0.1",
+    "remark-parse": "11.0.0",
+    "remark-stringify": "11.0.0",
+    "unified": "11.0.5",
+    "yaml": "2.9.0"
+  }
+}

@@ -25,8 +25,8 @@ With no args, do a full reconciliation pass across all modeled repos.
 
 1. **Structural facts only.** This model owns *what the systems/repos are and how
    they relate*. Narrative (positioning, naming canon, framing) belongs to
-   `writing/estate/` — never fold narrative in here.
-2. **One-way from writing.** You MAY read `writing/estate/estate.yml` and
+   `architecture/estate.yml` — never fold narrative in here.
+2. **One-way from estate facts.** You MAY read `architecture/estate.yml` and
    `storyline.md` for framing, but writing never feeds facts back and this model is
    the source of truth, not `estate.yml`.
 3. **Ref-free.** Names, roles, dependency edges only — never a commit SHA or
@@ -59,7 +59,7 @@ For the affected repo(s) (from `--repo`, `--summary`, or all in a full pass):
 
 - Read that sibling repo's `README`, `docs/`, and `docs/adr/` (paths are in
   `canonicals.yaml` `source_repo` + the element's `sourceRepo` metadata).
-- Cross-check against `writing/estate/estate.yml` for coarse facts — but prefer
+- Cross-check against `architecture/estate.yml` for coarse facts — but prefer
   the repo's own docs where they're more specific.
 - Determine the delta **and which layer it touches**: a new/changed *service or
   deployment* (concrete)? a new *capability or governance role* (abstract)? a new

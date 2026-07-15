@@ -1,0 +1,33 @@
+direction: right
+
+client: Client {
+  shape: person
+}
+
+# Architecture diagram
+arch: Architecture {
+  label: "Trusted System"
+
+  catalog: Catalog {
+    label: "Catalog\n(PIP + PDP)"
+    style.fill: "#ede9fe"
+    style.stroke: "#7c3aed"
+  }
+
+  filter: Filter Fleet {
+    label: Filtering Fleet
+  }
+
+  storage: Object Store {
+    label: "Object Store\n(PEP)"
+    shape: cylinder
+    style.fill: "#dbeafe"
+    style.stroke: "#2563eb"
+  }
+
+  catalog -> filter
+  filter -> storage
+}
+
+client <-> arch.catalog
+client -> arch.storage

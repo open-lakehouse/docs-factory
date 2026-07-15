@@ -32,7 +32,7 @@
       "start": "docs-read-delta-table-start",
       "end": "docs-read-delta-table-end",
       "referenced_by": [
-        "content/delta/how-to/read-a-delta-table.mdx"
+        "content/delta/how-to/read-a-delta-table.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -49,7 +49,7 @@
       "start": "docs-read-delta-table-start",
       "end": "docs-read-delta-table-end",
       "referenced_by": [
-        "content/delta/how-to/read-a-delta-table.mdx"
+        "content/delta/how-to/read-a-delta-table.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -66,7 +66,7 @@
       "start": "docs-read-delta-table-start",
       "end": "docs-read-delta-table-end",
       "referenced_by": [
-        "content/delta/how-to/read-a-delta-table.mdx"
+        "content/delta/how-to/read-a-delta-table.md"
       ],
       "tested": false,
       "engine_status": "stub"

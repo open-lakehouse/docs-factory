@@ -1,0 +1,45 @@
+# Known-tag registry (source of truth for blog post tags).
+#
+# Every tag used in a post's front matter (`tags: [...]`) MUST be defined here.
+# Reuse an existing tag before coining a new one; if none fits, add the new tag
+# below (with a one-line description) in the SAME change that introduces it.
+# This keeps the vocabulary deduplicated and discoverable. Mirrors the
+# Docusaurus `tags.yml` pattern. Keep it lean — grow it as posts introduce
+# genuinely new topics.
+
+delta-lake:
+  description: "Delta Lake table format & ecosystem"
+iceberg:
+  description: "Apache Iceberg table format"
+delta-kernel:
+  description: "delta-kernel-rs and engine integrations"
+table-formats:
+  description: "Open table formats in general (Delta, Iceberg, Hudi, …)"
+rust:
+  description: "Rust implementation / internals"
+datafusion:
+  description: "Apache DataFusion query engine"
+unity-catalog:
+  description: "Unity Catalog / data governance"
+lakehouse:
+  description: "Open lakehouse architecture"
+devrel:
+  description: "Developer-relations narrative / tutorial"
+observability:
+  description: "Tracing, MLflow, monitoring"
+file-formats:
+  description: "Columnar and on-disk file formats (Parquet, ORC, …)"
+data-lineage:
+  description: "OpenLineage and data-lineage tooling"
+governance:
+  description: "Access control, policy, security & trust across the platform"
+agents:
+  description: "Agentic AI workloads and their platform implications"
+codegen:
+  description: "Proto-driven / build-time code generation"
+wasm:
+  description: "WebAssembly builds of engines/clients (browser & edge)"
+ui-components:
+  description: "Reusable/headless front-end component distribution"
+
+# add new tags above this line

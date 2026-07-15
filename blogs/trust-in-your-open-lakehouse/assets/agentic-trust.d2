@@ -1,0 +1,57 @@
+direction: right
+
+user: Client {
+  shape: person
+}
+
+agent: Agent {
+  shape: person
+}
+
+# Architecture diagram
+arch: Architecture {
+  label: "Trusted System"
+
+  engine: Catalog {
+    label: "Query Service\n(PEP)"
+    style.fill: "#ede9fe"
+    style.stroke: "#7c3aed"
+  }
+
+  catalog: Catalog {
+    label: "Catalog\n(PEP + PIP)"
+    style.fill: "#ede9fe"
+    style.stroke: "#7c3aed"
+  }
+
+  policy: Policy Engine {
+    label: "Policy Engine\n(PDP)"
+    style.fill: "#ede9fe"
+    style.stroke: "#7c3aed"
+  }
+
+  storage: Object Store {
+    label: "Object Store\n(PEP)"
+    shape: cylinder
+
+    style.fill: "#dbeafe"
+    style.stroke: "#2563eb"
+  }
+
+  tools: Tools / MCPs ... {
+    label: "Tools / MCPs / APIs / ...\n(PEP + PIP)"
+
+    style.fill: "#ede9fe"
+    style.stroke: "#7c3aed"
+    style.multiple: true
+  }
+
+  engine -> catalog
+  catalog -> policy
+  engine -> storage
+  tools -> policy
+}
+
+user -> agent
+agent <-> arch.engine
+agent <-> arch.tools

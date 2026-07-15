@@ -1,0 +1,34 @@
+direction: right
+
+client: Client {
+  shape: person
+}
+
+# Architecture diagram
+arch: Architecture {
+  label: "Trusted System"
+
+  engine: Catalog {
+    label: "Query Service\n(PEP)"
+    style.fill: "#ede9fe"
+    style.stroke: "#7c3aed"
+  }
+
+  catalog: Catalog {
+    label: "Catalog\n(PIP + PDP)"
+    style.fill: "#ede9fe"
+    style.stroke: "#7c3aed"
+  }
+
+  storage: Object Store {
+    label: "Object Store\n(PEP)"
+    shape: cylinder
+    style.fill: "#dbeafe"
+    style.stroke: "#2563eb"
+  }
+
+  engine -> catalog
+  engine -> storage
+}
+
+client <-> arch.engine

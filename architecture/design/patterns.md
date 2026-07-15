@@ -60,6 +60,6 @@ just as services compose into a session.
 
 ---
 
-*These correspond to the `patterns:` block in `writing/estate/estate.yml`. That
-file is being superseded by this model as the source of structural fact; the
-narrative framing of these patterns lives in the writing estate's `storyline.md`.*
+*These correspond to the `patterns:` block in [`architecture/estate.yml`](./estate.yml).
+The LikeC4 model tags repos with these patterns; the narrative framing lives in
+[`blogs/STORYLINE.md`](../blogs/STORYLINE.md).*

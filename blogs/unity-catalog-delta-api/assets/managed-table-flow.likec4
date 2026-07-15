@@ -1,0 +1,77 @@
+// managed-table-flow.likec4 — sequence of the UC Delta API managed-table
+// CREATE + first COMMIT, as defined by the Unity Catalog managed-tables spec.
+//
+// SOURCE OF TRUTH: unitycatalog/unitycatalog · spec/protocols/ManagedTablesSpec.md
+//   (create: staging-tables -> write 0.json -> promote; commit: loadTable ->
+//    write staged commit -> add-commit (guarded) -> publish). Endpoint paths and
+//    action names are quoted verbatim from that spec.
+//
+// SELF-CONTAINED for the blog (blogs/unity-catalog-delta-api). It intentionally
+// does NOT live in the docs-factory ref-free logical model — this is
+// protocol-specific, technology-named detail. It follows docs-factory's
+// dynamic-view idiom (a `dynamic view` = a sequence diagram) but keeps its own
+// three participants.
+//
+// Render (LikeC4 >= 1.58, the version adopted in docs-factory). The --sequence
+// flag is REQUIRED: without it the static export lays a dynamic view out as a
+// box-and-arrow graph, not lifelines (see likec4/likec4#2532, fixed in #2542):
+//   npx likec4 export png --sequence -o . .    # -> managedTableFlow.png
+// Interactive (pick the "sequence" variant in the UI):
+//   npx likec4 start .
+// The rendered managedTableFlow.png is committed alongside this source.
+
+specification {
+  element participant {
+    style {
+      shape rectangle
+      color primary
+    }
+  }
+  element store {
+    notation "Object storage"
+    style {
+      shape storage
+      color muted
+    }
+  }
+}
+
+model {
+  client = participant "Delta client / engine" {
+    description "A Delta-compatible writer (e.g. Delta-Spark) proposing commits through the UC Delta API."
+  }
+  server = participant "Unity Catalog server" {
+    description "Ratifies commits, advertises protocol/features, and vends scoped storage credentials."
+  }
+  storage = store "Cloud storage" {
+    description "Where the table's data files and _delta_log live (S3 / ABFS / GCS, or a local file:// root)."
+  }
+}
+
+views {
+
+  // The create + first-commit path the Spark lead example actually exercises.
+  // Backfill-notify and credential-refresh edge cases are omitted for clarity
+  // (they are in the spec; this is the happy path the code walks).
+  dynamic view ucDeltaApi_managedTableFlow {
+    title "UC Delta API — create a managed table, then commit"
+    description "The end-to-end managed-table lifecycle from the Unity Catalog managed-tables spec: discover, allocate a staging table, write version 0, promote it, then commit an INSERT — staged first, ratified by the catalog, then published."
+
+    // --- Discovery ---------------------------------------------------------
+    client -> server "GET /delta/v1/config (negotiate endpoints + protocol-version)"
+
+    // --- CREATE ------------------------------------------------------------
+    client -> server "POST .../staging-tables { name }"
+    server -> client "table-id, location, READ_WRITE credential, required-protocol"
+    client -> storage "write _delta_log/0.json (schema, protocol, io.unitycatalog.tableId)"
+    client -> server "POST .../tables (promote: columns, protocol, properties)"
+    server -> client "loadTable response (table-uuid, etag, version 0)"
+
+    // --- COMMIT (INSERT) ---------------------------------------------------
+    client -> server "GET .../tables/{table} (loadTable: current etag + uuid)"
+    client -> storage "write _delta_log/_staged_commits/<v>.<uuid>.json"
+    client -> server "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }"
+    server -> client "ratified — loadTable with the new commit"
+    client -> storage "publish _delta_log/<v>.json (vended credential)"
+  }
+}

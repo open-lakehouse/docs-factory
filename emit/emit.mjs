@@ -1,0 +1,295 @@
+#!/usr/bin/env node
+/**
+ * emit.mjs — the deterministic emitter core.
+ *
+ * Resolve a canonical blog draft (blogs/<slug>/draft.md) and FLATTEN its rich
+ * constructs into portable, self-contained Markdown for a downstream target, plus
+ * an image manifest. See emit/README.md and blogs/CONVENTIONS.md §5.
+ *
+ *   node emit.mjs --slug <slug> --target <target>
+ *     → blogs/<slug>/dist/<slug>.md
+ *     → blogs/<slug>/dist/assets.json
+ *
+ * The two target-agnostic transforms (snippet inlining, the prose-colon guard) are
+ * imported VERBATIM from the preview harness so there is exactly one implementation
+ * of each. The construct FLATTENS (journey/callout/likec4/code-caption) are
+ * Markdown-emitting variants that live here. Delivery to the target (create a
+ * Google Doc, upload images, share) is a separate agent step — the /blog-emit skill.
+ */
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+import remarkGfm from "remark-gfm";
+import remarkDirective from "remark-directive";
+import remarkFrontmatter from "remark-frontmatter";
+import { parse as parseYaml } from "yaml";
+
+// Shared, target-agnostic transforms — imported verbatim from the preview.
+import remarkCodeSnippets from "../site/src/plugins/remark-code-snippets.mjs";
+import remarkDirectiveProseGuard from "../site/src/plugins/remark-directive-prose-guard.mjs";
+
+// Markdown-flattening variants (the emitter's own).
+import remarkCalloutsMd from "./plugins/remark-callouts-md.mjs";
+import remarkJourneyMd from "./plugins/remark-journey-md.mjs";
+import remarkCodeCaption from "./plugins/remark-code-caption.mjs";
+import remarkLikeC4Md from "./plugins/remark-likec4-md.mjs";
+import remarkUnwrapProse from "./plugins/remark-unwrap-prose.mjs";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+const REPO_ROOT = resolve(HERE, "..");
+
+// --- args -----------------------------------------------------------------
+
+function parseArgs(argv) {
+  const args = {};
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === "--slug") args.slug = argv[++i];
+    else if (a === "--target") args.target = argv[++i];
+    else if (a.startsWith("--slug=")) args.slug = a.slice(7);
+    else if (a.startsWith("--target=")) args.target = a.slice(9);
+  }
+  return args;
+}
+
+async function loadTarget(name) {
+  const mod = await import(`./targets/${name}.mjs`);
+  return mod.default ?? mod;
+}
+
+// --- frontmatter + HTML-comment handling ----------------------------------
+
+/**
+ * A remark plugin: extract & strip the YAML frontmatter node, capture its parsed
+ * value into `capture.frontmatter`, prepend the `title` as a top-level `#` heading,
+ * and drop every HTML-comment node (drafting annotations that shouldn't ship).
+ */
+const COMMENT_RE = /^\s*<!--[\s\S]*-->\s*$/;
+
+/** Recursively drop HTML-comment nodes anywhere in the tree. mdast keeps a
+ * `<!-- … -->` as an `html` node — a block comment as a top-level `html` node, an
+ * inline comment as an `html` node inside a paragraph. Both are drafting
+ * annotations that must not ship. Also trims a paragraph that becomes empty after
+ * its trailing comment is removed. */
+function stripComments(node) {
+  if (!node.children) return;
+  const hadComment = node.children.some(
+    (c) => c.type === "html" && COMMENT_RE.test(c.value),
+  );
+  node.children = node.children.filter(
+    (c) => !(c.type === "html" && COMMENT_RE.test(c.value)),
+  );
+  // A comment removed from mid-prose can leave a dangling whitespace-only text
+  // node (the space that preceded it). Trim leading/trailing whitespace-only text
+  // children so remark-stringify doesn't emit a stray `&#x20;`.
+  if (hadComment) {
+    while (
+      node.children.length &&
+      node.children.at(-1).type === "text" &&
+      !node.children.at(-1).value.trim()
+    )
+      node.children.pop();
+    while (
+      node.children.length &&
+      node.children[0].type === "text" &&
+      !node.children[0].value.trim()
+    )
+      node.children.shift();
+    // Trim a trailing space left on the last text node right before the comment.
+    const last = node.children.at(-1);
+    if (last && last.type === "text") last.value = last.value.replace(/\s+$/, "");
+  }
+  for (const child of node.children) stripComments(child);
+}
+
+function remarkPrelude(capture) {
+  return (tree) => {
+    const kept = [];
+    let title;
+    for (const node of tree.children) {
+      if (node.type === "yaml") {
+        try {
+          capture.frontmatter = parseYaml(node.value) ?? {};
+        } catch {
+          capture.frontmatter = {};
+        }
+        title = capture.frontmatter.title;
+        continue; // strip the frontmatter block from the body
+      }
+      kept.push(node);
+    }
+    tree.children = kept;
+    stripComments(tree); // remove block + inline HTML comments everywhere
+    // Drop any paragraph left empty (or whitespace-only) after comment removal.
+    tree.children = tree.children.filter(
+      (n) =>
+        !(
+          n.type === "paragraph" &&
+          (n.children.length === 0 ||
+            n.children.every((c) => c.type === "text" && !c.value.trim()))
+        ),
+    );
+    if (title) {
+      tree.children.unshift({
+        type: "heading",
+        depth: 1,
+        children: [{ type: "text", value: String(title) }],
+      });
+    }
+  };
+}
+
+// --- LikeC4 PNG regeneration ----------------------------------------------
+
+/**
+ * Regenerate PNGs for every *.likec4 under the draft's assets/, deterministically,
+ * into `outDir` (throwaway, under dist/). LikeC4 names each PNG by its view id and
+ * also emits an auto-generated `index.png`; the emitter reads back `<viewId>.png`
+ * by the `likec4=<viewId>` title on the draft image, so the export dir is kept
+ * separate from the committed assets/ (never polluted with view-id / index PNGs).
+ * Returns `outDir` if anything was exported, else null.
+ */
+function regenerateLikeC4(assetsDir, outDir) {
+  if (!existsSync(assetsDir)) return null;
+  const likec4Files = readdirSync(assetsDir).filter((f) => f.endsWith(".likec4"));
+  if (likec4Files.length === 0) return null;
+
+  mkdirSync(outDir, { recursive: true });
+  // Use the preview harness's pinned likec4 binary if present; else fall back to
+  // npx. Mirrors blogs/CONVENTIONS.md §5: --sequence is required for dynamic views
+  // (real lifelines, not a box-and-arrow graph). --flat keeps the output dir flat
+  // (one <viewId>.png per view, no per-view subfolders). Output dir is absolute so
+  // it does not depend on the process cwd.
+  const localBin = join(REPO_ROOT, "site", "node_modules", ".bin", "likec4");
+  const useLocal = existsSync(localBin);
+  const bin = useLocal ? localBin : "npx";
+  const base = ["export", "png", "--sequence", "--flat", "-o", outDir, assetsDir];
+  const args = useLocal ? base : ["likec4", ...base];
+  try {
+    execFileSync(bin, args, { stdio: "inherit" });
+  } catch (err) {
+    throw new Error(
+      `LikeC4 PNG export failed for ${assetsDir}. Ensure a headless Chromium is ` +
+        `installed (\`npx playwright install chromium\` once). Underlying error: ${err.message}`,
+    );
+  }
+  return outDir;
+}
+
+// --- delivery sidecar (idempotency) ---------------------------------------
+
+// Each post carries its delivery state in a committed sidecar dotfile next to
+// draft.md: `blogs/<slug>/.emitted.json`, keyed by target →
+// { doc_id, url, updated }. Self-contained in the post folder (so it travels with
+// the post, no global registry) while keeping draft.md itself PURE — no tooling
+// state in the canonical source. The core READS it (create-vs-update hint); the
+// /blog-emit skill WRITES it after a create. A dotfile so it reads as tooling
+// metadata, not content; committed (only dist/ is gitignored).
+function sidecarPath(draftDir) {
+  return join(draftDir, ".emitted.json");
+}
+
+function readSidecar(draftDir) {
+  const p = sidecarPath(draftDir);
+  if (!existsSync(p)) return {};
+  try {
+    return JSON.parse(readFileSync(p, "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+// --- main ------------------------------------------------------------------
+
+async function main() {
+  const { slug, target: targetName } = parseArgs(process.argv.slice(2));
+  if (!slug) throw new Error("usage: node emit.mjs --slug <slug> --target <target>");
+  if (!targetName) throw new Error("usage: node emit.mjs --slug <slug> --target <target>");
+
+  const target = await loadTarget(targetName);
+  const draftDir = join(REPO_ROOT, "blogs", slug);
+  const draftPath = join(draftDir, "draft.md");
+  if (!existsSync(draftPath)) throw new Error(`draft not found: ${draftPath}`);
+
+  const distDir = join(draftDir, "dist");
+  mkdirSync(distDir, { recursive: true });
+
+  const assetsDir = join(draftDir, "assets");
+  const likec4Dir = regenerateLikeC4(assetsDir, join(distDir, ".likec4-export"));
+
+  const capture = {};
+  const manifest = [];
+
+  const processor = unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkDirective) // parse :::/:::: container directives
+    .use(remarkDirectiveProseGuard) // undo false-positive :x text directives in prose
+    .use(remarkFrontmatter) // parse the YAML block into a `yaml` node
+    .use(remarkPrelude, capture) // strip frontmatter + comments, title → # H1
+    .use(remarkCodeSnippets) // inline file=/start=/end= (real code from snippets/)
+    .use(remarkCalloutsMd) // :::tip/:::warning/… → bold-led blockquote
+    .use(remarkJourneyMd) // ::::journey → numbered ### Step N — … headings
+    .use(remarkCodeCaption) // title="x.py" → bold caption line, clean the fence
+    .use(remarkLikeC4Md, {
+      manifest,
+      assetsDir: draftDir,
+      likec4Dir,
+      renderImage: target.renderImage,
+    })
+    .use(remarkUnwrapProse) // one line per paragraph so Docs converters reflow cleanly
+    .use(remarkGfm)
+    .use(remarkStringify, target.stringify);
+
+  const input = readFileSync(draftPath, "utf8");
+  const file = await processor.process({ value: input, path: draftPath });
+  const output = String(file);
+
+  // Existing delivery (if any) for this target — the create-vs-update hint. It
+  // lives in the post's sidecar `.emitted.json` (keyed by target), self-contained
+  // in blogs/<slug>/ so the mapping travels with the post (no global registry) and
+  // draft.md stays pure. The /blog-emit skill writes this key back after a create.
+  const existing = readSidecar(draftDir)[targetName] ?? null;
+
+  const mdPath = join(distDir, `${slug}.md`);
+  const assetsPath = join(distDir, "assets.json");
+  writeFileSync(mdPath, output, "utf8");
+  writeFileSync(
+    assetsPath,
+    JSON.stringify(
+      {
+        slug,
+        target: targetName,
+        title: capture.frontmatter?.title ?? null,
+        // The delivery agent reads this: null → CREATE a new Doc and record it in
+        // the sidecar `.emitted.json`; set → UPDATE that Doc in place (same
+        // URL/sharing). Shape: { doc_id, url, updated }.
+        existing,
+        images: manifest,
+      },
+      null,
+      2,
+    ) + "\n",
+    "utf8",
+  );
+
+  const rel = (p) => p.replace(REPO_ROOT + "/", "");
+  console.log(`emitted (${targetName}):`);
+  console.log(`  ${rel(mdPath)}`);
+  console.log(`  ${rel(assetsPath)}  (${manifest.length} image${manifest.length === 1 ? "" : "s"})`);
+  console.log(
+    existing
+      ? `  delivery: UPDATE existing doc ${existing.doc_id} (${existing.url ?? "url unknown"})`
+      : `  delivery: CREATE new doc (no "${targetName}" in ${slug}/.emitted.json)`,
+  );
+}
+
+main().catch((err) => {
+  console.error(`emit: ${err.message}`);
+  process.exitCode = 1;
+});

@@ -1,0 +1,260 @@
+# Open Lakehouse estate — facts of record (ref-free).
+#
+# Structured facts: repos, foundations, dependency edges, cross-estate patterns.
+# Glossary: architecture/glossary.md. Open questions: architecture/conflicts.md.
+# Narrative framing: blogs/STORYLINE.md. Blog arc: blogs/SERIES.md.
+#
+# One entry per repo in the `olai` estate, with coarse, slow-moving fields only.
+# REF-FREE BY RULE. This file carries names, purposes, dependency edges, and
+# orientation paths only — never a commit SHA or release tag. It is a
+# lead-generator, never cited directly in a published post. Briefs lift a fact
+# from here, then pin it to a SHA/tag and re-verify per blogs/CONVENTIONS.md §6
+# at draft time. Pinning refs here would rot instantly across five evolving repos.
+#
+# Keep it coarse: capture which repos exist, who depends on whom, each repo's
+# purpose and story role, and the *pattern* of what it publishes (e.g. "olai-uc-*
+# crates") — NOT a maintained roster of every crate/version. Enumerate an
+# individual artifact only where its name is load-bearing to the story.
+
+initiative: open-lakehouse (olai — "open lakehouse and ai")
+org: github.com/open-lakehouse
+license: Apache-2.0
+
+# Crate naming (applies to all olai-* / olai-uc-* below). The `olai-*` prefix is a
+# DEFENSIVE PUBLISH-TIME SHELL, not the code's identity: via Cargo `package =`
+# aliases the call sites use the aspirational, eventual-official identifiers (e.g.
+# `unitycatalog-common` -> `use unitycatalog_common::…`) while the crate is published
+# as `olai-uc-common`. This avoids polluting official/community namespaces before
+# consensus while the codebase already reads as the eventual official crates. Only the
+# published *prefix* is provisional. Prose uses role-descriptive names; literal crate
+# names (either form) appear only in code blocks. (Resolved 2026-07-13; see
+# conflicts.md and glossary.md.)
+
+# The external OSS the estate assembles on. The through-line is "assemble these +
+# build the gaps"; these are the foundations, the olai repos are the gaps we fill.
+foundations:
+  - datafusion       # query engine (Apache DataFusion) — the shared compute core
+  - delta            # Delta Lake table format (via delta-rs / delta-kernel-rs; some forks)
+  - cedar            # AWS Cedar policy language — the FGAC decision engine
+  - openlineage      # lineage event standard (Marquez is the reference server we're inspired by)
+  - unity-catalog    # Unity Catalog API surface — mangrove builds/integrates with it (not reimplements)
+
+# Cross-estate architectural patterns — opinionated seams that recur across repos.
+# The estate is organized by repo below, but its *identity* is these shared
+# patterns: each repo is an APPLICATION of them, and hydrofoil is where several
+# get composed into one experience. Repos reference these by key in
+# `applies_patterns`. Frame them as established-and-converging (real today, still
+# settling), not as a finished standard.
+patterns:
+
+  composition:
+    intent: >-
+      Compose independently-built pieces into one consolidated whole rather than
+      building monoliths. The recurring shape of the estate: services, DataFusion
+      integrations, and UIs are each assembled, not fused.
+    seam: >-
+      Narrow port traits + a Provides* compile-time DI pattern (established in
+      Trestle); `Arc<dyn Trait>` boundaries so a piece can be swapped or reused.
+    applied_by: [trestle, mangrove, headwaters, hydrofoil]
+    status: established; the estate's core design stance
+    notes: >-
+      Hydrofoil is the exemplar — it composes services and multiple DataFusion
+      integrations into a single consolidated session.
+
+  agentic-cli:
+    intent: >-
+      Ship CLIs in two registers: the classical one that mirrors the API endpoints,
+      AND an AGENT-OPTIMIZED one that formats output for agent digestion and reframes
+      the surface as actionable, task-shaped verbs — so the lakehouse is genuinely
+      usable BY AI, not just about it. This is where "open lakehouse AND AI" is real
+      effort, not a slogan.
+    seam: >-
+      A multi-mode render (table / json / agent), an interpreted `agent` envelope
+      that prunes noise and appends `_next` follow-up hints, a `schema` capabilities
+      primer, task-shaped "question-verbs" (return the answer, not an endpoint dump),
+      structured JSON errors + stable exit codes. Follows Anthropic / agent-tooling
+      best practices for tool design.
+    applied_by: [headwaters]           # hw is the lead, built-out application
+    aspiring: [mangrove, hydrofoil]    # uc/uc-server + others still mostly classical
+    status: emerging — hw (headwaters) is the strongest application today (ADR-0014,
+      docs/agent-cli-design.md); other CLIs still mostly endpoint-mirroring
+    notes: >-
+      Downstream: pairs naturally with an agent harness (e.g. Databricks Omnigent) —
+      see the parked blog idea in blogs/IDEAS.md. Ties to headwaters' agent-facing
+      question-verbs already in the ideas backlog.
+
+  composable-ui:
+    intent: >-
+      Build reusable, ideally HEADLESS UI apps/components with pluggable seams for
+      functionality, then wrap a thin per-service app around them — the UI analogue
+      of service composition. The aim is that the same components compose into ONE
+      consolidated experience (in hydrofoil), just as services compose into a session.
+    seam: >-
+      shadcn (agentic-optimized) components distributed by copy; headless
+      presentational components + versioned data-fetching logic behind a design-token
+      contract, so one component set serves several apps unchanged. The contract is
+      written as a `design.md` per the official convention
+      (github.com/google-labs-code/design.md) — a machine-readable file that fixes
+      semantic token names/meanings (not a concrete look), teaching agents how to use
+      the components and informing the design decisions when apps are built from them.
+    applied_by: [mangrove, headwaters, hydrofoil]
+    status: established & converging — followed in headwaters + mangrove today;
+      hydrofoil's consolidated experience is the direction of travel
+    notes: >-
+      See mangrove node/ui-kit/DESIGN.md and hydrofoil node/ui/DESIGN.md (both follow
+      the design.md convention), headwaters node/lineage-ui, and hydrofoil
+      docs/portable-uc-components.md. This is the estate's opinionated UI stance, the
+      counterpart to the composition pattern above; the design.md files are a small
+      extra agentic proof point (a contract agents can read), not a headline.
+
+# Dependency spine: trestle -> {mangrove, headwaters, breakwater} -> hydrofoil.
+repos:
+
+  trestle:
+    purpose: >-
+      Proto -> Rust codegen framework plus runtime libraries; `trestle new`
+      scaffolds a full data-platform service tree from annotated protobuf.
+    public: true
+    depends_on: []          # the root of the spine; depends on no sibling
+    publishes:
+      # olai-* published crates + the CLI. Load-bearing names called out; the set
+      # as a whole is "the olai-* framework crates", not a maintained roster.
+      - olai-codegen         # build-time proto -> Axum/clients/registry codegen
+      - olai-store           # TAO-inspired typed object/association graph store; field roles + encryption
+      - olai-http            # unified cloud-credential + HTTP client (CloudClient)
+      - olai-http-wasm       # browser/WASM HTTP transport for generated clients
+      - olai-stack-topology  # role/placement-aware service-to-service addressing model
+      - olai-trestle (CLI)   # the `trestle` binary: codegen + `trestle new` scaffolding
+    key_paths:               # orientation only — where to look, not pinned refs
+      - crates/olai-store/src/
+      - crates/olai-codegen/docs/codegen-design.md
+      - crates/stack-topology/
+      - docs/architecture.md
+    applies_patterns: [composition]   # establishes the opinionated composition seams
+    story_role: >-
+      The generator. Everything downstream is built with it; it is how we build
+      services fast enough to explore the estate — and where the estate's
+      opinionated composition patterns are established.
+
+  mangrove:                  # project name: unitycatalog-rs; Docker image: mangrove
+    purpose: >-
+      A pluggable framework for BUILDING Unity Catalog APIs and INTEGRATING with
+      UC — NOT a competing reimplementation of Unity Catalog OSS. It uses generic
+      resource APIs + Trestle codegen to stand up UC surfaces fast and explore
+      functionality ahead of the official Java UC OSS; it can PROXY to an upstream
+      OSS Java UC for supported securables while managing others itself; and it
+      can AUGMENT surfaces UC doesn't cover yet. Scope also spans Delta Sharing /
+      Open Sharing servers and the Delta API (the Delta API also feeds Lakekeeper).
+    public: true
+    depends_on: [trestle]
+    publishes:
+      - olai-uc-* crates      # common / client / delta-api / sharing-client / object-store / postgres / sqlite / datafusion / server / cli
+      - uc (CLI)              # command-line client for a running server
+      - uc-server (bin)       # the deployable UC service
+      - mangrove (Docker image)
+    key_paths:
+      - crates/delta-api/         # the UC Delta v1 REST API (also -> Lakekeeper)
+      - crates/datafusion/        # UC-backed DataFusion catalog provider — a piece we want to MATURE
+      - crates/query-wasm/        # in-browser query engine (separate workspace)
+      - docs/src/content/docs/explanation/   # architecture/design explanations (Starlight site)
+      - WASM_QUERY_PREVIEW.md
+      - lakekeeper-delta-api-feasibility.md
+    trade_off: >-
+      Moves faster but makes FEWER guarantees than UC OSS — this is deliberate and
+      must be stated wherever mangrove is positioned. The DataFusion integration
+      (and similar) are the parts we do intend to harden.
+    maturing: >-
+      Explicitly want to MATURE the DataFusion ecosystem-integration / client piece
+      against UC for the Rust ecosystem — a first-class, keep-it goal distinct from
+      the move-fast exploratory surface.
+    applies_patterns: [composition, composable-ui]
+    story_role: >-
+      The catalog / governance plane — the exploratory, proxy-capable UC surface
+      that lets the estate move ahead of, and integrate with, upstream UC; also a
+      home of the composable-UI pattern (its reusable UC components).
+
+  headwaters:
+    purpose: >-
+      OpenLineage on Apache DataFusion: emits column-level data lineage at
+      planning time and ingests OpenLineage events into a queryable store with a
+      read API (a Rust-native take inspired by, not a drop-in for, Marquez).
+    public: true
+    depends_on: [trestle]
+    publishes:
+      - datafusion-openlineage   # OpenLineage integration for DataFusion (published)
+      - openlineage-client       # engine-agnostic OpenLineage event model + emit client
+      - headwaters-client / headwaters-proto   # read-API client + generated proto types
+      - hw (CLI)                 # inspect a lineage estate (humans + agents)
+      - headwaters (bin)         # the ingest/read service
+      - headwaters (Docker image)
+    key_paths:
+      - crates/open-lineage/src/rule.rs   # planning-time column-level lineage
+      - docs/adr/                         # the lineage design decisions (0001-0014)
+      - docs/open-lineage-design.md
+      - docs/agent-cli-design.md
+    applies_patterns: [composition, composable-ui, agentic-cli]   # hw is the agentic-CLI lead
+    story_role: >-
+      The lineage plane — where the estate answers "where did this data come from,
+      and where does it flow", including agent-facing question-verbs; also applies
+      the composable-UI pattern (its headless lineage components) and is the LEAD
+      application of the agentic-CLI pattern (the `hw` tool).
+
+  breakwater:
+    purpose: >-
+      Fine-grained access control for the stack: Cedar policy enforcement wired
+      into DataFusion, split into an engine-neutral decide/enforce core and a
+      Cedar adapter. Answers "can this principal do this here?" and, when allowed,
+      governs what they see (row filters + column masks).
+    public: true
+    depends_on: []          # no crate dep on a sibling; extracted OUT of hydrofoil
+    extracted_from: hydrofoil
+    publishes:
+      - olai-datafusion-policy        # engine-neutral policy core (decide/enforce split)
+      - olai-datafusion-policy-cedar  # Cedar adapter implementing the core
+      - olai-cedar-oci                # Cedar policy provider over OCI-distributed bundles
+      # libraries only — no binaries, no Docker image
+    key_paths:
+      - crates/datafusion-policy/
+      - crates/datafusion-policy-cedar/examples/fact_gathering_walkthrough.rs
+      - docs/pluggable-policy-architecture.md
+      # note: breakwater's ADRs live in the hydrofoil repo (docs/adr/), not here
+    story_role: >-
+      The policy / access-control plane — the "plug in, don't fork" enforcement
+      that rides on DataFusion without forking the engine.
+
+  hydrofoil:
+    canonical_framing: >-
+      The INTEGRATION HUB — the consumer that composes all four siblings back
+      together. (Resolved 2026-07-13.) The README's "Open Lakehouse Lab" label and
+      the named "Open Lakehouse" desktop app are the hub's DEMONSTRABLE FACE, not the
+      headline; never present as a shipped/stable product (see pre_release_note, §6).
+    purpose: >-
+      A catalog-native query engine (Flight SQL + HTTP/ConnectRPC) that reads open
+      table formats through UC with policy and lineage wired in, plus a Tauri desktop
+      app and React UIs. The integration hub that composes the siblings back together.
+    public: true
+    depends_on: [trestle, mangrove, headwaters, breakwater]
+    publishes:
+      # unpublished application layer — consumes the published olai-* libs
+      - hydrofoil (bin + GHCR image)   # the query engine service
+      - portal (bin + GHCR image)      # Tags + Files ConnectRPC services
+      - desktop-host / open-lakehouse-desktop   # Tauri v2 desktop app ("Open Lakehouse")
+      - "@open-lakehouse/ui, /node"    # React web UI + JS workspace (unpublished)
+    key_paths:
+      - crates/hydrofoil/                    # the query engine
+      - crates/portal/                       # platform services (Tags + Files)
+      - docs/policy-enforcement-design.md
+      - docs/portable-uc-components.md
+      - docs/open-lineage-design.md
+      - docs/adr/                            # incl. the policy ADRs breakwater refers back to
+    pre_release_note: >-
+      Depends on personal forks (roeap/delta-rs, a delta-kernel fork) and
+      unpublished app crates. Never present as shipped/stable — see
+      blogs/CONVENTIONS.md §6 pre-release honesty.
+    applies_patterns: [composition, composable-ui]
+    story_role: >-
+      The consumer that ties it all together — where the generator, the three
+      planes, and the OSS foundations become one running lakehouse, and where both
+      patterns culminate: services + DataFusion integrations composed into one
+      session, and the siblings' composable UI components composed into one
+      consolidated experience.

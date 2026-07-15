@@ -8,6 +8,7 @@
 
 model: architecture/model            # the LikeC4 source of truth (layered)
 export: architecture/dist/model.json # generated JSON projection (agents/site)
+estate: architecture/estate.yml      # ref-free repo facts (purpose, deps, patterns)
 
 # --- Logical layer: abstract capabilities ---------------------------------
 capabilities:

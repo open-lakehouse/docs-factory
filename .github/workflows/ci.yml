@@ -51,5 +51,26 @@ jobs:
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
       - name: Validate frontmatter, snippets, and generated artifacts
-        # `check` runs validate + snippetcheck + asserts site-artifacts/ is not stale.
         run: uv run docsnip check
+
+  preview-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Build unified preview site
+        run: |
+          cd site && npm install && npm run build
+
+  architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate LikeC4 architecture model
+        run: |
+          cd architecture && npm install && npm run check

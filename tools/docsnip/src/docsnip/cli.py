@@ -17,8 +17,9 @@ import tempfile
 from pathlib import Path
 
 from . import llmstxt, manifest
+from .blog import iter_blog_drafts, load_tag_registry, validate_blog
 from .frontmatter import iter_pages, validate
-from .snippetcheck import check_content
+from .snippetcheck import check_blogs, check_content
 
 # Per-project published-site URL base for llms.txt links. Placeholder until the
 # restructured sites' URL scheme is confirmed; the generator is scheme-agnostic.
@@ -37,6 +38,7 @@ def _paths(root: Path | None):
     root = root or _repo_root()
     return {
         "content": root / "content",
+        "blogs": root / "blogs",
         "examples": root / "examples",
         "artifacts": root / "site-artifacts",
     }
@@ -46,6 +48,9 @@ def cmd_validate(p) -> int:
     errors: list[str] = []
     for page in iter_pages(p["content"]):
         errors.extend(validate(page))
+    known_tags = load_tag_registry(p["blogs"])
+    for page in iter_blog_drafts(p["blogs"]):
+        errors.extend(validate_blog(page, known_tags))
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} frontmatter error(s)", file=sys.stderr)
@@ -56,6 +61,7 @@ def cmd_validate(p) -> int:
 
 def cmd_snippetcheck(p) -> int:
     errors = check_content(p["content"])
+    errors.extend(check_blogs(p["blogs"]))
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} snippet error(s)", file=sys.stderr)

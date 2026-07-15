@@ -1,0 +1,29 @@
+# compose.yaml — local OSS Unity Catalog 0.5 configured so managed Delta tables
+# live on the LOCAL filesystem (no cloud storage, no credentials).
+#
+# The seed catalog `unity` (with schema `default` and the demo `marksheet` table)
+# ships in the image. Managed tables you create land under file:///tmp/uc-data,
+# which is bind-mounted 1:1 host<->container so the file:// locations UC vends
+# resolve unchanged for host Spark / DuckDB.
+#
+# Run:      mkdir -p /tmp/uc-data && docker compose up -d
+# Stop:     docker compose down
+# Ports:    :8080 REST API   (the web UI on :3000 is not needed for these examples)
+# Needs:    Docker; a writable /tmp/uc-data on the host.
+# Verified: unitycatalog v0.5.0 (docker :v0.5.0) — see the snippet transcripts.
+#
+# Equivalent plain `docker run` (what the post shows — same mounts, REST port only):
+#   mkdir -p /tmp/uc-data
+#   docker run -d --name uc -p 8080:8080 \
+#     -v /tmp/uc-data:/tmp/uc-data \
+#     -v "$PWD/server.properties:/home/unitycatalog/etc/conf/server.properties:ro" \
+#     unitycatalog/unitycatalog:v0.5.0
+services:
+  unitycatalog:
+    image: unitycatalog/unitycatalog:v0.5.0
+    ports:
+      - "8080:8080"   # REST API (web UI on :3000 omitted — unused by these examples)
+    volumes:
+      # 1:1 host<->container so vended file:///tmp/uc-data/... paths resolve on the host.
+      - /tmp/uc-data:/tmp/uc-data
+      - ./server.properties:/home/unitycatalog/etc/conf/server.properties:ro

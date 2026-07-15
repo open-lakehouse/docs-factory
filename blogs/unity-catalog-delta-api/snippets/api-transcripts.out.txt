@@ -1,0 +1,124 @@
+## GET /delta/v1/config — endpoint discovery + protocol negotiation
+$ curl -sS '.../delta/v1/config?catalog=unity&protocol-versions=1.0'
+{
+    "endpoints": [
+        "POST /v1/catalogs/{catalog}/schemas/{schema}/staging-tables",
+        "POST /v1/catalogs/{catalog}/schemas/{schema}/tables",
+        "GET /v1/catalogs/{catalog}/schemas/{schema}/tables",
+        "GET /v1/catalogs/{catalog}/schemas/{schema}/tables/{table}",
+        "POST /v1/catalogs/{catalog}/schemas/{schema}/tables/{table}",
+        "DELETE /v1/catalogs/{catalog}/schemas/{schema}/tables/{table}",
+        "HEAD /v1/catalogs/{catalog}/schemas/{schema}/tables/{table}",
+        "POST /v1/catalogs/{catalog}/schemas/{schema}/tables/{table}/rename",
+        "GET /v1/catalogs/{catalog}/schemas/{schema}/tables/{table}/credentials",
+        "POST /v1/catalogs/{catalog}/schemas/{schema}/tables/{table}/metrics",
+        "GET /v1/staging-tables/{table_id}/credentials",
+        "GET /v1/temporary-path-credentials"
+    ],
+    "protocol-version": "1.0"
+}
+
+# Real UC 0.5 Delta API transcripts (local, no cloud) — captured 2026-07-03
+
+## GET loadTable — unity.default.marksheet (seed managed Delta table)
+$ curl -sS .../delta/v1/catalogs/unity/schemas/default/tables/marksheet
+{
+    "metadata": {
+        "etag": "etag-1721241605595",
+        "table-type": "MANAGED",
+        "table-uuid": "c389adfa-5c8f-497b-8f70-26c2cca4976d",
+        "location": "file:///home/unitycatalog/etc/data/managed/unity/default/tables/marksheet",
+        "created-time": 1721241605595,
+        "updated-time": 1721241605595,
+        "columns": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "integer",
+                    "nullable": false,
+                    "metadata": {}
+                },
+                {
+                    "name": "name",
+                    "type": "string",
+                    "nullable": false,
+                    "metadata": {}
+                },
+                {
+                    "name": "marks",
+                    "type": "integer",
+                    "nullable": true,
+                    "metadata": {}
+                }
+            ]
+        },
+        "partition-columns": [],
+        "properties": {
+            "key1": "value1",
+            "key2": "value2"
+        }
+    },
+    "commits": [],
+    "latest-table-version": 0
+}
+
+## POST staging-tables — allocate a managed table (feature advertisement)
+$ curl -sS -X POST .../delta/v1/catalogs/unity/schemas/default/staging-tables -d {"name":"demo_local"}
+{
+    "table-id": "4c8d3d38-1f54-4e47-86cb-798134ab18ca",
+    "table-type": "MANAGED",
+    "location": "file:///tmp/uc-data/__unitystorage/tables/4c8d3d38-1f54-4e47-86cb-798134ab18ca",
+    "storage-credentials": [
+        {
+            "prefix": "file:///tmp/uc-data/__unitystorage/tables/4c8d3d38-1f54-4e47-86cb-798134ab18ca",
+            "operation": "READ_WRITE",
+            "config": {},
+            "expiration-time-ms": null
+        }
+    ],
+    "required-protocol": {
+        "min-reader-version": 3,
+        "min-writer-version": 7,
+        "reader-features": [
+            "catalogManaged",
+            "v2Checkpoint",
+            "vacuumProtocolCheck",
+            "deletionVectors"
+        ],
+        "writer-features": [
+            "catalogManaged",
+            "v2Checkpoint",
+            "vacuumProtocolCheck",
+            "deletionVectors",
+            "inCommitTimestamp"
+        ]
+    },
+    "suggested-protocol": {
+        "reader-features": [
+            "columnMapping"
+        ],
+        "writer-features": [
+            "columnMapping",
+            "domainMetadata",
+            "rowTracking"
+        ]
+    },
+    "required-properties": {
+        "delta.enableInCommitTimestamps": "true",
+        "delta.checkpoint.writeStatsAsJson": "true",
+        "delta.checkpointPolicy": "v2",
+        "delta.checkpoint.writeStatsAsStruct": "true",
+        "delta.enableDeletionVectors": "true",
+        "io.unitycatalog.tableId": "4c8d3d38-1f54-4e47-86cb-798134ab18ca"
+    },
+    "suggested-properties": {
+        "delta.enableRowTracking": "true",
+        "delta.rowTracking.materializedRowIdColumnName": null,
+        "delta.columnMapping.maxColumnId": null,
+        "delta.randomizeFilePrefixes": "true",
+        "delta.parquet.compression.codec": "zstd",
+        "delta.rowTracking.materializedRowCommitVersionColumnName": null,
+        "delta.columnMapping.mode": "name"
+    }
+}

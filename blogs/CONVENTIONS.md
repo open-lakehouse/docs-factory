@@ -157,18 +157,18 @@ bullets. Copy this to start a post.
     has no id collisions.
   - **Preview it richly (optional).** To see a draft rendered with the site's
     look and *interactive* diagrams before staging, run the throwaway root-level
-    harness: `cd preview && npm install && npm run dev`. It reads drafts in place
+    harness: `cd preview && bun install && bun run dev`. It reads drafts in place
     and never edits them — see [`site/README.md`](../site/README.md).
   - **Sequence diagrams** are a LikeC4 `dynamic view` (ordered
     `source -> target "label"` steps). Render with **`--sequence`** for a real
     lifeline layout — without it the static export falls back to a box-and-arrow
     graph (see [likec4#2532](https://github.com/likec4/likec4/issues/2532)):
     ```
-    npx likec4 export png --sequence -o . blogs/<slug>/assets
+    bunx likec4 export png --sequence -o . blogs/<slug>/assets
     ```
     (`likec4 start <dir>` opens the interactive viewer; pick the "sequence"
     variant there.) Static export needs a headless Chromium
-    (`npx playwright install chromium` once).
+    (`bunx playwright install chromium` once).
   - Keep a post's diagram **self-contained in its `assets/`** unless it genuinely
     belongs in the shared `docs-factory` model — that model's logical layer is
     deliberately ref-free and technology-agnostic, so protocol-specific,
@@ -290,7 +290,7 @@ bullets. Copy this to start a post.
   headings, `:::tip`/`:::warning`/… callouts become bold-led blockquotes, and each
   `likec4=` image is re-exported from its `.likec4` source to a PNG. Run it with:
   ```
-  node emit/emit.mjs --slug <slug> --target gdocs
+  bun emit/emit.mjs --slug <slug> --target gdocs
   ```
   which writes `blogs/<slug>/dist/<slug>.md` + `assets.json` (the `dist/` render is
   throwaway and gitignored — the draft stays the source of truth). **Google Docs

@@ -10,7 +10,7 @@ LikeC4 diagrams. One preview for both areas:
 ```bash
 just preview              # http://localhost:4321
 just preview-build        # static build into site/dist/
-cd site && npm run check  # likec4 validate over blog models
+cd site && bun run check  # likec4 validate over blog models
 ```
 
 ## What it does — and does NOT — touch
@@ -19,7 +19,7 @@ cd site && npm run check  # likec4 validate over blog models
   from `../content/` and `../blogs/*/draft.md`.
 - **Never edits source files.** Richness (interactive diagrams, callouts, tabs,
   journeys) is added by remark plugins here — never by putting JSX into the content.
-- **Is not wired into CI** (optional smoke: `npm run build` in CI). Produces no
+- **Is not wired into CI** (optional smoke: `bun run build` in CI). Produces no
   committed artifact except the throwaway `dist/`.
 
 ## Remark pipeline

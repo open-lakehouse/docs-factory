@@ -42,13 +42,13 @@ is unclear; don't restate them here.
 From the repo root:
 
 ```bash
-cd emit && npm install    # first run only (installs unified/remark deps)
-node emit.mjs --slug <slug> --target gdocs
+cd emit && bun install    # first run only (installs unified/remark deps)
+bun emit.mjs --slug <slug> --target gdocs
 ```
 
 This writes `blogs/<slug>/dist/<slug>.md` and `blogs/<slug>/dist/assets.json`, and
 prints whether delivery should **CREATE** a new Doc or **UPDATE** an existing one.
-If the LikeC4 export fails for want of a browser, run `npx playwright install
+If the LikeC4 export fails for want of a browser, run `bunx playwright install
 chromium` once and re-run.
 
 ### 2. Read the render + manifest

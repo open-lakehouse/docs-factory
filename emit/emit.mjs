@@ -6,7 +6,7 @@
  * constructs into portable, self-contained Markdown for a downstream target, plus
  * an image manifest. See emit/README.md and blogs/CONVENTIONS.md §5.
  *
- *   node emit.mjs --slug <slug> --target <target>
+ *   bun emit.mjs --slug <slug> --target <target>
  *     → blogs/<slug>/dist/<slug>.md
  *     → blogs/<slug>/dist/assets.json
  *
@@ -161,13 +161,13 @@ function regenerateLikeC4(assetsDir, outDir) {
 
   mkdirSync(outDir, { recursive: true });
   // Use the preview harness's pinned likec4 binary if present; else fall back to
-  // npx. Mirrors blogs/CONVENTIONS.md §5: --sequence is required for dynamic views
+  // bunx. Mirrors blogs/CONVENTIONS.md §5: --sequence is required for dynamic views
   // (real lifelines, not a box-and-arrow graph). --flat keeps the output dir flat
   // (one <viewId>.png per view, no per-view subfolders). Output dir is absolute so
   // it does not depend on the process cwd.
   const localBin = join(REPO_ROOT, "site", "node_modules", ".bin", "likec4");
   const useLocal = existsSync(localBin);
-  const bin = useLocal ? localBin : "npx";
+  const bin = useLocal ? localBin : "bunx";
   const base = ["export", "png", "--sequence", "--flat", "-o", outDir, assetsDir];
   const args = useLocal ? base : ["likec4", ...base];
   try {
@@ -175,7 +175,7 @@ function regenerateLikeC4(assetsDir, outDir) {
   } catch (err) {
     throw new Error(
       `LikeC4 PNG export failed for ${assetsDir}. Ensure a headless Chromium is ` +
-        `installed (\`npx playwright install chromium\` once). Underlying error: ${err.message}`,
+        `installed (\`bunx playwright install chromium\` once). Underlying error: ${err.message}`,
     );
   }
   return outDir;
@@ -208,8 +208,8 @@ function readSidecar(draftDir) {
 
 async function main() {
   const { slug, target: targetName } = parseArgs(process.argv.slice(2));
-  if (!slug) throw new Error("usage: node emit.mjs --slug <slug> --target <target>");
-  if (!targetName) throw new Error("usage: node emit.mjs --slug <slug> --target <target>");
+  if (!slug) throw new Error("usage: bun emit.mjs --slug <slug> --target <target>");
+  if (!targetName) throw new Error("usage: bun emit.mjs --slug <slug> --target <target>");
 
   const target = await loadTarget(targetName);
   const draftDir = join(REPO_ROOT, "blogs", slug);

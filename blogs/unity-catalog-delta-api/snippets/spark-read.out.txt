@@ -1,0 +1,14 @@
+# read_write_delta_spark.py — verified run against UC v0.5.0 (local, no cloud), 2026-07-03
+# Stack: PySpark 4.0.0 · unitycatalog-spark_4.0_2.13:0.5.0 · delta-spark_4.0_2.13:4.3.0
+# Jars resolved via the Databricks Maven proxy; data landed under /tmp/uc-data.
+$ export UC_URL=http://localhost:8080 UC_CATALOG=unity
+$ export MAVEN_REPO=https://maven-proxy.cloud.databricks.com
+$ uv run read_write_delta_spark.py
+...
+read back through the UC Delta API:
++---+-----+
+| id| name|
++---+-----+
+|  1|alpha|
+|  2| beta|
++---+-----+

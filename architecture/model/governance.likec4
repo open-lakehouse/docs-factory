@@ -1,0 +1,54 @@
+// LOGICAL LAYER — the zero-trust governance decomposition.
+//
+// The governance capability (declared in landscape.likec4) is extended here with
+// the NIST 800-207 / access-control points as first-class roles. These are
+// logical: WHICH concrete service plays each point is a deployment fact and
+// varies by topology (e.g. embedded PDP+PEP in trusted compute; coarse-only PEP
+// at an external engine). See deployments.likec4.
+//
+// Maturity is honest: the embedded decision+enforcement and authorize-then-vend
+// are #built; the distributed control plane (fast-push PAP), agent-tool PEP, and
+// network/session PIPs are #designed.
+
+model {
+  extend lakehouse.governance {
+
+    pap = role "PAP — administration point" {
+      #pap
+      description "Authors and distributes policy. Today: the Cedar policy set + schema published as an OCI bundle. The versioned, fast-push control plane with a freshness SLA is designed, not built."
+      metadata { canonicalDoc "design/governance.md" }
+    }
+
+    pdp = role "PDP — decision point" {
+      #pdp #built
+      description "Decides allow/deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central/hybrid topology is designed."
+      metadata { canonicalDoc "design/governance.md" }
+    }
+
+    pep = role "PEP — enforcement point" {
+      #pep #built
+      description "Enforces the PDP's decision — rewrites the query plan to inject filters/masks and short-circuits on deny. Realized as the engine PEP (in-plan) and, at the network edge, the gateway PEP (ext_authz). An agent-tool PEP is designed."
+      metadata { canonicalDoc "design/governance.md" }
+    }
+
+    pip = role "PIP — information point" {
+      #pip
+      description "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network (in_trusted_environment) and session/lineage PIPs are designed."
+      metadata { canonicalDoc "design/governance.md" }
+    }
+
+    pa = role "PA — administrator / vending" {
+      #built
+      description "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check. A guard making governed tables non-vendable to coarse-only consumers is designed."
+      metadata { canonicalDoc "design/governance.md" }
+    }
+
+    // --- Zero-trust relationships (logical) --------------------------------
+
+    pap -[administers]-> pdp "publishes policy set + schema (OCI bundle)"
+    pip -[informs]-> pdp "supplies resource / identity / context facts"
+    pdp -[decides]-> pep "allow-deny + fine-grained constraints"
+    pep -[enforces]-> pdp "requests a decision, applies the verdict"
+    pa -[enforces]-> pdp "mints a credential only on a PDP verdict"
+  }
+}

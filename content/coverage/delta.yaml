@@ -138,7 +138,7 @@ topics:
     sources:
       docs_delta_io: "Table batch reads and writes"
     pages:
-      how-to: { path: delta/how-to/read-a-delta-table.mdx, status: published }
+      how-to: { path: delta/how-to/read-a-delta-table.md, status: published }
       explanation: null
       reference: null
       tutorial: null

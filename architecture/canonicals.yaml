@@ -1,0 +1,83 @@
+# Canonical registry for the LAYERED model.
+#
+# Maps logical capabilities + governance roles to their design doc, and each
+# concrete deployment service to the repo that provides it. The maintenance skill
+# and human readers use this to navigate model <-> prose <-> source. Keep in sync
+# with `metadata.canonicalDoc` on logical elements and `metadata.sourceRepo` on
+# deployment nodes. Ref-free: repo pointers are names, never SHAs/tags.
+
+model: architecture/model            # the LikeC4 source of truth (layered)
+export: architecture/dist/model.json # generated JSON projection (agents/site)
+estate: architecture/estate.yml      # ref-free repo facts (purpose, deps, patterns)
+
+# --- Logical layer: abstract capabilities ---------------------------------
+capabilities:
+  lakehouse:
+    element: lakehouse
+    doc: design/reference-architecture.md
+  catalog:
+    element: lakehouse.catalog
+    doc: design/catalog-plane.md
+  queryEngine:
+    element: lakehouse.queryEngine
+    doc: design/reference-architecture.md
+  tableFormat:
+    element: lakehouse.tableFormat
+    doc: design/reference-architecture.md
+    note: Delta & Iceberg are peer concrete formats realizing this.
+  objectStorage:
+    element: lakehouse.objectStorage
+    doc: design/reference-architecture.md
+  lineage:
+    element: lakehouse.lineage
+    doc: design/lineage-plane.md
+  governance:
+    element: lakehouse.governance
+    doc: design/governance.md
+
+# --- Logical layer: governance roles (zero-trust) -------------------------
+governance_roles:
+  pap: { element: lakehouse.governance.pap, doc: design/governance.md }
+  pdp: { element: lakehouse.governance.pdp, doc: design/governance.md }
+  pep: { element: lakehouse.governance.pep, doc: design/governance.md }
+  pip: { element: lakehouse.governance.pip, doc: design/governance.md }
+  pa:  { element: lakehouse.governance.pa,  doc: design/governance.md }
+
+# --- Concrete layer: deployment services -> source repos ------------------
+# (Which logical roles each realizes is in model/deployments.likec4 via instanceOf.)
+services:
+  trestle:
+    source_repo: open-lakehouse/trestle
+    doc: design/generator.md
+    role: The generator; its stack-topology crate generates the Envoy gateway + Compose deployment.
+  mangrove:
+    source_repo: open-lakehouse/mangrove   # project: unitycatalog-rs
+    doc: design/catalog-plane.md
+    realizes: [catalog, pip, pa]
+  headwaters:
+    source_repo: open-lakehouse/headwaters
+    doc: design/lineage-plane.md
+    realizes: [lineage, pip]
+  breakwater:
+    source_repo: open-lakehouse/breakwater
+    doc: design/governance.md
+    realizes: [pdp, pep]   # decide/enforce; embedded in hydrofoil
+  hydrofoil:
+    source_repo: open-lakehouse/hydrofoil
+    doc: design/integration-hub.md
+    realizes: [queryEngine, pdp, pep]
+  axon:
+    source_repo: open-lakehouse/axon
+    doc: design/deployments.md
+    realizes: [queryEngine]   # browser-wasm topology only
+
+# --- Deployment topologies ------------------------------------------------
+deployments:
+  olaiNative:    { doc: design/deployments.md, trust: trusted,   note: "gateway = one surface; full FGAC" }
+  externalEngine: { doc: design/deployments.md, trust: untrusted, note: "credential vending; FGAC bypassed" }
+  browserWasm:   { doc: design/deployments.md, trust: untrusted, note: "signed-URL/proxy; prototype" }
+
+# --- Cross-cutting prose --------------------------------------------------
+other:
+  patterns:  { doc: design/patterns.md, note: composition / agentic-cli / composable-ui }
+  overview:  { doc: design/overview.md, note: layered-model entry point }

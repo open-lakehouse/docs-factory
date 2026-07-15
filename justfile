@@ -5,27 +5,18 @@
 default:
     @just --list
 
-# --- Preview site (Astro + Starlight, local only) --------------------------
+# --- Preview site (Vite + React + MDX, local only) -------------------------
 
-# Start the local preview at http://localhost:4321 (installs deps first run).
-# Pass a brand theme to skin it: `just preview` (delta) or `just preview unitycatalog`.
-# Stops any stale detached dev server first — `astro dev` daemonizes, so an old
-# instance (e.g. one started before your latest content changes) can otherwise
-# keep serving outdated pages.
-preview theme="delta": _site-deps stop
-    cd site && DOCS_THEME={{theme}} npm run dev
+# Start the unified local preview at http://localhost:4321 (installs deps first run).
+# Renders both content/ (Diátaxis docs) and blogs/ (narrative drafts).
+preview: _site-deps
+    cd site && npm run dev
 
-# Stop any running (detached) preview dev server.
-stop:
-    -cd site && npx astro dev stop
-    -pkill -f "astro.mjs dev"
-
-# Build the preview site into site/dist/.
+# Build the preview into site/dist/.
 preview-build: _site-deps
     cd site && npm run build
 
-# Install site deps and link them at the repo root so content/*.mdx can resolve
-# Starlight component imports (the .mdx files live outside site/).
+# Install site deps on first run.
 _site-deps:
     #!/usr/bin/env bash
     set -euo pipefail
@@ -33,9 +24,20 @@ _site-deps:
         echo "Installing site dependencies…"
         (cd site && npm install)
     fi
-    if [ ! -e node_modules ]; then
-        echo "Linking ./node_modules -> site/node_modules…"
-        ln -s site/node_modules node_modules
+
+# --- Emit a blog draft to a downstream target ------------------------------
+
+# Emit blogs/<slug>/draft.md to a target's flattened Markdown (default gdocs).
+# Produces blogs/<slug>/dist/<slug>.md + assets.json. See emit/README.md.
+emit slug target="gdocs": _emit-deps
+    cd emit && node emit.mjs --slug {{slug}} --target {{target}}
+
+_emit-deps:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ ! -d emit/node_modules ]; then
+        echo "Installing emitter dependencies…"
+        (cd emit && npm install)
     fi
 
 # --- Content & examples ----------------------------------------------------
@@ -64,3 +66,33 @@ lint:
 # Compile the Rust example/seed stubs.
 rust:
     cargo build --examples
+
+# --- Architecture model (LikeC4, canonical source of architectural fact) ----
+
+# Interactive dev server for the architecture model (http://localhost:5173).
+arch-dev: _arch-deps
+    cd architecture && npm run dev
+
+# Validate the LikeC4 model (syntax + semantics). CI-gateable.
+arch-check: _arch-deps
+    cd architecture && npm run check
+
+# Build the self-contained interactive static site into architecture/dist/static.
+arch-build: _arch-deps
+    cd architecture && npm run build
+
+# Export the model to architecture/dist/model.json (agent / interactive-site input).
+arch-model: _arch-deps
+    cd architecture && npm run model
+
+# Validate + export JSON + build static site in one step. Run after any model edit.
+arch-refresh: arch-check arch-model arch-build
+
+# Install the LikeC4 tooling on first run.
+_arch-deps:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ ! -d architecture/node_modules ]; then
+        echo "Installing architecture (LikeC4) dependencies…"
+        (cd architecture && npm install)
+    fi

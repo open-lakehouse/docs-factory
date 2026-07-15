@@ -1,0 +1,16 @@
+{
+  "name": "docs-factory-architecture",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "LikeC4 architecture model for the Open Lakehouse estate. The canonical, builder-agnostic source of architectural fact — systems, repos, relationships, the three planes, and flows. Narrative/positioning lives in the writing repo and references this model.",
+  "scripts": {
+    "dev": "likec4 start model",
+    "check": "likec4 validate model",
+    "build": "likec4 build -o dist/static model",
+    "model": "likec4 export json --pretty --skip-layout -o dist/model.json model && likec4 gen webcomponent -o dist/likec4-views.js model"
+  },
+  "devDependencies": {
+    "likec4": "1.58.0"
+  }
+}

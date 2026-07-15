@@ -1,31 +1,37 @@
 /**
- * remark-code-snippets — resolve `file=/start=/end=` fences at build time.
+ * remark-code-snippets — resolve `file=`/`start=`/`end=` code fences at build
+ * time, so a draft shows the *real, verified* snippet without hand-copying it.
  *
- * Docs in ../../content never inline code. A fence like
+ * A draft keeps the runnable code in `snippets/*.py` (the source of truth, per
+ * blogs/CONVENTIONS.md §5) and references it from a fence:
  *
- *   ```python file=../../../examples/python/read_delta_table.py \
- *             start=docs-read-delta-table-start end=docs-read-delta-table-end
+ *   ```python file=./snippets/read_write_delta_spark.py
  *   ```
+ *     → inlines the ENTIRE file (imports + setup + body: self-contained).
  *
- * is resolved here: we read the referenced example file, slice the region
- * *between* the start/end marker lines (markers excluded), and replace the
- * fence body with that live code. Nothing is ever copied into the .md, so the
- * preview always shows exactly what the example source contains.
+ *   ```python file=./snippets/x.py start=setup end=read
+ *   ```
+ *     → inlines only the region between the marker lines (markers excluded).
+ *       The marked region must itself be self-contained (include imports/setup).
  *
- * The resolution rules deliberately mirror `tools/docsnip/.../snippetcheck.py`
- * (source must exist; each marker must appear exactly once) so this preview and
- * the repo's `docsnip check` CI can never disagree about a snippet.
+ * The fence body stays empty; nothing is copied into the Markdown, so the preview
+ * always shows exactly what the snippet source contains. Shared by the preview
+ * harness and emit/. Resolution rules mirror tools/docsnip/snippetcheck.py.
+ * Runs before Shiki
+ * highlighting, so the resolved code is highlighted normally.
+ *
+ * Degradation: a plain fence (no `file=`) is untouched. A `file=` that can't be
+ * resolved throws with a clear message — a broken reference should fail the
+ * build, not silently render an empty block.
  */
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
 
-// Mirrors docsnip's _FENCE_RE: lang, then file/start/end meta in any order.
 const FILE_RE = /\bfile=(\S+)/;
 const START_RE = /\bstart=(\S+)/;
 const END_RE = /\bend=(\S+)/;
 
-/** Count lines that contain `marker` as a substring — same as docsnip. */
+/** Count lines containing `marker` as a substring. */
 function countMarker(text, marker) {
   let n = 0;
   for (const line of text.split("\n")) if (line.includes(marker)) n++;
@@ -41,72 +47,71 @@ function dedent(lines) {
   return lines.map((l) => l.slice(min)).join("\n");
 }
 
-/**
- * Extract the region strictly between the start and end marker lines.
- * Throws with a docsnip-shaped message if a marker is missing or duplicated.
- */
+/** Extract the region strictly between the start and end marker lines. */
 function extractRegion(srcText, start, end, relFile) {
-  for (const [marker, kind] of [
-    [start, "start"],
-    [end, "end"],
-  ]) {
+  for (const [marker, kind] of [[start, "start"], [end, "end"]]) {
     const n = countMarker(srcText, marker);
-    if (n === 0)
-      throw new Error(`${kind} marker '${marker}' not found in ${relFile}`);
-    if (n > 1)
-      throw new Error(
-        `${kind} marker '${marker}' found ${n}× in ${relFile} (must be unique)`,
-      );
+    if (n === 0) throw new Error(`${kind} marker '${marker}' not found in ${relFile}`);
+    if (n > 1) throw new Error(`${kind} marker '${marker}' found ${n}× in ${relFile} (must be unique)`);
   }
   const lines = srcText.split("\n");
   const startIdx = lines.findIndex((l) => l.includes(start));
   const endIdx = lines.findIndex((l) => l.includes(end));
-  // Region is between the markers, exclusive of the marker lines themselves.
+  // Between the markers, exclusive of the marker lines themselves.
   return dedent(lines.slice(startIdx + 1, endIdx));
 }
 
 export default function remarkCodeSnippets() {
   return (tree, file) => {
-    // `file.history[0]` is the absolute path of the .md being processed;
-    // the fence's file= is relative to that file's directory (like docsnip).
-    const mdPath = file.history[0] ?? file.path;
-    const mdDir = mdPath
-      ? dirname(mdPath)
-      : dirname(fileURLToPath(import.meta.url));
+    const mdPath = file?.history?.[0] ?? file?.path;
+    const mdDir = mdPath ? dirname(mdPath) : process.cwd();
 
-    visit(tree, "code", (node) => {
-      const meta = node.meta ?? "";
-      const fileM = meta.match(FILE_RE);
-      const startM = meta.match(START_RE);
-      const endM = meta.match(END_RE);
-      if (!fileM || !startM || !endM) return; // ordinary fenced code block
-
-      const relFile = fileM[1];
-      const src = resolve(mdDir, relFile);
-      let srcText;
-      try {
-        srcText = readFileSync(src, "utf8");
-      } catch {
-        throw new Error(
-          `${mdPath}: snippet source not found: ${relFile}`,
-        );
+    const walk = (node) => {
+      if (node.type === "code") {
+        const meta = node.meta ?? "";
+        const fileM = meta.match(FILE_RE);
+        if (fileM) {
+          const relFile = fileM[1];
+          const src = resolve(mdDir, relFile);
+          let srcText;
+          try {
+            srcText = readFileSync(src, "utf8");
+          } catch {
+            throw new Error(`${mdPath}: snippet source not found: ${relFile}`);
+          }
+          const startM = meta.match(START_RE);
+          const endM = meta.match(END_RE);
+          try {
+            node.value =
+              startM && endM
+                ? extractRegion(srcText, startM[1], endM[1], relFile)
+                : srcText.replace(/\n$/, ""); // whole file, sans trailing newline
+          } catch (err) {
+            throw new Error(`${mdPath}: ${err.message}`);
+          }
+          // Strip only the snippet keys (file=/start=/end=) so downstream
+          // (Shiki) doesn't choke on them, but PRESERVE any other meta — e.g.
+          // `step="…"`, which remark-journey reads to label a journey step, and
+          // `title="…"`, which rehype-pretty-code turns into a filename caption.
+          let rest = meta
+            .replace(FILE_RE, "")
+            .replace(START_RE, "")
+            .replace(END_RE, "")
+            .replace(/\s+/g, " ")
+            .trim();
+          // Default the code-block header's filename to the snippet's basename,
+          // unless the author already gave an explicit `title="…"`. So a
+          // `file=./snippets/x.py` fence shows "x.py" in the block header — the
+          // real source, one more cue that the code is inlined verbatim.
+          if (!/\btitle=/.test(rest)) {
+            const base = relFile.split("/").pop();
+            rest = `${rest} title="${base}"`.trim();
+          }
+          node.meta = rest || null;
+        }
       }
-      try {
-        node.value = extractRegion(srcText, startM[1], endM[1], relFile);
-      } catch (err) {
-        throw new Error(`${mdPath}: ${err.message}`);
-      }
-      // Drop the meta so downstream highlighters don't choke on file=/start=.
-      node.meta = null;
-    });
+      if (node.children) for (const child of node.children) walk(child);
+    };
+    walk(tree);
   };
-}
-
-// Minimal unist visitor (avoids an extra dependency for one traversal).
-function visit(tree, type, fn) {
-  const walk = (node) => {
-    if (node.type === type) fn(node);
-    if (node.children) for (const child of node.children) walk(child);
-  };
-  walk(tree);
 }

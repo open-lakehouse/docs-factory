@@ -1,0 +1,7 @@
+# Local run detritus — never commit
+spark-warehouse/
+*.log
+run.full.log
+metastore_db/
+derby.log
+./uc-data

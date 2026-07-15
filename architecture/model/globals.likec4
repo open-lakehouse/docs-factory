@@ -1,0 +1,13 @@
+// Global predicate groups shared across views.
+//
+// Maturity coloring (#designed / #prototype -> amber) is handled by the tag
+// colors declared in specification.likec4, which apply across all view types
+// (logical, deployment, dynamic) without a per-view directive — simpler and more
+// uniform than a global style group.
+
+global {
+  // Reusable predicate: the reference lakehouse and its capabilities only.
+  predicateGroup lakehouseOnly {
+    include lakehouse, lakehouse.*
+  }
+}

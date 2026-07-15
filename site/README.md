@@ -1,39 +1,45 @@
-# site/ — local preview harness
+# `site/` — unified local preview (docs + blogs)
 
-An [Astro](https://astro.build) + [Starlight](https://starlight.astro.build)
-app that renders the repo's `../content` so you can **see** docs as you write
-them. It is a **throwaway preview**, not a publishing target: the authoritative
-source is `../content`, which stays builder-agnostic and is migrated into the
-separate `delta.io` and `unitycatalog.io` site repos.
+A **throwaway** Vite + React + MDX harness that reads builder-agnostic content in
+place and renders it with site-like styling, Shiki code blocks, and interactive
+LikeC4 diagrams. One preview for both areas:
 
-## Run it
+- **`content/`** — Diátaxis docs (`/docs/:project/:bucket/:slug`)
+- **`blogs/`** — narrative drafts (`/blog/:slug`)
 
 ```bash
-cd site
-npm install       # uses your configured npm registry (corp proxy is fine — local only)
-npm run dev       # http://localhost:4321
+just preview              # http://localhost:4321
+just preview-build        # static build into site/dist/
+cd site && npm run check  # likec4 validate over blog models
 ```
 
-## How it works (and what it does NOT touch)
+## What it does — and does NOT — touch
 
-- **Content is read in place.** The Starlight docs collection loads
-  `../content/**/*.md` directly (`src/content.config.ts`, `base: "../content"`).
-  Nothing is copied; no Astro frontmatter is added to the content files.
-- **Snippet fences resolve live.** `src/plugins/remark-code-snippets.mjs` reads
-  the `file=/start=/end=` fences, slices the region between the `docs-*-start` /
-  `docs-*-end` markers in `../examples/…`, and injects the real code at build
-  time. Its rules mirror `tools/docsnip` `snippetcheck` exactly, so the preview
-  and `uv run docsnip check` never disagree.
-- **Nav comes from `_meta.yaml`.** `src/sidebar.mjs` translates each project's
-  `content/<project>/_meta.yaml` (label + bucket/page order) into the Starlight
-  sidebar.
+- **Reads content in place.** Nothing is copied; `import.meta.glob` loads files
+  from `../content/` and `../blogs/*/draft.md`.
+- **Never edits source files.** Richness (interactive diagrams, callouts, tabs,
+  journeys) is added by remark plugins here — never by putting JSX into the content.
+- **Is not wired into CI** (optional smoke: `npm run build` in CI). Produces no
+  committed artifact except the throwaway `dist/`.
 
-Everything Astro/Starlight-specific lives here in `site/`. If this directory
-were deleted, `../content` would lose nothing — that separation is deliberate,
-because the content feeds two *other* Astro builds, not just this one.
+## Remark pipeline
 
-## Not wired into CI
+All `.md` / `.mdx` files share one pipeline (`vite.config.ts`):
 
-There is no GitHub Actions job for the site (`node_modules`, `dist`, `.astro`,
-and `package-lock.json` are gitignored). CI validates content via
-`docsnip check`, which mirrors the snippet contract without needing Node.
+| Plugin | Effect |
+|---|---|
+| `remark-code-snippets` | Resolve `file=`/`start=`/`end=` fences |
+| `remark-callouts` | `:::tip` → `<Callout>` |
+| `remark-journey` | `::::journey` → timeline steps |
+| `remark-tabs` | `::::tabs` / `:::tab[Label]` → engine tabs |
+| `remark-code-block` | Shiki-highlighted code blocks |
+| `remark-likec4-views` | `likec4=<viewId>` images → interactive views |
+| `remark-resolve-images` | Relative `./assets/` paths → Vite `/@fs/` URLs |
+
+The same `remark-code-snippets` and `remark-directive-prose-guard` plugins are
+imported verbatim by `emit/` for blog flattening.
+
+## Adding a content area
+
+Register a new `import.meta.glob` in `src/content.ts` and a route in `src/App.tsx`.
+Docs nav comes from `content/<project>/_meta.yaml` via `src/sidebar.ts`.

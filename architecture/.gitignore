@@ -1,0 +1,13 @@
+# LikeC4 tooling deps
+/node_modules
+
+# The root .gitignore ignores `dist/` at any depth (a Python-build pattern).
+# We commit only the small, load-bearing semantic export:
+#   - dist/model.json   the JSON model (agents + interactive docs site input)
+# The heavy, fully-regenerable outputs (the static site under dist/static/ and
+# the ~2.5 MB self-contained web-component bundle dist/likec4-views.js) are built
+# on demand via `just arch-build` / `just arch-model` when the docs-site embed is
+# actually wired up — no need to carry them in git meanwhile.
+!dist/
+dist/*
+!dist/model.json

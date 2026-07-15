@@ -1,0 +1,468 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Geist+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap");
+
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Tailwind v4 is CSS-first: the config that used to live in tailwind.config.ts
+   is expressed here. Dark mode is class-based (next-themes toggles `.dark` on
+   <html>), so override the default media-query `dark:` variant to a class one. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Expose the DevHub/Delta design tokens as Tailwind theme values so the shadcn
+   registry components (Kibo code-block, Origin UI timeline) resolve `border`,
+   `muted`, `primary`, … onto our console palette instead of shadcn's default
+   slate. The CSS variables themselves are defined in :root / :root.dark below;
+   here we only bind Tailwind color names to them. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--card);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--accent);
+  --color-primary-foreground: #ffffff;
+  --color-secondary: var(--surface);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--surface);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--surface);
+  --color-accent-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--accent);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/*
+ * Styling stays true to the Databricks DevHub site
+ * (github.com/databricks/devhub): Inter body / DM Sans headings / Geist Mono
+ * code, DevHub's own neutral surfaces and high-contrast text, near-black code
+ * blocks. The ONLY brand color is the accent, and it is Delta cyan (not
+ * Databricks lava) — used sparingly on links, focus and small marks. Surfaces,
+ * backgrounds and text are DevHub-neutral, ported verbatim from
+ * docs-factory/site/src/styles/themes/delta.css.
+ */
+:root {
+  /* --- Delta accent (the only brand color; replaces DevHub lava) --- */
+  --accent: #0087b0;
+  --accent-hover: #005f7d;
+
+  /* --- DevHub light surfaces ("oat"), verbatim --- */
+  --background: #f9f7f4; /* db-bg */
+  --surface: #eeede9; /* db-oat-medium */
+  --card: #ffffff;
+  --border: #dce0e2;
+  --navbar: #000000;
+
+  /* --- Text: DevHub-neutral --- */
+  --foreground: #0b2026; /* db-navy — headings, strong, high-contrast marks */
+  --heading: #0b2026;
+  --body: rgb(11 32 38 / 0.82); /* body copy — a touch softer than headings */
+  --muted-foreground: rgb(11 32 38 / 0.65); /* genuinely secondary text */
+
+  /* --- Console code palette, verbatim (same in both themes) --- */
+  --code-bg: #09090b;
+  --code-surface: #242427;
+  --code-fg: #f9fafa;
+  --code-border: #2e3038;
+
+  --radius: 0.625rem;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-heading: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono", SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+:root.dark {
+  --accent: #22c3e6;
+  --accent-hover: #7de3f7;
+
+  /* DevHub dark surfaces, verbatim. */
+  --background: #111b20; /* db-dark-bg */
+  --surface: #162027; /* db-dark-surface */
+  --card: #182a32; /* db-dark-card */
+  --border: #2a3f4a;
+
+  /* High-contrast headings; body a touch softer, on the dark surface. */
+  --foreground: #f5f7f8;
+  --heading: #ffffff;
+  --body: rgb(245 247 248 / 0.80);
+  --muted-foreground: rgb(245 247 248 / 0.68);
+}
+
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  letter-spacing: -0.011em; /* DevHub tracking-tight feel */
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell { min-height: 100%; }
+
+/* DevHub navbar is pure black in both themes. */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1.5rem;
+  background: var(--navbar);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.brand {
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0;
+  text-decoration: none;
+  color: #f5f7f8;
+}
+.theme-toggle {
+  background: transparent;
+  border: 1px solid #2a3f4a;
+  border-radius: calc(var(--radius) - 0.25rem);
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+  color: #f5f7f8;
+  font-size: 0.9rem;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+
+.content { max-width: 60rem; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
+.muted { color: var(--muted-foreground); }
+
+/* Index — bordered cards on the neutral surface. */
+.draft-list { list-style: none; padding: 0; margin-top: 1.5rem; }
+.draft-list li {
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  margin-bottom: 0.6rem;
+}
+.draft-list a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.draft-list a:hover { color: var(--accent-hover); }
+.draft-list .meta {
+  display: block;
+  margin-top: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+/* Prose — DevHub-neutral: high-contrast body, DM Sans headings, cyan links only. */
+.prose { line-height: 1.7; font-size: 1.0625rem; color: var(--body); }
+.prose p, .prose li { color: var(--body); }
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  font-family: var(--font-heading);
+  color: var(--heading);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.prose h1 { font-size: 2.1rem; font-weight: 500; margin: 0 0 1rem; }
+.prose h2 { font-size: 1.6rem; font-weight: 500; margin: 2.75rem 0 1.25rem; }
+.prose h3 { font-size: 1.25rem; font-weight: 500; margin: 2rem 0 1rem; }
+.prose strong { color: var(--heading); font-weight: 600; }
+.prose a { color: var(--accent); text-decoration: none; }
+.prose a:hover { color: var(--accent-hover); text-decoration: underline; }
+.prose hr { border: 0; border-top: 1px solid var(--border); margin: 2rem 0; }
+.prose blockquote {
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+  border-left: 2px solid var(--accent); /* accent used as a small mark */
+  color: var(--muted-foreground);
+}
+.prose img { border-radius: var(--radius); border: 1px solid var(--border); }
+
+/* Console code blocks — near-black surface, Geist Mono, in both themes.
+   Syntax highlighting is Shiki (rehype-pretty-code), which wraps blocks in a
+   <figure data-rehype-pretty-code-figure> and colors each token with an inline
+   style — so we must NOT set a color on the token spans, only on the chrome. */
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--code-surface);
+  color: var(--code-fg);
+  padding: 0.12em 0.38em;
+  border-radius: 0.3rem;
+}
+/* Code blocks — the Kibo <CodeBlock> (client-side Shiki) wrapped by our chrome
+   (src/components/code-block.tsx). The .cb-* classes give it the DevHub console
+   look; the highlighted <pre class="shiki"> comes from Shiki, whose per-token
+   colors are inline, so we only style the chrome + the block surface. */
+.prose .cb {
+  margin: 1.5rem 0;
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--code-bg);
+  color: var(--code-fg);
+}
+.prose .cb-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.5rem 0.4rem 0.9rem;
+  background: var(--code-surface);
+  border-bottom: 1px solid var(--code-border);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.prose .cb-name { color: var(--code-fg); font-weight: 500; }
+.prose .cb-lang {
+  margin-left: auto;
+  text-transform: lowercase;
+  letter-spacing: 0.02em;
+  opacity: 0.8;
+}
+/* The copy button is a Kibo/shadcn ghost <button>; retint it to the console. */
+.prose .cb-copy {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  color: var(--muted-foreground);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.prose .cb-copy:hover {
+  color: var(--code-fg);
+  background: rgb(255 255 255 / 0.08);
+  border-color: var(--code-border);
+}
+.prose .cb-copy svg { width: 0.95rem; height: 0.95rem; }
+/* Kibo's CodeBlockContent renders <pre class="shiki">; keep the console
+   background and let the block scroll. Shiki colors tokens inline. */
+.prose .cb pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important; /* the .cb owns the surface color */
+  padding: 1rem 0;
+  overflow-x: auto;
+  font-size: 0.9rem;
+}
+.prose .cb pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+.prose .cb .shiki, .prose .cb .line { font-family: var(--font-mono); }
+/* Shiki wraps each source line in a `.line` span and Kibo lays them out as grid
+   rows (display:grid on <code>). A BLANK source line is an empty `.line` with no
+   content, which collapses to zero height — so blank lines between statements
+   vanish and the code looks squashed. Force every line to occupy one line-box. */
+.prose .cb .line {
+  display: block;
+  min-height: 1.5em;
+  line-height: 1.5;
+}
+
+/* Code journeys — a GitHub-style step timeline (see src/components/journey.tsx).
+   A thin MUTED rail runs down a left gutter through subtle grey-ringed bubbles;
+   the Delta accent is only a whisper. Each step's bubble, title and code block
+   share the rail, and the title is vertically centered on its bubble. */
+.prose .jr {
+  list-style: none;
+  margin: 1.75rem 0;
+  padding: 0;
+  /* gutter width for the bubble column; --jr-bubble is the bubble diameter */
+  --jr-bubble: 1.75rem;
+  --jr-gutter: 2.5rem;
+}
+.prose .jr-step {
+  position: relative;
+  margin: 0;
+  padding: 0 0 1.75rem var(--jr-gutter);
+}
+.prose .jr-step[data-last] { padding-bottom: 0; }
+/* The rail: a thin muted line down the bubble column, behind the bubbles. It
+   starts at each bubble's center and runs to the next step; the last step hides
+   it (a group-last equivalent). */
+.prose .jr-step::before {
+  content: "";
+  position: absolute;
+  top: calc(var(--jr-bubble) / 2);
+  bottom: 0;
+  left: calc(var(--jr-bubble) / 2);
+  width: 2px;
+  transform: translateX(-50%);
+  background: var(--border);
+}
+.prose .jr-step[data-last]::before { display: none; }
+/* The bubble: GitHub's muted surface + grey ring, number in muted-foreground.
+   A hair of accent only on the ring so it reads as "ours" without shouting. */
+.prose .jr-bubble {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: var(--jr-bubble);
+  height: var(--jr-bubble);
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 0 4px var(--background); /* mask the rail behind the bubble */
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+}
+/* Title: vertically centered on its bubble (bubble is var(--jr-bubble) tall).
+   Sized/weighted to read as a step heading — it should stand out from the
+   now-softer body copy below it. */
+.prose .jr-title {
+  display: flex;
+  align-items: center;
+  min-height: var(--jr-bubble);
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--heading);
+  letter-spacing: -0.015em;
+}
+/* Body: the code block sits just under the title, sharing the step's indent. */
+.prose .jr-body { margin-top: 0.6rem; }
+.prose .jr-body .cb { margin: 0; }
+
+/* Callouts — tip / note / info / warning / caution / danger boxes
+   (src/components/callout.tsx). A tinted left border + soft tinted surface, an
+   icon and a heading; the tint is per-type via --callout-accent. */
+.prose .callout {
+  --callout-accent: var(--accent);
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--callout-accent);
+  border-radius: calc(var(--radius) - 0.15rem);
+  background: color-mix(in srgb, var(--callout-accent) 7%, var(--card));
+  padding: 0.85rem 1rem;
+}
+.prose .callout[data-type="tip"] { --callout-accent: #16a34a; }      /* green */
+.prose .callout[data-type="note"],
+.prose .callout[data-type="info"] { --callout-accent: var(--accent); } /* Delta cyan */
+.prose .callout[data-type="warning"],
+.prose .callout[data-type="caution"] { --callout-accent: #d97706; }  /* amber */
+.prose .callout[data-type="danger"] { --callout-accent: #dc2626; }   /* red */
+:root.dark .prose .callout[data-type="tip"] { --callout-accent: #22c55e; }
+:root.dark .prose .callout[data-type="warning"],
+:root.dark .prose .callout[data-type="caution"] { --callout-accent: #f59e0b; }
+:root.dark .prose .callout[data-type="danger"] { --callout-accent: #f87171; }
+.prose .callout-head {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.35rem;
+  color: var(--callout-accent);
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.prose .callout-icon { width: 1.05rem; height: 1.05rem; flex: none; }
+.prose .callout-body { color: var(--foreground); }
+/* The box owns the outer spacing; kill the first/last child margins so text and
+   code blocks sit snug inside it. */
+.prose .callout-body > :first-child { margin-top: 0; }
+.prose .callout-body > :last-child { margin-bottom: 0; }
+.prose .callout-body p { margin: 0.5rem 0; }
+.prose .callout-body .cb { margin: 0.75rem 0; }
+
+/* Tables — bordered, neutral. */
+.prose table {
+  border-collapse: collapse;
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  font-size: 0.95rem;
+  color: var(--foreground);
+}
+.prose th, .prose td { border: 1px solid var(--border); padding: 0.45rem 0.7rem; text-align: left; }
+.prose th { background: var(--surface); font-weight: 600; color: var(--heading); }
+
+/* An interactive LikeC4 view renders inside shadow DOM; give it room. */
+.prose likec4-view, .prose .likec4-view, .prose [data-likec4-instance] {
+  display: block;
+  min-height: 26rem;
+  margin: 1.75rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* Top nav + index layout */
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.topnav {
+  display: flex;
+  gap: 1rem;
+  margin-left: auto;
+  margin-right: 0.5rem;
+}
+.topnav a {
+  color: var(--muted-foreground);
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+.topnav a:hover { color: var(--accent); }
+.index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 2rem;
+  margin-top: 1.5rem;
+}
+.draft-list.compact li { margin-bottom: 0.35rem; }
+.nav-section { margin-bottom: 2rem; }
+.nav-bucket { margin-left: 0.5rem; margin-bottom: 1rem; }
+.nav-bucket h3 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+  margin: 0.75rem 0 0.35rem;
+}
+
+/* Engine tabs (remark-tabs) */
+.prose .tabs { margin: 1.25rem 0; }
+.prose .tabs-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.75rem;
+}
+.prose .tabs-trigger {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+.prose .tabs-trigger:hover { color: var(--foreground); }
+.prose .tabs-trigger.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.prose .tabs-panel > :first-child { margin-top: 0; }

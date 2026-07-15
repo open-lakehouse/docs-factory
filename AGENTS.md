@@ -6,71 +6,81 @@ repo convention; it is **not** published to any docs site.
 ## What this repo is
 
 The **authoritative content source** for the restructured `delta.io` and
-`unitycatalog.io` documentation. We author engine-neutral explanations and
-multi-engine, copy/paste-runnable, CI-tested examples here, then migrate them into
-the sites later. Content targets **Astro + Starlight**: pages are Markdown
-(`.md`) or MDX (`.mdx`), and MDX pages may use Starlight components (e.g. `<Tabs>`
-for engine-tabbed snippets). The destination sites are expected to provide the
-same Starlight component set. It does **not** depend on the separate
-`delta-docs-factory` build orchestrator.
+`unitycatalog.io` documentation, plus narrative blog drafts for the open-lakehouse
+estate. We author engine-neutral explanations and multi-engine, copy/paste-runnable,
+CI-tested examples here, then migrate docs into the sites later. Content is
+**builder-agnostic Markdown** (`.md`): richness comes from remark plugins in the
+local preview harness, not from JSX or site-specific syntax in the source files.
+
+Narrative (blogs) stays separate from architectural fact (`architecture/`) and from
+reference docs (`content/`).
 
 ## Layout
 
 ```
-content/        Diátaxis-organized Markdown/MDX (tutorials / how-to / reference / explanation)
+content/          Diátaxis-organized Markdown (tutorials / how-to / reference / explanation)
 content/coverage/ coverage tracker — backlog + per-page/example status (YAML, not published)
-examples/       real, tested example source — the single source of truth for snippets
-seed/           docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
-tools/docsnip/  content tooling (frontmatter validate, snippet check, manifest, llms.txt)
-site-artifacts/ GENERATED — llms.txt + examples-manifest.json (do not hand-edit)
-research/       existing research reports (leave alone)
-proto/          existing trestle tracker API (leave alone)
+blogs/            narrative blog drafts (draft.md + assets/ + snippets/ per post)
+emit/             deterministic blog draft → flattened Markdown (Google Docs today)
+examples/         real, tested example source — the single source of truth for doc snippets
+seed/             docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
+tools/docsnip/    content tooling (frontmatter validate, snippet check, manifest, llms.txt)
+site/             throwaway Vite + React + MDX preview (docs + blogs; not wired into CI)
+site-artifacts/   GENERATED — llms.txt + examples-manifest.json (do not hand-edit)
+architecture/     LikeC4 model + design docs + ADRs + estate facts (estate.yml, glossary)
+research/         existing research reports (leave alone)
+proto/            existing trestle tracker API (leave alone)
 ```
 
 ## Load-bearing conventions
 
 1. **Examples are the source of truth for docs code.** Docs never inline code;
    they reference example files via `remark-code-snippets` fences
-   (`file=... start=... end=...`). The Astro build resolves them live; nothing is
-   copied into the page, so there is nothing to drift. `docsnip snippetcheck`
-   enforces that every fence resolves to a unique region. Fences work the same in
-   `.md` and `.mdx` — including inside `<Tabs>`/`<TabItem>` (leave a blank line
-   around a fence inside a component so MDX parses it as a code block).
+   (`file=... start=... end=...`). The preview resolves them live; nothing is
+   copied into the page. `docsnip snippetcheck` enforces that every fence resolves.
+   Engine-tabbed snippets use neutral `::::tabs` / `:::tab[Label]` directives.
 
-2. **Region markers wrap only what the reader should see.** Put seeding, `main`
+2. **Blog snippets live in `blogs/<slug>/snippets/`.** Same `file=`/`start=`/`end=`
+   fence contract; whole-file inlining (`file=` only) is also supported. Blog
+   frontmatter is validated separately (see `blogs/CONVENTIONS.md`).
+
+3. **Region markers wrap only what the reader should see.** Put seeding, `main`
    wrappers, and asserts *outside* the `docs-...-start` / `docs-...-end` markers —
-   except the `seed_dataset(...)` line for examples that read pre-existing data,
-   which stays *inside* so the shown snippet is runnable.
-
-3. **Seeded data uses `docs_factory_seed`, the same path readers and CI use.**
-   Never hide test fixtures. A snippet that needs a table calls `seed_dataset(...)`;
-   that is what a reader who `pip install docs-factory-seed` runs too.
+   except the `seed_dataset(...)` line for examples that read pre-existing data.
 
 4. **`site-artifacts/` is generated.** Run `uv run docsnip generate` after changing
-   content or examples and commit the result. CI (`docsnip check`) fails if it's stale.
+   content or examples and commit the result. CI (`docsnip check`) fails if stale.
 
 5. **Every content page carries frontmatter.** Required: `title`, `diataxis`,
-   `project`. Controlled vocabularies (diataxis / project / engines / status) are
-   validated by `docsnip validate`.
+   `project`. Blog drafts require `title`, `slug`, `status`, `date`, `tags`, `author`,
+   `target` (tags must exist in `blogs/tags.yml`).
 
-6. **`content/coverage/` is the backlog + status ledger.** `delta.yaml` (fully
-   enumerated) and `unitycatalog.yaml` (skeleton) map every feature/topic to its
-   planned Diátaxis pages and examples. It is planning metadata, not published
-   content, and does not render on the site. When a page or example lands or changes
-   status, update its entry in the *same PR*. Published upstream sources
-   (`PROTOCOL.md`, docs.delta.io, Databricks docs) are authoritative for what to
-   cover; `research/` is a hint only, never a source of truth. See
-   `content/coverage/README.md`.
+6. **`content/coverage/` is the backlog + status ledger.** Update coverage status
+   in the *same PR* as content changes. See `content/coverage/README.md`.
+
+7. **Richness is a property of the renderer.** Blog constructs (`:::tip`, `::::journey`,
+   LikeC4 diagrams) degrade to plain Markdown on GitHub; the preview upgrades them.
+   See `blogs/CONVENTIONS.md` §5 and `site/README.md`.
+
+## On each import, reflect on the conventions
+
+When new ideas, drafts, or source material land here, reflect on whether the
+experience surfaced a gap in the relevant conventions doc — and **propose a concrete
+update** rather than silently working around it. When adding a blog tag, prefer an
+existing entry from `blogs/tags.yml`; only add a new tag in the same change.
 
 ## Common commands
 
 ```bash
 uv sync --all-packages                 # install every workspace package
+just preview                           # Vite preview at :4321 (docs + blogs)
+just emit <slug>                       # flatten a blog draft for Google Docs
 uv run pytest examples/tests           # run + verify the Python examples
 uv run docsnip check                   # frontmatter + snippets + artifact freshness
 uv run docsnip generate                # regenerate site-artifacts/
 uv run ruff check . && uv run ty check # lint + types
 cargo build --examples                 # compile the Rust example/seed stubs
+just arch-dev                          # LikeC4 architecture model at :5173
 ```
 
 ## Adding an engine to an example
@@ -82,3 +92,10 @@ To promote a stub to built:
 3. Add the engine to `BUILT_ENGINES` in `tools/docsnip/src/docsnip/manifest.py`.
 4. Reference it from the relevant `content/**/*.md` via a snippet fence + a
    `snippets:` frontmatter entry, then `uv run docsnip generate`.
+
+## Blog workflow
+
+Read [`blogs/CONVENTIONS.md`](blogs/CONVENTIONS.md) before working on posts.
+Skills in `.claude/skills/{blog-post,blog-review,blog-emit}` automate the lifecycle.
+Estate facts for cross-repo posts live in [`architecture/estate.yml`](architecture/estate.yml);
+narrative framing in [`blogs/STORYLINE.md`](blogs/STORYLINE.md).

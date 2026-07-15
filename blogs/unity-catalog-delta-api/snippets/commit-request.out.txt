@@ -1,0 +1,120 @@
+# The create -> commit lifecycle on the wire — real request bodies captured from
+# Delta-Spark's traffic to the UC Delta API (v0.5.0), 2026-07-10. Captured by
+# proxying Delta-Spark's HTTP to the server and dumping every POST body, then
+# running read_write_delta_spark.py (table `events2`). NOT hand-written.
+#
+# This is the §5 centerpiece: intent-based, atomic, server-validated updates over
+# ONE overloaded endpoint. Note the two-RPC create rule (staging -> promote) vs
+# the single-RPC commit on an existing table.
+
+## 1. POST .../staging-tables — allocate a managed table (client sends just the name)
+$ POST /api/2.1/unity-catalog/delta/v1/catalogs/unity/schemas/default/staging-tables
+{
+  "name": "events2"
+}
+# -> the server RESPONDS with the vended file:// location + the feature-advertisement
+#    payload (required/suggested protocol + properties). See the response in
+#    api-transcripts.out.txt ("POST staging-tables").
+
+## 2. POST .../tables — promote: register the table with its native Delta schema + protocol
+$ POST /api/2.1/unity-catalog/delta/v1/catalogs/unity/schemas/default/tables
+{
+  "name": "events2",
+  "location": "file:///tmp/uc-data/__unitystorage/tables/1f47e3b8-7fb8-413c-9d9d-20f2ab75b908",
+  "table-type": "MANAGED",
+  "columns": {
+    "type": "struct",
+    "fields": [
+      {
+        "name": "id",
+        "type": "long",
+        "nullable": true,
+        "metadata": {
+          "delta.columnMapping.id": 1,
+          "delta.columnMapping.physicalName": "col-fcddc5e6-7710-46ca-a0df-58b6fc55b42f"
+        }
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "nullable": true,
+        "metadata": {
+          "delta.columnMapping.id": 2,
+          "delta.columnMapping.physicalName": "col-67fa099c-f1d5-4adb-b4cb-da42a4ffb76d"
+        }
+      }
+    ]
+  },
+  "partition-columns": [],
+  "protocol": {
+    "min-reader-version": 3,
+    "min-writer-version": 7,
+    "reader-features": ["deletionVectors", "v2Checkpoint", "catalogManaged", "vacuumProtocolCheck", "columnMapping"],
+    "writer-features": ["deletionVectors", "domainMetadata", "v2Checkpoint", "catalogManaged", "vacuumProtocolCheck", "rowTracking", "invariants", "inCommitTimestamp", "appendOnly", "columnMapping"]
+  },
+  "properties": {
+    "delta.randomizeFilePrefixes": "true",
+    "delta.enableDeletionVectors": "true",
+    "delta.checkpoint.writeStatsAsStruct": "true",
+    "delta.enableRowTracking": "true",
+    "delta.checkpointPolicy": "v2",
+    "io.unitycatalog.tableId": "1f47e3b8-7fb8-413c-9d9d-20f2ab75b908",
+    "delta.rowTracking.materializedRowIdColumnName": "_row-id-col-d6c882a6-2762-4712-bc29-7395012cae27",
+    "delta.enableInCommitTimestamps": "true",
+    "delta.checkpoint.writeStatsAsJson": "true",
+    "delta.columnMapping.mode": "name",
+    "delta.columnMapping.maxColumnId": "2",
+    "delta.rowTracking.materializedRowCommitVersionColumnName": "_row-commit-version-col-47711aff-8d63-4a2e-8f8a-2dacd2d57414"
+  },
+  "last-commit-timestamp-ms": 1783665695287
+}
+# Note: the schema is NATIVE DELTA (struct/fields + column-mapping metadata), the
+# `protocol` is a structured object of reader/writer FEATURES, not an Iceberg
+# schema — the "IRC ergonomics, Delta semantics" point made concrete.
+
+## 3. POST .../tables/events2 — the atomic commit (INSERT INTO): one overloaded endpoint
+$ POST /api/2.1/unity-catalog/delta/v1/catalogs/unity/schemas/default/tables/events2
+{
+  "requirements": [
+    {
+      "type": "assert-table-uuid",
+      "uuid": "1f47e3b8-7fb8-413c-9d9d-20f2ab75b908"
+    }
+  ],
+  "updates": [
+    {
+      "action": "add-commit",
+      "commit": {
+        "version": 1,
+        "timestamp": 1783665699029,
+        "file-name": "00000000000000000001.63e70f6f-eb63-4913-a1e3-2c9a973ea726.json",
+        "file-size": 1773,
+        "file-modification-timestamp": 1783665699076
+      }
+    },
+    {
+      "action": "set-latest-backfilled-version",
+      "latest-published-version": 0
+    }
+  ]
+}
+# THE key artifact: `requirements` carries the optimistic-concurrency guard
+# (assert-table-uuid — assert-etag appears here too on property/schema updates),
+# and `updates` is the intent list. The client writes the Delta commit file first,
+# then this RPC ratifies it (add-commit) — Delta's "client-writes-commit-then-
+# catalog-ratifies" flow, guarded + validated server-side.
+
+## loadTable AFTER the commit — the server now tracks version 1
+$ GET /api/2.1/unity-catalog/delta/v1/catalogs/unity/schemas/default/tables/events2
+{
+  "commits": [
+    {
+      "version": 1,
+      "timestamp": 1783665699029,
+      "file-name": "00000000000000000001.63e70f6f-eb63-4913-a1e3-2c9a973ea726.json",
+      "file-size": 1773,
+      "file-modification-timestamp": 1783665699076
+    }
+  ],
+  "latest-table-version": 1
+}

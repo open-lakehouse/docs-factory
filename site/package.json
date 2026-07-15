@@ -39,7 +39,7 @@
     "@types/node": "^26.1.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
-    "@vitejs/plugin-react-swc": "^3.11.0",
+    "@vitejs/plugin-react-swc": "^4.3.1",
     "likec4": "1.58.0",
     "postcss": "^8.5.6",
     "rehype-autolink-headings": "^7.1.0",
@@ -50,6 +50,6 @@
     "shiki": "^4.3.1",
     "tailwindcss": "^4.3.2",
     "typescript": "^5.8.3",
-    "vite": "^5.4.19"
+    "vite": "^8.1.3"
   }
 }

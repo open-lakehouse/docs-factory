@@ -116,3 +116,62 @@ export function findBlog(slug: string): ContentPage | undefined {
 export function findDoc(project: string, bucket: string, slug: string): ContentPage | undefined {
   return docPages.find((p) => p.project === project && p.bucket === bucket && p.slug === slug);
 }
+
+export interface BlogSeriesGroup {
+  series: string;
+  posts: ContentPage[];
+}
+
+/** Blog posts grouped by series; standalone posts last. */
+export function blogsBySeries(): { series: BlogSeriesGroup[]; standalone: ContentPage[] } {
+  const seriesMap = new Map<string, ContentPage[]>();
+  const standalone: ContentPage[] = [];
+
+  for (const post of blogPosts) {
+    const series = post.frontmatter.series;
+    if (series) {
+      const list = seriesMap.get(series) ?? [];
+      list.push(post);
+      seriesMap.set(series, list);
+    } else {
+      standalone.push(post);
+    }
+  }
+
+  const series: BlogSeriesGroup[] = [...seriesMap.entries()]
+    .map(([name, posts]) => ({
+      series: name,
+      posts: posts.sort(
+        (a, b) =>
+          (a.frontmatter.series_order ?? 0) - (b.frontmatter.series_order ?? 0) ||
+          (b.frontmatter.date ?? "").localeCompare(a.frontmatter.date ?? ""),
+      ),
+    }))
+    .sort((a, b) => a.series.localeCompare(b.series));
+
+  return { series, standalone };
+}
+
+/** All unique blog tags across posts, sorted. */
+export function blogTags(): string[] {
+  const tags = new Set<string>();
+  for (const post of blogPosts) {
+    for (const tag of post.frontmatter.tags ?? []) tags.add(tag);
+  }
+  return [...tags].sort();
+}
+
+export function blogNeighbors(slug: string): { prev?: ContentPage; next?: ContentPage } {
+  const idx = blogPosts.findIndex((p) => p.slug === slug);
+  if (idx < 0) return {};
+  return {
+    prev: idx < blogPosts.length - 1 ? blogPosts[idx + 1] : undefined,
+    next: idx > 0 ? blogPosts[idx - 1] : undefined,
+  };
+}
+
+/** Rough reading time from plain text (words / 200 wpm). */
+export function readingTimeMinutes(text: string): number {
+  const words = text.trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 200));
+}

@@ -1,0 +1,17 @@
+# Navigation ordering hints for the downstream site.
+label: Unity Catalog
+order:
+  - explanation
+  - tutorials
+  - how-to
+  - reference
+sections:
+  explanation:
+    label: Explanation
+    order: [what-is-unity-catalog]
+  tutorials:
+    label: Tutorials
+  how-to:
+    label: How-to guides
+  reference:
+    label: Reference

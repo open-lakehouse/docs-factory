@@ -1,10 +1,10 @@
 // LOGICAL LAYER (abstract) — the reference open lakehouse.
 //
 // Technology-agnostic capabilities and the external OSS they assemble on, plus
-// the people who use the lakehouse. NO repo/service/infra names appear here —
-// those live only in the deployment layer. The governance capability's internal
-// zero-trust roles live in governance.likec4; cross-capability relationships
-// live in relationships.likec4.
+// the people who use the lakehouse. NO service/repo/technology names appear here
+// — those live only in the deployment layer. The governance capability's zero-
+// trust roles live in governance.likec4; cross-capability relationships live in
+// relationships.likec4.
 
 model {
 
@@ -15,52 +15,107 @@ model {
   }
 
   platformEngineer = person "Platform engineer" {
-    description "Builds and operates the lakehouse services; the primary audience for this model."
+    description "Builds and operates the lakehouse: the services, their health, and smooth operation of the platform."
   }
 
   agent = person "AI agent" {
-    description "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces. The 'and AI' half of open-lakehouse-and-ai."
+    description "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
   }
 
   // --- The reference open lakehouse: capabilities --------------------------
 
   lakehouse = capability "Open Lakehouse" {
     description "
-      The reference architecture: warehouse-style governance and query over open table formats on object storage.
-      Assembled from OSS foundations plus the connective tissue they don't ship.
+      The reference architecture: warehouse-style governance and query over open
+      table formats on object storage. Assembled from OSS foundations plus the
+      connective tissue they don't ship.
     "
     link https://openlakehouse.io
-    link https://github.com/open-lakehouse
 
     catalog = capability "Catalog" {
-      description "Governs tables, schemas, and credentials. The surface every query resolves through; issues short-lived scoped storage credentials at resolution time (credential vending)."
+      summary "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+
+      description "
+        A catalog is the metadata layer that records which tables and schemas
+        exist, where their data lives, and who may touch it — the authoritative
+        namespace a query resolves a table name against before any bytes are read.
+
+        In the lakehouse it also brokers access: at resolution time it issues a
+        short-lived, scoped storage credential for exactly the data a query needs
+        (credential vending), so raw storage keys are never handed out.
+      "
+
+      link https://www.openlakehouse.io/technologies/catalogs
+
       metadata { canonicalDoc "design/catalog-plane.md" }
     }
 
     queryEngine = capability "Query engine" {
-      description "Resolves tables through the catalog and executes over open table formats. Catalog-native: credentials, policy, and lineage attach at resolution/planning time."
+      summary "Parses, plans, and executes queries over open table formats."
+      description "
+        A query engine turns a declarative query into a plan of operations and
+        executes it: it parses the query, resolves the tables it references,
+        optimizes an execution plan, and runs it to produce results.
+
+        Here it is catalog-native — it resolves tables through the catalog, and
+        credentials, policy enforcement, and lineage capture all attach to the
+        plan at resolution / planning time rather than being bolted on after.
+      "
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     tableFormat = capability "Open table format" {
-      description "Gives raw object-storage bytes table semantics — ACID transactions, schema, and snapshots. The technology-agnostic 'open table format' layer; Delta and Iceberg are peer concrete formats that realize it."
+      summary "A metadata layer that gives object-storage files ACID table semantics."
+
+      description "
+        An open table format is an open specification for a metadata layer over
+        data files in object storage. It tracks which files make up a table plus
+        their schema and snapshots, giving a plain directory of files table
+        semantics — ACID transactions, schema evolution, and time travel.
+
+        It is technology-agnostic in the model: Delta Lake and Apache Iceberg are
+        peer concrete formats that realize this capability.
+      "
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     objectStorage = capability "Object storage" {
-      description "The byte container where table data files are written. Beneath the table format — the format is what makes these bytes a governed, transactional table."
+      summary "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+      description "
+        Object storage manages data as discrete objects (blobs) in a flat
+        namespace addressed by key, rather than as a file hierarchy or fixed
+        blocks. It scales cheaply and horizontally, which is why it is the byte
+        container the lakehouse writes table data files into.
+
+        It sits beneath the table format: object storage holds the bytes; the
+        table format is what makes those bytes a governed, transactional table.
+      "
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
     lineage = capability "Lineage" {
-      description "Captures dataset- and column-level provenance (OpenLineage) at query planning time — 'where did this data come from, and where does it flow'."
+      summary "Records where data came from and where it flows, down to the column."
+      description "
+        Data lineage traces the origin and movement of data through the system —
+        which inputs produced which outputs, dataset- and column-level.
+
+        Here it is captured at query planning time, so provenance is derived from
+        the plan the engine is about to run rather than reconstructed after.
+      "
       metadata { canonicalDoc "design/lineage-plane.md" }
     }
 
-    // Governance is a first-class capability; its zero-trust roles (PAP/PDP/
-    // PEP/PIP/PA) are declared in governance.likec4 via `extend`.
+    // Governance is a first-class capability; its zero-trust roles (PAP / PDP /
+    // PEP / PIP / PA) are declared in governance.likec4 via `extend`.
     governance = capability "Governance" {
-      description "Decides 'can this principal do this here?' and, when allowed, governs what they see (row filters, column masks). A cross-cutting zero-trust decomposition (PAP / PDP / PEP / PIP) whose points are realized by different services per deployment."
+      summary "Decides who may access what, and enforces it (row filters, column masks)."
+      description "
+        Governance answers 'can this principal do this here?' and, when allowed,
+        governs what they see — enforcing row filters and column masks.
+
+        It is a cross-cutting zero-trust decomposition (PAP / PDP / PEP / PIP /
+        PA) whose points are realized by different services per deployment.
+      "
       metadata { canonicalDoc "design/governance.md" }
     }
   }
@@ -68,52 +123,45 @@ model {
   // --- External OSS foundations & concrete formats -------------------------
 
   datafusion = foundation "Apache DataFusion" {
-    description "The shared query/compute core the query engine is built on. Policy and lineage plug in via its extension points."
+    description "The shared query / compute core the query engine is built on."
     technology "Rust query engine"
     link https://datafusion.apache.org
   }
 
-  // Delta and Iceberg are PEER open table formats realizing `tableFormat`.
   delta = foundation "Delta Lake" {
-    description "An open table format (via delta-rs / delta-kernel-rs). Realizes the tableFormat capability."
+    description "An open table format. Realizes the tableFormat capability."
     technology "Delta Lake"
     link https://delta.io
   }
 
   iceberg = foundation "Apache Iceberg" {
-    description "An open table format. Realizes the tableFormat capability; reached in the estate via Iceberg-REST catalogs (e.g. Lakekeeper)."
+    description "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
     technology "Apache Iceberg"
     link https://iceberg.apache.org
   }
 
-  cedar = foundation "AWS Cedar" {
+  cedar = foundation "Cedar" {
     description "The policy language and decision engine behind the governance PDP."
     technology "Cedar"
     link https://www.cedarpolicy.com
   }
 
   openlineage = foundation "OpenLineage" {
-    description "The lineage event standard the lineage capability emits and ingests. Marquez is the reference server it's inspired by."
-    technology "OpenLineage / Marquez"
+    description "The lineage event standard the lineage capability emits and ingests."
+    technology "OpenLineage"
     link https://openlineage.io
   }
 
   unitycatalog = foundation "Unity Catalog OSS" {
-    description "The governance API surface the catalog builds and integrates with — and explores ahead of — rather than competing with the official Java implementation."
+    description "The governance API surface the catalog builds on and integrates with."
     technology "Unity Catalog"
     link https://www.unitycatalog.io
   }
 
   lakekeeper = foundation "Lakekeeper" {
-    description "An Iceberg-REST catalog. The catalog's Delta API can feed it (feasibility-stage interop) so Iceberg-REST consumers see the same tables."
+    description "An Iceberg-REST catalog. The catalog can interoperate with it so Iceberg-REST consumers see the same tables."
     technology "Iceberg-REST catalog"
+
     link https://github.com/lakekeeper/lakekeeper
-  }
-
-  // --- External untrusted engines (deployment consumers) -------------------
-
-  sparkTrino = externalEngine "Spark / Trino / notebook" {
-    description "An external query engine that can receive a vended scoped storage credential and read raw files. Enforces only coarse access — FGAC (row filters / column masks) is bypassed when it reads directly."
-    metadata { canonicalDoc "design/deployments.md" }
   }
 }

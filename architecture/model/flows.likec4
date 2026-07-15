@@ -1,5 +1,5 @@
 // Dynamic (sequence) flows over the logical model. These read at the conceptual
-// altitude — the same abstract capabilities/roles the deployments realize — so
+// altitude — the same abstract capabilities / roles the deployments realize — so
 // they never drift from the structure.
 
 views {
@@ -27,7 +27,7 @@ views {
     lakehouse.queryEngine -> lakehouse.governance.pep "govern the plan"
     lakehouse.governance.pep -> lakehouse.governance.pdp "request decision"
     lakehouse.governance.pdp -> lakehouse.governance.pip "gather facts"
-    lakehouse.governance.pdp -> lakehouse.governance.pep "allow + row/column constraints"
+    lakehouse.governance.pdp -> lakehouse.governance.pep "allow + row / column constraints"
     lakehouse.queryEngine -> lakehouse.lineage "emit column-level lineage"
     lakehouse.queryEngine -> practitioner "governed results"
   }
@@ -42,18 +42,5 @@ views {
     lakehouse.governance.pip -> lakehouse.governance.pdp "supply resource / identity / context facts"
     lakehouse.governance.pdp -> lakehouse.governance.pep "verdict + constraints"
     lakehouse.governance.pep -> lakehouse.queryEngine "apply (filters / masks / deny)"
-  }
-
-  // --- The FGAC bypass (the sharp point) -----------------------------------
-  dynamic view fgacBypass {
-    title "Flow — FGAC bypass (external engine)"
-    description "When the catalog vends a raw credential to an external engine, the query never flows through the enforcing engine — row filters and column masks are bypassed. The designed mitigation: refuse to vend a raw credential for a governed table."
-
-    practitioner -> sparkTrino "run query on external engine"
-    sparkTrino -> lakehouse.catalog "request storage credential"
-    lakehouse.catalog -> lakehouse.governance.pa "coarse authorize"
-    lakehouse.catalog -> sparkTrino "scoped credential (coarse only)"
-    sparkTrino -> lakehouse.objectStorage "read raw files — FGAC BYPASSED"
-    sparkTrino -> practitioner "unfiltered results"
   }
 }

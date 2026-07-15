@@ -1,16 +1,19 @@
-// Specification for the Open Lakehouse architecture model.
+// Specification for the Open Lakehouse architecture model — the vocabulary of
+// element / deployment-node / relationship kinds and tags.
 //
 // The model is LAYERED:
 //   - LOGICAL (abstract): technology-agnostic capabilities + governance roles.
-//     The reference open lakehouse. No repo/service/infra names here.
-//   - DEPLOYMENT (concrete): our repos/services as deployment nodes that
-//     `instanceOf` the logical elements, across several trust-differentiated
-//     topologies.
+//     The reference open lakehouse. No service/repo/technology names here.
+//   - DEPLOYMENT (concrete): our services as deployment nodes that `instanceOf`
+//     the logical capabilities they realize, across deployment topologies.
 //
-// REF-FREE: names, roles, and edges only — never a commit SHA or release tag.
-// MATURITY-HONEST: everything designed-but-not-built carries #designed (or
-// #prototype); a global style renders those dashed/amber so the model never
-// overstates what exists.
+// TRUST is a property of the DEPLOYMENT boundary, not of a component: the same
+// query engine is trusted inside the boundary and untrusted reaching in from
+// outside. So trust tags live on deployment nodes/topologies, never on a kind.
+//
+// REF-FREE: names and edges only — never a commit SHA or release tag.
+// MATURITY-HONEST: designed-but-not-built carries #designed (or #prototype);
+// the tag colors render those amber so the model never overstates what exists.
 
 specification {
 
@@ -51,50 +54,31 @@ specification {
     }
   }
 
-  // An external, untrusted query engine (Spark / Trino / notebook) — a consumer
-  // that can receive a vended credential but does not enforce FGAC.
-  element externalEngine {
-    notation "External engine (untrusted)"
-    style {
-      shape rectangle
-      color slate
-    }
-  }
-
   // --- Deployment node kinds ----------------------------------------------
 
+  // A deployment topology. Its trust posture (#trusted / #untrusted) is what
+  // determines where enforcement happens — not which component runs in it.
   deploymentNode environment {
     notation "Deployment topology"
   }
 
-  // A deployed service/process (our repos manifest here).
+  // A deployed service / process (our repos manifest here).
   deploymentNode service {
     style {
       icon tech:rust
     }
   }
 
-  // The single-port API gateway (Envoy) — where the platform manifests as one
-  // cohesive API surface. Central gateway, not per-service sidecars.
-  deploymentNode gateway {
-    notation "API gateway (Envoy)"
-    technology "Envoy"
-    style {
-      shape rectangle
-      color green
-    }
-  }
-
-  // A browser / client-side WASM runtime (untrusted).
+  // A browser / client-side runtime.
   deploymentNode browser {
-    notation "Browser / WASM runtime"
+    notation "Browser runtime"
     style {
       shape browser
       color sky
     }
   }
 
-  // A datastore backing a service (Postgres, object storage buckets).
+  // A datastore backing a service (object storage buckets, relational store).
   deploymentNode datastore {
     style {
       shape storage
@@ -104,12 +88,11 @@ specification {
 
   // --- Relationship kinds --------------------------------------------------
 
-  relationship flows                       // generic data/control flow
-  relationship realizes { line dotted }    // (reserved) concrete realizes abstract
+  relationship flows                       // generic data / control flow
+  relationship realizes { line dotted }    // concrete realizes abstract
   relationship resolves                    // query engine resolves via catalog
   relationship reads                       // reads bytes / files
   relationship vends { color amber }       // catalog vends a scoped credential
-  relationship routes { color green }      // gateway routes traffic to a backend
   // Zero-trust edges:
   relationship administers                 // PAP administers policy for the PDP
   relationship decides                     // PDP decides
@@ -118,7 +101,7 @@ specification {
 
   // --- Tags ----------------------------------------------------------------
 
-  // Maturity (drives the global style — see globals.likec4).
+  // Maturity (drives amber coloring for designed / prototype work).
   tag built
   tag designed { color #f59e0b }     // amber — designed, not built
   tag prototype { color #f59e0b }    // amber — prototype / preview only
@@ -129,7 +112,7 @@ specification {
   tag pep
   tag pip
 
-  // Trust posture of a deployment / node.
+  // Trust posture of a DEPLOYMENT topology / node (never of a logical element).
   tag trusted
   tag untrusted
 }

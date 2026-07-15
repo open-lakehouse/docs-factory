@@ -1,33 +1,20 @@
-// DEPLOYMENT views — one per topology. These show WHICH concrete service plays
-// each logical capability / governance role, and the trust differences between
-// topologies. #designed / #prototype elements render amber (tag colors in spec).
-
 views {
 
-  // --- 1. olai-native (trusted compute) ------------------------------------
-  deployment view olaiNativeDeploy {
-    title "Deployment — olai-native (trusted compute)"
-    description "The reference deployment: an Envoy gateway fronts the stack as ONE API surface; hydrofoil is the trusted query engine enforcing full FGAC in-plan (embedded PDP + engine PEP); mangrove is the catalog + resource PIP + credential-vending PA. Auth-on makes the gateway an edge PEP."
+  // --- 1. trusted-compute (inside the boundary) ----------------------------
+  deployment view trustedComputeDeploy {
+    title "Deployment — trusted compute"
+    description "The reference deployment, inside the trusted boundary: hydrofoil is the query engine enforcing full FGAC in-plan (embedded PDP + engine PEP); mangrove is the catalog + resource PIP + credential-vending PA; headwaters captures lineage."
 
-    include olaiNative.**
+    include trustedCompute.**
     autoLayout LeftRight
   }
 
-  // --- 2. external-engine (credential vending) — the FGAC bypass -----------
-  deployment view externalEngineDeploy {
-    title "Deployment — external engine (credential vending)"
-    description "The catalog vends a scoped credential to an external, untrusted engine (Spark/Trino/notebook), which then reads raw files. Only coarse access is enforced — row filters and column masks are BYPASSED. The non-vendable-governed-table guard (amber) is the designed mitigation."
+  // --- 2. external-compute (the FGAC bypass) -------------------------------
+  deployment view externalComputeDeploy {
+    title "Deployment — external compute (FGAC bypass)"
+    description "The same query-engine capability deployed OUTSIDE the trusted boundary: the catalog vends a scoped credential after a coarse check, and the engine reads raw files directly. Row filters and column masks are BYPASSED because the untrusted engine plays no PEP. The non-vendable-governed-table guard (amber) is the designed mitigation."
 
-    include externalEngine.**
-    autoLayout LeftRight
-  }
-
-  // --- 3. browser-wasm (client-side) ---------------------------------------
-  deployment view browserWasmDeploy {
-    title "Deployment — browser / WASM (client-side)"
-    description "A client-side WASM query engine (axon) in the untrusted browser. The catalog issues signed URLs / proxies bytes rather than vending raw credentials — no raw cloud secrets reach the browser. Prototype."
-
-    include browserWasm.**
+    include externalCompute.**
     autoLayout LeftRight
   }
 }

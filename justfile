@@ -10,11 +10,11 @@ default:
 # Start the unified local preview at http://localhost:4321 (installs deps first run).
 # Renders both content/ (Diátaxis docs) and blogs/ (narrative drafts).
 preview: _site-deps
-    cd site && npm run dev
+    cd site && bun run dev
 
 # Build the preview into site/dist/.
 preview-build: _site-deps
-    cd site && npm run build
+    cd site && bun run build
 
 # Install site deps on first run.
 _site-deps:
@@ -22,7 +22,7 @@ _site-deps:
     set -euo pipefail
     if [ ! -d site/node_modules ]; then
         echo "Installing site dependencies…"
-        (cd site && npm install)
+        (cd site && bun install)
     fi
 
 # --- Emit a blog draft to a downstream target ------------------------------
@@ -30,14 +30,14 @@ _site-deps:
 # Emit blogs/<slug>/draft.md to a target's flattened Markdown (default gdocs).
 # Produces blogs/<slug>/dist/<slug>.md + assets.json. See emit/README.md.
 emit slug target="gdocs": _emit-deps
-    cd emit && node emit.mjs --slug {{slug}} --target {{target}}
+    cd emit && bun emit.mjs --slug {{slug}} --target {{target}}
 
 _emit-deps:
     #!/usr/bin/env bash
     set -euo pipefail
     if [ ! -d emit/node_modules ]; then
         echo "Installing emitter dependencies…"
-        (cd emit && npm install)
+        (cd emit && bun install)
     fi
 
 # --- Content & examples ----------------------------------------------------
@@ -71,19 +71,19 @@ rust:
 
 # Interactive dev server for the architecture model (http://localhost:5173).
 arch-dev: _arch-deps
-    cd architecture && npm run dev
+    cd architecture && bun rundev
 
 # Validate the LikeC4 model (syntax + semantics). CI-gateable.
 arch-check: _arch-deps
-    cd architecture && npm run check
+    cd architecture && bun runcheck
 
 # Build the self-contained interactive static site into architecture/dist/static.
 arch-build: _arch-deps
-    cd architecture && npm run build
+    cd architecture && bun runbuild
 
 # Export the model to architecture/dist/model.json (agent / interactive-site input).
 arch-model: _arch-deps
-    cd architecture && npm run model
+    cd architecture && bun runmodel
 
 # Validate + export JSON + build static site in one step. Run after any model edit.
 arch-refresh: arch-check arch-model arch-build
@@ -94,5 +94,5 @@ _arch-deps:
     set -euo pipefail
     if [ ! -d architecture/node_modules ]; then
         echo "Installing architecture (LikeC4) dependencies…"
-        (cd architecture && npm install)
+        (cd architecture && bun install)
     fi

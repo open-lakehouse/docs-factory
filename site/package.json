@@ -6,9 +6,9 @@
   "description": "Throwaway local preview of docs-factory content. Reads ../content (Diátaxis docs) and ../blogs (narrative drafts) in place with site-like styling and interactive LikeC4 diagrams. NEVER edits content; not wired into CI.",
   "scripts": {
     "codegen": "likec4 codegen react --outfile ./src/likec4.generated.jsx ../blogs",
-    "predev": "npm run codegen",
+    "predev": "bun run codegen",
     "dev": "vite",
-    "prebuild": "npm run codegen",
+    "prebuild": "bun run codegen",
     "build": "vite build",
     "preview": "vite preview",
     "check": "likec4 validate ../blogs"

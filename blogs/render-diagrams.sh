@@ -3,9 +3,9 @@
 # Render D2 diagram sources to SVG.
 #
 # NOTE: LikeC4 (https://likec4.dev) is the PREFERRED diagram tool for new
-# diagrams — see blogs/CONVENTIONS.md. LikeC4 has its own render path (npm +
+# diagrams — see blogs/CONVENTIONS.md. LikeC4 has its own render path (bun +
 # headless Chromium), not this script:
-#   npx likec4 export png --sequence -o . blogs/<slug>/assets
+#   bunx likec4 export png --sequence -o . blogs/<slug>/assets
 # This script remains the renderer for D2 (`.d2`), which is still fine for an
 # existing diagram or a quick one-off.
 #

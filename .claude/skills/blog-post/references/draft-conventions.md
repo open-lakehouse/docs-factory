@@ -29,8 +29,8 @@ fact.
   `source -> target "label"` steps. Render with **`--sequence`** for a real lifeline
   layout; without it the static export falls back to a box-and-arrow graph
   ([likec4#2532](https://github.com/likec4/likec4/issues/2532)):
-  `npx likec4 export png --sequence -o . blogs/<slug>/assets` (static export needs a
-  headless Chromium once: `npx playwright install chromium`). `likec4 start <dir>`
+  `bunx likec4 export png --sequence -o . blogs/<slug>/assets` (static export needs a
+  headless Chromium once: `bunx playwright install chromium`). `likec4 start <dir>`
   opens the interactive viewer.
 - Keep a post's diagram **self-contained in its `assets/`** unless it truly belongs
   in the shared `docs-factory` model (whose logical layer is deliberately ref-free

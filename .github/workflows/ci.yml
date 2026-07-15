@@ -57,20 +57,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: "22"
+          bun-version: latest
       - name: Build unified preview site
         run: |
-          cd site && npm install && npm run build
+          cd site && bun install && bun run build
 
   architecture:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: oven-sh/setup-bun@v2
         with:
-          node-version: "22"
+          bun-version: latest
       - name: Validate LikeC4 architecture model
         run: |
-          cd architecture && npm install && npm run check
+          cd architecture && bun install && bun run check

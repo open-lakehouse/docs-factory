@@ -8,7 +8,7 @@
     "emit": "./emit.mjs"
   },
   "scripts": {
-    "emit": "node emit.mjs"
+    "emit": "bun emit.mjs"
   },
   "dependencies": {
     "mdast-util-directive": "3.1.0",

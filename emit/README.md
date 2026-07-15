@@ -9,8 +9,8 @@ consume.
 
 ```bash
 cd emit
-npm install                                             # first run only
-node emit.mjs --slug unity-catalog-delta-api --target gdocs
+bun install                                             # first run only
+bun emit.mjs --slug unity-catalog-delta-api --target gdocs
 #   → blogs/unity-catalog-delta-api/dist/unity-catalog-delta-api.md
 #   → blogs/unity-catalog-delta-api/dist/assets.json
 ```
@@ -98,7 +98,7 @@ A new target (Delta.io, UC.io) is a new `targets/<name>.mjs` reusing the whole
 
 ## Prerequisites
 
-- Node (matches `preview/`). Deps installed via `npm install`.
-- For LikeC4 PNG regeneration: a headless Chromium — run `npx playwright install
+- Bun (matches `preview/`). Deps installed via `bun install`.
+- For LikeC4 PNG regeneration: a headless Chromium — run `bunx playwright install
   chromium` once. The `--sequence` export lays a dynamic view out as a real
   sequence (lifelines), per `blogs/CONVENTIONS.md` §5.

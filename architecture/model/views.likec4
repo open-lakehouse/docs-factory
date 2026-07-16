@@ -9,11 +9,14 @@ views {
     description "The abstract, technology-agnostic lakehouse: its capabilities, the people who use it, and the OSS foundations & open table formats it assembles on. Foundations attach to the capability they realize (DataFusion <- query engine, Cedar <- PDP, ...), not to the lakehouse as a whole."
 
     include
-      practitioner, platformEngineer, agent,
-      // expand the lakehouse into its capabilities so foundation edges land on
-      // the right capability rather than rolling up to the parent box
-      lakehouse, lakehouse.*,
-      datafusion, delta, iceberg, cedar, openlineage, unitycatalog, lakekeeper
+      practitioner,
+      platformEngineer,
+      agent,
+    // expand the lakehouse into its capabilities so foundation edges land on
+    // the right capability rather than rolling up to the parent box
+      lakehouse,
+      lakehouse.*,
+
     // the zero-trust roles get their own view; keep them collapsed here
     exclude lakehouse.governance.*
     autoLayout LeftRight
@@ -24,10 +27,7 @@ views {
     title "Reference Open Lakehouse — capabilities"
     description "The capability chain: query engine -> catalog -> table format -> object storage, with governance and lineage attaching at planning time. Delta & Iceberg are peer formats realizing the table-format capability."
 
-    include
-      *,
-      // show the concrete formats + engine against the capabilities
-      delta, iceberg, datafusion, unitycatalog, cedar, openlineage
+    include *
 
     // collapse the governance roles here (they get their own view)
     exclude lakehouse.governance.*

@@ -26,13 +26,6 @@ model {
 
   // --- Foundations realize the capabilities --------------------------------
 
-  datafusion -[realizes]-> lakehouse.queryEngine "built on"
-  delta -[realizes]-> lakehouse.tableFormat "is an open table format"
-  iceberg -[realizes]-> lakehouse.tableFormat "is an open table format"
-  unitycatalog -[realizes]-> lakehouse.catalog "builds on / integrates with"
-
-  lakehouse.lineage -[realizes]-> openlineage "speaks"
-
   // --- People --------------------------------------------------------------
 
   practitioner -[flows]-> lakehouse.queryEngine "queries + governs data"

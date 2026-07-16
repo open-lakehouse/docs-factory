@@ -1,0 +1,220 @@
+---
+title: Read & write UC-governed data
+summary: Use the unitycatalog-object-store Rust crate (and its Python obstore integration) to read and write data files governed by Unity Catalog volumes, tables, and external locations.
+diataxis: how-to
+project: unitycatalog
+engines: [python, rust]
+snippets:
+  - file: ../../../examples/rust/src/object_store.rs
+    start: docs-object_store_factory-start
+    end: docs-object_store_factory-end
+    engine: rust
+  - file: ../../../examples/python/object_store.py
+    start: docs-object_store_client-start
+    end: docs-object_store_client-end
+    engine: python
+  - file: ../../../examples/python/object_store.py
+    start: docs-object_store_for_url-start
+    end: docs-object_store_for_url-end
+    engine: python
+  - file: ../../../examples/rust/src/object_store.rs
+    start: docs-object_store_for_url-start
+    end: docs-object_store_for_url-end
+    engine: rust
+  - file: ../../../examples/python/object_store.py
+    start: docs-object_store_for_volume-start
+    end: docs-object_store_for_volume-end
+    engine: python
+  - file: ../../../examples/rust/src/object_store.rs
+    start: docs-object_store_for_volume-start
+    end: docs-object_store_for_volume-end
+    engine: rust
+  - file: ../../../examples/python/object_store.py
+    start: docs-object_store_for_table-start
+    end: docs-object_store_for_table-end
+    engine: python
+  - file: ../../../examples/rust/src/object_store.rs
+    start: docs-object_store_for_table-start
+    end: docs-object_store_for_table-end
+    engine: rust
+  - file: ../../../examples/rust/src/object_store.rs
+    start: docs-object_store_for_path-start
+    end: docs-object_store_for_path-end
+    engine: rust
+  - file: ../../../examples/rust/src/object_store.rs
+    start: docs-object_store_datafusion-start
+    end: docs-object_store_datafusion-end
+    engine: rust
+  - file: ../../../examples/python/object_store.py
+    start: docs-object_store_duckdb-start
+    end: docs-object_store_duckdb-end
+    engine: python
+status: draft
+---
+
+`unitycatalog-object-store` (Rust) and the `unitycatalog_client.obstore` Python
+submodule turn Unity Catalog credential vending into a regular
+[`object_store`](https://docs.rs/object_store) /
+[`obstore`](https://developmentseed.org/obstore/) instance.
+
+Anything that already accepts an `ObjectStore` — DataFusion, `delta_kernel`,
+`parquet`, DuckDB through `obstore`, etc. — can read and write data governed by
+Unity Catalog with no extra plumbing.
+
+## The `uc://` URL scheme
+
+The crate parses a single, conventional URL grammar:
+
+```text
+uc:///Volumes/<catalog>/<schema>/<volume>[/<path>]   → temporary-volume-credentials
+uc:///Tables/<catalog>/<schema>/<table>              → temporary-table-credentials
+s3://, gs://, abfss://, r2://, …                     → temporary-path-credentials
+```
+
+The capitalised `Volumes` / `Tables` segment mirrors the Databricks workspace
+POSIX convention (`/Volumes/<catalog>/<schema>/<volume>/...`). The kind goes in
+the path (not the URL host) because Unity Catalog names commonly contain
+underscores, which are not legal in hostnames.
+
+Kind segments are matched **case-insensitively** — `/Volumes/...`,
+`/volumes/...`, and `/VOLUMES/...` all dispatch the same way. The Databricks
+`vol+dbfs:/Volumes/<c>/<s>/<v>[/<path>]` alias is also accepted for ecosystem
+compatibility.
+
+## Build the factory once
+
+Construct a factory at startup and reuse it across the process. In Python the
+equivalent is a `TemporaryCredentialClient`.
+
+::::tabs{syncKey=language}
+
+:::tab[Python]
+
+```python file=../../../examples/python/object_store.py start=docs-object_store_client-start end=docs-object_store_client-end
+```
+
+:::
+
+:::tab[Rust]
+
+```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_factory-start end=docs-object_store_factory-end
+```
+
+:::
+
+::::
+
+## Read any UC securable with one URL
+
+The `for_url` entry point dispatches to the right vending endpoint based on the
+scheme.
+
+::::tabs{syncKey=language}
+
+:::tab[Python]
+
+```python file=../../../examples/python/object_store.py start=docs-object_store_for_url-start end=docs-object_store_for_url-end
+```
+
+:::
+
+:::tab[Rust]
+
+```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_for_url-start end=docs-object_store_for_url-end
+```
+
+:::
+
+::::
+
+## Typed convenience constructors
+
+If you already know what you're addressing, use the typed accessors. They return
+the same `UCStore` / `obstore` store as `for_url` and skip the URL parser.
+
+### Volumes
+
+::::tabs{syncKey=language}
+
+:::tab[Python]
+
+```python file=../../../examples/python/object_store.py start=docs-object_store_for_volume-start end=docs-object_store_for_volume-end
+```
+
+:::
+
+:::tab[Rust]
+
+```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_for_volume-start end=docs-object_store_for_volume-end
+```
+
+:::
+
+::::
+
+### Tables
+
+::::tabs{syncKey=language}
+
+:::tab[Python]
+
+```python file=../../../examples/python/object_store.py start=docs-object_store_for_table-start end=docs-object_store_for_table-end
+```
+
+:::
+
+:::tab[Rust]
+
+```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_for_table-start end=docs-object_store_for_table-end
+```
+
+:::
+
+::::
+
+### Raw external paths
+
+The typed path accessor is available in the Rust crate.
+
+```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_for_path-start end=docs-object_store_for_path-end
+```
+
+## DataFusion
+
+Register a UC-backed store with DataFusion's `RuntimeEnv` so SQL queries that
+reference cloud URLs transparently flow through Unity Catalog.
+
+```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_datafusion-start end=docs-object_store_datafusion-end
+```
+
+## DuckDB
+
+You can also bridge the vended credentials into DuckDB's `httpfs` extension by
+hand.
+
+```python file=../../../examples/python/object_store.py start=docs-object_store_duckdb-start end=docs-object_store_duckdb-end
+```
+
+## Credential lifecycle
+
+The returned store carries a credential provider bound to the original securable
++ operation. When the cached credential approaches expiry, the provider
+transparently re-vends a fresh one using the same arguments. Refreshes can never
+silently widen privileges.
+
+For the Python `obstore` integration,
+[obstore handles the refresh window](https://developmentseed.org/obstore/)
+automatically — call the returned provider and you'll always get a valid
+credential.
+
+## Compatibility notes
+
+- The server-side `/temporary-volume-credentials` handler in this repository is
+  currently a stub that returns `NOT_IMPLEMENTED`. The clients (Rust + Python)
+  already implement the endpoint, so they work end-to-end against Databricks
+  Unity Catalog or any other compliant implementation today. See the follow-up
+  issue for tracking.
+- AWS region inference relies (in order) on a builder override, the `AWS_REGION`
+  environment variable, or the `object_store` default.
+- SAS-token responses from Azure are exposed through `obstore`'s `sas_token`
+  provider; AAD-token responses go through `token`.

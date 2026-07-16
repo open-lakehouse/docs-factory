@@ -125,3 +125,136 @@ topics:
       tutorial: null
     examples: {}
     notes: "Which engines reach UC (Spark, DuckDB, Trino, Daft, StarRocks, ...). Verify against published integration docs; report is a hint only."
+
+  # --- Migrated from the mangrove (unitycatalog-rs) Starlight docs site, 2026-07-16.
+  # These document the OSS unitycatalog-rs server + clients specifically (the
+  # `just rest` server, the Rust/Python/TypeScript clients, the uc:// object-store
+  # scheme). They are the concrete user-facing surface; the abstract "what is UC"
+  # topics above still stand. Re-verify against the current unitycatalog-rs code
+  # before publishing (framing: mangrove builds/integrates with UC, not a
+  # reimplementation).
+
+  - id: uc-rs-first-server
+    feature: null
+    feature_class: n/a
+    title: Start your first Unity Catalog server
+    priority: p1
+    sources:
+      mangrove: "docs/tutorials/01-first-server (migrated)"
+    pages:
+      tutorial: { path: unitycatalog/tutorials/first-server.md, status: draft }
+      explanation: null
+      how-to: null
+      reference: null
+    examples: {}
+    notes: "In-memory server via `just rest`; catalog/schema/table over REST."
+
+  - id: uc-rs-python-client
+    feature: null
+    feature_class: n/a
+    title: Use the Python client
+    priority: p1
+    sources:
+      mangrove: "docs/tutorials/02-python-client (migrated)"
+    pages:
+      tutorial: { path: unitycatalog/tutorials/python-client.md, status: draft }
+      explanation: null
+      how-to: null
+      reference: null
+    examples: {}
+    notes: "PyO3 wheel; connect/list/create/errors."
+
+  - id: uc-rs-postgres-server
+    feature: null
+    feature_class: n/a
+    title: Run a PostgreSQL-backed server
+    priority: p2
+    sources:
+      mangrove: "docs/tutorials/03-postgres-server (migrated)"
+    pages:
+      tutorial: { path: unitycatalog/tutorials/postgres-server.md, status: draft }
+      explanation: null
+      how-to: null
+      reference: null
+    examples: {}
+    notes: "`just rest-db`; persistence across restarts via Docker Compose."
+
+  - id: uc-rs-client-operations
+    feature: null
+    feature_class: n/a
+    title: Client how-to guides (catalogs, schemas, tables, volumes, models, tag policies)
+    priority: p1
+    sources:
+      mangrove: "docs/guides/{catalogs,schemas,tables,volumes,registered-models,tag-policies} (migrated)"
+    pages:
+      how-to: { path: unitycatalog/how-to/manage-catalogs.md, status: draft }
+      explanation: null
+      reference: null
+      tutorial: null
+    examples:
+      python: examples/python/{catalogs,schemas,tables,volumes,registered_models,tag_policies}.py
+      typescript: examples/typescript/examples/{catalogs,schemas,tables,volumes,registered_models,tag_policies}.ts
+      rust: examples/rust/src/{catalogs,schemas,tables,volumes,registered_models,tag_policies}.rs
+    notes: "One page per resource: manage-catalogs / manage-schemas / manage-tables / manage-volumes / manage-registered-models / manage-tag-policies. Tri-language tabs from copied examples. TS lacks tag-policy create/update. Examples are stub (untested) engines in docs-factory."
+
+  - id: uc-rs-object-store
+    feature: null
+    feature_class: n/a
+    title: Read & write UC-governed data (uc:// object store)
+    priority: p1
+    sources:
+      mangrove: "docs/guides/object-store (migrated)"
+    pages:
+      how-to: { path: unitycatalog/how-to/read-write-governed-data.md, status: draft }
+      explanation: null
+      reference: null
+      tutorial: null
+    examples:
+      python: examples/python/object_store.py
+      rust: examples/rust/src/object_store.rs
+    notes: "unitycatalog-object-store / obstore; uc:// scheme; DataFusion + DuckDB bridges. Server-side temporary-volume-credentials is a NOT_IMPLEMENTED stub in the repo."
+
+  - id: uc-rs-azure-sp-credentials
+    feature: null
+    feature_class: n/a
+    title: Configure Azure service principal credentials
+    priority: p2
+    sources:
+      mangrove: "docs/guides/credentials-azure-sp (migrated)"
+    pages:
+      how-to: { path: unitycatalog/how-to/configure-azure-service-principal.md, status: draft }
+      explanation: null
+      reference: null
+      tutorial: null
+    examples: {}
+    notes: "curl recipe: create credential + external location, verify, rotate, clean up."
+
+  - id: uc-rs-rest-api
+    feature: null
+    feature_class: n/a
+    title: REST API reference
+    priority: p1
+    sources:
+      mangrove: "docs/reference/rest-api (migrated)"
+    pages:
+      reference: { path: unitycatalog/reference/rest-api.md, status: draft }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Endpoint tables (method/path/permission) + error codes for the unitycatalog-rs server."
+
+  - id: uc-rs-configuration
+    feature: null
+    feature_class: n/a
+    title: Server configuration reference
+    priority: p2
+    sources:
+      mangrove: "docs/reference/configuration (migrated)"
+    pages:
+      reference: { path: unitycatalog/reference/configuration.md, status: draft }
+      explanation: null
+      how-to: null
+      tutorial: null
+    examples: {}
+    notes: "Config / Backend / SecretBackend / ConfigValue fields; in-memory vs postgres."

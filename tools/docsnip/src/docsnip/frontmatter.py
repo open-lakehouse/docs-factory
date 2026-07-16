@@ -15,7 +15,7 @@ import yaml
 
 DIATAXIS = {"tutorial", "how-to", "reference", "explanation"}
 PROJECTS = {"delta", "unitycatalog"}
-ENGINES = {"python", "polars", "duckdb", "rust", "spark"}
+ENGINES = {"python", "polars", "duckdb", "rust", "spark", "typescript"}
 STATUSES = {"draft", "published"}
 
 

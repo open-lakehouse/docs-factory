@@ -11,7 +11,18 @@ sections:
     order: [what-is-unity-catalog]
   tutorials:
     label: Tutorials
+    order: [first-server, python-client, postgres-server]
   how-to:
     label: How-to guides
+    order:
+      - manage-catalogs
+      - manage-schemas
+      - manage-tables
+      - manage-volumes
+      - manage-registered-models
+      - manage-tag-policies
+      - read-write-governed-data
+      - configure-azure-service-principal
   reference:
     label: Reference
+    order: [rest-api, configuration]

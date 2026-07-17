@@ -301,8 +301,13 @@ bullets. Copy this to start a post.
   `blogs/<slug>/.emitted.json` sidecar, so the mapping travels with the post while
   `draft.md` stays pure), so the draft stays canonical and the shared link never
   duplicates. Do **not** feed raw `draft.md` to the Doc importer — its `file=`
-  fences are empty and its `::::journey`/`:::tip` markers leak as literal text. A new
-  target (Delta.io, UC.io) is a new `emit/targets/<name>.mjs` reusing the same core.
+  fences are empty and its `::::journey`/`:::tip` markers leak as literal text. The
+  same `/blog-emit` skill also cross-publishes to the **UnityCatalog.io** and
+  **Delta.io** Astro sites (`--target unitycatalog` / `--target delta`) — RICH
+  targets that keep the constructs interactive (native MDX `<Journey>`, `<LikeC4View>`,
+  styled `:::` callouts) rather than flattening them. A new target is a new
+  `emit/targets/<name>.mjs` reusing the same core, plus a `references/<name>-target.md`
+  runbook in the skill.
 
 **Citability (human + AI readability).** Structure the draft so both a skimming
 human and an AI can find, quote, and trust it: an answer-first intro, a

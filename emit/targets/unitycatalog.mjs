@@ -21,7 +21,8 @@
  * The post is written to `dist/unitycatalog/index.mdx` (the content-collection
  * filename) with UC-shaped YAML frontmatter. Delivery — copying the folder into the
  * sibling repo and reconciling `authors` against its `profiles` collection — is the
- * `/blog-emit-uc` skill, mirroring how gdocs delivery is `/blog-emit`.
+ * `/blog-emit` skill with `--target unitycatalog` (see its
+ * references/unitycatalog-target.md runbook).
  */
 import remarkJourneyMdx from "../plugins/remark-journey-mdx.mjs";
 import remarkLikeC4Mdx from "../plugins/remark-likec4-mdx.mjs";

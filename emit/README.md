@@ -110,26 +110,32 @@ gitignored).
   `blogs/<slug>/dist/` (gitignored — a throwaway render, like `preview/dist/`). The
   draft stays byte-for-byte canonical; the only per-post state the delivery step
   writes is the sidecar `.emitted.json`, never the draft itself.
-- **Does not deliver.** It stops at the rendered Markdown/MDX + manifest. Delivery
-  is a per-target skill (`/blog-emit` for gdocs, `/blog-emit-uc` for unitycatalog).
+- **Does not deliver.** It stops at the rendered Markdown/MDX + manifest. Delivery is
+  the one `/blog-emit` skill, which dispatches on `--target` and follows a per-target
+  runbook in its `references/`.
 - **Is not wired into CI.**
 
 ## Targets
 
 `--target` selects a target module in `targets/`:
 
-- **`gdocs`** — Google Docs (a FLATTENING target). Delivery: `/blog-emit`.
+- **`gdocs`** (default) — Google Docs (a FLATTENING target).
 - **`unitycatalog`** — the UnityCatalog.io / OpenLakehouse Astro site (a RICH,
   component target: MDX with interactive LikeC4 + `<Journey>` + `:::` callouts).
-  Delivery: `/blog-emit-uc`.
+- **`delta`** — the Delta.io Astro site (`delta-io/website`, sibling `../website`) —
+  also a RICH, component target (same interactive LikeC4 + `<Journey>` + `:::`
+  callouts), with a delta-shaped frontmatter schema and callout-vocabulary remap.
+
+Delivery for all three is the single `/blog-emit` skill (`--target` picks the runbook).
 
 The pipeline is **target-aware**: a target module declares its per-construct
 renderers (`constructs: { callouts, journey, codeCaption, likec4 }`) plus flags
 (`titleAsH1`, `unwrapProse`, `stringifyExtension`, `safeText`, `outputFile`,
 `componentImportBase`, `likec4WebComponent`) — so one target can flatten while
-another upgrades to components, over one shared `resolve` core. A new target
-(Delta.io, …) is a new `targets/<name>.mjs` + its rewrite plugins in `plugins/`,
-plus a short delivery skill; the core stays untouched.
+another upgrades to components, over one shared `resolve` core. A new target is a new
+`targets/<name>.mjs` (+ any rewrite plugins in `plugins/`) plus a
+`references/<name>-target.md` runbook in the `/blog-emit` skill; the core stays
+untouched.
 
 ## Prerequisites
 

@@ -38,8 +38,13 @@ specification {
 
 model {
   client = participant "Delta client / engine" {
-    description "A Delta-compatible writer (e.g. Delta-Spark) proposing commits through the UC Delta API."
+    description "A Delta-compatible writer proposing commits through the UC Delta API."
+    link https://delta.io
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg
+    }
   }
+
   server = participant "Unity Catalog" {
     summary "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
     description "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."

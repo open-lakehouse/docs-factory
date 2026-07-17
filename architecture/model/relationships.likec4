@@ -25,6 +25,8 @@ model {
   }
 
   // --- Foundations realize the capabilities --------------------------------
+  // Foundation `realizes` edges are co-located with each foundation element in
+  // landscape.likec4, so nothing lives here.
 
   // --- People --------------------------------------------------------------
 

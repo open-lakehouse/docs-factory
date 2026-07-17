@@ -10,16 +10,22 @@
  *   - `:::tip`/…     → LEFT AS-IS. The UC site styles the raw `:::` directive with
  *                       its own remark handler, so the emitter must NOT rewrite
  *                       callouts (no `constructs.callouts`).
- *   - code captions  → shared `remark-code-caption` (renders fine as HTML in MDX).
+ *   - code captions  → LEFT ON THE FENCE. The UC site renders code fences with
+ *                       Expressive Code, which turns a fence's `title="x.py"` meta
+ *                       into a native editor-frame filename tab. So — unlike gdocs,
+ *                       which has no code chrome and lifts the title to a bold
+ *                       caption line via remark-code-caption — this target does NOT
+ *                       run codeCaption; the `title=` meta that remark-code-snippets
+ *                       already put on the fence passes straight through.
  *
  * The post is written to `dist/unitycatalog/index.mdx` (the content-collection
  * filename) with UC-shaped YAML frontmatter. Delivery — copying the folder into the
  * sibling repo and reconciling `authors` against its `profiles` collection — is the
- * `/blog-emit-uc` skill, mirroring how gdocs delivery is `/blog-emit`.
+ * `/blog-emit` skill with `--target unitycatalog` (see its
+ * references/unitycatalog-target.md runbook).
  */
 import remarkJourneyMdx from "../plugins/remark-journey-mdx.mjs";
 import remarkLikeC4Mdx from "../plugins/remark-likec4-mdx.mjs";
-import remarkCodeCaption from "../plugins/remark-code-caption.mjs";
 import remarkMdxSafeText from "../plugins/remark-mdx-safe-text.mjs";
 import remarkStringifyMdx from "../plugins/remark-stringify-mdx.mjs";
 
@@ -94,8 +100,9 @@ const unitycatalog = {
   likec4WebComponent: true, // generate dist/unitycatalog/likec4-webcomponent.mjs
   constructs: {
     // callouts: OMITTED — pass `:::tip`/… through untouched; the UC site styles them.
+    // codeCaption: OMITTED — keep `title="x.py"` on the fence; Expressive Code
+    //   renders it as a native filename frame (see the module comment above).
     journey: remarkJourneyMdx, // ::::journey → <Journey><JourneyStep>
-    codeCaption: remarkCodeCaption, // shared verbatim (renders as HTML in MDX)
     likec4: remarkLikeC4Mdx, // likec4= image → <LikeC4View> + manifest + fallback PNG
   },
   // Co-located post assets: Astro resolves `./file.png` relative to index.mdx.

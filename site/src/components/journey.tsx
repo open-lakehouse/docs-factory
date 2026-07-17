@@ -16,7 +16,7 @@ interface JourneyStepProps {
   step?: string;
   /** Injected by <Journey>: the 1-based position in the timeline. */
   index?: number;
-  /** Injected by <Journey>: true for the last step (rail stops at its bubble). */
+  /** Injected by <Journey>: true for the last step (drops its bottom padding). */
   last?: boolean;
   children: ReactNode;
 }

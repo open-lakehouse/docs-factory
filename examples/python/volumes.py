@@ -43,7 +43,9 @@ def update_volume_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
     client = UnityCatalogClient(base_url="http://localhost:8080")
-    volume = client.volume("my_catalog", "my_schema", "my_volume").update(comment="Updated comment")
+    volume = client.volume("my_catalog", "my_schema", "my_volume").update(
+        comment="Updated comment"
+    )
     print(f"Updated: {volume.name}")
 
 

@@ -18,7 +18,9 @@ def build_client():
     from unitycatalog_client import TemporaryCredentialClient
 
     return TemporaryCredentialClient(
-        base_url=os.environ.get("UC_BASE_URL", "http://localhost:8080/api/2.1/unity-catalog/"),
+        base_url=os.environ.get(
+            "UC_BASE_URL", "http://localhost:8080/api/2.1/unity-catalog/"
+        ),
         token=os.environ.get("UC_TOKEN"),
     )
 

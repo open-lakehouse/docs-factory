@@ -60,11 +60,14 @@ con.execute("LOAD unity_catalog")
 # --8<-- [end:install]
 
 # --8<-- [start:attach]
-# A UC secret carries the endpoint + token. Local OSS UC runs with authorization
-# disabled, so the token is present-but-ignored ('not-used'); a hosted UC would
-# use a real PAT.
 con.execute(
-    "CREATE SECRET (TYPE unity_catalog, TOKEN 'not-used', ENDPOINT $endpoint)",
+    """
+    CREATE SECRET (
+        TYPE unity_catalog,
+        TOKEN 'not-used',
+        ENDPOINT $endpoint
+    )
+    """,
     {"endpoint": uc_url},
 )
 
@@ -75,6 +78,6 @@ con.execute(
 # --8<-- [end:attach]
 
 # --8<-- [start:read]
-con.sql(f"SELECT * FROM {catalog}.default.events ORDER BY id").fetchall()
+con.sql("SELECT * FROM events ORDER BY id").fetchall()
 # --8<-- [end:read]
 # --8<-- [end:full]

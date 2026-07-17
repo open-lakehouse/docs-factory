@@ -24,10 +24,11 @@ Inputs (from the core, step 2 of the skill):
 
 2. **Insert images** — do section §C for every entry in `images[]`.
 
-3. **Share** — §D.
+3. **Style pass** — §B2.
 
-4. **Record the delivery** in the draft's frontmatter — §E (this is what makes the
-   next run an UPDATE, not a duplicate).
+4. **Report** — §D (report the URL; do NOT share). Then the skill's shared **step 4**
+   records the delivery in `blogs/<slug>/.emitted.json` under the `gdocs` key — see
+   §E for the exact block. That mapping is what makes the next run an UPDATE.
 
 ## B. UPDATE (assets.json `existing` = `{ doc_id, url, updated }`)
 
@@ -170,11 +171,10 @@ tool) on it, under any circumstances. Sharing is always the user's own action; t
 decide the audience and do it themselves. This holds even for a "review" doc, even
 `anyone`-with-link, even if the request seems to imply sharing.
 
-## E. Record the mapping (in the post's sidecar)
+## E. The `gdocs` sidecar block (recorded by the skill's shared step 4)
 
-The delivery mapping lives in a committed sidecar dotfile next to the draft,
-**`blogs/<slug>/.emitted.json`**, keyed by target — self-contained in the post's
-folder (it travels with the post, no global registry) while `draft.md` stays pure.
+Recording the delivery is the skill's shared **step 4** (`blogs/<slug>/.emitted.json`,
+keyed by target). The `gdocs` block shape is:
 
 ```json
 {
@@ -186,14 +186,11 @@ folder (it travels with the post, no global registry) while `draft.md` stays pur
 }
 ```
 
-- **CREATE:** read the sidecar (treat missing as `{}`), set the `gdocs` key to the
-  block above (leave other targets' keys untouched), write it back, and commit.
+- **CREATE:** set the whole block (leave other targets' keys untouched).
 - **UPDATE:** set `gdocs.updated` to today.
 
-The core reads this same sidecar and prints CREATE vs UPDATE, echoing it into
-`assets.json` as `existing` — so the decision is already made for you by step 1 of
-the skill. The sidecar is tracked (a dotfile, not gitignored); never write delivery
-state into `draft.md`.
+The core reads this same sidecar and echoes the decision into `assets.json` as
+`existing` — so CREATE-vs-UPDATE is already decided for you by step 1.
 
 ## Notes
 

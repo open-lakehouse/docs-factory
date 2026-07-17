@@ -2,7 +2,9 @@
 from unitycatalog_client import UnityCatalogClient
 
 client = UnityCatalogClient(base_url="http://localhost:8080")
-models = client.list_registered_models(catalog_name="my_catalog", schema_name="my_schema")
+models = client.list_registered_models(
+    catalog_name="my_catalog", schema_name="my_schema"
+)
 for model in models:
     print(model.name)
 # docs-list_registered_models-end

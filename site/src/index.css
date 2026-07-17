@@ -165,7 +165,7 @@ body {
 }
 
 /* Prose — DevHub-neutral: high-contrast body, DM Sans headings, cyan links only. */
-.prose { line-height: 1.7; font-size: 1.0625rem; color: var(--body); }
+.prose { line-height: 1.7; font-size: 1.125rem; color: var(--body); }
 .prose p, .prose li { color: var(--body); }
 .prose h1, .prose h2, .prose h3, .prose h4 {
   font-family: var(--font-heading);
@@ -290,8 +290,9 @@ body {
 }
 .prose .jr-step[data-last] { padding-bottom: 0; }
 /* The rail: a thin muted line down the bubble column, behind the bubbles. It
-   starts at each bubble's center and runs to the next step; the last step hides
-   it (a group-last equivalent). */
+   starts at each bubble's center and runs to the bottom of the step's box — so
+   on the last step it extends alongside the whole body rather than stopping at
+   the bubble. */
 .prose .jr-step::before {
   content: "";
   position: absolute;
@@ -302,9 +303,9 @@ body {
   transform: translateX(-50%);
   background: var(--border);
 }
-.prose .jr-step[data-last]::before { display: none; }
-/* The bubble: GitHub's muted surface + grey ring, number in muted-foreground.
-   A hair of accent only on the ring so it reads as "ours" without shouting. */
+/* The bubble: GitHub's muted surface, but with a touch more presence — an
+   accent-tinted ring and accent number so each step reads as a deliberate
+   marker without shouting. */
 .prose .jr-bubble {
   position: absolute;
   top: 0;
@@ -315,12 +316,12 @@ body {
   height: var(--jr-bubble);
   border-radius: 999px;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid color-mix(in srgb, var(--accent) 55%, var(--border));
   box-shadow: 0 0 0 4px var(--background); /* mask the rail behind the bubble */
-  color: var(--muted-foreground);
+  color: var(--accent);
   font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.85rem;
+  font-weight: 700;
   line-height: 1;
 }
 /* Title: vertically centered on its bubble (bubble is var(--jr-bubble) tall).
@@ -931,7 +932,7 @@ body {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 12rem;
   gap: 2.5rem;
-  max-width: 52rem;
+  max-width: 58rem;
   margin: 0 auto;
 }
 .blog-post-main { min-width: 0; }

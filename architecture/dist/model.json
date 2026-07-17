@@ -102,16 +102,16 @@
         "notation": "Deployment topology",
         "style": {}
       },
-      "service": {
-        "style": {
-          "icon": "tech:rust"
-        }
-      },
       "browser": {
         "notation": "Browser runtime",
         "style": {
           "shape": "browser",
           "color": "sky"
+        }
+      },
+      "service": {
+        "style": {
+          "icon": "tech:rust"
         }
       },
       "datastore": {
@@ -294,138 +294,157 @@
       "kind": "person",
       "id": "agent"
     },
-    "datafusion": {
+    "unityCatalog": {
       "notation": "OSS foundation / format",
       "style": {
         "shape": "cylinder",
-        "color": "muted"
-      },
-      "links": [
-        {
-          "url": "https://datafusion.apache.org"
-        }
-      ],
-      "technology": "Rust query engine",
-      "description": {
-        "txt": "The shared query / compute core the query engine is built on."
-      },
-      "title": "Apache DataFusion",
-      "kind": "foundation",
-      "id": "datafusion"
-    },
-    "delta": {
-      "notation": "OSS foundation / format",
-      "style": {
-        "shape": "cylinder",
-        "color": "muted"
-      },
-      "links": [
-        {
-          "url": "https://delta.io"
-        }
-      ],
-      "technology": "Delta Lake",
-      "description": {
-        "txt": "An open table format. Realizes the tableFormat capability."
-      },
-      "title": "Delta Lake",
-      "kind": "foundation",
-      "id": "delta"
-    },
-    "iceberg": {
-      "notation": "OSS foundation / format",
-      "style": {
-        "shape": "cylinder",
-        "color": "muted"
-      },
-      "links": [
-        {
-          "url": "https://iceberg.apache.org"
-        }
-      ],
-      "technology": "Apache Iceberg",
-      "description": {
-        "txt": "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
-      },
-      "title": "Apache Iceberg",
-      "kind": "foundation",
-      "id": "iceberg"
-    },
-    "cedar": {
-      "notation": "OSS foundation / format",
-      "style": {
-        "shape": "cylinder",
-        "color": "muted"
-      },
-      "links": [
-        {
-          "url": "https://www.cedarpolicy.com"
-        }
-      ],
-      "technology": "Cedar",
-      "description": {
-        "txt": "The policy language and decision engine behind the governance PDP."
-      },
-      "title": "Cedar",
-      "kind": "foundation",
-      "id": "cedar"
-    },
-    "openlineage": {
-      "notation": "OSS foundation / format",
-      "style": {
-        "shape": "cylinder",
-        "color": "muted"
-      },
-      "links": [
-        {
-          "url": "https://openlineage.io"
-        }
-      ],
-      "technology": "OpenLineage",
-      "description": {
-        "txt": "The lineage event standard the lineage capability emits and ingests."
-      },
-      "title": "OpenLineage",
-      "kind": "foundation",
-      "id": "openlineage"
-    },
-    "unitycatalog": {
-      "notation": "OSS foundation / format",
-      "style": {
-        "shape": "cylinder",
-        "color": "muted"
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg"
       },
       "links": [
         {
           "url": "https://www.unitycatalog.io"
         }
       ],
-      "technology": "Unity Catalog",
       "description": {
-        "txt": "The governance API surface the catalog builds on and integrates with."
+        "txt": "Open source catalog for data & AI — governs tables, files, functions, and models across engines. An LF AI & Data project."
       },
-      "title": "Unity Catalog OSS",
+      "title": "Unity Catalog",
       "kind": "foundation",
-      "id": "unitycatalog"
+      "id": "unityCatalog"
+    },
+    "deltaLake": {
+      "notation": "OSS foundation / format",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg"
+      },
+      "links": [
+        {
+          "url": "https://delta.io"
+        }
+      ],
+      "description": {
+        "txt": "Open table format bringing ACID transactions, schema evolution, and time travel to object storage. An LF AI & Data project."
+      },
+      "title": "Delta Lake",
+      "kind": "foundation",
+      "id": "deltaLake"
+    },
+    "iceberg": {
+      "notation": "OSS foundation / format",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png"
+      },
+      "links": [
+        {
+          "url": "https://iceberg.apache.org"
+        }
+      ],
+      "description": {
+        "txt": "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation. An Apache Software Foundation project."
+      },
+      "title": "Apache Iceberg",
+      "kind": "foundation",
+      "id": "iceberg"
+    },
+    "datafusion": {
+      "notation": "OSS foundation / format",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg"
+      },
+      "links": [
+        {
+          "url": "https://datafusion.apache.org"
+        }
+      ],
+      "description": {
+        "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. An Apache Software Foundation project."
+      },
+      "title": "Apache DataFusion",
+      "kind": "foundation",
+      "id": "datafusion"
+    },
+    "apacheSpark": {
+      "notation": "OSS foundation / format",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png"
+      },
+      "links": [
+        {
+          "url": "https://spark.apache.org"
+        }
+      ],
+      "description": {
+        "txt": "Unified analytics engine for large-scale data processing. An Apache Software Foundation project."
+      },
+      "title": "Apache Spark",
+      "kind": "foundation",
+      "id": "apacheSpark"
     },
     "lakekeeper": {
       "notation": "OSS foundation / format",
       "style": {
         "shape": "cylinder",
-        "color": "muted"
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg"
       },
       "links": [
         {
-          "url": "https://github.com/lakekeeper/lakekeeper"
+          "url": "https://lakekeeper.io"
         }
       ],
-      "technology": "Iceberg-REST catalog",
       "description": {
-        "txt": "An Iceberg-REST catalog. The catalog can interoperate with it so Iceberg-REST consumers see the same tables."
+        "txt": "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
       },
       "title": "Lakekeeper",
       "kind": "foundation",
       "id": "lakekeeper"
+    },
+    "mlflow": {
+      "notation": "OSS foundation / format",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg"
+      },
+      "links": [
+        {
+          "url": "https://mlflow.org"
+        }
+      ],
+      "description": {
+        "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment. An LF AI & Data project."
+      },
+      "title": "MLflow",
+      "kind": "foundation",
+      "id": "mlflow"
+    },
+    "omnigent": {
+      "notation": "OSS foundation / format",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg"
+      },
+      "links": [
+        {
+          "url": "https://omnigent.ai"
+        }
+      ],
+      "description": {
+        "txt": "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
+      },
+      "title": "Omnigent",
+      "kind": "foundation",
+      "id": "omnigent"
     },
     "lakehouse.catalog": {
       "metadata": {
@@ -434,6 +453,11 @@
       "style": {
         "color": "primary"
       },
+      "links": [
+        {
+          "url": "https://www.openlakehouse.io/technologies/catalogs"
+        }
+      ],
       "summary": {
         "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
       },
@@ -511,6 +535,23 @@
       "title": "Lineage",
       "kind": "capability",
       "id": "lakehouse.lineage"
+    },
+    "lakehouse.mlLifecycle": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "Tracks experiments, versions models, and governs their promotion to production."
+      },
+      "description": {
+        "txt": "The ML-lifecycle capability manages machine-learning artifacts over time:\nexperiment tracking, a model registry with versions and stages, and the\npath from a trained model to a governed, deployable one.\n\nIt sits alongside the query/governance capabilities: models are data\nassets too, catalogued and governed like tables rather than living in a\nseparate, ungoverned silo."
+      },
+      "title": "ML lifecycle",
+      "kind": "capability",
+      "id": "lakehouse.mlLifecycle"
     }
   },
   "relations": {
@@ -559,33 +600,33 @@
       "kind": "enforces",
       "id": "e8usp9"
     },
-    "8w4yz4": {
+    "td9u5f": {
       "line": "dotted",
-      "title": "built on",
+      "title": "realizes the catalog capability",
       "source": {
-        "model": "datafusion"
+        "model": "unityCatalog"
       },
       "target": {
-        "model": "lakehouse.queryEngine"
+        "model": "lakehouse.catalog"
       },
       "kind": "realizes",
-      "id": "8w4yz4"
+      "id": "td9u5f"
     },
-    "1wh06oa": {
+    "mn4ddk": {
       "line": "dotted",
-      "title": "is an open table format",
+      "title": "realizes the table-format capability",
       "source": {
-        "model": "delta"
+        "model": "deltaLake"
       },
       "target": {
         "model": "lakehouse.tableFormat"
       },
       "kind": "realizes",
-      "id": "1wh06oa"
+      "id": "mn4ddk"
     },
-    "zvuefi": {
+    "1gmohps": {
       "line": "dotted",
-      "title": "is an open table format",
+      "title": "realizes the table-format capability",
       "source": {
         "model": "iceberg"
       },
@@ -593,45 +634,57 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "realizes",
-      "id": "zvuefi"
+      "id": "1gmohps"
     },
-    "1vmfc2e": {
+    "1rqw8et": {
       "line": "dotted",
-      "title": "builds on / integrates with",
+      "title": "realizes the query-engine capability",
       "source": {
+        "model": "datafusion"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "realizes",
+      "id": "1rqw8et"
+    },
+    "17lybnu": {
+      "line": "dotted",
+      "title": "realizes the query-engine capability",
+      "source": {
+        "model": "apacheSpark"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "realizes",
+      "id": "17lybnu"
+    },
+    "1uopptd": {
+      "line": "dotted",
+      "title": "realizes the catalog capability",
+      "source": {
+        "model": "lakekeeper"
+      },
+      "target": {
         "model": "lakehouse.catalog"
       },
-      "target": {
-        "model": "unitycatalog"
-      },
       "kind": "realizes",
-      "id": "1vmfc2e"
+      "id": "1uopptd"
     },
-    "q6gvod": {
+    "12opdl7": {
       "line": "dotted",
-      "title": "decisions computed by",
+      "title": "realizes the ML-lifecycle capability",
       "source": {
-        "model": "lakehouse.governance.pdp"
+        "model": "mlflow"
       },
       "target": {
-        "model": "cedar"
+        "model": "lakehouse.mlLifecycle"
       },
       "kind": "realizes",
-      "id": "q6gvod"
+      "id": "12opdl7"
     },
-    "14sh7z3": {
-      "line": "dotted",
-      "title": "speaks",
-      "source": {
-        "model": "lakehouse.lineage"
-      },
-      "target": {
-        "model": "openlineage"
-      },
-      "kind": "realizes",
-      "id": "14sh7z3"
-    },
-    "1eyhfjs": {
+    "5pe79a": {
       "title": "queries + governs data",
       "source": {
         "model": "practitioner"
@@ -640,9 +693,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "flows",
-      "id": "1eyhfjs"
+      "id": "5pe79a"
     },
-    "pjwb1": {
+    "cqka9z": {
       "title": "builds + operates",
       "source": {
         "model": "platformEngineer"
@@ -651,9 +704,9 @@
         "model": "lakehouse"
       },
       "kind": "flows",
-      "id": "pjwb1"
+      "id": "cqka9z"
     },
-    "1aqcxn4": {
+    "gxybq2": {
       "title": "investigates",
       "source": {
         "model": "agent"
@@ -662,7 +715,7 @@
         "model": "lakehouse.lineage"
       },
       "kind": "flows",
-      "id": "1aqcxn4"
+      "id": "gxybq2"
     },
     "lwdcta": {
       "title": "resolves tables through",
@@ -789,55 +842,13 @@
       },
       "edges": [
         {
-          "id": "d5xsf0",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "cedar",
-          "label": "decisions computed by",
-          "relations": [
-            "q6gvod"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "3dth0",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "openlineage",
-          "label": "speaks",
-          "relations": [
-            "14sh7z3"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "rvmyip",
-          "parent": null,
-          "source": "lakehouse",
-          "target": "unitycatalog",
-          "label": "builds on / integrates with",
-          "relations": [
-            "1vmfc2e"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
           "id": "ttcejf",
           "parent": null,
           "source": "practitioner",
           "target": "lakehouse",
           "label": "queries + governs data",
           "relations": [
-            "1eyhfjs"
+            "5pe79a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -851,7 +862,7 @@
           "target": "lakehouse",
           "label": "builds + operates",
           "relations": [
-            "pjwb1"
+            "cqka9z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -865,7 +876,7 @@
           "target": "lakehouse",
           "label": "investigates",
           "relations": [
-            "1aqcxn4"
+            "gxybq2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -873,13 +884,13 @@
           "kind": "flows"
         },
         {
-          "id": "byeu7p",
+          "id": "1wwg9s1",
           "parent": null,
-          "source": "datafusion",
+          "source": "unityCatalog",
           "target": "lakehouse",
-          "label": "built on",
+          "label": "realizes the catalog capability",
           "relations": [
-            "8w4yz4"
+            "td9u5f"
           ],
           "color": "gray",
           "line": "dotted",
@@ -887,13 +898,13 @@
           "kind": "realizes"
         },
         {
-          "id": "p2nyt1",
+          "id": "1ttfh9y",
           "parent": null,
-          "source": "delta",
+          "source": "deltaLake",
           "target": "lakehouse",
-          "label": "is an open table format",
+          "label": "realizes the table-format capability",
           "relations": [
-            "1wh06oa"
+            "mn4ddk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -905,9 +916,65 @@
           "parent": null,
           "source": "iceberg",
           "target": "lakehouse",
-          "label": "is an open table format",
+          "label": "realizes the table-format capability",
           "relations": [
-            "zvuefi"
+            "1gmohps"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "byeu7p",
+          "parent": null,
+          "source": "datafusion",
+          "target": "lakehouse",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1rqw8et"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "bd1jqg",
+          "parent": null,
+          "source": "apacheSpark",
+          "target": "lakehouse",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "17lybnu"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "p5ap0i",
+          "parent": null,
+          "source": "lakekeeper",
+          "target": "lakehouse",
+          "label": "realizes the catalog capability",
+          "relations": [
+            "1uopptd"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1sk4qke",
+          "parent": null,
+          "source": "mlflow",
+          "target": "lakehouse",
+          "label": "realizes the ML-lifecycle capability",
+          "relations": [
+            "12opdl7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -986,54 +1053,55 @@
           "kind": "person"
         },
         {
-          "id": "datafusion",
+          "id": "unityCatalog",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "byeu7p"
+            "1wwg9s1"
           ],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
+          "title": "Unity Catalog",
+          "modelRef": "unityCatalog",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "The shared query / compute core the query engine is built on."
+            "txt": "Open source catalog for data & AI — governs tables, files, functions, and models across engines. An LF AI & Data project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
           "links": [
             {
-              "url": "https://datafusion.apache.org"
+              "url": "https://www.unitycatalog.io"
             }
           ],
-          "technology": "Rust query engine",
           "kind": "foundation"
         },
         {
-          "id": "delta",
+          "id": "deltaLake",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "p2nyt1"
+            "1ttfh9y"
           ],
           "title": "Delta Lake",
-          "modelRef": "delta",
+          "modelRef": "deltaLake",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "An open table format. Realizes the tableFormat capability."
+            "txt": "Open table format bringing ACID transactions, schema evolution, and time travel to object storage. An LF AI & Data project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -1042,7 +1110,6 @@
               "url": "https://delta.io"
             }
           ],
-          "technology": "Delta Lake",
           "kind": "foundation"
         },
         {
@@ -1058,12 +1125,13 @@
           "modelRef": "iceberg",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
+            "txt": "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation. An Apache Software Foundation project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -1072,7 +1140,126 @@
               "url": "https://iceberg.apache.org"
             }
           ],
-          "technology": "Apache Iceberg",
+          "kind": "foundation"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "byeu7p"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. An Apache Software Foundation project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "apacheSpark",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "bd1jqg"
+          ],
+          "title": "Apache Spark",
+          "modelRef": "apacheSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Unified analytics engine for large-scale data processing. An Apache Software Foundation project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://spark.apache.org"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "lakekeeper",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "p5ap0i"
+          ],
+          "title": "Lakekeeper",
+          "modelRef": "lakekeeper",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://lakekeeper.io"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "mlflow",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1sk4qke"
+          ],
+          "title": "MLflow",
+          "modelRef": "mlflow",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment. An LF AI & Data project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://mlflow.org"
+            }
+          ],
           "kind": "foundation"
         },
         {
@@ -1084,15 +1271,15 @@
             "ttcejf",
             "12g2j4b",
             "11of8s4",
+            "1wwg9s1",
+            "1ttfh9y",
+            "1jbc580",
             "byeu7p",
-            "p2nyt1",
-            "1jbc580"
+            "bd1jqg",
+            "p5ap0i",
+            "1sk4qke"
           ],
-          "outEdges": [
-            "d5xsf0",
-            "3dth0",
-            "rvmyip"
-          ],
+          "outEdges": [],
           "title": "Open Lakehouse",
           "modelRef": "lakehouse",
           "shape": "rectangle",
@@ -1114,121 +1301,31 @@
           "navigateTo": "capabilityMap"
         },
         {
-          "id": "cedar",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "d5xsf0"
-          ],
-          "outEdges": [],
-          "title": "Cedar",
-          "modelRef": "cedar",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The policy language and decision engine behind the governance PDP."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.cedarpolicy.com"
-            }
-          ],
-          "technology": "Cedar",
-          "kind": "foundation"
-        },
-        {
-          "id": "openlineage",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "3dth0"
-          ],
-          "outEdges": [],
-          "title": "OpenLineage",
-          "modelRef": "openlineage",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The lineage event standard the lineage capability emits and ingests."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://openlineage.io"
-            }
-          ],
-          "technology": "OpenLineage",
-          "kind": "foundation"
-        },
-        {
-          "id": "unitycatalog",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "rvmyip"
-          ],
-          "outEdges": [],
-          "title": "Unity Catalog OSS",
-          "modelRef": "unitycatalog",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The governance API surface the catalog builds on and integrates with."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "technology": "Unity Catalog",
-          "kind": "foundation"
-        },
-        {
-          "id": "lakekeeper",
+          "id": "omnigent",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [],
-          "title": "Lakekeeper",
-          "modelRef": "lakekeeper",
+          "title": "Omnigent",
+          "modelRef": "omnigent",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "An Iceberg-REST catalog. The catalog can interoperate with it so Iceberg-REST consumers see the same tables."
+            "txt": "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
           },
           "tags": [],
           "notation": "OSS foundation / format",
           "links": [
             {
-              "url": "https://github.com/lakekeeper/lakekeeper"
+              "url": "https://omnigent.ai"
             }
           ],
-          "technology": "Iceberg-REST catalog",
           "kind": "foundation"
         }
       ],
@@ -1244,7 +1341,7 @@
           }
         ]
       },
-      "hash": "MjQH88vPEAgO-tQ990XwEnTsZW-bt5vNcTIbCmDCWn4"
+      "hash": "WhmGbVCZBtsXoLXbwJ3jBhPMhRLZaKjzy7VvMqhr-a8"
     },
     "trustedComputeDeploy": {
       "_type": "deployment",
@@ -1261,34 +1358,6 @@
         "direction": "LR"
       },
       "edges": [
-        {
-          "id": "cvgyot",
-          "parent": "trustedCompute.hydrofoil",
-          "source": "trustedCompute.hydrofoil.pep",
-          "target": "trustedCompute.hydrofoil.pdp",
-          "label": "consults the PDP, then applies its verdict",
-          "relations": [
-            "1g1bbjq"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "enforces"
-        },
-        {
-          "id": "1gra0g6",
-          "parent": "trustedCompute.mangrove",
-          "source": "trustedCompute.mangrove.catalog",
-          "target": "trustedCompute.mangrove.pip",
-          "label": "serves resource facts (identity, tags, locations)",
-          "relations": [
-            "1wt8s51"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
         {
           "id": "6jwg4k",
           "parent": null,
@@ -1318,62 +1387,6 @@
           "kind": "flows"
         },
         {
-          "id": "x9fbsu",
-          "parent": null,
-          "source": "trustedCompute.mangrove.pip",
-          "target": "trustedCompute.hydrofoil.pdp",
-          "label": "supplies resource / identity / context facts",
-          "relations": [
-            "1ayvbln"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "informs"
-        },
-        {
-          "id": "1ang8li",
-          "parent": null,
-          "source": "trustedCompute.mangrove.pa",
-          "target": "trustedCompute.hydrofoil.pdp",
-          "label": "mints a credential only on a PDP verdict",
-          "relations": [
-            "e8usp9"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "enforces"
-        },
-        {
-          "id": "1f5oldn",
-          "parent": null,
-          "source": "trustedCompute.headwaters.pip",
-          "target": "trustedCompute.hydrofoil.pdp",
-          "label": "supplies resource / identity / context facts",
-          "relations": [
-            "1ayvbln"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "informs"
-        },
-        {
-          "id": "1jfaefd",
-          "parent": null,
-          "source": "trustedCompute.cedarOci.pap",
-          "target": "trustedCompute.hydrofoil.pdp",
-          "label": "publishes policy set + schema (OCI bundle)",
-          "relations": [
-            "83x1rk"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "administers"
-        },
-        {
           "id": "sr6ids",
           "parent": null,
           "source": "trustedCompute.mangrove.catalog",
@@ -1390,205 +1403,13 @@
       ],
       "nodes": [
         {
-          "id": "trustedCompute.mangrove",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "trustedCompute.mangrove.pa",
-            "trustedCompute.mangrove.catalog",
-            "trustedCompute.mangrove.pip"
-          ],
-          "inEdges": [
-            "6jwg4k"
-          ],
-          "outEdges": [
-            "x9fbsu",
-            "1ang8li",
-            "sr6ids"
-          ],
-          "deploymentRef": "trustedCompute.mangrove",
-          "title": "mangrove",
-          "kind": "service",
-          "links": [
-            {
-              "url": "https://github.com/open-lakehouse/mangrove"
-            }
-          ],
-          "color": "primary",
-          "shape": "rectangle",
-          "icon": "tech:rust",
-          "description": {
-            "txt": "The catalog server. Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
-          },
-          "tags": [
-            "built"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "depth": 1
-        },
-        {
-          "id": "trustedCompute.mangrove.pa",
-          "parent": "trustedCompute.mangrove",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1ang8li"
-          ],
-          "kind": "instance",
-          "title": "PA — administrator / vending",
-          "description": {
-            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check."
-          },
-          "tags": [
-            "built"
-          ],
-          "color": "indigo",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "trustedCompute.mangrove.pa",
-          "modelRef": "lakehouse.governance.pa"
-        },
-        {
-          "id": "trustedCompute.headwaters",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "trustedCompute.headwaters.pip",
-            "trustedCompute.headwaters.lineage"
-          ],
-          "inEdges": [
-            "3hah27"
-          ],
-          "outEdges": [
-            "1f5oldn"
-          ],
-          "deploymentRef": "trustedCompute.headwaters",
-          "title": "headwaters",
-          "kind": "service",
-          "links": [
-            {
-              "url": "https://github.com/open-lakehouse/headwaters"
-            }
-          ],
-          "color": "primary",
-          "shape": "rectangle",
-          "icon": "tech:rust",
-          "description": {
-            "txt": "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capability is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
-          },
-          "tags": [
-            "built"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "depth": 1
-        },
-        {
-          "id": "trustedCompute.headwaters.pip",
-          "parent": "trustedCompute.headwaters",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1f5oldn"
-          ],
-          "kind": "instance",
-          "title": "PIP — information point",
-          "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
-          },
-          "tags": [
-            "pip"
-          ],
-          "color": "indigo",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "trustedCompute.headwaters.pip",
-          "modelRef": "lakehouse.governance.pip"
-        },
-        {
-          "id": "trustedCompute.cedarOci",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "trustedCompute.cedarOci.pap"
-          ],
-          "inEdges": [],
-          "outEdges": [
-            "1jfaefd"
-          ],
-          "deploymentRef": "trustedCompute.cedarOci",
-          "title": "cedar-oci bundle",
-          "kind": "service",
-          "color": "primary",
-          "shape": "rectangle",
-          "modelRef": "lakehouse.governance.pap",
-          "icon": "tech:rust",
-          "description": {
-            "txt": "The Cedar policy set + schema published as an OCI bundle — today's policy administration artifact. Versioned fast-push with a freshness SLA is designed, not built."
-          },
-          "tags": [
-            "built"
-          ],
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "depth": 1
-        },
-        {
-          "id": "trustedCompute.cedarOci.pap",
-          "parent": "trustedCompute.cedarOci",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1jfaefd"
-          ],
-          "kind": "instance",
-          "title": "PAP — administration point",
-          "description": {
-            "txt": "Authors and distributes policy. Today: the Cedar policy set + schema published as an OCI bundle. The versioned, fast-push control plane with a freshness SLA is designed, not built."
-          },
-          "tags": [
-            "pap"
-          ],
-          "color": "indigo",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "trustedCompute.cedarOci.pap",
-          "modelRef": "lakehouse.governance.pap"
-        },
-        {
           "id": "trustedCompute.hydrofoil",
           "parent": null,
           "level": 0,
           "children": [
-            "trustedCompute.hydrofoil.pep",
-            "trustedCompute.hydrofoil.queryEngine",
-            "trustedCompute.hydrofoil.pdp"
+            "trustedCompute.hydrofoil.queryEngine"
           ],
-          "inEdges": [
-            "x9fbsu",
-            "1ang8li",
-            "1f5oldn",
-            "1jfaefd"
-          ],
+          "inEdges": [],
           "outEdges": [
             "6jwg4k",
             "3hah27"
@@ -1603,45 +1424,17 @@
           ],
           "color": "primary",
           "shape": "rectangle",
+          "modelRef": "lakehouse.queryEngine",
           "icon": "tech:rust",
           "description": {
             "txt": "The catalog-native query engine. Composes the catalog, policy, and lineage into one session and enforces full FGAC in-plan — it embeds the PDP (decide) and the PEP (enforce)."
           },
-          "tags": [
-            "built"
-          ],
+          "tags": [],
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "depth": 1
-        },
-        {
-          "id": "trustedCompute.hydrofoil.pep",
-          "parent": "trustedCompute.hydrofoil",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "cvgyot"
-          ],
-          "kind": "instance",
-          "title": "PEP — enforcement point",
-          "description": {
-            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters / masks and short-circuits on deny. Realized in-plan by the query engine. An agent-tool PEP is designed."
-          },
-          "tags": [
-            "pep",
-            "built"
-          ],
-          "color": "indigo",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "trustedCompute.hydrofoil.pep",
-          "modelRef": "lakehouse.governance.pep"
         },
         {
           "id": "trustedCompute.hydrofoil.queryEngine",
@@ -1669,6 +1462,74 @@
           "modelRef": "lakehouse.queryEngine"
         },
         {
+          "id": "trustedCompute.mangrove",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "trustedCompute.mangrove.catalog"
+          ],
+          "inEdges": [
+            "6jwg4k"
+          ],
+          "outEdges": [
+            "sr6ids"
+          ],
+          "deploymentRef": "trustedCompute.mangrove",
+          "title": "mangrove",
+          "kind": "service",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/mangrove"
+            }
+          ],
+          "color": "primary",
+          "shape": "rectangle",
+          "modelRef": "lakehouse.catalog",
+          "icon": "tech:rust",
+          "description": {
+            "txt": "The catalog server. Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
+          },
+          "tags": [],
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "depth": 1
+        },
+        {
+          "id": "trustedCompute.headwaters",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "trustedCompute.headwaters.lineage"
+          ],
+          "inEdges": [
+            "3hah27"
+          ],
+          "outEdges": [],
+          "deploymentRef": "trustedCompute.headwaters",
+          "title": "headwaters",
+          "kind": "service",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/headwaters"
+            }
+          ],
+          "color": "primary",
+          "shape": "rectangle",
+          "modelRef": "lakehouse.lineage",
+          "icon": "tech:rust",
+          "description": {
+            "txt": "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capability is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
+          },
+          "tags": [],
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "depth": 1
+        },
+        {
           "id": "trustedCompute.mangrove.catalog",
           "parent": "trustedCompute.mangrove",
           "level": 1,
@@ -1677,7 +1538,6 @@
             "6jwg4k"
           ],
           "outEdges": [
-            "1gra0g6",
             "sr6ids"
           ],
           "kind": "instance",
@@ -1686,6 +1546,11 @@
             "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
           },
           "tags": [],
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
           "color": "primary",
           "shape": "rectangle",
           "style": {
@@ -1720,34 +1585,6 @@
           "modelRef": "lakehouse.lineage"
         },
         {
-          "id": "trustedCompute.mangrove.pip",
-          "parent": "trustedCompute.mangrove",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1gra0g6"
-          ],
-          "outEdges": [
-            "x9fbsu"
-          ],
-          "kind": "instance",
-          "title": "PIP — information point",
-          "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
-          },
-          "tags": [
-            "pip"
-          ],
-          "color": "indigo",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "trustedCompute.mangrove.pip",
-          "modelRef": "lakehouse.governance.pip"
-        },
-        {
           "id": "trustedCompute.objstore",
           "parent": null,
           "level": 0,
@@ -1767,45 +1604,12 @@
           "description": {
             "txt": "S3-compatible object storage where table files are written."
           },
-          "tags": [
-            "built"
-          ],
+          "tags": [],
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "depth": 1
-        },
-        {
-          "id": "trustedCompute.hydrofoil.pdp",
-          "parent": "trustedCompute.hydrofoil",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "cvgyot",
-            "x9fbsu",
-            "1ang8li",
-            "1f5oldn",
-            "1jfaefd"
-          ],
-          "outEdges": [],
-          "kind": "instance",
-          "title": "PDP — decision point",
-          "description": {
-            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
-          },
-          "tags": [
-            "pdp",
-            "built"
-          ],
-          "color": "indigo",
-          "shape": "rectangle",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "deploymentRef": "trustedCompute.hydrofoil.pdp",
-          "modelRef": "lakehouse.governance.pdp"
         },
         {
           "id": "trustedCompute.objstore.objectStorage",
@@ -1832,7 +1636,7 @@
           "modelRef": "lakehouse.objectStorage"
         }
       ],
-      "hash": "p2PASiXa1TvK2Qx9z6QmXrPdFyPMBK8IT37r3GSyT_U"
+      "hash": "ydlXg2-gZwiAeBUlQ3NE93HBILa5EAiT-8dvm-FLjaY"
     },
     "externalComputeDeploy": {
       "_type": "deployment",
@@ -1899,7 +1703,7 @@
           "parent": null,
           "source": "externalCompute.extEngine",
           "target": "externalCompute.extStore",
-          "label": "reads raw files — FGAC BYPASSED",
+          "label": "reads raw files",
           "relations": [
             "1ih0uhh"
           ],
@@ -1932,11 +1736,9 @@
           "modelRef": "lakehouse.queryEngine",
           "icon": "tech:rust",
           "description": {
-            "txt": "A query engine deployed outside the trusted boundary (e.g. Spark, Trino, a raw-storage notebook). Receives a vended credential and reads raw files directly. It does not enforce FGAC — row filters and column masks are NOT applied."
+            "txt": "A query engine deployed outside the trusted boundary. Receives a vended credential and reads raw files directly."
           },
-          "tags": [
-            "built"
-          ],
+          "tags": [],
           "style": {
             "opacity": 15,
             "size": "md"
@@ -1991,13 +1793,12 @@
           ],
           "color": "primary",
           "shape": "rectangle",
+          "modelRef": "lakehouse.catalog",
           "icon": "tech:rust",
           "description": {
             "txt": "The catalog vends a short-lived scoped credential to an engine outside the trusted boundary after a coarse authorize check."
           },
-          "tags": [
-            "built"
-          ],
+          "tags": [],
           "style": {
             "opacity": 15,
             "size": "md"
@@ -2021,6 +1822,11 @@
             "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
           },
           "tags": [],
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
           "color": "primary",
           "shape": "rectangle",
           "style": {
@@ -2048,9 +1854,7 @@
           "color": "muted",
           "shape": "storage",
           "modelRef": "lakehouse.objectStorage",
-          "tags": [
-            "built"
-          ],
+          "tags": [],
           "style": {
             "opacity": 15,
             "size": "md"
@@ -2082,7 +1886,7 @@
           "modelRef": "lakehouse.objectStorage"
         }
       ],
-      "hash": "_3qGPcgJjAFqHcWQkM4bvNrPc8nln1E_FsGpUFjpzo0"
+      "hash": "Y3vy0P2Q3IFrHPQTo7iZ7fJ2WsBlL-1JCctrejwPJJ4"
     },
     "credentialVending": {
       "_type": "dynamic",
@@ -2091,9 +1895,9 @@
       "_stage": "computed",
       "sourcePath": "flows.likec4",
       "description": {
-        "txt": "The catalog issues a short-lived, scoped storage credential at table-resolution time; the query engine reads object storage with it (no long-lived keys)."
+        "txt": "The catalog issues a short-lived, scoped storage credential at table-resolution time;\nthe query engine reads object storage with it (no long-lived keys)."
       },
-      "title": "Flow — Credential vending",
+      "title": "Governance / Credential Vending",
       "id": "credentialVending",
       "variant": "diagram",
       "autoLayout": {
@@ -2106,7 +1910,7 @@
           "level": 0,
           "children": [],
           "inEdges": [
-            "step-07"
+            "step-05"
           ],
           "outEdges": [
             "step-01"
@@ -2132,12 +1936,12 @@
           "children": [],
           "inEdges": [
             "step-01",
-            "step-05"
+            "step-03"
           ],
           "outEdges": [
             "step-02",
-            "step-06",
-            "step-07"
+            "step-04",
+            "step-05"
           ],
           "title": "Query engine",
           "modelRef": "lakehouse.queryEngine",
@@ -2165,8 +1969,7 @@
             "step-02"
           ],
           "outEdges": [
-            "step-03",
-            "step-05"
+            "step-03"
           ],
           "title": "Catalog",
           "modelRef": "lakehouse.catalog",
@@ -2183,68 +1986,12 @@
           "metadata": {
             "canonicalDoc": "design/catalog-plane.md"
           },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
           "kind": "capability"
-        },
-        {
-          "id": "lakehouse.governance.pa",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-03"
-          ],
-          "outEdges": [
-            "step-04"
-          ],
-          "title": "PA — administrator / vending",
-          "modelRef": "lakehouse.governance.pa",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Acts on the PDP's verdict. NIST 800-207 'Policy Administrator': the catalog's credential-vending path mints a short-lived scoped credential only after an authorize check."
-          },
-          "tags": [
-            "built"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.governance.pdp",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-04"
-          ],
-          "outEdges": [],
-          "title": "PDP — decision point",
-          "modelRef": "lakehouse.governance.pdp",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
-          },
-          "tags": [
-            "pdp",
-            "built"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
         },
         {
           "id": "lakehouse.objectStorage",
@@ -2252,7 +1999,7 @@
           "level": 0,
           "children": [],
           "inEdges": [
-            "step-06"
+            "step-04"
           ],
           "outEdges": [],
           "title": "Object storage",
@@ -2281,14 +2028,17 @@
           "target": "lakehouse.queryEngine",
           "label": "query table",
           "relations": [
-            "1eyhfjs"
+            "5pe79a"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "tags": [],
           "kind": "flows",
-          "astPath": "/steps@0"
+          "astPath": "/steps@0",
+          "notes": {
+            "txt": "A query is issued by a client to the query engine.\nThe caller identity travels with the request."
+          }
         },
         {
           "id": "step-02",
@@ -2304,39 +2054,13 @@
           "head": "normal",
           "tags": [],
           "kind": "resolves",
-          "astPath": "/steps@1"
+          "astPath": "/steps@1",
+          "notes": {
+            "txt": "The query engine asks the catalog to resolve the table name into\na concrete storage location, the table schema and metadata, as well\nas a credential to access the storage location."
+          }
         },
         {
           "id": "step-03",
-          "parent": null,
-          "source": "lakehouse.catalog",
-          "target": "lakehouse.governance.pa",
-          "label": "authorize + mint credential",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@2"
-        },
-        {
-          "id": "step-04",
-          "parent": null,
-          "source": "lakehouse.governance.pa",
-          "target": "lakehouse.governance.pdp",
-          "label": "check verdict",
-          "relations": [
-            "e8usp9"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "kind": "enforces",
-          "astPath": "/steps@3"
-        },
-        {
-          "id": "step-05",
           "parent": null,
           "source": "lakehouse.catalog",
           "target": "lakehouse.queryEngine",
@@ -2346,296 +2070,15 @@
           "line": "dashed",
           "head": "normal",
           "tags": [],
-          "astPath": "/steps@4",
+          "astPath": "/steps@2",
           "dir": "back"
-        },
-        {
-          "id": "step-06",
-          "parent": null,
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.objectStorage",
-          "label": "read data files",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@5"
-        },
-        {
-          "id": "step-07",
-          "parent": null,
-          "source": "lakehouse.queryEngine",
-          "target": "practitioner",
-          "label": "results",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@6",
-          "dir": "back"
-        }
-      ],
-      "notation": {
-        "nodes": [
-          {
-            "title": "Governance role",
-            "shape": "rectangle",
-            "color": "indigo",
-            "kinds": [
-              "role"
-            ]
-          }
-        ]
-      },
-      "hash": "2LE0e4Iy-UfCRkxw4txQztF-Pv4NFh9WuuQr-kHP2_A"
-    },
-    "planningTimeCapture": {
-      "_type": "dynamic",
-      "tags": null,
-      "links": null,
-      "_stage": "computed",
-      "sourcePath": "flows.likec4",
-      "description": {
-        "txt": "Policy enforcement and lineage capture attach to the query plan before it runs — 'plug in, don't fork'."
-      },
-      "title": "Flow — Planning-time policy + lineage",
-      "id": "planningTimeCapture",
-      "variant": "diagram",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "nodes": [
-        {
-          "id": "practitioner",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-07"
-          ],
-          "outEdges": [
-            "step-01"
-          ],
-          "title": "Data practitioner",
-          "modelRef": "practitioner",
-          "shape": "person",
-          "color": "secondary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
-          },
-          "tags": [],
-          "kind": "person"
-        },
-        {
-          "id": "lakehouse.queryEngine",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-01"
-          ],
-          "outEdges": [
-            "step-02",
-            "step-06",
-            "step-07"
-          ],
-          "title": "Query engine",
-          "modelRef": "lakehouse.queryEngine",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Parses, plans, and executes queries over open table formats."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        },
-        {
-          "id": "lakehouse.governance.pep",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-02",
-            "step-05"
-          ],
-          "outEdges": [
-            "step-03"
-          ],
-          "title": "PEP — enforcement point",
-          "modelRef": "lakehouse.governance.pep",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters / masks and short-circuits on deny. Realized in-plan by the query engine. An agent-tool PEP is designed."
-          },
-          "tags": [
-            "pep",
-            "built"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.governance.pdp",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-03"
-          ],
-          "outEdges": [
-            "step-04",
-            "step-05"
-          ],
-          "title": "PDP — decision point",
-          "modelRef": "lakehouse.governance.pdp",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
-          },
-          "tags": [
-            "pdp",
-            "built"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.governance.pip",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-04"
-          ],
-          "outEdges": [],
-          "title": "PIP — information point",
-          "modelRef": "lakehouse.governance.pip",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
-          },
-          "tags": [
-            "pip"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.lineage",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-06"
-          ],
-          "outEdges": [],
-          "title": "Lineage",
-          "modelRef": "lakehouse.lineage",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Records where data came from and where it flows, down to the column."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
-          },
-          "kind": "capability"
-        }
-      ],
-      "edges": [
-        {
-          "id": "step-01",
-          "parent": null,
-          "source": "practitioner",
-          "target": "lakehouse.queryEngine",
-          "label": "submit query",
-          "relations": [
-            "1eyhfjs"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "kind": "flows",
-          "astPath": "/steps@0"
-        },
-        {
-          "id": "step-02",
-          "parent": null,
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.governance.pep",
-          "label": "govern the plan",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@1"
-        },
-        {
-          "id": "step-03",
-          "parent": null,
-          "source": "lakehouse.governance.pep",
-          "target": "lakehouse.governance.pdp",
-          "label": "request decision",
-          "relations": [
-            "1g1bbjq"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "kind": "enforces",
-          "astPath": "/steps@2"
         },
         {
           "id": "step-04",
           "parent": null,
-          "source": "lakehouse.governance.pdp",
-          "target": "lakehouse.governance.pip",
-          "label": "gather facts",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.objectStorage",
+          "label": "read data files",
           "relations": [],
           "color": "gray",
           "line": "dashed",
@@ -2646,9 +2089,9 @@
         {
           "id": "step-05",
           "parent": null,
-          "source": "lakehouse.governance.pdp",
-          "target": "lakehouse.governance.pep",
-          "label": "allow + row / column constraints",
+          "source": "lakehouse.queryEngine",
+          "target": "practitioner",
+          "label": "results",
           "relations": [],
           "color": "gray",
           "line": "dashed",
@@ -2656,310 +2099,9 @@
           "tags": [],
           "astPath": "/steps@4",
           "dir": "back"
-        },
-        {
-          "id": "step-06",
-          "parent": null,
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.lineage",
-          "label": "emit column-level lineage",
-          "relations": [
-            "1j0fe4l"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "kind": "flows",
-          "astPath": "/steps@5"
-        },
-        {
-          "id": "step-07",
-          "parent": null,
-          "source": "lakehouse.queryEngine",
-          "target": "practitioner",
-          "label": "governed results",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@6",
-          "dir": "back"
         }
       ],
-      "notation": {
-        "nodes": [
-          {
-            "title": "Governance role",
-            "shape": "rectangle",
-            "color": "indigo",
-            "kinds": [
-              "role"
-            ]
-          }
-        ]
-      },
-      "hash": "sS0Xt0llm4Xa6CcIUbSYDBf05HGZoeF_1fqQL9XalX8"
-    },
-    "policyDecisionFlow": {
-      "_type": "dynamic",
-      "tags": null,
-      "links": null,
-      "_stage": "computed",
-      "sourcePath": "flows.likec4",
-      "description": {
-        "txt": "How the governance points interact for one access decision."
-      },
-      "title": "Flow — Zero-trust decision (PAP → PDP → PEP → PIP)",
-      "id": "policyDecisionFlow",
-      "variant": "diagram",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "nodes": [
-        {
-          "id": "lakehouse.governance.pap",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "step-01"
-          ],
-          "title": "PAP — administration point",
-          "modelRef": "lakehouse.governance.pap",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Authors and distributes policy. Today: the Cedar policy set + schema published as an OCI bundle. The versioned, fast-push control plane with a freshness SLA is designed, not built."
-          },
-          "tags": [
-            "pap"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.governance.pep",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-04"
-          ],
-          "outEdges": [
-            "step-02",
-            "step-05"
-          ],
-          "title": "PEP — enforcement point",
-          "modelRef": "lakehouse.governance.pep",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Enforces the PDP's decision — rewrites the query plan to inject filters / masks and short-circuits on deny. Realized in-plan by the query engine. An agent-tool PEP is designed."
-          },
-          "tags": [
-            "pep",
-            "built"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.governance.pip",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "step-03"
-          ],
-          "title": "PIP — information point",
-          "modelRef": "lakehouse.governance.pip",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Supplies the facts a decision needs. The catalog is the authoritative resource.* PIP (table identity, ownership, classification tags); identity PIP is built (v1); network and session / lineage PIPs are designed."
-          },
-          "tags": [
-            "pip"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.governance.pdp",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-01",
-            "step-02",
-            "step-03"
-          ],
-          "outEdges": [
-            "step-04"
-          ],
-          "title": "PDP — decision point",
-          "modelRef": "lakehouse.governance.pdp",
-          "shape": "rectangle",
-          "color": "indigo",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides allow / deny and computes fine-grained constraints (row filters, column masks) from the policy + facts. NIST 800-207 'Policy Engine'. Today embedded (in-process Cedar); a central / hybrid topology is designed."
-          },
-          "tags": [
-            "pdp",
-            "built"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "notation": "Governance role",
-          "kind": "role"
-        },
-        {
-          "id": "lakehouse.queryEngine",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "step-05"
-          ],
-          "outEdges": [],
-          "title": "Query engine",
-          "modelRef": "lakehouse.queryEngine",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Parses, plans, and executes queries over open table formats."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        }
-      ],
-      "edges": [
-        {
-          "id": "step-01",
-          "parent": null,
-          "source": "lakehouse.governance.pap",
-          "target": "lakehouse.governance.pdp",
-          "label": "publish policy (OCI bundle)",
-          "relations": [
-            "83x1rk"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "kind": "administers",
-          "astPath": "/steps@0"
-        },
-        {
-          "id": "step-02",
-          "parent": null,
-          "source": "lakehouse.governance.pep",
-          "target": "lakehouse.governance.pdp",
-          "label": "request decision for a request",
-          "relations": [
-            "1g1bbjq"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "kind": "enforces",
-          "astPath": "/steps@1"
-        },
-        {
-          "id": "step-03",
-          "parent": null,
-          "source": "lakehouse.governance.pip",
-          "target": "lakehouse.governance.pdp",
-          "label": "supply resource / identity / context facts",
-          "relations": [
-            "1ayvbln"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "kind": "informs",
-          "astPath": "/steps@2"
-        },
-        {
-          "id": "step-04",
-          "parent": null,
-          "source": "lakehouse.governance.pdp",
-          "target": "lakehouse.governance.pep",
-          "label": "verdict + constraints",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@3",
-          "dir": "back"
-        },
-        {
-          "id": "step-05",
-          "parent": null,
-          "source": "lakehouse.governance.pep",
-          "target": "lakehouse.queryEngine",
-          "label": "apply (filters / masks / deny)",
-          "relations": [],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "tags": [],
-          "astPath": "/steps@4"
-        }
-      ],
-      "notation": {
-        "nodes": [
-          {
-            "title": "Governance role",
-            "shape": "rectangle",
-            "color": "indigo",
-            "kinds": [
-              "role"
-            ]
-          }
-        ]
-      },
-      "hash": "cX_CvQHG8b9IVTDjJrlFW7oeF7jjwiT_ySSD40lMP-A"
+      "hash": "UaTqxiywohS_RYqGu0LVDRQNUhCcf9EWNCs43RQFmPw"
     },
     "referenceContext": {
       "_type": "element",
@@ -2983,7 +2125,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "1eyhfjs"
+            "5pe79a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2997,7 +2139,7 @@
           "target": "lakehouse.lineage",
           "label": "investigates",
           "relations": [
-            "1aqcxn4"
+            "gxybq2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3103,13 +2245,13 @@
           "kind": "reads"
         },
         {
-          "id": "ipwqn",
+          "id": "qyrzng",
           "parent": null,
-          "source": "datafusion",
-          "target": "lakehouse.queryEngine",
-          "label": "built on",
+          "source": "unityCatalog",
+          "target": "lakehouse.catalog",
+          "label": "realizes the catalog capability",
           "relations": [
-            "8w4yz4"
+            "td9u5f"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3117,13 +2259,13 @@
           "kind": "realizes"
         },
         {
-          "id": "1y4ym12",
+          "id": "q6exad",
           "parent": null,
-          "source": "delta",
+          "source": "deltaLake",
           "target": "lakehouse.tableFormat",
-          "label": "is an open table format",
+          "label": "realizes the table-format capability",
           "relations": [
-            "1wh06oa"
+            "mn4ddk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3135,9 +2277,9 @@
           "parent": null,
           "source": "iceberg",
           "target": "lakehouse.tableFormat",
-          "label": "is an open table format",
+          "label": "realizes the table-format capability",
           "relations": [
-            "zvuefi"
+            "1gmohps"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3145,13 +2287,13 @@
           "kind": "realizes"
         },
         {
-          "id": "r41cnr",
+          "id": "ipwqn",
           "parent": null,
-          "source": "lakehouse.lineage",
-          "target": "openlineage",
-          "label": "speaks",
+          "source": "datafusion",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
           "relations": [
-            "14sh7z3"
+            "1rqw8et"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3159,13 +2301,41 @@
           "kind": "realizes"
         },
         {
-          "id": "15f5rvg",
+          "id": "zt1zxe",
           "parent": null,
-          "source": "lakehouse.catalog",
-          "target": "unitycatalog",
-          "label": "builds on / integrates with",
+          "source": "apacheSpark",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
           "relations": [
-            "1vmfc2e"
+            "17lybnu"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1ylu6cf",
+          "parent": null,
+          "source": "lakekeeper",
+          "target": "lakehouse.catalog",
+          "label": "realizes the catalog capability",
+          "relations": [
+            "1uopptd"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "c5alk7",
+          "parent": null,
+          "source": "mlflow",
+          "target": "lakehouse.mlLifecycle",
+          "label": "realizes the ML-lifecycle capability",
+          "relations": [
+            "12opdl7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3179,7 +2349,7 @@
           "target": "lakehouse",
           "label": "builds + operates",
           "relations": [
-            "pjwb1"
+            "cqka9z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3235,54 +2405,55 @@
           "kind": "person"
         },
         {
-          "id": "datafusion",
+          "id": "unityCatalog",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "ipwqn"
+            "qyrzng"
           ],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
+          "title": "Unity Catalog",
+          "modelRef": "unityCatalog",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "The shared query / compute core the query engine is built on."
+            "txt": "Open source catalog for data & AI — governs tables, files, functions, and models across engines. An LF AI & Data project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
           "links": [
             {
-              "url": "https://datafusion.apache.org"
+              "url": "https://www.unitycatalog.io"
             }
           ],
-          "technology": "Rust query engine",
           "kind": "foundation"
         },
         {
-          "id": "delta",
+          "id": "deltaLake",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1y4ym12"
+            "q6exad"
           ],
           "title": "Delta Lake",
-          "modelRef": "delta",
+          "modelRef": "deltaLake",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "An open table format. Realizes the tableFormat capability."
+            "txt": "Open table format bringing ACID transactions, schema evolution, and time travel to object storage. An LF AI & Data project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -3291,7 +2462,6 @@
               "url": "https://delta.io"
             }
           ],
-          "technology": "Delta Lake",
           "kind": "foundation"
         },
         {
@@ -3307,12 +2477,13 @@
           "modelRef": "iceberg",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
+            "txt": "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation. An Apache Software Foundation project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -3321,7 +2492,126 @@
               "url": "https://iceberg.apache.org"
             }
           ],
-          "technology": "Apache Iceberg",
+          "kind": "foundation"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "ipwqn"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. An Apache Software Foundation project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "apacheSpark",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "zt1zxe"
+          ],
+          "title": "Apache Spark",
+          "modelRef": "apacheSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Unified analytics engine for large-scale data processing. An Apache Software Foundation project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://spark.apache.org"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "lakekeeper",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ylu6cf"
+          ],
+          "title": "Lakekeeper",
+          "modelRef": "lakekeeper",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://lakekeeper.io"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "mlflow",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "c5alk7"
+          ],
+          "title": "MLflow",
+          "modelRef": "mlflow",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment. An LF AI & Data project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://mlflow.org"
+            }
+          ],
           "kind": "foundation"
         },
         {
@@ -3353,6 +2643,7 @@
           "level": 0,
           "children": [
             "lakehouse.queryEngine",
+            "lakehouse.mlLifecycle",
             "lakehouse.governance",
             "lakehouse.catalog",
             "lakehouse.lineage",
@@ -3363,14 +2654,15 @@
             "12g2j4b",
             "7v3snl",
             "1o5tqxj",
+            "qyrzng",
+            "q6exad",
+            "1fsmgn7",
             "ipwqn",
-            "1y4ym12",
-            "1fsmgn7"
+            "zt1zxe",
+            "1ylu6cf",
+            "c5alk7"
           ],
-          "outEdges": [
-            "r41cnr",
-            "15f5rvg"
-          ],
+          "outEdges": [],
           "title": "Open Lakehouse",
           "modelRef": "lakehouse",
           "shape": "rectangle",
@@ -3399,7 +2691,8 @@
           "children": [],
           "inEdges": [
             "7v3snl",
-            "ipwqn"
+            "ipwqn",
+            "zt1zxe"
           ],
           "outEdges": [
             "y1w3b4",
@@ -3417,6 +2710,32 @@
           },
           "description": {
             "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.mlLifecycle",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "c5alk7"
+          ],
+          "outEdges": [],
+          "title": "ML lifecycle",
+          "modelRef": "lakehouse.mlLifecycle",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
           "metadata": {
@@ -3457,12 +2776,13 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "1tnkhx9"
+            "1tnkhx9",
+            "qyrzng",
+            "1ylu6cf"
           ],
           "outEdges": [
             "1ko3ux0",
-            "qmrjf9",
-            "15f5rvg"
+            "qmrjf9"
           ],
           "title": "Catalog",
           "modelRef": "lakehouse.catalog",
@@ -3479,6 +2799,11 @@
           "metadata": {
             "canonicalDoc": "design/catalog-plane.md"
           },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
           "kind": "capability"
         },
         {
@@ -3490,9 +2815,7 @@
             "1o5tqxj",
             "tnia77"
           ],
-          "outEdges": [
-            "r41cnr"
-          ],
+          "outEdges": [],
           "title": "Lineage",
           "modelRef": "lakehouse.lineage",
           "shape": "rectangle",
@@ -3518,7 +2841,7 @@
           "inEdges": [
             "1ko3ux0",
             "rdpg8j",
-            "1y4ym12",
+            "q6exad",
             "1fsmgn7"
           ],
           "outEdges": [
@@ -3540,94 +2863,6 @@
             "canonicalDoc": "design/reference-architecture.md"
           },
           "kind": "capability"
-        },
-        {
-          "id": "cedar",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Cedar",
-          "modelRef": "cedar",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The policy language and decision engine behind the governance PDP."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.cedarpolicy.com"
-            }
-          ],
-          "technology": "Cedar",
-          "kind": "foundation"
-        },
-        {
-          "id": "unitycatalog",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "15f5rvg"
-          ],
-          "outEdges": [],
-          "title": "Unity Catalog OSS",
-          "modelRef": "unitycatalog",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The governance API surface the catalog builds on and integrates with."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "technology": "Unity Catalog",
-          "kind": "foundation"
-        },
-        {
-          "id": "openlineage",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "r41cnr"
-          ],
-          "outEdges": [],
-          "title": "OpenLineage",
-          "modelRef": "openlineage",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The lineage event standard the lineage capability emits and ingests."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://openlineage.io"
-            }
-          ],
-          "technology": "OpenLineage",
-          "kind": "foundation"
         },
         {
           "id": "lakehouse.objectStorage",
@@ -3657,31 +2892,31 @@
           "kind": "capability"
         },
         {
-          "id": "lakekeeper",
+          "id": "omnigent",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [],
-          "title": "Lakekeeper",
-          "modelRef": "lakekeeper",
+          "title": "Omnigent",
+          "modelRef": "omnigent",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "An Iceberg-REST catalog. The catalog can interoperate with it so Iceberg-REST consumers see the same tables."
+            "txt": "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
           },
           "tags": [],
           "notation": "OSS foundation / format",
           "links": [
             {
-              "url": "https://github.com/lakekeeper/lakekeeper"
+              "url": "https://omnigent.ai"
             }
           ],
-          "technology": "Iceberg-REST catalog",
           "kind": "foundation"
         }
       ],
@@ -3697,7 +2932,7 @@
           }
         ]
       },
-      "hash": "6BPw9NvvUsuGBaag7L4DWt_DcaWUkene9HSlqxal-6g"
+      "hash": "uXm4i2qsUJFUUQiqDIrw4leQPAunlnTTqDTCNqdR4NE"
     },
     "capabilityMap": {
       "_type": "element",
@@ -3722,7 +2957,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "1eyhfjs"
+            "5pe79a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3736,7 +2971,7 @@
           "target": "lakehouse.lineage",
           "label": "investigates",
           "relations": [
-            "1aqcxn4"
+            "gxybq2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3744,13 +2979,13 @@
           "kind": "flows"
         },
         {
-          "id": "ipwqn",
+          "id": "qyrzng",
           "parent": null,
-          "source": "datafusion",
-          "target": "lakehouse.queryEngine",
-          "label": "built on",
+          "source": "unityCatalog",
+          "target": "lakehouse.catalog",
+          "label": "realizes the catalog capability",
           "relations": [
-            "8w4yz4"
+            "td9u5f"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3758,13 +2993,13 @@
           "kind": "realizes"
         },
         {
-          "id": "1y4ym12",
+          "id": "q6exad",
           "parent": null,
-          "source": "delta",
+          "source": "deltaLake",
           "target": "lakehouse.tableFormat",
-          "label": "is an open table format",
+          "label": "realizes the table-format capability",
           "relations": [
-            "1wh06oa"
+            "mn4ddk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3776,9 +3011,65 @@
           "parent": null,
           "source": "iceberg",
           "target": "lakehouse.tableFormat",
-          "label": "is an open table format",
+          "label": "realizes the table-format capability",
           "relations": [
-            "zvuefi"
+            "1gmohps"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "ipwqn",
+          "parent": null,
+          "source": "datafusion",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1rqw8et"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "zt1zxe",
+          "parent": null,
+          "source": "apacheSpark",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "17lybnu"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1ylu6cf",
+          "parent": null,
+          "source": "lakekeeper",
+          "target": "lakehouse.catalog",
+          "label": "realizes the catalog capability",
+          "relations": [
+            "1uopptd"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "c5alk7",
+          "parent": null,
+          "source": "mlflow",
+          "target": "lakehouse.mlLifecycle",
+          "label": "realizes the ML-lifecycle capability",
+          "relations": [
+            "12opdl7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3882,34 +3173,6 @@
           "line": "dashed",
           "head": "normal",
           "kind": "reads"
-        },
-        {
-          "id": "15f5rvg",
-          "parent": null,
-          "source": "lakehouse.catalog",
-          "target": "unitycatalog",
-          "label": "builds on / integrates with",
-          "relations": [
-            "1vmfc2e"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "r41cnr",
-          "parent": null,
-          "source": "lakehouse.lineage",
-          "target": "openlineage",
-          "label": "speaks",
-          "relations": [
-            "14sh7z3"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
         }
       ],
       "nodes": [
@@ -3960,54 +3223,55 @@
           "kind": "person"
         },
         {
-          "id": "datafusion",
+          "id": "unityCatalog",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "ipwqn"
+            "qyrzng"
           ],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
+          "title": "Unity Catalog",
+          "modelRef": "unityCatalog",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "The shared query / compute core the query engine is built on."
+            "txt": "Open source catalog for data & AI — governs tables, files, functions, and models across engines. An LF AI & Data project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
           "links": [
             {
-              "url": "https://datafusion.apache.org"
+              "url": "https://www.unitycatalog.io"
             }
           ],
-          "technology": "Rust query engine",
           "kind": "foundation"
         },
         {
-          "id": "delta",
+          "id": "deltaLake",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1y4ym12"
+            "q6exad"
           ],
           "title": "Delta Lake",
-          "modelRef": "delta",
+          "modelRef": "deltaLake",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "An open table format. Realizes the tableFormat capability."
+            "txt": "Open table format bringing ACID transactions, schema evolution, and time travel to object storage. An LF AI & Data project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -4016,7 +3280,6 @@
               "url": "https://delta.io"
             }
           ],
-          "technology": "Delta Lake",
           "kind": "foundation"
         },
         {
@@ -4032,12 +3295,13 @@
           "modelRef": "iceberg",
           "shape": "cylinder",
           "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
+            "txt": "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation. An Apache Software Foundation project."
           },
           "tags": [],
           "notation": "OSS foundation / format",
@@ -4046,7 +3310,126 @@
               "url": "https://iceberg.apache.org"
             }
           ],
-          "technology": "Apache Iceberg",
+          "kind": "foundation"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "ipwqn"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. An Apache Software Foundation project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "apacheSpark",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "zt1zxe"
+          ],
+          "title": "Apache Spark",
+          "modelRef": "apacheSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Unified analytics engine for large-scale data processing. An Apache Software Foundation project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://spark.apache.org"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "lakekeeper",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ylu6cf"
+          ],
+          "title": "Lakekeeper",
+          "modelRef": "lakekeeper",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://lakekeeper.io"
+            }
+          ],
+          "kind": "foundation"
+        },
+        {
+          "id": "mlflow",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "c5alk7"
+          ],
+          "title": "MLflow",
+          "modelRef": "mlflow",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment. An LF AI & Data project."
+          },
+          "tags": [],
+          "notation": "OSS foundation / format",
+          "links": [
+            {
+              "url": "https://mlflow.org"
+            }
+          ],
           "kind": "foundation"
         },
         {
@@ -4055,6 +3438,7 @@
           "level": 0,
           "children": [
             "lakehouse.queryEngine",
+            "lakehouse.mlLifecycle",
             "lakehouse.governance",
             "lakehouse.catalog",
             "lakehouse.lineage",
@@ -4064,14 +3448,15 @@
           "inEdges": [
             "7v3snl",
             "1o5tqxj",
+            "qyrzng",
+            "q6exad",
+            "1fsmgn7",
             "ipwqn",
-            "1y4ym12",
-            "1fsmgn7"
+            "zt1zxe",
+            "1ylu6cf",
+            "c5alk7"
           ],
-          "outEdges": [
-            "15f5rvg",
-            "r41cnr"
-          ],
+          "outEdges": [],
           "title": "Open Lakehouse",
           "modelRef": "lakehouse",
           "shape": "rectangle",
@@ -4099,7 +3484,8 @@
           "children": [],
           "inEdges": [
             "7v3snl",
-            "ipwqn"
+            "ipwqn",
+            "zt1zxe"
           ],
           "outEdges": [
             "y1w3b4",
@@ -4117,6 +3503,32 @@
           },
           "description": {
             "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.mlLifecycle",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "c5alk7"
+          ],
+          "outEdges": [],
+          "title": "ML lifecycle",
+          "modelRef": "lakehouse.mlLifecycle",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
           "metadata": {
@@ -4157,12 +3569,13 @@
           "level": 1,
           "children": [],
           "inEdges": [
+            "qyrzng",
+            "1ylu6cf",
             "1tnkhx9"
           ],
           "outEdges": [
             "1ko3ux0",
-            "qmrjf9",
-            "15f5rvg"
+            "qmrjf9"
           ],
           "title": "Catalog",
           "modelRef": "lakehouse.catalog",
@@ -4179,6 +3592,11 @@
           "metadata": {
             "canonicalDoc": "design/catalog-plane.md"
           },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
           "kind": "capability"
         },
         {
@@ -4190,9 +3608,7 @@
             "1o5tqxj",
             "tnia77"
           ],
-          "outEdges": [
-            "r41cnr"
-          ],
+          "outEdges": [],
           "title": "Lineage",
           "modelRef": "lakehouse.lineage",
           "shape": "rectangle",
@@ -4216,7 +3632,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "1y4ym12",
+            "q6exad",
             "1fsmgn7",
             "1ko3ux0",
             "rdpg8j"
@@ -4240,94 +3656,6 @@
             "canonicalDoc": "design/reference-architecture.md"
           },
           "kind": "capability"
-        },
-        {
-          "id": "cedar",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Cedar",
-          "modelRef": "cedar",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The policy language and decision engine behind the governance PDP."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.cedarpolicy.com"
-            }
-          ],
-          "technology": "Cedar",
-          "kind": "foundation"
-        },
-        {
-          "id": "unitycatalog",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "15f5rvg"
-          ],
-          "outEdges": [],
-          "title": "Unity Catalog OSS",
-          "modelRef": "unitycatalog",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The governance API surface the catalog builds on and integrates with."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "technology": "Unity Catalog",
-          "kind": "foundation"
-        },
-        {
-          "id": "openlineage",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "r41cnr"
-          ],
-          "outEdges": [],
-          "title": "OpenLineage",
-          "modelRef": "openlineage",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The lineage event standard the lineage capability emits and ingests."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://openlineage.io"
-            }
-          ],
-          "technology": "OpenLineage",
-          "kind": "foundation"
         },
         {
           "id": "lakehouse.objectStorage",
@@ -4369,7 +3697,7 @@
           }
         ]
       },
-      "hash": "bHr3kPJ5m7TR6_ccopJUgicvoHUHfq2hq2vY5p8tpsg"
+      "hash": "_YUYDuZz6Gl9fW8wQzpFrqFi6LaYb5L3wc5MjcXG4g8"
     },
     "governanceModel": {
       "_type": "element",
@@ -4456,20 +3784,6 @@
           "line": "dashed",
           "head": "normal",
           "kind": "enforces"
-        },
-        {
-          "id": "bmwqd2",
-          "parent": null,
-          "source": "lakehouse.governance.pdp",
-          "target": "cedar",
-          "label": "decisions computed by",
-          "relations": [
-            "q6gvod"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
         }
       ],
       "nodes": [
@@ -4497,6 +3811,11 @@
           "metadata": {
             "canonicalDoc": "design/catalog-plane.md"
           },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
           "kind": "capability"
         },
         {
@@ -4513,9 +3832,7 @@
           "inEdges": [
             "1r14os0"
           ],
-          "outEdges": [
-            "bmwqd2"
-          ],
+          "outEdges": [],
           "title": "Governance",
           "modelRef": "lakehouse.governance",
           "shape": "rectangle",
@@ -4664,9 +3981,7 @@
             "1ruly5j",
             "1p2e44f"
           ],
-          "outEdges": [
-            "bmwqd2"
-          ],
+          "outEdges": [],
           "title": "PDP — decision point",
           "modelRef": "lakehouse.governance.pdp",
           "shape": "rectangle",
@@ -4687,48 +4002,10 @@
           },
           "notation": "Governance role",
           "kind": "role"
-        },
-        {
-          "id": "cedar",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "bmwqd2"
-          ],
-          "outEdges": [],
-          "title": "Cedar",
-          "modelRef": "cedar",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The policy language and decision engine behind the governance PDP."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.cedarpolicy.com"
-            }
-          ],
-          "technology": "Cedar",
-          "kind": "foundation"
         }
       ],
       "notation": {
         "nodes": [
-          {
-            "title": "OSS foundation / format",
-            "shape": "cylinder",
-            "color": "muted",
-            "kinds": [
-              "foundation"
-            ]
-          },
           {
             "title": "Governance role",
             "shape": "rectangle",
@@ -4739,7 +4016,7 @@
           }
         ]
       },
-      "hash": "gtq_Hb0FggJ1IZI6IscfFmCFbyfZOuzK6iTnMcKnzQU"
+      "hash": "G02QALVVDfiMeYQ_m8rejRDylLugvfhKUcMQG94PGM0"
     }
   },
   "deployments": {
@@ -4748,9 +4025,6 @@
         "notation": "Deployment topology",
         "style": {},
         "kind": "environment",
-        "tags": [
-          "trusted"
-        ],
         "title": "trustedCompute",
         "id": "trustedCompute"
       },
@@ -4758,9 +4032,6 @@
         "notation": "Deployment topology",
         "style": {},
         "kind": "environment",
-        "tags": [
-          "untrusted"
-        ],
         "title": "externalCompute",
         "id": "externalCompute"
       },
@@ -4772,9 +4043,6 @@
         "description": {
           "txt": "The catalog-native query engine. Composes the catalog, policy, and lineage into one session and enforces full FGAC in-plan — it embeds the PDP (decide) and the PEP (enforce)."
         },
-        "tags": [
-          "built"
-        ],
         "links": [
           {
             "url": "https://github.com/open-lakehouse/hydrofoil"
@@ -4794,9 +4062,6 @@
         "description": {
           "txt": "The catalog server. Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
         },
-        "tags": [
-          "built"
-        ],
         "links": [
           {
             "url": "https://github.com/open-lakehouse/mangrove"
@@ -4816,9 +4081,6 @@
         "description": {
           "txt": "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capability is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
         },
-        "tags": [
-          "built"
-        ],
         "links": [
           {
             "url": "https://github.com/open-lakehouse/headwaters"
@@ -4830,23 +4092,6 @@
         "title": "headwaters",
         "id": "trustedCompute.headwaters"
       },
-      "trustedCompute.cedarOci": {
-        "style": {
-          "icon": "tech:rust"
-        },
-        "kind": "service",
-        "description": {
-          "txt": "The Cedar policy set + schema published as an OCI bundle — today's policy administration artifact. Versioned fast-push with a freshness SLA is designed, not built."
-        },
-        "tags": [
-          "built"
-        ],
-        "metadata": {
-          "sourceRepo": "open-lakehouse/breakwater"
-        },
-        "title": "cedar-oci bundle",
-        "id": "trustedCompute.cedarOci"
-      },
       "trustedCompute.objstore": {
         "style": {
           "shape": "storage",
@@ -4856,9 +4101,6 @@
         "description": {
           "txt": "S3-compatible object storage where table files are written."
         },
-        "tags": [
-          "built"
-        ],
         "title": "Object storage",
         "id": "trustedCompute.objstore"
       },
@@ -4871,9 +4113,6 @@
         "description": {
           "txt": "Relational store backing the catalog and lineage services."
         },
-        "tags": [
-          "built"
-        ],
         "title": "Postgres",
         "id": "trustedCompute.postgres"
       },
@@ -4885,9 +4124,6 @@
         "description": {
           "txt": "The catalog vends a short-lived scoped credential to an engine outside the trusted boundary after a coarse authorize check."
         },
-        "tags": [
-          "built"
-        ],
         "links": [
           {
             "url": "https://github.com/open-lakehouse/mangrove"
@@ -4905,11 +4141,8 @@
         },
         "kind": "service",
         "description": {
-          "txt": "A query engine deployed outside the trusted boundary (e.g. Spark, Trino, a raw-storage notebook). Receives a vended credential and reads raw files directly. It does not enforce FGAC — row filters and column masks are NOT applied."
+          "txt": "A query engine deployed outside the trusted boundary. Receives a vended credential and reads raw files directly."
         },
-        "tags": [
-          "built"
-        ],
         "title": "Query engine (external)",
         "id": "externalCompute.extEngine"
       },
@@ -4919,9 +4152,6 @@
           "color": "muted"
         },
         "kind": "datastore",
-        "tags": [
-          "built"
-        ],
         "title": "Object storage",
         "id": "externalCompute.extStore"
       },
@@ -4930,44 +4160,14 @@
         "element": "lakehouse.queryEngine",
         "style": {}
       },
-      "trustedCompute.hydrofoil.pdp": {
-        "id": "trustedCompute.hydrofoil.pdp",
-        "element": "lakehouse.governance.pdp",
-        "style": {}
-      },
-      "trustedCompute.hydrofoil.pep": {
-        "id": "trustedCompute.hydrofoil.pep",
-        "element": "lakehouse.governance.pep",
-        "style": {}
-      },
       "trustedCompute.mangrove.catalog": {
         "id": "trustedCompute.mangrove.catalog",
         "element": "lakehouse.catalog",
         "style": {}
       },
-      "trustedCompute.mangrove.pip": {
-        "id": "trustedCompute.mangrove.pip",
-        "element": "lakehouse.governance.pip",
-        "style": {}
-      },
-      "trustedCompute.mangrove.pa": {
-        "id": "trustedCompute.mangrove.pa",
-        "element": "lakehouse.governance.pa",
-        "style": {}
-      },
       "trustedCompute.headwaters.lineage": {
         "id": "trustedCompute.headwaters.lineage",
         "element": "lakehouse.lineage",
-        "style": {}
-      },
-      "trustedCompute.headwaters.pip": {
-        "id": "trustedCompute.headwaters.pip",
-        "element": "lakehouse.governance.pip",
-        "style": {}
-      },
-      "trustedCompute.cedarOci.pap": {
-        "id": "trustedCompute.cedarOci.pap",
-        "element": "lakehouse.governance.pap",
         "style": {}
       },
       "trustedCompute.objstore.objectStorage": {
@@ -4978,11 +4178,6 @@
       "externalCompute.extCatalog.catalog": {
         "id": "externalCompute.extCatalog.catalog",
         "element": "lakehouse.catalog",
-        "style": {}
-      },
-      "externalCompute.extCatalog.pa": {
-        "id": "externalCompute.extCatalog.pa",
-        "element": "lakehouse.governance.pa",
         "style": {}
       },
       "externalCompute.extEngine.queryEngine": {
@@ -4999,7 +4194,7 @@
     "relations": {
       "1tjn58e": {
         "color": "amber",
-        "title": "vends scoped credential (coarse gate only)",
+        "title": "vends scoped credential",
         "source": {
           "deployment": "externalCompute.extCatalog"
         },
@@ -5010,7 +4205,7 @@
         "id": "1tjn58e"
       },
       "1ih0uhh": {
-        "title": "reads raw files — FGAC BYPASSED",
+        "title": "reads raw files",
         "source": {
           "deployment": "externalCompute.extEngine"
         },

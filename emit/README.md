@@ -45,7 +45,10 @@ For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
 - **`index.mdx`** — a rich Astro MDX post with UC-shaped frontmatter:
   - `::::journey` → `<Journey><JourneyStep>`; `likec4=` images → `<LikeC4View>`
     (interactive canvas); `:::` callouts are **left as directives** (the site styles
-    them); `file=` snippets inlined; code captions kept.
+    them); `file=` snippets inlined; a snippet's filename is **kept on the fence** as
+    `title="x.py"` meta — the site renders fences with Expressive Code, which turns
+    that into a native filename frame (so, unlike gdocs, this target does NOT run
+    `remark-code-caption`).
   - Frontmatter is **mapped** to the site's zod schema (title / authors[] from the
     draft author / `category: guide` / human date / optional description); the title
     is NOT emitted as a body H1 (the site renders it) and prose is not unwrapped.
@@ -70,6 +73,10 @@ React (JSX) components; this emitter emits Markdown. So the journey/callout/like
 transforms have **Markdown-emitting** variants living here in `plugins/`
 (`remark-journey-md.mjs`, `remark-callouts-md.mjs`, `remark-likec4-md.mjs`,
 `remark-code-caption.mjs`). One implementation per render flavor, deliberately.
+`remark-code-caption` is now **gdocs-only** — it exists because plain Markdown has
+no code-block chrome to hang a filename on, so it lifts a fence's `title=` into a
+bold caption line; the `unitycatalog` target instead leaves `title=` on the fence
+for Expressive Code to render.
 
 ## Idempotency — update the same Doc, don't duplicate
 

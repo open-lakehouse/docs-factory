@@ -44,7 +44,16 @@ export function CodeBlock({ code, lang = "text", filename }: CodeBlockProps) {
       className="cb border-0"
     >
       <div className={filename ? "cb-head" : "cb-head cb-head-nameonly"}>
-        {filename && <span className="cb-name">{filename}</span>}
+        <div className="cb-dots" aria-hidden="true">
+          <span className="cb-dot cb-dot-red" />
+          <span className="cb-dot cb-dot-yellow" />
+          <span className="cb-dot cb-dot-green" />
+        </div>
+        {filename && (
+          <div className="cb-tabs">
+            <span className="cb-tab">{filename}</span>
+          </div>
+        )}
         <span className="cb-lang">{lang}</span>
         <CodeBlockCopyButton className="cb-copy" />
       </div>

@@ -14,6 +14,8 @@ import Breadcrumbs from "./components/layout/Breadcrumbs";
 import OnThisPage from "./components/layout/OnThisPage";
 import Pager from "./components/layout/Pager";
 import Shell from "./components/layout/Shell";
+import TerminalHero from "./components/TerminalHero";
+import BlogTable from "./components/BlogTable";
 import { docNav, docNeighbors, firstDocForProject } from "./sidebar";
 import MdxProvider from "./MdxProvider";
 
@@ -54,40 +56,30 @@ function Index() {
 
   return (
     <Shell wide>
-      <section className="hero">
-        <p className="hero-eyebrow">Open Lakehouse ecosystem</p>
-        <h1 className="hero-title">Build on open table formats and a governed catalog</h1>
-        <p className="hero-lead muted">
-          Engine-neutral documentation, narrative blog drafts, and interactive architecture
-          diagrams — a local preview over the docs-factory content source. Nothing here
-          edits the source.
-        </p>
-        <div className="hero-actions">
-          <Link to="/docs" className="hero-cta">
-            Browse docs
-          </Link>
-          <Link to="/blog" className="hero-cta hero-cta-secondary">
-            Read the blog
-          </Link>
-        </div>
-      </section>
+      <TerminalHero />
 
       <section className="product-grid">
-        <Link to={deltaEntry?.href ?? "/docs"} className="product-card">
-          <h2>Delta Lake</h2>
+        <Link
+          to={deltaEntry?.href ?? "/docs"}
+          className="product-card"
+          data-accent="delta"
+        >
+          <h2>delta/</h2>
           <p className="muted">
-            Open table format for reliable storage on data lakes — ACID transactions,
-            time travel, and schema enforcement.
+            Open table format — ACID transactions, time travel, schema enforcement.
           </p>
-          <span className="product-card-link">Explore docs →</span>
+          <span className="product-card-link">cd delta →</span>
         </Link>
-        <Link to={ucEntry?.href ?? "/docs"} className="product-card">
-          <h2>Unity Catalog</h2>
+        <Link
+          to={ucEntry?.href ?? "/docs"}
+          className="product-card"
+          data-accent="unitycatalog"
+        >
+          <h2>unitycatalog/</h2>
           <p className="muted">
-            Open lakehouse catalog for unified governance — tables, volumes, and
-            fine-grained access across engines.
+            Open lakehouse catalog — unified governance across engines.
           </p>
-          <span className="product-card-link">Explore docs →</span>
+          <span className="product-card-link">cd unitycatalog →</span>
         </Link>
       </section>
 
@@ -185,13 +177,31 @@ function DocPage() {
 
   const { Component, frontmatter } = page;
   const neighbors = docNeighbors(page.href);
-  const bucketLabel =
-    docNav
-      .find((g) => g.project === project)
-      ?.buckets.find((b) => b.bucket === bucket)?.label ?? bucket;
+  const group = docNav.find((g) => g.project === project);
+  const activeBucket = group?.buckets.find((b) => b.bucket === bucket);
+  const bucketLabel = activeBucket?.label ?? bucket;
+  const projectLabel = group?.projectLabel ?? page.project ?? project;
+
+  // Sibling menus: other projects, other buckets in this project, and other
+  // pages in this bucket (the leaf) — so any crumb can hop to its siblings.
+  const projectSiblings = docNav
+    .map((g) => ({ label: g.projectLabel, href: g.buckets[0]?.items[0]?.href }))
+    .filter((s): s is { label: string; href: string } => Boolean(s.href));
+  const projectActiveHref = group?.buckets[0]?.items[0]?.href;
+  const bucketSiblings =
+    group?.buckets
+      .map((b) => ({ label: b.label, href: b.items[0]?.href }))
+      .filter((s): s is { label: string; href: string } => Boolean(s.href)) ?? [];
+  const bucketActiveHref = activeBucket?.items[0]?.href;
+  const pageSiblings =
+    activeBucket?.items.map((it) => ({ label: it.label, href: it.href })) ?? [];
 
   return (
-    <Shell showSidebarToggle wide>
+    <Shell
+      showSidebarToggle
+      wide
+      accent={project === "unitycatalog" ? "unitycatalog" : "delta"}
+    >
       <div className="docs-grid">
         <DocsSidebar
           activeProject={project}
@@ -203,9 +213,22 @@ function DocPage() {
             items={[
               { label: "Home", href: "/" },
               { label: "Docs", href: "/docs" },
-              { label: page.project ?? project, href: "/docs" },
-              { label: bucketLabel },
-              { label: frontmatter.title ?? slug },
+              {
+                label: projectLabel,
+                href: "/docs",
+                siblings: projectSiblings,
+                activeHref: projectActiveHref,
+              },
+              {
+                label: bucketLabel,
+                siblings: bucketSiblings,
+                activeHref: bucketActiveHref,
+              },
+              {
+                label: frontmatter.title ?? slug,
+                siblings: pageSiblings,
+                activeHref: page.href,
+              },
             ]}
           />
           <article className="prose" ref={articleRef}>
@@ -255,47 +278,7 @@ function BlogIndex() {
         </div>
       )}
 
-      {series.map((group) => (
-        <section key={group.series} className="blog-series">
-          <h2 className="blog-series-title">{group.series}</h2>
-          <div className="blog-card-grid">
-            {group.posts.map((post) => (
-              <Link key={post.href} to={post.href} className="blog-card">
-                <h3>{post.frontmatter.title ?? post.slug}</h3>
-                {post.frontmatter.summary && (
-                  <p className="blog-card-summary muted">{post.frontmatter.summary}</p>
-                )}
-                <div className="blog-card-meta">
-                  <span>{post.frontmatter.status}</span>
-                  {post.frontmatter.date && <span>{post.frontmatter.date}</span>}
-                </div>
-                <TagList tags={post.frontmatter.tags ?? []} />
-              </Link>
-            ))}
-          </div>
-        </section>
-      ))}
-
-      {standalone.length > 0 && (
-        <section className="blog-series">
-          <h2 className="blog-series-title">Standalone</h2>
-          <div className="blog-card-grid">
-            {standalone.map((post) => (
-              <Link key={post.href} to={post.href} className="blog-card">
-                <h3>{post.frontmatter.title ?? post.slug}</h3>
-                {post.frontmatter.summary && (
-                  <p className="blog-card-summary muted">{post.frontmatter.summary}</p>
-                )}
-                <div className="blog-card-meta">
-                  <span>{post.frontmatter.status}</span>
-                  {post.frontmatter.date && <span>{post.frontmatter.date}</span>}
-                </div>
-                <TagList tags={post.frontmatter.tags ?? []} />
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
+      <BlogTable series={series} standalone={standalone} />
     </Shell>
   );
 }
@@ -318,6 +301,16 @@ function BlogPost() {
   const { Component, frontmatter } = page;
   const neighbors = blogNeighbors(slug);
 
+  // Sibling posts for the leaf crumb: same series if this post is in one,
+  // otherwise the other standalone posts.
+  const siblingPosts = frontmatter.series
+    ? blogPosts.filter((p) => p.frontmatter.series === frontmatter.series)
+    : blogPosts.filter((p) => !p.frontmatter.series);
+  const postSiblings = siblingPosts.map((p) => ({
+    label: p.frontmatter.title ?? p.slug,
+    href: p.href,
+  }));
+
   return (
     <Shell wide>
       <div className="blog-post-layout">
@@ -326,7 +319,11 @@ function BlogPost() {
             items={[
               { label: "Home", href: "/" },
               { label: "Blog", href: "/blog" },
-              { label: frontmatter.title ?? slug },
+              {
+                label: frontmatter.title ?? slug,
+                siblings: postSiblings,
+                activeHref: page.href,
+              },
             ]}
           />
           <header className="blog-post-header">

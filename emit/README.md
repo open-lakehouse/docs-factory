@@ -23,7 +23,11 @@ Node script can't call.
 
 ## What it produces
 
-Under `blogs/<slug>/dist/`:
+Output is written **per target** under `blogs/<slug>/dist/<target>/`, so
+cross-publishing (gdocs review → unitycatalog → …) is non-destructive. The
+regenerated LikeC4 PNG export is shared at `dist/.likec4-export/` (target-agnostic).
+
+For the `gdocs` (FLATTENING) target, `dist/gdocs/`:
 
 - **`<slug>.md`** — resolved, self-contained CommonMark + GFM:
   - `file=` snippet fences are **inlined** with the real code from `snippets/*`.
@@ -35,6 +39,19 @@ Under `blogs/<slug>/dist/`:
   - Hard-wrapped prose is **unwrapped** to one line per paragraph (code untouched)
     so Google Docs' in-place `replace_section` converter reflows it cleanly instead
     of shredding each wrapped line into its own paragraph.
+
+For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
+
+- **`index.mdx`** — a rich Astro MDX post with UC-shaped frontmatter:
+  - `::::journey` → `<Journey><JourneyStep>`; `likec4=` images → `<LikeC4View>`
+    (interactive canvas); `:::` callouts are **left as directives** (the site styles
+    them); `file=` snippets inlined; code captions kept.
+  - Frontmatter is **mapped** to the site's zod schema (title / authors[] from the
+    draft author / `category: guide` / human date / optional description); the title
+    is NOT emitted as a body H1 (the site renders it) and prose is not unwrapped.
+  - MDX-significant chars in prose (`<`, `>`, `{`, `}`) are entity-escaped.
+- **`likec4-webcomponent.mjs`** — the framework-agnostic LikeC4 web-component
+  bundle (when the post has a diagram).
 - **`assets.json`** — a manifest of every image in the output, so a delivery
   adapter can upload/insert images from data rather than re-parsing Markdown.
 
@@ -86,15 +103,26 @@ gitignored).
   `blogs/<slug>/dist/` (gitignored — a throwaway render, like `preview/dist/`). The
   draft stays byte-for-byte canonical; the only per-post state the delivery step
   writes is the sidecar `.emitted.json`, never the draft itself.
-- **Does not deliver.** It stops at the flattened Markdown + manifest. Delivery is
-  the `/blog-emit` skill.
+- **Does not deliver.** It stops at the rendered Markdown/MDX + manifest. Delivery
+  is a per-target skill (`/blog-emit` for gdocs, `/blog-emit-uc` for unitycatalog).
 - **Is not wired into CI.**
 
 ## Targets
 
-`--target` selects a target module in `targets/`. Today: `gdocs` (Google Docs).
-A new target (Delta.io, UC.io) is a new `targets/<name>.mjs` reusing the whole
-`resolve → flatten` core, plus a short section in the delivery skill.
+`--target` selects a target module in `targets/`:
+
+- **`gdocs`** — Google Docs (a FLATTENING target). Delivery: `/blog-emit`.
+- **`unitycatalog`** — the UnityCatalog.io / OpenLakehouse Astro site (a RICH,
+  component target: MDX with interactive LikeC4 + `<Journey>` + `:::` callouts).
+  Delivery: `/blog-emit-uc`.
+
+The pipeline is **target-aware**: a target module declares its per-construct
+renderers (`constructs: { callouts, journey, codeCaption, likec4 }`) plus flags
+(`titleAsH1`, `unwrapProse`, `stringifyExtension`, `safeText`, `outputFile`,
+`componentImportBase`, `likec4WebComponent`) — so one target can flatten while
+another upgrades to components, over one shared `resolve` core. A new target
+(Delta.io, …) is a new `targets/<name>.mjs` + its rewrite plugins in `plugins/`,
+plus a short delivery skill; the core stays untouched.
 
 ## Prerequisites
 

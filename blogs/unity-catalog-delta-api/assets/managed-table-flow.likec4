@@ -40,8 +40,13 @@ model {
   client = participant "Delta client / engine" {
     description "A Delta-compatible writer (e.g. Delta-Spark) proposing commits through the UC Delta API."
   }
-  server = participant "Unity Catalog server" {
-    description "Ratifies commits, advertises protocol/features, and vends scoped storage credentials."
+  server = participant "Unity Catalog" {
+    summary "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
+    description "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
+    link https://www.unitycatalog.io
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+    }
   }
   storage = store "Cloud storage" {
     description "Where the table's data files and _delta_log live (S3 / ABFS / GCS, or a local file:// root)."
@@ -58,20 +63,100 @@ views {
     description "The end-to-end managed-table lifecycle from the Unity Catalog managed-tables spec: discover, allocate a staging table, write version 0, promote it, then commit an INSERT — staged first, ratified by the catalog, then published."
 
     // --- Discovery ---------------------------------------------------------
-    client -> server "GET /delta/v1/config (negotiate endpoints + protocol-version)"
+    client -> server "GET /delta/v1/config (negotiate endpoints + protocol-version)" {
+      notes '''
+        **Handshake.** Before touching any table, the client asks the catalog
+        two things: *"which API endpoints do you support?"* and *"which
+        protocol version should we speak?"* The client sends the highest
+        versions it can handle; the server replies with the version they'll
+        both use. This keeps a new client and an older server (or vice versa)
+        talking the same language.
+      '''
+    }
 
     // --- CREATE ------------------------------------------------------------
-    client -> server "POST .../staging-tables { name }"
-    server -> client "table-id, location, READ_WRITE credential, required-protocol"
-    client -> storage "write _delta_log/0.json (schema, protocol, io.unitycatalog.tableId)"
-    client -> server "POST .../tables (promote: columns, protocol, properties)"
-    server -> client "loadTable response (table-uuid, etag, version 0)"
+    client -> server "POST .../staging-tables { name }" {
+      notes '''
+        **Reserve a spot.** The client asks the catalog to set aside a place
+        for a brand-new table, passing just the name. Nothing is committed
+        yet — think of it as claiming a plot of land before you build on it.
+      '''
+    }
+    server -> client "table-id, location, READ_WRITE credential, required-protocol" {
+      notes '''
+        **The starter kit.** The catalog hands back everything the client
+        needs to build the table: a unique **table-id**, the **location** in
+        cloud storage where files will go, a short-lived **READ_WRITE
+        credential** to write there, and the **required-protocol** — the
+        minimum Delta features this table must declare.
+      '''
+    }
+    client -> storage "write _delta_log/0.json (schema, protocol, io.unitycatalog.tableId)" {
+      notes '''
+        **Lay the foundation.** Using the vended credential, the client writes
+        the very first Delta log file, `0.json`, directly to storage. It
+        records the table's schema, the required protocol, and stamps in the
+        `io.unitycatalog.tableId` so the file is provably tied to the id the
+        catalog just reserved.
+      '''
+    }
+    client -> server "POST .../tables (promote: columns, protocol, properties)" {
+      notes '''
+        **Make it official.** The client tells the catalog *"I've written
+        version 0 — please promote this staging table into a real, managed
+        table."* It echoes back the columns, protocol, and properties so the
+        catalog's record matches what's on disk.
+      '''
+    }
+    server -> client "loadTable response (table-uuid, etag, version 0)" {
+      notes '''
+        **Table is live.** The catalog confirms the table now exists and
+        returns its current state: the **table-uuid**, an **etag** (a version
+        fingerprint used to detect conflicts), and the fact that it sits at
+        **version 0**. Creation is done.
+      '''
+    }
 
     // --- COMMIT (INSERT) ---------------------------------------------------
-    client -> server "GET .../tables/{table} (loadTable: current etag + uuid)"
-    client -> storage "write _delta_log/_staged_commits/<v>.<uuid>.json"
-    client -> server "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }"
-    server -> client "ratified — loadTable with the new commit"
-    client -> storage "publish _delta_log/<v>.json (vended credential)"
+    client -> server "GET .../tables/{table} (loadTable: current etag + uuid)" {
+      notes '''
+        **Check the current state.** To append data, the client first reads
+        the table to learn where it stands — the latest **etag** and
+        **uuid**. It needs these so the catalog can later verify that nothing
+        else changed the table in the meantime.
+      '''
+    }
+    client -> storage "write _delta_log/_staged_commits/<v>.<uuid>.json" {
+      notes '''
+        **Stage the change.** The client writes its new commit as a *staged*
+        file (`<version>.<uuid>.json`) in the `_staged_commits` folder. It's
+        fully written but not yet part of the table's official history — the
+        catalog hasn't blessed it, so no reader will see it.
+      '''
+    }
+    client -> server "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }" {
+      notes '''
+        **Ask for a ratify.** The client asks the catalog to accept the staged
+        commit. The **requirements** are safety guards — *"only if the table
+        is still this uuid and this etag"* — so two writers can't clobber each
+        other. The **add-commit** update points at the staged file. The
+        catalog is the referee: it approves at most one commit per version.
+      '''
+    }
+    server -> client "ratified — loadTable with the new commit" {
+      notes '''
+        **Accepted.** The catalog ratified the commit: it's now the official
+        version, even though the file still lives in `_staged_commits`. The
+        catalog returns the updated table state, including the new etag.
+      '''
+    }
+    client -> storage "publish _delta_log/<v>.json (vended credential)" {
+      notes '''
+        **Publish.** As a final tidy-up, the client copies the ratified staged
+        file to its permanent name, `_delta_log/<v>.json`. Now a plain
+        filesystem listing shows the commit too. Publishing happens strictly
+        in version order, so the log always reads cleanly from 0 upward.
+      '''
+    }
   }
 }

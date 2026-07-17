@@ -16,9 +16,15 @@ specification {
     }
   }
 
-  // A technology-agnostic capability of the reference lakehouse
-  // (catalog, query engine, table format, object storage, lineage, governance).
+  // A technology-agnostic capability of the Agentic Lakehouse
   element capability {
+    style {
+      color primary
+    }
+  }
+
+  // A protocol (specification)
+  element openSpecification {
     style {
       color primary
     }
@@ -44,18 +50,9 @@ specification {
     }
   }
 
-  // --- Deployment node kinds ----------------------------------------------
-
   // A deployment topology.
   deploymentNode environment {
     notation "Deployment topology"
-  }
-
-  // A deployed service / process (our repos manifest here).
-  deploymentNode service {
-    style {
-      icon tech:rust
-    }
   }
 
   // A browser / client-side runtime.
@@ -64,6 +61,13 @@ specification {
     style {
       shape browser
       color sky
+    }
+  }
+
+  // A deployed service / process (our repos manifest here).
+  deploymentNode service {
+    style {
+      icon tech:rust
     }
   }
 

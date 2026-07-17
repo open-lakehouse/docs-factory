@@ -118,5 +118,104 @@ model {
       "
       metadata { canonicalDoc "design/governance.md" }
     }
+
+    mlLifecycle = capability "ML lifecycle" {
+      summary "Tracks experiments, versions models, and governs their promotion to production."
+      description "
+        The ML-lifecycle capability manages machine-learning artifacts over time:
+        experiment tracking, a model registry with versions and stages, and the
+        path from a trained model to a governed, deployable one.
+
+        It sits alongside the query/governance capabilities: models are data
+        assets too, catalogued and governed like tables rather than living in a
+        separate, ungoverned silo.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+  }
+
+  // --- OSS foundations & concrete formats it assembles on ------------------
+  // External technologies that realize a capability. Each is co-located with its
+  // `realizes` edge to the capability it realizes (not to the lakehouse as a
+  // whole). Omnigent is the exception: agent tooling, so it carries no edge.
+  //
+  // Icons are the official project marks (LF AI & Data / Apache), referenced by
+  // a commit-pinned raw URL. A remote URL (not a local file) is deliberate: the
+  // committed, portable dist/model.json is browser-consumed, and LikeC4's JSON
+  // export serializes a local icon as an absolute file:// path (machine-specific,
+  // unloadable in a browser). The pin guards against upstream artwork moving.
+
+  unityCatalog = foundation "Unity Catalog" {
+    description "Open source catalog for data & AI — governs tables, files, functions, and models across engines."
+    link https://www.unitycatalog.io
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+    }
+  }
+  unityCatalog -[realizes]-> lakehouse.catalog "realizes the catalog capability"
+
+  deltaLake = foundation "Delta Lake" {
+    description "Open table format bringing ACID transactions, schema evolution, and time travel to object storage."
+    link https://delta.io
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg
+    }
+  }
+  deltaLake -[realizes]-> lakehouse.tableFormat "realizes the table-format capability"
+
+  iceberg = foundation "Apache Iceberg" {
+    description "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation."
+    link https://iceberg.apache.org
+    style {
+      icon https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png
+    }
+  }
+  iceberg -[realizes]-> lakehouse.tableFormat "realizes the table-format capability"
+
+  datafusion = foundation "Apache DataFusion" {
+    description "Extensible, high-performance query engine in Rust using Apache Arrow."
+    link https://datafusion.apache.org
+    style {
+      icon https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg
+    }
+  }
+  datafusion -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+
+  apacheSpark = foundation "Apache Spark" {
+    description "Unified analytics engine for large-scale data processing."
+    link https://spark.apache.org
+    style {
+      // Spark ships no square icon mark — this is the official (wide) wordmark.
+      icon https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png
+    }
+  }
+  apacheSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+
+  lakekeeper = foundation "Lakekeeper" {
+    description "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
+    link https://lakekeeper.io
+    style {
+      icon https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg
+    }
+  }
+  lakekeeper -[realizes]-> lakehouse.catalog "realizes the catalog capability"
+
+  mlflow = foundation "MLflow" {
+    description "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
+    link https://mlflow.org
+    style {
+      icon https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg
+    }
+  }
+  mlflow -[realizes]-> lakehouse.mlLifecycle "realizes the ML-lifecycle capability"
+
+  // Omnigent — Databricks' Apache-2.0 AI-agent meta-harness. Deliberately has NO
+  // `realizes` edge: it is agent tooling, not a lakehouse capability.
+  omnigent = foundation "Omnigent" {
+    description "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
+    link https://omnigent.ai
+    style {
+      icon https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg
+    }
   }
 }

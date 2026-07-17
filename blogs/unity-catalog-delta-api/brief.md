@@ -1,9 +1,9 @@
 ---
-title: The UC Delta API — a Delta-native REST catalog, and why it isn't Iceberg REST
+title: Introducing the UC Delta API — a Delta-native REST catalog
 slug: unity-catalog-delta-api
 status: drafting
 date: 2026-07-03
-tags: [unity-catalog, delta-lake, iceberg, lakehouse]
+tags: [unity-catalog, delta-lake, lakehouse]
 series:
 series_order:
 author: Robert Pack
@@ -34,19 +34,33 @@ whole post — and every example — anchors on the PUBLIC repo:
 Internal-only artifacts (build.sbt SHA pins, compile-time shims, kill-switch
 class names, project plans, reviewer names/dates) MUST NOT appear in the post.
 See §9.
+
+SCOPE PIVOT (2026-07-17). The original framing — "and why it isn't Iceberg
+REST", an opinionated design argument comparing the UC Delta API to the Iceberg
+REST Catalog — was ABANDONED. The UC Delta API stands on its own; the post is now
+a standalone how-to / walkthrough of the API (discover → create → commit → read),
+not a comparison piece. IRC survives only as a one-line lineage nod (the REST
+*shape* was inspired by IRC), never as the load-bearing case. The `iceberg` tag
+was dropped. The sections below are rewritten to match; the abandoned IRC/lossy-
+translation argument (old §5.1, §5.3-5.4) is struck rather than deleted so the
+history is legible.
 -->
 
 ## 1. Hook / thesis
 
 Unity Catalog 0.5 ships a **Delta-native REST catalog API** — a versioned,
 discoverable HTTP surface that lets any Delta engine (Spark, and increasingly
-Flink, Trino, DuckDB) treat UC as a first-class Delta catalog. It borrows the
-*shape* of the Iceberg REST Catalog (IRC) — `/config` discovery, versioned
-endpoints, a uniform resource hierarchy — but it deliberately is **not** Iceberg
-REST for Delta: it speaks native Delta schema, protocol, and domain metadata
-over the wire, with no Iceberg translation layer. The one-line claim: *we took
-the best ergonomics of IRC and built a Delta-native protocol underneath, because
-forcing Delta through an Iceberg abstraction would cost Delta its own features.*
+Flink, Trino, DuckDB) treat UC as a first-class Delta catalog. It speaks native
+Delta schema, protocol, and domain metadata over the wire, with no translation
+layer, and every write goes through one overloaded, guarded endpoint that the
+server validates and applies atomically. The one-line claim: *the UC Delta API
+is a versioned, intent-based, atomic catalog surface that carries Delta's own
+semantics on the wire — and you can run all of it locally today.*
+
+> The REST *shape* (`/config` discovery, versioned endpoints, a uniform resource
+> hierarchy) is inspired by the Iceberg REST Catalog. That lineage is worth a
+> one-line nod, but it is **not** the thesis — see the scope pivot note above.
+> The post stands on its own as a walkthrough of the API.
 
 ## 2. Audience
 
@@ -54,45 +68,44 @@ Engineers who build or integrate **Delta clients / query engines**, and platform
 teams evaluating open-source Unity Catalog as an external catalog. Assumed
 knowledge: the Delta transaction log basics (commits, `_delta_log`, protocol /
 table features), REST APIs, and roughly what a catalog does (namespaces →
-tables). Assumed familiarity with IRC is a *plus but not required* — the post
-explains the IRC comparison rather than presuming it. NOT assumed: any Databricks
-internal context. A secondary reader is the "why did they build another
-protocol?" skeptic who already knows Iceberg REST.
+tables). NOT assumed: any Databricks internal context, or familiarity with the
+Iceberg REST Catalog — the post no longer leans on that comparison.
 
 ## 3. Tone / voice
 
-First person, opinionated, engineer-to-engineer. The stance is a genuine design
-argument, not a launch announcement: **a Delta-native protocol was the right call
-over reusing IRC**, and the post should be willing to say *where* IRC would have
-been simpler and why we paid the cost anyway (credibility comes from naming the
-tradeoff, not hiding it). Keep it concrete and protocol-level — show real request
-bodies, not adjectives. Avoid the internal framing "Delta must not feel
-second-class" as a *primary* argument; it's a strategic motivation, fine to
-mention lightly, but the load-bearing case is technical (feature fidelity,
-intent-based updates, server-side validation).
+First person, opinionated, engineer-to-engineer. Concrete and protocol-level —
+show real request bodies, not adjectives. The register is a hands-on walkthrough
+of a released API (discover it, stand it up, drive it with two engines), not a
+launch announcement and not a comparison essay. The opinion lives in the choices
+the post highlights — intent-based updates, server-side validation, credential
+vending — rather than in an us-vs-IRC argument. Avoid the internal framing
+"Delta must not feel second-class"; the load-bearing case is technical (feature
+fidelity, intent-based updates, server-side validation).
 
 ## 4. Key takeaways
 
+These are the dominant points, and they seed the draft's TL;DR box.
+
 - UC 0.5 exposes a **versioned, Delta-native REST catalog** (`/delta/v1/…`) whose
-  first request is `GET /delta/v1/config` — server capability + endpoint
-  discovery, IRC-style.
-- **IRC ergonomics, Delta semantics.** Same REST *shape*; the payloads carry
-  Delta's own schema JSON (the `schemaString` form), a structured `protocol`
-  object, and typed per-domain **domain metadata** — not an Iceberg schema.
-- Why not just use IRC for Delta? Because Iceberg's schema/RPC model doesn't
-  carry Delta features cleanly (generated/identity columns, default values,
-  column-mapping metadata, clustering as domain metadata) and Delta's
-  client-writes-commit-then-catalog-ratifies flow differs from IRC's create/commit
-  assumptions. The translation layer would be lossy.
+  first request is `GET /delta/v1/config` — it negotiates the protocol version and
+  hands back the list of endpoints the server supports.
+- The wire format is **native Delta**: the payloads carry Delta's own schema JSON
+  (the `schemaString` form), a structured `protocol` object, column-mapping
+  metadata, and typed per-domain **domain metadata** — no translation layer. (The
+  REST *shape* is inspired by IRC; that's lineage, not the point.)
 - **Intent-based updates + server-side validation** are the substance: an
   overloaded `POST …/tables/{table}` bundles metadata changes (`set-properties` /
   `remove-properties` — *only the changed keys*, not a full-map replace),
   `set-protocol`, `set-columns`, `set-domain-metadata`, and `add-commit` into
   one atomic RPC, guarded by `assert-table-uuid` / `assert-etag`.
-- It **co-exists** with IRC, doesn't replace it: Delta clients use the Delta API,
-  Iceberg clients use IRC (incl. reading UniForm tables); the Delta log stays the
-  source of truth for UniForm.
-- You can run all of this locally today against OSS UC 0.5 — the payoff section.
+- The create path is **two RPCs** (staging → write `0.json` → promote); committing
+  to an **existing** table is a **single** guarded RPC.
+- Creating a table **advertises features**: the staging response carries
+  `required-protocol` / `suggested-protocol`, so the catalog states the Delta
+  table features it expects up front, and the engine also receives a **vended,
+  scoped credential** to write the data.
+- You can **run all of this locally today** against OSS UC 0.5 — two engines
+  (Spark and DuckDB) read one managed table over one catalog, no cloud. The payoff.
 
 ## 5. Outline
 
@@ -100,40 +113,45 @@ Working H2s (sentence-case; each leads with the answer — QUALITY.md facet f).
 `[code]` marks a section carrying a request/response or a runnable command.
 Baseline-first: the spine is §1→§3→§5; §6/§7 are depth to defer if the post runs long.
 
-1. **The elephant in the room** — open on the outline's hook ("why does Delta need
-   its own catalog spec instead of just adopting Iceberg REST?") and answer it in
-   the first few sentences, not at the end.
-2. **What the old UC table API couldn't do** — the gap: unversioned/versionless,
-   inconsistent identifier placement, no server-side commit validation, no feature
-   advertisement on create, no intent-based property updates. Keep to the concrete
-   limitations, sourced from the public spec's own framing.
-3. **IRC ergonomics, Delta semantics** `[code]` — the centerpiece. `/config`
-   discovery + versioned `/delta/v1/…` endpoints (the IRC-style shape), then the
-   hard turn: the wire payload is native Delta. Show the v0 `ColumnInfo`
-   (`type_text`/`type_json`/`type_name`) vs. v1 native `columns` (Delta
-   `schemaString` shape) side by side.
-4. **Why an Iceberg schema would be lossy for Delta** — concrete feature gaps:
-   generated columns, identity columns, default values, column-mapping ids in
-   field metadata, clustering carried as domain metadata. This is the "not just a
-   wrapper" argument. Sourced from the delta.yaml models + public Delta protocol.
-5. **One endpoint, atomic updates** `[code]` — the overloaded `POST …/tables/{table}`:
-   intent-based `set-properties`/`remove-properties`, first-class `set-protocol`,
-   `set-columns`, `set-domain-metadata`, `add-commit`, guarded by
-   `assert-etag`/`assert-table-uuid`. Show one real request body. Contrast the
-   "1 RPC for existing table / 2 RPCs (staging→promote) for create" rule.
-6. **Where it fits: managed tables, UniForm, and IRC** — the co-existence story.
-   Delta API for Delta clients; IRC for Iceberg clients; UniForm = Delta log is
-   truth, Iceberg metadata is a projection. Dispel "Delta API vs IRC are
-   competing." Ties back to the managed-tables spec (public GitHub version).
-7. **Try it against OSS UC 0.5** `[code]` — the payoff. **Spark-first**: run a
-   local UC 0.5 server (`docker compose up -d`), point Delta-Spark at it, and
-   create→write→read a managed table — the realistic end-user path
-   (`snippets/read_write_delta_spark.py`). Then show the raw protocol underneath
-   with captured curl (`GET /delta/v1/config`, `snippets/config.sh`) so the reader
-   sees the Delta-native payloads Spark is exchanging. THIS IS THE MAIN NEXT STEP
-   — see §9 examples plan.
-8. **Wrap-up** — restate: borrowed IRC's ergonomics, built Delta-native underneath;
-   stable/versioned external surface without flattening Delta. CTA (§7 below).
+The draft's actual section order is Getting started → read/write via Spark →
+the protocol in detail (handshake, table features, commit) → DuckDB → wrap-up.
+The working H2s below are recast to that shape.
+
+1. **Getting started** `[code]` — stand up a local OSS UC 0.5 server: the
+   `server.properties` that enables managed tables + storage root, then
+   `docker compose up -d` / `docker run` on `:8080`. Sourced from the verified
+   `snippets/`.
+2. **Read and write via the UC Delta API** `[code]` — the realistic Spark path:
+   configure a `SparkSession` with the UC + Delta packages, create a managed table,
+   write rows, read them back. This is the "it's just SQL" payoff before the
+   under-the-hood detail (`snippets/read_write_delta_spark.py`).
+3. **The protocol in detail** `[code]` — the discover→create→commit lifecycle,
+   anchored by the interactive LikeC4 sequence diagram (the original asset):
+   - **The engine↔catalog handshake:** `GET /delta/v1/config` negotiates protocol
+     version + endpoint list. Show the captured response.
+   - **Delta table features on create:** the staging response's `required-protocol`
+     / `suggested-protocol` — the catalog advertising expected Delta features, plus
+     the vended write credential.
+   - **One endpoint, atomic updates:** the overloaded `POST …/tables/{table}` —
+     intent-based `updates` (`set-properties`/`remove-properties`, `set-protocol`,
+     `set-columns`, `set-domain-metadata`, `add-commit`) guarded by
+     `assert-etag`/`assert-table-uuid`. Show one real captured commit body; note the
+     "1 RPC for existing table / 2 RPCs (staging→promote) for create" rule.
+4. **Read the same table from DuckDB** `[code]` — a second engine over the same
+   catalog, to make the "any Delta engine" claim concrete
+   (`snippets/read_delta_duckdb.py`).
+   ~~*(struck: the old "why an Iceberg schema would be lossy" / "elephant in the
+   room" / co-existence-with-IRC sections — abandoned with the comparison framing;
+   see the scope pivot note.)*~~
+5. **Wrap-up** — restate the point: a versioned, discoverable, Delta-native catalog
+   surface that carries Delta's schema, protocol, and intent-based commits on the
+   wire without flattening any of them — proven by two engines reading one managed
+   table over one catalog. CTA (§7 below).
+
+*(The examples are the main deliverable — see §9. "Spark-first, curl underneath"
+is the driver: the realistic end-user path via `snippets/read_write_delta_spark.py`,
+with captured `GET /delta/v1/config` / commit-body transcripts showing the
+Delta-native payloads Spark is exchanging.)*
 
 ## 6. Source material
 
@@ -153,9 +171,11 @@ and NOT citable):*
   (e.g. the schema `columns` object, `protocol`, domain-metadata, the update
   actions, `assert-etag`/`assert-table-uuid` requirements). Cite specific model
   files for the §3–§5 payload claims.
-- `unitycatalog · spec/protocols/ManagedTablesSpec.md · main` — the PUBLIC managed
-  tables spec (CCv2 commit protocol). This is the "v0" the Delta API builds on;
-  the public anchor for §6's co-existence + commit-flow claims.
+- `unitycatalog · spec/protocols/ManagedTablesSpec.md · v0.5.0` — the PUBLIC managed
+  tables spec (CCv2 commit protocol). The public anchor for the commit-flow claims.
+  (Draft pins this and `api/delta.yaml` to the `v0.5.0` tag; the Delta PROTOCOL.md
+  links pin to delta-io/delta's own latest release tag, `v4.3.1`, since that repo
+  has no `v0.5.0`.)
 - `unitycatalog · connectors/spark/…/UCSingleCatalog.scala · v0.5` — the Spark
   catalog entry point, for the "drive it through Delta-Spark" example in §7.
 - `unitycatalog · (build.sbt / version.sbt / compose.yaml) · v0.5` — artifact
@@ -179,14 +199,14 @@ and NOT citable):*
 
 *External refs:*
 
-- Apache Iceberg REST Catalog OpenAPI spec (the IRC we compare to) — link the
-  public `rest-catalog-open-api.yaml` in apache/iceberg for the `/config` +
-  versioning shape the post says UC "borrowed."
 - UC OSS 0.5 release notes (github.com/unitycatalog/unitycatalog/releases) — the
   "what shipped" anchor. Confirm the exact tag + date at draft time.
 - Delta protocol spec (delta-io/delta PROTOCOL.md) — for the feature claims in §4
   (generated/identity columns, defaults, column mapping, clustering, domain
-  metadata) — anchor each named feature here, not on the internal doc.
+  metadata) and the managed-tables / table-features anchors — anchor each named
+  feature here, not on the internal doc.
+- ~~Apache Iceberg REST Catalog OpenAPI spec — dropped with the comparison framing;
+  the post no longer argues against IRC, so the IRC spec is no longer a source.~~
 
 ## 7. Call to action
 
@@ -207,9 +227,10 @@ the local server via `docker compose up -d` (pinned image tag), REST as captured
 with a `Run:`/`Needs:`/`Verified:` header. Original asset (QUALITY.md facet f): a
 diagram of the
 create/commit lifecycle (`/config` → `staging-tables` → write `0.json` →
-`POST /tables` → `POST /tables/{table}` commit) — author in D2 under `assets/`
-per CONVENTIONS §5. Disclose Databricks affiliation (§10). SEO: keep "Unity
-Catalog", "Delta", "REST API / catalog", "Iceberg REST" in title/subtitle.
+`POST /tables` → `POST /tables/{table}` commit) — authored as a LikeC4 dynamic
+(sequence) view under `assets/` per CONVENTIONS §5, rendered as an interactive
+walkthrough. Disclose Databricks affiliation (§10). SEO: keep "Unity Catalog",
+"Delta", "REST API / catalog", "managed tables" in title/subtitle.
 
 ## 9. Verification / accuracy notes — INCLUDING the examples plan (the main next step)
 
@@ -284,7 +305,7 @@ them against UC 0.5 and flip those to a real `Verified:` line. Driver is
   pattern. `config.sh` (curl) verified the same, exit 0.
 - ✅ **The whole read path works LOCALLY with no cloud creds.** `GET` loadTable on
   the seed managed table `unity.default.marksheet` returns the native Delta schema
-  (Delta `struct`/`fields` shape — the "not Iceberg" point made concrete), `etag`,
+  (Delta `struct`/`fields` shape — native Delta on the wire, made concrete), `etag`,
   `table-uuid`, `latest-table-version`. Credential vend
   (`?operation=READ`) returns a `file://` credential with an **empty `config: {}`**
   — no secret. (Transcripts in `snippets/api-transcripts.out.txt`.)
@@ -375,5 +396,6 @@ them against UC 0.5 and flip those to a real `Verified:` line. Driver is
   member. Leave `series` blank until that arc earns a SERIES.md entry.
 - **Disclosure / COI.** Databricks-authored post about Databricks-originated OSS.
   Disclose per the target's requirement (CONVENTIONS §10).
-- **Audience calibration.** The IRC comparison is load-bearing but not every reader
-  knows IRC — §3 must explain it enough to follow without turning into an IRC tutorial.
+- **Audience calibration.** No IRC knowledge is assumed (the comparison was dropped —
+  see the scope pivot). Assume Delta transaction-log basics, REST, and what a catalog
+  does; keep the depth at protocol level without re-teaching those fundamentals.

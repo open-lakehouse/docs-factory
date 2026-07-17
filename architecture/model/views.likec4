@@ -17,6 +17,16 @@ views {
       lakehouse,
       lakehouse.*,
 
+    // OSS foundations attach to the capability they realize
+      unityCatalog,
+      deltaLake,
+      iceberg,
+      datafusion,
+      apacheSpark,
+      lakekeeper,
+      mlflow,
+      omnigent,
+
     // the zero-trust roles get their own view; keep them collapsed here
     exclude lakehouse.governance.*
     autoLayout LeftRight

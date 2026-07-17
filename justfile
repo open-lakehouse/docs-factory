@@ -71,19 +71,19 @@ rust:
 
 # Interactive dev server for the architecture model (http://localhost:5173).
 arch-dev: _arch-deps
-    cd architecture && bun rundev
+    cd architecture && bun run dev
 
 # Validate the LikeC4 model (syntax + semantics). CI-gateable.
 arch-check: _arch-deps
-    cd architecture && bun runcheck
+    cd architecture && bun run check
 
 # Build the self-contained interactive static site into architecture/dist/static.
 arch-build: _arch-deps
-    cd architecture && bun runbuild
+    cd architecture && bun run build
 
 # Export the model to architecture/dist/model.json (agent / interactive-site input).
 arch-model: _arch-deps
-    cd architecture && bun runmodel
+    cd architecture && bun run model
 
 # Validate + export JSON + build static site in one step. Run after any model edit.
 arch-refresh: arch-check arch-model arch-build

@@ -1,16 +1,6 @@
 // Specification for the Open Lakehouse architecture model — the vocabulary of
 // element / deployment-node / relationship kinds and tags.
 //
-// The model is LAYERED:
-//   - LOGICAL (abstract): technology-agnostic capabilities + governance roles.
-//     The reference open lakehouse. No service/repo/technology names here.
-//   - DEPLOYMENT (concrete): our services as deployment nodes that `instanceOf`
-//     the logical capabilities they realize, across deployment topologies.
-//
-// TRUST is a property of the DEPLOYMENT boundary, not of a component: the same
-// query engine is trusted inside the boundary and untrusted reaching in from
-// outside. So trust tags live on deployment nodes/topologies, never on a kind.
-//
 // REF-FREE: names and edges only — never a commit SHA or release tag.
 // MATURITY-HONEST: designed-but-not-built carries #designed (or #prototype);
 // the tag colors render those amber so the model never overstates what exists.
@@ -56,8 +46,7 @@ specification {
 
   // --- Deployment node kinds ----------------------------------------------
 
-  // A deployment topology. Its trust posture (#trusted / #untrusted) is what
-  // determines where enforcement happens — not which component runs in it.
+  // A deployment topology.
   deploymentNode environment {
     notation "Deployment topology"
   }
@@ -93,6 +82,7 @@ specification {
   relationship resolves                    // query engine resolves via catalog
   relationship reads                       // reads bytes / files
   relationship vends { color amber }       // catalog vends a scoped credential
+
   // Zero-trust edges:
   relationship administers                 // PAP administers policy for the PDP
   relationship decides                     // PDP decides

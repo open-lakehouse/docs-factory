@@ -119,49 +119,4 @@ model {
       metadata { canonicalDoc "design/governance.md" }
     }
   }
-
-  // --- External OSS foundations & concrete formats -------------------------
-
-  datafusion = foundation "Apache DataFusion" {
-    description "The shared query / compute core the query engine is built on."
-    technology "Rust query engine"
-    link https://datafusion.apache.org
-  }
-
-  delta = foundation "Delta Lake" {
-    description "An open table format. Realizes the tableFormat capability."
-    technology "Delta Lake"
-    link https://delta.io
-  }
-
-  iceberg = foundation "Apache Iceberg" {
-    description "An open table format. Realizes the tableFormat capability; reached via Iceberg-REST catalogs."
-    technology "Apache Iceberg"
-    link https://iceberg.apache.org
-  }
-
-  cedar = foundation "Cedar" {
-    description "The policy language and decision engine behind the governance PDP."
-    technology "Cedar"
-    link https://www.cedarpolicy.com
-  }
-
-  openlineage = foundation "OpenLineage" {
-    description "The lineage event standard the lineage capability emits and ingests."
-    technology "OpenLineage"
-    link https://openlineage.io
-  }
-
-  unitycatalog = foundation "Unity Catalog OSS" {
-    description "The governance API surface the catalog builds on and integrates with."
-    technology "Unity Catalog"
-    link https://www.unitycatalog.io
-  }
-
-  lakekeeper = foundation "Lakekeeper" {
-    description "An Iceberg-REST catalog. The catalog can interoperate with it so Iceberg-REST consumers see the same tables."
-    technology "Iceberg-REST catalog"
-
-    link https://github.com/lakekeeper/lakekeeper
-  }
 }

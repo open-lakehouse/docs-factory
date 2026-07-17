@@ -27,17 +27,17 @@ import remarkStringify from "remark-stringify";
 import remarkGfm from "remark-gfm";
 import remarkDirective from "remark-directive";
 import remarkFrontmatter from "remark-frontmatter";
-import { parse as parseYaml } from "yaml";
+import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 
 // Shared, target-agnostic transforms — imported verbatim from the preview.
 import remarkCodeSnippets from "../site/src/plugins/remark-code-snippets.mjs";
 import remarkDirectiveProseGuard from "../site/src/plugins/remark-directive-prose-guard.mjs";
 
-// Markdown-flattening variants (the emitter's own).
-import remarkCalloutsMd from "./plugins/remark-callouts-md.mjs";
-import remarkJourneyMd from "./plugins/remark-journey-md.mjs";
-import remarkCodeCaption from "./plugins/remark-code-caption.mjs";
-import remarkLikeC4Md from "./plugins/remark-likec4-md.mjs";
+// The construct renderers (journey / callout / likec4 / code-caption) and the
+// prose-unwrap are now TARGET-PROVIDED (each target module declares which plugins
+// it uses via its `constructs` map + flags), so the core imports none of them
+// directly — see emit/targets/*.mjs. This keeps one linear core pipeline while
+// letting a target flatten (gdocs) OR upgrade to components (unitycatalog).
 import remarkUnwrapProse from "./plugins/remark-unwrap-prose.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -107,7 +107,23 @@ function stripComments(node) {
   for (const child of node.children) stripComments(child);
 }
 
-function remarkPrelude(capture) {
+/**
+ * @param capture  object the parsed frontmatter is captured onto (`capture.frontmatter`).
+ * @param opts     `{ titleAsH1, frontmatter }`:
+ *                 - `titleAsH1` — when true (Google Docs), the frontmatter `title`
+ *                   is prepended as a top-level `#` heading (Docs has no title field
+ *                   of its own). Targets whose site renders the title from
+ *                   frontmatter (e.g. UnityCatalog's `BlogPost.astro` renders
+ *                   `post.data.title`) pass `titleAsH1: false` so it isn't duplicated.
+ *                 - `frontmatter(draftFm) → object | string` — an OUTPUT-frontmatter
+ *                   hook. gdocs omits it (its body carries no YAML). A content-
+ *                   collection target (unitycatalog) returns the target-shaped
+ *                   frontmatter, which is prepended to the tree as a `yaml` node so
+ *                   remark-frontmatter serializes it as a leading `--- … ---` block.
+ */
+function remarkPrelude(capture, opts = {}) {
+  const titleAsH1 = opts.titleAsH1 ?? true;
+  const frontmatterFn = opts.frontmatter ?? null;
   return (tree) => {
     const kept = [];
     let title;
@@ -134,12 +150,24 @@ function remarkPrelude(capture) {
             n.children.every((c) => c.type === "text" && !c.value.trim()))
         ),
     );
-    if (title) {
+    if (title && titleAsH1) {
       tree.children.unshift({
         type: "heading",
         depth: 1,
         children: [{ type: "text", value: String(title) }],
       });
+    }
+    // Output-frontmatter targets (content collections) get a leading `--- … ---`
+    // block. The hook maps the draft frontmatter to the target's shape; a returned
+    // object is serialized to YAML, a returned string is used verbatim. Prepend it
+    // FIRST (before any H1) so it is the document's opening block.
+    if (frontmatterFn) {
+      const mapped = frontmatterFn(capture.frontmatter ?? {});
+      if (mapped != null) {
+        const yaml =
+          typeof mapped === "string" ? mapped : stringifyYaml(mapped).replace(/\n$/, "");
+        tree.children.unshift({ type: "yaml", value: yaml });
+      }
     }
   };
 }
@@ -181,6 +209,38 @@ function regenerateLikeC4(assetsDir, outDir) {
   return outDir;
 }
 
+/**
+ * Generate the framework-agnostic LikeC4 web-component bundle for a target that
+ * renders diagrams interactively (e.g. UnityCatalog's Astro site, which has no
+ * React). The bundle registers a `<likec4-view view-id="…">` custom element backed
+ * by the same model the drafts are codegen'd from. Mirrors the estate model's own
+ * `likec4 gen webcomponent` step (architecture/package.json). Sources are the whole
+ * `blogs/` tree so a post's own `assets/*.likec4` is included (view ids are
+ * globally unique + slug-prefixed, so one pass has no collisions).
+ *
+ * Returns `outFile` on success, else null (no .likec4 sources under the draft).
+ */
+function generateLikeC4WebComponent(assetsDir, blogsDir, outFile) {
+  if (!existsSync(assetsDir)) return null;
+  const likec4Files = readdirSync(assetsDir).filter((f) => f.endsWith(".likec4"));
+  if (likec4Files.length === 0) return null;
+
+  mkdirSync(dirname(outFile), { recursive: true });
+  const localBin = join(REPO_ROOT, "site", "node_modules", ".bin", "likec4");
+  const useLocal = existsSync(localBin);
+  const bin = useLocal ? localBin : "bunx";
+  const base = ["gen", "webcomponent", "-o", outFile, blogsDir];
+  const args = useLocal ? base : ["likec4", ...base];
+  try {
+    execFileSync(bin, args, { stdio: "inherit" });
+  } catch (err) {
+    throw new Error(
+      `LikeC4 web-component generation failed for ${blogsDir}. Underlying error: ${err.message}`,
+    );
+  }
+  return outFile;
+}
+
 // --- delivery sidecar (idempotency) ---------------------------------------
 
 // Each post carries its delivery state in a committed sidecar dotfile next to
@@ -216,8 +276,13 @@ async function main() {
   const draftPath = join(draftDir, "draft.md");
   if (!existsSync(draftPath)) throw new Error(`draft not found: ${draftPath}`);
 
+  // dist/ root holds the shared, target-agnostic LikeC4 PNG export; each target's
+  // FLATTENED/RENDERED output lands under dist/<target>/ so cross-publishing to
+  // several targets (gdocs review → unitycatalog → …) is non-destructive: one
+  // target's index.mdx never clobbers another's <slug>.md. dist/ is gitignored.
   const distDir = join(draftDir, "dist");
-  mkdirSync(distDir, { recursive: true });
+  const targetDistDir = join(distDir, targetName);
+  mkdirSync(targetDistDir, { recursive: true });
 
   const assetsDir = join(draftDir, "assets");
   const likec4Dir = regenerateLikeC4(assetsDir, join(distDir, ".likec4-export"));
@@ -225,40 +290,82 @@ async function main() {
   const capture = {};
   const manifest = [];
 
-  const processor = unified()
+  // The construct renderers are TARGET-PROVIDED. gdocs supplies its `-md`
+  // flatteners; unitycatalog supplies MDX-emitting variants (+ a no-op for
+  // callouts, which its site styles from the raw `:::` directive). The shared
+  // core (parse/gfm/directive/proseGuard/frontmatter/prelude/codeSnippets) is
+  // identical for every target.
+  const constructs = target.constructs ?? {};
+  const componentImportBase = target.componentImportBase;
+  // A JSX-emitting target (unitycatalog) adds remark-mdx as a stringify EXTENSION:
+  // it augments remark-stringify's compiler to serialize mdxJsxFlowElement/mdxjsEsm
+  // nodes as MDX, rather than replacing the compiler. remark-stringify still runs.
+  const stringifyExtension = target.stringifyExtension ?? null;
+
+  let processor = unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkDirective) // parse :::/:::: container directives
     .use(remarkDirectiveProseGuard) // undo false-positive :x text directives in prose
     .use(remarkFrontmatter) // parse the YAML block into a `yaml` node
-    .use(remarkPrelude, capture) // strip frontmatter + comments, title → # H1
-    .use(remarkCodeSnippets) // inline file=/start=/end= (real code from snippets/)
-    .use(remarkCalloutsMd) // :::tip/:::warning/… → bold-led blockquote
-    .use(remarkJourneyMd) // ::::journey → numbered ### Step N — … headings
-    .use(remarkCodeCaption) // title="x.py" → bold caption line, clean the fence
-    .use(remarkLikeC4Md, {
+    .use(remarkPrelude, capture, {
+      titleAsH1: target.titleAsH1,
+      frontmatter: target.frontmatter,
+    }) // strip draft fm + comments, opt. title → # H1, opt. emit target frontmatter
+    .use(remarkCodeSnippets); // inline file=/start=/end= (real code from snippets/)
+
+  // Callouts, then journey (so a callout nested in a step is already rendered),
+  // then code-caption, then likec4 — mirroring the preview's plugin order.
+  if (constructs.callouts) processor = processor.use(constructs.callouts, { componentImportBase });
+  if (constructs.journey) processor = processor.use(constructs.journey, { componentImportBase });
+  if (constructs.codeCaption) processor = processor.use(constructs.codeCaption);
+  if (constructs.likec4)
+    processor = processor.use(constructs.likec4, {
       manifest,
       assetsDir: draftDir,
       likec4Dir,
       renderImage: target.renderImage,
-    })
-    .use(remarkUnwrapProse) // one line per paragraph so Docs converters reflow cleanly
-    .use(remarkGfm)
-    .use(remarkStringify, target.stringify);
+      componentImportBase,
+    });
+
+  // Prose-unwrap is only for targets whose importer reflows (Google Docs); MDX
+  // must keep authored line breaks, so unitycatalog opts out.
+  if (target.unwrapProse ?? true) processor = processor.use(remarkUnwrapProse);
+
+  processor = processor.use(remarkGfm);
+  // A JSX-serializing target escapes MDX-significant chars in prose LAST, so bare
+  // `<`/`{` in the draft's text don't break the MDX stringify (code is untouched).
+  if (target.safeText) processor = processor.use(target.safeText);
+  if (stringifyExtension) processor = processor.use(stringifyExtension);
+  processor = processor.use(remarkStringify, target.stringify);
 
   const input = readFileSync(draftPath, "utf8");
   const file = await processor.process({ value: input, path: draftPath });
   const output = String(file);
 
+  // Interactive-LikeC4 targets (no React) get the framework-agnostic web-component
+  // bundle registering <likec4-view>. Deterministic + no network, so it belongs in
+  // the core. Guarded on the target opting in AND the draft actually having a
+  // .likec4 source.
+  let webComponentPath = null;
+  if (target.likec4WebComponent) {
+    webComponentPath = generateLikeC4WebComponent(
+      assetsDir,
+      join(REPO_ROOT, "blogs"),
+      join(targetDistDir, "likec4-webcomponent.mjs"),
+    );
+  }
+
   // Existing delivery (if any) for this target — the create-vs-update hint. It
   // lives in the post's sidecar `.emitted.json` (keyed by target), self-contained
   // in blogs/<slug>/ so the mapping travels with the post (no global registry) and
-  // draft.md stays pure. The /blog-emit skill writes this key back after a create.
+  // draft.md stays pure. The delivery skill writes this key back after a create.
   const existing = readSidecar(draftDir)[targetName] ?? null;
 
-  const mdPath = join(distDir, `${slug}.md`);
-  const assetsPath = join(distDir, "assets.json");
-  writeFileSync(mdPath, output, "utf8");
+  const outName = target.outputFile ?? `${slug}.md`;
+  const outPath = join(targetDistDir, outName);
+  const assetsPath = join(targetDistDir, "assets.json");
+  writeFileSync(outPath, output, "utf8");
   writeFileSync(
     assetsPath,
     JSON.stringify(
@@ -266,9 +373,10 @@ async function main() {
         slug,
         target: targetName,
         title: capture.frontmatter?.title ?? null,
-        // The delivery agent reads this: null → CREATE a new Doc and record it in
-        // the sidecar `.emitted.json`; set → UPDATE that Doc in place (same
-        // URL/sharing). Shape: { doc_id, url, updated }.
+        // The delivery agent reads this: null → CREATE (a new Doc / a new post
+        // dir) and record it in the sidecar `.emitted.json`; set → UPDATE that
+        // target in place. Shape is target-specific (gdocs: { doc_id, url,
+        // updated }; unitycatalog: { post_dir, updated }).
         existing,
         images: manifest,
       },
@@ -280,12 +388,13 @@ async function main() {
 
   const rel = (p) => p.replace(REPO_ROOT + "/", "");
   console.log(`emitted (${targetName}):`);
-  console.log(`  ${rel(mdPath)}`);
+  console.log(`  ${rel(outPath)}`);
   console.log(`  ${rel(assetsPath)}  (${manifest.length} image${manifest.length === 1 ? "" : "s"})`);
+  if (webComponentPath) console.log(`  ${rel(webComponentPath)}  (LikeC4 web component)`);
   console.log(
     existing
-      ? `  delivery: UPDATE existing doc ${existing.doc_id} (${existing.url ?? "url unknown"})`
-      : `  delivery: CREATE new doc (no "${targetName}" in ${slug}/.emitted.json)`,
+      ? `  delivery: UPDATE existing ${targetName} target (${existing.url ?? existing.post_dir ?? "recorded"})`
+      : `  delivery: CREATE new ${targetName} target (no "${targetName}" in ${slug}/.emitted.json)`,
   );
 }
 

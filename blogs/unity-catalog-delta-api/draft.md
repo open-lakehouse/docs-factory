@@ -1,5 +1,5 @@
 ---
-title: The UC Delta API — a Delta-native REST catalog, and why it isn't Iceberg REST
+title: Introducing the UC Delta API
 slug: unity-catalog-delta-api
 status: drafting
 date: 2026-07-03
@@ -10,52 +10,10 @@ author: Robert Pack
 target: company blog
 ---
 
-<!--
-DRAFT — first prose pass. Kept deliberately LIGHT on argument; the examples carry
-the narrative (user direction, 2026-07-14). Headlines are provisional. Fill order was
-baseline-first: §1 (why) · the surface · atomic updates · two-engine payoff.
-
-Source of truth: brief.md (§9 examples plan). Every endpoint/field name traces to
-unitycatalog api/delta.yaml or delta-docs; every named Delta feature to
-delta-io/delta PROTOCOL.md. Anti-leak checklist: brief §9 — no internal design-doc
-content, no SHA pins, no runtime flag names, no kill-switch classes.
-
-Runnable snippets (all VERIFIED — brief §9):
-  compose.yaml · read_write_delta_spark.py · config_check.py / config.sh ·
-  commit-request.out.txt (+ api-transcripts.out.txt, spark-read.out.txt) ·
-  read_delta_duckdb.py · duckdb-uc-bug-repro.py (regression check)
-
-TODO before publish-ready:
-  - Pin every code link to the v0.5.0 tag permalink at draft-final time.
-  - Decide whether the create/commit lifecycle diagram earns a D2 asset (§ atomic
-    updates) once prose is settled.
-  - Deepen §"features" ONLY if the post wants more argument — kept light for now.
-  - Re-run /humanizer, then hand to /blog-review.
--->
-
-When two engines share one Delta table through a catalog, the catalog has to do more
-than point at files — for a managed table it sits in the write path, ratifying each
-commit. Doing that safely means it has to understand Delta. Unity Catalog 0.5 ships
-exactly that: a Delta-native REST catalog, a versioned HTTP surface that lets any
-Delta engine treat UC as a first-class Delta catalog. The first request you ever make
-is `GET /delta/v1/config` — the server hands back its capabilities and the exact
-endpoint list. Everything on the wire is native Delta: Delta schema, a Delta protocol
-object, Delta commits. No translation layer.
-
 **TL;DR**
 
-- The Delta API is a **versioned, discoverable** catalog surface. Your first call is
-  `GET /delta/v1/config`, which returns the endpoint list and a `protocol-version`.
-- The wire format is **native Delta** — the schema is Delta's `struct`/`fields`
-  shape, the protocol is a structured object of reader/writer *features*, not a
-  foreign schema the catalog translates.
-- Writes are **intent-based and atomic**: one overloaded `POST …/tables/{table}`
-  carries a list of `updates` guarded by `requirements` (`assert-table-uuid` /
-  `assert-etag`) — the server validates the commit.
-- Creating a table is **two RPCs** (`staging-tables` → `tables`); committing to an
-  existing one is **one**.
-- You can run all of it **locally today** on OSS UC 0.5 — and read one managed table
-  from **two different engines** (Spark and DuckDB) over one catalog, no cloud creds.
+- The UC Delta API is a **versioned, intent-based and atomic** API surface for the Delta Ecosystem
+- The wire format is **native Delta** and ispired by IRC.
 
 ## Introducing the UC Delta API
 
@@ -74,30 +32,10 @@ path and validate what lands.
 
 The rest of this post is just the API doing that, shown on the wire.
 
-<!-- PHRASING: reworked per direction 2026-07-14. Heading is an intro (not "why does
-Delta need…"); dropped the redundant "a Delta table is more than a set of columns"
-opener; added a grounding first beat to the top intro (was jumping straight into the
-mechanism). Internal-doc phrasing pass DONE (Glean): the load-bearing reframe is "the
-catalog is a participant in the commit protocol for a managed table, not a directory
-beside it" — a concrete answer to "why native." Took the IDEA only, in my own words;
-did NOT lift internal one-liners and did NOT use the internal "a Delta version of
-IRC" framing (that's the IRC thread we deliberately dropped). Sources were the same
-internal DRAFT docs the brief flags as leads-only — nothing cited, facts still anchor
-public (api/delta.yaml, PROTOCOL.md). -->
-
-
-<!-- PHRASING: reworked per direction 2026-07-14 — heading is now an intro (not "why
-does Delta need…"), dropped the redundant "a Delta table is more than a set of
-columns" opener, lead with what the API IS then a short reason. Internal-doc phrasing
-pass PENDING: Glean auth expired this session; revisit the "that native fit is the
-reason it exists" paragraph against internal framing once Glean is re-authed (per
-[[find-public-anchor-first]], internal is inspiration only — facts stay public). -->
-
-
 ## Start a local server
 
-Everything below runs against a local OSS UC 0.5 server, so start one first — no
-cloud storage, no credentials. All the server needs is one `server.properties`:
+Everything below runs against a local OSS UC 0.5 server, so let's start one.
+We need to define `server.properties` to configure managed tables in the server.
 
 ```properties
 # server.properties
@@ -105,10 +43,6 @@ server.authorization=disable          # local only: any token (or none) is accep
 server.managed-table.enabled=true     # let the Delta API allocate + commit managed tables
 storage-root.tables=file:///tmp/uc-data   # managed-table storage root (absolute file:// path)
 ```
-
-The one subtlety is that last line. UC vends the `file:///tmp/uc-data/...` locations
-straight to the client, so that path has to mean the same thing inside the container
-and on your host — which is why the `docker run` bind-mounts it **1:1**:
 
 ```bash
 mkdir -p /tmp/uc-data
@@ -120,26 +54,27 @@ docker run -d --name uc \
 # REST API on :8080
 ```
 
-<!-- Verified 2026-07-14: this exact docker run (server.properties mounted to the
-real WORKDIR /home/unitycatalog/etc/conf/, /tmp/uc-data bind-mounted 1:1, UI port
-:3000 intentionally dropped) boots UC 0.5, loads managed tables, and serves
-/delta/v1/config (12 endpoints). Spark write + DuckDB read both verified against it.
-snippets/compose.yaml is the equivalent Compose form for readers who prefer it. -->
+:::note
+UC vends the `file:///tmp/uc-data/...` locations
+straight to the client, so that path has to mean the same thing inside the container
+and on your host — which is why the `docker run` bind-mounts it **1:1**:
+:::
 
-With that running on `:8080`, the rest of the post is just talking to it.
+With that running on `:8080`, we can get right into the fun part.
 
 ## A versioned, discoverable surface
 
-Point a client at the server and the first thing it does is ask what the server can
-do. `config.sh` is that call as a captured transcript:
+If there is one thing we learned from open table formats, it is that
+we should always design for a clear evolution path. As such you can
+ask the server to advertise its version and supported endpoints.
 
 ```bash
 curl -sS --fail-with-body \
   "$UC_URL/api/2.1/unity-catalog/delta/v1/config?catalog=unity&protocol-versions=1.0"
 ```
 
-The server answers with the endpoint list and the protocol version it negotiated —
-discovery, not guesswork:
+The server answers with the endpoint list and the protocol version it negotiated
+between the client and server supported versions.
 
 ```json
 {
@@ -154,9 +89,6 @@ discovery, not guesswork:
   "protocol-version": "1.0"
 }
 ```
-
-<!-- Full 12-endpoint response: snippets/api-transcripts.out.txt (top). `catalog` is
-a mandatory query param (getConfig in api/delta.yaml). -->
 
 Load a table and the schema comes back as native Delta — the `struct`/`fields` shape
 straight out of the transaction log, not a catalog-specific column model:
@@ -178,9 +110,6 @@ straight out of the transaction log, not a catalog-specific column model:
 }
 ```
 
-<!-- Full loadTable response (unity.default.marksheet): snippets/api-transcripts.out.txt.
-Also carries etag, location, partition-columns, properties, commits. -->
-
 That schema shape is the whole point. But before picking the payload apart, it's
 worth seeing the whole thing work end to end — because in practice you never make
 these calls by hand.
@@ -200,12 +129,6 @@ the local server. This is the only setup step; the rest is plain SQL.
 
 ```python file=./snippets/read_write_delta_spark.py start=start:session end=end:session
 ```
-
-:::note
-The connector artifact carries both a Spark-version qualifier (`_4.1_`) and a
-Scala one (`_2.13`). For Spark 4.0.x, swap `_4.1_` for `_4.0_` — same 0.5.0 /
-4.3.0 lines.
-:::
 
 ### Create the managed table and write rows
 `CREATE` routes through `POST /staging-tables` → `POST /tables`; the `INSERT`
@@ -237,12 +160,6 @@ The `SELECT` prints the two rows back:
 |  2| beta|
 +---+-----+
 ```
-
-<!-- Code inlined from snippets/read_write_delta_spark.py via the file=/start=/end=
-snippet fence — one source of truth, verified against the ref. Managed CREATE must
-set delta.feature.catalogManaged='supported'; a benign reportMetrics 404 may log
-after the commit. Verified stack: PySpark 4.1.0 +
-unitycatalog-spark_4.1_2.13:0.5.0 + delta-spark_4.1_2.13:4.3.0. -->
 
 Three SQL statements. Underneath, the engine and the catalog have a specific
 conversation over the Delta API — and that conversation is the interesting part.
@@ -283,11 +200,6 @@ with nothing flattened. You can see it the moment a table is allocated: `POST
 }
 ```
 
-<!-- Full staging-tables response: snippets/api-transcripts.out.txt. Feature names
-(catalogManaged, deletionVectors, columnMapping, domainMetadata, rowTracking,
-inCommitTimestamp) all trace to delta-io/delta PROTOCOL.md — cite there, not internal
-docs. -->
-
 And in the per-column metadata, where column-mapping ids ride along in each field —
 
 ```json
@@ -301,11 +213,6 @@ And in the per-column metadata, where column-mapping ids ride along in each fiel
   }
 }
 ```
-
-<!-- From the create/promote body: snippets/commit-request.out.txt (§2). Keeping this
-LIGHT per direction — column mapping shown as the one concrete example; generated /
-identity columns, defaults, and clustering-as-domain-metadata are further cases to
-add ONLY if the post later wants more depth. Each would anchor to PROTOCOL.md. -->
 
 The catalog is speaking Delta. That is the feature.
 
@@ -333,38 +240,12 @@ captured from Delta-Spark's traffic during an `INSERT`:
 }
 ```
 
-<!-- Full body + the create/promote bodies: snippets/commit-request.out.txt. Captured
-via a logging proxy, not hand-written. assert-etag appears here too on property/schema
-updates; updates can also carry set-properties/remove-properties (changed keys only),
-set-protocol, set-columns, set-domain-metadata. Kept light — one add-commit shown. -->
-
 The client writes the Delta commit file first, then this RPC ratifies it — Delta's
 client-writes-then-catalog-ratifies flow, guarded and validated on the server.
 
 One rule worth stating plainly, because the examples show it: creating a table is
 **two** RPCs — `POST …/staging-tables` to allocate, then `POST …/tables` to register
 the schema and protocol — while committing to an existing table is **one**.
-
-<!-- The create/commit lifecycle diagram now lives in "How that conversation goes"
-(assets/managed-table-flow.likec4 → managedTableFlow.png). This section zooms into
-one step of it (the guarded add-commit). -->
-
-
-## Where it fits: managed tables and UniForm
-
-The Delta API is the client-facing surface over UC's managed-tables commit protocol
-(the public [ManagedTablesSpec] — the CCv2 protocol UC uses to coordinate commits).
-Credential vending, external locations, and the governance around all this are the
-subject of the sibling [Unity Catalog storage post][uc-storage] and the
-[open-lakehouse trust post][trust] — I won't re-derive them here.
-
-And Iceberg REST? It coexists. Iceberg clients still read UC tables through IRC,
-including UniForm tables — but for UniForm the Delta log stays the source of truth
-and the Iceberg metadata is a projection of it. Two surfaces, different clients, one
-set of tables.
-
-<!-- Links to pin at draft-final: ManagedTablesSpec (unitycatalog
-spec/protocols/ManagedTablesSpec.md @ v0.5.0), uc-storage + trust sibling posts. -->
 
 ## A second engine reads the same table
 
@@ -383,22 +264,11 @@ development, so it comes from `core_nightly`.
 ```python file=./snippets/read_delta_duckdb.py start=start:install end=end:install
 ```
 
-:::warning
-The `unity_catalog` extension is unpinned (`core_nightly`) and moves fast —
-expect its API to shift. An earlier nightly failed here on an unrecognized
-`type_precision` field; that skew is fixed upstream now.
-:::
-
 ### Point DuckDB at the UC catalog
 A UC secret carries the endpoint + token, then `ATTACH` mounts the catalog.
 
 ```python file=./snippets/read_delta_duckdb.py start=start:attach end=end:attach
 ```
-
-:::tip
-Use an **unnamed** secret. In the current nightly a named secret isn't wired into
-the request URL, so the attach silently misses its credentials.
-:::
 
 ### Read the Spark-written table
 DuckDB resolves the table through `GET /delta/v1/.../tables/{table}` and scans the
@@ -418,13 +288,6 @@ read back through the UC Delta API, from DuckDB:
 That is the reason a Delta-native catalog API is worth having: any Delta engine can
 speak it.
 
-<!-- Code inlined from snippets/read_delta_duckdb.py via the file=/start=/end=
-snippet fence. DuckDB needs a nightly unity_catalog extension (moves fast; snippet
-FORCE INSTALLs the latest — delta from core, unity_catalog from core_nightly — and
-uses an unnamed secret). A type_precision parse skew that broke this read is now
-fixed upstream (build fd85147); snippets/duckdb-uc-bug-repro.py is the regression
-check. -->
-
 ## Wrap-up
 
 The UC Delta API is a versioned, discoverable, Delta-native catalog surface: it
@@ -436,10 +299,3 @@ If you want to see it yourself: stand up OSS UC 0.5, run `GET /delta/v1/config`,
 walk the create → commit → load lifecycle. Point your own Delta engine at it. And if
 you are building a client, read [`api/delta.yaml`][delta-yaml] and the
 [managed-tables spec][ManagedTablesSpec].
-
-<!-- Link anchors to define/pin at draft-final:
-[delta-yaml]: unitycatalog api/delta.yaml @ v0.5.0 permalink
-[ManagedTablesSpec]: unitycatalog spec/protocols/ManagedTablesSpec.md @ v0.5.0
-[uc-storage]: blogs/unity-catalog-storage
-[trust]: blogs/trust-in-your-open-lakehouse
--->

@@ -24,3 +24,12 @@ def test_time_travel_sees_history() -> None:
     assert v0_rows == 1000  # initial load
     assert latest_rows == 950  # after delete
     assert v0_rows > latest_rows
+
+
+def test_explore_delta_history_journey() -> None:
+    # The multi-step journey example: every region runs as one file.
+    mod = load_example("python", "explore_delta_history")
+    n_commits, v0_rows, latest_rows = mod.explore_delta_history()
+    assert n_commits == 2  # the orders table has two commits (write, delete)
+    assert v0_rows == 1000  # first commit
+    assert latest_rows == 950  # after delete

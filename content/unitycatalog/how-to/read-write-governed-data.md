@@ -4,51 +4,6 @@ summary: Use the unitycatalog-object-store Rust crate (and its Python obstore in
 diataxis: how-to
 project: unitycatalog
 engines: [python, rust]
-snippets:
-  - file: ../../../examples/rust/src/object_store.rs
-    start: start:object_store_factory
-    end: end:object_store_factory
-    engine: rust
-  - file: ../../../examples/python/object_store.py
-    start: start:object_store_client
-    end: end:object_store_client
-    engine: python
-  - file: ../../../examples/python/object_store.py
-    start: start:object_store_for_url
-    end: end:object_store_for_url
-    engine: python
-  - file: ../../../examples/rust/src/object_store.rs
-    start: start:object_store_for_url
-    end: end:object_store_for_url
-    engine: rust
-  - file: ../../../examples/python/object_store.py
-    start: start:object_store_for_volume
-    end: end:object_store_for_volume
-    engine: python
-  - file: ../../../examples/rust/src/object_store.rs
-    start: start:object_store_for_volume
-    end: end:object_store_for_volume
-    engine: rust
-  - file: ../../../examples/python/object_store.py
-    start: start:object_store_for_table
-    end: end:object_store_for_table
-    engine: python
-  - file: ../../../examples/rust/src/object_store.rs
-    start: start:object_store_for_table
-    end: end:object_store_for_table
-    engine: rust
-  - file: ../../../examples/rust/src/object_store.rs
-    start: start:object_store_for_path
-    end: end:object_store_for_path
-    engine: rust
-  - file: ../../../examples/rust/src/object_store.rs
-    start: start:object_store_datafusion
-    end: end:object_store_datafusion
-    engine: rust
-  - file: ../../../examples/python/object_store.py
-    start: start:object_store_duckdb
-    end: end:object_store_duckdb
-    engine: python
 status: draft
 ---
 

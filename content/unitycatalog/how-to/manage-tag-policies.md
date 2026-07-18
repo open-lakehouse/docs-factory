@@ -4,59 +4,6 @@ summary: List, create, get, update, and delete governed tag definitions (tag pol
 diataxis: how-to
 project: unitycatalog
 engines: [python, typescript, rust]
-snippets:
-  - file: ../../../examples/python/tag_policies.py
-    start: start:list_tag_policies
-    end: end:list_tag_policies
-    engine: python
-  - file: ../../../examples/typescript/examples/tag_policies.ts
-    start: start:list_tag_policies
-    end: end:list_tag_policies
-    engine: typescript
-  - file: ../../../examples/rust/src/tag_policies.rs
-    start: start:list_tag_policies
-    end: end:list_tag_policies
-    engine: rust
-  - file: ../../../examples/python/tag_policies.py
-    start: start:create_tag_policy
-    end: end:create_tag_policy
-    engine: python
-  - file: ../../../examples/rust/src/tag_policies.rs
-    start: start:create_tag_policy
-    end: end:create_tag_policy
-    engine: rust
-  - file: ../../../examples/python/tag_policies.py
-    start: start:get_tag_policy
-    end: end:get_tag_policy
-    engine: python
-  - file: ../../../examples/typescript/examples/tag_policies.ts
-    start: start:get_tag_policy
-    end: end:get_tag_policy
-    engine: typescript
-  - file: ../../../examples/rust/src/tag_policies.rs
-    start: start:get_tag_policy
-    end: end:get_tag_policy
-    engine: rust
-  - file: ../../../examples/python/tag_policies.py
-    start: start:update_tag_policy
-    end: end:update_tag_policy
-    engine: python
-  - file: ../../../examples/rust/src/tag_policies.rs
-    start: start:update_tag_policy
-    end: end:update_tag_policy
-    engine: rust
-  - file: ../../../examples/python/tag_policies.py
-    start: start:delete_tag_policy
-    end: end:delete_tag_policy
-    engine: python
-  - file: ../../../examples/typescript/examples/tag_policies.ts
-    start: start:delete_tag_policy
-    end: end:delete_tag_policy
-    engine: typescript
-  - file: ../../../examples/rust/src/tag_policies.rs
-    start: start:delete_tag_policy
-    end: end:delete_tag_policy
-    engine: rust
 status: draft
 ---
 

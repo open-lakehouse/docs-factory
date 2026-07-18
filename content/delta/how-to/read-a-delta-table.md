@@ -11,19 +11,6 @@ prerequisites:
     polars: [polars]
     duckdb: [duckdb]
   datasets: [orders]
-snippets:
-  - file: ../../../examples/python/read_delta_table.py
-    start: start:read-delta-table
-    end: end:read-delta-table
-    engine: python
-  - file: ../../../examples/polars/read_delta_table.py
-    start: start:read-delta-table
-    end: end:read-delta-table
-    engine: polars
-  - file: ../../../examples/duckdb/read_delta_table.py
-    start: start:read-delta-table
-    end: end:read-delta-table
-    engine: duckdb
 status: published
 ---
 

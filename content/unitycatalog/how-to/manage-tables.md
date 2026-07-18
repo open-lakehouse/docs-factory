@@ -4,55 +4,6 @@ summary: List, create, get, and delete tables using the Unity Catalog clients.
 diataxis: how-to
 project: unitycatalog
 engines: [python, typescript, rust]
-snippets:
-  - file: ../../../examples/python/tables.py
-    start: start:list_tables
-    end: end:list_tables
-    engine: python
-  - file: ../../../examples/typescript/examples/tables.ts
-    start: start:list_tables
-    end: end:list_tables
-    engine: typescript
-  - file: ../../../examples/rust/src/tables.rs
-    start: start:list_tables
-    end: end:list_tables
-    engine: rust
-  - file: ../../../examples/python/tables.py
-    start: start:create_table
-    end: end:create_table
-    engine: python
-  - file: ../../../examples/typescript/examples/tables.ts
-    start: start:create_table
-    end: end:create_table
-    engine: typescript
-  - file: ../../../examples/rust/src/tables.rs
-    start: start:create_table
-    end: end:create_table
-    engine: rust
-  - file: ../../../examples/python/tables.py
-    start: start:get_table
-    end: end:get_table
-    engine: python
-  - file: ../../../examples/typescript/examples/tables.ts
-    start: start:get_table
-    end: end:get_table
-    engine: typescript
-  - file: ../../../examples/rust/src/tables.rs
-    start: start:get_table
-    end: end:get_table
-    engine: rust
-  - file: ../../../examples/python/tables.py
-    start: start:delete_table
-    end: end:delete_table
-    engine: python
-  - file: ../../../examples/typescript/examples/tables.ts
-    start: start:delete_table
-    end: end:delete_table
-    engine: typescript
-  - file: ../../../examples/rust/src/tables.rs
-    start: start:delete_table
-    end: end:delete_table
-    engine: rust
 status: draft
 ---
 

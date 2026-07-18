@@ -9,11 +9,6 @@ prerequisites:
   packages:
     python: [deltalake, docs-factory-seed]
   datasets: [orders]
-snippets:
-  - file: ../../../examples/python/time_travel_read.py
-    start: start:time-travel-read
-    end: end:time-travel-read
-    engine: python
 status: published
 ---
 

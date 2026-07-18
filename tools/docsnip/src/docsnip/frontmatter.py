@@ -122,13 +122,14 @@ def validate(page: Page, model_ids: set[str] | None = None) -> list[str]:
         if eng not in ENGINES:
             errors.append(f"engine '{eng}' not in {sorted(ENGINES)}")
 
-    for snip in m.get("snippets", []) or []:
-        for key in ("file", "start", "end"):
-            if key not in snip:
-                errors.append(f"snippet entry missing '{key}': {snip}")
-        eng = snip.get("engine")
-        if eng is not None and eng not in ENGINES:
-            errors.append(f"snippet engine '{eng}' not in {sorted(ENGINES)}")
+    # Snippets are no longer declared in frontmatter — the inline ``file=`` fences
+    # in the body are the single source of truth (validated by snippetcheck and
+    # scanned by manifest.py). A leftover ``snippets:`` array is stale metadata.
+    if "snippets" in m:
+        errors.append(
+            "frontmatter 'snippets:' array is no longer used — remove it; "
+            "the inline file= fences are the source of truth"
+        )
 
     if model_ids:
         for ref in _as_str_list(m.get("references")):

@@ -4,6 +4,10 @@ summary: Use the unitycatalog-object-store Rust crate (and its Python obstore in
 diataxis: how-to
 project: unitycatalog
 engines: [python, rust]
+references:
+  - ucSpec
+  - unityCatalogOSS
+  - s3Api
 status: draft
 ---
 

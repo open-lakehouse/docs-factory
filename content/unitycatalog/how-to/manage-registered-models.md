@@ -4,6 +4,9 @@ summary: Manage registered models and model versions, and vend temporary credent
 diataxis: how-to
 project: unitycatalog
 engines: [python, typescript, rust]
+references:
+  - ucSpec
+  - unityCatalogOSS
 status: draft
 ---
 

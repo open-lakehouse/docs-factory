@@ -4,6 +4,9 @@ summary: List, create, get, and delete tables using the Unity Catalog clients.
 diataxis: how-to
 project: unitycatalog
 engines: [python, typescript, rust]
+references:
+  - ucSpec
+  - unityCatalogOSS
 status: draft
 ---
 

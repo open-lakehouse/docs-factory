@@ -4,6 +4,9 @@ summary: List, create, get, update, and delete governed tag definitions (tag pol
 diataxis: how-to
 project: unitycatalog
 engines: [python, typescript, rust]
+references:
+  - ucSpec
+  - unityCatalogOSS
 status: draft
 ---
 

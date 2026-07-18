@@ -11,12 +11,19 @@ prerequisites:
     polars: [polars]
     duckdb: [duckdb]
   datasets: [orders]
+references:
+  - deltaSpec
+  - deltaRs
+  - polars
+  - duckdb
 status: published
 ---
 
 Reading a Delta table means loading its current version into an in-memory
-dataframe. Delta is an open table format, so many engines can read the same
-table — pick the one that fits your stack.
+dataframe. [Delta Lake](model:deltaSpec) is an open table format, so many
+engines can read the same table — pick the one that fits your stack. The tabs
+below use [delta-rs](model:deltaRs) (via its `deltalake` Python package),
+[Polars](model:polars), and [DuckDB](model:duckdb).
 
 The examples below all read the `orders` sample table. To create it locally,
 first bootstrap the data (this is the same table our CI reads):

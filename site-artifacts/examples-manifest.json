@@ -16,8 +16,8 @@
       "referenced_by": [
         "content/delta/how-to/read-a-delta-table.md"
       ],
-      "tested": false,
-      "engine_status": "stub"
+      "tested": true,
+      "engine_status": "built"
     },
     {
       "id": "polars/read-delta-table",
@@ -34,8 +34,8 @@
       "referenced_by": [
         "content/delta/how-to/read-a-delta-table.md"
       ],
-      "tested": false,
-      "engine_status": "stub"
+      "tested": true,
+      "engine_status": "built"
     },
     {
       "id": "python/create_catalog",

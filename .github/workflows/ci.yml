@@ -57,8 +57,17 @@ jobs:
       - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           enable-cache: true
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
       - uses: ./.github/actions/pypi-public
+      - uses: ./.github/actions/npm-public
       - run: uv sync --all-packages
+      # Export the LikeC4 model fresh so references:/model: id validation runs
+      # against the real estate, not a possibly-stale committed dist/model.json
+      # (a missing model silently skips id validation — a false pass).
+      - name: Export architecture model
+        run: cd architecture && bun install --frozen-lockfile && bun run model
       - name: Validate frontmatter, snippets, and generated artifacts
         run: uv run docsnip check
 

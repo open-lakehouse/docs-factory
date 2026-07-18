@@ -20,9 +20,10 @@ from pathlib import Path
 from .frontmatter import iter_pages
 from .snippetcheck import iter_fences
 
-# Engines whose examples are actually built + tested today. Everything else is a
-# stub, surfaced as engine_status="stub" so consumers don't treat it as ready.
-BUILT_ENGINES = {"python"}
+# Engines whose examples are actually built + tested today (see
+# examples/tests/test_examples.py). Everything else is a stub, surfaced as
+# engine_status="stub" so consumers don't treat it as ready.
+BUILT_ENGINES = {"python", "duckdb", "polars"}
 
 # Maps an example's engine (its examples/<engine>/ dir) to the LikeC4 model
 # implementation id it exercises. Lets consumers tie a snippet to the concrete

@@ -1,4 +1,4 @@
-# docs-list_registered_models-start
+# --8<-- [start:list_registered_models]
 from unitycatalog_client import UnityCatalogClient
 
 client = UnityCatalogClient(base_url="http://localhost:8080")
@@ -7,10 +7,10 @@ models = client.list_registered_models(
 )
 for model in models:
     print(model.name)
-# docs-list_registered_models-end
+# --8<-- [end:list_registered_models]
 
 
-# docs-create_registered_model-start
+# --8<-- [start:create_registered_model]
 def create_registered_model_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -24,10 +24,10 @@ def create_registered_model_example() -> None:
     print(f"Created: {model.full_name}")
 
 
-# docs-create_registered_model-end
+# --8<-- [end:create_registered_model]
 
 
-# docs-get_registered_model-start
+# --8<-- [start:get_registered_model]
 def get_registered_model_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -36,10 +36,10 @@ def get_registered_model_example() -> None:
     print(f"Got: {model.name}")
 
 
-# docs-get_registered_model-end
+# --8<-- [end:get_registered_model]
 
 
-# docs-create_model_version-start
+# --8<-- [start:create_model_version]
 def create_model_version_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -55,10 +55,10 @@ def create_model_version_example() -> None:
     print(f"Created version {version.version}")
 
 
-# docs-create_model_version-end
+# --8<-- [end:create_model_version]
 
 
-# docs-finalize_model_version-start
+# --8<-- [start:finalize_model_version]
 def finalize_model_version_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -68,10 +68,10 @@ def finalize_model_version_example() -> None:
     print(f"Finalized version {version.version}")
 
 
-# docs-finalize_model_version-end
+# --8<-- [end:finalize_model_version]
 
 
-# docs-list_model_versions-start
+# --8<-- [start:list_model_versions]
 def list_model_versions_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -81,4 +81,4 @@ def list_model_versions_example() -> None:
         print(f"version {version.version}")
 
 
-# docs-list_model_versions-end
+# --8<-- [end:list_model_versions]

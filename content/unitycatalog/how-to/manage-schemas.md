@@ -4,67 +4,9 @@ summary: List, create, get, update, and delete schemas using the Unity Catalog c
 diataxis: how-to
 project: unitycatalog
 engines: [python, typescript, rust]
-snippets:
-  - file: ../../../examples/python/schemas.py
-    start: docs-list_schemas-start
-    end: docs-list_schemas-end
-    engine: python
-  - file: ../../../examples/typescript/examples/schemas.ts
-    start: docs-list_schemas-start
-    end: docs-list_schemas-end
-    engine: typescript
-  - file: ../../../examples/rust/src/schemas.rs
-    start: docs-list_schemas-start
-    end: docs-list_schemas-end
-    engine: rust
-  - file: ../../../examples/python/schemas.py
-    start: docs-create_schema-start
-    end: docs-create_schema-end
-    engine: python
-  - file: ../../../examples/typescript/examples/schemas.ts
-    start: docs-create_schema-start
-    end: docs-create_schema-end
-    engine: typescript
-  - file: ../../../examples/rust/src/schemas.rs
-    start: docs-create_schema-start
-    end: docs-create_schema-end
-    engine: rust
-  - file: ../../../examples/python/schemas.py
-    start: docs-get_schema-start
-    end: docs-get_schema-end
-    engine: python
-  - file: ../../../examples/typescript/examples/schemas.ts
-    start: docs-get_schema-start
-    end: docs-get_schema-end
-    engine: typescript
-  - file: ../../../examples/rust/src/schemas.rs
-    start: docs-get_schema-start
-    end: docs-get_schema-end
-    engine: rust
-  - file: ../../../examples/python/schemas.py
-    start: docs-update_schema-start
-    end: docs-update_schema-end
-    engine: python
-  - file: ../../../examples/typescript/examples/schemas.ts
-    start: docs-update_schema-start
-    end: docs-update_schema-end
-    engine: typescript
-  - file: ../../../examples/rust/src/schemas.rs
-    start: docs-update_schema-start
-    end: docs-update_schema-end
-    engine: rust
-  - file: ../../../examples/python/schemas.py
-    start: docs-delete_schema-start
-    end: docs-delete_schema-end
-    engine: python
-  - file: ../../../examples/typescript/examples/schemas.ts
-    start: docs-delete_schema-start
-    end: docs-delete_schema-end
-    engine: typescript
-  - file: ../../../examples/rust/src/schemas.rs
-    start: docs-delete_schema-start
-    end: docs-delete_schema-end
-    engine: rust
+references:
+  - ucSpec
+  - unityCatalogOSS
 status: draft
 ---
 
@@ -78,21 +20,21 @@ Retrieve all schemas in a catalog.
 
 :::tab[Python]
 
-```python file=../../../examples/python/schemas.py start=docs-list_schemas-start end=docs-list_schemas-end
+```python file=../../../examples/python/schemas.py start=start:list_schemas end=end:list_schemas
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/schemas.ts start=docs-list_schemas-start end=docs-list_schemas-end
+```typescript file=../../../examples/typescript/examples/schemas.ts start=start:list_schemas end=end:list_schemas
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/schemas.rs start=docs-list_schemas-start end=docs-list_schemas-end
+```rust file=../../../examples/rust/src/schemas.rs start=start:list_schemas end=end:list_schemas
 ```
 
 :::
@@ -107,21 +49,21 @@ Create a new schema inside an existing catalog.
 
 :::tab[Python]
 
-```python file=../../../examples/python/schemas.py start=docs-create_schema-start end=docs-create_schema-end
+```python file=../../../examples/python/schemas.py start=start:create_schema end=end:create_schema
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/schemas.ts start=docs-create_schema-start end=docs-create_schema-end
+```typescript file=../../../examples/typescript/examples/schemas.ts start=start:create_schema end=end:create_schema
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/schemas.rs start=docs-create_schema-start end=docs-create_schema-end
+```rust file=../../../examples/rust/src/schemas.rs start=start:create_schema end=end:create_schema
 ```
 
 :::
@@ -136,21 +78,21 @@ Retrieve details for a specific schema.
 
 :::tab[Python]
 
-```python file=../../../examples/python/schemas.py start=docs-get_schema-start end=docs-get_schema-end
+```python file=../../../examples/python/schemas.py start=start:get_schema end=end:get_schema
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/schemas.ts start=docs-get_schema-start end=docs-get_schema-end
+```typescript file=../../../examples/typescript/examples/schemas.ts start=start:get_schema end=end:get_schema
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/schemas.rs start=docs-get_schema-start end=docs-get_schema-end
+```rust file=../../../examples/rust/src/schemas.rs start=start:get_schema end=end:get_schema
 ```
 
 :::
@@ -165,21 +107,21 @@ Update a schema's metadata, such as its description or name.
 
 :::tab[Python]
 
-```python file=../../../examples/python/schemas.py start=docs-update_schema-start end=docs-update_schema-end
+```python file=../../../examples/python/schemas.py start=start:update_schema end=end:update_schema
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/schemas.ts start=docs-update_schema-start end=docs-update_schema-end
+```typescript file=../../../examples/typescript/examples/schemas.ts start=start:update_schema end=end:update_schema
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/schemas.rs start=docs-update_schema-start end=docs-update_schema-end
+```rust file=../../../examples/rust/src/schemas.rs start=start:update_schema end=end:update_schema
 ```
 
 :::
@@ -194,21 +136,21 @@ Delete a schema. The schema must be empty unless the `force` option is used.
 
 :::tab[Python]
 
-```python file=../../../examples/python/schemas.py start=docs-delete_schema-start end=docs-delete_schema-end
+```python file=../../../examples/python/schemas.py start=start:delete_schema end=end:delete_schema
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/schemas.ts start=docs-delete_schema-start end=docs-delete_schema-end
+```typescript file=../../../examples/typescript/examples/schemas.ts start=start:delete_schema end=end:delete_schema
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/schemas.rs start=docs-delete_schema-start end=docs-delete_schema-end
+```rust file=../../../examples/rust/src/schemas.rs start=start:delete_schema end=end:delete_schema
 ```
 
 :::

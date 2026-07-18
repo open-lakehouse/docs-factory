@@ -6,12 +6,12 @@
 //! examples are built out.
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // docs-read-delta-table-start
+    // --8<-- [start:read-delta-table]
     // let path = docs_factory_seed::seed_dataset("orders")?;
     // let table = deltalake::open_table(&path).await?;
     // println!("{} files", table.get_files_count());
     println!("delta-rs read_delta_table example: not implemented yet");
-    // docs-read-delta-table-end
+    // --8<-- [end:read-delta-table]
     let _ = docs_factory_seed::seed_dataset; // keep the seed crate linked
     Ok(())
 }

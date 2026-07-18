@@ -1,0 +1,45 @@
+# Author registry — source of truth for blog bylines.
+#
+# A post's front matter carries `author: <Full Name>` (see CONVENTIONS.md §3).
+# That name is portable, plain-Markdown text; it degrades to a byline on GitHub.
+# Here we enrich it: the preview harness (and, later, emit targets) looks the
+# byline up by `name` and renders a rich, interactive author card — avatar, role,
+# and social links. Richness is a property of the renderer, never of the source.
+#
+# Keyed by a kebab-case id. `avatar` is a filename under blogs/authors/ (omit if
+# we have no photo — the card falls back to initials). Add a person here in the
+# same change that first bylines them; reuse an existing entry before adding one.
+
+robert-pack:
+  name: Robert Pack
+  role: Staff Developer Advocate
+  org: Databricks
+  avatar: robert-pack.jpg
+  links:
+    linkedin: https://www.linkedin.com/in/robert-pack/
+    github: https://github.com/roeap
+
+scott-haines:
+  name: Scott Haines
+  role: Staff Developer Advocate
+  org: Databricks
+  avatar: scott-haines.jpg
+  links:
+    linkedin: https://www.linkedin.com/in/scotthaines/
+
+jules-damji:
+  name: Jules S. Damji
+  role: Staff Developer Advocate
+  org: Databricks
+  avatar: jules-damji.jpg
+  links:
+    linkedin: https://www.linkedin.com/in/dmatrix
+    github: https://github.com/dmatrix
+    x: https://x.com/2twitme
+
+lisa-cao:
+  name: Lisa N. Cao
+  role: Staff Developer Relations
+  org: Databricks
+  links:
+    linkedin: https://www.linkedin.com/in/lisancao

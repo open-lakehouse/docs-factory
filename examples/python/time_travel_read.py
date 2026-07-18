@@ -8,7 +8,7 @@ the same code path CI runs.
 
 
 def time_travel_read() -> tuple[int, int]:
-    # docs-time-travel-read-start
+    # --8<-- [start:time-travel-read]
     from deltalake import DeltaTable
     from docs_factory_seed import seed_dataset
 
@@ -20,7 +20,7 @@ def time_travel_read() -> tuple[int, int]:
     latest_rows = latest.to_pyarrow_table().num_rows
     v0_rows = v0.to_pyarrow_table().num_rows
     print(f"v0 had {v0_rows} rows; latest has {latest_rows}")
-    # docs-time-travel-read-end
+    # --8<-- [end:time-travel-read]
     return v0_rows, latest_rows
 
 

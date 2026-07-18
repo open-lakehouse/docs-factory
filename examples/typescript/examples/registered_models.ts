@@ -1,6 +1,6 @@
 import { UnityCatalogClient } from "@unitycatalog/client";
 
-// docs-list_registered_models-start
+// --8<-- [start:list_registered_models]
 export async function listRegisteredModelsExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   const models = await client.listRegisteredModels({
@@ -11,9 +11,9 @@ export async function listRegisteredModelsExample(): Promise<void> {
     console.log(model.name);
   }
 }
-// docs-list_registered_models-end
+// --8<-- [end:list_registered_models]
 
-// docs-create_registered_model-start
+// --8<-- [start:create_registered_model]
 export async function createRegisteredModelExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   const model = await client.createRegisteredModel(
@@ -24,9 +24,9 @@ export async function createRegisteredModelExample(): Promise<void> {
   );
   console.log(`Created: ${model.fullName}`);
 }
-// docs-create_registered_model-end
+// --8<-- [end:create_registered_model]
 
-// docs-get_registered_model-start
+// --8<-- [start:get_registered_model]
 export async function getRegisteredModelExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   const model = await client
@@ -34,9 +34,9 @@ export async function getRegisteredModelExample(): Promise<void> {
     .get();
   console.log(`Got: ${model.name}`);
 }
-// docs-get_registered_model-end
+// --8<-- [end:get_registered_model]
 
-// docs-create_model_version-start
+// --8<-- [start:create_model_version]
 export async function createModelVersionExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   // A new version starts in PENDING_REGISTRATION. Write your artifacts to the
@@ -49,9 +49,9 @@ export async function createModelVersionExample(): Promise<void> {
   );
   console.log(`Created version ${version.version}`);
 }
-// docs-create_model_version-end
+// --8<-- [end:create_model_version]
 
-// docs-finalize_model_version-start
+// --8<-- [start:finalize_model_version]
 export async function finalizeModelVersionExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   // Once all artifacts are written, finalize to transition the version to READY.
@@ -61,9 +61,9 @@ export async function finalizeModelVersionExample(): Promise<void> {
   );
   console.log(`Finalized version ${version.version}`);
 }
-// docs-finalize_model_version-end
+// --8<-- [end:finalize_model_version]
 
-// docs-list_model_versions-start
+// --8<-- [start:list_model_versions]
 export async function listModelVersionsExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   const versions = await client.listModelVersions(
@@ -73,4 +73,4 @@ export async function listModelVersionsExample(): Promise<void> {
     console.log(`version ${version.version}`);
   }
 }
-// docs-list_model_versions-end
+// --8<-- [end:list_model_versions]

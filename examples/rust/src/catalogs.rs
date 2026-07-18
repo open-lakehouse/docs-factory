@@ -1,6 +1,6 @@
 use unitycatalog_client::UnityCatalogClient;
 
-// docs-list_catalogs-start
+// --8<-- [start:list_catalogs]
 pub async fn list_catalogs_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let response = client.list_catalogs().await.unwrap();
@@ -8,9 +8,9 @@ pub async fn list_catalogs_example(base_url: url::Url) {
         println!("{}", catalog.name);
     }
 }
-// docs-list_catalogs-end
+// --8<-- [end:list_catalogs]
 
-// docs-create_catalog-start
+// --8<-- [start:create_catalog]
 pub async fn create_catalog_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let catalog = client
@@ -20,17 +20,17 @@ pub async fn create_catalog_example(base_url: url::Url) {
         .unwrap();
     println!("Created: {}", catalog.name);
 }
-// docs-create_catalog-end
+// --8<-- [end:create_catalog]
 
-// docs-get_catalog-start
+// --8<-- [start:get_catalog]
 pub async fn get_catalog_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let catalog = client.catalog("my_catalog").get().await.unwrap();
     println!("Got: {}", catalog.name);
 }
-// docs-get_catalog-end
+// --8<-- [end:get_catalog]
 
-// docs-update_catalog-start
+// --8<-- [start:update_catalog]
 pub async fn update_catalog_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let catalog = client
@@ -41,12 +41,12 @@ pub async fn update_catalog_example(base_url: url::Url) {
         .unwrap();
     println!("Updated: {}", catalog.name);
 }
-// docs-update_catalog-end
+// --8<-- [end:update_catalog]
 
-// docs-delete_catalog-start
+// --8<-- [start:delete_catalog]
 pub async fn delete_catalog_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     client.catalog("my_catalog").delete().await.unwrap();
     println!("Deleted catalog");
 }
-// docs-delete_catalog-end
+// --8<-- [end:delete_catalog]

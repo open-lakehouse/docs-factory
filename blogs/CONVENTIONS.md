@@ -91,6 +91,15 @@ a new one; if none fits, add the new tag to `tags.yml` (with its one-line
 description) **in the same change** — never introduce a tag that lives only in a
 post. This keeps the vocabulary deduplicated and discoverable.
 
+**Authors.** The `author` byline is a real person's full name and stays plain
+text in the source (it degrades to a byline on GitHub). Rich rendering — avatar,
+role, and social links — is a *renderer* concern, driven by the author registry
+in [`blogs/authors.yml`](authors.yml): the preview looks the byline up by name
+and shows an interactive author card. Add a person to `authors.yml` (with an
+avatar under `blogs/authors/`, or none for an initials fallback) in the same
+change that first bylines them; an unregistered byline still renders as plain
+text. Mirrors the `profiles/` collections on unitycatalog.io and delta.io.
+
 ## 4. Brief template (`brief.md`)
 
 The front-matter block (§3) followed by ten short sections; keep each to
@@ -136,11 +145,11 @@ bullets. Copy this to start a post.
   Link on first mention; don't over-link.
 - **Front matter** present (§3); keep the body portable across targets.
 - **Diagrams as code — [LikeC4](https://likec4.dev) is preferred.** Author
-  diagrams in LikeC4 (`assets/*.likec4` is the source of truth) and commit both
-  the source and the rendered image in the post's `assets/`, so the draft renders
-  without a build step. This matches the estate's architecture model in the
-  `docs-factory` repo, which adopted LikeC4 as its canonical source of
-  architectural fact — so a post's diagram can share that vocabulary and idiom.
+  interactive diagrams as dedicated views in
+  `architecture/model/views/blog-views.likec4` and commit the rendered fallback image
+  in the post's `assets/`, so the draft renders without a build step. This keeps
+  the local preview on one LikeC4 Vite-plugin runtime while still allowing a
+  post to carry purpose-built, protocol-level views with slug-prefixed ids.
   - **Richness is a property of the renderer, never the source.** `draft.md`
     stays plain, portable Markdown that renders acceptably everywhere — on GitHub,
     in any Markdown viewer, and through the Google Docs export (below). A diagram
@@ -153,8 +162,8 @@ bullets. Copy this to start a post.
     `site/` harness (and the site) key off `likec4=<viewId>` to swap in the
     interactive view. An image with no `likec4=` title (a D2 SVG, a screenshot)
     stays a plain static image. **View ids are globally unique and slug-prefixed**
-    (e.g. `ucDeltaApi_managedTableFlow`) so one codegen pass over all of `blogs/`
-    has no id collisions.
+    (e.g. `ucDeltaApi_managedTableFlow`) because blog views share the estate
+    LikeC4 workspace.
   - **Preview it richly (optional).** To see a draft rendered with the site's
     look and *interactive* diagrams before staging, run the throwaway root-level
     harness: `cd preview && bun install && bun run dev`. It reads drafts in place
@@ -164,15 +173,14 @@ bullets. Copy this to start a post.
     lifeline layout — without it the static export falls back to a box-and-arrow
     graph (see [likec4#2532](https://github.com/likec4/likec4/issues/2532)):
     ```
-    bunx likec4 export png --sequence -o . blogs/<slug>/assets
+    bunx likec4 export png --sequence --flat -f "<viewId>" -o blogs/<slug>/assets architecture/model
     ```
     (`likec4 start <dir>` opens the interactive viewer; pick the "sequence"
     variant there.) Static export needs a headless Chromium
     (`bunx playwright install chromium` once).
-  - Keep a post's diagram **self-contained in its `assets/`** unless it genuinely
-    belongs in the shared `docs-factory` model — that model's logical layer is
-    deliberately ref-free and technology-agnostic, so protocol-specific,
-    technology-named detail (endpoint names, wire fields) stays in the post.
+  - Keep blog-only elements clearly slug/topic-prefixed in `blog-views.likec4`.
+    They may be more protocol-specific than the logical model, but they still
+    share one renderer and should not masquerade as core architecture facts.
   - A publishing target may need a different export (SVG, inline) than the
     committed PNG — regenerate from the same `.likec4` source at publish.
   - **D2** ([d2lang.com](https://d2lang.com)) is still fine for an existing `.d2`
@@ -288,7 +296,8 @@ bullets. Copy this to start a post.
   *flattens* the rich constructs to portable Markdown: a `file=` fence becomes a
   real fenced code block, a `::::journey` becomes numbered `### Step N — …`
   headings, `:::tip`/`:::warning`/… callouts become bold-led blockquotes, and each
-  `likec4=` image is re-exported from its `.likec4` source to a PNG. Run it with:
+  `likec4=` image is re-exported from the unified `architecture/model` workspace
+  to a PNG. Run it with:
   ```
   bun emit/emit.mjs --slug <slug> --target gdocs
   ```

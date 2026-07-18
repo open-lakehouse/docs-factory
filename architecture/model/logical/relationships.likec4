@@ -1,9 +1,11 @@
 // LOGICAL LAYER — cross-capability relationships of the reference lakehouse.
 //
-// The core chain: queryEngine -> catalog -> tableFormat -> objectStorage, with
-// governance and lineage attaching at resolution / planning time. Foundations
-// and concrete formats realize the capabilities. Deployment-specific edges
-// (per-topology credential vending) live in deployments.likec4.
+// The core chain: queryEngine -> catalog -> tableFormat -> fileFormat ->
+// objectStorage, with governance, lineage, and observability attaching at
+// resolution / planning time. Specifications specify the capabilities and
+// implementations realize them (co-located in technology-catalog.likec4).
+// Deployment-specific edges (per-topology credential vending) live in
+// deployment/deployments.likec4.
 
 model {
   extend lakehouse {
@@ -13,20 +15,24 @@ model {
     queryEngine -[resolves]-> catalog "resolves tables through"
     catalog -[flows]-> tableFormat "resolves a table to its format + location"
     queryEngine -[reads]-> tableFormat "reads tables via the format"
-    tableFormat -[reads]-> objectStorage "manifests as files in"
+    tableFormat -[reads]-> fileFormat "stored as data files encoded in"
+    fileFormat -[reads]-> objectStorage "bytes persisted in"
 
-    // Governance + lineage attach to the query engine at planning time.
+    // Governance + lineage + observability attach to the query engine at
+    // planning / execution time.
     queryEngine -[enforces]-> governance "policy decided + enforced in-plan (planning-time)"
     queryEngine -[flows]-> lineage "emits column-level lineage (planning-time)"
+    queryEngine -[flows]-> observability "emits traces + metrics"
 
     // The catalog is the authoritative resource PIP and hosts the PA (vending).
     catalog -[flows]-> governance.pip "serves resource facts (identity, tags, locations)"
     catalog -[vends]-> objectStorage "vends short-lived scoped credentials for"
   }
 
-  // --- Foundations realize the capabilities --------------------------------
-  // Foundation `realizes` edges are co-located with each foundation element in
-  // landscape.likec4, so nothing lives here.
+  // --- Specifications & implementations ------------------------------------
+  // `specifies` / `implements` / `realizes` edges are co-located with each
+  // specification / implementation element in technology-catalog.likec4, so
+  // nothing lives here.
 
   // --- People --------------------------------------------------------------
 

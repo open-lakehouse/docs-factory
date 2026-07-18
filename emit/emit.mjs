@@ -17,7 +17,7 @@
  * Google Doc, upload images, share) is a separate agent step — the /blog-emit skill.
  */
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -175,18 +175,14 @@ function remarkPrelude(capture, opts = {}) {
 // --- LikeC4 PNG regeneration ----------------------------------------------
 
 /**
- * Regenerate PNGs for every *.likec4 under the draft's assets/, deterministically,
- * into `outDir` (throwaway, under dist/). LikeC4 names each PNG by its view id and
- * also emits an auto-generated `index.png`; the emitter reads back `<viewId>.png`
- * by the `likec4=<viewId>` title on the draft image, so the export dir is kept
- * separate from the committed assets/ (never polluted with view-id / index PNGs).
+ * Regenerate PNGs from the unified architecture LikeC4 workspace,
+ * deterministically into `outDir` (throwaway, under dist/). The emitter reads
+ * back `<viewId>.png` by the `likec4=<viewId>` title on the draft image.
  * Returns `outDir` if anything was exported, else null.
  */
-function regenerateLikeC4(assetsDir, outDir) {
-  if (!existsSync(assetsDir)) return null;
-  const likec4Files = readdirSync(assetsDir).filter((f) => f.endsWith(".likec4"));
-  if (likec4Files.length === 0) return null;
-
+function regenerateLikeC4(modelDir, outDir, hasLikeC4Refs) {
+  if (!hasLikeC4Refs) return null;
+  if (!existsSync(modelDir)) return null;
   mkdirSync(outDir, { recursive: true });
   // Use the preview harness's pinned likec4 binary if present; else fall back to
   // bunx. Mirrors blogs/CONVENTIONS.md §5: --sequence is required for dynamic views
@@ -196,13 +192,13 @@ function regenerateLikeC4(assetsDir, outDir) {
   const localBin = join(REPO_ROOT, "site", "node_modules", ".bin", "likec4");
   const useLocal = existsSync(localBin);
   const bin = useLocal ? localBin : "bunx";
-  const base = ["export", "png", "--sequence", "--flat", "-o", outDir, assetsDir];
+  const base = ["export", "png", "--sequence", "--flat", "-o", outDir, modelDir];
   const args = useLocal ? base : ["likec4", ...base];
   try {
     execFileSync(bin, args, { stdio: "inherit" });
   } catch (err) {
     throw new Error(
-      `LikeC4 PNG export failed for ${assetsDir}. Ensure a headless Chromium is ` +
+      `LikeC4 PNG export failed for ${modelDir}. Ensure a headless Chromium is ` +
         `installed (\`bunx playwright install chromium\` once). Underlying error: ${err.message}`,
     );
   }
@@ -213,29 +209,24 @@ function regenerateLikeC4(assetsDir, outDir) {
  * Generate the framework-agnostic LikeC4 web-component bundle for a target that
  * renders diagrams interactively (e.g. UnityCatalog's Astro site, which has no
  * React). The bundle registers a `<likec4-view view-id="…">` custom element backed
- * by the same model the drafts are codegen'd from. Mirrors the estate model's own
- * `likec4 gen webcomponent` step (architecture/package.json). Sources are the whole
- * `blogs/` tree so a post's own `assets/*.likec4` is included (view ids are
- * globally unique + slug-prefixed, so one pass has no collisions).
+ * by the unified architecture model.
  *
- * Returns `outFile` on success, else null (no .likec4 sources under the draft).
+ * Returns `outFile` on success, else null (draft has no likec4= refs).
  */
-function generateLikeC4WebComponent(assetsDir, blogsDir, outFile) {
-  if (!existsSync(assetsDir)) return null;
-  const likec4Files = readdirSync(assetsDir).filter((f) => f.endsWith(".likec4"));
-  if (likec4Files.length === 0) return null;
-
+function generateLikeC4WebComponent(modelDir, outFile, hasLikeC4Refs) {
+  if (!hasLikeC4Refs) return null;
+  if (!existsSync(modelDir)) return null;
   mkdirSync(dirname(outFile), { recursive: true });
   const localBin = join(REPO_ROOT, "site", "node_modules", ".bin", "likec4");
   const useLocal = existsSync(localBin);
   const bin = useLocal ? localBin : "bunx";
-  const base = ["gen", "webcomponent", "-o", outFile, blogsDir];
+  const base = ["gen", "webcomponent", "-o", outFile, modelDir];
   const args = useLocal ? base : ["likec4", ...base];
   try {
     execFileSync(bin, args, { stdio: "inherit" });
   } catch (err) {
     throw new Error(
-      `LikeC4 web-component generation failed for ${blogsDir}. Underlying error: ${err.message}`,
+      `LikeC4 web-component generation failed for ${modelDir}. Underlying error: ${err.message}`,
     );
   }
   return outFile;
@@ -284,8 +275,15 @@ async function main() {
   const targetDistDir = join(distDir, targetName);
   mkdirSync(targetDistDir, { recursive: true });
 
+  const input = readFileSync(draftPath, "utf8");
   const assetsDir = join(draftDir, "assets");
-  const likec4Dir = regenerateLikeC4(assetsDir, join(distDir, ".likec4-export"));
+  const architectureModelDir = join(REPO_ROOT, "architecture", "model");
+  const hasLikeC4Refs = /\blikec4=\S+/.test(input);
+  const likec4Dir = regenerateLikeC4(
+    architectureModelDir,
+    join(distDir, ".likec4-export"),
+    hasLikeC4Refs,
+  );
 
   const capture = {};
   const manifest = [];
@@ -339,7 +337,6 @@ async function main() {
   if (stringifyExtension) processor = processor.use(stringifyExtension);
   processor = processor.use(remarkStringify, target.stringify);
 
-  const input = readFileSync(draftPath, "utf8");
   const file = await processor.process({ value: input, path: draftPath });
   const output = String(file);
 
@@ -350,9 +347,9 @@ async function main() {
   let webComponentPath = null;
   if (target.likec4WebComponent) {
     webComponentPath = generateLikeC4WebComponent(
-      assetsDir,
-      join(REPO_ROOT, "blogs"),
+      architectureModelDir,
       join(targetDistDir, "likec4-webcomponent.mjs"),
+      hasLikeC4Refs,
     );
   }
 

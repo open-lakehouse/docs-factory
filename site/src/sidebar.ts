@@ -1,9 +1,13 @@
 /**
  * Build docs navigation from each project's content/<project>/_meta.yaml.
- * Mirrors the former Astro sidebar.mjs — ordering lives with the content.
- * Projects without _meta.yaml get a synthesized nav from discovered pages.
  */
 import yaml from "js-yaml";
+import {
+  bucketFromPath,
+  docPaths,
+  projectFromPath,
+  slugFromPath,
+} from "./lib/content-source";
 
 export interface DocNavItem {
   project: string;
@@ -46,31 +50,10 @@ const metaModules = import.meta.glob("../../content/*/_meta.yaml", {
   eager: true,
 }) as Record<string, string>;
 
-const docPaths = Object.keys(
-  import.meta.glob("../../content/{delta,unitycatalog}/**/*.{md,mdx}", {
-    eager: true,
-  }),
-);
-
 const docTitleModules = import.meta.glob<MdxModule>(
   "../../content/{delta,unitycatalog}/**/*.{md,mdx}",
   { eager: true },
 );
-
-function slugFromPath(filePath: string): string {
-  const name = filePath.split("/").pop() ?? "";
-  return name.replace(/\.mdx?$/, "");
-}
-
-function bucketFromPath(filePath: string): string {
-  const parts = filePath.split("/");
-  return parts[parts.length - 2] ?? "";
-}
-
-function projectFromPath(filePath: string): string {
-  const parts = filePath.split("/");
-  return parts[parts.length - 3] ?? "";
-}
 
 function titleForDoc(project: string, bucket: string, slug: string): string {
   for (const [path, mod] of Object.entries(docTitleModules)) {
@@ -110,9 +93,8 @@ function presentSlugs(project: string, bucket: string): string[] {
 function allProjectsWithDocs(): string[] {
   const projects = new Set<string>();
   for (const p of docPaths) {
-    const project = projectFromPath(p);
     const slug = slugFromPath(p);
-    if (slug.toLowerCase() !== "readme") projects.add(project);
+    if (slug.toLowerCase() !== "readme") projects.add(projectFromPath(p));
   }
   return [...projects].sort();
 }
@@ -156,7 +138,6 @@ function buildFallbackGroup(project: string): DocNavGroup | null {
   });
 }
 
-/** Full docs sidebar tree — one entry per project with docs. */
 export function buildDocNav(): DocNavGroup[] {
   const groups: DocNavGroup[] = [];
   const covered = new Set<string>();
@@ -182,7 +163,6 @@ export function buildDocNav(): DocNavGroup[] {
 
 export const docNav = buildDocNav();
 
-/** Flat reading order for prev/next pager. */
 export const docSequence: DocNavItem[] = docNav.flatMap((g) =>
   g.buckets.flatMap((b) => b.items),
 );
@@ -196,7 +176,6 @@ export function docNeighbors(href: string): { prev?: DocNavItem; next?: DocNavIt
   };
 }
 
-/** First doc page for a project (for product cards). */
 export function firstDocForProject(project: string): DocNavItem | undefined {
   const group = docNav.find((g) => g.project === project);
   return group?.buckets[0]?.items[0];

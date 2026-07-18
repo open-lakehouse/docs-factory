@@ -1,8 +1,17 @@
-// tabs.tsx — engine-tabbed (or arbitrary) content groups. remark-tabs turns
-// `::::tabs` / `:::tab[Label]` into <Tabs>/<Tab>. syncKey persists the active
-// tab in the URL hash when provided.
-import { useControllableState } from "@radix-ui/react-use-controllable-state";
-import { useEffect, useId, type ReactNode } from "react";
+// tabs.tsx — engine-tabbed content groups. remark-tabs emits <Tabs>/<Tab>.
+// Uses shadcn Tabs with console styling; syncKey links selection across groups.
+import { Children, isValidElement, useEffect, useId, useState, type ReactNode } from "react";
+import {
+  Tabs as ShadcnTabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import {
+  setTabSync,
+  subscribeTabSync,
+  unsubscribeTabSync,
+} from "@/lib/tab-sync";
 
 interface TabProps {
   label: string;
@@ -19,67 +28,51 @@ interface TabsProps {
 }
 
 export function Tabs({ syncKey, children }: TabsProps) {
-  const tabs = Array.isArray(children) ? children : [children];
-  const items = tabs.filter(Boolean) as React.ReactElement<TabProps>[];
-  const labels = items.map((t) => t.props.label);
+  const tabs = Children.toArray(children).filter(isValidElement) as React.ReactElement<TabProps>[];
+  const labels = tabs.map((t) => t.props.label);
   const baseId = useId();
-
-  const storageKey = syncKey ? `tabs:${syncKey}` : undefined;
-  const [active, setActive] = useControllableState({
-    defaultProp: labels[0] ?? "",
-    onChange: (v) => {
-      if (storageKey && typeof window !== "undefined") {
-        try {
-          sessionStorage.setItem(storageKey, v);
-        } catch {
-          /* ignore */
-        }
-      }
-    },
-  });
+  const [active, setActive] = useState(labels[0] ?? "");
 
   useEffect(() => {
-    if (!storageKey || typeof window === "undefined") return;
-    try {
-      const saved = sessionStorage.getItem(storageKey);
-      if (saved && labels.includes(saved)) setActive(saved);
-    } catch {
-      /* ignore */
-    }
-  }, [storageKey, labels, setActive]);
+    if (!syncKey || labels.length === 0) return;
+    const onChange = (value: string) => setActive(value);
+    const initial = subscribeTabSync(syncKey, labels, onChange);
+    setActive(initial);
+    return () => unsubscribeTabSync(syncKey, onChange);
+  }, [syncKey, labels.join("\0")]);
 
-  const idx = Math.max(0, labels.indexOf(active ?? labels[0]));
+  const handleChange = (value: string) => {
+    setActive(value);
+    if (syncKey) setTabSync(syncKey, value);
+  };
+
+  if (labels.length === 0) return null;
 
   return (
-    <div className="tabs" data-sync-key={syncKey}>
-      <div className="tabs-list" role="tablist">
+    <ShadcnTabs
+      value={active}
+      onValueChange={handleChange}
+      className="tabs"
+      data-sync-key={syncKey}
+    >
+      <TabsList className="tabs-list" aria-label="Tabbed content">
         {labels.map((label, i) => (
-          <button
-            key={label}
-            type="button"
-            role="tab"
-            id={`${baseId}-tab-${i}`}
-            aria-selected={i === idx}
-            aria-controls={`${baseId}-panel-${i}`}
-            className={i === idx ? "tabs-trigger active" : "tabs-trigger"}
-            onClick={() => setActive(label)}
-          >
+          <TabsTrigger key={label} value={label} id={`${baseId}-tab-${i}`} className="tabs-trigger">
             {label}
-          </button>
+          </TabsTrigger>
         ))}
-      </div>
-      {items.map((item, i) => (
-        <div
+      </TabsList>
+      {tabs.map((tab, i) => (
+        <TabsContent
           key={labels[i]}
-          role="tabpanel"
+          value={labels[i]}
           id={`${baseId}-panel-${i}`}
-          aria-labelledby={`${baseId}-tab-${i}`}
-          hidden={i !== idx}
           className="tabs-panel"
+          aria-labelledby={`${baseId}-tab-${i}`}
         >
-          {item.props.children}
-        </div>
+          {tab.props.children}
+        </TabsContent>
       ))}
-    </div>
+    </ShadcnTabs>
   );
 }

@@ -1,14 +1,14 @@
-# docs-list_catalogs-start
+# --8<-- [start:list_catalogs]
 from unitycatalog_client import UnityCatalogClient
 
 client = UnityCatalogClient(base_url="http://localhost:8080")
 catalogs = client.list_catalogs()
 for catalog in catalogs:
     print(catalog.name)
-# docs-list_catalogs-end
+# --8<-- [end:list_catalogs]
 
 
-# docs-create_catalog-start
+# --8<-- [start:create_catalog]
 def create_catalog_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -17,10 +17,10 @@ def create_catalog_example() -> None:
     print(f"Created: {catalog.name}")
 
 
-# docs-create_catalog-end
+# --8<-- [end:create_catalog]
 
 
-# docs-get_catalog-start
+# --8<-- [start:get_catalog]
 def get_catalog_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -29,10 +29,10 @@ def get_catalog_example() -> None:
     print(f"Got: {catalog.name}")
 
 
-# docs-get_catalog-end
+# --8<-- [end:get_catalog]
 
 
-# docs-update_catalog-start
+# --8<-- [start:update_catalog]
 def update_catalog_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -41,10 +41,10 @@ def update_catalog_example() -> None:
     print(f"Updated: {catalog.name}")
 
 
-# docs-update_catalog-end
+# --8<-- [end:update_catalog]
 
 
-# docs-delete_catalog-start
+# --8<-- [start:delete_catalog]
 def delete_catalog_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -53,4 +53,4 @@ def delete_catalog_example() -> None:
     print("Deleted catalog")
 
 
-# docs-delete_catalog-end
+# --8<-- [end:delete_catalog]

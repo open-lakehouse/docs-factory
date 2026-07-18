@@ -1,43 +1,12 @@
-// managed-table-flow.likec4 — sequence of the UC Delta API managed-table
-// CREATE + first COMMIT, as defined by the Unity Catalog managed-tables spec.
+// Blog-specific LikeC4 views rendered by the site preview.
 //
-// SOURCE OF TRUTH: unitycatalog/unitycatalog · spec/protocols/ManagedTablesSpec.md
-//   (create: staging-tables -> write 0.json -> promote; commit: loadTable ->
-//    write staged commit -> add-commit (guarded) -> publish). Endpoint paths and
-//    action names are quoted verbatim from that spec.
-//
-// SELF-CONTAINED for the blog (blogs/unity-catalog-delta-api). It intentionally
-// does NOT live in the docs-factory ref-free logical model — this is
-// protocol-specific, technology-named detail. It follows docs-factory's
-// dynamic-view idiom (a `dynamic view` = a sequence diagram) but keeps its own
-// three participants.
-//
-// Render (LikeC4 >= 1.58, the version adopted in docs-factory). The --sequence
-// flag is REQUIRED: without it the static export lays a dynamic view out as a
-// box-and-arrow graph, not lifelines (see likec4/likec4#2532, fixed in #2542):
-//   npx likec4 export png --sequence -o . .    # -> managedTableFlow.png
-// Interactive (pick the "sequence" variant in the UI):
-//   npx likec4 start .
-// The rendered managedTableFlow.png is committed alongside this source.
-
-specification {
-  element participant {
-    style {
-      shape rectangle
-      color primary
-    }
-  }
-  element store {
-    notation "Object storage"
-    style {
-      shape storage
-      color muted
-    }
-  }
-}
+// These views intentionally live beside the estate model so the preview uses
+// one LikeC4 Vite plugin/runtime. They may contain protocol-level participants
+// that are too concrete for the reference architecture, but their ids are
+// prefixed by post/topic to avoid polluting the main vocabulary.
 
 model {
-  client = participant "Delta client / engine" {
+  blogUcDeltaApiClient = participant "Delta client / engine" {
     description "A Delta-compatible writer proposing commits through the UC Delta API."
     link https://delta.io
     style {
@@ -45,7 +14,7 @@ model {
     }
   }
 
-  server = participant "Unity Catalog" {
+  blogUcDeltaApiServer = participant "Unity Catalog" {
     summary "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
     description "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
     link https://www.unitycatalog.io
@@ -53,7 +22,8 @@ model {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }
   }
-  storage = store "Cloud storage" {
+
+  blogUcDeltaApiStorage = store "Cloud storage" {
     description "Where the table's data files and _delta_log live (S3 / ABFS / GCS, or a local file:// root)."
   }
 }
@@ -68,7 +38,7 @@ views {
     description "The end-to-end managed-table lifecycle from the Unity Catalog managed-tables spec: discover, allocate a staging table, write version 0, promote it, then commit an INSERT — staged first, ratified by the catalog, then published."
 
     // --- Discovery ---------------------------------------------------------
-    client -> server "GET /delta/v1/config (negotiate endpoints + protocol-version)" {
+    blogUcDeltaApiClient -> blogUcDeltaApiServer "GET /delta/v1/config (negotiate endpoints + protocol-version)" {
       notes '''
         **Handshake.** Before touching any table, the client asks the catalog
         two things: *"which API endpoints do you support?"* and *"which
@@ -80,14 +50,14 @@ views {
     }
 
     // --- CREATE ------------------------------------------------------------
-    client -> server "POST .../staging-tables { name }" {
+    blogUcDeltaApiClient -> blogUcDeltaApiServer "POST .../staging-tables { name }" {
       notes '''
         **Reserve a spot.** The client asks the catalog to set aside a place
         for a brand-new table, passing just the name. Nothing is committed
         yet — think of it as claiming a plot of land before you build on it.
       '''
     }
-    server -> client "table-id, location, READ_WRITE credential, required-protocol" {
+    blogUcDeltaApiServer -> blogUcDeltaApiClient "table-id, location, READ_WRITE credential, required-protocol" {
       notes '''
         **The starter kit.** The catalog hands back everything the client
         needs to build the table: a unique **table-id**, the **location** in
@@ -96,7 +66,7 @@ views {
         minimum Delta features this table must declare.
       '''
     }
-    client -> storage "write _delta_log/0.json (schema, protocol, io.unitycatalog.tableId)" {
+    blogUcDeltaApiClient -> blogUcDeltaApiStorage "write _delta_log/0.json (schema, protocol, io.unitycatalog.tableId)" {
       notes '''
         **Lay the foundation.** Using the vended credential, the client writes
         the very first Delta log file, `0.json`, directly to storage. It
@@ -105,7 +75,7 @@ views {
         catalog just reserved.
       '''
     }
-    client -> server "POST .../tables (promote: columns, protocol, properties)" {
+    blogUcDeltaApiClient -> blogUcDeltaApiServer "POST .../tables (promote: columns, protocol, properties)" {
       notes '''
         **Make it official.** The client tells the catalog *"I've written
         version 0 — please promote this staging table into a real, managed
@@ -113,7 +83,7 @@ views {
         catalog's record matches what's on disk.
       '''
     }
-    server -> client "loadTable response (table-uuid, etag, version 0)" {
+    blogUcDeltaApiServer -> blogUcDeltaApiClient "loadTable response (table-uuid, etag, version 0)" {
       notes '''
         **Table is live.** The catalog confirms the table now exists and
         returns its current state: the **table-uuid**, an **etag** (a version
@@ -123,7 +93,7 @@ views {
     }
 
     // --- COMMIT (INSERT) ---------------------------------------------------
-    client -> server "GET .../tables/{table} (loadTable: current etag + uuid)" {
+    blogUcDeltaApiClient -> blogUcDeltaApiServer "GET .../tables/{table} (loadTable: current etag + uuid)" {
       notes '''
         **Check the current state.** To append data, the client first reads
         the table to learn where it stands — the latest **etag** and
@@ -131,7 +101,7 @@ views {
         else changed the table in the meantime.
       '''
     }
-    client -> storage "write _delta_log/_staged_commits/<v>.<uuid>.json" {
+    blogUcDeltaApiClient -> blogUcDeltaApiStorage "write _delta_log/_staged_commits/<v>.<uuid>.json" {
       notes '''
         **Stage the change.** The client writes its new commit as a *staged*
         file (`<version>.<uuid>.json`) in the `_staged_commits` folder. It's
@@ -139,7 +109,7 @@ views {
         catalog hasn't blessed it, so no reader will see it.
       '''
     }
-    client -> server "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }" {
+    blogUcDeltaApiClient -> blogUcDeltaApiServer "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }" {
       notes '''
         **Ask for a ratify.** The client asks the catalog to accept the staged
         commit. The **requirements** are safety guards — *"only if the table
@@ -148,14 +118,14 @@ views {
         catalog is the referee: it approves at most one commit per version.
       '''
     }
-    server -> client "ratified — loadTable with the new commit" {
+    blogUcDeltaApiServer -> blogUcDeltaApiClient "ratified — loadTable with the new commit" {
       notes '''
         **Accepted.** The catalog ratified the commit: it's now the official
         version, even though the file still lives in `_staged_commits`. The
         catalog returns the updated table state, including the new etag.
       '''
     }
-    client -> storage "publish _delta_log/<v>.json (vended credential)" {
+    blogUcDeltaApiClient -> blogUcDeltaApiStorage "publish _delta_log/<v>.json (vended credential)" {
       notes '''
         **Publish.** As a final tidy-up, the client copies the ratified staged
         file to its permanent name, `_delta_log/<v>.json`. Now a plain

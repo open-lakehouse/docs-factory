@@ -46,9 +46,9 @@ decision must preserve — they are the real asset, not the SSG:
 Also relevant:
 - The **live in-browser Delta+DataFusion query engine already exists** as
   `deltalake-wasm` (`../delta-rs/crates/wasm`), consumed by mangrove
-  (`@open-lakehouse/query`) for UC table previews; `axon` is a self-contained
-  browser query workbench. A future log explorer / query playground is *real*, not
-  hypothetical — reason to keep the door open, not to build it now.
+  (`@open-lakehouse/query`) for UC table previews. A future log explorer / query
+  playground is *real*, not hypothetical — reason to keep the door open, not to
+  build it now.
 - The `<Tabs>`/`<TabItem>` engine-tab pattern is already used in
   `content/delta/how-to/read-a-delta-table.mdx` — the existing "island" precedent.
 - The feature-matrix data source is the coverage backlog

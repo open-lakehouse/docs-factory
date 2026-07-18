@@ -6,10 +6,10 @@ helper to materialize the table, then reads it through Spark.
 
 
 def read_delta_table(spark, path: str) -> None:
-    # docs-read-delta-table-start
+    # --8<-- [start:read-delta-table]
     df = spark.read.format("delta").load(path)
     df.show(5)
-    # docs-read-delta-table-end
+    # --8<-- [end:read-delta-table]
 
 
 if __name__ == "__main__":

@@ -1,14 +1,14 @@
-# docs-list_schemas-start
+# --8<-- [start:list_schemas]
 from unitycatalog_client import UnityCatalogClient
 
 client = UnityCatalogClient(base_url="http://localhost:8080")
 schemas = client.list_schemas("my_catalog")
 for schema in schemas:
     print(schema.name)
-# docs-list_schemas-end
+# --8<-- [end:list_schemas]
 
 
-# docs-create_schema-start
+# --8<-- [start:create_schema]
 def create_schema_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -17,10 +17,10 @@ def create_schema_example() -> None:
     print(f"Created: {schema.catalog_name}.{schema.name}")
 
 
-# docs-create_schema-end
+# --8<-- [end:create_schema]
 
 
-# docs-get_schema-start
+# --8<-- [start:get_schema]
 def get_schema_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -29,10 +29,10 @@ def get_schema_example() -> None:
     print(f"Got: {schema.catalog_name}.{schema.name}")
 
 
-# docs-get_schema-end
+# --8<-- [end:get_schema]
 
 
-# docs-update_schema-start
+# --8<-- [start:update_schema]
 def update_schema_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -41,10 +41,10 @@ def update_schema_example() -> None:
     print(f"Updated: {schema.catalog_name}.{schema.name}")
 
 
-# docs-update_schema-end
+# --8<-- [end:update_schema]
 
 
-# docs-delete_schema-start
+# --8<-- [start:delete_schema]
 def delete_schema_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -53,4 +53,4 @@ def delete_schema_example() -> None:
     print("Deleted schema")
 
 
-# docs-delete_schema-end
+# --8<-- [end:delete_schema]

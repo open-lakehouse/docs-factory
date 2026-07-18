@@ -1,6 +1,6 @@
 use unitycatalog_client::UnityCatalogClient;
 
-// docs-list_registered_models-start
+// --8<-- [start:list_registered_models]
 pub async fn list_registered_models_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let response = client
@@ -13,9 +13,9 @@ pub async fn list_registered_models_example(base_url: url::Url) {
         println!("{}", model.name);
     }
 }
-// docs-list_registered_models-end
+// --8<-- [end:list_registered_models]
 
-// docs-create_registered_model-start
+// --8<-- [start:create_registered_model]
 pub async fn create_registered_model_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let model = client
@@ -25,9 +25,9 @@ pub async fn create_registered_model_example(base_url: url::Url) {
         .unwrap();
     println!("Created: {}", model.full_name);
 }
-// docs-create_registered_model-end
+// --8<-- [end:create_registered_model]
 
-// docs-get_registered_model-start
+// --8<-- [start:get_registered_model]
 pub async fn get_registered_model_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let model = client
@@ -37,9 +37,9 @@ pub async fn get_registered_model_example(base_url: url::Url) {
         .unwrap();
     println!("Got: {}", model.name);
 }
-// docs-get_registered_model-end
+// --8<-- [end:get_registered_model]
 
-// docs-create_model_version-start
+// --8<-- [start:create_model_version]
 pub async fn create_model_version_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     // A new version starts in PENDING_REGISTRATION. Write your artifacts to the
@@ -55,9 +55,9 @@ pub async fn create_model_version_example(base_url: url::Url) {
         .unwrap();
     println!("Created version {}", version.version);
 }
-// docs-create_model_version-end
+// --8<-- [end:create_model_version]
 
-// docs-finalize_model_version-start
+// --8<-- [start:finalize_model_version]
 pub async fn finalize_model_version_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     // Once all artifacts are written, finalize to transition the version to READY.
@@ -70,9 +70,9 @@ pub async fn finalize_model_version_example(base_url: url::Url) {
         version.version, version.status
     );
 }
-// docs-finalize_model_version-end
+// --8<-- [end:finalize_model_version]
 
-// docs-list_model_versions-start
+// --8<-- [start:list_model_versions]
 pub async fn list_model_versions_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let response = client
@@ -83,4 +83,4 @@ pub async fn list_model_versions_example(base_url: url::Url) {
         println!("version {}", version.version);
     }
 }
-// docs-list_model_versions-end
+// --8<-- [end:list_model_versions]

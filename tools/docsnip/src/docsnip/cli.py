@@ -18,7 +18,7 @@ from pathlib import Path
 
 from . import llmstxt, manifest
 from .blog import iter_blog_drafts, load_tag_registry, validate_blog
-from .frontmatter import iter_pages, validate
+from .frontmatter import iter_pages, load_model_element_ids, validate
 from .snippetcheck import check_blogs, check_content
 
 # Per-project published-site URL base for llms.txt links. Placeholder until the
@@ -41,13 +41,15 @@ def _paths(root: Path | None):
         "blogs": root / "blogs",
         "examples": root / "examples",
         "artifacts": root / "site-artifacts",
+        "arch_model": root / "architecture" / "dist" / "model.json",
     }
 
 
 def cmd_validate(p) -> int:
     errors: list[str] = []
+    model_ids = load_model_element_ids(p["arch_model"])
     for page in iter_pages(p["content"]):
-        errors.extend(validate(page))
+        errors.extend(validate(page, model_ids))
     known_tags = load_tag_registry(p["blogs"])
     for page in iter_blog_drafts(p["blogs"]):
         errors.extend(validate_blog(page, known_tags))

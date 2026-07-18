@@ -1,6 +1,6 @@
 // LOGICAL LAYER — the zero-trust governance decomposition.
 //
-// The governance capability (declared in landscape.likec4) is extended here with
+// The governance capability (declared in capabilities.likec4) is extended here with
 // the NIST 800-207 access-control points as first-class roles. These are logical:
 // WHICH concrete service plays each point is a deployment fact and varies by
 // topology. See deployments.likec4.

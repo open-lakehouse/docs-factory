@@ -1,13 +1,10 @@
 // content.ts — discover builder-agnostic sources and expose them to the app.
-//
-// THROWAWAY LENS. Reads content in place via import.meta.glob; nothing is copied
-// and no source file is ever edited. Two areas today:
-//   blogs/  — narrative posts (blogs/*/draft.md)
-//   docs/   — Diátaxis reference content (content/<project>/<bucket>/*.{md,mdx})
-
 import type { ComponentType } from "react";
+import {
+  parseDocPath,
+  slugFromBlogPath,
+} from "./lib/content-source";
 
-/** Shared YAML front matter — every field optional; the content owns the contract. */
 export interface Frontmatter {
   title?: string;
   slug?: string;
@@ -21,22 +18,17 @@ export interface Frontmatter {
   diataxis?: string;
   project?: string;
   summary?: string;
+  references?: string[];
   [key: string]: unknown;
 }
 
 export interface ContentPage {
-  /** Content area: "blogs" or "docs". */
   area: "blogs" | "docs";
-  /** Folder slug for blogs; page slug for docs. */
   slug: string;
-  /** Docs-only routing segments. */
   project?: string;
   bucket?: string;
-  /** Parsed front matter from the YAML block. */
   frontmatter: Frontmatter;
-  /** Compiled MDX/MD component. */
   Component: ComponentType;
-  /** Route path for react-router. */
   href: string;
 }
 
@@ -45,29 +37,11 @@ interface MdxModule {
   frontmatter?: Frontmatter;
 }
 
-const blogModules = import.meta.glob<MdxModule>("../../blogs/*/draft.md", {
-  eager: true,
-});
-
+const blogModules = import.meta.glob<MdxModule>("../../blogs/*/draft.md", { eager: true });
 const docModules = import.meta.glob<MdxModule>(
   "../../content/{delta,unitycatalog}/**/*.{md,mdx}",
   { eager: true },
 );
-
-function slugFromBlogPath(path: string): string {
-  const parts = path.split("/");
-  return parts[parts.length - 2] ?? path;
-}
-
-function parseDocPath(path: string): { project: string; bucket: string; slug: string } {
-  const parts = path.split("/");
-  const filename = parts[parts.length - 1] ?? "";
-  return {
-    project: parts[parts.length - 3] ?? "",
-    bucket: parts[parts.length - 2] ?? "",
-    slug: filename.replace(/\.mdx?$/, ""),
-  };
-}
 
 const blogPages: ContentPage[] = Object.entries(blogModules).map(([path, mod]) => {
   const slug = slugFromBlogPath(path);
@@ -95,7 +69,6 @@ const docPages: ContentPage[] = Object.entries(docModules)
     };
   });
 
-/** All discovered pages, sorted by area then slug. */
 export const pages: ContentPage[] = [...blogPages, ...docPages].sort((a, b) => {
   if (a.area !== b.area) return a.area.localeCompare(b.area);
   if (a.project !== b.project) return (a.project ?? "").localeCompare(b.project ?? "");
@@ -103,8 +76,10 @@ export const pages: ContentPage[] = [...blogPages, ...docPages].sort((a, b) => {
   return a.slug.localeCompare(b.slug);
 });
 
-export const blogPosts = blogPages.sort(
-  (a, b) => (b.frontmatter.date ?? "").localeCompare(a.frontmatter.date ?? "") || a.slug.localeCompare(b.slug),
+export const blogPosts = [...blogPages].sort(
+  (a, b) =>
+    (b.frontmatter.date ?? "").localeCompare(a.frontmatter.date ?? "") ||
+    a.slug.localeCompare(b.slug),
 );
 
 export const docs = docPages;
@@ -122,7 +97,6 @@ export interface BlogSeriesGroup {
   posts: ContentPage[];
 }
 
-/** Blog posts grouped by series; standalone posts last. */
 export function blogsBySeries(): { series: BlogSeriesGroup[]; standalone: ContentPage[] } {
   const seriesMap = new Map<string, ContentPage[]>();
   const standalone: ContentPage[] = [];
@@ -141,7 +115,7 @@ export function blogsBySeries(): { series: BlogSeriesGroup[]; standalone: Conten
   const series: BlogSeriesGroup[] = [...seriesMap.entries()]
     .map(([name, posts]) => ({
       series: name,
-      posts: posts.sort(
+      posts: [...posts].sort(
         (a, b) =>
           (a.frontmatter.series_order ?? 0) - (b.frontmatter.series_order ?? 0) ||
           (b.frontmatter.date ?? "").localeCompare(a.frontmatter.date ?? ""),
@@ -152,7 +126,6 @@ export function blogsBySeries(): { series: BlogSeriesGroup[]; standalone: Conten
   return { series, standalone };
 }
 
-/** All unique blog tags across posts, sorted. */
 export function blogTags(): string[] {
   const tags = new Set<string>();
   for (const post of blogPosts) {
@@ -170,7 +143,6 @@ export function blogNeighbors(slug: string): { prev?: ContentPage; next?: Conten
   };
 }
 
-/** Rough reading time from plain text (words / 200 wpm). */
 export function readingTimeMinutes(text: string): number {
   const words = text.trim().split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.ceil(words / 200));

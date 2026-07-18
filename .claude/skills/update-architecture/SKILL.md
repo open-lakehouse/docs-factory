@@ -49,7 +49,9 @@ With no args, do a full reconciliation pass across all modeled repos.
 ## Phase 1 — Load current truth
 
 - Read `architecture/canonicals.yaml` (element → design-doc → source-repo registry).
-- Read the `architecture/model/*.likec4` files — the current model.
+- Read the `architecture/model/**/*.likec4` files — the current model (grouped
+  under `logical/`, `deployment/`, `views/`, with shared `specification.likec4` +
+  `globals.likec4` at the root).
 - Optionally read `architecture/dist/model.json` for a resolved view of elements
   and relationships.
 
@@ -70,14 +72,20 @@ For the affected repo(s) (from `--repo`, `--summary`, or all in a full pass):
 
 Decide the layer first, then map to the owning file and draft a **minimal** diff:
 
+Files are grouped by layer under `model/`: `logical/`, `deployment/`, `views/`,
+with `specification.likec4` + `globals.likec4` shared at the root. (LikeC4
+discovers `**/*.likec4` recursively, so location is organization only.)
+
 | Change | Owning file |
 |---|---|
-| New/changed abstract **capability** or OSS foundation / format | `model/landscape.likec4` |
-| New/changed **governance role** or zero-trust edge | `model/governance.likec4` |
-| Capability-chain / realizes / vends / reads edge | `model/relationships.likec4` |
-| New/changed **service, gateway, topology**, or `instanceOf` | `model/deployments.likec4` |
+| New/changed abstract **capability** | `model/logical/capabilities.likec4` |
+| New/changed **specification** or **implementation** (OSS tech) | `model/logical/technology-catalog.likec4` |
+| New/changed **governance role** or zero-trust edge | `model/logical/governance.likec4` |
+| New/changed **asset kind** (securable) or requires/governs edge | `model/logical/assets.likec4` |
+| Capability-chain / realizes / vends / reads edge | `model/logical/relationships.likec4` |
+| New/changed **service, gateway, topology**, or `instanceOf` | `model/deployment/deployments.likec4` |
 | New element / deploymentNode / relationship kind, or tag | `model/specification.likec4` |
-| New logical / deployment / dynamic **view** | `model/views.likec4` / `deployment-views.likec4` / `flows.likec4` |
+| New logical / deployment / dynamic **view** | `model/views/logical-views.likec4` / `deployment-views.likec4` / `flows.likec4` |
 
 - A new **service** goes in `deployments.likec4` as a `service` (or `gateway` /
   `browser` / `datastore`) node inside the right topology, with `metadata` +

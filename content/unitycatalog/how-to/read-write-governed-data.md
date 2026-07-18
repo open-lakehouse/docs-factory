@@ -4,51 +4,10 @@ summary: Use the unitycatalog-object-store Rust crate (and its Python obstore in
 diataxis: how-to
 project: unitycatalog
 engines: [python, rust]
-snippets:
-  - file: ../../../examples/rust/src/object_store.rs
-    start: docs-object_store_factory-start
-    end: docs-object_store_factory-end
-    engine: rust
-  - file: ../../../examples/python/object_store.py
-    start: docs-object_store_client-start
-    end: docs-object_store_client-end
-    engine: python
-  - file: ../../../examples/python/object_store.py
-    start: docs-object_store_for_url-start
-    end: docs-object_store_for_url-end
-    engine: python
-  - file: ../../../examples/rust/src/object_store.rs
-    start: docs-object_store_for_url-start
-    end: docs-object_store_for_url-end
-    engine: rust
-  - file: ../../../examples/python/object_store.py
-    start: docs-object_store_for_volume-start
-    end: docs-object_store_for_volume-end
-    engine: python
-  - file: ../../../examples/rust/src/object_store.rs
-    start: docs-object_store_for_volume-start
-    end: docs-object_store_for_volume-end
-    engine: rust
-  - file: ../../../examples/python/object_store.py
-    start: docs-object_store_for_table-start
-    end: docs-object_store_for_table-end
-    engine: python
-  - file: ../../../examples/rust/src/object_store.rs
-    start: docs-object_store_for_table-start
-    end: docs-object_store_for_table-end
-    engine: rust
-  - file: ../../../examples/rust/src/object_store.rs
-    start: docs-object_store_for_path-start
-    end: docs-object_store_for_path-end
-    engine: rust
-  - file: ../../../examples/rust/src/object_store.rs
-    start: docs-object_store_datafusion-start
-    end: docs-object_store_datafusion-end
-    engine: rust
-  - file: ../../../examples/python/object_store.py
-    start: docs-object_store_duckdb-start
-    end: docs-object_store_duckdb-end
-    engine: python
+references:
+  - ucSpec
+  - unityCatalogOSS
+  - s3Api
 status: draft
 ---
 
@@ -90,14 +49,14 @@ equivalent is a `TemporaryCredentialClient`.
 
 :::tab[Python]
 
-```python file=../../../examples/python/object_store.py start=docs-object_store_client-start end=docs-object_store_client-end
+```python file=../../../examples/python/object_store.py start=start:object_store_client end=end:object_store_client
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_factory-start end=docs-object_store_factory-end
+```rust file=../../../examples/rust/src/object_store.rs start=start:object_store_factory end=end:object_store_factory
 ```
 
 :::
@@ -113,14 +72,14 @@ scheme.
 
 :::tab[Python]
 
-```python file=../../../examples/python/object_store.py start=docs-object_store_for_url-start end=docs-object_store_for_url-end
+```python file=../../../examples/python/object_store.py start=start:object_store_for_url end=end:object_store_for_url
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_for_url-start end=docs-object_store_for_url-end
+```rust file=../../../examples/rust/src/object_store.rs start=start:object_store_for_url end=end:object_store_for_url
 ```
 
 :::
@@ -138,14 +97,14 @@ the same `UCStore` / `obstore` store as `for_url` and skip the URL parser.
 
 :::tab[Python]
 
-```python file=../../../examples/python/object_store.py start=docs-object_store_for_volume-start end=docs-object_store_for_volume-end
+```python file=../../../examples/python/object_store.py start=start:object_store_for_volume end=end:object_store_for_volume
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_for_volume-start end=docs-object_store_for_volume-end
+```rust file=../../../examples/rust/src/object_store.rs start=start:object_store_for_volume end=end:object_store_for_volume
 ```
 
 :::
@@ -158,14 +117,14 @@ the same `UCStore` / `obstore` store as `for_url` and skip the URL parser.
 
 :::tab[Python]
 
-```python file=../../../examples/python/object_store.py start=docs-object_store_for_table-start end=docs-object_store_for_table-end
+```python file=../../../examples/python/object_store.py start=start:object_store_for_table end=end:object_store_for_table
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_for_table-start end=docs-object_store_for_table-end
+```rust file=../../../examples/rust/src/object_store.rs start=start:object_store_for_table end=end:object_store_for_table
 ```
 
 :::
@@ -176,7 +135,7 @@ the same `UCStore` / `obstore` store as `for_url` and skip the URL parser.
 
 The typed path accessor is available in the Rust crate.
 
-```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_for_path-start end=docs-object_store_for_path-end
+```rust file=../../../examples/rust/src/object_store.rs start=start:object_store_for_path end=end:object_store_for_path
 ```
 
 ## DataFusion
@@ -184,7 +143,7 @@ The typed path accessor is available in the Rust crate.
 Register a UC-backed store with DataFusion's `RuntimeEnv` so SQL queries that
 reference cloud URLs transparently flow through Unity Catalog.
 
-```rust file=../../../examples/rust/src/object_store.rs start=docs-object_store_datafusion-start end=docs-object_store_datafusion-end
+```rust file=../../../examples/rust/src/object_store.rs start=start:object_store_datafusion end=end:object_store_datafusion
 ```
 
 ## DuckDB
@@ -192,7 +151,7 @@ reference cloud URLs transparently flow through Unity Catalog.
 You can also bridge the vended credentials into DuckDB's `httpfs` extension by
 hand.
 
-```python file=../../../examples/python/object_store.py start=docs-object_store_duckdb-start end=docs-object_store_duckdb-end
+```python file=../../../examples/python/object_store.py start=start:object_store_duckdb end=end:object_store_duckdb
 ```
 
 ## Credential lifecycle

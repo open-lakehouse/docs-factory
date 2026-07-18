@@ -18,12 +18,23 @@ Examples are organized by engine:
 
 ## Region markers
 
-Each example wraps the shown code in comment markers, e.g.
-`# docs-read-delta-table-start` / `# docs-read-delta-table-end`. Seeding, test
+Each example wraps the shown code in mkdocs-style region markers, e.g.
+`# --8<-- [start:read-delta-table]` / `# --8<-- [end:read-delta-table]`
+(`//` instead of `#` in Rust/TypeScript). This is the same convention blogs use,
+so docs, blogs, and examples share one snippet-resolution path. Seeding, test
 wrappers, and asserts live *outside* the markers so they run in CI but don't
 appear in the published snippet — except the `seed_dataset(...)` line for
 examples that read pre-existing data, which stays inside so the snippet is
 runnable as shown.
+
+Pages reference a region with an empty fence, using the bracketed marker token:
+
+    ```python file=../../examples/python/read_delta_table.py start=start:read-delta-table end=end:read-delta-table
+    ```
+
+The `start:`/`end:` prefixes are required (not the bare region name): the
+resolver matches markers by substring and enforces uniqueness, and the bare
+region name would match both marker lines.
 
 ## Running
 

@@ -11,25 +11,19 @@ prerequisites:
     polars: [polars]
     duckdb: [duckdb]
   datasets: [orders]
-snippets:
-  - file: ../../../examples/python/read_delta_table.py
-    start: docs-read-delta-table-start
-    end: docs-read-delta-table-end
-    engine: python
-  - file: ../../../examples/polars/read_delta_table.py
-    start: docs-read-delta-table-start
-    end: docs-read-delta-table-end
-    engine: polars
-  - file: ../../../examples/duckdb/read_delta_table.py
-    start: docs-read-delta-table-start
-    end: docs-read-delta-table-end
-    engine: duckdb
+references:
+  - deltaSpec
+  - deltaRs
+  - polars
+  - duckdb
 status: published
 ---
 
 Reading a Delta table means loading its current version into an in-memory
-dataframe. Delta is an open table format, so many engines can read the same
-table — pick the one that fits your stack.
+dataframe. [Delta Lake](model:deltaSpec) is an open table format, so many
+engines can read the same table — pick the one that fits your stack. The tabs
+below use [delta-rs](model:deltaRs) (via its `deltalake` Python package),
+[Polars](model:polars), and [DuckDB](model:duckdb).
 
 The examples below all read the `orders` sample table. To create it locally,
 first bootstrap the data (this is the same table our CI reads):
@@ -43,21 +37,21 @@ docs-factory-seed orders   # prints the table path
 
 :::tab[Python (deltalake)]
 
-```python file=../../../examples/python/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
+```python file=../../../examples/python/read_delta_table.py start=start:read-delta-table end=end:read-delta-table
 ```
 
 :::
 
 :::tab[Polars]
 
-```python file=../../../examples/polars/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
+```python file=../../../examples/polars/read_delta_table.py start=start:read-delta-table end=end:read-delta-table
 ```
 
 :::
 
 :::tab[DuckDB]
 
-```python file=../../../examples/duckdb/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
+```python file=../../../examples/duckdb/read_delta_table.py start=start:read-delta-table end=end:read-delta-table
 ```
 
 :::

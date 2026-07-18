@@ -1,0 +1,102 @@
+// LOGICAL views — the abstract reference lakehouse and its governance model.
+// Deployment (concrete) views live in deployment-views.likec4; flows in flows.likec4.
+
+views {
+
+  // --- The reference lakehouse in context ----------------------------------
+  view referenceContext {
+    title "Reference Open Lakehouse — context"
+    description "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping)."
+
+    include
+      practitioner,
+      platformEngineer,
+      agent,
+    // expand the lakehouse into its capabilities
+      lakehouse,
+      lakehouse.*,
+
+    // the zero-trust roles + governed asset kinds get their own views
+    exclude lakehouse.governance.*
+    exclude element.kind == asset
+    autoLayout LeftRight
+  }
+
+  // --- Technology catalog: capabilities <- specifications <- implementations
+  view technologyCatalog {
+    title "Technology catalog — capabilities, specifications, implementations"
+    description "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #infra) is intrinsic; running instances live in the deployment views."
+
+    include
+      lakehouse.*,
+    // specifications (the open standards / APIs)
+      deltaSpec,
+      icebergSpec,
+      ucSpec,
+      icebergRestSpec,
+      openSharingSpec,
+      parquetSpec,
+      s3Api,
+    // implementations (concrete software)
+      datafusion,
+      apacheSpark,
+      lakekeeper,
+      unityCatalogOSS,
+      minio,
+      mlflow,
+      omnigent,
+
+    exclude lakehouse.governance.*
+    exclude element.kind == asset
+    autoLayout LeftRight
+  }
+
+  // --- Capability map: inside the lakehouse --------------------------------
+  view capabilityMap of lakehouse {
+    title "Reference Open Lakehouse — capabilities"
+    description "The capability chain: query engine -> catalog -> table format -> file format -> object storage, with governance, lineage, and observability attaching at planning time. Delta & Iceberg are peer specifications of the table-format capability."
+
+    include *
+
+    // collapse the governance roles + asset kinds here (own views)
+    exclude lakehouse.governance.*
+    exclude element.kind == asset
+    autoLayout LeftRight
+  }
+
+  // --- Governed asset kinds: catalog breadth (the hero view) ---------------
+  view assetGovernanceBreadth {
+    title "Governed asset kinds — catalog breadth"
+    description "Which asset kinds (UC 'securables') each catalog specification governs. Unity Catalog governs the full data & AI set (tables, volumes, functions, models, agent skills); the Iceberg REST catalog is table-centric (namespaces + tables). The breadth gap is a structural property of the model, not prose."
+
+    include
+      ucSpec,
+      icebergRestSpec,
+      lakehouse,
+      element.kind == asset
+    autoLayout LeftRight
+  }
+
+  // --- Governed asset kinds: capabilities required to manage them -----------
+  view assetCapabilities {
+    title "Governed asset kinds — capabilities required"
+    description "What a platform must be able to do to manage each asset kind. Every kind requires the catalog to be a governed securable; domain capabilities materialize each kind (a table needs a table format + query engine; a volume needs object storage; a model needs model tracking)."
+
+    include
+      lakehouse,
+      lakehouse.*,
+      element.kind == asset
+
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  // --- The zero-trust governance decomposition -----------------------------
+  view governanceModel of lakehouse.governance {
+    title "Governance — zero-trust decomposition (PAP / PDP / PEP / PIP / PA)"
+    description "The logical access-control points and how they relate. WHICH service plays each point is a deployment fact (see the deployment views). Amber = designed, not built."
+
+    include *
+    autoLayout LeftRight
+  }
+}

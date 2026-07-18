@@ -38,9 +38,16 @@ interface ShellProps {
   showSidebarToggle?: boolean;
   /** Wider layout without the default content max-width (landing, indexes). */
   wide?: boolean;
+  /** Per-project accent: delta | unitycatalog */
+  accent?: "delta" | "unitycatalog";
 }
 
-export default function Shell({ children, showSidebarToggle = false, wide = false }: ShellProps) {
+export default function Shell({
+  children,
+  showSidebarToggle = false,
+  wide = false,
+  accent,
+}: ShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -51,7 +58,7 @@ export default function Shell({ children, showSidebarToggle = false, wide = fals
         toggleMobile: () => setMobileOpen((o) => !o),
       }}
     >
-      <div className="shell">
+      <div className="shell" data-accent={accent}>
         <header className="topbar">
           {showSidebarToggle && (
             <button
@@ -67,7 +74,7 @@ export default function Shell({ children, showSidebarToggle = false, wide = fals
             </button>
           )}
           <Link to="/" className="brand">
-            Open Lakehouse
+            ~/open-lakehouse
             <span className="brand-tag">preview</span>
           </Link>
           <nav className="topnav">
@@ -82,6 +89,12 @@ export default function Shell({ children, showSidebarToggle = false, wide = fals
               className={({ isActive }) => (isActive ? "active" : undefined)}
             >
               Blog
+            </NavLink>
+            <NavLink
+              to="/explain"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
+              Explain
             </NavLink>
           </nav>
           <ThemeToggle />

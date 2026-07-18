@@ -1,0 +1,195 @@
+// LOGICAL LAYER (concrete technology) — the technology catalog.
+//
+// Concrete technology mapped onto the reference architecture (see ADR-0005).
+// Still the LOGICAL layer: these are third-party specs/software, NOT our repos
+// (our services live in the deployment layer). A `specification` is an open
+// standard / API (no compute); it `specifies` the capability it defines. An
+// `implementation` is concrete software; it either `implements` a specification
+// or `realizes` a capability directly (query engines have no shared spec).
+// Compute posture is an optional #service / #library / #infra marker; running
+// instances live in the deployment layer.
+//
+// This is a first, deliberately shallow set of examples of the typing — not an
+// exhaustive catalog. It grows as content references more of it. The abstract
+// capabilities these map onto live in capabilities.likec4.
+//
+// Icons are the official project marks, referenced by a commit-pinned raw URL.
+// A remote URL (not a local file) is deliberate: the committed, portable
+// dist/model.json is browser-consumed, and LikeC4's JSON export serializes a
+// local icon as an absolute file:// path (unloadable in a browser). The pin
+// guards against upstream artwork moving.
+
+model {
+
+  // Table-format specifications ---------------------------------------------
+  deltaSpec = openSpecification "Delta Lake" {
+    description "Open table-format specification: ACID transactions, schema evolution, and time travel over object storage."
+    link https://delta.io
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg
+    }
+  }
+  deltaSpec -[specifies]-> lakehouse.tableFormat "specifies the table-format capability"
+
+  icebergSpec = openSpecification "Apache Iceberg" {
+    description "Open table-format specification for huge analytic datasets, with hidden partitioning and snapshot isolation."
+    link https://iceberg.apache.org
+    style {
+      icon https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png
+    }
+  }
+  icebergSpec -[specifies]-> lakehouse.tableFormat "specifies the table-format capability"
+
+  // Catalog specifications ---------------------------------------------------
+  ucSpec = openSpecification "Unity Catalog" {
+    description "Open catalog specification for data & AI — a REST API governing tables, files, functions, and models across engines."
+    link https://www.unitycatalog.io
+    metadata { explainDoc "explain/unity-catalog.md" }
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+    }
+  }
+  ucSpec -[specifies]-> lakehouse.catalog "specifies the catalog capability"
+
+  icebergRestSpec = openSpecification "Iceberg REST Catalog" {
+    description "Open REST specification for an Iceberg catalog — the API engines use to resolve and commit Iceberg tables."
+    link https://iceberg.apache.org/concepts/catalog/
+  }
+  icebergRestSpec -[specifies]-> lakehouse.catalog "specifies the catalog capability"
+
+  // Sharing specification ----------------------------------------------------
+  // "Open Sharing" is the open profile of the Delta Sharing protocol: a recipient
+  // holding a credential file reads shared assets live, cross-platform, with no
+  // shared catalog — and the same surface can vend new resource kinds.
+  openSharingSpec = openSpecification "Open Sharing" {
+    description "Open profile of the Delta Sharing protocol — a credential-file recipient reads shared assets live, cross-platform, without a shared catalog. Also a generic surface for new resource kinds (e.g. agent skills)."
+    link https://delta.io/sharing/
+  }
+  openSharingSpec -[specifies]-> lakehouse.sharing "specifies the sharing capability"
+
+  // File-format specification ------------------------------------------------
+  parquetSpec = openSpecification "Apache Parquet" {
+    description "Open columnar file-format specification — the dominant on-disk encoding for analytic table data."
+    link https://parquet.apache.org
+  }
+  parquetSpec -[specifies]-> lakehouse.fileFormat "specifies the file-format capability"
+
+  // Object-storage interface — the canonical infrastructure example (ADR-0005).
+  s3Api = openSpecification "S3 API" {
+    description "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement — the seam between the lakehouse and infrastructure."
+    link https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html
+  }
+  s3Api -[specifies]-> lakehouse.objectStorage "specifies the object-storage capability"
+
+  // Query-engine implementations — no shared spec, so they realize directly.
+  datafusion = implementation "Apache DataFusion" {
+    #library
+    description "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
+    link https://datafusion.apache.org
+    style {
+      icon https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg
+    }
+  }
+  datafusion -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  datafusion -[consumes]-> s3Api "reads data files via"
+
+  apacheSpark = implementation "Apache Spark" {
+    #service
+    description "Unified analytics engine for large-scale data processing."
+    link https://spark.apache.org
+    style {
+      // Spark ships no square icon mark — this is the official (wide) wordmark.
+      icon https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png
+    }
+  }
+  apacheSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  apacheSpark -[consumes]-> icebergRestSpec "resolves Iceberg tables via"
+
+  // Delta implementations ----------------------------------------------------
+  // Concrete software that implements the Delta table-format spec (delta-rs,
+  // Delta Spark) or reads Delta tables through an embedded reader (DuckDB,
+  // Polars). These are what the multi-language examples actually exercise, so
+  // content pages tag their snippets with these ids (via `references:`).
+  deltaRs = implementation "delta-rs" {
+    #library
+    description "Native Rust implementation of the Delta protocol with a Python binding (the `deltalake` package). Reads and writes Delta tables without a JVM."
+    link https://delta-io.github.io/delta-rs/
+  }
+  deltaRs -[implements]-> deltaSpec "implements"
+  deltaRs -[consumes]-> s3Api "reads/writes data files via"
+
+  deltaSpark = implementation "Delta Spark" {
+    #service
+    description "The reference Delta connector for Apache Spark (`io.delta:delta-spark`) — the JVM path for reading and writing Delta tables."
+    link https://docs.delta.io
+  }
+  deltaSpark -[implements]-> deltaSpec "implements"
+  deltaSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+
+  duckdb = implementation "DuckDB" {
+    #library
+    description "In-process analytical SQL engine; reads Delta tables via its `delta` extension."
+    link https://duckdb.org
+  }
+  duckdb -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  duckdb -[consumes]-> deltaSpec "reads Delta tables via"
+
+  polars = implementation "Polars" {
+    #library
+    description "Fast DataFrame library written in Rust with a Python API; reads and writes Delta via delta-rs."
+    link https://pola.rs
+  }
+  polars -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  polars -[consumes]-> deltaRs "reads/writes Delta via"
+
+  // Catalog implementations --------------------------------------------------
+  lakekeeper = implementation "Lakekeeper" {
+    #service
+    description "Apache-licensed, Rust-native catalog server implementing the Iceberg REST Catalog specification."
+    link https://lakekeeper.io
+    style {
+      icon https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg
+    }
+  }
+  lakekeeper -[implements]-> icebergRestSpec "implements"
+
+  unityCatalogOSS = implementation "Unity Catalog (OSS)" {
+    #service
+    description "The open-source reference server implementing the Unity Catalog specification."
+    link https://github.com/unitycatalog/unitycatalog
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+    }
+  }
+  unityCatalogOSS -[implements]-> ucSpec "implements"
+
+  // Object-storage implementation (infra) ------------------------------------
+  minio = implementation "MinIO" {
+    #infra
+    description "S3-compatible object storage you can self-host — an implementation of the S3 API."
+    link https://min.io
+  }
+  minio -[implements]-> s3Api "implements"
+
+  // Model-tracking implementation --------------------------------------------
+  mlflow = implementation "MLflow" {
+    #service
+    description "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
+    link https://mlflow.org
+    style {
+      icon https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg
+    }
+  }
+  mlflow -[realizes]-> lakehouse.modelTracking "realizes the model-tracking capability"
+
+  // Omnigent — Databricks' Apache-2.0 AI-agent meta-harness. Deliberately has NO
+  // capability edge: it is agent tooling, not a lakehouse capability.
+  omnigent = implementation "Omnigent" {
+    #service
+    description "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
+    link https://omnigent.ai
+    style {
+      icon https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg
+    }
+  }
+}

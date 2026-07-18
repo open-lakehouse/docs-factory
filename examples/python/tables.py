@@ -1,14 +1,14 @@
-# docs-list_tables-start
+# --8<-- [start:list_tables]
 from unitycatalog_client import UnityCatalogClient
 
 client = UnityCatalogClient(base_url="http://localhost:8080")
 tables = client.list_tables("my_catalog", "my_schema")
 for table in tables:
     print(table.name)
-# docs-list_tables-end
+# --8<-- [end:list_tables]
 
 
-# docs-create_table-start
+# --8<-- [start:create_table]
 def create_table_example() -> None:
     from unitycatalog_client import DataSourceFormat, TableType, UnityCatalogClient
 
@@ -24,10 +24,10 @@ def create_table_example() -> None:
     print(f"Created: {table.name}")
 
 
-# docs-create_table-end
+# --8<-- [end:create_table]
 
 
-# docs-get_table-start
+# --8<-- [start:get_table]
 def get_table_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -36,10 +36,10 @@ def get_table_example() -> None:
     print(f"Got: {table.name}")
 
 
-# docs-get_table-end
+# --8<-- [end:get_table]
 
 
-# docs-delete_table-start
+# --8<-- [start:delete_table]
 def delete_table_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -48,4 +48,4 @@ def delete_table_example() -> None:
     print("Deleted table")
 
 
-# docs-delete_table-end
+# --8<-- [end:delete_table]

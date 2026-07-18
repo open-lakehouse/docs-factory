@@ -9,18 +9,16 @@ prerequisites:
   packages:
     python: [deltalake, docs-factory-seed]
   datasets: [orders]
-snippets:
-  - file: ../../../examples/python/time_travel_read.py
-    start: docs-time-travel-read-start
-    end: docs-time-travel-read-end
-    engine: python
+references:
+  - deltaSpec
+  - deltaRs
 status: published
 ---
 
-Every write to a Delta table produces a new **version**. Delta keeps the history,
-so you can read the table exactly as it was at an earlier version — this is
-called **time travel**. It's useful for reproducing a report, auditing a change,
-or rolling back.
+Every write to a [Delta](model:deltaSpec) table produces a new **version**. Delta
+keeps the history, so you can read the table exactly as it was at an earlier
+version — this is called **time travel**. It's useful for reproducing a report,
+auditing a change, or rolling back.
 
 The snippet below reads a table that already has history. The first line seeds
 that history so the example runs as shown — the same one-liner our CI uses, so
@@ -28,7 +26,7 @@ what you copy is what we test.
 
 ## Python (deltalake)
 
-```python file=../../../examples/python/time_travel_read.py start=docs-time-travel-read-start end=docs-time-travel-read-end
+```python file=../../../examples/python/time_travel_read.py start=start:time-travel-read end=end:time-travel-read
 ```
 
 `DeltaTable(path, version=0)` opens the first commit; omitting `version` opens the

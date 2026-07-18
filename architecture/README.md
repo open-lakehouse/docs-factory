@@ -35,9 +35,9 @@ this model. If it's a fact about how the software is *structured*, it lives here
 architecture/
   model/
     specification.likec4      # element/deploymentNode/relationship kinds, tags
-    landscape.likec4          # LOGICAL: capabilities + people + OSS foundations
+    landscape.likec4          # LOGICAL: capabilities + people + specs/implementations
     governance.likec4         # LOGICAL: the zero-trust roles + their edges
-    relationships.likec4      # LOGICAL: capability chain + realizes/vends/reads
+    relationships.likec4      # LOGICAL: capability chain + specifies/implements/realizes/vends/reads
     deployments.likec4        # DEPLOYMENT: services instanceOf capabilities, per topology
     views.likec4              # logical views
     deployment-views.likec4   # one view per deployment topology

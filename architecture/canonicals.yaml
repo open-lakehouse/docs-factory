@@ -24,16 +24,28 @@ capabilities:
   tableFormat:
     element: lakehouse.tableFormat
     doc: design/reference-architecture.md
-    note: Delta & Iceberg are peer concrete formats realizing this.
+    note: Delta & Iceberg are peer specifications of this (see ADR-0005).
+  fileFormat:
+    element: lakehouse.fileFormat
+    doc: design/reference-architecture.md
+    note: Parquet/ORC/Avro are peer specifications; sits beneath tableFormat.
   objectStorage:
     element: lakehouse.objectStorage
     doc: design/reference-architecture.md
+    note: The S3 API specifies it; buckets are deployment datastores (ADR-0005).
   lineage:
     element: lakehouse.lineage
     doc: design/lineage-plane.md
   governance:
     element: lakehouse.governance
     doc: design/governance.md
+  modelTracking:
+    element: lakehouse.modelTracking
+    doc: design/reference-architecture.md
+    note: Renamed from mlLifecycle (ADR-0005); realized by MLflow.
+  observability:
+    element: lakehouse.observability
+    doc: design/reference-architecture.md
 
 # --- Logical layer: governance roles (zero-trust) -------------------------
 governance_roles:
@@ -66,10 +78,6 @@ services:
     source_repo: open-lakehouse/hydrofoil
     doc: design/integration-hub.md
     realizes: [queryEngine, pdp, pep]
-  axon:
-    source_repo: open-lakehouse/axon
-    doc: design/deployments.md
-    realizes: [queryEngine]   # browser-wasm topology only
 
 # --- Deployment topologies ------------------------------------------------
 deployments:

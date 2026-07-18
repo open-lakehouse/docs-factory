@@ -40,7 +40,6 @@ capabilities/roles:
 | **headwaters** | lineage + dynamic PIP | OpenLineage on DataFusion. [capability](./lineage-plane.md) |
 | **breakwater** | PDP/PEP (decide/enforce) | Cedar on DataFusion; embedded in hydrofoil. [governance](./governance.md) |
 | **hydrofoil** | query engine + embedded PDP + engine PEP | The integration hub. [notes](./integration-hub.md) |
-| **axon** | client query engine (browser) | WASM workbench; signed-URL posture. |
 
 ## Cross-cutting
 

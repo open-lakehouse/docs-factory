@@ -13,26 +13,35 @@
       "designed": {
         "color": "#f59e0b"
       },
-      "pap": {
+      "infra": {
         "color": "grass"
       },
-      "pdp": {
+      "library": {
         "color": "blue"
       },
-      "pep": {
+      "pap": {
         "color": "ruby"
       },
-      "pip": {
+      "pdp": {
         "color": "orange"
+      },
+      "pep": {
+        "color": "indigo"
+      },
+      "pip": {
+        "color": "pink"
       },
       "prototype": {
         "color": "#f59e0b"
       },
+      "service": {
+        "color": "teal"
+      },
       "trusted": {
-        "color": "indigo"
+        "color": "purple"
       },
       "untrusted": {
-        "color": "pink"
+        "color": "amber"
       }
     },
     "elements": {
@@ -47,6 +56,13 @@
           "color": "primary"
         }
       },
+      "openSpecification": {
+        "notation": "Specification / open standard",
+        "style": {
+          "color": "sky",
+          "shape": "rectangle"
+        }
+      },
       "role": {
         "notation": "Governance role",
         "style": {
@@ -54,8 +70,8 @@
           "color": "indigo"
         }
       },
-      "foundation": {
-        "notation": "OSS foundation / format",
+      "implementation": {
+        "notation": "Implementation (software / service)",
         "style": {
           "shape": "cylinder",
           "color": "muted"
@@ -80,6 +96,19 @@
       "vends": {
         "style": {
           "color": "amber"
+        }
+      },
+      "specifies": {
+        "style": {}
+      },
+      "implements": {
+        "style": {
+          "line": "dotted"
+        }
+      },
+      "consumes": {
+        "style": {
+          "line": "dashed"
         }
       },
       "administers": {
@@ -294,30 +323,11 @@
       "kind": "person",
       "id": "agent"
     },
-    "unityCatalog": {
-      "notation": "OSS foundation / format",
+    "deltaSpec": {
+      "notation": "Specification / open standard",
       "style": {
-        "shape": "cylinder",
-        "color": "muted",
-        "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg"
-      },
-      "links": [
-        {
-          "url": "https://www.unitycatalog.io"
-        }
-      ],
-      "description": {
-        "txt": "Open source catalog for data & AI — governs tables, files, functions, and models across engines. An LF AI & Data project."
-      },
-      "title": "Unity Catalog",
-      "kind": "foundation",
-      "id": "unityCatalog"
-    },
-    "deltaLake": {
-      "notation": "OSS foundation / format",
-      "style": {
-        "shape": "cylinder",
-        "color": "muted",
+        "color": "sky",
+        "shape": "rectangle",
         "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg"
       },
       "links": [
@@ -326,17 +336,17 @@
         }
       ],
       "description": {
-        "txt": "Open table format bringing ACID transactions, schema evolution, and time travel to object storage. An LF AI & Data project."
+        "txt": "Open table-format specification: ACID transactions, schema evolution, and time travel over object storage."
       },
       "title": "Delta Lake",
-      "kind": "foundation",
-      "id": "deltaLake"
+      "kind": "openSpecification",
+      "id": "deltaSpec"
     },
-    "iceberg": {
-      "notation": "OSS foundation / format",
+    "icebergSpec": {
+      "notation": "Specification / open standard",
       "style": {
-        "shape": "cylinder",
-        "color": "muted",
+        "color": "sky",
+        "shape": "rectangle",
         "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png"
       },
       "links": [
@@ -345,14 +355,87 @@
         }
       ],
       "description": {
-        "txt": "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation. An Apache Software Foundation project."
+        "txt": "Open table-format specification for huge analytic datasets, with hidden partitioning and snapshot isolation."
       },
       "title": "Apache Iceberg",
-      "kind": "foundation",
-      "id": "iceberg"
+      "kind": "openSpecification",
+      "id": "icebergSpec"
+    },
+    "ucSpec": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle",
+        "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg"
+      },
+      "links": [
+        {
+          "url": "https://www.unitycatalog.io"
+        }
+      ],
+      "description": {
+        "txt": "Open catalog specification for data & AI — a REST API governing tables, files, functions, and models across engines."
+      },
+      "title": "Unity Catalog",
+      "kind": "openSpecification",
+      "id": "ucSpec"
+    },
+    "icebergRestSpec": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://iceberg.apache.org/concepts/catalog/"
+        }
+      ],
+      "description": {
+        "txt": "Open REST specification for an Iceberg catalog — the API engines use to resolve and commit Iceberg tables."
+      },
+      "title": "Iceberg REST Catalog",
+      "kind": "openSpecification",
+      "id": "icebergRestSpec"
+    },
+    "parquetSpec": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://parquet.apache.org"
+        }
+      ],
+      "description": {
+        "txt": "Open columnar file-format specification — the dominant on-disk encoding for analytic table data."
+      },
+      "title": "Apache Parquet",
+      "kind": "openSpecification",
+      "id": "parquetSpec"
+    },
+    "s3Api": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+        }
+      ],
+      "description": {
+        "txt": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement — the seam between the lakehouse and infrastructure."
+      },
+      "title": "S3 API",
+      "kind": "openSpecification",
+      "id": "s3Api"
     },
     "datafusion": {
-      "notation": "OSS foundation / format",
+      "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
         "color": "muted",
@@ -363,15 +446,18 @@
           "url": "https://datafusion.apache.org"
         }
       ],
+      "tags": [
+        "library"
+      ],
       "description": {
-        "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. An Apache Software Foundation project."
+        "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
       },
       "title": "Apache DataFusion",
-      "kind": "foundation",
+      "kind": "implementation",
       "id": "datafusion"
     },
     "apacheSpark": {
-      "notation": "OSS foundation / format",
+      "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
         "color": "muted",
@@ -382,15 +468,18 @@
           "url": "https://spark.apache.org"
         }
       ],
+      "tags": [
+        "service"
+      ],
       "description": {
-        "txt": "Unified analytics engine for large-scale data processing. An Apache Software Foundation project."
+        "txt": "Unified analytics engine for large-scale data processing."
       },
       "title": "Apache Spark",
-      "kind": "foundation",
+      "kind": "implementation",
       "id": "apacheSpark"
     },
     "lakekeeper": {
-      "notation": "OSS foundation / format",
+      "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
         "color": "muted",
@@ -401,15 +490,61 @@
           "url": "https://lakekeeper.io"
         }
       ],
+      "tags": [
+        "service"
+      ],
       "description": {
-        "txt": "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
+        "txt": "Apache-licensed, Rust-native catalog server implementing the Iceberg REST Catalog specification."
       },
       "title": "Lakekeeper",
-      "kind": "foundation",
+      "kind": "implementation",
       "id": "lakekeeper"
     },
+    "unityCatalogOSS": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted",
+        "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg"
+      },
+      "links": [
+        {
+          "url": "https://github.com/unitycatalog/unitycatalog"
+        }
+      ],
+      "tags": [
+        "service"
+      ],
+      "description": {
+        "txt": "The open-source reference server implementing the Unity Catalog specification."
+      },
+      "title": "Unity Catalog (OSS)",
+      "kind": "implementation",
+      "id": "unityCatalogOSS"
+    },
+    "minio": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://min.io"
+        }
+      ],
+      "tags": [
+        "infra"
+      ],
+      "description": {
+        "txt": "S3-compatible object storage you can self-host — an implementation of the S3 API."
+      },
+      "title": "MinIO",
+      "kind": "implementation",
+      "id": "minio"
+    },
     "mlflow": {
-      "notation": "OSS foundation / format",
+      "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
         "color": "muted",
@@ -420,15 +555,18 @@
           "url": "https://mlflow.org"
         }
       ],
+      "tags": [
+        "service"
+      ],
       "description": {
-        "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment. An LF AI & Data project."
+        "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
       },
       "title": "MLflow",
-      "kind": "foundation",
+      "kind": "implementation",
       "id": "mlflow"
     },
     "omnigent": {
-      "notation": "OSS foundation / format",
+      "notation": "Implementation (software / service)",
       "style": {
         "shape": "cylinder",
         "color": "muted",
@@ -439,11 +577,14 @@
           "url": "https://omnigent.ai"
         }
       ],
+      "tags": [
+        "service"
+      ],
       "description": {
         "txt": "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
       },
       "title": "Omnigent",
-      "kind": "foundation",
+      "kind": "implementation",
       "id": "omnigent"
     },
     "lakehouse.catalog": {
@@ -496,11 +637,28 @@
         "txt": "A metadata layer that gives object-storage files ACID table semantics."
       },
       "description": {
-        "txt": "An open table format is an open specification for a metadata layer over\ndata files in object storage. It tracks which files make up a table plus\ntheir schema and snapshots, giving a plain directory of files table\nsemantics — ACID transactions, schema evolution, and time travel.\n\nIt is technology-agnostic in the model: Delta Lake and Apache Iceberg are\npeer concrete formats that realize this capability."
+        "txt": "An open table format is an open specification for a metadata layer over\ndata files in object storage. It tracks which files make up a table plus\ntheir schema and snapshots, giving a plain directory of files table\nsemantics — ACID transactions, schema evolution, and time travel.\n\nIt is technology-agnostic in the model: Delta Lake and Apache Iceberg are\npeer specifications of this capability, implemented by concrete engines\nand libraries."
       },
       "title": "Open table format",
       "kind": "capability",
       "id": "lakehouse.tableFormat"
+    },
+    "lakehouse.fileFormat": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "The on-disk encoding of the bytes a table's data files are made of."
+      },
+      "description": {
+        "txt": "A file format is the on-disk encoding of a data file — how rows, columns,\nand their types are laid out as bytes. Columnar formats (Parquet, ORC) and\nrow formats (Avro) are peer specifications of this capability.\n\nIt sits beneath the table format: the table format tracks which files make\nup a table; the file format decides how each of those files is encoded."
+      },
+      "title": "File format",
+      "kind": "capability",
+      "id": "lakehouse.fileFormat"
     },
     "lakehouse.objectStorage": {
       "metadata": {
@@ -536,7 +694,7 @@
       "kind": "capability",
       "id": "lakehouse.lineage"
     },
-    "lakehouse.mlLifecycle": {
+    "lakehouse.modelTracking": {
       "metadata": {
         "canonicalDoc": "design/reference-architecture.md"
       },
@@ -547,11 +705,28 @@
         "txt": "Tracks experiments, versions models, and governs their promotion to production."
       },
       "description": {
-        "txt": "The ML-lifecycle capability manages machine-learning artifacts over time:\nexperiment tracking, a model registry with versions and stages, and the\npath from a trained model to a governed, deployable one.\n\nIt sits alongside the query/governance capabilities: models are data\nassets too, catalogued and governed like tables rather than living in a\nseparate, ungoverned silo."
+        "txt": "Model tracking manages machine-learning artifacts over time: experiment\ntracking, a model registry with versions and stages, and the path from a\ntrained model to a governed, deployable one.\n\nIt sits alongside the query/governance capabilities: models are data\nassets too, catalogued and governed like tables rather than living in a\nseparate, ungoverned silo."
       },
-      "title": "ML lifecycle",
+      "title": "Model tracking",
       "kind": "capability",
-      "id": "lakehouse.mlLifecycle"
+      "id": "lakehouse.modelTracking"
+    },
+    "lakehouse.observability": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+      },
+      "description": {
+        "txt": "Observability is the cross-cutting capability that makes the running\nplatform legible: distributed traces, metrics, and logs emitted by the\nquery engine and services, so operators can reason about latency,\nfailures, and cost.\n\nLike governance and lineage it attaches across the stack rather than\nsitting in the query path."
+      },
+      "title": "Observability",
+      "kind": "capability",
+      "id": "lakehouse.observability"
     }
   },
   "relations": {
@@ -600,43 +775,73 @@
       "kind": "enforces",
       "id": "e8usp9"
     },
-    "td9u5f": {
-      "line": "dotted",
-      "title": "realizes the catalog capability",
+    "196zd7g": {
+      "title": "specifies the table-format capability",
       "source": {
-        "model": "unityCatalog"
+        "model": "deltaSpec"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
+      },
+      "kind": "specifies",
+      "id": "196zd7g"
+    },
+    "lx0aor": {
+      "title": "specifies the table-format capability",
+      "source": {
+        "model": "icebergSpec"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
+      },
+      "kind": "specifies",
+      "id": "lx0aor"
+    },
+    "1uhph00": {
+      "title": "specifies the catalog capability",
+      "source": {
+        "model": "ucSpec"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
-      "kind": "realizes",
-      "id": "td9u5f"
+      "kind": "specifies",
+      "id": "1uhph00"
     },
-    "mn4ddk": {
-      "line": "dotted",
-      "title": "realizes the table-format capability",
+    "1lrsklu": {
+      "title": "specifies the catalog capability",
       "source": {
-        "model": "deltaLake"
+        "model": "icebergRestSpec"
       },
       "target": {
-        "model": "lakehouse.tableFormat"
+        "model": "lakehouse.catalog"
       },
-      "kind": "realizes",
-      "id": "mn4ddk"
+      "kind": "specifies",
+      "id": "1lrsklu"
     },
-    "1gmohps": {
-      "line": "dotted",
-      "title": "realizes the table-format capability",
+    "nfx7x9": {
+      "title": "specifies the file-format capability",
       "source": {
-        "model": "iceberg"
+        "model": "parquetSpec"
       },
       "target": {
-        "model": "lakehouse.tableFormat"
+        "model": "lakehouse.fileFormat"
       },
-      "kind": "realizes",
-      "id": "1gmohps"
+      "kind": "specifies",
+      "id": "nfx7x9"
     },
-    "1rqw8et": {
+    "1dnkpi1": {
+      "title": "specifies the object-storage capability",
+      "source": {
+        "model": "s3Api"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "specifies",
+      "id": "1dnkpi1"
+    },
+    "5pt8pf": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -646,9 +851,21 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "1rqw8et"
+      "id": "5pt8pf"
     },
-    "17lybnu": {
+    "mdob6x": {
+      "line": "dashed",
+      "title": "reads data files via",
+      "source": {
+        "model": "datafusion"
+      },
+      "target": {
+        "model": "s3Api"
+      },
+      "kind": "consumes",
+      "id": "mdob6x"
+    },
+    "1pt0u7e": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -658,31 +875,67 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "17lybnu"
+      "id": "1pt0u7e"
     },
-    "1uopptd": {
+    "gjxi5q": {
+      "line": "dashed",
+      "title": "resolves Iceberg tables via",
+      "source": {
+        "model": "apacheSpark"
+      },
+      "target": {
+        "model": "icebergRestSpec"
+      },
+      "kind": "consumes",
+      "id": "gjxi5q"
+    },
+    "3qt3ra": {
       "line": "dotted",
-      "title": "realizes the catalog capability",
+      "title": "implements",
       "source": {
         "model": "lakekeeper"
       },
       "target": {
-        "model": "lakehouse.catalog"
+        "model": "icebergRestSpec"
       },
-      "kind": "realizes",
-      "id": "1uopptd"
+      "kind": "implements",
+      "id": "3qt3ra"
     },
-    "12opdl7": {
+    "171bzvb": {
       "line": "dotted",
-      "title": "realizes the ML-lifecycle capability",
+      "title": "implements",
+      "source": {
+        "model": "unityCatalogOSS"
+      },
+      "target": {
+        "model": "ucSpec"
+      },
+      "kind": "implements",
+      "id": "171bzvb"
+    },
+    "1sw55ld": {
+      "line": "dotted",
+      "title": "implements",
+      "source": {
+        "model": "minio"
+      },
+      "target": {
+        "model": "s3Api"
+      },
+      "kind": "implements",
+      "id": "1sw55ld"
+    },
+    "lzakkx": {
+      "line": "dotted",
+      "title": "realizes the model-tracking capability",
       "source": {
         "model": "mlflow"
       },
       "target": {
-        "model": "lakehouse.mlLifecycle"
+        "model": "lakehouse.modelTracking"
       },
       "kind": "realizes",
-      "id": "12opdl7"
+      "id": "lzakkx"
     },
     "5pe79a": {
       "title": "queries + governs data",
@@ -750,18 +1003,29 @@
       "kind": "reads",
       "id": "xd9n6a"
     },
-    "tho3ej": {
-      "title": "manifests as files in",
+    "1hr81g2": {
+      "title": "stored as data files encoded in",
       "source": {
         "model": "lakehouse.tableFormat"
+      },
+      "target": {
+        "model": "lakehouse.fileFormat"
+      },
+      "kind": "reads",
+      "id": "1hr81g2"
+    },
+    "4idelg": {
+      "title": "bytes persisted in",
+      "source": {
+        "model": "lakehouse.fileFormat"
       },
       "target": {
         "model": "lakehouse.objectStorage"
       },
       "kind": "reads",
-      "id": "tho3ej"
+      "id": "4idelg"
     },
-    "13u6y6f": {
+    "ulwbty": {
       "title": "policy decided + enforced in-plan (planning-time)",
       "source": {
         "model": "lakehouse.queryEngine"
@@ -770,9 +1034,9 @@
         "model": "lakehouse.governance"
       },
       "kind": "enforces",
-      "id": "13u6y6f"
+      "id": "ulwbty"
     },
-    "1j0fe4l": {
+    "q6exs6": {
       "title": "emits column-level lineage (planning-time)",
       "source": {
         "model": "lakehouse.queryEngine"
@@ -781,9 +1045,20 @@
         "model": "lakehouse.lineage"
       },
       "kind": "flows",
-      "id": "1j0fe4l"
+      "id": "q6exs6"
     },
-    "1wt8s51": {
+    "zvjzmf": {
+      "title": "emits traces + metrics",
+      "source": {
+        "model": "lakehouse.queryEngine"
+      },
+      "target": {
+        "model": "lakehouse.observability"
+      },
+      "kind": "flows",
+      "id": "zvjzmf"
+    },
+    "wji2ez": {
       "title": "serves resource facts (identity, tags, locations)",
       "source": {
         "model": "lakehouse.catalog"
@@ -792,9 +1067,9 @@
         "model": "lakehouse.governance.pip"
       },
       "kind": "flows",
-      "id": "1wt8s51"
+      "id": "wji2ez"
     },
-    "29leb5": {
+    "jvefnj": {
       "color": "amber",
       "title": "vends short-lived scoped credentials for",
       "source": {
@@ -804,7 +1079,7 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "vends",
-      "id": "29leb5"
+      "id": "jvefnj"
     }
   },
   "globals": {
@@ -884,46 +1159,88 @@
           "kind": "flows"
         },
         {
-          "id": "1wwg9s1",
+          "id": "1pfr91s",
           "parent": null,
-          "source": "unityCatalog",
+          "source": "deltaSpec",
           "target": "lakehouse",
-          "label": "realizes the catalog capability",
+          "label": "specifies the table-format capability",
           "relations": [
-            "td9u5f"
+            "196zd7g"
           ],
           "color": "gray",
-          "line": "dotted",
+          "line": "dashed",
           "head": "normal",
-          "kind": "realizes"
+          "kind": "specifies"
         },
         {
-          "id": "1ttfh9y",
+          "id": "1n3wkt1",
           "parent": null,
-          "source": "deltaLake",
+          "source": "icebergSpec",
           "target": "lakehouse",
-          "label": "realizes the table-format capability",
+          "label": "specifies the table-format capability",
           "relations": [
-            "mn4ddk"
+            "lx0aor"
           ],
           "color": "gray",
-          "line": "dotted",
+          "line": "dashed",
           "head": "normal",
-          "kind": "realizes"
+          "kind": "specifies"
         },
         {
-          "id": "1jbc580",
+          "id": "1qvv3jy",
           "parent": null,
-          "source": "iceberg",
+          "source": "ucSpec",
           "target": "lakehouse",
-          "label": "realizes the table-format capability",
+          "label": "specifies the catalog capability",
           "relations": [
-            "1gmohps"
+            "1uhph00"
           ],
           "color": "gray",
-          "line": "dotted",
+          "line": "dashed",
           "head": "normal",
-          "kind": "realizes"
+          "kind": "specifies"
+        },
+        {
+          "id": "lv7f45",
+          "parent": null,
+          "source": "icebergRestSpec",
+          "target": "lakehouse",
+          "label": "specifies the catalog capability",
+          "relations": [
+            "1lrsklu"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "s3zh3y",
+          "parent": null,
+          "source": "parquetSpec",
+          "target": "lakehouse",
+          "label": "specifies the file-format capability",
+          "relations": [
+            "nfx7x9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "zreoid",
+          "parent": null,
+          "source": "s3Api",
+          "target": "lakehouse",
+          "label": "specifies the object-storage capability",
+          "relations": [
+            "1dnkpi1"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
         },
         {
           "id": "byeu7p",
@@ -932,7 +1249,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1rqw8et"
+            "5pt8pf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -946,21 +1263,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "17lybnu"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "p5ap0i",
-          "parent": null,
-          "source": "lakekeeper",
-          "target": "lakehouse",
-          "label": "realizes the catalog capability",
-          "relations": [
-            "1uopptd"
+            "1pt0u7e"
           ],
           "color": "gray",
           "line": "dotted",
@@ -972,14 +1275,84 @@
           "parent": null,
           "source": "mlflow",
           "target": "lakehouse",
-          "label": "realizes the ML-lifecycle capability",
+          "label": "realizes the model-tracking capability",
           "relations": [
-            "12opdl7"
+            "lzakkx"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "realizes"
+        },
+        {
+          "id": "1pglyt6",
+          "parent": null,
+          "source": "unityCatalogOSS",
+          "target": "ucSpec",
+          "label": "implements",
+          "relations": [
+            "171bzvb"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "rqwp5z",
+          "parent": null,
+          "source": "apacheSpark",
+          "target": "icebergRestSpec",
+          "label": "resolves Iceberg tables via",
+          "relations": [
+            "gjxi5q"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "wv3hil",
+          "parent": null,
+          "source": "lakekeeper",
+          "target": "icebergRestSpec",
+          "label": "implements",
+          "relations": [
+            "3qt3ra"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "epvgru",
+          "parent": null,
+          "source": "datafusion",
+          "target": "s3Api",
+          "label": "reads data files via",
+          "relations": [
+            "mdob6x"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1mh655q",
+          "parent": null,
+          "source": "minio",
+          "target": "s3Api",
+          "label": "implements",
+          "relations": [
+            "1sw55ld"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
         }
       ],
       "nodes": [
@@ -1053,94 +1426,93 @@
           "kind": "person"
         },
         {
-          "id": "unityCatalog",
+          "id": "deltaSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1wwg9s1"
-          ],
-          "title": "Unity Catalog",
-          "modelRef": "unityCatalog",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open source catalog for data & AI — governs tables, files, functions, and models across engines. An LF AI & Data project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "deltaLake",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1ttfh9y"
+            "1pfr91s"
           ],
           "title": "Delta Lake",
-          "modelRef": "deltaLake",
-          "shape": "cylinder",
-          "color": "muted",
+          "modelRef": "deltaSpec",
+          "shape": "rectangle",
+          "color": "sky",
           "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "Open table format bringing ACID transactions, schema evolution, and time travel to object storage. An LF AI & Data project."
+            "txt": "Open table-format specification: ACID transactions, schema evolution, and time travel over object storage."
           },
           "tags": [],
-          "notation": "OSS foundation / format",
+          "notation": "Specification / open standard",
           "links": [
             {
               "url": "https://delta.io"
             }
           ],
-          "kind": "foundation"
+          "kind": "openSpecification"
         },
         {
-          "id": "iceberg",
+          "id": "icebergSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1jbc580"
+            "1n3wkt1"
           ],
           "title": "Apache Iceberg",
-          "modelRef": "iceberg",
-          "shape": "cylinder",
-          "color": "muted",
+          "modelRef": "icebergSpec",
+          "shape": "rectangle",
+          "color": "sky",
           "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation. An Apache Software Foundation project."
+            "txt": "Open table-format specification for huge analytic datasets, with hidden partitioning and snapshot isolation."
           },
           "tags": [],
-          "notation": "OSS foundation / format",
+          "notation": "Specification / open standard",
           "links": [
             {
               "url": "https://iceberg.apache.org"
             }
           ],
-          "kind": "foundation"
+          "kind": "openSpecification"
+        },
+        {
+          "id": "parquetSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "s3zh3y"
+          ],
+          "title": "Apache Parquet",
+          "modelRef": "parquetSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open columnar file-format specification — the dominant on-disk encoding for analytic table data."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://parquet.apache.org"
+            }
+          ],
+          "kind": "openSpecification"
         },
         {
           "id": "datafusion",
@@ -1149,7 +1521,8 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "byeu7p"
+            "byeu7p",
+            "epvgru"
           ],
           "title": "Apache DataFusion",
           "modelRef": "datafusion",
@@ -1161,16 +1534,18 @@
             "size": "md"
           },
           "description": {
-            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. An Apache Software Foundation project."
+            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
           },
-          "tags": [],
-          "notation": "OSS foundation / format",
+          "tags": [
+            "library"
+          ],
+          "notation": "Implementation (software / service)",
           "links": [
             {
               "url": "https://datafusion.apache.org"
             }
           ],
-          "kind": "foundation"
+          "kind": "implementation"
         },
         {
           "id": "apacheSpark",
@@ -1179,7 +1554,8 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "bd1jqg"
+            "bd1jqg",
+            "rqwp5z"
           ],
           "title": "Apache Spark",
           "modelRef": "apacheSpark",
@@ -1191,46 +1567,18 @@
             "size": "md"
           },
           "description": {
-            "txt": "Unified analytics engine for large-scale data processing. An Apache Software Foundation project."
+            "txt": "Unified analytics engine for large-scale data processing."
           },
-          "tags": [],
-          "notation": "OSS foundation / format",
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
           "links": [
             {
               "url": "https://spark.apache.org"
             }
           ],
-          "kind": "foundation"
-        },
-        {
-          "id": "lakekeeper",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "p5ap0i"
-          ],
-          "title": "Lakekeeper",
-          "modelRef": "lakekeeper",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://lakekeeper.io"
-            }
-          ],
-          "kind": "foundation"
+          "kind": "implementation"
         },
         {
           "id": "mlflow",
@@ -1251,16 +1599,209 @@
             "size": "md"
           },
           "description": {
-            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment. An LF AI & Data project."
+            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
           },
-          "tags": [],
-          "notation": "OSS foundation / format",
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
           "links": [
             {
               "url": "https://mlflow.org"
             }
           ],
-          "kind": "foundation"
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogOSS",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1pglyt6"
+          ],
+          "title": "Unity Catalog (OSS)",
+          "modelRef": "unityCatalogOSS",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The open-source reference server implementing the Unity Catalog specification."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "lakekeeper",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "wv3hil"
+          ],
+          "title": "Lakekeeper",
+          "modelRef": "lakekeeper",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Apache-licensed, Rust-native catalog server implementing the Iceberg REST Catalog specification."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://lakekeeper.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "minio",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1mh655q"
+          ],
+          "title": "MinIO",
+          "modelRef": "minio",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "S3-compatible object storage you can self-host — an implementation of the S3 API."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://min.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "ucSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1pglyt6"
+          ],
+          "outEdges": [
+            "1qvv3jy"
+          ],
+          "title": "Unity Catalog",
+          "modelRef": "ucSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open catalog specification for data & AI — a REST API governing tables, files, functions, and models across engines."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "icebergRestSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "rqwp5z",
+            "wv3hil"
+          ],
+          "outEdges": [
+            "lv7f45"
+          ],
+          "title": "Iceberg REST Catalog",
+          "modelRef": "icebergRestSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open REST specification for an Iceberg catalog — the API engines use to resolve and commit Iceberg tables."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org/concepts/catalog/"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "s3Api",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "epvgru",
+            "1mh655q"
+          ],
+          "outEdges": [
+            "zreoid"
+          ],
+          "title": "S3 API",
+          "modelRef": "s3Api",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement — the seam between the lakehouse and infrastructure."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+            }
+          ],
+          "kind": "openSpecification"
         },
         {
           "id": "lakehouse",
@@ -1271,12 +1812,14 @@
             "ttcejf",
             "12g2j4b",
             "11of8s4",
-            "1wwg9s1",
-            "1ttfh9y",
-            "1jbc580",
+            "1pfr91s",
+            "1n3wkt1",
+            "1qvv3jy",
+            "lv7f45",
+            "s3zh3y",
+            "zreoid",
             "byeu7p",
             "bd1jqg",
-            "p5ap0i",
             "1sk4qke"
           ],
           "outEdges": [],
@@ -1319,29 +1862,39 @@
           "description": {
             "txt": "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
           },
-          "tags": [],
-          "notation": "OSS foundation / format",
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
           "links": [
             {
               "url": "https://omnigent.ai"
             }
           ],
-          "kind": "foundation"
+          "kind": "implementation"
         }
       ],
       "notation": {
         "nodes": [
           {
-            "title": "OSS foundation / format",
+            "title": "Implementation (software / service)",
             "shape": "cylinder",
             "color": "muted",
             "kinds": [
-              "foundation"
+              "implementation"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
             ]
           }
         ]
       },
-      "hash": "WhmGbVCZBtsXoLXbwJ3jBhPMhRLZaKjzy7VvMqhr-a8"
+      "hash": "WKqRYYCcyZQN5iGh8QzkXctYWd76DQuUlMso7Bpwk00"
     },
     "trustedComputeDeploy": {
       "_type": "deployment",
@@ -1379,7 +1932,7 @@
           "target": "trustedCompute.headwaters.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
-            "1j0fe4l"
+            "q6exs6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1393,7 +1946,7 @@
           "target": "trustedCompute.objstore.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "29leb5"
+            "jvefnj"
           ],
           "color": "amber",
           "line": "dashed",
@@ -1660,7 +2213,7 @@
           "target": "externalCompute.extStore.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "29leb5"
+            "jvefnj"
           ],
           "color": "amber",
           "line": "dashed",
@@ -2110,7 +2663,7 @@
       "_stage": "computed",
       "sourcePath": "views.likec4",
       "description": {
-        "txt": "The abstract, technology-agnostic lakehouse: its capabilities, the people who use it, and the OSS foundations & open table formats it assembles on. Foundations attach to the capability they realize (DataFusion <- query engine, Cedar <- PDP, ...), not to the lakehouse as a whole."
+        "txt": "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping)."
       },
       "title": "Reference Open Lakehouse — context",
       "id": "referenceContext",
@@ -2153,7 +2706,7 @@
           "target": "lakehouse.governance",
           "label": "policy decided + enforced in-plan (planning-time)",
           "relations": [
-            "13u6y6f"
+            "ulwbty"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2181,7 +2734,7 @@
           "target": "lakehouse.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "29leb5"
+            "jvefnj"
           ],
           "color": "amber",
           "line": "dashed",
@@ -2223,7 +2776,7 @@
           "target": "lakehouse.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
-            "1j0fe4l"
+            "q6exs6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2231,13 +2784,27 @@
           "kind": "flows"
         },
         {
-          "id": "6usziz",
+          "id": "m6bsvn",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.observability",
+          "label": "emits traces + metrics",
+          "relations": [
+            "zvjzmf"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "1nn750y",
           "parent": "lakehouse",
           "source": "lakehouse.tableFormat",
-          "target": "lakehouse.objectStorage",
-          "label": "manifests as files in",
+          "target": "lakehouse.fileFormat",
+          "label": "stored as data files encoded in",
           "relations": [
-            "tho3ej"
+            "1hr81g2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2245,102 +2812,18 @@
           "kind": "reads"
         },
         {
-          "id": "qyrzng",
-          "parent": null,
-          "source": "unityCatalog",
-          "target": "lakehouse.catalog",
-          "label": "realizes the catalog capability",
+          "id": "1u0v1f",
+          "parent": "lakehouse",
+          "source": "lakehouse.fileFormat",
+          "target": "lakehouse.objectStorage",
+          "label": "bytes persisted in",
           "relations": [
-            "td9u5f"
+            "4idelg"
           ],
           "color": "gray",
-          "line": "dotted",
+          "line": "dashed",
           "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "q6exad",
-          "parent": null,
-          "source": "deltaLake",
-          "target": "lakehouse.tableFormat",
-          "label": "realizes the table-format capability",
-          "relations": [
-            "mn4ddk"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "1fsmgn7",
-          "parent": null,
-          "source": "iceberg",
-          "target": "lakehouse.tableFormat",
-          "label": "realizes the table-format capability",
-          "relations": [
-            "1gmohps"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "ipwqn",
-          "parent": null,
-          "source": "datafusion",
-          "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
-          "relations": [
-            "1rqw8et"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "zt1zxe",
-          "parent": null,
-          "source": "apacheSpark",
-          "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
-          "relations": [
-            "17lybnu"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "1ylu6cf",
-          "parent": null,
-          "source": "lakekeeper",
-          "target": "lakehouse.catalog",
-          "label": "realizes the catalog capability",
-          "relations": [
-            "1uopptd"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "c5alk7",
-          "parent": null,
-          "source": "mlflow",
-          "target": "lakehouse.mlLifecycle",
-          "label": "realizes the ML-lifecycle capability",
-          "relations": [
-            "12opdl7"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
+          "kind": "reads"
         },
         {
           "id": "12g2j4b",
@@ -2405,216 +2888,6 @@
           "kind": "person"
         },
         {
-          "id": "unityCatalog",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "qyrzng"
-          ],
-          "title": "Unity Catalog",
-          "modelRef": "unityCatalog",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open source catalog for data & AI — governs tables, files, functions, and models across engines. An LF AI & Data project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "deltaLake",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "q6exad"
-          ],
-          "title": "Delta Lake",
-          "modelRef": "deltaLake",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open table format bringing ACID transactions, schema evolution, and time travel to object storage. An LF AI & Data project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://delta.io"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "iceberg",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1fsmgn7"
-          ],
-          "title": "Apache Iceberg",
-          "modelRef": "iceberg",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation. An Apache Software Foundation project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://iceberg.apache.org"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "datafusion",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "ipwqn"
-          ],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. An Apache Software Foundation project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://datafusion.apache.org"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "apacheSpark",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "zt1zxe"
-          ],
-          "title": "Apache Spark",
-          "modelRef": "apacheSpark",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Unified analytics engine for large-scale data processing. An Apache Software Foundation project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://spark.apache.org"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "lakekeeper",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1ylu6cf"
-          ],
-          "title": "Lakekeeper",
-          "modelRef": "lakekeeper",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://lakekeeper.io"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "mlflow",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "c5alk7"
-          ],
-          "title": "MLflow",
-          "modelRef": "mlflow",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment. An LF AI & Data project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://mlflow.org"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
           "id": "platformEngineer",
           "parent": null,
           "level": 0,
@@ -2643,24 +2916,19 @@
           "level": 0,
           "children": [
             "lakehouse.queryEngine",
-            "lakehouse.mlLifecycle",
             "lakehouse.governance",
             "lakehouse.catalog",
             "lakehouse.lineage",
+            "lakehouse.modelTracking",
+            "lakehouse.observability",
             "lakehouse.tableFormat",
+            "lakehouse.fileFormat",
             "lakehouse.objectStorage"
           ],
           "inEdges": [
             "12g2j4b",
             "7v3snl",
-            "1o5tqxj",
-            "qyrzng",
-            "q6exad",
-            "1fsmgn7",
-            "ipwqn",
-            "zt1zxe",
-            "1ylu6cf",
-            "c5alk7"
+            "1o5tqxj"
           ],
           "outEdges": [],
           "title": "Open Lakehouse",
@@ -2690,808 +2958,14 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "7v3snl",
-            "ipwqn",
-            "zt1zxe"
-          ],
-          "outEdges": [
-            "y1w3b4",
-            "1tnkhx9",
-            "rdpg8j",
-            "tnia77"
-          ],
-          "title": "Query engine",
-          "modelRef": "lakehouse.queryEngine",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Parses, plans, and executes queries over open table formats."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        },
-        {
-          "id": "lakehouse.mlLifecycle",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "c5alk7"
-          ],
-          "outEdges": [],
-          "title": "ML lifecycle",
-          "modelRef": "lakehouse.mlLifecycle",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Tracks experiments, versions models, and governs their promotion to production."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "y1w3b4"
-          ],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability",
-          "navigateTo": "governanceModel"
-        },
-        {
-          "id": "lakehouse.catalog",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1tnkhx9",
-            "qyrzng",
-            "1ylu6cf"
-          ],
-          "outEdges": [
-            "1ko3ux0",
-            "qmrjf9"
-          ],
-          "title": "Catalog",
-          "modelRef": "lakehouse.catalog",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
-          },
-          "links": [
-            {
-              "url": "https://www.openlakehouse.io/technologies/catalogs"
-            }
-          ],
-          "kind": "capability"
-        },
-        {
-          "id": "lakehouse.lineage",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1o5tqxj",
-            "tnia77"
-          ],
-          "outEdges": [],
-          "title": "Lineage",
-          "modelRef": "lakehouse.lineage",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Records where data came from and where it flows, down to the column."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
-          },
-          "kind": "capability"
-        },
-        {
-          "id": "lakehouse.tableFormat",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1ko3ux0",
-            "rdpg8j",
-            "q6exad",
-            "1fsmgn7"
-          ],
-          "outEdges": [
-            "6usziz"
-          ],
-          "title": "Open table format",
-          "modelRef": "lakehouse.tableFormat",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "A metadata layer that gives object-storage files ACID table semantics."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        },
-        {
-          "id": "lakehouse.objectStorage",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "qmrjf9",
-            "6usziz"
-          ],
-          "outEdges": [],
-          "title": "Object storage",
-          "modelRef": "lakehouse.objectStorage",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        },
-        {
-          "id": "omnigent",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Omnigent",
-          "modelRef": "omnigent",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://omnigent.ai"
-            }
-          ],
-          "kind": "foundation"
-        }
-      ],
-      "notation": {
-        "nodes": [
-          {
-            "title": "OSS foundation / format",
-            "shape": "cylinder",
-            "color": "muted",
-            "kinds": [
-              "foundation"
-            ]
-          }
-        ]
-      },
-      "hash": "uXm4i2qsUJFUUQiqDIrw4leQPAunlnTTqDTCNqdR4NE"
-    },
-    "capabilityMap": {
-      "_type": "element",
-      "tags": null,
-      "links": null,
-      "viewOf": "lakehouse",
-      "_stage": "computed",
-      "sourcePath": "views.likec4",
-      "description": {
-        "txt": "The capability chain: query engine -> catalog -> table format -> object storage, with governance and lineage attaching at planning time. Delta & Iceberg are peer formats realizing the table-format capability."
-      },
-      "title": "Reference Open Lakehouse — capabilities",
-      "id": "capabilityMap",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "edges": [
-        {
-          "id": "7v3snl",
-          "parent": null,
-          "source": "practitioner",
-          "target": "lakehouse.queryEngine",
-          "label": "queries + governs data",
-          "relations": [
-            "5pe79a"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "1o5tqxj",
-          "parent": null,
-          "source": "agent",
-          "target": "lakehouse.lineage",
-          "label": "investigates",
-          "relations": [
-            "gxybq2"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "qyrzng",
-          "parent": null,
-          "source": "unityCatalog",
-          "target": "lakehouse.catalog",
-          "label": "realizes the catalog capability",
-          "relations": [
-            "td9u5f"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "q6exad",
-          "parent": null,
-          "source": "deltaLake",
-          "target": "lakehouse.tableFormat",
-          "label": "realizes the table-format capability",
-          "relations": [
-            "mn4ddk"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "1fsmgn7",
-          "parent": null,
-          "source": "iceberg",
-          "target": "lakehouse.tableFormat",
-          "label": "realizes the table-format capability",
-          "relations": [
-            "1gmohps"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "ipwqn",
-          "parent": null,
-          "source": "datafusion",
-          "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
-          "relations": [
-            "1rqw8et"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "zt1zxe",
-          "parent": null,
-          "source": "apacheSpark",
-          "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
-          "relations": [
-            "17lybnu"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "1ylu6cf",
-          "parent": null,
-          "source": "lakekeeper",
-          "target": "lakehouse.catalog",
-          "label": "realizes the catalog capability",
-          "relations": [
-            "1uopptd"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "c5alk7",
-          "parent": null,
-          "source": "mlflow",
-          "target": "lakehouse.mlLifecycle",
-          "label": "realizes the ML-lifecycle capability",
-          "relations": [
-            "12opdl7"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
-          "id": "y1w3b4",
-          "parent": "lakehouse",
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.governance",
-          "label": "policy decided + enforced in-plan (planning-time)",
-          "relations": [
-            "13u6y6f"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "enforces"
-        },
-        {
-          "id": "1ko3ux0",
-          "parent": "lakehouse",
-          "source": "lakehouse.catalog",
-          "target": "lakehouse.tableFormat",
-          "label": "resolves a table to its format + location",
-          "relations": [
-            "1tl0x5y"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "qmrjf9",
-          "parent": "lakehouse",
-          "source": "lakehouse.catalog",
-          "target": "lakehouse.objectStorage",
-          "label": "vends short-lived scoped credentials for",
-          "relations": [
-            "29leb5"
-          ],
-          "color": "amber",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "vends"
-        },
-        {
-          "id": "1tnkhx9",
-          "parent": "lakehouse",
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.catalog",
-          "label": "resolves tables through",
-          "relations": [
-            "lwdcta"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "resolves"
-        },
-        {
-          "id": "rdpg8j",
-          "parent": "lakehouse",
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.tableFormat",
-          "label": "reads tables via the format",
-          "relations": [
-            "xd9n6a"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "reads"
-        },
-        {
-          "id": "tnia77",
-          "parent": "lakehouse",
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.lineage",
-          "label": "emits column-level lineage (planning-time)",
-          "relations": [
-            "1j0fe4l"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "6usziz",
-          "parent": "lakehouse",
-          "source": "lakehouse.tableFormat",
-          "target": "lakehouse.objectStorage",
-          "label": "manifests as files in",
-          "relations": [
-            "tho3ej"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "reads"
-        }
-      ],
-      "nodes": [
-        {
-          "id": "practitioner",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
             "7v3snl"
           ],
-          "title": "Data practitioner",
-          "modelRef": "practitioner",
-          "shape": "person",
-          "color": "secondary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
-          },
-          "tags": [],
-          "kind": "person"
-        },
-        {
-          "id": "agent",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1o5tqxj"
-          ],
-          "title": "AI agent",
-          "modelRef": "agent",
-          "shape": "person",
-          "color": "secondary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
-          },
-          "tags": [],
-          "kind": "person"
-        },
-        {
-          "id": "unityCatalog",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "qyrzng"
-          ],
-          "title": "Unity Catalog",
-          "modelRef": "unityCatalog",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open source catalog for data & AI — governs tables, files, functions, and models across engines. An LF AI & Data project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "deltaLake",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "q6exad"
-          ],
-          "title": "Delta Lake",
-          "modelRef": "deltaLake",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open table format bringing ACID transactions, schema evolution, and time travel to object storage. An LF AI & Data project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://delta.io"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "iceberg",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1fsmgn7"
-          ],
-          "title": "Apache Iceberg",
-          "modelRef": "iceberg",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation. An Apache Software Foundation project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://iceberg.apache.org"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "datafusion",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "ipwqn"
-          ],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. An Apache Software Foundation project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://datafusion.apache.org"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "apacheSpark",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "zt1zxe"
-          ],
-          "title": "Apache Spark",
-          "modelRef": "apacheSpark",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Unified analytics engine for large-scale data processing. An Apache Software Foundation project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://spark.apache.org"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "lakekeeper",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1ylu6cf"
-          ],
-          "title": "Lakekeeper",
-          "modelRef": "lakekeeper",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://lakekeeper.io"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "mlflow",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "c5alk7"
-          ],
-          "title": "MLflow",
-          "modelRef": "mlflow",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment. An LF AI & Data project."
-          },
-          "tags": [],
-          "notation": "OSS foundation / format",
-          "links": [
-            {
-              "url": "https://mlflow.org"
-            }
-          ],
-          "kind": "foundation"
-        },
-        {
-          "id": "lakehouse",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "lakehouse.queryEngine",
-            "lakehouse.mlLifecycle",
-            "lakehouse.governance",
-            "lakehouse.catalog",
-            "lakehouse.lineage",
-            "lakehouse.tableFormat",
-            "lakehouse.objectStorage"
-          ],
-          "inEdges": [
-            "7v3snl",
-            "1o5tqxj",
-            "qyrzng",
-            "q6exad",
-            "1fsmgn7",
-            "ipwqn",
-            "zt1zxe",
-            "1ylu6cf",
-            "c5alk7"
-          ],
-          "outEdges": [],
-          "title": "Open Lakehouse",
-          "modelRef": "lakehouse",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
-          },
-          "tags": [],
-          "links": [
-            {
-              "url": "https://openlakehouse.io"
-            }
-          ],
-          "kind": "capability",
-          "depth": 1
-        },
-        {
-          "id": "lakehouse.queryEngine",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "7v3snl",
-            "ipwqn",
-            "zt1zxe"
-          ],
           "outEdges": [
             "y1w3b4",
             "1tnkhx9",
             "rdpg8j",
-            "tnia77"
+            "tnia77",
+            "m6bsvn"
           ],
           "title": "Query engine",
           "modelRef": "lakehouse.queryEngine",
@@ -3503,32 +2977,6 @@
           },
           "description": {
             "txt": "Parses, plans, and executes queries over open table formats."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        },
-        {
-          "id": "lakehouse.mlLifecycle",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "c5alk7"
-          ],
-          "outEdges": [],
-          "title": "ML lifecycle",
-          "modelRef": "lakehouse.mlLifecycle",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Tracks experiments, versions models, and governs their promotion to production."
           },
           "tags": [],
           "metadata": {
@@ -3569,8 +3017,6 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "qyrzng",
-            "1ylu6cf",
             "1tnkhx9"
           ],
           "outEdges": [
@@ -3627,18 +3073,66 @@
           "kind": "capability"
         },
         {
+          "id": "lakehouse.modelTracking",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Model tracking",
+          "modelRef": "lakehouse.modelTracking",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Tracks experiments, versions models, and governs their promotion to production."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.observability",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "m6bsvn"
+          ],
+          "outEdges": [],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
           "id": "lakehouse.tableFormat",
           "parent": "lakehouse",
           "level": 1,
           "children": [],
           "inEdges": [
-            "q6exad",
-            "1fsmgn7",
             "1ko3ux0",
             "rdpg8j"
           ],
           "outEdges": [
-            "6usziz"
+            "1nn750y"
           ],
           "title": "Open table format",
           "modelRef": "lakehouse.tableFormat",
@@ -3658,13 +3152,2054 @@
           "kind": "capability"
         },
         {
+          "id": "lakehouse.fileFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1nn750y"
+          ],
+          "outEdges": [
+            "1u0v1f"
+          ],
+          "title": "File format",
+          "modelRef": "lakehouse.fileFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The on-disk encoding of the bytes a table's data files are made of."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
           "id": "lakehouse.objectStorage",
           "parent": "lakehouse",
           "level": 1,
           "children": [],
           "inEdges": [
             "qmrjf9",
-            "6usziz"
+            "1u0v1f"
+          ],
+          "outEdges": [],
+          "title": "Object storage",
+          "modelRef": "lakehouse.objectStorage",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        }
+      ],
+      "hash": "mkkrmcevTshNJSWgO6x8Y3rshtOnTMa2HxSuqZykrWE"
+    },
+    "technologyCatalog": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "_stage": "computed",
+      "sourcePath": "views.likec4",
+      "description": {
+        "txt": "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #infra) is intrinsic; running instances live in the deployment views."
+      },
+      "title": "Technology catalog — capabilities, specifications, implementations",
+      "id": "technologyCatalog",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "y1w3b4",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.governance",
+          "label": "policy decided + enforced in-plan (planning-time)",
+          "relations": [
+            "ulwbty"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "enforces"
+        },
+        {
+          "id": "1ko3ux0",
+          "parent": "lakehouse",
+          "source": "lakehouse.catalog",
+          "target": "lakehouse.tableFormat",
+          "label": "resolves a table to its format + location",
+          "relations": [
+            "1tl0x5y"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "qmrjf9",
+          "parent": "lakehouse",
+          "source": "lakehouse.catalog",
+          "target": "lakehouse.objectStorage",
+          "label": "vends short-lived scoped credentials for",
+          "relations": [
+            "jvefnj"
+          ],
+          "color": "amber",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "vends"
+        },
+        {
+          "id": "1tnkhx9",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.catalog",
+          "label": "resolves tables through",
+          "relations": [
+            "lwdcta"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "resolves"
+        },
+        {
+          "id": "rdpg8j",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.tableFormat",
+          "label": "reads tables via the format",
+          "relations": [
+            "xd9n6a"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "tnia77",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.lineage",
+          "label": "emits column-level lineage (planning-time)",
+          "relations": [
+            "q6exs6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "m6bsvn",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.observability",
+          "label": "emits traces + metrics",
+          "relations": [
+            "zvjzmf"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "1nn750y",
+          "parent": "lakehouse",
+          "source": "lakehouse.tableFormat",
+          "target": "lakehouse.fileFormat",
+          "label": "stored as data files encoded in",
+          "relations": [
+            "1hr81g2"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "1u0v1f",
+          "parent": "lakehouse",
+          "source": "lakehouse.fileFormat",
+          "target": "lakehouse.objectStorage",
+          "label": "bytes persisted in",
+          "relations": [
+            "4idelg"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "1qkmdr7",
+          "parent": null,
+          "source": "deltaSpec",
+          "target": "lakehouse.tableFormat",
+          "label": "specifies the table-format capability",
+          "relations": [
+            "196zd7g"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "67455y",
+          "parent": null,
+          "source": "icebergSpec",
+          "target": "lakehouse.tableFormat",
+          "label": "specifies the table-format capability",
+          "relations": [
+            "lx0aor"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "cp7myr",
+          "parent": null,
+          "source": "ucSpec",
+          "target": "lakehouse.catalog",
+          "label": "specifies the catalog capability",
+          "relations": [
+            "1uhph00"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "dton7c",
+          "parent": null,
+          "source": "icebergRestSpec",
+          "target": "lakehouse.catalog",
+          "label": "specifies the catalog capability",
+          "relations": [
+            "1lrsklu"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "1p0amr9",
+          "parent": null,
+          "source": "parquetSpec",
+          "target": "lakehouse.fileFormat",
+          "label": "specifies the file-format capability",
+          "relations": [
+            "nfx7x9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "1ol3q9j",
+          "parent": null,
+          "source": "s3Api",
+          "target": "lakehouse.objectStorage",
+          "label": "specifies the object-storage capability",
+          "relations": [
+            "1dnkpi1"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "ipwqn",
+          "parent": null,
+          "source": "datafusion",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "5pt8pf"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "epvgru",
+          "parent": null,
+          "source": "datafusion",
+          "target": "s3Api",
+          "label": "reads data files via",
+          "relations": [
+            "mdob6x"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "zt1zxe",
+          "parent": null,
+          "source": "apacheSpark",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1pt0u7e"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "rqwp5z",
+          "parent": null,
+          "source": "apacheSpark",
+          "target": "icebergRestSpec",
+          "label": "resolves Iceberg tables via",
+          "relations": [
+            "gjxi5q"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "wv3hil",
+          "parent": null,
+          "source": "lakekeeper",
+          "target": "icebergRestSpec",
+          "label": "implements",
+          "relations": [
+            "3qt3ra"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1pglyt6",
+          "parent": null,
+          "source": "unityCatalogOSS",
+          "target": "ucSpec",
+          "label": "implements",
+          "relations": [
+            "171bzvb"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1mh655q",
+          "parent": null,
+          "source": "minio",
+          "target": "s3Api",
+          "label": "implements",
+          "relations": [
+            "1sw55ld"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1t5h2fk",
+          "parent": null,
+          "source": "mlflow",
+          "target": "lakehouse.modelTracking",
+          "label": "realizes the model-tracking capability",
+          "relations": [
+            "lzakkx"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "deltaSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1qkmdr7"
+          ],
+          "title": "Delta Lake",
+          "modelRef": "deltaSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open table-format specification: ACID transactions, schema evolution, and time travel over object storage."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://delta.io"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "icebergSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "67455y"
+          ],
+          "title": "Apache Iceberg",
+          "modelRef": "icebergSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open table-format specification for huge analytic datasets, with hidden partitioning and snapshot isolation."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "parquetSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1p0amr9"
+          ],
+          "title": "Apache Parquet",
+          "modelRef": "parquetSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open columnar file-format specification — the dominant on-disk encoding for analytic table data."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://parquet.apache.org"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "ipwqn",
+            "epvgru"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
+          },
+          "tags": [
+            "library"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "apacheSpark",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "zt1zxe",
+            "rqwp5z"
+          ],
+          "title": "Apache Spark",
+          "modelRef": "apacheSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Unified analytics engine for large-scale data processing."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://spark.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "lakekeeper",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "wv3hil"
+          ],
+          "title": "Lakekeeper",
+          "modelRef": "lakekeeper",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Apache-licensed, Rust-native catalog server implementing the Iceberg REST Catalog specification."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://lakekeeper.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogOSS",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1pglyt6"
+          ],
+          "title": "Unity Catalog (OSS)",
+          "modelRef": "unityCatalogOSS",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The open-source reference server implementing the Unity Catalog specification."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "minio",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1mh655q"
+          ],
+          "title": "MinIO",
+          "modelRef": "minio",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "S3-compatible object storage you can self-host — an implementation of the S3 API."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://min.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "mlflow",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1t5h2fk"
+          ],
+          "title": "MLflow",
+          "modelRef": "mlflow",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://mlflow.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "icebergRestSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "rqwp5z",
+            "wv3hil"
+          ],
+          "outEdges": [
+            "dton7c"
+          ],
+          "title": "Iceberg REST Catalog",
+          "modelRef": "icebergRestSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open REST specification for an Iceberg catalog — the API engines use to resolve and commit Iceberg tables."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org/concepts/catalog/"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "ucSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1pglyt6"
+          ],
+          "outEdges": [
+            "cp7myr"
+          ],
+          "title": "Unity Catalog",
+          "modelRef": "ucSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open catalog specification for data & AI — a REST API governing tables, files, functions, and models across engines."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "s3Api",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "epvgru",
+            "1mh655q"
+          ],
+          "outEdges": [
+            "1ol3q9j"
+          ],
+          "title": "S3 API",
+          "modelRef": "s3Api",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement — the seam between the lakehouse and infrastructure."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "lakehouse.queryEngine",
+            "lakehouse.modelTracking",
+            "lakehouse.governance",
+            "lakehouse.catalog",
+            "lakehouse.lineage",
+            "lakehouse.observability",
+            "lakehouse.tableFormat",
+            "lakehouse.fileFormat",
+            "lakehouse.objectStorage"
+          ],
+          "inEdges": [
+            "1qkmdr7",
+            "67455y",
+            "cp7myr",
+            "dton7c",
+            "1p0amr9",
+            "1ol3q9j",
+            "ipwqn",
+            "zt1zxe",
+            "1t5h2fk"
+          ],
+          "outEdges": [],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "depth": 1,
+          "navigateTo": "capabilityMap"
+        },
+        {
+          "id": "lakehouse.queryEngine",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "ipwqn",
+            "zt1zxe"
+          ],
+          "outEdges": [
+            "y1w3b4",
+            "1tnkhx9",
+            "rdpg8j",
+            "tnia77",
+            "m6bsvn"
+          ],
+          "title": "Query engine",
+          "modelRef": "lakehouse.queryEngine",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.modelTracking",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1t5h2fk"
+          ],
+          "outEdges": [],
+          "title": "Model tracking",
+          "modelRef": "lakehouse.modelTracking",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Tracks experiments, versions models, and governs their promotion to production."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.governance",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "y1w3b4"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability",
+          "navigateTo": "governanceModel"
+        },
+        {
+          "id": "lakehouse.catalog",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1tnkhx9",
+            "cp7myr",
+            "dton7c"
+          ],
+          "outEdges": [
+            "1ko3ux0",
+            "qmrjf9"
+          ],
+          "title": "Catalog",
+          "modelRef": "lakehouse.catalog",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/catalog-plane.md"
+          },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.lineage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "tnia77"
+          ],
+          "outEdges": [],
+          "title": "Lineage",
+          "modelRef": "lakehouse.lineage",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/lineage-plane.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.observability",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "m6bsvn"
+          ],
+          "outEdges": [],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.tableFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1ko3ux0",
+            "rdpg8j",
+            "1qkmdr7",
+            "67455y"
+          ],
+          "outEdges": [
+            "1nn750y"
+          ],
+          "title": "Open table format",
+          "modelRef": "lakehouse.tableFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A metadata layer that gives object-storage files ACID table semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.fileFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1nn750y",
+            "1p0amr9"
+          ],
+          "outEdges": [
+            "1u0v1f"
+          ],
+          "title": "File format",
+          "modelRef": "lakehouse.fileFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The on-disk encoding of the bytes a table's data files are made of."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.objectStorage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "qmrjf9",
+            "1u0v1f",
+            "1ol3q9j"
+          ],
+          "outEdges": [],
+          "title": "Object storage",
+          "modelRef": "lakehouse.objectStorage",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "omnigent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Omnigent",
+          "modelRef": "omnigent",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/omnigent-ai/omnigent/99e25f6de1ae8c9f31f2a70efbfc09d95fd8884c/editors/vscode/media/omnigent-icon.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://omnigent.ai"
+            }
+          ],
+          "kind": "implementation"
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
+            ]
+          }
+        ]
+      },
+      "hash": "OHSSYL_X8Kp9kZJcQIZl0LpHer56DlVXiyrN2glUroQ"
+    },
+    "capabilityMap": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "viewOf": "lakehouse",
+      "_stage": "computed",
+      "sourcePath": "views.likec4",
+      "description": {
+        "txt": "The capability chain: query engine -> catalog -> table format -> file format -> object storage, with governance, lineage, and observability attaching at planning time. Delta & Iceberg are peer specifications of the table-format capability."
+      },
+      "title": "Reference Open Lakehouse — capabilities",
+      "id": "capabilityMap",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "7v3snl",
+          "parent": null,
+          "source": "practitioner",
+          "target": "lakehouse.queryEngine",
+          "label": "queries + governs data",
+          "relations": [
+            "5pe79a"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "1o5tqxj",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse.lineage",
+          "label": "investigates",
+          "relations": [
+            "gxybq2"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "1qkmdr7",
+          "parent": null,
+          "source": "deltaSpec",
+          "target": "lakehouse.tableFormat",
+          "label": "specifies the table-format capability",
+          "relations": [
+            "196zd7g"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "67455y",
+          "parent": null,
+          "source": "icebergSpec",
+          "target": "lakehouse.tableFormat",
+          "label": "specifies the table-format capability",
+          "relations": [
+            "lx0aor"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "cp7myr",
+          "parent": null,
+          "source": "ucSpec",
+          "target": "lakehouse.catalog",
+          "label": "specifies the catalog capability",
+          "relations": [
+            "1uhph00"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "dton7c",
+          "parent": null,
+          "source": "icebergRestSpec",
+          "target": "lakehouse.catalog",
+          "label": "specifies the catalog capability",
+          "relations": [
+            "1lrsklu"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "1p0amr9",
+          "parent": null,
+          "source": "parquetSpec",
+          "target": "lakehouse.fileFormat",
+          "label": "specifies the file-format capability",
+          "relations": [
+            "nfx7x9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "1ol3q9j",
+          "parent": null,
+          "source": "s3Api",
+          "target": "lakehouse.objectStorage",
+          "label": "specifies the object-storage capability",
+          "relations": [
+            "1dnkpi1"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "ipwqn",
+          "parent": null,
+          "source": "datafusion",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "5pt8pf"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "zt1zxe",
+          "parent": null,
+          "source": "apacheSpark",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1pt0u7e"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1t5h2fk",
+          "parent": null,
+          "source": "mlflow",
+          "target": "lakehouse.modelTracking",
+          "label": "realizes the model-tracking capability",
+          "relations": [
+            "lzakkx"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "y1w3b4",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.governance",
+          "label": "policy decided + enforced in-plan (planning-time)",
+          "relations": [
+            "ulwbty"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "enforces"
+        },
+        {
+          "id": "1ko3ux0",
+          "parent": "lakehouse",
+          "source": "lakehouse.catalog",
+          "target": "lakehouse.tableFormat",
+          "label": "resolves a table to its format + location",
+          "relations": [
+            "1tl0x5y"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "qmrjf9",
+          "parent": "lakehouse",
+          "source": "lakehouse.catalog",
+          "target": "lakehouse.objectStorage",
+          "label": "vends short-lived scoped credentials for",
+          "relations": [
+            "jvefnj"
+          ],
+          "color": "amber",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "vends"
+        },
+        {
+          "id": "1tnkhx9",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.catalog",
+          "label": "resolves tables through",
+          "relations": [
+            "lwdcta"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "resolves"
+        },
+        {
+          "id": "rdpg8j",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.tableFormat",
+          "label": "reads tables via the format",
+          "relations": [
+            "xd9n6a"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "tnia77",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.lineage",
+          "label": "emits column-level lineage (planning-time)",
+          "relations": [
+            "q6exs6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "m6bsvn",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.observability",
+          "label": "emits traces + metrics",
+          "relations": [
+            "zvjzmf"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "1nn750y",
+          "parent": "lakehouse",
+          "source": "lakehouse.tableFormat",
+          "target": "lakehouse.fileFormat",
+          "label": "stored as data files encoded in",
+          "relations": [
+            "1hr81g2"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "1u0v1f",
+          "parent": "lakehouse",
+          "source": "lakehouse.fileFormat",
+          "target": "lakehouse.objectStorage",
+          "label": "bytes persisted in",
+          "relations": [
+            "4idelg"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "practitioner",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "7v3snl"
+          ],
+          "title": "Data practitioner",
+          "modelRef": "practitioner",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
+          },
+          "tags": [],
+          "kind": "person"
+        },
+        {
+          "id": "agent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1o5tqxj"
+          ],
+          "title": "AI agent",
+          "modelRef": "agent",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
+          },
+          "tags": [],
+          "kind": "person"
+        },
+        {
+          "id": "deltaSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1qkmdr7"
+          ],
+          "title": "Delta Lake",
+          "modelRef": "deltaSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open table-format specification: ACID transactions, schema evolution, and time travel over object storage."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://delta.io"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "icebergSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "67455y"
+          ],
+          "title": "Apache Iceberg",
+          "modelRef": "icebergSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open table-format specification for huge analytic datasets, with hidden partitioning and snapshot isolation."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "ucSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "cp7myr"
+          ],
+          "title": "Unity Catalog",
+          "modelRef": "ucSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open catalog specification for data & AI — a REST API governing tables, files, functions, and models across engines."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "icebergRestSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "dton7c"
+          ],
+          "title": "Iceberg REST Catalog",
+          "modelRef": "icebergRestSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open REST specification for an Iceberg catalog — the API engines use to resolve and commit Iceberg tables."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org/concepts/catalog/"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "parquetSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1p0amr9"
+          ],
+          "title": "Apache Parquet",
+          "modelRef": "parquetSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open columnar file-format specification — the dominant on-disk encoding for analytic table data."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://parquet.apache.org"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "s3Api",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ol3q9j"
+          ],
+          "title": "S3 API",
+          "modelRef": "s3Api",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement — the seam between the lakehouse and infrastructure."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "ipwqn"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
+          },
+          "tags": [
+            "library"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "apacheSpark",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "zt1zxe"
+          ],
+          "title": "Apache Spark",
+          "modelRef": "apacheSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Unified analytics engine for large-scale data processing."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://spark.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "mlflow",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1t5h2fk"
+          ],
+          "title": "MLflow",
+          "modelRef": "mlflow",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://mlflow.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "lakehouse.queryEngine",
+            "lakehouse.modelTracking",
+            "lakehouse.governance",
+            "lakehouse.catalog",
+            "lakehouse.lineage",
+            "lakehouse.observability",
+            "lakehouse.tableFormat",
+            "lakehouse.fileFormat",
+            "lakehouse.objectStorage"
+          ],
+          "inEdges": [
+            "7v3snl",
+            "1o5tqxj",
+            "1qkmdr7",
+            "67455y",
+            "cp7myr",
+            "dton7c",
+            "1p0amr9",
+            "1ol3q9j",
+            "ipwqn",
+            "zt1zxe",
+            "1t5h2fk"
+          ],
+          "outEdges": [],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "depth": 1
+        },
+        {
+          "id": "lakehouse.queryEngine",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "7v3snl",
+            "ipwqn",
+            "zt1zxe"
+          ],
+          "outEdges": [
+            "y1w3b4",
+            "1tnkhx9",
+            "rdpg8j",
+            "tnia77",
+            "m6bsvn"
+          ],
+          "title": "Query engine",
+          "modelRef": "lakehouse.queryEngine",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.modelTracking",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1t5h2fk"
+          ],
+          "outEdges": [],
+          "title": "Model tracking",
+          "modelRef": "lakehouse.modelTracking",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Tracks experiments, versions models, and governs their promotion to production."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.governance",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "y1w3b4"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability",
+          "navigateTo": "governanceModel"
+        },
+        {
+          "id": "lakehouse.catalog",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "cp7myr",
+            "dton7c",
+            "1tnkhx9"
+          ],
+          "outEdges": [
+            "1ko3ux0",
+            "qmrjf9"
+          ],
+          "title": "Catalog",
+          "modelRef": "lakehouse.catalog",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/catalog-plane.md"
+          },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.lineage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1o5tqxj",
+            "tnia77"
+          ],
+          "outEdges": [],
+          "title": "Lineage",
+          "modelRef": "lakehouse.lineage",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/lineage-plane.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.observability",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "m6bsvn"
+          ],
+          "outEdges": [],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.tableFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1qkmdr7",
+            "67455y",
+            "1ko3ux0",
+            "rdpg8j"
+          ],
+          "outEdges": [
+            "1nn750y"
+          ],
+          "title": "Open table format",
+          "modelRef": "lakehouse.tableFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A metadata layer that gives object-storage files ACID table semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.fileFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1p0amr9",
+            "1nn750y"
+          ],
+          "outEdges": [
+            "1u0v1f"
+          ],
+          "title": "File format",
+          "modelRef": "lakehouse.fileFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The on-disk encoding of the bytes a table's data files are made of."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.objectStorage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1ol3q9j",
+            "qmrjf9",
+            "1u0v1f"
           ],
           "outEdges": [],
           "title": "Object storage",
@@ -3688,16 +5223,24 @@
       "notation": {
         "nodes": [
           {
-            "title": "OSS foundation / format",
+            "title": "Implementation (software / service)",
             "shape": "cylinder",
             "color": "muted",
             "kinds": [
-              "foundation"
+              "implementation"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
             ]
           }
         ]
       },
-      "hash": "_YUYDuZz6Gl9fW8wQzpFrqFi6LaYb5L3wc5MjcXG4g8"
+      "hash": "pksByMI8_VrrlzEOemZCmFDso9PUoZvipZWGinDU58Q"
     },
     "governanceModel": {
       "_type": "element",
@@ -3722,7 +5265,7 @@
           "target": "lakehouse.governance.pip",
           "label": "serves resource facts (identity, tags, locations)",
           "relations": [
-            "1wt8s51"
+            "wji2ez"
           ],
           "color": "gray",
           "line": "dashed",

@@ -16,6 +16,8 @@ stay in each repo's own `docs/adr/`.
 | [ADR-0001](./ADR-0001-likec4-over-structurizr.md) | LikeC4 over Structurizr for the architecture model | Accepted | 2026-07-13 |
 | [ADR-0002](./ADR-0002-facts-here-narrative-in-writing.md) | Architectural facts live here; narrative stays in the writing estate | Accepted | 2026-07-13 |
 | [ADR-0003](./ADR-0003-logical-abstract-deployment-concrete.md) | Logical layer is abstract; deployment layer is concrete | Accepted | 2026-07-13 |
+| [ADR-0004](./ADR-0004-model-driven-information-system.md) | The docs site is a model-driven information system | Proposed | 2026-07-18 |
+| [ADR-0005](./ADR-0005-capability-specification-implementation.md) | Capability / specification / implementation typing | Accepted | 2026-07-18 |
 
 ---
 

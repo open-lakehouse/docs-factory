@@ -23,10 +23,17 @@ specification {
     }
   }
 
-  // A protocol (specification)
+  // A specification: an open protocol or format definition — the contract/API
+  // side of the stack (Backstage's first-class "API"). Pure definition, never
+  // compute: "just libraries and definitions". Delta / Iceberg (table-format
+  // specs), the Iceberg REST & Unity Catalog catalog specs, Parquet, the S3 API.
+  // NB: the element-kind id is `openSpecification` because `specification` is a
+  // reserved block keyword; its notation/label is simply "Specification".
   element openSpecification {
+    notation "Specification / open standard"
     style {
-      color primary
+      color sky
+      shape rectangle
     }
   }
 
@@ -40,10 +47,13 @@ specification {
     }
   }
 
-  // An external OSS technology the lakehouse assembles on, or a concrete open
-  // table format (Delta, Iceberg) realizing the tableFormat capability.
-  element foundation {
-    notation "OSS foundation / format"
+  // A concrete implementation: software that realizes a capability and/or
+  // implements a specification. May run as a service or embed as a library.
+  // The compute posture is carried by the deployment layer (a running instance
+  // is a `service`/`datastore` node) plus an optional #service / #library /
+  // #infra marker for third-party tech that never deploys in our estate.
+  element implementation {
+    notation "Implementation (software / service)"
     style {
       shape cylinder
       color muted
@@ -82,10 +92,15 @@ specification {
   // --- Relationship kinds --------------------------------------------------
 
   relationship flows                       // generic data / control flow
-  relationship realizes { line dotted }    // concrete realizes abstract
+  relationship realizes { line dotted }    // concrete realizes abstract capability
   relationship resolves                    // query engine resolves via catalog
   relationship reads                       // reads bytes / files
   relationship vends { color amber }       // catalog vends a scoped credential
+
+  // Altitude edges (concept <- specification <- implementation):
+  relationship specifies                   // a specification specifies a capability
+  relationship implements { line dotted }  // an implementation implements a spec (Backstage providesApi)
+  relationship consumes { line dashed }    // an implementation consumes a spec (Backstage consumesApi)
 
   // Zero-trust edges:
   relationship administers                 // PAP administers policy for the PDP
@@ -105,6 +120,12 @@ specification {
   tag pdp
   tag pep
   tag pip
+
+  // Implementation compute posture (intrinsic; complements the deployment layer).
+  // #service = runs as a server, #library = embeddable, #infra = managed infra.
+  tag service
+  tag library
+  tag infra
 
   // Trust posture of a DEPLOYMENT topology / node (never of a logical element).
   tag trusted

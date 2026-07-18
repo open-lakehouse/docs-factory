@@ -6,28 +6,44 @@ views {
   // --- The reference lakehouse in context ----------------------------------
   view referenceContext {
     title "Reference Open Lakehouse — context"
-    description "The abstract, technology-agnostic lakehouse: its capabilities, the people who use it, and the OSS foundations & open table formats it assembles on. Foundations attach to the capability they realize (DataFusion <- query engine, Cedar <- PDP, ...), not to the lakehouse as a whole."
+    description "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping)."
 
     include
       practitioner,
       platformEngineer,
       agent,
-    // expand the lakehouse into its capabilities so foundation edges land on
-    // the right capability rather than rolling up to the parent box
+    // expand the lakehouse into its capabilities
       lakehouse,
       lakehouse.*,
 
-    // OSS foundations attach to the capability they realize
-      unityCatalog,
-      deltaLake,
-      iceberg,
+    // the zero-trust roles get their own view; keep them collapsed here
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  // --- Technology catalog: capabilities <- specifications <- implementations
+  view technologyCatalog {
+    title "Technology catalog — capabilities, specifications, implementations"
+    description "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #infra) is intrinsic; running instances live in the deployment views."
+
+    include
+      lakehouse.*,
+    // specifications (the open standards / APIs)
+      deltaSpec,
+      icebergSpec,
+      ucSpec,
+      icebergRestSpec,
+      parquetSpec,
+      s3Api,
+    // implementations (concrete software)
       datafusion,
       apacheSpark,
       lakekeeper,
+      unityCatalogOSS,
+      minio,
       mlflow,
       omnigent,
 
-    // the zero-trust roles get their own view; keep them collapsed here
     exclude lakehouse.governance.*
     autoLayout LeftRight
   }
@@ -35,7 +51,7 @@ views {
   // --- Capability map: inside the lakehouse --------------------------------
   view capabilityMap of lakehouse {
     title "Reference Open Lakehouse — capabilities"
-    description "The capability chain: query engine -> catalog -> table format -> object storage, with governance and lineage attaching at planning time. Delta & Iceberg are peer formats realizing the table-format capability."
+    description "The capability chain: query engine -> catalog -> table format -> file format -> object storage, with governance, lineage, and observability attaching at planning time. Delta & Iceberg are peer specifications of the table-format capability."
 
     include *
 

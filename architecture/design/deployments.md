@@ -45,10 +45,9 @@ BYPASSED** — only coarse access is enforced. Shown as an explicit edge. The
 governed table) is the `#designed` mitigation.
 
 ### 3. browser-wasm (client-side) — prototype
-`#untrusted #prototype`. A client-side WASM query engine (**axon**) runs in the
-untrusted browser. The catalog issues **signed URLs / proxies bytes** rather than
-vending raw credentials — *no raw cloud secrets reach the browser* (aligns to
-axon's ADR-0002 signed-URL posture).
+`#untrusted #prototype`. A client-side WASM query engine runs in the untrusted
+browser. The catalog issues **signed URLs / proxies bytes** rather than vending
+raw credentials — *no raw cloud secrets reach the browser*.
 
 ## What isn't modeled
 

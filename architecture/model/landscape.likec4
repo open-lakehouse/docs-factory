@@ -1,8 +1,9 @@
 // LOGICAL LAYER (abstract) — the reference open lakehouse.
 //
-// Technology-agnostic capabilities and the external OSS they assemble on, plus
-// the people who use the lakehouse. NO service/repo/technology names appear here
-// — those live only in the deployment layer. The governance capability's zero-
+// Technology-agnostic capabilities plus the specifications & implementations
+// they assemble on, and the people who use the lakehouse. OUR service/repo names
+// appear only in the deployment layer; third-party specs/impls form a technology
+// catalog mapped onto the capabilities. The governance capability's zero-
 // trust roles live in governance.likec4; cross-capability relationships live in
 // relationships.likec4.
 
@@ -74,7 +75,21 @@ model {
         semantics — ACID transactions, schema evolution, and time travel.
 
         It is technology-agnostic in the model: Delta Lake and Apache Iceberg are
-        peer concrete formats that realize this capability.
+        peer specifications of this capability, implemented by concrete engines
+        and libraries.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
+    fileFormat = capability "File format" {
+      summary "The on-disk encoding of the bytes a table's data files are made of."
+      description "
+        A file format is the on-disk encoding of a data file — how rows, columns,
+        and their types are laid out as bytes. Columnar formats (Parquet, ORC) and
+        row formats (Avro) are peer specifications of this capability.
+
+        It sits beneath the table format: the table format tracks which files make
+        up a table; the file format decides how each of those files is encoded.
       "
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
@@ -119,12 +134,12 @@ model {
       metadata { canonicalDoc "design/governance.md" }
     }
 
-    mlLifecycle = capability "ML lifecycle" {
+    modelTracking = capability "Model tracking" {
       summary "Tracks experiments, versions models, and governs their promotion to production."
       description "
-        The ML-lifecycle capability manages machine-learning artifacts over time:
-        experiment tracking, a model registry with versions and stages, and the
-        path from a trained model to a governed, deployable one.
+        Model tracking manages machine-learning artifacts over time: experiment
+        tracking, a model registry with versions and stages, and the path from a
+        trained model to a governed, deployable one.
 
         It sits alongside the query/governance capabilities: models are data
         assets too, catalogued and governed like tables rather than living in a
@@ -132,56 +147,102 @@ model {
       "
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
-  }
 
-  // --- OSS foundations & concrete formats it assembles on ------------------
-  // External technologies that realize a capability. Each is co-located with its
-  // `realizes` edge to the capability it realizes (not to the lakehouse as a
-  // whole). Omnigent is the exception: agent tooling, so it carries no edge.
-  //
-  // Icons are the official project marks (LF AI & Data / Apache), referenced by
-  // a commit-pinned raw URL. A remote URL (not a local file) is deliberate: the
-  // committed, portable dist/model.json is browser-consumed, and LikeC4's JSON
-  // export serializes a local icon as an absolute file:// path (machine-specific,
-  // unloadable in a browser). The pin guards against upstream artwork moving.
+    observability = capability "Observability" {
+      summary "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+      description "
+        Observability is the cross-cutting capability that makes the running
+        platform legible: distributed traces, metrics, and logs emitted by the
+        query engine and services, so operators can reason about latency,
+        failures, and cost.
 
-  unityCatalog = foundation "Unity Catalog" {
-    description "Open source catalog for data & AI — governs tables, files, functions, and models across engines."
-    link https://www.unitycatalog.io
-    style {
-      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+        Like governance and lineage it attaches across the stack rather than
+        sitting in the query path.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
     }
   }
-  unityCatalog -[realizes]-> lakehouse.catalog "realizes the catalog capability"
 
-  deltaLake = foundation "Delta Lake" {
-    description "Open table format bringing ACID transactions, schema evolution, and time travel to object storage."
+  // --- The technology catalog: specifications & implementations ------------
+  // Concrete technology mapped onto the reference architecture (see ADR-0005).
+  // A `specification` is an open standard / API (no compute); it `specifies` the
+  // capability it defines. An `implementation` is concrete software; it either
+  // `implements` a specification or `realizes` a capability directly (query
+  // engines have no shared spec). Compute posture is an optional #service /
+  // #library / #infra marker; running instances live in the deployment layer.
+  //
+  // This is a first, deliberately shallow set of examples of the new typing —
+  // not an exhaustive catalog. It grows as content references more of it.
+  //
+  // Icons are the official project marks, referenced by a commit-pinned raw URL.
+  // A remote URL (not a local file) is deliberate: the committed, portable
+  // dist/model.json is browser-consumed, and LikeC4's JSON export serializes a
+  // local icon as an absolute file:// path (unloadable in a browser). The pin
+  // guards against upstream artwork moving.
+
+  // Table-format specifications ---------------------------------------------
+  deltaSpec = openSpecification "Delta Lake" {
+    description "Open table-format specification: ACID transactions, schema evolution, and time travel over object storage."
     link https://delta.io
     style {
       icon https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg
     }
   }
-  deltaLake -[realizes]-> lakehouse.tableFormat "realizes the table-format capability"
+  deltaSpec -[specifies]-> lakehouse.tableFormat "specifies the table-format capability"
 
-  iceberg = foundation "Apache Iceberg" {
-    description "Open table format for huge analytic datasets, with hidden partitioning and snapshot isolation."
+  icebergSpec = openSpecification "Apache Iceberg" {
+    description "Open table-format specification for huge analytic datasets, with hidden partitioning and snapshot isolation."
     link https://iceberg.apache.org
     style {
       icon https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png
     }
   }
-  iceberg -[realizes]-> lakehouse.tableFormat "realizes the table-format capability"
+  icebergSpec -[specifies]-> lakehouse.tableFormat "specifies the table-format capability"
 
-  datafusion = foundation "Apache DataFusion" {
-    description "Extensible, high-performance query engine in Rust using Apache Arrow."
+  // Catalog specifications ---------------------------------------------------
+  ucSpec = openSpecification "Unity Catalog" {
+    description "Open catalog specification for data & AI — a REST API governing tables, files, functions, and models across engines."
+    link https://www.unitycatalog.io
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+    }
+  }
+  ucSpec -[specifies]-> lakehouse.catalog "specifies the catalog capability"
+
+  icebergRestSpec = openSpecification "Iceberg REST Catalog" {
+    description "Open REST specification for an Iceberg catalog — the API engines use to resolve and commit Iceberg tables."
+    link https://iceberg.apache.org/concepts/catalog/
+  }
+  icebergRestSpec -[specifies]-> lakehouse.catalog "specifies the catalog capability"
+
+  // File-format specification ------------------------------------------------
+  parquetSpec = openSpecification "Apache Parquet" {
+    description "Open columnar file-format specification — the dominant on-disk encoding for analytic table data."
+    link https://parquet.apache.org
+  }
+  parquetSpec -[specifies]-> lakehouse.fileFormat "specifies the file-format capability"
+
+  // Object-storage interface — the canonical infrastructure example (ADR-0005).
+  s3Api = openSpecification "S3 API" {
+    description "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement — the seam between the lakehouse and infrastructure."
+    link https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html
+  }
+  s3Api -[specifies]-> lakehouse.objectStorage "specifies the object-storage capability"
+
+  // Query-engine implementations — no shared spec, so they realize directly.
+  datafusion = implementation "Apache DataFusion" {
+    #library
+    description "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
     link https://datafusion.apache.org
     style {
       icon https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg
     }
   }
   datafusion -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  datafusion -[consumes]-> s3Api "reads data files via"
 
-  apacheSpark = foundation "Apache Spark" {
+  apacheSpark = implementation "Apache Spark" {
+    #service
     description "Unified analytics engine for large-scale data processing."
     link https://spark.apache.org
     style {
@@ -190,28 +251,52 @@ model {
     }
   }
   apacheSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  apacheSpark -[consumes]-> icebergRestSpec "resolves Iceberg tables via"
 
-  lakekeeper = foundation "Lakekeeper" {
-    description "Apache-licensed, Rust-native implementation of the Apache Iceberg REST Catalog specification."
+  // Catalog implementations --------------------------------------------------
+  lakekeeper = implementation "Lakekeeper" {
+    #service
+    description "Apache-licensed, Rust-native catalog server implementing the Iceberg REST Catalog specification."
     link https://lakekeeper.io
     style {
       icon https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg
     }
   }
-  lakekeeper -[realizes]-> lakehouse.catalog "realizes the catalog capability"
+  lakekeeper -[implements]-> icebergRestSpec "implements"
 
-  mlflow = foundation "MLflow" {
+  unityCatalogOSS = implementation "Unity Catalog (OSS)" {
+    #service
+    description "The open-source reference server implementing the Unity Catalog specification."
+    link https://github.com/unitycatalog/unitycatalog
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+    }
+  }
+  unityCatalogOSS -[implements]-> ucSpec "implements"
+
+  // Object-storage implementation (infra) ------------------------------------
+  minio = implementation "MinIO" {
+    #infra
+    description "S3-compatible object storage you can self-host — an implementation of the S3 API."
+    link https://min.io
+  }
+  minio -[implements]-> s3Api "implements"
+
+  // Model-tracking implementation --------------------------------------------
+  mlflow = implementation "MLflow" {
+    #service
     description "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment."
     link https://mlflow.org
     style {
       icon https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg
     }
   }
-  mlflow -[realizes]-> lakehouse.mlLifecycle "realizes the ML-lifecycle capability"
+  mlflow -[realizes]-> lakehouse.modelTracking "realizes the model-tracking capability"
 
   // Omnigent — Databricks' Apache-2.0 AI-agent meta-harness. Deliberately has NO
-  // `realizes` edge: it is agent tooling, not a lakehouse capability.
-  omnigent = foundation "Omnigent" {
+  // capability edge: it is agent tooling, not a lakehouse capability.
+  omnigent = implementation "Omnigent" {
+    #service
     description "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses (Claude Code, Codex, etc.). Apache 2.0, from Databricks."
     link https://omnigent.ai
     style {

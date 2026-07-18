@@ -18,6 +18,7 @@ import TerminalHero from "./components/TerminalHero";
 import BlogTable from "./components/BlogTable";
 import { docNav, docNeighbors, firstDocForProject } from "./sidebar";
 import MdxProvider from "./MdxProvider";
+import { ExplainIndex, ExplainPage } from "./ExplainPage";
 
 function TagList({ tags }: { tags: string[] }) {
   if (tags.length === 0) return null;
@@ -379,6 +380,8 @@ export default function App() {
       <Route path="/blog/:slug" element={<BlogPost />} />
       <Route path="/docs" element={<DocsIndex />} />
       <Route path="/docs/:project/:bucket/:slug" element={<DocPage />} />
+      <Route path="/explain" element={<ExplainIndex />} />
+      <Route path="/explain/:elementId" element={<ExplainPage />} />
     </Routes>
   );
 }

@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import path from "node:path";
 import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
+import { LikeC4VitePlugin } from "likec4/vite-plugin";
 import mdx from "@mdx-js/rollup";
 import remarkGfm from "remark-gfm";
 import remarkDirective from "remark-directive";
@@ -69,6 +70,14 @@ export default defineConfig({
     },
     react(),
     tailwindcss(),
+    // Serve the estate architecture model as virtual modules (likec4:react,
+    // likec4:single-project, …). This replaces a second `codegen react` pass:
+    // one bundled likec4/react instance backs both <ReactLikeC4> and the
+    // custom-node primitives, so there is no dual-context mismatch. Blog
+    // diagrams keep using their own generated module (src/likec4.generated.jsx).
+    LikeC4VitePlugin({
+      workspace: path.resolve(__dirname, "../architecture/model"),
+    }),
   ],
   resolve: {
     alias: {

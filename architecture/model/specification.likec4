@@ -4,6 +4,14 @@
 // REF-FREE: names and edges only — never a commit SHA or release tag.
 // MATURITY-HONEST: designed-but-not-built carries #designed (or #prototype);
 // the tag colors render those amber so the model never overstates what exists.
+//
+// METADATA CONVENTIONS (free-form key/values on elements):
+//   canonicalDoc  — path (relative to architecture/) of the NAVIGATION design
+//                   doc for this element; used by canonicals.yaml / update skill.
+//   explainDoc    — path (relative to architecture/) of the EXPLANATION-PAGE
+//                   body rendered by the site's /explain/<id> route. Distinct
+//                   from canonicalDoc so navigation and explanation can diverge.
+//   sourceRepo    — org/repo identity of a deployment service.
 
 specification {
 

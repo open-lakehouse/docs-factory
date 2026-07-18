@@ -48,7 +48,10 @@ model {
 
       link https://www.openlakehouse.io/technologies/catalogs
 
-      metadata { canonicalDoc "design/catalog-plane.md" }
+      metadata {
+        canonicalDoc "design/catalog-plane.md"
+        explainDoc "explain/catalog.md"
+      }
     }
 
     queryEngine = capability "Query engine" {
@@ -203,6 +206,7 @@ model {
   ucSpec = openSpecification "Unity Catalog" {
     description "Open catalog specification for data & AI — a REST API governing tables, files, functions, and models across engines."
     link https://www.unitycatalog.io
+    metadata { explainDoc "explain/unity-catalog.md" }
     style {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }

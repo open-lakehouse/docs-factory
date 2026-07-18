@@ -90,6 +90,12 @@ export default function Shell({
             >
               Blog
             </NavLink>
+            <NavLink
+              to="/explain"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
+              Explain
+            </NavLink>
           </nav>
           <ThemeToggle />
         </header>

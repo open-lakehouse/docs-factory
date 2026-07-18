@@ -1,0 +1,106 @@
+// Scoped element views for the site's /explain pages. One `view of <element>`
+// per capability and specification, each an ad-hoc neighborhood (`include *` =
+// the element plus its direct neighbors). The preview seeds the explanation
+// diagram with the element's own view (element.defaultView) instead of a
+// whole-estate reference view, so each page is focused on its subject.
+//
+// Convention: id `explain_<element>`, title "<Title> — in context".
+// Governance reuses its existing `governanceModel` view (view of
+// lakehouse.governance), so it is intentionally absent here.
+
+views {
+
+  // --- Capabilities --------------------------------------------------------
+  view explain_catalog of lakehouse.catalog {
+    title "Catalog — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  view explain_queryEngine of lakehouse.queryEngine {
+    title "Query engine — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  view explain_tableFormat of lakehouse.tableFormat {
+    title "Open table format — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  view explain_fileFormat of lakehouse.fileFormat {
+    title "File format — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  view explain_objectStorage of lakehouse.objectStorage {
+    title "Object storage — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  view explain_lineage of lakehouse.lineage {
+    title "Lineage — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  view explain_modelTracking of lakehouse.modelTracking {
+    title "Model tracking — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  view explain_observability of lakehouse.observability {
+    title "Observability — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
+  // --- Specifications ------------------------------------------------------
+  view explain_deltaSpec of deltaSpec {
+    title "Delta Lake — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_icebergSpec of icebergSpec {
+    title "Apache Iceberg — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_ucSpec of ucSpec {
+    title "Unity Catalog — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_icebergRestSpec of icebergRestSpec {
+    title "Iceberg REST Catalog — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_parquetSpec of parquetSpec {
+    title "Apache Parquet — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_s3Api of s3Api {
+    title "S3 API — in context"
+    include *
+    autoLayout LeftRight
+  }
+}

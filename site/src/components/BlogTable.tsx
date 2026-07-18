@@ -1,24 +1,13 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { ChevronDown, ChevronRight, FileText, Layers } from "lucide-react";
+import { Link } from "react-router-dom";
+import TagList from "./TagList";
+import AuthorBadge from "./AuthorBadge";
 import type { BlogSeriesGroup, ContentPage } from "../content";
 
 interface BlogTableProps {
   series: BlogSeriesGroup[];
   standalone: ContentPage[];
-}
-
-function Tags({ tags }: { tags: string[] }) {
-  if (tags.length === 0) return null;
-  return (
-    <div className="tag-list">
-      {tags.map((t) => (
-        <span key={t} className="tag">
-          {t}
-        </span>
-      ))}
-    </div>
-  );
 }
 
 function latestDate(posts: ContentPage[]): string | undefined {
@@ -28,7 +17,6 @@ function latestDate(posts: ContentPage[]): string | undefined {
     .sort((a, b) => b.localeCompare(a))[0];
 }
 
-/** Expanded detail for a single standalone post: summary + metadata grid. */
 function PostDetail({ post }: { post: ContentPage }) {
   const fm = post.frontmatter;
   return (
@@ -38,7 +26,9 @@ function PostDetail({ post }: { post: ContentPage }) {
         {fm.author && (
           <div className="blog-meta">
             <dt>Author</dt>
-            <dd>{fm.author}</dd>
+            <dd>
+              <AuthorBadge byline={fm.author} />
+            </dd>
           </div>
         )}
         {fm.date && (
@@ -63,7 +53,7 @@ function PostDetail({ post }: { post: ContentPage }) {
           <div className="blog-meta blog-meta-wide">
             <dt>Tags</dt>
             <dd>
-              <Tags tags={fm.tags} />
+              <TagList tags={fm.tags} />
             </dd>
           </div>
         )}
@@ -75,7 +65,6 @@ function PostDetail({ post }: { post: ContentPage }) {
   );
 }
 
-/** Expanded detail for a series: its posts listed richly in reading order. */
 function SeriesDetail({ posts }: { posts: ContentPage[] }) {
   return (
     <ol className="blog-series-posts">
@@ -92,14 +81,10 @@ function SeriesDetail({ posts }: { posts: ContentPage[] }) {
               </Link>
               <div className="blog-series-post-meta">
                 {fm.date && <span className="mono">{fm.date}</span>}
-                {fm.status && (
-                  <span className="blog-post-status">{fm.status}</span>
-                )}
+                {fm.status && <span className="blog-post-status">{fm.status}</span>}
               </div>
-              {fm.summary && (
-                <p className="blog-series-post-summary">{fm.summary}</p>
-              )}
-              <Tags tags={fm.tags ?? []} />
+              {fm.summary && <p className="blog-series-post-summary">{fm.summary}</p>}
+              <TagList tags={fm.tags ?? []} />
             </div>
           </li>
         );
@@ -127,16 +112,15 @@ export default function BlogTable({ series, standalone }: BlogTableProps) {
         <tbody>
           {series.map((group) => {
             const id = `series:${group.series}`;
-            const isOpen = open === id;
             return (
               <BlogRow
                 key={id}
-                isOpen={isOpen}
+                isOpen={open === id}
                 onToggle={() => toggle(id)}
                 icon={<Layers className="blog-row-icon" aria-hidden="true" />}
                 title={group.series}
                 titleBadge={`${group.posts.length} posts`}
-                author="—"
+                author={<span className="author-badge-empty">—</span>}
                 date={latestDate(group.posts)}
                 status="series"
                 detail={<SeriesDetail posts={group.posts} />}
@@ -145,17 +129,16 @@ export default function BlogTable({ series, standalone }: BlogTableProps) {
           })}
           {standalone.map((post) => {
             const id = `post:${post.slug}`;
-            const isOpen = open === id;
             const fm = post.frontmatter;
             return (
               <BlogRow
                 key={id}
-                isOpen={isOpen}
+                isOpen={open === id}
                 onToggle={() => toggle(id)}
                 icon={<FileText className="blog-row-icon" aria-hidden="true" />}
                 title={fm.title ?? post.slug}
                 titleHref={post.href}
-                author={fm.author ?? "—"}
+                author={<AuthorBadge byline={fm.author} />}
                 date={fm.date}
                 status={fm.status}
                 detail={<PostDetail post={post} />}
@@ -186,7 +169,7 @@ function BlogRow({
   title: string;
   titleHref?: string;
   titleBadge?: string;
-  author?: string;
+  author?: React.ReactNode;
   date?: string;
   status?: string;
   detail: React.ReactNode;

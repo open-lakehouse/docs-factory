@@ -1,6 +1,11 @@
-import { lazy, Suspense, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useMemo, useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import MetaLinks from "./components/MetaLinks";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import type { ElementModel } from "likec4/model";
 import Shell from "./components/layout/Shell";
 import ExplainSidebar from "./components/layout/ExplainSidebar";
@@ -89,31 +94,7 @@ function contextSections(el: ElementModel): ContextSection[] {
 }
 
 function NeighborLinks({ neighbors }: { neighbors: Neighbor[] }) {
-  return (
-    <span className="meta-links">
-      {neighbors.map((n) =>
-        n.href ? (
-          <Link key={n.id} to={n.href} className="meta-link">
-            {n.title}
-          </Link>
-        ) : n.externalUrl ? (
-          <a
-            key={n.id}
-            href={n.externalUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="meta-link"
-          >
-            {n.title} ↗
-          </a>
-        ) : (
-          <span key={n.id} className="meta-link meta-link-plain">
-            {n.title}
-          </span>
-        ),
-      )}
-    </span>
-  );
+  return <MetaLinks items={neighbors} />;
 }
 
 // --- Metadata table (consolidates header badges + relationship sidebar) -----
@@ -134,8 +115,6 @@ function ExplainMeta({
   maturity?: string;
   views: ViewItem[];
 }) {
-  const [viewsOpen, setViewsOpen] = useState(false);
-
   return (
     <div className="meta-table-wrap">
       <table className="meta-table">
@@ -162,60 +141,37 @@ function ExplainMeta({
             <tr>
               <th scope="row">Links</th>
               <td>
-                <span className="meta-links">
-                  {el.links.map((link) => (
-                    <a
-                      key={link.url}
-                      href={link.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="meta-link"
-                    >
-                      {link.title ?? link.url} ↗
-                    </a>
-                  ))}
-                </span>
+                <MetaLinks
+                  items={el.links.map((link) => ({
+                    id: link.url,
+                    title: link.title ?? link.url,
+                    href: null,
+                    externalUrl: link.url,
+                  }))}
+                />
               </td>
             </tr>
           )}
           {views.length > 0 && (
-            <>
-              <tr
-                className="meta-expand-row"
-                onClick={() => setViewsOpen((o) => !o)}
-                aria-expanded={viewsOpen}
-              >
-                <th scope="row">
-                  <span className="meta-expand-label">
-                    {viewsOpen ? (
-                      <ChevronDown className="meta-chevron" aria-hidden="true" />
-                    ) : (
-                      <ChevronRight
-                        className="meta-chevron"
-                        aria-hidden="true"
-                      />
-                    )}
-                    Appears in
-                  </span>
-                </th>
-                <td>
-                  <span className="meta-view-count">
-                    {views.length} {views.length === 1 ? "view" : "views"}
-                  </span>
-                </td>
-              </tr>
-              {viewsOpen && (
-                <tr className="meta-expand-detail">
-                  <td colSpan={2}>
+            <tr>
+              <td colSpan={2} className="meta-expand-cell">
+                <Collapsible>
+                  <CollapsibleTrigger className="meta-expand-row">
+                    <span className="meta-expand-label">Appears in</span>
+                    <span className="meta-view-count">
+                      {views.length} {views.length === 1 ? "view" : "views"}
+                    </span>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
                     <ul className="meta-view-list">
                       {views.map((v) => (
                         <li key={v.id}>{v.title}</li>
                       ))}
                     </ul>
-                  </td>
-                </tr>
-              )}
-            </>
+                  </CollapsibleContent>
+                </Collapsible>
+              </td>
+            </tr>
           )}
         </tbody>
       </table>

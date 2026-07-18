@@ -25,7 +25,8 @@ Node script can't call.
 
 Output is written **per target** under `blogs/<slug>/dist/<target>/`, so
 cross-publishing (gdocs review → unitycatalog → …) is non-destructive. The
-regenerated LikeC4 PNG export is shared at `dist/.likec4-export/` (target-agnostic).
+regenerated LikeC4 PNG export is shared at `dist/.likec4-export/`
+(target-agnostic) and comes from the unified `architecture/model` workspace.
 
 For the `gdocs` (FLATTENING) target, `dist/gdocs/`:
 

@@ -19,22 +19,19 @@ what "good" looks like as a scored rubric, see `blogs/QUALITY.md`.
 
 ## Diagrams as code — LikeC4 preferred
 
-Author diagrams in [LikeC4](https://likec4.dev) (`assets/*.likec4` is the source of
-truth) and commit both the source and the rendered image in the post's `assets/`, so
-the draft renders without a build step. This matches the `docs-factory` repo's
-architecture model, which adopted LikeC4 as its canonical source of architectural
-fact.
+Author diagrams in [LikeC4](https://likec4.dev) as dedicated views in
+`architecture/model/views/blog-views.likec4` and commit the rendered fallback image in
+the post's `assets/`, so the draft renders without a build step while the preview
+uses one LikeC4 Vite-plugin runtime.
 
 - **Sequence diagrams** are a LikeC4 `dynamic view` — ordered
   `source -> target "label"` steps. Render with **`--sequence`** for a real lifeline
   layout; without it the static export falls back to a box-and-arrow graph
   ([likec4#2532](https://github.com/likec4/likec4/issues/2532)):
-  `bunx likec4 export png --sequence -o . blogs/<slug>/assets` (static export needs a
-  headless Chromium once: `bunx playwright install chromium`). `likec4 start <dir>`
-  opens the interactive viewer.
-- Keep a post's diagram **self-contained in its `assets/`** unless it truly belongs
-  in the shared `docs-factory` model (whose logical layer is deliberately ref-free
-  and technology-agnostic — protocol/wire detail stays in the post).
+  `bunx likec4 export png --sequence --flat -f "<viewId>" -o blogs/<slug>/assets architecture/model`
+  (static export needs a headless Chromium once: `bunx playwright install chromium`).
+- Keep blog-only elements slug/topic-prefixed in `blog-views.likec4`; protocol/wire
+  detail may live there, but it should not masquerade as core architecture fact.
 - Reference the rendered image from `draft.md` as `![alt](./assets/<name>.png)` with
   real alt text; regenerate a different export (SVG, inline) at publish if the target
   needs it.

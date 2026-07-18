@@ -1,76 +1,56 @@
-import { useEffect, useState, type ReactNode } from "react";
-
-const MaximizeIcon = () => (
-  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M8 3H5a2 2 0 0 0-2 2v3" />
-    <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
-    <path d="M3 16v3a2 2 0 0 0 2 2h3" />
-    <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
-  </svg>
-);
-
-const MinimizeIcon = () => (
-  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M8 3v3a2 2 0 0 1-2 2H3" />
-    <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
-    <path d="M3 16h3a2 2 0 0 1 2 2v3" />
-    <path d="M16 21v-3a2 2 0 0 1 2-2h3" />
-  </svg>
-);
+import { useState, type ReactNode } from "react";
+import { Maximize2, Minimize2 } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 /**
  * Frame that renders its child diagram inline and can expand it to a
- * near-fullscreen overlay. Escape or the backdrop collapses it.
- *
- * `children` is a render prop receiving the current `expanded` state. Callers
- * should key their diagram on it (ReactLikeC4 only auto-fits when its container
- * grows, so remounting on each toggle is what guarantees a correct refit when
- * collapsing back down — otherwise the viewport stays panned off-screen).
+ * near-fullscreen dialog. `children` is a render prop receiving `expanded`.
  */
 export default function ExpandableDiagram({
   children,
+  inlineClassName = "diagram-frame",
 }: {
   children: (expanded: boolean) => ReactNode;
+  /** Class for the inline frame. Pass a fit variant to let it grow to the
+   * diagram's natural height (e.g. tall sequences) instead of a fixed height. */
+  inlineClassName?: string;
 }) {
   const [expanded, setExpanded] = useState(false);
 
-  useEffect(() => {
-    if (!expanded) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setExpanded(false);
-    };
-    document.addEventListener("keydown", onKey);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prevOverflow;
-    };
-  }, [expanded]);
-
   return (
     <>
-      {expanded && (
-        <button
-          type="button"
-          className="diagram-backdrop"
-          aria-label="Collapse diagram"
-          onClick={() => setExpanded(false)}
-        />
-      )}
-      <div className={expanded ? "diagram-frame diagram-frame-expanded" : "diagram-frame"}>
+      <div className={inlineClassName}>
         <button
           type="button"
           className="diagram-expand-btn"
-          onClick={() => setExpanded((e) => !e)}
-          aria-label={expanded ? "Collapse diagram" : "Expand diagram"}
-          aria-expanded={expanded}
+          onClick={() => setExpanded(true)}
+          aria-label="Expand diagram"
         >
-          {expanded ? <MinimizeIcon /> : <MaximizeIcon />}
-          <span>{expanded ? "Close" : "Expand"}</span>
+          <Maximize2 size={15} aria-hidden="true" />
+          <span>Expand</span>
         </button>
-        {children(expanded)}
+        {children(false)}
       </div>
+
+      <Dialog open={expanded} onOpenChange={setExpanded}>
+        <DialogContent className="diagram-frame-expanded" showCloseButton>
+          <DialogTitle className="sr-only">Expanded diagram</DialogTitle>
+          <button
+            type="button"
+            className="diagram-expand-btn"
+            onClick={() => setExpanded(false)}
+            aria-label="Collapse diagram"
+          >
+            <Minimize2 size={15} aria-hidden="true" />
+            <span>Close</span>
+          </button>
+          {children(true)}
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

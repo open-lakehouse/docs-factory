@@ -340,27 +340,27 @@ body {
   border-color: var(--code-border);
 }
 .prose .cb-copy svg { width: 0.95rem; height: 0.95rem; }
-/* Kibo's CodeBlockContent renders <pre class="shiki">; keep the console
-   background and let the block scroll. Shiki colors tokens inline. */
-.prose .cb pre {
+/* Build-time Shiki renders <pre class="shiki"><code>…</code></pre> inside our
+   chrome wrapper. Each line is a `<span class="line">` followed by a real `\n`,
+   which the `<pre>` already renders as a break — so the lines must stay INLINE
+   (forcing `display:block` here would double every line break). */
+.prose .cb-pre {
   margin: 0;
   border: 0;
   border-radius: 0;
-  background: transparent !important; /* the .cb owns the surface color */
+  background: transparent !important;
   padding: 1rem 0;
   overflow-x: auto;
   font-size: 0.9rem;
+  line-height: 1.6;
+  font-family: var(--font-mono);
 }
-.prose .cb pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
-.prose .cb .shiki, .prose .cb .line { font-family: var(--font-mono); }
-/* Shiki wraps each source line in a `.line` span and Kibo lays them out as grid
-   rows (display:grid on <code>). A BLANK source line is an empty `.line` with no
-   content, which collapses to zero height — so blank lines between statements
-   vanish and the code looks squashed. Force every line to occupy one line-box. */
-.prose .cb .line {
-  display: block;
-  min-height: 1.5em;
-  line-height: 1.5;
+.prose .cb-pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
 }
 
 /* Code journeys — a GitHub-style step timeline (see src/components/journey.tsx).
@@ -445,6 +445,8 @@ body {
   border-radius: calc(var(--radius) - 0.15rem);
   background: color-mix(in srgb, var(--callout-accent) 7%, var(--card));
   padding: 0.85rem 1rem;
+  grid-template-columns: 1.05rem 1fr;
+  gap: 0.35rem 0.65rem;
 }
 .prose .callout[data-type="tip"] { --callout-accent: #16a34a; }      /* green */
 .prose .callout[data-type="note"],
@@ -456,17 +458,13 @@ body {
 :root.dark .prose .callout[data-type="warning"],
 :root.dark .prose .callout[data-type="caution"] { --callout-accent: #f59e0b; }
 :root.dark .prose .callout[data-type="danger"] { --callout-accent: #f87171; }
-.prose .callout-head {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin-bottom: 0.35rem;
+.prose .callout-icon { width: 1.05rem; height: 1.05rem; flex: none; color: var(--callout-accent); }
+.prose .callout-title {
   color: var(--callout-accent);
   font-family: var(--font-heading);
   font-weight: 600;
   font-size: 0.9rem;
 }
-.prose .callout-icon { width: 1.05rem; height: 1.05rem; flex: none; }
 .prose .callout-body { color: var(--foreground); }
 /* The box owns the outer spacing; kill the first/last child margins so text and
    code blocks sit snug inside it. */
@@ -518,6 +516,15 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
+}
+/* Inside a diagram frame, the frame owns the chrome (border/margin/height),
+   so strip the standalone decoration off the embedded view. */
+.diagram-frame .likec4-view,
+.diagram-frame [data-likec4-instance] {
+  margin: 0;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
 }
 
 /* Top nav + index layout */
@@ -578,11 +585,13 @@ body {
   margin-bottom: -1px;
 }
 .prose .tabs-trigger:hover { color: var(--foreground); }
+.prose .tabs-trigger[data-state="active"],
 .prose .tabs-trigger.active {
   color: var(--accent);
   border-bottom-color: var(--accent);
   font-weight: 600;
 }
+.prose .tabs-list { background: transparent; border-radius: 0; padding: 0; }
 .prose .tabs-panel > :first-child { margin-top: 0; }
 
 /* --- App shell extensions --- */
@@ -1023,7 +1032,9 @@ body {
   text-decoration: none;
 }
 .breadcrumbs a:hover { color: var(--accent); }
-.breadcrumbs li:last-child span { color: var(--foreground); }
+.breadcrumbs li:last-child span,
+.breadcrumbs [data-slot="breadcrumb-page"] { color: var(--foreground); }
+.breadcrumbs [data-slot="breadcrumb-separator"] { color: var(--border); }
 
 /* Crumb dropdown — click a crumb to hop to its siblings. */
 .crumb-dropdown {
@@ -1297,6 +1308,80 @@ a.blog-row-title:hover { color: var(--accent); }
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Author bylines — interactive chips + hover card */
+.author-badge {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  min-width: 0;
+}
+.author-badge-item { display: inline-flex; align-items: center; min-width: 0; }
+.author-badge-sep { color: var(--muted-foreground); }
+.author-badge-empty { color: var(--muted-foreground); }
+.author-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  padding: 0.1rem 0.35rem 0.1rem 0.1rem;
+  border-radius: 999px;
+  cursor: default;
+  transition: background 0.12s ease;
+}
+.author-chip:hover,
+.author-chip:focus-visible {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  outline: none;
+}
+.author-chip .author-chip-avatar {
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1px solid var(--border);
+}
+.author-chip-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--foreground);
+}
+
+.author-hovercard { width: 17rem; }
+.author-card { display: flex; gap: 0.85rem; align-items: flex-start; }
+.author-card .author-card-avatar {
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--border);
+}
+.author-card-body { min-width: 0; }
+.author-card-name {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--foreground);
+}
+.author-card-role {
+  margin: 0.1rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.author-card-socials {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+.author-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  transition: color 0.12s ease, transform 0.12s ease;
+}
+.author-social-link:hover {
+  color: var(--accent);
+  transform: translateY(-1px);
 }
 .blog-row-date {
   color: var(--muted-foreground);
@@ -1686,46 +1771,36 @@ a.meta-link:hover {
   color: var(--muted-foreground);
 }
 
-/* Expandable "Appears in" row at the bottom of the metadata table. */
+/* Expandable "Appears in" row (shadcn Collapsible inside metadata table). */
+.meta-expand-cell { padding: 0 !important; }
 .meta-expand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: transparent;
+  border: 0;
   cursor: pointer;
   transition: background 0.12s;
+  font: inherit;
+  color: inherit;
 }
 .meta-expand-row:hover {
   background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
-.meta-expand-row th[scope="row"],
-.meta-expand-row td {
-  user-select: none;
-  vertical-align: middle;
-}
-.meta-expand-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-.meta-chevron {
-  width: 0.85rem;
-  height: 0.85rem;
-  flex: none;
-  color: var(--muted-foreground);
-}
-.meta-expand-row:hover .meta-chevron,
-.meta-expand-row[aria-expanded="true"] .meta-chevron {
-  color: var(--accent);
-}
+.meta-expand-row[data-state="open"] .meta-expand-label { color: var(--accent); }
+.meta-expand-label { font-weight: 500; }
 .meta-view-count {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--muted-foreground);
 }
-.meta-expand-detail td {
-  background: color-mix(in srgb, var(--surface) 45%, transparent);
-}
 .meta-view-list {
   margin: 0;
-  padding: 0.15rem 0;
+  padding: 0.35rem 0.75rem 0.65rem;
   list-style: none;
+  background: color-mix(in srgb, var(--surface) 45%, transparent);
 }
 .meta-view-list li {
   font-family: var(--font-mono);
@@ -1754,23 +1829,26 @@ a.meta-link:hover {
   overflow: hidden;
   background: var(--sidebar);
 }
-.diagram-frame-expanded {
-  position: fixed;
-  inset: 2.5rem;
+/* Fit variant: grow to the diagram's natural (aspect-ratio) height instead of a
+   fixed height — keeps tall sequence diagrams elongated and legible. */
+.diagram-frame-fit {
   height: auto;
-  width: auto;
-  z-index: 50;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  min-height: 26rem;
+  max-height: 80vh;
 }
-.diagram-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 49;
-  border: 0;
-  padding: 0;
-  cursor: zoom-out;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
+.diagram-frame-expanded {
+  width: min(1200px, calc(100vw - 2rem)) !important;
+  max-width: none !important;
+  height: min(85vh, 900px) !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.diagram-frame-expanded .diagram-expand-btn { z-index: 10; }
+.diagram-frame-expanded > :not(.diagram-expand-btn) {
+  flex: 1;
+  min-height: 0;
 }
 .diagram-expand-btn {
   position: absolute;
@@ -1888,31 +1966,14 @@ a.model-ref-label:hover {
   color: var(--muted-foreground);
 }
 
-/* Popup modal: never inline, mounted only while open. */
-.model-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 60;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2.5rem;
-  border: 0;
-  cursor: zoom-out;
-  background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
-}
+/* Popup modal: shadcn Dialog + custom layout for model diagrams. */
 .model-modal {
   display: flex;
   flex-direction: column;
-  width: min(920px, 100%);
-  max-height: 100%;
-  cursor: default;
-  text-align: left;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+  width: min(920px, calc(100vw - 2rem)) !important;
+  max-width: none !important;
+  max-height: calc(100vh - 2rem);
+  padding: 0 !important;
   overflow: hidden;
 }
 .model-modal-header {
@@ -1946,25 +2007,7 @@ a.model-ref-label:hover {
   text-decoration: none;
   white-space: nowrap;
 }
-.model-modal-link:hover {
-  text-decoration: underline;
-}
-.model-modal-close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.25rem;
-  color: var(--muted-foreground);
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 0.35rem;
-  cursor: pointer;
-  transition: color 0.12s, border-color 0.12s;
-}
-.model-modal-close:hover {
-  color: var(--foreground);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-}
+.model-modal-link:hover { text-decoration: underline; }
 .model-modal-summary {
   margin: 0;
   padding: 0 1.25rem 0.75rem;

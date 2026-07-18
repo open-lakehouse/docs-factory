@@ -91,12 +91,14 @@ governing rule).
 
 ### 5. Diagrams (if any)
 
-Author diagrams in **LikeC4** (preferred; `assets/*.likec4` is the source of truth) —
-a sequence diagram is a `dynamic view`, rendered with `likec4 export png --sequence`
-(the `--sequence` flag is required for a lifeline layout). Reference the rendered
-image from `draft.md` as `![real alt text](./assets/<name>.png)`, and commit both the
-`.likec4` source and the image. D2 is still fine for an existing `.d2` or a quick
-one-off (`blogs/render-diagrams.sh`, needs the `d2` CLI). Details in
+Author diagrams in **LikeC4** (preferred) as dedicated views in
+`architecture/model/views/blog-views.likec4`; commit the rendered fallback image in the
+post's `assets/`. A sequence diagram is a `dynamic view`, rendered with
+`likec4 export png --sequence` (the `--sequence` flag is required for a lifeline
+layout). Reference the rendered image from `draft.md` as
+`![real alt text](./assets/<name>.png "likec4=<viewId>")`. D2 is still fine for
+an existing `.d2` or a quick one-off (`blogs/render-diagrams.sh`, needs the `d2`
+CLI). Details in
 [`references/draft-conventions.md`](references/draft-conventions.md).
 
 ### 6. Refine / humanize

@@ -105,6 +105,43 @@ model {
   apacheSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
   apacheSpark -[consumes]-> icebergRestSpec "resolves Iceberg tables via"
 
+  // Delta implementations ----------------------------------------------------
+  // Concrete software that implements the Delta table-format spec (delta-rs,
+  // Delta Spark) or reads Delta tables through an embedded reader (DuckDB,
+  // Polars). These are what the multi-language examples actually exercise, so
+  // content pages tag their snippets with these ids (via `references:`).
+  deltaRs = implementation "delta-rs" {
+    #library
+    description "Native Rust implementation of the Delta protocol with a Python binding (the `deltalake` package). Reads and writes Delta tables without a JVM."
+    link https://delta-io.github.io/delta-rs/
+  }
+  deltaRs -[implements]-> deltaSpec "implements"
+  deltaRs -[consumes]-> s3Api "reads/writes data files via"
+
+  deltaSpark = implementation "Delta Spark" {
+    #service
+    description "The reference Delta connector for Apache Spark (`io.delta:delta-spark`) — the JVM path for reading and writing Delta tables."
+    link https://docs.delta.io
+  }
+  deltaSpark -[implements]-> deltaSpec "implements"
+  deltaSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+
+  duckdb = implementation "DuckDB" {
+    #library
+    description "In-process analytical SQL engine; reads Delta tables via its `delta` extension."
+    link https://duckdb.org
+  }
+  duckdb -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  duckdb -[consumes]-> deltaSpec "reads Delta tables via"
+
+  polars = implementation "Polars" {
+    #library
+    description "Fast DataFrame library written in Rust with a Python API; reads and writes Delta via delta-rs."
+    link https://pola.rs
+  }
+  polars -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  polars -[consumes]-> deltaRs "reads/writes Delta via"
+
   // Catalog implementations --------------------------------------------------
   lakekeeper = implementation "Lakekeeper" {
     #service

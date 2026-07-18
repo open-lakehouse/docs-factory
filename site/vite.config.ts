@@ -18,6 +18,7 @@ import remarkDirectiveProseGuard from "./src/plugins/remark-directive-prose-guar
 import remarkCallouts from "./src/plugins/remark-callouts.mjs";
 import remarkCodeBlock from "./src/plugins/remark-code-block.mjs";
 import remarkTabs from "./src/plugins/remark-tabs.mjs";
+import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
 
 // Throwaway local preview of docs-factory content. Vite + React + @mdx-js/rollup
 // reads ../content (Diátaxis docs) and ../blogs (narrative drafts) in place;
@@ -49,6 +50,7 @@ export default defineConfig({
           remarkGfm,
           remarkDirective, // parse `:::journey`, `:::tip`, … container directives
           remarkDirectiveProseGuard, // undo false-positive `:x` text directives in prose (e.g. **1:1**, port maps)
+          remarkModelLinks, // `[label](model:<id>)` -> <ModelRef> (inline model links)
           remarkFrontmatter,
           [remarkMdxFrontmatter, { name: "frontmatter" }],
           remarkCodeSnippets, // resolve file=/start=/end= (descends into directives)

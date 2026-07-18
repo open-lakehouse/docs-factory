@@ -7,6 +7,7 @@ import ExplainSidebar from "./components/layout/ExplainSidebar";
 import Breadcrumbs from "./components/layout/Breadcrumbs";
 import ExplainDiagram from "./components/ExplainDiagram";
 import MdxProvider from "./MdxProvider";
+import { backlinksFor } from "./backlinks";
 import {
   getExplainElement,
   explainDocLoader,
@@ -329,6 +330,7 @@ export function ExplainPage() {
 
   const maturity = MATURITY_TAGS.find((t) => el.tags.includes(t));
   const sections = contextSections(el);
+  const backlinks = backlinksFor(elementId);
   const views: ViewItem[] = [...el.views()].map((v) => ({
     id: String(v.id),
     title: v.title ?? String(v.id),
@@ -376,6 +378,22 @@ export function ExplainPage() {
             <h2 className="section-heading">In context</h2>
             <ExplainDiagram elementId={elementId} />
           </section>
+
+          {backlinks.length > 0 && (
+            <section className="explain-section">
+              <h3>Referenced by</h3>
+              <ul className="draft-list compact">
+                {backlinks.map((page) => (
+                  <li key={page.href}>
+                    <Link to={page.href}>
+                      {page.frontmatter.title ?? page.slug}
+                    </Link>
+                    <span className="muted"> — {page.area}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </div>
       </div>
     </Shell>

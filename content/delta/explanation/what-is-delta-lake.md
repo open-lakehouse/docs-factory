@@ -6,13 +6,17 @@ project: delta
 engines: []
 delta_features: []
 status: published
+references:
+  - deltaSpec
+  - parquetSpec
+  - lakehouse.tableFormat
 ---
 
-Delta Lake is an open **table format**: a specification for laying out data files
-(Parquet) plus a transaction log so that many engines can read and write the same
-tables with ACID guarantees. It is not tied to any single engine — Spark, the
-`deltalake` Python package, delta-rs (Rust), DuckDB, and Polars all read Delta
-tables.
+Delta Lake is an open [table format](model:deltaSpec): a specification for laying
+out data files ([Parquet](model:parquetSpec)) plus a transaction log so that many
+engines can read and write the same tables with ACID guarantees. It is not tied to
+any single engine — Spark, the `deltalake` Python package, delta-rs (Rust), DuckDB,
+and Polars all read Delta tables.
 
 ## The transaction log
 

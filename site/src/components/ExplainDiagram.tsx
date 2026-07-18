@@ -18,6 +18,7 @@ import {
   useUpdateEffect,
 } from "likec4/react";
 import { likec4model, hasExplainPage, explainHref } from "../explain";
+import { pickScopedViewId } from "../model-refs";
 import ExpandableDiagram from "./ExpandableDiagram";
 
 /**
@@ -42,28 +43,6 @@ function RefitOnResize({ expanded }: { expanded: boolean }) {
   return null;
 }
 
-// Fallback reference views (whole-estate) if an element has no scoped view.
-const PREFERRED_VIEWS = ["capabilityMap", "technologyCatalog", "referenceContext"];
-
-/**
- * Pick the view to seed the diagram with. Prefer the element's own scoped view
- * (a `view of <element>` authored in architecture/model/explain-views.likec4,
- * surfaced as `element.defaultView`) so the diagram is an ad-hoc neighborhood
- * around the subject. Fall back to a reference view, then any containing view.
- */
-function pickViewId(elementId: string): string | null {
-  const el = likec4model.findElement(elementId);
-  if (!el) return null;
-  const scoped = el.defaultView;
-  if (scoped) return String(scoped.id);
-  const views = [...el.views()].map((v) => String(v.id));
-  if (views.length === 0) return null;
-  for (const preferred of PREFERRED_VIEWS) {
-    if (views.includes(preferred)) return preferred;
-  }
-  return views[0];
-}
-
 const ExplainArrowIcon = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
@@ -75,7 +54,7 @@ const ExplainArrowIcon = () => (
 
 export default function ExplainDiagram({ elementId }: { elementId: string }) {
   const navigate = useNavigate();
-  const viewId = pickViewId(elementId);
+  const viewId = pickScopedViewId(elementId);
 
   // Custom element node: adds an "Explain →" action that routes to the
   // neighbor's explanation page. Memoized so the renderer stays referentially

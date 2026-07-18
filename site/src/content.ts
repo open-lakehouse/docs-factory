@@ -21,6 +21,9 @@ export interface Frontmatter {
   diataxis?: string;
   project?: string;
   summary?: string;
+  /** Model element ids this page is "about" — drives the concept header and
+   * the reverse "Referenced by" index on /explain pages. */
+  references?: string[];
   [key: string]: unknown;
 }
 

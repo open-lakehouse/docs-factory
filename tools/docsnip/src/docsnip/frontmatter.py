@@ -9,6 +9,8 @@ agent-discoverable.
 from __future__ import annotations
 
 import dataclasses
+import json
+import re
 from pathlib import Path
 
 import yaml
@@ -23,6 +25,31 @@ STATUSES = {"draft", "published"}
 # site components (e.g. ``<Tabs>``) but still carry the same YAML frontmatter and
 # snippet fences, so all tooling scans both extensions uniformly.
 CONTENT_SUFFIXES = (".md", ".mdx")
+
+# Inline model reference in prose: ``[label](model:<id>)`` (see the site's
+# remark-model-links plugin). We validate the id resolves against the estate
+# model, the same way ``references:`` frontmatter is checked.
+MODEL_LINK_RE = re.compile(r"\]\(model:([^)\s]+)\)")
+
+
+def load_model_element_ids(model_json: Path) -> set[str]:
+    """Element ids from the built LikeC4 model (``architecture/dist/model.json``).
+
+    Returns an empty set if the model has not been built; callers should then
+    skip model-id validation rather than flag every reference as unknown.
+    """
+    if not model_json.is_file():
+        return set()
+    data = json.loads(model_json.read_text())
+    return set((data.get("elements") or {}).keys())
+
+
+def _as_str_list(value: object) -> list[str]:
+    if isinstance(value, list):
+        return [v for v in value if isinstance(v, str)]
+    if isinstance(value, str):
+        return [value]
+    return []
 
 
 def iter_content_files(content_root: Path):
@@ -62,8 +89,14 @@ def parse(path: Path) -> Page:
     return Page(path=path, meta=meta, body=body.lstrip("\n"))
 
 
-def validate(page: Page) -> list[str]:
-    """Return a list of human-readable validation errors (empty if valid)."""
+def validate(page: Page, model_ids: set[str] | None = None) -> list[str]:
+    """Return a list of human-readable validation errors (empty if valid).
+
+    When ``model_ids`` is a non-empty set, every ``references:`` frontmatter id
+    and every inline ``[label](model:<id>)`` link is checked to resolve against
+    the estate model. Pass ``None`` (or an empty set) to skip that check, e.g.
+    when the model has not been built.
+    """
     errors: list[str] = []
     m = page.meta
 
@@ -96,6 +129,16 @@ def validate(page: Page) -> list[str]:
         eng = snip.get("engine")
         if eng is not None and eng not in ENGINES:
             errors.append(f"snippet engine '{eng}' not in {sorted(ENGINES)}")
+
+    if model_ids:
+        for ref in _as_str_list(m.get("references")):
+            if ref not in model_ids:
+                errors.append(f"references id '{ref}' not found in the estate model")
+        for ref in MODEL_LINK_RE.findall(page.body):
+            if ref not in model_ids:
+                errors.append(
+                    f"inline model link 'model:{ref}' not found in the estate model"
+                )
 
     return [f"{page.path}: {e}" for e in errors]
 

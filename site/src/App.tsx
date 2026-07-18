@@ -16,6 +16,7 @@ import Pager from "./components/layout/Pager";
 import Shell from "./components/layout/Shell";
 import TerminalHero from "./components/TerminalHero";
 import BlogTable from "./components/BlogTable";
+import ConceptHeader from "./components/ConceptHeader";
 import { docNav, docNeighbors, firstDocForProject } from "./sidebar";
 import MdxProvider from "./MdxProvider";
 import { ExplainIndex, ExplainPage } from "./ExplainPage";
@@ -237,6 +238,7 @@ function DocPage() {
             {frontmatter.summary && (
               <p className="lead muted">{frontmatter.summary}</p>
             )}
+            <ConceptHeader references={frontmatter.references} />
             <MdxProvider>
               <Component />
             </MdxProvider>
@@ -342,6 +344,7 @@ function BlogPost() {
             </div>
             <TagList tags={frontmatter.tags ?? []} />
           </header>
+          <ConceptHeader references={frontmatter.references} />
           <article className="prose" ref={articleRef}>
             <MdxProvider>
               <Component />

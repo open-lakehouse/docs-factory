@@ -51,6 +51,19 @@
           "color": "secondary"
         }
       },
+      "participant": {
+        "style": {
+          "shape": "rectangle",
+          "color": "primary"
+        }
+      },
+      "store": {
+        "notation": "Object storage",
+        "style": {
+          "shape": "storage",
+          "color": "muted"
+        }
+      },
       "capability": {
         "style": {
           "color": "primary"
@@ -68,6 +81,13 @@
         "style": {
           "shape": "rectangle",
           "color": "indigo"
+        }
+      },
+      "asset": {
+        "notation": "Data & AI asset kind",
+        "style": {
+          "shape": "rectangle",
+          "color": "green"
         }
       },
       "implementation": {
@@ -110,6 +130,12 @@
         "style": {
           "line": "dashed"
         }
+      },
+      "requires": {
+        "style": {}
+      },
+      "governs": {
+        "style": {}
       },
       "administers": {
         "style": {}
@@ -174,6 +200,264 @@
       "kind": "capability",
       "id": "lakehouse"
     },
+    "lakehouse.schema": {
+      "metadata": {
+        "canonicalDoc": "design/asset-kinds.md"
+      },
+      "notation": "Data & AI asset kind",
+      "style": {
+        "shape": "rectangle",
+        "color": "green"
+      },
+      "summary": {
+        "txt": "The namespace container other asset kinds are organized under."
+      },
+      "description": {
+        "txt": "A schema (namespace) is the container securable: the addressable namespace\nthat tables, volumes, functions, models, and skills are organized and\ngoverned within. Grants and lineage attach at this level as well as at the\nleaf asset."
+      },
+      "title": "Schema / namespace",
+      "kind": "asset",
+      "id": "lakehouse.schema"
+    },
+    "lakehouse.table": {
+      "metadata": {
+        "canonicalDoc": "design/asset-kinds.md"
+      },
+      "notation": "Data & AI asset kind",
+      "style": {
+        "shape": "rectangle",
+        "color": "green"
+      },
+      "summary": {
+        "txt": "The classic tabular securable — rows and columns with ACID semantics."
+      },
+      "description": {
+        "txt": "A table is the tabular asset kind: schema'd rows and columns with ACID\ntable semantics. It is the one asset kind every catalog handles, and the\nonly kind a table-format-centric catalog handles."
+      },
+      "title": "Table",
+      "kind": "asset",
+      "id": "lakehouse.table"
+    },
+    "lakehouse.volume": {
+      "metadata": {
+        "canonicalDoc": "design/asset-kinds.md"
+      },
+      "notation": "Data & AI asset kind",
+      "style": {
+        "shape": "rectangle",
+        "color": "green"
+      },
+      "summary": {
+        "txt": "Governed non-tabular files — a catalogued path in object storage."
+      },
+      "description": {
+        "txt": "A volume is the non-tabular asset kind: a governed location of arbitrary\nfiles (images, PDFs, checkpoints) in object storage, catalogued and\naccess-controlled like a table rather than left as ungoverned raw storage."
+      },
+      "title": "Volume",
+      "kind": "asset",
+      "id": "lakehouse.volume"
+    },
+    "lakehouse.registeredFunction": {
+      "metadata": {
+        "canonicalDoc": "design/asset-kinds.md"
+      },
+      "notation": "Data & AI asset kind",
+      "style": {
+        "shape": "rectangle",
+        "color": "green"
+      },
+      "summary": {
+        "txt": "A governed, reusable unit of computation registered in the catalog."
+      },
+      "description": {
+        "txt": "A function is the executable asset kind: a registered, reusable unit of\ncomputation (a UDF or routine) that the query engine can resolve and run,\ngoverned and versioned through the catalog like data."
+      },
+      "title": "Function",
+      "kind": "asset",
+      "id": "lakehouse.registeredFunction"
+    },
+    "lakehouse.mlModel": {
+      "metadata": {
+        "canonicalDoc": "design/asset-kinds.md"
+      },
+      "notation": "Data & AI asset kind",
+      "style": {
+        "shape": "rectangle",
+        "color": "green"
+      },
+      "summary": {
+        "txt": "A governed ML model — versions, stages, and lineage catalogued like data."
+      },
+      "description": {
+        "txt": "A model is the ML asset kind: a trained machine-learning artifact with\nversions and lifecycle stages, tracked and governed as a catalogued asset\nrather than living in a separate, ungoverned registry."
+      },
+      "title": "Model",
+      "kind": "asset",
+      "id": "lakehouse.mlModel"
+    },
+    "lakehouse.agentSkill": {
+      "metadata": {
+        "canonicalDoc": "design/asset-kinds.md"
+      },
+      "notation": "Data & AI asset kind",
+      "style": {
+        "shape": "rectangle",
+        "color": "green"
+      },
+      "summary": {
+        "txt": "An emerging asset kind: a shareable, governed capability for AI agents."
+      },
+      "description": {
+        "txt": "An agent skill is an emerging asset kind on the data & AI value chain: a\npackaged, shareable capability an AI agent can discover and invoke,\ngoverned and distributed through the catalog / Open Sharing surface. A\nflagship example of a catalog augmenting beyond the tabular set."
+      },
+      "title": "Agent skill",
+      "kind": "asset",
+      "id": "lakehouse.agentSkill"
+    },
+    "practitioner": {
+      "style": {
+        "shape": "person",
+        "color": "secondary"
+      },
+      "description": {
+        "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
+      },
+      "title": "Data practitioner",
+      "kind": "person",
+      "id": "practitioner"
+    },
+    "platformEngineer": {
+      "style": {
+        "shape": "person",
+        "color": "secondary"
+      },
+      "description": {
+        "txt": "Builds and operates the lakehouse: the services, their health, and smooth operation of the platform."
+      },
+      "title": "Platform engineer",
+      "kind": "person",
+      "id": "platformEngineer"
+    },
+    "agent": {
+      "style": {
+        "shape": "person",
+        "color": "secondary"
+      },
+      "description": {
+        "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
+      },
+      "title": "AI agent",
+      "kind": "person",
+      "id": "agent"
+    },
+    "lakehouse.catalog": {
+      "metadata": {
+        "canonicalDoc": "design/catalog-plane.md",
+        "explainDoc": "explain/catalog.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "links": [
+        {
+          "url": "https://www.openlakehouse.io/technologies/catalogs"
+        }
+      ],
+      "summary": {
+        "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+      },
+      "description": {
+        "txt": "A catalog is the metadata layer that records which tables and schemas\nexist, where their data lives, and who may touch it — the authoritative\nnamespace a query resolves a table name against before any bytes are read.\n\nIn the lakehouse it also brokers access: at resolution time it issues a\nshort-lived, scoped storage credential for exactly the data a query needs\n(credential vending), so raw storage keys are never handed out."
+      },
+      "title": "Catalog",
+      "kind": "capability",
+      "id": "lakehouse.catalog"
+    },
+    "lakehouse.queryEngine": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "Parses, plans, and executes queries over open table formats."
+      },
+      "description": {
+        "txt": "A query engine turns a declarative query into a plan of operations and\nexecutes it: it parses the query, resolves the tables it references,\noptimizes an execution plan, and runs it to produce results.\n\nHere it is catalog-native — it resolves tables through the catalog, and\ncredentials, policy enforcement, and lineage capture all attach to the\nplan at resolution / planning time rather than being bolted on after."
+      },
+      "title": "Query engine",
+      "kind": "capability",
+      "id": "lakehouse.queryEngine"
+    },
+    "lakehouse.tableFormat": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "A metadata layer that gives object-storage files ACID table semantics."
+      },
+      "description": {
+        "txt": "An open table format is an open specification for a metadata layer over\ndata files in object storage. It tracks which files make up a table plus\ntheir schema and snapshots, giving a plain directory of files table\nsemantics — ACID transactions, schema evolution, and time travel.\n\nIt is technology-agnostic in the model: Delta Lake and Apache Iceberg are\npeer specifications of this capability, implemented by concrete engines\nand libraries."
+      },
+      "title": "Open table format",
+      "kind": "capability",
+      "id": "lakehouse.tableFormat"
+    },
+    "lakehouse.fileFormat": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "The on-disk encoding of the bytes a table's data files are made of."
+      },
+      "description": {
+        "txt": "A file format is the on-disk encoding of a data file — how rows, columns,\nand their types are laid out as bytes. Columnar formats (Parquet, ORC) and\nrow formats (Avro) are peer specifications of this capability.\n\nIt sits beneath the table format: the table format tracks which files make\nup a table; the file format decides how each of those files is encoded."
+      },
+      "title": "File format",
+      "kind": "capability",
+      "id": "lakehouse.fileFormat"
+    },
+    "lakehouse.objectStorage": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+      },
+      "description": {
+        "txt": "Object storage manages data as discrete objects (blobs) in a flat\nnamespace addressed by key, rather than as a file hierarchy or fixed\nblocks. It scales cheaply and horizontally, which is why it is the byte\ncontainer the lakehouse writes table data files into.\n\nIt sits beneath the table format: object storage holds the bytes; the\ntable format is what makes those bytes a governed, transactional table."
+      },
+      "title": "Object storage",
+      "kind": "capability",
+      "id": "lakehouse.objectStorage"
+    },
+    "lakehouse.lineage": {
+      "metadata": {
+        "canonicalDoc": "design/lineage-plane.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "Records where data came from and where it flows, down to the column."
+      },
+      "description": {
+        "txt": "Data lineage traces the origin and movement of data through the system —\nwhich inputs produced which outputs, dataset- and column-level.\n\nHere it is captured at query planning time, so provenance is derived from\nthe plan the engine is about to run rather than reconstructed after."
+      },
+      "title": "Lineage",
+      "kind": "capability",
+      "id": "lakehouse.lineage"
+    },
     "lakehouse.governance": {
       "metadata": {
         "canonicalDoc": "design/governance.md"
@@ -190,6 +474,57 @@
       "title": "Governance",
       "kind": "capability",
       "id": "lakehouse.governance"
+    },
+    "lakehouse.modelTracking": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "Tracks experiments, versions models, and governs their promotion to production."
+      },
+      "description": {
+        "txt": "Model tracking manages machine-learning artifacts over time: experiment\ntracking, a model registry with versions and stages, and the path from a\ntrained model to a governed, deployable one.\n\nIt sits alongside the query/governance capabilities: models are data\nassets too, catalogued and governed like tables rather than living in a\nseparate, ungoverned silo."
+      },
+      "title": "Model tracking",
+      "kind": "capability",
+      "id": "lakehouse.modelTracking"
+    },
+    "lakehouse.sharing": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
+      },
+      "description": {
+        "txt": "Sharing delivers governed assets — tables today, and increasingly\nnon-tabular resources — to recipients across organizational or platform\nboundaries through an open protocol, live and without copying the data.\nRecipients need not run the same engine or platform.\n\nIt sits alongside the catalog: the catalog governs who may share what;\nsharing is the protocol surface that delivers it — and the distribution\nsurface a catalog can reuse to vend new resource kinds (e.g. agent\nskills) beyond the tabular set."
+      },
+      "title": "Sharing",
+      "kind": "capability",
+      "id": "lakehouse.sharing"
+    },
+    "lakehouse.observability": {
+      "metadata": {
+        "canonicalDoc": "design/reference-architecture.md"
+      },
+      "style": {
+        "color": "primary"
+      },
+      "summary": {
+        "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+      },
+      "description": {
+        "txt": "Observability is the cross-cutting capability that makes the running\nplatform legible: distributed traces, metrics, and logs emitted by the\nquery engine and services, so operators can reason about latency,\nfailures, and cost.\n\nLike governance and lineage it attaches across the stack rather than\nsitting in the query path."
+      },
+      "title": "Observability",
+      "kind": "capability",
+      "id": "lakehouse.observability"
     },
     "lakehouse.governance.pap": {
       "metadata": {
@@ -288,42 +623,6 @@
       "kind": "role",
       "id": "lakehouse.governance.pa"
     },
-    "practitioner": {
-      "style": {
-        "shape": "person",
-        "color": "secondary"
-      },
-      "description": {
-        "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
-      },
-      "title": "Data practitioner",
-      "kind": "person",
-      "id": "practitioner"
-    },
-    "platformEngineer": {
-      "style": {
-        "shape": "person",
-        "color": "secondary"
-      },
-      "description": {
-        "txt": "Builds and operates the lakehouse: the services, their health, and smooth operation of the platform."
-      },
-      "title": "Platform engineer",
-      "kind": "person",
-      "id": "platformEngineer"
-    },
-    "agent": {
-      "style": {
-        "shape": "person",
-        "color": "secondary"
-      },
-      "description": {
-        "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
-      },
-      "title": "AI agent",
-      "kind": "person",
-      "id": "agent"
-    },
     "deltaSpec": {
       "notation": "Specification / open standard",
       "style": {
@@ -401,6 +700,24 @@
       "title": "Iceberg REST Catalog",
       "kind": "openSpecification",
       "id": "icebergRestSpec"
+    },
+    "openSharingSpec": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://delta.io/sharing/"
+        }
+      ],
+      "description": {
+        "txt": "Open profile of the Delta Sharing protocol — a credential-file recipient reads shared assets live, cross-platform, without a shared catalog. Also a generic surface for new resource kinds (e.g. agent skills)."
+      },
+      "title": "Open Sharing",
+      "kind": "openSpecification",
+      "id": "openSharingSpec"
     },
     "parquetSpec": {
       "notation": "Specification / open standard",
@@ -591,151 +908,281 @@
       "kind": "implementation",
       "id": "omnigent"
     },
-    "lakehouse.catalog": {
-      "metadata": {
-        "canonicalDoc": "design/catalog-plane.md",
-        "explainDoc": "explain/catalog.md"
-      },
+    "blogUcDeltaApiClient": {
       "style": {
-        "color": "primary"
+        "shape": "rectangle",
+        "color": "primary",
+        "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg"
       },
       "links": [
         {
-          "url": "https://www.openlakehouse.io/technologies/catalogs"
+          "url": "https://delta.io"
+        }
+      ],
+      "description": {
+        "txt": "A Delta-compatible writer proposing commits through the UC Delta API."
+      },
+      "title": "Delta client / engine",
+      "kind": "participant",
+      "id": "blogUcDeltaApiClient"
+    },
+    "blogUcDeltaApiServer": {
+      "style": {
+        "shape": "rectangle",
+        "color": "primary",
+        "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg"
+      },
+      "links": [
+        {
+          "url": "https://www.unitycatalog.io"
         }
       ],
       "summary": {
-        "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+        "txt": "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
       },
       "description": {
-        "txt": "A catalog is the metadata layer that records which tables and schemas\nexist, where their data lives, and who may touch it — the authoritative\nnamespace a query resolves a table name against before any bytes are read.\n\nIn the lakehouse it also brokers access: at resolution time it issues a\nshort-lived, scoped storage credential for exactly the data a query needs\n(credential vending), so raw storage keys are never handed out."
+        "txt": "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
       },
-      "title": "Catalog",
-      "kind": "capability",
-      "id": "lakehouse.catalog"
+      "title": "Unity Catalog",
+      "kind": "participant",
+      "id": "blogUcDeltaApiServer"
     },
-    "lakehouse.queryEngine": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
+    "blogUcDeltaApiStorage": {
+      "notation": "Object storage",
       "style": {
-        "color": "primary"
-      },
-      "summary": {
-        "txt": "Parses, plans, and executes queries over open table formats."
+        "shape": "storage",
+        "color": "muted"
       },
       "description": {
-        "txt": "A query engine turns a declarative query into a plan of operations and\nexecutes it: it parses the query, resolves the tables it references,\noptimizes an execution plan, and runs it to produce results.\n\nHere it is catalog-native — it resolves tables through the catalog, and\ncredentials, policy enforcement, and lineage capture all attach to the\nplan at resolution / planning time rather than being bolted on after."
+        "txt": "Where the table's data files and _delta_log live (S3 / ABFS / GCS, or a local file:// root)."
       },
-      "title": "Query engine",
-      "kind": "capability",
-      "id": "lakehouse.queryEngine"
-    },
-    "lakehouse.tableFormat": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
-      "style": {
-        "color": "primary"
-      },
-      "summary": {
-        "txt": "A metadata layer that gives object-storage files ACID table semantics."
-      },
-      "description": {
-        "txt": "An open table format is an open specification for a metadata layer over\ndata files in object storage. It tracks which files make up a table plus\ntheir schema and snapshots, giving a plain directory of files table\nsemantics — ACID transactions, schema evolution, and time travel.\n\nIt is technology-agnostic in the model: Delta Lake and Apache Iceberg are\npeer specifications of this capability, implemented by concrete engines\nand libraries."
-      },
-      "title": "Open table format",
-      "kind": "capability",
-      "id": "lakehouse.tableFormat"
-    },
-    "lakehouse.fileFormat": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
-      "style": {
-        "color": "primary"
-      },
-      "summary": {
-        "txt": "The on-disk encoding of the bytes a table's data files are made of."
-      },
-      "description": {
-        "txt": "A file format is the on-disk encoding of a data file — how rows, columns,\nand their types are laid out as bytes. Columnar formats (Parquet, ORC) and\nrow formats (Avro) are peer specifications of this capability.\n\nIt sits beneath the table format: the table format tracks which files make\nup a table; the file format decides how each of those files is encoded."
-      },
-      "title": "File format",
-      "kind": "capability",
-      "id": "lakehouse.fileFormat"
-    },
-    "lakehouse.objectStorage": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
-      "style": {
-        "color": "primary"
-      },
-      "summary": {
-        "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
-      },
-      "description": {
-        "txt": "Object storage manages data as discrete objects (blobs) in a flat\nnamespace addressed by key, rather than as a file hierarchy or fixed\nblocks. It scales cheaply and horizontally, which is why it is the byte\ncontainer the lakehouse writes table data files into.\n\nIt sits beneath the table format: object storage holds the bytes; the\ntable format is what makes those bytes a governed, transactional table."
-      },
-      "title": "Object storage",
-      "kind": "capability",
-      "id": "lakehouse.objectStorage"
-    },
-    "lakehouse.lineage": {
-      "metadata": {
-        "canonicalDoc": "design/lineage-plane.md"
-      },
-      "style": {
-        "color": "primary"
-      },
-      "summary": {
-        "txt": "Records where data came from and where it flows, down to the column."
-      },
-      "description": {
-        "txt": "Data lineage traces the origin and movement of data through the system —\nwhich inputs produced which outputs, dataset- and column-level.\n\nHere it is captured at query planning time, so provenance is derived from\nthe plan the engine is about to run rather than reconstructed after."
-      },
-      "title": "Lineage",
-      "kind": "capability",
-      "id": "lakehouse.lineage"
-    },
-    "lakehouse.modelTracking": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
-      "style": {
-        "color": "primary"
-      },
-      "summary": {
-        "txt": "Tracks experiments, versions models, and governs their promotion to production."
-      },
-      "description": {
-        "txt": "Model tracking manages machine-learning artifacts over time: experiment\ntracking, a model registry with versions and stages, and the path from a\ntrained model to a governed, deployable one.\n\nIt sits alongside the query/governance capabilities: models are data\nassets too, catalogued and governed like tables rather than living in a\nseparate, ungoverned silo."
-      },
-      "title": "Model tracking",
-      "kind": "capability",
-      "id": "lakehouse.modelTracking"
-    },
-    "lakehouse.observability": {
-      "metadata": {
-        "canonicalDoc": "design/reference-architecture.md"
-      },
-      "style": {
-        "color": "primary"
-      },
-      "summary": {
-        "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
-      },
-      "description": {
-        "txt": "Observability is the cross-cutting capability that makes the running\nplatform legible: distributed traces, metrics, and logs emitted by the\nquery engine and services, so operators can reason about latency,\nfailures, and cost.\n\nLike governance and lineage it attaches across the stack rather than\nsitting in the query path."
-      },
-      "title": "Observability",
-      "kind": "capability",
-      "id": "lakehouse.observability"
+      "title": "Cloud storage",
+      "kind": "store",
+      "id": "blogUcDeltaApiStorage"
     }
   },
   "relations": {
-    "83x1rk": {
+    "tpqhsm": {
+      "title": "governs",
+      "source": {
+        "model": "ucSpec"
+      },
+      "target": {
+        "model": "lakehouse.schema"
+      },
+      "kind": "governs",
+      "id": "tpqhsm"
+    },
+    "dzl1i2": {
+      "title": "governs",
+      "source": {
+        "model": "ucSpec"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "governs",
+      "id": "dzl1i2"
+    },
+    "150ybot": {
+      "title": "governs",
+      "source": {
+        "model": "ucSpec"
+      },
+      "target": {
+        "model": "lakehouse.volume"
+      },
+      "kind": "governs",
+      "id": "150ybot"
+    },
+    "ygx05k": {
+      "title": "governs",
+      "source": {
+        "model": "ucSpec"
+      },
+      "target": {
+        "model": "lakehouse.registeredFunction"
+      },
+      "kind": "governs",
+      "id": "ygx05k"
+    },
+    "54j0h9": {
+      "title": "governs",
+      "source": {
+        "model": "ucSpec"
+      },
+      "target": {
+        "model": "lakehouse.mlModel"
+      },
+      "kind": "governs",
+      "id": "54j0h9"
+    },
+    "vkmfwo": {
+      "title": "governs",
+      "source": {
+        "model": "ucSpec"
+      },
+      "target": {
+        "model": "lakehouse.agentSkill"
+      },
+      "kind": "governs",
+      "id": "vkmfwo"
+    },
+    "1hedyi3": {
+      "title": "governs namespaces",
+      "source": {
+        "model": "icebergRestSpec"
+      },
+      "target": {
+        "model": "lakehouse.schema"
+      },
+      "kind": "governs",
+      "id": "1hedyi3"
+    },
+    "1ityl9n": {
+      "title": "governs",
+      "source": {
+        "model": "icebergRestSpec"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "governs",
+      "id": "1ityl9n"
+    },
+    "d4z585": {
+      "title": "governed / namespaced by",
+      "source": {
+        "model": "lakehouse.schema"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "requires",
+      "id": "d4z585"
+    },
+    "ayn46z": {
+      "title": "governed / resolved through",
+      "source": {
+        "model": "lakehouse.table"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "requires",
+      "id": "ayn46z"
+    },
+    "114abe": {
+      "title": "materialized as an open table format",
+      "source": {
+        "model": "lakehouse.table"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
+      },
+      "kind": "requires",
+      "id": "114abe"
+    },
+    "xibkn6": {
+      "title": "read + written by",
+      "source": {
+        "model": "lakehouse.table"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "requires",
+      "id": "xibkn6"
+    },
+    "l3c597": {
+      "title": "governed / resolved through",
+      "source": {
+        "model": "lakehouse.volume"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "requires",
+      "id": "l3c597"
+    },
+    "1xirhr9": {
+      "title": "materialized as files in",
+      "source": {
+        "model": "lakehouse.volume"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "requires",
+      "id": "1xirhr9"
+    },
+    "df7ke3": {
+      "title": "governed / resolved through",
+      "source": {
+        "model": "lakehouse.registeredFunction"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "requires",
+      "id": "df7ke3"
+    },
+    "1vnqcq5": {
+      "title": "executed by",
+      "source": {
+        "model": "lakehouse.registeredFunction"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "requires",
+      "id": "1vnqcq5"
+    },
+    "15cic61": {
+      "title": "governed / resolved through",
+      "source": {
+        "model": "lakehouse.mlModel"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "requires",
+      "id": "15cic61"
+    },
+    "110tpfv": {
+      "title": "versioned + promoted by",
+      "source": {
+        "model": "lakehouse.mlModel"
+      },
+      "target": {
+        "model": "lakehouse.modelTracking"
+      },
+      "kind": "requires",
+      "id": "110tpfv"
+    },
+    "ijzynx": {
+      "title": "governed / resolved through",
+      "source": {
+        "model": "lakehouse.agentSkill"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "requires",
+      "id": "ijzynx"
+    },
+    "bonsvb": {
+      "title": "distributed as a shareable resource via",
+      "source": {
+        "model": "lakehouse.agentSkill"
+      },
+      "target": {
+        "model": "lakehouse.sharing"
+      },
+      "kind": "requires",
+      "id": "bonsvb"
+    },
+    "yph9ks": {
       "title": "publishes policy set + schema (OCI bundle)",
       "source": {
         "model": "lakehouse.governance.pap"
@@ -744,9 +1191,9 @@
         "model": "lakehouse.governance.pdp"
       },
       "kind": "administers",
-      "id": "83x1rk"
+      "id": "yph9ks"
     },
-    "1ayvbln": {
+    "o10l4n": {
       "line": "dashed",
       "title": "supplies resource / identity / context facts",
       "source": {
@@ -756,9 +1203,9 @@
         "model": "lakehouse.governance.pdp"
       },
       "kind": "informs",
-      "id": "1ayvbln"
+      "id": "o10l4n"
     },
-    "1g1bbjq": {
+    "ihr4ca": {
       "title": "consults the PDP, then applies its verdict",
       "source": {
         "model": "lakehouse.governance.pep"
@@ -767,9 +1214,9 @@
         "model": "lakehouse.governance.pdp"
       },
       "kind": "enforces",
-      "id": "1g1bbjq"
+      "id": "ihr4ca"
     },
-    "e8usp9": {
+    "sysds1": {
       "title": "mints a credential only on a PDP verdict",
       "source": {
         "model": "lakehouse.governance.pa"
@@ -778,171 +1225,9 @@
         "model": "lakehouse.governance.pdp"
       },
       "kind": "enforces",
-      "id": "e8usp9"
+      "id": "sysds1"
     },
-    "196zd7g": {
-      "title": "specifies the table-format capability",
-      "source": {
-        "model": "deltaSpec"
-      },
-      "target": {
-        "model": "lakehouse.tableFormat"
-      },
-      "kind": "specifies",
-      "id": "196zd7g"
-    },
-    "lx0aor": {
-      "title": "specifies the table-format capability",
-      "source": {
-        "model": "icebergSpec"
-      },
-      "target": {
-        "model": "lakehouse.tableFormat"
-      },
-      "kind": "specifies",
-      "id": "lx0aor"
-    },
-    "1uhph00": {
-      "title": "specifies the catalog capability",
-      "source": {
-        "model": "ucSpec"
-      },
-      "target": {
-        "model": "lakehouse.catalog"
-      },
-      "kind": "specifies",
-      "id": "1uhph00"
-    },
-    "1lrsklu": {
-      "title": "specifies the catalog capability",
-      "source": {
-        "model": "icebergRestSpec"
-      },
-      "target": {
-        "model": "lakehouse.catalog"
-      },
-      "kind": "specifies",
-      "id": "1lrsklu"
-    },
-    "nfx7x9": {
-      "title": "specifies the file-format capability",
-      "source": {
-        "model": "parquetSpec"
-      },
-      "target": {
-        "model": "lakehouse.fileFormat"
-      },
-      "kind": "specifies",
-      "id": "nfx7x9"
-    },
-    "1dnkpi1": {
-      "title": "specifies the object-storage capability",
-      "source": {
-        "model": "s3Api"
-      },
-      "target": {
-        "model": "lakehouse.objectStorage"
-      },
-      "kind": "specifies",
-      "id": "1dnkpi1"
-    },
-    "5pt8pf": {
-      "line": "dotted",
-      "title": "realizes the query-engine capability",
-      "source": {
-        "model": "datafusion"
-      },
-      "target": {
-        "model": "lakehouse.queryEngine"
-      },
-      "kind": "realizes",
-      "id": "5pt8pf"
-    },
-    "mdob6x": {
-      "line": "dashed",
-      "title": "reads data files via",
-      "source": {
-        "model": "datafusion"
-      },
-      "target": {
-        "model": "s3Api"
-      },
-      "kind": "consumes",
-      "id": "mdob6x"
-    },
-    "1pt0u7e": {
-      "line": "dotted",
-      "title": "realizes the query-engine capability",
-      "source": {
-        "model": "apacheSpark"
-      },
-      "target": {
-        "model": "lakehouse.queryEngine"
-      },
-      "kind": "realizes",
-      "id": "1pt0u7e"
-    },
-    "gjxi5q": {
-      "line": "dashed",
-      "title": "resolves Iceberg tables via",
-      "source": {
-        "model": "apacheSpark"
-      },
-      "target": {
-        "model": "icebergRestSpec"
-      },
-      "kind": "consumes",
-      "id": "gjxi5q"
-    },
-    "3qt3ra": {
-      "line": "dotted",
-      "title": "implements",
-      "source": {
-        "model": "lakekeeper"
-      },
-      "target": {
-        "model": "icebergRestSpec"
-      },
-      "kind": "implements",
-      "id": "3qt3ra"
-    },
-    "171bzvb": {
-      "line": "dotted",
-      "title": "implements",
-      "source": {
-        "model": "unityCatalogOSS"
-      },
-      "target": {
-        "model": "ucSpec"
-      },
-      "kind": "implements",
-      "id": "171bzvb"
-    },
-    "1sw55ld": {
-      "line": "dotted",
-      "title": "implements",
-      "source": {
-        "model": "minio"
-      },
-      "target": {
-        "model": "s3Api"
-      },
-      "kind": "implements",
-      "id": "1sw55ld"
-    },
-    "lzakkx": {
-      "line": "dotted",
-      "title": "realizes the model-tracking capability",
-      "source": {
-        "model": "mlflow"
-      },
-      "target": {
-        "model": "lakehouse.modelTracking"
-      },
-      "kind": "realizes",
-      "id": "lzakkx"
-    },
-    "5pe79a": {
+    "1k0olo2": {
       "title": "queries + governs data",
       "source": {
         "model": "practitioner"
@@ -951,9 +1236,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "flows",
-      "id": "5pe79a"
+      "id": "1k0olo2"
     },
-    "cqka9z": {
+    "1twabnv": {
       "title": "builds + operates",
       "source": {
         "model": "platformEngineer"
@@ -962,9 +1247,9 @@
         "model": "lakehouse"
       },
       "kind": "flows",
-      "id": "cqka9z"
+      "id": "1twabnv"
     },
-    "gxybq2": {
+    "1ewqy8m": {
       "title": "investigates",
       "source": {
         "model": "agent"
@@ -973,9 +1258,9 @@
         "model": "lakehouse.lineage"
       },
       "kind": "flows",
-      "id": "gxybq2"
+      "id": "1ewqy8m"
     },
-    "lwdcta": {
+    "12zzcia": {
       "title": "resolves tables through",
       "source": {
         "model": "lakehouse.queryEngine"
@@ -984,9 +1269,9 @@
         "model": "lakehouse.catalog"
       },
       "kind": "resolves",
-      "id": "lwdcta"
+      "id": "12zzcia"
     },
-    "1tl0x5y": {
+    "d29hbe": {
       "title": "resolves a table to its format + location",
       "source": {
         "model": "lakehouse.catalog"
@@ -995,9 +1280,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "flows",
-      "id": "1tl0x5y"
+      "id": "d29hbe"
     },
-    "xd9n6a": {
+    "qf9jmm": {
       "title": "reads tables via the format",
       "source": {
         "model": "lakehouse.queryEngine"
@@ -1006,9 +1291,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "reads",
-      "id": "xd9n6a"
+      "id": "qf9jmm"
     },
-    "1hr81g2": {
+    "lzt3a6": {
       "title": "stored as data files encoded in",
       "source": {
         "model": "lakehouse.tableFormat"
@@ -1017,9 +1302,9 @@
         "model": "lakehouse.fileFormat"
       },
       "kind": "reads",
-      "id": "1hr81g2"
+      "id": "lzt3a6"
     },
-    "4idelg": {
+    "1h2u8x4": {
       "title": "bytes persisted in",
       "source": {
         "model": "lakehouse.fileFormat"
@@ -1028,9 +1313,9 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "reads",
-      "id": "4idelg"
+      "id": "1h2u8x4"
     },
-    "ulwbty": {
+    "3lmxre": {
       "title": "policy decided + enforced in-plan (planning-time)",
       "source": {
         "model": "lakehouse.queryEngine"
@@ -1039,9 +1324,9 @@
         "model": "lakehouse.governance"
       },
       "kind": "enforces",
-      "id": "ulwbty"
+      "id": "3lmxre"
     },
-    "q6exs6": {
+    "j89ea2": {
       "title": "emits column-level lineage (planning-time)",
       "source": {
         "model": "lakehouse.queryEngine"
@@ -1050,9 +1335,9 @@
         "model": "lakehouse.lineage"
       },
       "kind": "flows",
-      "id": "q6exs6"
+      "id": "j89ea2"
     },
-    "zvjzmf": {
+    "1cmtsez": {
       "title": "emits traces + metrics",
       "source": {
         "model": "lakehouse.queryEngine"
@@ -1061,9 +1346,9 @@
         "model": "lakehouse.observability"
       },
       "kind": "flows",
-      "id": "zvjzmf"
+      "id": "1cmtsez"
     },
-    "wji2ez": {
+    "1j4t99z": {
       "title": "serves resource facts (identity, tags, locations)",
       "source": {
         "model": "lakehouse.catalog"
@@ -1072,9 +1357,9 @@
         "model": "lakehouse.governance.pip"
       },
       "kind": "flows",
-      "id": "wji2ez"
+      "id": "1j4t99z"
     },
-    "jvefnj": {
+    "1g5llmb": {
       "color": "amber",
       "title": "vends short-lived scoped credentials for",
       "source": {
@@ -1084,7 +1369,180 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "vends",
-      "id": "jvefnj"
+      "id": "1g5llmb"
+    },
+    "1384df3": {
+      "title": "specifies the table-format capability",
+      "source": {
+        "model": "deltaSpec"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
+      },
+      "kind": "specifies",
+      "id": "1384df3"
+    },
+    "11p08o8": {
+      "title": "specifies the table-format capability",
+      "source": {
+        "model": "icebergSpec"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
+      },
+      "kind": "specifies",
+      "id": "11p08o8"
+    },
+    "spqfrf": {
+      "title": "specifies the catalog capability",
+      "source": {
+        "model": "ucSpec"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "specifies",
+      "id": "spqfrf"
+    },
+    "j2dxgy": {
+      "title": "specifies the catalog capability",
+      "source": {
+        "model": "icebergRestSpec"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "specifies",
+      "id": "j2dxgy"
+    },
+    "vgrhli": {
+      "title": "specifies the sharing capability",
+      "source": {
+        "model": "openSharingSpec"
+      },
+      "target": {
+        "model": "lakehouse.sharing"
+      },
+      "kind": "specifies",
+      "id": "vgrhli"
+    },
+    "1ldf6eg": {
+      "title": "specifies the file-format capability",
+      "source": {
+        "model": "parquetSpec"
+      },
+      "target": {
+        "model": "lakehouse.fileFormat"
+      },
+      "kind": "specifies",
+      "id": "1ldf6eg"
+    },
+    "1pdmgi0": {
+      "title": "specifies the object-storage capability",
+      "source": {
+        "model": "s3Api"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "specifies",
+      "id": "1pdmgi0"
+    },
+    "1qegp0m": {
+      "line": "dotted",
+      "title": "realizes the query-engine capability",
+      "source": {
+        "model": "datafusion"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "realizes",
+      "id": "1qegp0m"
+    },
+    "9ef440": {
+      "line": "dashed",
+      "title": "reads data files via",
+      "source": {
+        "model": "datafusion"
+      },
+      "target": {
+        "model": "s3Api"
+      },
+      "kind": "consumes",
+      "id": "9ef440"
+    },
+    "tp0ity": {
+      "line": "dotted",
+      "title": "realizes the query-engine capability",
+      "source": {
+        "model": "apacheSpark"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "realizes",
+      "id": "tp0ity"
+    },
+    "1haz4ya": {
+      "line": "dashed",
+      "title": "resolves Iceberg tables via",
+      "source": {
+        "model": "apacheSpark"
+      },
+      "target": {
+        "model": "icebergRestSpec"
+      },
+      "kind": "consumes",
+      "id": "1haz4ya"
+    },
+    "43pqb7": {
+      "line": "dotted",
+      "title": "implements",
+      "source": {
+        "model": "lakekeeper"
+      },
+      "target": {
+        "model": "icebergRestSpec"
+      },
+      "kind": "implements",
+      "id": "43pqb7"
+    },
+    "15lich2": {
+      "line": "dotted",
+      "title": "implements",
+      "source": {
+        "model": "unityCatalogOSS"
+      },
+      "target": {
+        "model": "ucSpec"
+      },
+      "kind": "implements",
+      "id": "15lich2"
+    },
+    "1vhlnes": {
+      "line": "dotted",
+      "title": "implements",
+      "source": {
+        "model": "minio"
+      },
+      "target": {
+        "model": "s3Api"
+      },
+      "kind": "implements",
+      "id": "1vhlnes"
+    },
+    "7obxhk": {
+      "line": "dotted",
+      "title": "realizes the model-tracking capability",
+      "source": {
+        "model": "mlflow"
+      },
+      "target": {
+        "model": "lakehouse.modelTracking"
+      },
+      "kind": "realizes",
+      "id": "7obxhk"
     }
   },
   "globals": {
@@ -1128,7 +1586,7 @@
           "target": "lakehouse",
           "label": "queries + governs data",
           "relations": [
-            "5pe79a"
+            "1k0olo2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1142,7 +1600,7 @@
           "target": "lakehouse",
           "label": "builds + operates",
           "relations": [
-            "cqka9z"
+            "1twabnv"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1156,7 +1614,7 @@
           "target": "lakehouse",
           "label": "investigates",
           "relations": [
-            "gxybq2"
+            "1ewqy8m"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1170,7 +1628,7 @@
           "target": "lakehouse",
           "label": "specifies the table-format capability",
           "relations": [
-            "196zd7g"
+            "1384df3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1184,7 +1642,7 @@
           "target": "lakehouse",
           "label": "specifies the table-format capability",
           "relations": [
-            "lx0aor"
+            "11p08o8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1196,23 +1654,43 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse",
-          "label": "specifies the catalog capability",
+          "label": "[...]",
           "relations": [
-            "1uhph00"
+            "tpqhsm",
+            "dzl1i2",
+            "150ybot",
+            "ygx05k",
+            "54j0h9",
+            "vkmfwo",
+            "spqfrf"
           ],
           "color": "gray",
           "line": "dashed",
-          "head": "normal",
-          "kind": "specifies"
+          "head": "normal"
         },
         {
           "id": "lv7f45",
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse",
-          "label": "specifies the catalog capability",
+          "label": "[...]",
           "relations": [
-            "1lrsklu"
+            "1hedyi3",
+            "1ityl9n",
+            "j2dxgy"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal"
+        },
+        {
+          "id": "du97h0",
+          "parent": null,
+          "source": "openSharingSpec",
+          "target": "lakehouse",
+          "label": "specifies the sharing capability",
+          "relations": [
+            "vgrhli"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1226,7 +1704,7 @@
           "target": "lakehouse",
           "label": "specifies the file-format capability",
           "relations": [
-            "nfx7x9"
+            "1ldf6eg"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1240,7 +1718,7 @@
           "target": "lakehouse",
           "label": "specifies the object-storage capability",
           "relations": [
-            "1dnkpi1"
+            "1pdmgi0"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1254,7 +1732,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "5pt8pf"
+            "1qegp0m"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1268,7 +1746,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1pt0u7e"
+            "tp0ity"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1282,7 +1760,7 @@
           "target": "lakehouse",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "lzakkx"
+            "7obxhk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1296,7 +1774,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "171bzvb"
+            "15lich2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1310,7 +1788,7 @@
           "target": "icebergRestSpec",
           "label": "resolves Iceberg tables via",
           "relations": [
-            "gjxi5q"
+            "1haz4ya"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1324,7 +1802,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "3qt3ra"
+            "43pqb7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1338,7 +1816,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "mdob6x"
+            "9ef440"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1352,7 +1830,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1sw55ld"
+            "1vhlnes"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1491,6 +1969,35 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_icebergSpec"
+        },
+        {
+          "id": "openSharingSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "du97h0"
+          ],
+          "title": "Open Sharing",
+          "modelRef": "openSharingSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open profile of the Delta Sharing protocol — a credential-file recipient reads shared assets live, cross-platform, without a shared catalog. Also a generic surface for new resource kinds (e.g. agent skills)."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://delta.io/sharing/"
+            }
+          ],
+          "kind": "openSpecification"
         },
         {
           "id": "parquetSpec",
@@ -1830,6 +2337,7 @@
             "1n3wkt1",
             "1qvv3jy",
             "lv7f45",
+            "du97h0",
             "s3zh3y",
             "zreoid",
             "byeu7p",
@@ -1886,6 +2394,82 @@
             }
           ],
           "kind": "implementation"
+        },
+        {
+          "id": "blogUcDeltaApiClient",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Delta client / engine",
+          "modelRef": "blogUcDeltaApiClient",
+          "shape": "rectangle",
+          "color": "primary",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A Delta-compatible writer proposing commits through the UC Delta API."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://delta.io"
+            }
+          ],
+          "kind": "participant"
+        },
+        {
+          "id": "blogUcDeltaApiServer",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Unity Catalog",
+          "modelRef": "blogUcDeltaApiServer",
+          "shape": "rectangle",
+          "color": "primary",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "kind": "participant"
+        },
+        {
+          "id": "blogUcDeltaApiStorage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Cloud storage",
+          "modelRef": "blogUcDeltaApiStorage",
+          "shape": "storage",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Where the table's data files and _delta_log live (S3 / ABFS / GCS, or a local file:// root)."
+          },
+          "tags": [],
+          "notation": "Object storage",
+          "kind": "store"
         }
       ],
       "notation": {
@@ -1905,17 +2489,340 @@
             "kinds": [
               "openSpecification"
             ]
+          },
+          {
+            "title": "Object storage",
+            "shape": "storage",
+            "color": "muted",
+            "kinds": [
+              "store"
+            ]
           }
         ]
       },
-      "hash": "WKqRYYCcyZQN5iGh8QzkXctYWd76DQuUlMso7Bpwk00"
+      "hash": "OZwP0SLwfMbzIWNYzJ9CJHpmU-r9FjAt3nYYtXY-RDI"
+    },
+    "ucDeltaApi_managedTableFlow": {
+      "_type": "dynamic",
+      "tags": null,
+      "links": null,
+      "_stage": "computed",
+      "sourcePath": "views/blog-views.likec4",
+      "description": {
+        "txt": "The end-to-end managed-table lifecycle from the Unity Catalog managed-tables spec: discover, allocate a staging table, write version 0, promote it, then commit an INSERT — staged first, ratified by the catalog, then published."
+      },
+      "title": "UC Delta API — create a managed table, then commit",
+      "id": "ucDeltaApi_managedTableFlow",
+      "variant": "diagram",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "nodes": [
+        {
+          "id": "blogUcDeltaApiClient",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "step-03",
+            "step-06",
+            "step-10"
+          ],
+          "outEdges": [
+            "step-01",
+            "step-02",
+            "step-04",
+            "step-05",
+            "step-07",
+            "step-08",
+            "step-09",
+            "step-11"
+          ],
+          "title": "Delta client / engine",
+          "modelRef": "blogUcDeltaApiClient",
+          "shape": "rectangle",
+          "color": "primary",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A Delta-compatible writer proposing commits through the UC Delta API."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://delta.io"
+            }
+          ],
+          "kind": "participant"
+        },
+        {
+          "id": "blogUcDeltaApiServer",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "step-01",
+            "step-02",
+            "step-05",
+            "step-07",
+            "step-09"
+          ],
+          "outEdges": [
+            "step-03",
+            "step-06",
+            "step-10"
+          ],
+          "title": "Unity Catalog",
+          "modelRef": "blogUcDeltaApiServer",
+          "shape": "rectangle",
+          "color": "primary",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "kind": "participant"
+        },
+        {
+          "id": "blogUcDeltaApiStorage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "step-04",
+            "step-08",
+            "step-11"
+          ],
+          "outEdges": [],
+          "title": "Cloud storage",
+          "modelRef": "blogUcDeltaApiStorage",
+          "shape": "storage",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Where the table's data files and _delta_log live (S3 / ABFS / GCS, or a local file:// root)."
+          },
+          "tags": [],
+          "notation": "Object storage",
+          "kind": "store"
+        }
+      ],
+      "edges": [
+        {
+          "id": "step-01",
+          "parent": null,
+          "source": "blogUcDeltaApiClient",
+          "target": "blogUcDeltaApiServer",
+          "label": "GET /delta/v1/config (negotiate endpoints + protocol-version)",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@0",
+          "notes": {
+            "md": "**Handshake.** Before touching any table, the client asks the catalog\ntwo things: *\"which API endpoints do you support?\"* and *\"which\nprotocol version should we speak?\"* The client sends the highest\nversions it can handle; the server replies with the version they'll\nboth use. This keeps a new client and an older server (or vice versa)\ntalking the same language."
+          }
+        },
+        {
+          "id": "step-02",
+          "parent": null,
+          "source": "blogUcDeltaApiClient",
+          "target": "blogUcDeltaApiServer",
+          "label": "POST .../staging-tables { name }",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@1",
+          "notes": {
+            "md": "**Reserve a spot.** The client asks the catalog to set aside a place\nfor a brand-new table, passing just the name. Nothing is committed\nyet — think of it as claiming a plot of land before you build on it."
+          }
+        },
+        {
+          "id": "step-03",
+          "parent": null,
+          "source": "blogUcDeltaApiServer",
+          "target": "blogUcDeltaApiClient",
+          "label": "table-id, location, READ_WRITE credential, required-protocol",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@2",
+          "notes": {
+            "md": "**The starter kit.** The catalog hands back everything the client\nneeds to build the table: a unique **table-id**, the **location** in\ncloud storage where files will go, a short-lived **READ_WRITE\ncredential** to write there, and the **required-protocol** — the\nminimum Delta features this table must declare."
+          },
+          "dir": "back"
+        },
+        {
+          "id": "step-04",
+          "parent": null,
+          "source": "blogUcDeltaApiClient",
+          "target": "blogUcDeltaApiStorage",
+          "label": "write _delta_log/0.json (schema, protocol, io.unitycatalog.tableId)",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@3",
+          "notes": {
+            "md": "**Lay the foundation.** Using the vended credential, the client writes\nthe very first Delta log file, `0.json`, directly to storage. It\nrecords the table's schema, the required protocol, and stamps in the\n`io.unitycatalog.tableId` so the file is provably tied to the id the\ncatalog just reserved."
+          }
+        },
+        {
+          "id": "step-05",
+          "parent": null,
+          "source": "blogUcDeltaApiClient",
+          "target": "blogUcDeltaApiServer",
+          "label": "POST .../tables (promote: columns, protocol, properties)",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@4",
+          "notes": {
+            "md": "**Make it official.** The client tells the catalog *\"I've written\nversion 0 — please promote this staging table into a real, managed\ntable.\"* It echoes back the columns, protocol, and properties so the\ncatalog's record matches what's on disk."
+          }
+        },
+        {
+          "id": "step-06",
+          "parent": null,
+          "source": "blogUcDeltaApiServer",
+          "target": "blogUcDeltaApiClient",
+          "label": "loadTable response (table-uuid, etag, version 0)",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@5",
+          "notes": {
+            "md": "**Table is live.** The catalog confirms the table now exists and\nreturns its current state: the **table-uuid**, an **etag** (a version\nfingerprint used to detect conflicts), and the fact that it sits at\n**version 0**. Creation is done."
+          },
+          "dir": "back"
+        },
+        {
+          "id": "step-07",
+          "parent": null,
+          "source": "blogUcDeltaApiClient",
+          "target": "blogUcDeltaApiServer",
+          "label": "GET .../tables/{table} (loadTable: current etag + uuid)",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@6",
+          "notes": {
+            "md": "**Check the current state.** To append data, the client first reads\nthe table to learn where it stands — the latest **etag** and\n**uuid**. It needs these so the catalog can later verify that nothing\nelse changed the table in the meantime."
+          }
+        },
+        {
+          "id": "step-08",
+          "parent": null,
+          "source": "blogUcDeltaApiClient",
+          "target": "blogUcDeltaApiStorage",
+          "label": "write _delta_log/_staged_commits/<v>.<uuid>.json",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@7",
+          "notes": {
+            "md": "**Stage the change.** The client writes its new commit as a *staged*\nfile (`<version>.<uuid>.json`) in the `_staged_commits` folder. It's\nfully written but not yet part of the table's official history — the\ncatalog hasn't blessed it, so no reader will see it."
+          }
+        },
+        {
+          "id": "step-09",
+          "parent": null,
+          "source": "blogUcDeltaApiClient",
+          "target": "blogUcDeltaApiServer",
+          "label": "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@8",
+          "notes": {
+            "md": "**Ask for a ratify.** The client asks the catalog to accept the staged\ncommit. The **requirements** are safety guards — *\"only if the table\nis still this uuid and this etag\"* — so two writers can't clobber each\nother. The **add-commit** update points at the staged file. The\ncatalog is the referee: it approves at most one commit per version."
+          }
+        },
+        {
+          "id": "step-10",
+          "parent": null,
+          "source": "blogUcDeltaApiServer",
+          "target": "blogUcDeltaApiClient",
+          "label": "ratified — loadTable with the new commit",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@9",
+          "notes": {
+            "md": "**Accepted.** The catalog ratified the commit: it's now the official\nversion, even though the file still lives in `_staged_commits`. The\ncatalog returns the updated table state, including the new etag."
+          },
+          "dir": "back"
+        },
+        {
+          "id": "step-11",
+          "parent": null,
+          "source": "blogUcDeltaApiClient",
+          "target": "blogUcDeltaApiStorage",
+          "label": "publish _delta_log/<v>.json (vended credential)",
+          "relations": [],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "tags": [],
+          "astPath": "/steps@10",
+          "notes": {
+            "md": "**Publish.** As a final tidy-up, the client copies the ratified staged\nfile to its permanent name, `_delta_log/<v>.json`. Now a plain\nfilesystem listing shows the commit too. Publishing happens strictly\nin version order, so the log always reads cleanly from 0 upward."
+          }
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "Object storage",
+            "shape": "storage",
+            "color": "muted",
+            "kinds": [
+              "store"
+            ]
+          }
+        ]
+      },
+      "hash": "N5LqMJcle-KZf-6Al_1uX3XMpztNcD3lTtifT9ADD_c"
     },
     "trustedComputeDeploy": {
       "_type": "deployment",
       "tags": null,
       "links": null,
       "_stage": "computed",
-      "sourcePath": "deployment-views.likec4",
+      "sourcePath": "views/deployment-views.likec4",
       "description": {
         "txt": "The reference deployment, inside the trusted boundary: hydrofoil is the query engine enforcing full FGAC in-plan (embedded PDP + engine PEP); mangrove is the catalog + resource PIP + credential-vending PA; headwaters captures lineage."
       },
@@ -1932,7 +2839,7 @@
           "target": "trustedCompute.mangrove.catalog",
           "label": "resolves tables through",
           "relations": [
-            "lwdcta"
+            "12zzcia"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1946,7 +2853,7 @@
           "target": "trustedCompute.headwaters.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
-            "q6exs6"
+            "j89ea2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1960,7 +2867,7 @@
           "target": "trustedCompute.objstore.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "jvefnj"
+            "1g5llmb"
           ],
           "color": "amber",
           "line": "dashed",
@@ -2218,7 +3125,7 @@
       "tags": null,
       "links": null,
       "_stage": "computed",
-      "sourcePath": "deployment-views.likec4",
+      "sourcePath": "views/deployment-views.likec4",
       "description": {
         "txt": "The same query-engine capability deployed OUTSIDE the trusted boundary: the catalog vends a scoped credential after a coarse check, and the engine reads raw files directly. Row filters and column masks are BYPASSED because the untrusted engine plays no PEP. The non-vendable-governed-table guard (amber) is the designed mitigation."
       },
@@ -2235,7 +3142,7 @@
           "target": "externalCompute.extStore.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "jvefnj"
+            "1g5llmb"
           ],
           "color": "amber",
           "line": "dashed",
@@ -2249,7 +3156,7 @@
           "target": "externalCompute.extCatalog.catalog",
           "label": "resolves tables through",
           "relations": [
-            "lwdcta"
+            "12zzcia"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2263,8 +3170,8 @@
           "target": "externalCompute.extEngine",
           "label": "[...]",
           "relations": [
-            "1tjn58e",
-            "1wlqv08"
+            "1ini3rc",
+            "1b2q0r2"
           ],
           "color": "amber",
           "line": "dashed",
@@ -2280,7 +3187,7 @@
           "target": "externalCompute.extStore",
           "label": "reads raw files",
           "relations": [
-            "1ih0uhh"
+            "1jhb6w3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2475,7 +3382,7 @@
       "links": null,
       "viewOf": "lakehouse.catalog",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Catalog — in context",
       "id": "explain_catalog",
@@ -2490,7 +3397,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1uhph00"
+            "spqfrf"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2504,12 +3411,96 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1lrsklu"
+            "j2dxgy"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "specifies"
+        },
+        {
+          "id": "1ag5gdk",
+          "parent": null,
+          "source": "lakehouse.schema",
+          "target": "lakehouse.catalog",
+          "label": "governed / namespaced by",
+          "relations": [
+            "d4z585"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "kurvyf",
+          "parent": null,
+          "source": "lakehouse.table",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "ayn46z"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1mjqvbl",
+          "parent": null,
+          "source": "lakehouse.volume",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "l3c597"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "10gn1rn",
+          "parent": null,
+          "source": "lakehouse.registeredFunction",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "df7ke3"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1cz1lcn",
+          "parent": null,
+          "source": "lakehouse.mlModel",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "15cic61"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1v6wcxd",
+          "parent": null,
+          "source": "lakehouse.agentSkill",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "ijzynx"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
         },
         {
           "id": "1tnkhx9",
@@ -2518,7 +3509,7 @@
           "target": "lakehouse.catalog",
           "label": "resolves tables through",
           "relations": [
-            "lwdcta"
+            "12zzcia"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2532,7 +3523,7 @@
           "target": "lakehouse.tableFormat",
           "label": "resolves a table to its format + location",
           "relations": [
-            "1tl0x5y"
+            "d29hbe"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2546,7 +3537,7 @@
           "target": "lakehouse.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "jvefnj"
+            "1g5llmb"
           ],
           "color": "amber",
           "line": "dashed",
@@ -2620,6 +3611,168 @@
           "navigateTo": "explain_icebergRestSpec"
         },
         {
+          "id": "lakehouse.schema",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ag5gdk"
+          ],
+          "title": "Schema / namespace",
+          "modelRef": "lakehouse.schema",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The namespace container other asset kinds are organized under."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.table",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "kurvyf"
+          ],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The classic tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.volume",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1mjqvbl"
+          ],
+          "title": "Volume",
+          "modelRef": "lakehouse.volume",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Governed non-tabular files — a catalogued path in object storage."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.registeredFunction",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "10gn1rn"
+          ],
+          "title": "Function",
+          "modelRef": "lakehouse.registeredFunction",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed, reusable unit of computation registered in the catalog."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.mlModel",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1cz1lcn"
+          ],
+          "title": "Model",
+          "modelRef": "lakehouse.mlModel",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed ML model — versions, stages, and lineage catalogued like data."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.agentSkill",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1v6wcxd"
+          ],
+          "title": "Agent skill",
+          "modelRef": "lakehouse.agentSkill",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "An emerging asset kind: a shareable, governed capability for AI agents."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
           "id": "lakehouse.queryEngine",
           "parent": null,
           "level": 0,
@@ -2654,6 +3807,12 @@
           "inEdges": [
             "cp7myr",
             "dton7c",
+            "1ag5gdk",
+            "kurvyf",
+            "1mjqvbl",
+            "10gn1rn",
+            "1cz1lcn",
+            "1v6wcxd",
             "1tnkhx9"
           ],
           "outEdges": [
@@ -2741,6 +3900,14 @@
       "notation": {
         "nodes": [
           {
+            "title": "Data & AI asset kind",
+            "shape": "rectangle",
+            "color": "green",
+            "kinds": [
+              "asset"
+            ]
+          },
+          {
             "title": "Specification / open standard",
             "shape": "rectangle",
             "color": "sky",
@@ -2750,7 +3917,7 @@
           }
         ]
       },
-      "hash": "KfwXeVFGpOgGp1oXIK64MT2C8Fr7QHYaMbIGexSxoJ8"
+      "hash": "PJl4PaLNjqPjJGiJkZJYQtyoevbNJFJu48vw4Mujbgo"
     },
     "explain_queryEngine": {
       "_type": "element",
@@ -2758,7 +3925,7 @@
       "links": null,
       "viewOf": "lakehouse.queryEngine",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Query engine — in context",
       "id": "explain_queryEngine",
@@ -2773,7 +3940,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "5pe79a"
+            "1k0olo2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2787,7 +3954,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "5pt8pf"
+            "1qegp0m"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2801,7 +3968,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1pt0u7e"
+            "tp0ity"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2809,18 +3976,32 @@
           "kind": "realizes"
         },
         {
-          "id": "y1w3b4",
+          "id": "eyun5c",
           "parent": null,
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.governance",
-          "label": "policy decided + enforced in-plan (planning-time)",
+          "source": "lakehouse.table",
+          "target": "lakehouse.queryEngine",
+          "label": "read + written by",
           "relations": [
-            "ulwbty"
+            "xibkn6"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "enforces"
+          "kind": "requires"
+        },
+        {
+          "id": "evzpms",
+          "parent": null,
+          "source": "lakehouse.registeredFunction",
+          "target": "lakehouse.queryEngine",
+          "label": "executed by",
+          "relations": [
+            "1vnqcq5"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
         },
         {
           "id": "1tnkhx9",
@@ -2829,7 +4010,7 @@
           "target": "lakehouse.catalog",
           "label": "resolves tables through",
           "relations": [
-            "lwdcta"
+            "12zzcia"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2843,7 +4024,7 @@
           "target": "lakehouse.tableFormat",
           "label": "reads tables via the format",
           "relations": [
-            "xd9n6a"
+            "qf9jmm"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2857,12 +4038,26 @@
           "target": "lakehouse.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
-            "q6exs6"
+            "j89ea2"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "y1w3b4",
+          "parent": null,
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.governance",
+          "label": "policy decided + enforced in-plan (planning-time)",
+          "relations": [
+            "3lmxre"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "enforces"
         },
         {
           "id": "m6bsvn",
@@ -2871,7 +4066,7 @@
           "target": "lakehouse.observability",
           "label": "emits traces + metrics",
           "relations": [
-            "zvjzmf"
+            "1cmtsez"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2968,6 +4163,60 @@
           "kind": "implementation"
         },
         {
+          "id": "lakehouse.table",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "eyun5c"
+          ],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The classic tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.registeredFunction",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "evzpms"
+          ],
+          "title": "Function",
+          "modelRef": "lakehouse.registeredFunction",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed, reusable unit of computation registered in the catalog."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
           "id": "lakehouse.queryEngine",
           "parent": null,
           "level": 0,
@@ -2975,13 +4224,15 @@
           "inEdges": [
             "7v3snl",
             "ipwqn",
-            "zt1zxe"
+            "zt1zxe",
+            "eyun5c",
+            "evzpms"
           ],
           "outEdges": [
-            "y1w3b4",
             "1tnkhx9",
             "rdpg8j",
             "tnia77",
+            "y1w3b4",
             "m6bsvn"
           ],
           "title": "Query engine",
@@ -3000,33 +4251,6 @@
             "canonicalDoc": "design/reference-architecture.md"
           },
           "kind": "capability"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "y1w3b4"
-          ],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability",
-          "navigateTo": "governanceModel"
         },
         {
           "id": "lakehouse.catalog",
@@ -3116,6 +4340,33 @@
           "navigateTo": "explain_lineage"
         },
         {
+          "id": "lakehouse.governance",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "y1w3b4"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability",
+          "navigateTo": "governanceModel"
+        },
+        {
           "id": "lakehouse.observability",
           "parent": null,
           "level": 0,
@@ -3152,10 +4403,18 @@
             "kinds": [
               "implementation"
             ]
+          },
+          {
+            "title": "Data & AI asset kind",
+            "shape": "rectangle",
+            "color": "green",
+            "kinds": [
+              "asset"
+            ]
           }
         ]
       },
-      "hash": "tr3f4aqJfP2aN8r5H_Ynw0fxpMmkr28yYWXsWIl7UNA"
+      "hash": "-DyOmLNKMSx63ft5bTkW8dr7MYrzhXfYteBzPst2GO0"
     },
     "explain_tableFormat": {
       "_type": "element",
@@ -3163,7 +4422,7 @@
       "links": null,
       "viewOf": "lakehouse.tableFormat",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Open table format — in context",
       "id": "explain_tableFormat",
@@ -3178,7 +4437,7 @@
           "target": "lakehouse.tableFormat",
           "label": "specifies the table-format capability",
           "relations": [
-            "196zd7g"
+            "1384df3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3192,12 +4451,26 @@
           "target": "lakehouse.tableFormat",
           "label": "specifies the table-format capability",
           "relations": [
-            "lx0aor"
+            "11p08o8"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "specifies"
+        },
+        {
+          "id": "115nb49",
+          "parent": null,
+          "source": "lakehouse.table",
+          "target": "lakehouse.tableFormat",
+          "label": "materialized as an open table format",
+          "relations": [
+            "114abe"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
         },
         {
           "id": "1ko3ux0",
@@ -3206,7 +4479,7 @@
           "target": "lakehouse.tableFormat",
           "label": "resolves a table to its format + location",
           "relations": [
-            "1tl0x5y"
+            "d29hbe"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3220,7 +4493,7 @@
           "target": "lakehouse.tableFormat",
           "label": "reads tables via the format",
           "relations": [
-            "xd9n6a"
+            "qf9jmm"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3234,7 +4507,7 @@
           "target": "lakehouse.fileFormat",
           "label": "stored as data files encoded in",
           "relations": [
-            "1hr81g2"
+            "lzt3a6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3306,6 +4579,33 @@
           "navigateTo": "explain_icebergSpec"
         },
         {
+          "id": "lakehouse.table",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "115nb49"
+          ],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The classic tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
           "id": "lakehouse.catalog",
           "parent": null,
           "level": 0,
@@ -3373,6 +4673,7 @@
           "inEdges": [
             "1qkmdr7",
             "67455y",
+            "115nb49",
             "1ko3ux0",
             "rdpg8j"
           ],
@@ -3427,6 +4728,14 @@
       "notation": {
         "nodes": [
           {
+            "title": "Data & AI asset kind",
+            "shape": "rectangle",
+            "color": "green",
+            "kinds": [
+              "asset"
+            ]
+          },
+          {
             "title": "Specification / open standard",
             "shape": "rectangle",
             "color": "sky",
@@ -3436,7 +4745,7 @@
           }
         ]
       },
-      "hash": "_JBFdbBjjbS0mmxyS6p9Y3QB0GIm8rBicvem_X1rAWA"
+      "hash": "_B_IuTw4Dy6WyFhkNvXqtbQSym5Lis7eIeKIXA0tjhA"
     },
     "explain_fileFormat": {
       "_type": "element",
@@ -3444,7 +4753,7 @@
       "links": null,
       "viewOf": "lakehouse.fileFormat",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "File format — in context",
       "id": "explain_fileFormat",
@@ -3459,7 +4768,7 @@
           "target": "lakehouse.fileFormat",
           "label": "specifies the file-format capability",
           "relations": [
-            "nfx7x9"
+            "1ldf6eg"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3473,7 +4782,7 @@
           "target": "lakehouse.fileFormat",
           "label": "stored as data files encoded in",
           "relations": [
-            "1hr81g2"
+            "lzt3a6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3487,7 +4796,7 @@
           "target": "lakehouse.objectStorage",
           "label": "bytes persisted in",
           "relations": [
-            "4idelg"
+            "1h2u8x4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3630,7 +4939,7 @@
       "links": null,
       "viewOf": "lakehouse.objectStorage",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Object storage — in context",
       "id": "explain_objectStorage",
@@ -3645,12 +4954,26 @@
           "target": "lakehouse.objectStorage",
           "label": "specifies the object-storage capability",
           "relations": [
-            "1dnkpi1"
+            "1pdmgi0"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "specifies"
+        },
+        {
+          "id": "1q3ub9q",
+          "parent": null,
+          "source": "lakehouse.volume",
+          "target": "lakehouse.objectStorage",
+          "label": "materialized as files in",
+          "relations": [
+            "1xirhr9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
         },
         {
           "id": "qmrjf9",
@@ -3659,7 +4982,7 @@
           "target": "lakehouse.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "jvefnj"
+            "1g5llmb"
           ],
           "color": "amber",
           "line": "dashed",
@@ -3673,7 +4996,7 @@
           "target": "lakehouse.objectStorage",
           "label": "bytes persisted in",
           "relations": [
-            "4idelg"
+            "1h2u8x4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3711,6 +5034,33 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_s3Api"
+        },
+        {
+          "id": "lakehouse.volume",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1q3ub9q"
+          ],
+          "title": "Volume",
+          "modelRef": "lakehouse.volume",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Governed non-tabular files — a catalogued path in object storage."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
         },
         {
           "id": "lakehouse.catalog",
@@ -3779,6 +5129,7 @@
           "children": [],
           "inEdges": [
             "1ol3q9j",
+            "1q3ub9q",
             "qmrjf9",
             "1u0v1f"
           ],
@@ -3804,6 +5155,14 @@
       "notation": {
         "nodes": [
           {
+            "title": "Data & AI asset kind",
+            "shape": "rectangle",
+            "color": "green",
+            "kinds": [
+              "asset"
+            ]
+          },
+          {
             "title": "Specification / open standard",
             "shape": "rectangle",
             "color": "sky",
@@ -3813,7 +5172,7 @@
           }
         ]
       },
-      "hash": "Y2KP7ypoGQEaCWCM5vopoDNi9m7kiERDrGkB6byRu48"
+      "hash": "0kpT_p580qWtRgeIc-CwSSMBpt6lbf_F9cfQU8fHnjU"
     },
     "explain_lineage": {
       "_type": "element",
@@ -3821,7 +5180,7 @@
       "links": null,
       "viewOf": "lakehouse.lineage",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Lineage — in context",
       "id": "explain_lineage",
@@ -3836,7 +5195,7 @@
           "target": "lakehouse.lineage",
           "label": "investigates",
           "relations": [
-            "gxybq2"
+            "1ewqy8m"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3850,7 +5209,7 @@
           "target": "lakehouse.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
-            "q6exs6"
+            "j89ea2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3945,7 +5304,7 @@
       "links": null,
       "viewOf": "lakehouse.modelTracking",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Model tracking — in context",
       "id": "explain_modelTracking",
@@ -3960,12 +5319,26 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "lzakkx"
+            "7obxhk"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "realizes"
+        },
+        {
+          "id": "1ojjwck",
+          "parent": null,
+          "source": "lakehouse.mlModel",
+          "target": "lakehouse.modelTracking",
+          "label": "versioned + promoted by",
+          "relations": [
+            "110tpfv"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
         }
       ],
       "nodes": [
@@ -4002,44 +5375,40 @@
           "kind": "implementation"
         },
         {
-          "id": "lakehouse",
+          "id": "lakehouse.mlModel",
           "parent": null,
           "level": 0,
-          "children": [
-            "lakehouse.modelTracking"
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ojjwck"
           ],
-          "inEdges": [
-            "1t5h2fk"
-          ],
-          "outEdges": [],
-          "title": "Open Lakehouse",
-          "modelRef": "lakehouse",
+          "title": "Model",
+          "modelRef": "lakehouse.mlModel",
           "shape": "rectangle",
-          "color": "primary",
+          "color": "green",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+            "txt": "A governed ML model — versions, stages, and lineage catalogued like data."
           },
           "tags": [],
-          "links": [
-            {
-              "url": "https://openlakehouse.io"
-            }
-          ],
-          "kind": "capability",
-          "depth": 1,
-          "navigateTo": "capabilityMap"
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
         },
         {
           "id": "lakehouse.modelTracking",
-          "parent": "lakehouse",
-          "level": 1,
+          "parent": null,
+          "level": 0,
           "children": [],
           "inEdges": [
-            "1t5h2fk"
+            "1t5h2fk",
+            "1ojjwck"
           ],
           "outEdges": [],
           "title": "Model tracking",
@@ -4069,10 +5438,18 @@
             "kinds": [
               "implementation"
             ]
+          },
+          {
+            "title": "Data & AI asset kind",
+            "shape": "rectangle",
+            "color": "green",
+            "kinds": [
+              "asset"
+            ]
           }
         ]
       },
-      "hash": "WwaafruWHHyJeT6cmBkkpaHD0FR06yiP-_mFGwr2pP0"
+      "hash": "gXktf9KI1eJC2m0hzh7JE9SFM-ds1nbEg_XXk7PO8n8"
     },
     "explain_observability": {
       "_type": "element",
@@ -4080,7 +5457,7 @@
       "links": null,
       "viewOf": "lakehouse.observability",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Observability — in context",
       "id": "explain_observability",
@@ -4095,7 +5472,7 @@
           "target": "lakehouse.observability",
           "label": "emits traces + metrics",
           "relations": [
-            "zvjzmf"
+            "1cmtsez"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4166,7 +5543,7 @@
       "links": null,
       "viewOf": "deltaSpec",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Delta Lake — in context",
       "id": "explain_deltaSpec",
@@ -4181,7 +5558,7 @@
           "target": "lakehouse",
           "label": "specifies the table-format capability",
           "relations": [
-            "196zd7g"
+            "1384df3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4270,7 +5647,7 @@
       "links": null,
       "viewOf": "icebergSpec",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Apache Iceberg — in context",
       "id": "explain_icebergSpec",
@@ -4285,7 +5662,7 @@
           "target": "lakehouse",
           "label": "specifies the table-format capability",
           "relations": [
-            "lx0aor"
+            "11p08o8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4374,7 +5751,7 @@
       "links": null,
       "viewOf": "ucSpec",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Unity Catalog — in context",
       "id": "explain_ucSpec",
@@ -4389,7 +5766,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "171bzvb"
+            "15lich2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4401,14 +5778,19 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse",
-          "label": "specifies the catalog capability",
+          "label": "[...]",
           "relations": [
-            "1uhph00"
+            "tpqhsm",
+            "dzl1i2",
+            "150ybot",
+            "ygx05k",
+            "54j0h9",
+            "vkmfwo",
+            "spqfrf"
           ],
           "color": "gray",
           "line": "dashed",
-          "head": "normal",
-          "kind": "specifies"
+          "head": "normal"
         }
       ],
       "nodes": [
@@ -4529,7 +5911,7 @@
           }
         ]
       },
-      "hash": "LJUbXiDlpNm3KoG_6H0jUGUeIOr1TAGTUQxh6Hke5gs"
+      "hash": "fcwrhVWM4YA-Gs5Gyo-E7e9MSm_oK8FnyvYn1HNHKv4"
     },
     "explain_icebergRestSpec": {
       "_type": "element",
@@ -4537,7 +5919,7 @@
       "links": null,
       "viewOf": "icebergRestSpec",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Iceberg REST Catalog — in context",
       "id": "explain_icebergRestSpec",
@@ -4552,7 +5934,7 @@
           "target": "icebergRestSpec",
           "label": "resolves Iceberg tables via",
           "relations": [
-            "gjxi5q"
+            "1haz4ya"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4566,7 +5948,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "3qt3ra"
+            "43pqb7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4578,14 +5960,15 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse",
-          "label": "specifies the catalog capability",
+          "label": "[...]",
           "relations": [
-            "1lrsklu"
+            "1hedyi3",
+            "1ityl9n",
+            "j2dxgy"
           ],
           "color": "gray",
           "line": "dashed",
-          "head": "normal",
-          "kind": "specifies"
+          "head": "normal"
         }
       ],
       "nodes": [
@@ -4735,7 +6118,7 @@
           }
         ]
       },
-      "hash": "wsLhpAwBLqzyumDgd2FpwZYSkZZ04mhYt7iTNeMy8iI"
+      "hash": "iwM3-xNR45HHPGAu2gDB5SjdptWi7YkwJsZPFEkNf0U"
     },
     "explain_parquetSpec": {
       "_type": "element",
@@ -4743,7 +6126,7 @@
       "links": null,
       "viewOf": "parquetSpec",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "Apache Parquet — in context",
       "id": "explain_parquetSpec",
@@ -4758,7 +6141,7 @@
           "target": "lakehouse",
           "label": "specifies the file-format capability",
           "relations": [
-            "nfx7x9"
+            "1ldf6eg"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4846,7 +6229,7 @@
       "links": null,
       "viewOf": "s3Api",
       "_stage": "computed",
-      "sourcePath": "explain-views.likec4",
+      "sourcePath": "views/explain-views.likec4",
       "description": null,
       "title": "S3 API — in context",
       "id": "explain_s3Api",
@@ -4861,7 +6244,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "mdob6x"
+            "9ef440"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4875,7 +6258,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1sw55ld"
+            "1vhlnes"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4889,7 +6272,7 @@
           "target": "lakehouse",
           "label": "specifies the object-storage capability",
           "relations": [
-            "1dnkpi1"
+            "1pdmgi0"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5050,7 +6433,7 @@
       "tags": null,
       "links": null,
       "_stage": "computed",
-      "sourcePath": "flows.likec4",
+      "sourcePath": "views/flows.likec4",
       "description": {
         "txt": "The catalog issues a short-lived, scoped storage credential at table-resolution time;\nthe query engine reads object storage with it (no long-lived keys)."
       },
@@ -5189,7 +6572,7 @@
           "target": "lakehouse.queryEngine",
           "label": "query table",
           "relations": [
-            "5pe79a"
+            "1k0olo2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5208,7 +6591,7 @@
           "target": "lakehouse.catalog",
           "label": "resolve table",
           "relations": [
-            "lwdcta"
+            "12zzcia"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5269,7 +6652,7 @@
       "tags": null,
       "links": null,
       "_stage": "computed",
-      "sourcePath": "views.likec4",
+      "sourcePath": "views/logical-views.likec4",
       "description": {
         "txt": "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping)."
       },
@@ -5286,7 +6669,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "5pe79a"
+            "1k0olo2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5300,26 +6683,12 @@
           "target": "lakehouse.lineage",
           "label": "investigates",
           "relations": [
-            "gxybq2"
+            "1ewqy8m"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
-        },
-        {
-          "id": "y1w3b4",
-          "parent": "lakehouse",
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.governance",
-          "label": "policy decided + enforced in-plan (planning-time)",
-          "relations": [
-            "ulwbty"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "enforces"
         },
         {
           "id": "1ko3ux0",
@@ -5328,7 +6697,7 @@
           "target": "lakehouse.tableFormat",
           "label": "resolves a table to its format + location",
           "relations": [
-            "1tl0x5y"
+            "d29hbe"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5342,7 +6711,7 @@
           "target": "lakehouse.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "jvefnj"
+            "1g5llmb"
           ],
           "color": "amber",
           "line": "dashed",
@@ -5356,7 +6725,7 @@
           "target": "lakehouse.catalog",
           "label": "resolves tables through",
           "relations": [
-            "lwdcta"
+            "12zzcia"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5370,7 +6739,7 @@
           "target": "lakehouse.tableFormat",
           "label": "reads tables via the format",
           "relations": [
-            "xd9n6a"
+            "qf9jmm"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5384,12 +6753,26 @@
           "target": "lakehouse.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
-            "q6exs6"
+            "j89ea2"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "y1w3b4",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.governance",
+          "label": "policy decided + enforced in-plan (planning-time)",
+          "relations": [
+            "3lmxre"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "enforces"
         },
         {
           "id": "m6bsvn",
@@ -5398,7 +6781,7 @@
           "target": "lakehouse.observability",
           "label": "emits traces + metrics",
           "relations": [
-            "zvjzmf"
+            "1cmtsez"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5412,7 +6795,7 @@
           "target": "lakehouse.fileFormat",
           "label": "stored as data files encoded in",
           "relations": [
-            "1hr81g2"
+            "lzt3a6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5426,7 +6809,7 @@
           "target": "lakehouse.objectStorage",
           "label": "bytes persisted in",
           "relations": [
-            "4idelg"
+            "1h2u8x4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5440,7 +6823,7 @@
           "target": "lakehouse",
           "label": "builds + operates",
           "relations": [
-            "cqka9z"
+            "1twabnv"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5524,10 +6907,11 @@
           "level": 0,
           "children": [
             "lakehouse.queryEngine",
-            "lakehouse.governance",
             "lakehouse.catalog",
             "lakehouse.lineage",
+            "lakehouse.governance",
             "lakehouse.modelTracking",
+            "lakehouse.sharing",
             "lakehouse.observability",
             "lakehouse.tableFormat",
             "lakehouse.fileFormat",
@@ -5569,10 +6953,10 @@
             "7v3snl"
           ],
           "outEdges": [
-            "y1w3b4",
             "1tnkhx9",
             "rdpg8j",
             "tnia77",
+            "y1w3b4",
             "m6bsvn"
           ],
           "title": "Query engine",
@@ -5592,33 +6976,6 @@
           },
           "kind": "capability",
           "navigateTo": "explain_queryEngine"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "y1w3b4"
-          ],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability",
-          "navigateTo": "governanceModel"
         },
         {
           "id": "lakehouse.catalog",
@@ -5685,6 +7042,33 @@
           "navigateTo": "explain_lineage"
         },
         {
+          "id": "lakehouse.governance",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "y1w3b4"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability",
+          "navigateTo": "governanceModel"
+        },
+        {
           "id": "lakehouse.modelTracking",
           "parent": "lakehouse",
           "level": 1,
@@ -5708,6 +7092,30 @@
           },
           "kind": "capability",
           "navigateTo": "explain_modelTracking"
+        },
+        {
+          "id": "lakehouse.sharing",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Sharing",
+          "modelRef": "lakehouse.sharing",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
         },
         {
           "id": "lakehouse.observability",
@@ -5824,14 +7232,14 @@
           "navigateTo": "explain_objectStorage"
         }
       ],
-      "hash": "mkkrmcevTshNJSWgO6x8Y3rshtOnTMa2HxSuqZykrWE"
+      "hash": "96A25GLewJs0hgM2ASsEgSUp9iz0VHtkqp1CuWzy-uk"
     },
     "technologyCatalog": {
       "_type": "element",
       "tags": null,
       "links": null,
       "_stage": "computed",
-      "sourcePath": "views.likec4",
+      "sourcePath": "views/logical-views.likec4",
       "description": {
         "txt": "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #infra) is intrinsic; running instances live in the deployment views."
       },
@@ -5842,27 +7250,13 @@
       },
       "edges": [
         {
-          "id": "y1w3b4",
-          "parent": "lakehouse",
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.governance",
-          "label": "policy decided + enforced in-plan (planning-time)",
-          "relations": [
-            "ulwbty"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "enforces"
-        },
-        {
           "id": "1ko3ux0",
           "parent": "lakehouse",
           "source": "lakehouse.catalog",
           "target": "lakehouse.tableFormat",
           "label": "resolves a table to its format + location",
           "relations": [
-            "1tl0x5y"
+            "d29hbe"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5876,7 +7270,7 @@
           "target": "lakehouse.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "jvefnj"
+            "1g5llmb"
           ],
           "color": "amber",
           "line": "dashed",
@@ -5890,7 +7284,7 @@
           "target": "lakehouse.catalog",
           "label": "resolves tables through",
           "relations": [
-            "lwdcta"
+            "12zzcia"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5904,7 +7298,7 @@
           "target": "lakehouse.tableFormat",
           "label": "reads tables via the format",
           "relations": [
-            "xd9n6a"
+            "qf9jmm"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5918,12 +7312,26 @@
           "target": "lakehouse.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
-            "q6exs6"
+            "j89ea2"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "y1w3b4",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.governance",
+          "label": "policy decided + enforced in-plan (planning-time)",
+          "relations": [
+            "3lmxre"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "enforces"
         },
         {
           "id": "m6bsvn",
@@ -5932,7 +7340,7 @@
           "target": "lakehouse.observability",
           "label": "emits traces + metrics",
           "relations": [
-            "zvjzmf"
+            "1cmtsez"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5946,7 +7354,7 @@
           "target": "lakehouse.fileFormat",
           "label": "stored as data files encoded in",
           "relations": [
-            "1hr81g2"
+            "lzt3a6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5960,7 +7368,7 @@
           "target": "lakehouse.objectStorage",
           "label": "bytes persisted in",
           "relations": [
-            "4idelg"
+            "1h2u8x4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5974,7 +7382,7 @@
           "target": "lakehouse.tableFormat",
           "label": "specifies the table-format capability",
           "relations": [
-            "196zd7g"
+            "1384df3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5988,7 +7396,7 @@
           "target": "lakehouse.tableFormat",
           "label": "specifies the table-format capability",
           "relations": [
-            "lx0aor"
+            "11p08o8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6002,7 +7410,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1uhph00"
+            "spqfrf"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6016,7 +7424,21 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1lrsklu"
+            "j2dxgy"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "g3s102",
+          "parent": null,
+          "source": "openSharingSpec",
+          "target": "lakehouse.sharing",
+          "label": "specifies the sharing capability",
+          "relations": [
+            "vgrhli"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6030,7 +7452,7 @@
           "target": "lakehouse.fileFormat",
           "label": "specifies the file-format capability",
           "relations": [
-            "nfx7x9"
+            "1ldf6eg"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6044,7 +7466,7 @@
           "target": "lakehouse.objectStorage",
           "label": "specifies the object-storage capability",
           "relations": [
-            "1dnkpi1"
+            "1pdmgi0"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6058,7 +7480,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "5pt8pf"
+            "1qegp0m"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6072,7 +7494,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "mdob6x"
+            "9ef440"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6086,7 +7508,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1pt0u7e"
+            "tp0ity"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6100,7 +7522,7 @@
           "target": "icebergRestSpec",
           "label": "resolves Iceberg tables via",
           "relations": [
-            "gjxi5q"
+            "1haz4ya"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6114,7 +7536,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "3qt3ra"
+            "43pqb7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6128,7 +7550,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "171bzvb"
+            "15lich2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6142,7 +7564,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1sw55ld"
+            "1vhlnes"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6156,7 +7578,7 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "lzakkx"
+            "7obxhk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6226,6 +7648,35 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_icebergSpec"
+        },
+        {
+          "id": "openSharingSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "g3s102"
+          ],
+          "title": "Open Sharing",
+          "modelRef": "openSharingSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open profile of the Delta Sharing protocol — a credential-file recipient reads shared assets live, cross-platform, without a shared catalog. Also a generic surface for new resource kinds (e.g. agent skills)."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://delta.io/sharing/"
+            }
+          ],
+          "kind": "openSpecification"
         },
         {
           "id": "parquetSpec",
@@ -6558,10 +8009,11 @@
           "level": 0,
           "children": [
             "lakehouse.queryEngine",
+            "lakehouse.sharing",
             "lakehouse.modelTracking",
-            "lakehouse.governance",
             "lakehouse.catalog",
             "lakehouse.lineage",
+            "lakehouse.governance",
             "lakehouse.observability",
             "lakehouse.tableFormat",
             "lakehouse.fileFormat",
@@ -6572,6 +8024,7 @@
             "67455y",
             "cp7myr",
             "dton7c",
+            "g3s102",
             "1p0amr9",
             "1ol3q9j",
             "ipwqn",
@@ -6610,10 +8063,10 @@
             "zt1zxe"
           ],
           "outEdges": [
-            "y1w3b4",
             "1tnkhx9",
             "rdpg8j",
             "tnia77",
+            "y1w3b4",
             "m6bsvn"
           ],
           "title": "Query engine",
@@ -6633,6 +8086,32 @@
           },
           "kind": "capability",
           "navigateTo": "explain_queryEngine"
+        },
+        {
+          "id": "lakehouse.sharing",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "g3s102"
+          ],
+          "outEdges": [],
+          "title": "Sharing",
+          "modelRef": "lakehouse.sharing",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
         },
         {
           "id": "lakehouse.modelTracking",
@@ -6660,33 +8139,6 @@
           },
           "kind": "capability",
           "navigateTo": "explain_modelTracking"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "y1w3b4"
-          ],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability",
-          "navigateTo": "governanceModel"
         },
         {
           "id": "lakehouse.catalog",
@@ -6752,6 +8204,33 @@
           },
           "kind": "capability",
           "navigateTo": "explain_lineage"
+        },
+        {
+          "id": "lakehouse.governance",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "y1w3b4"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability",
+          "navigateTo": "governanceModel"
         },
         {
           "id": "lakehouse.observability",
@@ -6922,7 +8401,7 @@
           }
         ]
       },
-      "hash": "OHSSYL_X8Kp9kZJcQIZl0LpHer56DlVXiyrN2glUroQ"
+      "hash": "mmbVq0EN3sSI-yBK7A9Au9J3okKUlBpCd1NHIBGRd40"
     },
     "capabilityMap": {
       "_type": "element",
@@ -6930,7 +8409,7 @@
       "links": null,
       "viewOf": "lakehouse",
       "_stage": "computed",
-      "sourcePath": "views.likec4",
+      "sourcePath": "views/logical-views.likec4",
       "description": {
         "txt": "The capability chain: query engine -> catalog -> table format -> file format -> object storage, with governance, lineage, and observability attaching at planning time. Delta & Iceberg are peer specifications of the table-format capability."
       },
@@ -6947,7 +8426,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "5pe79a"
+            "1k0olo2"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6961,7 +8440,7 @@
           "target": "lakehouse.lineage",
           "label": "investigates",
           "relations": [
-            "gxybq2"
+            "1ewqy8m"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6975,7 +8454,7 @@
           "target": "lakehouse.tableFormat",
           "label": "specifies the table-format capability",
           "relations": [
-            "196zd7g"
+            "1384df3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6989,7 +8468,7 @@
           "target": "lakehouse.tableFormat",
           "label": "specifies the table-format capability",
           "relations": [
-            "lx0aor"
+            "11p08o8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7003,7 +8482,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1uhph00"
+            "spqfrf"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7017,7 +8496,21 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1lrsklu"
+            "j2dxgy"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "g3s102",
+          "parent": null,
+          "source": "openSharingSpec",
+          "target": "lakehouse.sharing",
+          "label": "specifies the sharing capability",
+          "relations": [
+            "vgrhli"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7031,7 +8524,7 @@
           "target": "lakehouse.fileFormat",
           "label": "specifies the file-format capability",
           "relations": [
-            "nfx7x9"
+            "1ldf6eg"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7045,7 +8538,7 @@
           "target": "lakehouse.objectStorage",
           "label": "specifies the object-storage capability",
           "relations": [
-            "1dnkpi1"
+            "1pdmgi0"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7059,7 +8552,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "5pt8pf"
+            "1qegp0m"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7073,7 +8566,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1pt0u7e"
+            "tp0ity"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7087,26 +8580,12 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "lzakkx"
+            "7obxhk"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "realizes"
-        },
-        {
-          "id": "y1w3b4",
-          "parent": "lakehouse",
-          "source": "lakehouse.queryEngine",
-          "target": "lakehouse.governance",
-          "label": "policy decided + enforced in-plan (planning-time)",
-          "relations": [
-            "ulwbty"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "enforces"
         },
         {
           "id": "1ko3ux0",
@@ -7115,7 +8594,7 @@
           "target": "lakehouse.tableFormat",
           "label": "resolves a table to its format + location",
           "relations": [
-            "1tl0x5y"
+            "d29hbe"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7129,7 +8608,7 @@
           "target": "lakehouse.objectStorage",
           "label": "vends short-lived scoped credentials for",
           "relations": [
-            "jvefnj"
+            "1g5llmb"
           ],
           "color": "amber",
           "line": "dashed",
@@ -7143,7 +8622,7 @@
           "target": "lakehouse.catalog",
           "label": "resolves tables through",
           "relations": [
-            "lwdcta"
+            "12zzcia"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7157,7 +8636,7 @@
           "target": "lakehouse.tableFormat",
           "label": "reads tables via the format",
           "relations": [
-            "xd9n6a"
+            "qf9jmm"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7171,12 +8650,26 @@
           "target": "lakehouse.lineage",
           "label": "emits column-level lineage (planning-time)",
           "relations": [
-            "q6exs6"
+            "j89ea2"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "y1w3b4",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.governance",
+          "label": "policy decided + enforced in-plan (planning-time)",
+          "relations": [
+            "3lmxre"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "enforces"
         },
         {
           "id": "m6bsvn",
@@ -7185,7 +8678,7 @@
           "target": "lakehouse.observability",
           "label": "emits traces + metrics",
           "relations": [
-            "zvjzmf"
+            "1cmtsez"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7199,7 +8692,7 @@
           "target": "lakehouse.fileFormat",
           "label": "stored as data files encoded in",
           "relations": [
-            "1hr81g2"
+            "lzt3a6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7213,7 +8706,7 @@
           "target": "lakehouse.objectStorage",
           "label": "bytes persisted in",
           "relations": [
-            "4idelg"
+            "1h2u8x4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7395,6 +8888,35 @@
           "navigateTo": "explain_icebergRestSpec"
         },
         {
+          "id": "openSharingSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "g3s102"
+          ],
+          "title": "Open Sharing",
+          "modelRef": "openSharingSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open profile of the Delta Sharing protocol — a credential-file recipient reads shared assets live, cross-platform, without a shared catalog. Also a generic surface for new resource kinds (e.g. agent skills)."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://delta.io/sharing/"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
           "id": "parquetSpec",
           "parent": null,
           "level": 0,
@@ -7556,10 +9078,11 @@
           "level": 0,
           "children": [
             "lakehouse.queryEngine",
+            "lakehouse.sharing",
             "lakehouse.modelTracking",
-            "lakehouse.governance",
             "lakehouse.catalog",
             "lakehouse.lineage",
+            "lakehouse.governance",
             "lakehouse.observability",
             "lakehouse.tableFormat",
             "lakehouse.fileFormat",
@@ -7572,6 +9095,7 @@
             "67455y",
             "cp7myr",
             "dton7c",
+            "g3s102",
             "1p0amr9",
             "1ol3q9j",
             "ipwqn",
@@ -7610,10 +9134,10 @@
             "zt1zxe"
           ],
           "outEdges": [
-            "y1w3b4",
             "1tnkhx9",
             "rdpg8j",
             "tnia77",
+            "y1w3b4",
             "m6bsvn"
           ],
           "title": "Query engine",
@@ -7633,6 +9157,32 @@
           },
           "kind": "capability",
           "navigateTo": "explain_queryEngine"
+        },
+        {
+          "id": "lakehouse.sharing",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "g3s102"
+          ],
+          "outEdges": [],
+          "title": "Sharing",
+          "modelRef": "lakehouse.sharing",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
         },
         {
           "id": "lakehouse.modelTracking",
@@ -7660,33 +9210,6 @@
           },
           "kind": "capability",
           "navigateTo": "explain_modelTracking"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "y1w3b4"
-          ],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability",
-          "navigateTo": "governanceModel"
         },
         {
           "id": "lakehouse.catalog",
@@ -7753,6 +9276,33 @@
           },
           "kind": "capability",
           "navigateTo": "explain_lineage"
+        },
+        {
+          "id": "lakehouse.governance",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "y1w3b4"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability",
+          "navigateTo": "governanceModel"
         },
         {
           "id": "lakehouse.observability",
@@ -7893,7 +9443,1275 @@
           }
         ]
       },
-      "hash": "pksByMI8_VrrlzEOemZCmFDso9PUoZvipZWGinDU58Q"
+      "hash": "iWOfwDm35K7o2aPWNJPCS8_4PU4c-gSje9iLVzfQrJI"
+    },
+    "assetGovernanceBreadth": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "_stage": "computed",
+      "sourcePath": "views/logical-views.likec4",
+      "description": {
+        "txt": "Which asset kinds (UC 'securables') each catalog specification governs. Unity Catalog governs the full data & AI set (tables, volumes, functions, models, agent skills); the Iceberg REST catalog is table-centric (namespaces + tables). The breadth gap is a structural property of the model, not prose."
+      },
+      "title": "Governed asset kinds — catalog breadth",
+      "id": "assetGovernanceBreadth",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "k2635t",
+          "parent": null,
+          "source": "ucSpec",
+          "target": "lakehouse.schema",
+          "label": "governs",
+          "relations": [
+            "tpqhsm"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "governs"
+        },
+        {
+          "id": "1xgx7ym",
+          "parent": null,
+          "source": "ucSpec",
+          "target": "lakehouse.table",
+          "label": "governs",
+          "relations": [
+            "dzl1i2"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "governs"
+        },
+        {
+          "id": "if3ptk",
+          "parent": null,
+          "source": "ucSpec",
+          "target": "lakehouse.volume",
+          "label": "governs",
+          "relations": [
+            "150ybot"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "governs"
+        },
+        {
+          "id": "1wiz13u",
+          "parent": null,
+          "source": "ucSpec",
+          "target": "lakehouse.registeredFunction",
+          "label": "governs",
+          "relations": [
+            "ygx05k"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "governs"
+        },
+        {
+          "id": "1ruoj8e",
+          "parent": null,
+          "source": "ucSpec",
+          "target": "lakehouse.mlModel",
+          "label": "governs",
+          "relations": [
+            "54j0h9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "governs"
+        },
+        {
+          "id": "xp5wpk",
+          "parent": null,
+          "source": "ucSpec",
+          "target": "lakehouse.agentSkill",
+          "label": "governs",
+          "relations": [
+            "vkmfwo"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "governs"
+        },
+        {
+          "id": "8py55m",
+          "parent": null,
+          "source": "icebergRestSpec",
+          "target": "lakehouse.schema",
+          "label": "governs namespaces",
+          "relations": [
+            "1hedyi3"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "governs"
+        },
+        {
+          "id": "91p14l",
+          "parent": null,
+          "source": "icebergRestSpec",
+          "target": "lakehouse.table",
+          "label": "governs",
+          "relations": [
+            "1ityl9n"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "governs"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "ucSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "k2635t",
+            "1xgx7ym",
+            "if3ptk",
+            "1wiz13u",
+            "1ruoj8e",
+            "xp5wpk"
+          ],
+          "title": "Unity Catalog",
+          "modelRef": "ucSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open catalog specification for data & AI — a REST API governing tables, files, functions, and models across engines."
+          },
+          "tags": [],
+          "metadata": {
+            "explainDoc": "explain/unity-catalog.md"
+          },
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_ucSpec"
+        },
+        {
+          "id": "icebergRestSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "8py55m",
+            "91p14l"
+          ],
+          "title": "Iceberg REST Catalog",
+          "modelRef": "icebergRestSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open REST specification for an Iceberg catalog — the API engines use to resolve and commit Iceberg tables."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org/concepts/catalog/"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_icebergRestSpec"
+        },
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "lakehouse.schema",
+            "lakehouse.table",
+            "lakehouse.volume",
+            "lakehouse.registeredFunction",
+            "lakehouse.mlModel",
+            "lakehouse.agentSkill"
+          ],
+          "inEdges": [
+            "k2635t",
+            "1xgx7ym",
+            "if3ptk",
+            "1wiz13u",
+            "1ruoj8e",
+            "xp5wpk",
+            "8py55m",
+            "91p14l"
+          ],
+          "outEdges": [],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "depth": 1,
+          "navigateTo": "capabilityMap"
+        },
+        {
+          "id": "lakehouse.schema",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "k2635t",
+            "8py55m"
+          ],
+          "outEdges": [],
+          "title": "Schema / namespace",
+          "modelRef": "lakehouse.schema",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The namespace container other asset kinds are organized under."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.table",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1xgx7ym",
+            "91p14l"
+          ],
+          "outEdges": [],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The classic tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.volume",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "if3ptk"
+          ],
+          "outEdges": [],
+          "title": "Volume",
+          "modelRef": "lakehouse.volume",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Governed non-tabular files — a catalogued path in object storage."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.registeredFunction",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1wiz13u"
+          ],
+          "outEdges": [],
+          "title": "Function",
+          "modelRef": "lakehouse.registeredFunction",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed, reusable unit of computation registered in the catalog."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.mlModel",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1ruoj8e"
+          ],
+          "outEdges": [],
+          "title": "Model",
+          "modelRef": "lakehouse.mlModel",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed ML model — versions, stages, and lineage catalogued like data."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.agentSkill",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "xp5wpk"
+          ],
+          "outEdges": [],
+          "title": "Agent skill",
+          "modelRef": "lakehouse.agentSkill",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "An emerging asset kind: a shareable, governed capability for AI agents."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "Data & AI asset kind",
+            "shape": "rectangle",
+            "color": "green",
+            "kinds": [
+              "asset"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
+            ]
+          }
+        ]
+      },
+      "hash": "nV4IEpwI2TGDYAry2eSK4VXXXWFGqvwTX2MfVEBE32s"
+    },
+    "assetCapabilities": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "_stage": "computed",
+      "sourcePath": "views/logical-views.likec4",
+      "description": {
+        "txt": "What a platform must be able to do to manage each asset kind. Every kind requires the catalog to be a governed securable; domain capabilities materialize each kind (a table needs a table format + query engine; a volume needs object storage; a model needs model tracking)."
+      },
+      "title": "Governed asset kinds — capabilities required",
+      "id": "assetCapabilities",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "1ag5gdk",
+          "parent": "lakehouse",
+          "source": "lakehouse.schema",
+          "target": "lakehouse.catalog",
+          "label": "governed / namespaced by",
+          "relations": [
+            "d4z585"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "kurvyf",
+          "parent": "lakehouse",
+          "source": "lakehouse.table",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "ayn46z"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "eyun5c",
+          "parent": "lakehouse",
+          "source": "lakehouse.table",
+          "target": "lakehouse.queryEngine",
+          "label": "read + written by",
+          "relations": [
+            "xibkn6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "115nb49",
+          "parent": "lakehouse",
+          "source": "lakehouse.table",
+          "target": "lakehouse.tableFormat",
+          "label": "materialized as an open table format",
+          "relations": [
+            "114abe"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1mjqvbl",
+          "parent": "lakehouse",
+          "source": "lakehouse.volume",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "l3c597"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1q3ub9q",
+          "parent": "lakehouse",
+          "source": "lakehouse.volume",
+          "target": "lakehouse.objectStorage",
+          "label": "materialized as files in",
+          "relations": [
+            "1xirhr9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "10gn1rn",
+          "parent": "lakehouse",
+          "source": "lakehouse.registeredFunction",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "df7ke3"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "evzpms",
+          "parent": "lakehouse",
+          "source": "lakehouse.registeredFunction",
+          "target": "lakehouse.queryEngine",
+          "label": "executed by",
+          "relations": [
+            "1vnqcq5"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1cz1lcn",
+          "parent": "lakehouse",
+          "source": "lakehouse.mlModel",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "15cic61"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1ojjwck",
+          "parent": "lakehouse",
+          "source": "lakehouse.mlModel",
+          "target": "lakehouse.modelTracking",
+          "label": "versioned + promoted by",
+          "relations": [
+            "110tpfv"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1v6wcxd",
+          "parent": "lakehouse",
+          "source": "lakehouse.agentSkill",
+          "target": "lakehouse.catalog",
+          "label": "governed / resolved through",
+          "relations": [
+            "ijzynx"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1lyniiy",
+          "parent": "lakehouse",
+          "source": "lakehouse.agentSkill",
+          "target": "lakehouse.sharing",
+          "label": "distributed as a shareable resource via",
+          "relations": [
+            "bonsvb"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "requires"
+        },
+        {
+          "id": "1ko3ux0",
+          "parent": "lakehouse",
+          "source": "lakehouse.catalog",
+          "target": "lakehouse.tableFormat",
+          "label": "resolves a table to its format + location",
+          "relations": [
+            "d29hbe"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "qmrjf9",
+          "parent": "lakehouse",
+          "source": "lakehouse.catalog",
+          "target": "lakehouse.objectStorage",
+          "label": "vends short-lived scoped credentials for",
+          "relations": [
+            "1g5llmb"
+          ],
+          "color": "amber",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "vends"
+        },
+        {
+          "id": "1tnkhx9",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.catalog",
+          "label": "resolves tables through",
+          "relations": [
+            "12zzcia"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "resolves"
+        },
+        {
+          "id": "rdpg8j",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.tableFormat",
+          "label": "reads tables via the format",
+          "relations": [
+            "qf9jmm"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "tnia77",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.lineage",
+          "label": "emits column-level lineage (planning-time)",
+          "relations": [
+            "j89ea2"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "y1w3b4",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.governance",
+          "label": "policy decided + enforced in-plan (planning-time)",
+          "relations": [
+            "3lmxre"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "enforces"
+        },
+        {
+          "id": "m6bsvn",
+          "parent": "lakehouse",
+          "source": "lakehouse.queryEngine",
+          "target": "lakehouse.observability",
+          "label": "emits traces + metrics",
+          "relations": [
+            "1cmtsez"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "1nn750y",
+          "parent": "lakehouse",
+          "source": "lakehouse.tableFormat",
+          "target": "lakehouse.fileFormat",
+          "label": "stored as data files encoded in",
+          "relations": [
+            "lzt3a6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        },
+        {
+          "id": "1u0v1f",
+          "parent": "lakehouse",
+          "source": "lakehouse.fileFormat",
+          "target": "lakehouse.objectStorage",
+          "label": "bytes persisted in",
+          "relations": [
+            "1h2u8x4"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "reads"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "lakehouse.schema",
+            "lakehouse.table",
+            "lakehouse.volume",
+            "lakehouse.registeredFunction",
+            "lakehouse.mlModel",
+            "lakehouse.agentSkill",
+            "lakehouse.queryEngine",
+            "lakehouse.modelTracking",
+            "lakehouse.sharing",
+            "lakehouse.catalog",
+            "lakehouse.lineage",
+            "lakehouse.governance",
+            "lakehouse.observability",
+            "lakehouse.tableFormat",
+            "lakehouse.fileFormat",
+            "lakehouse.objectStorage"
+          ],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "depth": 1,
+          "navigateTo": "capabilityMap"
+        },
+        {
+          "id": "lakehouse.schema",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ag5gdk"
+          ],
+          "title": "Schema / namespace",
+          "modelRef": "lakehouse.schema",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The namespace container other asset kinds are organized under."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.table",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "kurvyf",
+            "eyun5c",
+            "115nb49"
+          ],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The classic tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.volume",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1mjqvbl",
+            "1q3ub9q"
+          ],
+          "title": "Volume",
+          "modelRef": "lakehouse.volume",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Governed non-tabular files — a catalogued path in object storage."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.registeredFunction",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "10gn1rn",
+            "evzpms"
+          ],
+          "title": "Function",
+          "modelRef": "lakehouse.registeredFunction",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed, reusable unit of computation registered in the catalog."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.mlModel",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1cz1lcn",
+            "1ojjwck"
+          ],
+          "title": "Model",
+          "modelRef": "lakehouse.mlModel",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed ML model — versions, stages, and lineage catalogued like data."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.agentSkill",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1v6wcxd",
+            "1lyniiy"
+          ],
+          "title": "Agent skill",
+          "modelRef": "lakehouse.agentSkill",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "An emerging asset kind: a shareable, governed capability for AI agents."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "notation": "Data & AI asset kind",
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.queryEngine",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "eyun5c",
+            "evzpms"
+          ],
+          "outEdges": [
+            "1tnkhx9",
+            "rdpg8j",
+            "tnia77",
+            "y1w3b4",
+            "m6bsvn"
+          ],
+          "title": "Query engine",
+          "modelRef": "lakehouse.queryEngine",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_queryEngine"
+        },
+        {
+          "id": "lakehouse.modelTracking",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1ojjwck"
+          ],
+          "outEdges": [],
+          "title": "Model tracking",
+          "modelRef": "lakehouse.modelTracking",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Tracks experiments, versions models, and governs their promotion to production."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_modelTracking"
+        },
+        {
+          "id": "lakehouse.sharing",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1lyniiy"
+          ],
+          "outEdges": [],
+          "title": "Sharing",
+          "modelRef": "lakehouse.sharing",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability"
+        },
+        {
+          "id": "lakehouse.catalog",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1ag5gdk",
+            "kurvyf",
+            "1mjqvbl",
+            "10gn1rn",
+            "1cz1lcn",
+            "1v6wcxd",
+            "1tnkhx9"
+          ],
+          "outEdges": [
+            "1ko3ux0",
+            "qmrjf9"
+          ],
+          "title": "Catalog",
+          "modelRef": "lakehouse.catalog",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/catalog-plane.md",
+            "explainDoc": "explain/catalog.md"
+          },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
+          "kind": "capability",
+          "navigateTo": "explain_catalog"
+        },
+        {
+          "id": "lakehouse.lineage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "tnia77"
+          ],
+          "outEdges": [],
+          "title": "Lineage",
+          "modelRef": "lakehouse.lineage",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/lineage-plane.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_lineage"
+        },
+        {
+          "id": "lakehouse.governance",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "y1w3b4"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability",
+          "navigateTo": "governanceModel"
+        },
+        {
+          "id": "lakehouse.observability",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "m6bsvn"
+          ],
+          "outEdges": [],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_observability"
+        },
+        {
+          "id": "lakehouse.tableFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "115nb49",
+            "1ko3ux0",
+            "rdpg8j"
+          ],
+          "outEdges": [
+            "1nn750y"
+          ],
+          "title": "Open table format",
+          "modelRef": "lakehouse.tableFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A metadata layer that gives object-storage files ACID table semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_tableFormat"
+        },
+        {
+          "id": "lakehouse.fileFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1nn750y"
+          ],
+          "outEdges": [
+            "1u0v1f"
+          ],
+          "title": "File format",
+          "modelRef": "lakehouse.fileFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The on-disk encoding of the bytes a table's data files are made of."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_fileFormat"
+        },
+        {
+          "id": "lakehouse.objectStorage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1q3ub9q",
+            "qmrjf9",
+            "1u0v1f"
+          ],
+          "outEdges": [],
+          "title": "Object storage",
+          "modelRef": "lakehouse.objectStorage",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_objectStorage"
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "Data & AI asset kind",
+            "shape": "rectangle",
+            "color": "green",
+            "kinds": [
+              "asset"
+            ]
+          }
+        ]
+      },
+      "hash": "dzh-9qs-KLgKr5f5fd-4j3uAG_9oMZgGobq6jbTIhzY"
     },
     "governanceModel": {
       "_type": "element",
@@ -7901,7 +10719,7 @@
       "links": null,
       "viewOf": "lakehouse.governance",
       "_stage": "computed",
-      "sourcePath": "views.likec4",
+      "sourcePath": "views/logical-views.likec4",
       "description": {
         "txt": "The logical access-control points and how they relate. WHICH service plays each point is a deployment fact (see the deployment views). Amber = designed, not built."
       },
@@ -7918,7 +10736,7 @@
           "target": "lakehouse.governance.pip",
           "label": "serves resource facts (identity, tags, locations)",
           "relations": [
-            "wji2ez"
+            "1j4t99z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7932,7 +10750,7 @@
           "target": "lakehouse.governance.pdp",
           "label": "publishes policy set + schema (OCI bundle)",
           "relations": [
-            "83x1rk"
+            "yph9ks"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7946,7 +10764,7 @@
           "target": "lakehouse.governance.pdp",
           "label": "consults the PDP, then applies its verdict",
           "relations": [
-            "1g1bbjq"
+            "ihr4ca"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7960,7 +10778,7 @@
           "target": "lakehouse.governance.pdp",
           "label": "supplies resource / identity / context facts",
           "relations": [
-            "1ayvbln"
+            "o10l4n"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7974,7 +10792,7 @@
           "target": "lakehouse.governance.pdp",
           "label": "mints a credential only on a PDP verdict",
           "relations": [
-            "e8usp9"
+            "sysds1"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8390,7 +11208,7 @@
       }
     },
     "relations": {
-      "1tjn58e": {
+      "1ini3rc": {
         "color": "amber",
         "title": "vends scoped credential",
         "source": {
@@ -8400,9 +11218,9 @@
           "deployment": "externalCompute.extEngine"
         },
         "kind": "vends",
-        "id": "1tjn58e"
+        "id": "1ini3rc"
       },
-      "1ih0uhh": {
+      "1jhb6w3": {
         "title": "reads raw files",
         "source": {
           "deployment": "externalCompute.extEngine"
@@ -8411,9 +11229,9 @@
           "deployment": "externalCompute.extStore"
         },
         "kind": "reads",
-        "id": "1ih0uhh"
+        "id": "1jhb6w3"
       },
-      "1wlqv08": {
+      "1b2q0r2": {
         "title": "non-vendable-governed-table guard",
         "tags": [
           "designed"
@@ -8425,7 +11243,7 @@
           "deployment": "externalCompute.extEngine"
         },
         "kind": "flows",
-        "id": "1wlqv08"
+        "id": "1b2q0r2"
       }
     }
   },

@@ -1,0 +1,184 @@
+// LOGICAL LAYER (abstract) — the reference open lakehouse: people + capabilities.
+//
+// Technology-agnostic capabilities and the people who use the lakehouse. OUR
+// service/repo names appear only in the deployment layer; the concrete
+// technology mapped onto these capabilities (specifications + implementations)
+// lives in technology-catalog.likec4. The governance capability's zero-trust
+// roles live in governance.likec4; asset kinds in assets.likec4; cross-capability
+// relationships in relationships.likec4.
+
+model {
+
+  // --- People --------------------------------------------------------------
+
+  practitioner = person "Data practitioner" {
+    description "Queries and governs data over open table formats — the human consumer of the lakehouse."
+  }
+
+  platformEngineer = person "Platform engineer" {
+    description "Builds and operates the lakehouse: the services, their health, and smooth operation of the platform."
+  }
+
+  agent = person "AI agent" {
+    description "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
+  }
+
+  // --- The reference open lakehouse: capabilities --------------------------
+
+  lakehouse = capability "Open Lakehouse" {
+    description "
+      The reference architecture: warehouse-style governance and query over open
+      table formats on object storage. Assembled from OSS foundations plus the
+      connective tissue they don't ship.
+    "
+    link https://openlakehouse.io
+
+    catalog = capability "Catalog" {
+      summary "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+
+      description "
+        A catalog is the metadata layer that records which tables and schemas
+        exist, where their data lives, and who may touch it — the authoritative
+        namespace a query resolves a table name against before any bytes are read.
+
+        In the lakehouse it also brokers access: at resolution time it issues a
+        short-lived, scoped storage credential for exactly the data a query needs
+        (credential vending), so raw storage keys are never handed out.
+      "
+
+      link https://www.openlakehouse.io/technologies/catalogs
+
+      metadata {
+        canonicalDoc "design/catalog-plane.md"
+        explainDoc "explain/catalog.md"
+      }
+    }
+
+    queryEngine = capability "Query engine" {
+      summary "Parses, plans, and executes queries over open table formats."
+      description "
+        A query engine turns a declarative query into a plan of operations and
+        executes it: it parses the query, resolves the tables it references,
+        optimizes an execution plan, and runs it to produce results.
+
+        Here it is catalog-native — it resolves tables through the catalog, and
+        credentials, policy enforcement, and lineage capture all attach to the
+        plan at resolution / planning time rather than being bolted on after.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
+    tableFormat = capability "Open table format" {
+      summary "A metadata layer that gives object-storage files ACID table semantics."
+
+      description "
+        An open table format is an open specification for a metadata layer over
+        data files in object storage. It tracks which files make up a table plus
+        their schema and snapshots, giving a plain directory of files table
+        semantics — ACID transactions, schema evolution, and time travel.
+
+        It is technology-agnostic in the model: Delta Lake and Apache Iceberg are
+        peer specifications of this capability, implemented by concrete engines
+        and libraries.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
+    fileFormat = capability "File format" {
+      summary "The on-disk encoding of the bytes a table's data files are made of."
+      description "
+        A file format is the on-disk encoding of a data file — how rows, columns,
+        and their types are laid out as bytes. Columnar formats (Parquet, ORC) and
+        row formats (Avro) are peer specifications of this capability.
+
+        It sits beneath the table format: the table format tracks which files make
+        up a table; the file format decides how each of those files is encoded.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
+    objectStorage = capability "Object storage" {
+      summary "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
+      description "
+        Object storage manages data as discrete objects (blobs) in a flat
+        namespace addressed by key, rather than as a file hierarchy or fixed
+        blocks. It scales cheaply and horizontally, which is why it is the byte
+        container the lakehouse writes table data files into.
+
+        It sits beneath the table format: object storage holds the bytes; the
+        table format is what makes those bytes a governed, transactional table.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
+    lineage = capability "Lineage" {
+      summary "Records where data came from and where it flows, down to the column."
+      description "
+        Data lineage traces the origin and movement of data through the system —
+        which inputs produced which outputs, dataset- and column-level.
+
+        Here it is captured at query planning time, so provenance is derived from
+        the plan the engine is about to run rather than reconstructed after.
+      "
+      metadata { canonicalDoc "design/lineage-plane.md" }
+    }
+
+    // Governance is a first-class capability; its zero-trust roles (PAP / PDP /
+    // PEP / PIP / PA) are declared in governance.likec4 via `extend`.
+    governance = capability "Governance" {
+      summary "Decides who may access what, and enforces it (row filters, column masks)."
+      description "
+        Governance answers 'can this principal do this here?' and, when allowed,
+        governs what they see — enforcing row filters and column masks.
+
+        It is a cross-cutting zero-trust decomposition (PAP / PDP / PEP / PIP /
+        PA) whose points are realized by different services per deployment.
+      "
+      metadata { canonicalDoc "design/governance.md" }
+    }
+
+    modelTracking = capability "Model tracking" {
+      summary "Tracks experiments, versions models, and governs their promotion to production."
+      description "
+        Model tracking manages machine-learning artifacts over time: experiment
+        tracking, a model registry with versions and stages, and the path from a
+        trained model to a governed, deployable one.
+
+        It sits alongside the query/governance capabilities: models are data
+        assets too, catalogued and governed like tables rather than living in a
+        separate, ungoverned silo.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
+    sharing = capability "Sharing" {
+      summary "Shares governed assets with recipients across a trust boundary via an open protocol — live, no copy."
+      description "
+        Sharing delivers governed assets — tables today, and increasingly
+        non-tabular resources — to recipients across organizational or platform
+        boundaries through an open protocol, live and without copying the data.
+        Recipients need not run the same engine or platform.
+
+        It sits alongside the catalog: the catalog governs who may share what;
+        sharing is the protocol surface that delivers it — and the distribution
+        surface a catalog can reuse to vend new resource kinds (e.g. agent
+        skills) beyond the tabular set.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
+    observability = capability "Observability" {
+      summary "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+      description "
+        Observability is the cross-cutting capability that makes the running
+        platform legible: distributed traces, metrics, and logs emitted by the
+        query engine and services, so operators can reason about latency,
+        failures, and cost.
+
+        Like governance and lineage it attaches across the stack rather than
+        sitting in the query path.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+  }
+}

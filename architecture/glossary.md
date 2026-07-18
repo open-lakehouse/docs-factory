@@ -108,6 +108,15 @@ block in [estate.yml](./estate.yml).)_
 
 ## Cross-cutting concepts
 
+- **asset kind ↔ securable** — the vendor-neutral name (`asset` in the logical
+  model) for a *kind* of governed subject on the data & AI value chain: table,
+  volume, function, model, agent skill, schema. **Securable** is Unity Catalog's
+  term for the same concept. Type-level only — a specific table is an *instance*
+  (runtime/deployment), never a logical element. The breadth of asset kinds a
+  catalog governs (UC: the full data & AI set; Iceberg REST: tables) is a
+  structural property of the model. See
+  [design/asset-kinds.md](./design/asset-kinds.md) and
+  [ADR-0006](./adr/ADR-0006-governed-asset-kinds.md).
 - **credential vending** — the catalog issues short-lived, scoped storage
   credentials at resolution time instead of clients holding long-lived keys; the
   safe-by-default storage path.

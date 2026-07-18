@@ -43,6 +43,10 @@ capabilities:
     element: lakehouse.modelTracking
     doc: design/reference-architecture.md
     note: Renamed from mlLifecycle (ADR-0005); realized by MLflow.
+  sharing:
+    element: lakehouse.sharing
+    doc: design/reference-architecture.md
+    note: Specified by Open Sharing (Delta Sharing protocol); agent skills require it (ADR-0006).
   observability:
     element: lakehouse.observability
     doc: design/reference-architecture.md
@@ -54,6 +58,16 @@ governance_roles:
   pep: { element: lakehouse.governance.pep, doc: design/governance.md }
   pip: { element: lakehouse.governance.pip, doc: design/governance.md }
   pa:  { element: lakehouse.governance.pa,  doc: design/governance.md }
+
+# --- Logical layer: governed asset kinds (securables) ---------------------
+# The subject axis (ADR-0006). "securable" is UC's term; `asset` is neutral.
+asset_kinds:
+  schema:     { element: lakehouse.schema,             doc: design/asset-kinds.md }
+  table:      { element: lakehouse.table,              doc: design/asset-kinds.md }
+  volume:     { element: lakehouse.volume,             doc: design/asset-kinds.md }
+  function:   { element: lakehouse.registeredFunction, doc: design/asset-kinds.md }
+  model:      { element: lakehouse.mlModel,            doc: design/asset-kinds.md }
+  agentSkill: { element: lakehouse.agentSkill,         doc: design/asset-kinds.md, note: "governed by catalog; distributed via the sharing capability (Open Sharing) — built today." }
 
 # --- Concrete layer: deployment services -> source repos ------------------
 # (Which logical roles each realizes is in model/deployments.likec4 via instanceOf.)

@@ -16,8 +16,9 @@ views {
       lakehouse,
       lakehouse.*,
 
-    // the zero-trust roles get their own view; keep them collapsed here
+    // the zero-trust roles + governed asset kinds get their own views
     exclude lakehouse.governance.*
+    exclude element.kind == asset
     autoLayout LeftRight
   }
 
@@ -33,6 +34,7 @@ views {
       icebergSpec,
       ucSpec,
       icebergRestSpec,
+      openSharingSpec,
       parquetSpec,
       s3Api,
     // implementations (concrete software)
@@ -45,6 +47,7 @@ views {
       omnigent,
 
     exclude lakehouse.governance.*
+    exclude element.kind == asset
     autoLayout LeftRight
   }
 
@@ -55,7 +58,35 @@ views {
 
     include *
 
-    // collapse the governance roles here (they get their own view)
+    // collapse the governance roles + asset kinds here (own views)
+    exclude lakehouse.governance.*
+    exclude element.kind == asset
+    autoLayout LeftRight
+  }
+
+  // --- Governed asset kinds: catalog breadth (the hero view) ---------------
+  view assetGovernanceBreadth {
+    title "Governed asset kinds — catalog breadth"
+    description "Which asset kinds (UC 'securables') each catalog specification governs. Unity Catalog governs the full data & AI set (tables, volumes, functions, models, agent skills); the Iceberg REST catalog is table-centric (namespaces + tables). The breadth gap is a structural property of the model, not prose."
+
+    include
+      ucSpec,
+      icebergRestSpec,
+      lakehouse,
+      element.kind == asset
+    autoLayout LeftRight
+  }
+
+  // --- Governed asset kinds: capabilities required to manage them -----------
+  view assetCapabilities {
+    title "Governed asset kinds — capabilities required"
+    description "What a platform must be able to do to manage each asset kind. Every kind requires the catalog to be a governed securable; domain capabilities materialize each kind (a table needs a table format + query engine; a volume needs object storage; a model needs model tracking)."
+
+    include
+      lakehouse,
+      lakehouse.*,
+      element.kind == asset
+
     exclude lakehouse.governance.*
     autoLayout LeftRight
   }

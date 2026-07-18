@@ -31,25 +31,38 @@ this model. If it's a fact about how the software is *structured*, it lives here
 
 ## Layout
 
+The `model/` files are grouped by layer. `specification.likec4` (the shared
+vocabulary) and `globals.likec4` stay at the root because they apply to every
+layer; everything else lives under `logical/`, `deployment/`, or `views/`. LikeC4
+discovers `**/*.likec4` recursively, so the folders are organization only — the
+model is the union of all files regardless of location.
+
 ```
 architecture/
   model/
-    specification.likec4      # element/deploymentNode/relationship kinds, tags
-    landscape.likec4          # LOGICAL: capabilities + people + specs/implementations
-    governance.likec4         # LOGICAL: the zero-trust roles + their edges
-    relationships.likec4      # LOGICAL: capability chain + specifies/implements/realizes/vends/reads
-    deployments.likec4        # DEPLOYMENT: services instanceOf capabilities, per topology
-    views.likec4              # logical views
-    deployment-views.likec4   # one view per deployment topology
-    flows.likec4              # dynamic/sequence views
-    globals.likec4            # shared predicate groups
-  design/                     # architecture-focused prose (canonicalDoc targets)
-  adr/                        # architecture decision records
-  canonicals.yaml            # capability/service -> design-doc -> source-repo registry
-  estate.yml                 # ref-free repo facts
-  glossary.md                # canonical terminology
-  conflicts.md               # open-questions register
-  dist/                       # generated build artifact (model.json)
+    specification.likec4        # SHARED: element/deploymentNode/relationship kinds, tags
+    globals.likec4              # SHARED: predicate groups reused across views
+    logical/
+      capabilities.likec4       # abstract reference: people + capabilities
+      technology-catalog.likec4 # concrete tech: specs + implementations (still logical)
+      governance.likec4         # the zero-trust roles + their edges
+      assets.likec4             # governed asset kinds (securables) + requires/governs
+      relationships.likec4      # capability chain + specifies/implements/realizes/vends/reads
+    deployment/
+      deployments.likec4        # services instanceOf capabilities, per topology
+    views/
+      logical-views.likec4      # logical views
+      deployment-views.likec4   # one view per deployment topology
+      flows.likec4              # dynamic/sequence views
+      explain-views.likec4      # per-element views for the site's /explain pages
+      blog-views.likec4         # blog-specific preview views (not the reference model)
+  design/                       # architecture-focused prose (canonicalDoc targets)
+  adr/                          # architecture decision records
+  canonicals.yaml              # capability/service -> design-doc -> source-repo registry
+  estate.yml                   # ref-free repo facts
+  glossary.md                  # canonical terminology
+  conflicts.md                 # open-questions register
+  dist/                         # generated build artifact (model.json)
 ```
 
 ## Commands
@@ -67,9 +80,11 @@ just arch-refresh   # check + model + build — run after any model edit
 ## Update process
 
 1. Decide which **layer** the change touches, then edit the owning file (logical
-   capability → `landscape`; governance role → `governance`; cross-capability
-   edge → `relationships`; service/topology → `deployments`; kinds/tags →
-   `specification`; views → `views`/`deployment-views`/`flows`).
+   capability → `logical/capabilities`; spec/implementation → `logical/technology-catalog`;
+   governance role → `logical/governance`; asset kind → `logical/assets`;
+   cross-capability edge → `logical/relationships`; service/topology →
+   `deployment/deployments`; kinds/tags → `specification`; views →
+   `views/logical-views`/`views/deployment-views`/`views/flows`).
 2. Make the minimal change. Never add a service/repo/technology name to a logical
    file. Tag designed-but-not-built work `#designed`/`#prototype`. Stay ref-free.
 3. Run `just arch-refresh`; commit the `.likec4` sources and `dist/model.json`

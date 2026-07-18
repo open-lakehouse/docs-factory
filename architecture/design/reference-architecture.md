@@ -53,6 +53,19 @@ Iceberg-REST interop through Lakekeeper), that shows up on **deployment** edges,
 tagged for maturity — not on the format concept itself. See
 [`deployments.md`](./deployments.md).
 
+## The governed subjects (asset kinds)
+
+The capabilities above are the *verbs* of the lakehouse. The *nouns* they govern —
+tables, volumes, functions, models, agent skills — are modeled as first-class,
+type-level **asset kinds** (Unity Catalog's "securables") on a separate subject
+axis. Each kind `requires` the capabilities needed to manage it, and each catalog
+specification `governs` the set of kinds it covers — which is where the data & AI
+breadth of Unity Catalog shows against a table-centric catalog. Agent skills, the
+newest kind, surfaced a new capability of their own: **Sharing** (specified by
+Open Sharing), the distribution surface a catalog reuses to vend a new resource
+kind. See [`asset-kinds.md`](./asset-kinds.md) and
+[ADR-0006](../adr/ADR-0006-governed-asset-kinds.md).
+
 ## The foundations (assemble on)
 
 The reference lakehouse assembles on open source: **Apache DataFusion** (the

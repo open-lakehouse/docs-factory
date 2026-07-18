@@ -24,6 +24,24 @@ specification {
     }
   }
 
+  // Blog-local sequence diagrams sometimes need protocol participants that are
+  // too concrete for the reference capability model. Keep the element kinds
+  // here so preview diagrams still use the single estate LikeC4 runtime.
+  element participant {
+    style {
+      shape rectangle
+      color primary
+    }
+  }
+
+  element store {
+    notation "Object storage"
+    style {
+      shape storage
+      color muted
+    }
+  }
+
   // A technology-agnostic capability of the Agentic Lakehouse
   element capability {
     style {
@@ -52,6 +70,19 @@ specification {
     style {
       shape rectangle
       color indigo
+    }
+  }
+
+  // A governed asset KIND — the noun the platform manages along the data & AI
+  // value chain (table, volume, function, model, agent skill, schema). This is
+  // the technology-agnostic name; Unity Catalog's term for the same concept is a
+  // "securable". Type-level only: a specific table is an instance and lives in
+  // the runtime/deployment world, never here (see ADR-0003, ADR-0006).
+  element asset {
+    notation "Data & AI asset kind"
+    style {
+      shape rectangle
+      color green
     }
   }
 
@@ -109,6 +140,10 @@ specification {
   relationship specifies                   // a specification specifies a capability
   relationship implements { line dotted }  // an implementation implements a spec (Backstage providesApi)
   relationship consumes { line dashed }    // an implementation consumes a spec (Backstage consumesApi)
+
+  // Governed-asset edges (the subject axis — see ADR-0006):
+  relationship requires                    // an asset kind requires a capability to be managed
+  relationship governs                     // a catalog specification governs an asset kind
 
   // Zero-trust edges:
   relationship administers                 // PAP administers policy for the PDP

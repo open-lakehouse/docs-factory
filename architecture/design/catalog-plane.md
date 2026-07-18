@@ -17,7 +17,10 @@ Catalog OSS.
 - It can **proxy** to an upstream OSS Java UC for supported securables while
   **managing others itself**.
 - It can **augment** surfaces UC doesn't cover yet (e.g. exposing Open Sharing
-  "agent skills" as a resource type — built today).
+  "agent skills" as a resource type — built today). The *kinds* of thing a catalog
+  governs are modeled as first-class **asset kinds** (securables); UC's data & AI
+  breadth vs a table-centric catalog is shown structurally. See
+  [`asset-kinds.md`](./asset-kinds.md).
 - Scope also spans **Delta Sharing / Open Sharing** servers and the **Delta API**
   (the Delta v1 REST API also feeds Lakekeeper).
 

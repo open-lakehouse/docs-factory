@@ -3,9 +3,9 @@
 // The core chain: queryEngine -> catalog -> tableFormat -> fileFormat ->
 // objectStorage, with governance, lineage, and observability attaching at
 // resolution / planning time. Specifications specify the capabilities and
-// implementations realize them (co-located in landscape.likec4).
+// implementations realize them (co-located in technology-catalog.likec4).
 // Deployment-specific edges (per-topology credential vending) live in
-// deployments.likec4.
+// deployment/deployments.likec4.
 
 model {
   extend lakehouse {
@@ -31,8 +31,8 @@ model {
 
   // --- Specifications & implementations ------------------------------------
   // `specifies` / `implements` / `realizes` edges are co-located with each
-  // specification / implementation element in landscape.likec4, so nothing
-  // lives here.
+  // specification / implementation element in technology-catalog.likec4, so
+  // nothing lives here.
 
   // --- People --------------------------------------------------------------
 

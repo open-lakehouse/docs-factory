@@ -62,7 +62,7 @@ export function resolveRef(id: string): ModelRefInfo | null {
 /**
  * Pick the view to seed a diagram with for a given element. Prefer the
  * element's own scoped view (a `view of <element>` authored in
- * architecture/model/explain-views.likec4, surfaced as `element.defaultView`)
+ * architecture/model/views/explain-views.likec4, surfaced as `element.defaultView`)
  * so the diagram is an ad-hoc neighborhood around the subject. Fall back to a
  * reference view, then any containing view. Single source of truth shared by
  * the explain page's diagram and the inline model popup.

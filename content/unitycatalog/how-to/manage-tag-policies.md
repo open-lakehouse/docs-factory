@@ -6,56 +6,56 @@ project: unitycatalog
 engines: [python, typescript, rust]
 snippets:
   - file: ../../../examples/python/tag_policies.py
-    start: docs-list_tag_policies-start
-    end: docs-list_tag_policies-end
+    start: start:list_tag_policies
+    end: end:list_tag_policies
     engine: python
   - file: ../../../examples/typescript/examples/tag_policies.ts
-    start: docs-list_tag_policies-start
-    end: docs-list_tag_policies-end
+    start: start:list_tag_policies
+    end: end:list_tag_policies
     engine: typescript
   - file: ../../../examples/rust/src/tag_policies.rs
-    start: docs-list_tag_policies-start
-    end: docs-list_tag_policies-end
+    start: start:list_tag_policies
+    end: end:list_tag_policies
     engine: rust
   - file: ../../../examples/python/tag_policies.py
-    start: docs-create_tag_policy-start
-    end: docs-create_tag_policy-end
+    start: start:create_tag_policy
+    end: end:create_tag_policy
     engine: python
   - file: ../../../examples/rust/src/tag_policies.rs
-    start: docs-create_tag_policy-start
-    end: docs-create_tag_policy-end
+    start: start:create_tag_policy
+    end: end:create_tag_policy
     engine: rust
   - file: ../../../examples/python/tag_policies.py
-    start: docs-get_tag_policy-start
-    end: docs-get_tag_policy-end
+    start: start:get_tag_policy
+    end: end:get_tag_policy
     engine: python
   - file: ../../../examples/typescript/examples/tag_policies.ts
-    start: docs-get_tag_policy-start
-    end: docs-get_tag_policy-end
+    start: start:get_tag_policy
+    end: end:get_tag_policy
     engine: typescript
   - file: ../../../examples/rust/src/tag_policies.rs
-    start: docs-get_tag_policy-start
-    end: docs-get_tag_policy-end
+    start: start:get_tag_policy
+    end: end:get_tag_policy
     engine: rust
   - file: ../../../examples/python/tag_policies.py
-    start: docs-update_tag_policy-start
-    end: docs-update_tag_policy-end
+    start: start:update_tag_policy
+    end: end:update_tag_policy
     engine: python
   - file: ../../../examples/rust/src/tag_policies.rs
-    start: docs-update_tag_policy-start
-    end: docs-update_tag_policy-end
+    start: start:update_tag_policy
+    end: end:update_tag_policy
     engine: rust
   - file: ../../../examples/python/tag_policies.py
-    start: docs-delete_tag_policy-start
-    end: docs-delete_tag_policy-end
+    start: start:delete_tag_policy
+    end: end:delete_tag_policy
     engine: python
   - file: ../../../examples/typescript/examples/tag_policies.ts
-    start: docs-delete_tag_policy-start
-    end: docs-delete_tag_policy-end
+    start: start:delete_tag_policy
+    end: end:delete_tag_policy
     engine: typescript
   - file: ../../../examples/rust/src/tag_policies.rs
-    start: docs-delete_tag_policy-start
-    end: docs-delete_tag_policy-end
+    start: start:delete_tag_policy
+    end: end:delete_tag_policy
     engine: rust
 status: draft
 ---
@@ -81,21 +81,21 @@ Retrieve all tag policies.
 
 :::tab[Python]
 
-```python file=../../../examples/python/tag_policies.py start=docs-list_tag_policies-start end=docs-list_tag_policies-end
+```python file=../../../examples/python/tag_policies.py start=start:list_tag_policies end=end:list_tag_policies
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/tag_policies.ts start=docs-list_tag_policies-start end=docs-list_tag_policies-end
+```typescript file=../../../examples/typescript/examples/tag_policies.ts start=start:list_tag_policies end=end:list_tag_policies
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/tag_policies.rs start=docs-list_tag_policies-start end=docs-list_tag_policies-end
+```rust file=../../../examples/rust/src/tag_policies.rs start=start:list_tag_policies end=end:list_tag_policies
 ```
 
 :::
@@ -111,14 +111,14 @@ values.
 
 :::tab[Python]
 
-```python file=../../../examples/python/tag_policies.py start=docs-create_tag_policy-start end=docs-create_tag_policy-end
+```python file=../../../examples/python/tag_policies.py start=start:create_tag_policy end=end:create_tag_policy
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/tag_policies.rs start=docs-create_tag_policy-start end=docs-create_tag_policy-end
+```rust file=../../../examples/rust/src/tag_policies.rs start=start:create_tag_policy end=end:create_tag_policy
 ```
 
 :::
@@ -133,21 +133,21 @@ Retrieve a specific tag policy by its tag key.
 
 :::tab[Python]
 
-```python file=../../../examples/python/tag_policies.py start=docs-get_tag_policy-start end=docs-get_tag_policy-end
+```python file=../../../examples/python/tag_policies.py start=start:get_tag_policy end=end:get_tag_policy
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/tag_policies.ts start=docs-get_tag_policy-start end=docs-get_tag_policy-end
+```typescript file=../../../examples/typescript/examples/tag_policies.ts start=start:get_tag_policy end=end:get_tag_policy
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/tag_policies.rs start=docs-get_tag_policy-start end=docs-get_tag_policy-end
+```rust file=../../../examples/rust/src/tag_policies.rs start=start:get_tag_policy end=end:get_tag_policy
 ```
 
 :::
@@ -162,14 +162,14 @@ Update a tag policy's description or allowed values.
 
 :::tab[Python]
 
-```python file=../../../examples/python/tag_policies.py start=docs-update_tag_policy-start end=docs-update_tag_policy-end
+```python file=../../../examples/python/tag_policies.py start=start:update_tag_policy end=end:update_tag_policy
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/tag_policies.rs start=docs-update_tag_policy-start end=docs-update_tag_policy-end
+```rust file=../../../examples/rust/src/tag_policies.rs start=start:update_tag_policy end=end:update_tag_policy
 ```
 
 :::
@@ -184,21 +184,21 @@ Delete a governed tag definition by its tag key.
 
 :::tab[Python]
 
-```python file=../../../examples/python/tag_policies.py start=docs-delete_tag_policy-start end=docs-delete_tag_policy-end
+```python file=../../../examples/python/tag_policies.py start=start:delete_tag_policy end=end:delete_tag_policy
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/tag_policies.ts start=docs-delete_tag_policy-start end=docs-delete_tag_policy-end
+```typescript file=../../../examples/typescript/examples/tag_policies.ts start=start:delete_tag_policy end=end:delete_tag_policy
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/tag_policies.rs start=docs-delete_tag_policy-start end=docs-delete_tag_policy-end
+```rust file=../../../examples/rust/src/tag_policies.rs start=start:delete_tag_policy end=end:delete_tag_policy
 ```
 
 :::

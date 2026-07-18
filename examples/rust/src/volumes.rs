@@ -1,7 +1,7 @@
 use unitycatalog_client::UnityCatalogClient;
 use unitycatalog_common::models::volumes::v1::VolumeType;
 
-// docs-list_volumes-start
+// --8<-- [start:list_volumes]
 pub async fn list_volumes_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let response = client
@@ -12,9 +12,9 @@ pub async fn list_volumes_example(base_url: url::Url) {
         println!("{}", volume.name);
     }
 }
-// docs-list_volumes-end
+// --8<-- [end:list_volumes]
 
-// docs-create_volume-start
+// --8<-- [start:create_volume]
 pub async fn create_volume_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let volume = client
@@ -24,9 +24,9 @@ pub async fn create_volume_example(base_url: url::Url) {
         .unwrap();
     println!("Created: {}", volume.name);
 }
-// docs-create_volume-end
+// --8<-- [end:create_volume]
 
-// docs-get_volume-start
+// --8<-- [start:get_volume]
 pub async fn get_volume_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let volume = client
@@ -36,9 +36,9 @@ pub async fn get_volume_example(base_url: url::Url) {
         .unwrap();
     println!("Got: {}", volume.name);
 }
-// docs-get_volume-end
+// --8<-- [end:get_volume]
 
-// docs-update_volume-start
+// --8<-- [start:update_volume]
 pub async fn update_volume_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let volume = client
@@ -49,9 +49,9 @@ pub async fn update_volume_example(base_url: url::Url) {
         .unwrap();
     println!("Updated: {}", volume.name);
 }
-// docs-update_volume-end
+// --8<-- [end:update_volume]
 
-// docs-delete_volume-start
+// --8<-- [start:delete_volume]
 pub async fn delete_volume_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     client
@@ -61,4 +61,4 @@ pub async fn delete_volume_example(base_url: url::Url) {
         .unwrap();
     println!("Deleted volume");
 }
-// docs-delete_volume-end
+// --8<-- [end:delete_volume]

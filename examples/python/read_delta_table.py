@@ -14,14 +14,14 @@ def main() -> None:
 
 
 def read_delta_table(path: str) -> int:
-    # docs-read-delta-table-start
+    # --8<-- [start:read-delta-table]
     from deltalake import DeltaTable
 
     dt = DeltaTable(path)
     df = dt.to_pandas()
     print(df.head())
     print(f"{len(df)} rows")
-    # docs-read-delta-table-end
+    # --8<-- [end:read-delta-table]
     return len(df)
 
 

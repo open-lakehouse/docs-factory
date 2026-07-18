@@ -6,64 +6,64 @@ project: unitycatalog
 engines: [python, typescript, rust]
 snippets:
   - file: ../../../examples/python/volumes.py
-    start: docs-list_volumes-start
-    end: docs-list_volumes-end
+    start: start:list_volumes
+    end: end:list_volumes
     engine: python
   - file: ../../../examples/typescript/examples/volumes.ts
-    start: docs-list_volumes-start
-    end: docs-list_volumes-end
+    start: start:list_volumes
+    end: end:list_volumes
     engine: typescript
   - file: ../../../examples/rust/src/volumes.rs
-    start: docs-list_volumes-start
-    end: docs-list_volumes-end
+    start: start:list_volumes
+    end: end:list_volumes
     engine: rust
   - file: ../../../examples/python/volumes.py
-    start: docs-create_volume-start
-    end: docs-create_volume-end
+    start: start:create_volume
+    end: end:create_volume
     engine: python
   - file: ../../../examples/typescript/examples/volumes.ts
-    start: docs-create_volume-start
-    end: docs-create_volume-end
+    start: start:create_volume
+    end: end:create_volume
     engine: typescript
   - file: ../../../examples/rust/src/volumes.rs
-    start: docs-create_volume-start
-    end: docs-create_volume-end
+    start: start:create_volume
+    end: end:create_volume
     engine: rust
   - file: ../../../examples/python/volumes.py
-    start: docs-get_volume-start
-    end: docs-get_volume-end
+    start: start:get_volume
+    end: end:get_volume
     engine: python
   - file: ../../../examples/typescript/examples/volumes.ts
-    start: docs-get_volume-start
-    end: docs-get_volume-end
+    start: start:get_volume
+    end: end:get_volume
     engine: typescript
   - file: ../../../examples/rust/src/volumes.rs
-    start: docs-get_volume-start
-    end: docs-get_volume-end
+    start: start:get_volume
+    end: end:get_volume
     engine: rust
   - file: ../../../examples/python/volumes.py
-    start: docs-update_volume-start
-    end: docs-update_volume-end
+    start: start:update_volume
+    end: end:update_volume
     engine: python
   - file: ../../../examples/typescript/examples/volumes.ts
-    start: docs-update_volume-start
-    end: docs-update_volume-end
+    start: start:update_volume
+    end: end:update_volume
     engine: typescript
   - file: ../../../examples/rust/src/volumes.rs
-    start: docs-update_volume-start
-    end: docs-update_volume-end
+    start: start:update_volume
+    end: end:update_volume
     engine: rust
   - file: ../../../examples/python/volumes.py
-    start: docs-delete_volume-start
-    end: docs-delete_volume-end
+    start: start:delete_volume
+    end: end:delete_volume
     engine: python
   - file: ../../../examples/typescript/examples/volumes.ts
-    start: docs-delete_volume-start
-    end: docs-delete_volume-end
+    start: start:delete_volume
+    end: end:delete_volume
     engine: typescript
   - file: ../../../examples/rust/src/volumes.rs
-    start: docs-delete_volume-start
-    end: docs-delete_volume-end
+    start: start:delete_volume
+    end: end:delete_volume
     engine: rust
 status: draft
 ---
@@ -79,21 +79,21 @@ Retrieve all volumes in a schema.
 
 :::tab[Python]
 
-```python file=../../../examples/python/volumes.py start=docs-list_volumes-start end=docs-list_volumes-end
+```python file=../../../examples/python/volumes.py start=start:list_volumes end=end:list_volumes
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/volumes.ts start=docs-list_volumes-start end=docs-list_volumes-end
+```typescript file=../../../examples/typescript/examples/volumes.ts start=start:list_volumes end=end:list_volumes
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/volumes.rs start=docs-list_volumes-start end=docs-list_volumes-end
+```rust file=../../../examples/rust/src/volumes.rs start=start:list_volumes end=end:list_volumes
 ```
 
 :::
@@ -108,21 +108,21 @@ Create a new managed volume.
 
 :::tab[Python]
 
-```python file=../../../examples/python/volumes.py start=docs-create_volume-start end=docs-create_volume-end
+```python file=../../../examples/python/volumes.py start=start:create_volume end=end:create_volume
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/volumes.ts start=docs-create_volume-start end=docs-create_volume-end
+```typescript file=../../../examples/typescript/examples/volumes.ts start=start:create_volume end=end:create_volume
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/volumes.rs start=docs-create_volume-start end=docs-create_volume-end
+```rust file=../../../examples/rust/src/volumes.rs start=start:create_volume end=end:create_volume
 ```
 
 :::
@@ -137,21 +137,21 @@ Retrieve details for a specific volume.
 
 :::tab[Python]
 
-```python file=../../../examples/python/volumes.py start=docs-get_volume-start end=docs-get_volume-end
+```python file=../../../examples/python/volumes.py start=start:get_volume end=end:get_volume
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/volumes.ts start=docs-get_volume-start end=docs-get_volume-end
+```typescript file=../../../examples/typescript/examples/volumes.ts start=start:get_volume end=end:get_volume
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/volumes.rs start=docs-get_volume-start end=docs-get_volume-end
+```rust file=../../../examples/rust/src/volumes.rs start=start:get_volume end=end:get_volume
 ```
 
 :::
@@ -166,21 +166,21 @@ Update a volume's metadata, such as its description.
 
 :::tab[Python]
 
-```python file=../../../examples/python/volumes.py start=docs-update_volume-start end=docs-update_volume-end
+```python file=../../../examples/python/volumes.py start=start:update_volume end=end:update_volume
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/volumes.ts start=docs-update_volume-start end=docs-update_volume-end
+```typescript file=../../../examples/typescript/examples/volumes.ts start=start:update_volume end=end:update_volume
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/volumes.rs start=docs-update_volume-start end=docs-update_volume-end
+```rust file=../../../examples/rust/src/volumes.rs start=start:update_volume end=end:update_volume
 ```
 
 :::
@@ -195,21 +195,21 @@ Delete a volume.
 
 :::tab[Python]
 
-```python file=../../../examples/python/volumes.py start=docs-delete_volume-start end=docs-delete_volume-end
+```python file=../../../examples/python/volumes.py start=start:delete_volume end=end:delete_volume
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/volumes.ts start=docs-delete_volume-start end=docs-delete_volume-end
+```typescript file=../../../examples/typescript/examples/volumes.ts start=start:delete_volume end=end:delete_volume
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/volumes.rs start=docs-delete_volume-start end=docs-delete_volume-end
+```rust file=../../../examples/rust/src/volumes.rs start=start:delete_volume end=end:delete_volume
 ```
 
 :::

@@ -1,6 +1,6 @@
 use unitycatalog_client::UnityCatalogClient;
 
-// docs-list_schemas-start
+// --8<-- [start:list_schemas]
 pub async fn list_schemas_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let response = client.list_schemas("my_catalog").await.unwrap();
@@ -8,9 +8,9 @@ pub async fn list_schemas_example(base_url: url::Url) {
         println!("{}", schema.name);
     }
 }
-// docs-list_schemas-end
+// --8<-- [end:list_schemas]
 
-// docs-create_schema-start
+// --8<-- [start:create_schema]
 pub async fn create_schema_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let schema = client
@@ -20,9 +20,9 @@ pub async fn create_schema_example(base_url: url::Url) {
         .unwrap();
     println!("Created: {}.{}", schema.catalog_name, schema.name);
 }
-// docs-create_schema-end
+// --8<-- [end:create_schema]
 
-// docs-get_schema-start
+// --8<-- [start:get_schema]
 pub async fn get_schema_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let schema = client
@@ -32,9 +32,9 @@ pub async fn get_schema_example(base_url: url::Url) {
         .unwrap();
     println!("Got: {}.{}", schema.catalog_name, schema.name);
 }
-// docs-get_schema-end
+// --8<-- [end:get_schema]
 
-// docs-update_schema-start
+// --8<-- [start:update_schema]
 pub async fn update_schema_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let schema = client
@@ -45,9 +45,9 @@ pub async fn update_schema_example(base_url: url::Url) {
         .unwrap();
     println!("Updated: {}.{}", schema.catalog_name, schema.name);
 }
-// docs-update_schema-end
+// --8<-- [end:update_schema]
 
-// docs-delete_schema-start
+// --8<-- [start:delete_schema]
 pub async fn delete_schema_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     client
@@ -57,4 +57,4 @@ pub async fn delete_schema_example(base_url: url::Url) {
         .unwrap();
     println!("Deleted schema");
 }
-// docs-delete_schema-end
+// --8<-- [end:delete_schema]

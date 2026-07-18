@@ -2,7 +2,7 @@
   "schema_version": 1,
   "examples": [
     {
-      "id": "python/time-travel-read",
+      "id": "python/start:time-travel-read",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [
@@ -12,8 +12,8 @@
         "orders"
       ],
       "source": "examples/python/time_travel_read.py",
-      "start": "docs-time-travel-read-start",
-      "end": "docs-time-travel-read-end",
+      "start": "start:time-travel-read",
+      "end": "end:time-travel-read",
       "referenced_by": [
         "content/delta/how-to/query-a-table-as-of-version.md"
       ],
@@ -21,7 +21,7 @@
       "engine_status": "built"
     },
     {
-      "id": "python/read-delta-table",
+      "id": "python/start:read-delta-table",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
@@ -29,8 +29,8 @@
         "orders"
       ],
       "source": "examples/python/read_delta_table.py",
-      "start": "docs-read-delta-table-start",
-      "end": "docs-read-delta-table-end",
+      "start": "start:read-delta-table",
+      "end": "end:read-delta-table",
       "referenced_by": [
         "content/delta/how-to/read-a-delta-table.md"
       ],
@@ -38,7 +38,7 @@
       "engine_status": "built"
     },
     {
-      "id": "polars/read-delta-table",
+      "id": "polars/start:read-delta-table",
       "engine": "polars",
       "diataxis": "how-to",
       "delta_features": [],
@@ -46,8 +46,8 @@
         "orders"
       ],
       "source": "examples/polars/read_delta_table.py",
-      "start": "docs-read-delta-table-start",
-      "end": "docs-read-delta-table-end",
+      "start": "start:read-delta-table",
+      "end": "end:read-delta-table",
       "referenced_by": [
         "content/delta/how-to/read-a-delta-table.md"
       ],
@@ -55,7 +55,7 @@
       "engine_status": "stub"
     },
     {
-      "id": "duckdb/read-delta-table",
+      "id": "duckdb/start:read-delta-table",
       "engine": "duckdb",
       "diataxis": "how-to",
       "delta_features": [],
@@ -63,8 +63,8 @@
         "orders"
       ],
       "source": "examples/duckdb/read_delta_table.py",
-      "start": "docs-read-delta-table-start",
-      "end": "docs-read-delta-table-end",
+      "start": "start:read-delta-table",
+      "end": "end:read-delta-table",
       "referenced_by": [
         "content/delta/how-to/read-a-delta-table.md"
       ],
@@ -72,14 +72,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/list_catalogs",
+      "id": "python/start:list_catalogs",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/catalogs.py",
-      "start": "docs-list_catalogs-start",
-      "end": "docs-list_catalogs-end",
+      "start": "start:list_catalogs",
+      "end": "end:list_catalogs",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -87,14 +87,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/list_catalogs",
+      "id": "typescript/start:list_catalogs",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/catalogs.ts",
-      "start": "docs-list_catalogs-start",
-      "end": "docs-list_catalogs-end",
+      "start": "start:list_catalogs",
+      "end": "end:list_catalogs",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -102,14 +102,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/list_catalogs",
+      "id": "rust/start:list_catalogs",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/catalogs.rs",
-      "start": "docs-list_catalogs-start",
-      "end": "docs-list_catalogs-end",
+      "start": "start:list_catalogs",
+      "end": "end:list_catalogs",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -117,14 +117,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/create_catalog",
+      "id": "python/start:create_catalog",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/catalogs.py",
-      "start": "docs-create_catalog-start",
-      "end": "docs-create_catalog-end",
+      "start": "start:create_catalog",
+      "end": "end:create_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -132,14 +132,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/create_catalog",
+      "id": "typescript/start:create_catalog",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/catalogs.ts",
-      "start": "docs-create_catalog-start",
-      "end": "docs-create_catalog-end",
+      "start": "start:create_catalog",
+      "end": "end:create_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -147,14 +147,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/create_catalog",
+      "id": "rust/start:create_catalog",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/catalogs.rs",
-      "start": "docs-create_catalog-start",
-      "end": "docs-create_catalog-end",
+      "start": "start:create_catalog",
+      "end": "end:create_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -162,14 +162,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/get_catalog",
+      "id": "python/start:get_catalog",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/catalogs.py",
-      "start": "docs-get_catalog-start",
-      "end": "docs-get_catalog-end",
+      "start": "start:get_catalog",
+      "end": "end:get_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -177,14 +177,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/get_catalog",
+      "id": "typescript/start:get_catalog",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/catalogs.ts",
-      "start": "docs-get_catalog-start",
-      "end": "docs-get_catalog-end",
+      "start": "start:get_catalog",
+      "end": "end:get_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -192,14 +192,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/get_catalog",
+      "id": "rust/start:get_catalog",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/catalogs.rs",
-      "start": "docs-get_catalog-start",
-      "end": "docs-get_catalog-end",
+      "start": "start:get_catalog",
+      "end": "end:get_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -207,14 +207,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/update_catalog",
+      "id": "python/start:update_catalog",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/catalogs.py",
-      "start": "docs-update_catalog-start",
-      "end": "docs-update_catalog-end",
+      "start": "start:update_catalog",
+      "end": "end:update_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -222,14 +222,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/update_catalog",
+      "id": "typescript/start:update_catalog",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/catalogs.ts",
-      "start": "docs-update_catalog-start",
-      "end": "docs-update_catalog-end",
+      "start": "start:update_catalog",
+      "end": "end:update_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -237,14 +237,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/update_catalog",
+      "id": "rust/start:update_catalog",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/catalogs.rs",
-      "start": "docs-update_catalog-start",
-      "end": "docs-update_catalog-end",
+      "start": "start:update_catalog",
+      "end": "end:update_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -252,14 +252,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/delete_catalog",
+      "id": "python/start:delete_catalog",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/catalogs.py",
-      "start": "docs-delete_catalog-start",
-      "end": "docs-delete_catalog-end",
+      "start": "start:delete_catalog",
+      "end": "end:delete_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -267,14 +267,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/delete_catalog",
+      "id": "typescript/start:delete_catalog",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/catalogs.ts",
-      "start": "docs-delete_catalog-start",
-      "end": "docs-delete_catalog-end",
+      "start": "start:delete_catalog",
+      "end": "end:delete_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -282,14 +282,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/delete_catalog",
+      "id": "rust/start:delete_catalog",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/catalogs.rs",
-      "start": "docs-delete_catalog-start",
-      "end": "docs-delete_catalog-end",
+      "start": "start:delete_catalog",
+      "end": "end:delete_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
       ],
@@ -297,14 +297,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/list_registered_models",
+      "id": "python/start:list_registered_models",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/registered_models.py",
-      "start": "docs-list_registered_models-start",
-      "end": "docs-list_registered_models-end",
+      "start": "start:list_registered_models",
+      "end": "end:list_registered_models",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -312,14 +312,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/list_registered_models",
+      "id": "typescript/start:list_registered_models",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/registered_models.ts",
-      "start": "docs-list_registered_models-start",
-      "end": "docs-list_registered_models-end",
+      "start": "start:list_registered_models",
+      "end": "end:list_registered_models",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -327,14 +327,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/list_registered_models",
+      "id": "rust/start:list_registered_models",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/registered_models.rs",
-      "start": "docs-list_registered_models-start",
-      "end": "docs-list_registered_models-end",
+      "start": "start:list_registered_models",
+      "end": "end:list_registered_models",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -342,14 +342,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/create_registered_model",
+      "id": "python/start:create_registered_model",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/registered_models.py",
-      "start": "docs-create_registered_model-start",
-      "end": "docs-create_registered_model-end",
+      "start": "start:create_registered_model",
+      "end": "end:create_registered_model",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -357,14 +357,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/create_registered_model",
+      "id": "typescript/start:create_registered_model",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/registered_models.ts",
-      "start": "docs-create_registered_model-start",
-      "end": "docs-create_registered_model-end",
+      "start": "start:create_registered_model",
+      "end": "end:create_registered_model",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -372,14 +372,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/create_registered_model",
+      "id": "rust/start:create_registered_model",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/registered_models.rs",
-      "start": "docs-create_registered_model-start",
-      "end": "docs-create_registered_model-end",
+      "start": "start:create_registered_model",
+      "end": "end:create_registered_model",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -387,14 +387,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/get_registered_model",
+      "id": "python/start:get_registered_model",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/registered_models.py",
-      "start": "docs-get_registered_model-start",
-      "end": "docs-get_registered_model-end",
+      "start": "start:get_registered_model",
+      "end": "end:get_registered_model",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -402,14 +402,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/get_registered_model",
+      "id": "typescript/start:get_registered_model",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/registered_models.ts",
-      "start": "docs-get_registered_model-start",
-      "end": "docs-get_registered_model-end",
+      "start": "start:get_registered_model",
+      "end": "end:get_registered_model",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -417,14 +417,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/get_registered_model",
+      "id": "rust/start:get_registered_model",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/registered_models.rs",
-      "start": "docs-get_registered_model-start",
-      "end": "docs-get_registered_model-end",
+      "start": "start:get_registered_model",
+      "end": "end:get_registered_model",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -432,14 +432,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/create_model_version",
+      "id": "python/start:create_model_version",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/registered_models.py",
-      "start": "docs-create_model_version-start",
-      "end": "docs-create_model_version-end",
+      "start": "start:create_model_version",
+      "end": "end:create_model_version",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -447,14 +447,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/create_model_version",
+      "id": "typescript/start:create_model_version",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/registered_models.ts",
-      "start": "docs-create_model_version-start",
-      "end": "docs-create_model_version-end",
+      "start": "start:create_model_version",
+      "end": "end:create_model_version",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -462,14 +462,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/create_model_version",
+      "id": "rust/start:create_model_version",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/registered_models.rs",
-      "start": "docs-create_model_version-start",
-      "end": "docs-create_model_version-end",
+      "start": "start:create_model_version",
+      "end": "end:create_model_version",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -477,14 +477,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/finalize_model_version",
+      "id": "python/start:finalize_model_version",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/registered_models.py",
-      "start": "docs-finalize_model_version-start",
-      "end": "docs-finalize_model_version-end",
+      "start": "start:finalize_model_version",
+      "end": "end:finalize_model_version",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -492,14 +492,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/finalize_model_version",
+      "id": "typescript/start:finalize_model_version",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/registered_models.ts",
-      "start": "docs-finalize_model_version-start",
-      "end": "docs-finalize_model_version-end",
+      "start": "start:finalize_model_version",
+      "end": "end:finalize_model_version",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -507,14 +507,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/finalize_model_version",
+      "id": "rust/start:finalize_model_version",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/registered_models.rs",
-      "start": "docs-finalize_model_version-start",
-      "end": "docs-finalize_model_version-end",
+      "start": "start:finalize_model_version",
+      "end": "end:finalize_model_version",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -522,14 +522,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/list_model_versions",
+      "id": "python/start:list_model_versions",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/registered_models.py",
-      "start": "docs-list_model_versions-start",
-      "end": "docs-list_model_versions-end",
+      "start": "start:list_model_versions",
+      "end": "end:list_model_versions",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -537,14 +537,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/list_model_versions",
+      "id": "typescript/start:list_model_versions",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/registered_models.ts",
-      "start": "docs-list_model_versions-start",
-      "end": "docs-list_model_versions-end",
+      "start": "start:list_model_versions",
+      "end": "end:list_model_versions",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -552,14 +552,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/list_model_versions",
+      "id": "rust/start:list_model_versions",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/registered_models.rs",
-      "start": "docs-list_model_versions-start",
-      "end": "docs-list_model_versions-end",
+      "start": "start:list_model_versions",
+      "end": "end:list_model_versions",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-registered-models.md"
       ],
@@ -567,14 +567,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/list_schemas",
+      "id": "python/start:list_schemas",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/schemas.py",
-      "start": "docs-list_schemas-start",
-      "end": "docs-list_schemas-end",
+      "start": "start:list_schemas",
+      "end": "end:list_schemas",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -582,14 +582,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/list_schemas",
+      "id": "typescript/start:list_schemas",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/schemas.ts",
-      "start": "docs-list_schemas-start",
-      "end": "docs-list_schemas-end",
+      "start": "start:list_schemas",
+      "end": "end:list_schemas",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -597,14 +597,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/list_schemas",
+      "id": "rust/start:list_schemas",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/schemas.rs",
-      "start": "docs-list_schemas-start",
-      "end": "docs-list_schemas-end",
+      "start": "start:list_schemas",
+      "end": "end:list_schemas",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -612,14 +612,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/create_schema",
+      "id": "python/start:create_schema",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/schemas.py",
-      "start": "docs-create_schema-start",
-      "end": "docs-create_schema-end",
+      "start": "start:create_schema",
+      "end": "end:create_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -627,14 +627,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/create_schema",
+      "id": "typescript/start:create_schema",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/schemas.ts",
-      "start": "docs-create_schema-start",
-      "end": "docs-create_schema-end",
+      "start": "start:create_schema",
+      "end": "end:create_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -642,14 +642,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/create_schema",
+      "id": "rust/start:create_schema",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/schemas.rs",
-      "start": "docs-create_schema-start",
-      "end": "docs-create_schema-end",
+      "start": "start:create_schema",
+      "end": "end:create_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -657,14 +657,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/get_schema",
+      "id": "python/start:get_schema",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/schemas.py",
-      "start": "docs-get_schema-start",
-      "end": "docs-get_schema-end",
+      "start": "start:get_schema",
+      "end": "end:get_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -672,14 +672,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/get_schema",
+      "id": "typescript/start:get_schema",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/schemas.ts",
-      "start": "docs-get_schema-start",
-      "end": "docs-get_schema-end",
+      "start": "start:get_schema",
+      "end": "end:get_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -687,14 +687,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/get_schema",
+      "id": "rust/start:get_schema",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/schemas.rs",
-      "start": "docs-get_schema-start",
-      "end": "docs-get_schema-end",
+      "start": "start:get_schema",
+      "end": "end:get_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -702,14 +702,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/update_schema",
+      "id": "python/start:update_schema",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/schemas.py",
-      "start": "docs-update_schema-start",
-      "end": "docs-update_schema-end",
+      "start": "start:update_schema",
+      "end": "end:update_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -717,14 +717,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/update_schema",
+      "id": "typescript/start:update_schema",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/schemas.ts",
-      "start": "docs-update_schema-start",
-      "end": "docs-update_schema-end",
+      "start": "start:update_schema",
+      "end": "end:update_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -732,14 +732,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/update_schema",
+      "id": "rust/start:update_schema",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/schemas.rs",
-      "start": "docs-update_schema-start",
-      "end": "docs-update_schema-end",
+      "start": "start:update_schema",
+      "end": "end:update_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -747,14 +747,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/delete_schema",
+      "id": "python/start:delete_schema",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/schemas.py",
-      "start": "docs-delete_schema-start",
-      "end": "docs-delete_schema-end",
+      "start": "start:delete_schema",
+      "end": "end:delete_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -762,14 +762,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/delete_schema",
+      "id": "typescript/start:delete_schema",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/schemas.ts",
-      "start": "docs-delete_schema-start",
-      "end": "docs-delete_schema-end",
+      "start": "start:delete_schema",
+      "end": "end:delete_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -777,14 +777,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/delete_schema",
+      "id": "rust/start:delete_schema",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/schemas.rs",
-      "start": "docs-delete_schema-start",
-      "end": "docs-delete_schema-end",
+      "start": "start:delete_schema",
+      "end": "end:delete_schema",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-schemas.md"
       ],
@@ -792,14 +792,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/list_tables",
+      "id": "python/start:list_tables",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tables.py",
-      "start": "docs-list_tables-start",
-      "end": "docs-list_tables-end",
+      "start": "start:list_tables",
+      "end": "end:list_tables",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -807,14 +807,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/list_tables",
+      "id": "typescript/start:list_tables",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/tables.ts",
-      "start": "docs-list_tables-start",
-      "end": "docs-list_tables-end",
+      "start": "start:list_tables",
+      "end": "end:list_tables",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -822,14 +822,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/list_tables",
+      "id": "rust/start:list_tables",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tables.rs",
-      "start": "docs-list_tables-start",
-      "end": "docs-list_tables-end",
+      "start": "start:list_tables",
+      "end": "end:list_tables",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -837,14 +837,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/create_table",
+      "id": "python/start:create_table",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tables.py",
-      "start": "docs-create_table-start",
-      "end": "docs-create_table-end",
+      "start": "start:create_table",
+      "end": "end:create_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -852,14 +852,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/create_table",
+      "id": "typescript/start:create_table",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/tables.ts",
-      "start": "docs-create_table-start",
-      "end": "docs-create_table-end",
+      "start": "start:create_table",
+      "end": "end:create_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -867,14 +867,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/create_table",
+      "id": "rust/start:create_table",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tables.rs",
-      "start": "docs-create_table-start",
-      "end": "docs-create_table-end",
+      "start": "start:create_table",
+      "end": "end:create_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -882,14 +882,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/get_table",
+      "id": "python/start:get_table",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tables.py",
-      "start": "docs-get_table-start",
-      "end": "docs-get_table-end",
+      "start": "start:get_table",
+      "end": "end:get_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -897,14 +897,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/get_table",
+      "id": "typescript/start:get_table",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/tables.ts",
-      "start": "docs-get_table-start",
-      "end": "docs-get_table-end",
+      "start": "start:get_table",
+      "end": "end:get_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -912,14 +912,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/get_table",
+      "id": "rust/start:get_table",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tables.rs",
-      "start": "docs-get_table-start",
-      "end": "docs-get_table-end",
+      "start": "start:get_table",
+      "end": "end:get_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -927,14 +927,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/delete_table",
+      "id": "python/start:delete_table",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tables.py",
-      "start": "docs-delete_table-start",
-      "end": "docs-delete_table-end",
+      "start": "start:delete_table",
+      "end": "end:delete_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -942,14 +942,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/delete_table",
+      "id": "typescript/start:delete_table",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/tables.ts",
-      "start": "docs-delete_table-start",
-      "end": "docs-delete_table-end",
+      "start": "start:delete_table",
+      "end": "end:delete_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -957,14 +957,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/delete_table",
+      "id": "rust/start:delete_table",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tables.rs",
-      "start": "docs-delete_table-start",
-      "end": "docs-delete_table-end",
+      "start": "start:delete_table",
+      "end": "end:delete_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
       ],
@@ -972,14 +972,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/list_tag_policies",
+      "id": "python/start:list_tag_policies",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tag_policies.py",
-      "start": "docs-list_tag_policies-start",
-      "end": "docs-list_tag_policies-end",
+      "start": "start:list_tag_policies",
+      "end": "end:list_tag_policies",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -987,14 +987,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/list_tag_policies",
+      "id": "typescript/start:list_tag_policies",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/tag_policies.ts",
-      "start": "docs-list_tag_policies-start",
-      "end": "docs-list_tag_policies-end",
+      "start": "start:list_tag_policies",
+      "end": "end:list_tag_policies",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1002,14 +1002,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/list_tag_policies",
+      "id": "rust/start:list_tag_policies",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tag_policies.rs",
-      "start": "docs-list_tag_policies-start",
-      "end": "docs-list_tag_policies-end",
+      "start": "start:list_tag_policies",
+      "end": "end:list_tag_policies",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1017,14 +1017,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/create_tag_policy",
+      "id": "python/start:create_tag_policy",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tag_policies.py",
-      "start": "docs-create_tag_policy-start",
-      "end": "docs-create_tag_policy-end",
+      "start": "start:create_tag_policy",
+      "end": "end:create_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1032,14 +1032,14 @@
       "engine_status": "built"
     },
     {
-      "id": "rust/create_tag_policy",
+      "id": "rust/start:create_tag_policy",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tag_policies.rs",
-      "start": "docs-create_tag_policy-start",
-      "end": "docs-create_tag_policy-end",
+      "start": "start:create_tag_policy",
+      "end": "end:create_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1047,14 +1047,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/get_tag_policy",
+      "id": "python/start:get_tag_policy",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tag_policies.py",
-      "start": "docs-get_tag_policy-start",
-      "end": "docs-get_tag_policy-end",
+      "start": "start:get_tag_policy",
+      "end": "end:get_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1062,14 +1062,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/get_tag_policy",
+      "id": "typescript/start:get_tag_policy",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/tag_policies.ts",
-      "start": "docs-get_tag_policy-start",
-      "end": "docs-get_tag_policy-end",
+      "start": "start:get_tag_policy",
+      "end": "end:get_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1077,14 +1077,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/get_tag_policy",
+      "id": "rust/start:get_tag_policy",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tag_policies.rs",
-      "start": "docs-get_tag_policy-start",
-      "end": "docs-get_tag_policy-end",
+      "start": "start:get_tag_policy",
+      "end": "end:get_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1092,14 +1092,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/update_tag_policy",
+      "id": "python/start:update_tag_policy",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tag_policies.py",
-      "start": "docs-update_tag_policy-start",
-      "end": "docs-update_tag_policy-end",
+      "start": "start:update_tag_policy",
+      "end": "end:update_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1107,14 +1107,14 @@
       "engine_status": "built"
     },
     {
-      "id": "rust/update_tag_policy",
+      "id": "rust/start:update_tag_policy",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tag_policies.rs",
-      "start": "docs-update_tag_policy-start",
-      "end": "docs-update_tag_policy-end",
+      "start": "start:update_tag_policy",
+      "end": "end:update_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1122,14 +1122,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/delete_tag_policy",
+      "id": "python/start:delete_tag_policy",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/tag_policies.py",
-      "start": "docs-delete_tag_policy-start",
-      "end": "docs-delete_tag_policy-end",
+      "start": "start:delete_tag_policy",
+      "end": "end:delete_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1137,14 +1137,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/delete_tag_policy",
+      "id": "typescript/start:delete_tag_policy",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/tag_policies.ts",
-      "start": "docs-delete_tag_policy-start",
-      "end": "docs-delete_tag_policy-end",
+      "start": "start:delete_tag_policy",
+      "end": "end:delete_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1152,14 +1152,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/delete_tag_policy",
+      "id": "rust/start:delete_tag_policy",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/tag_policies.rs",
-      "start": "docs-delete_tag_policy-start",
-      "end": "docs-delete_tag_policy-end",
+      "start": "start:delete_tag_policy",
+      "end": "end:delete_tag_policy",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
@@ -1167,14 +1167,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/list_volumes",
+      "id": "python/start:list_volumes",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/volumes.py",
-      "start": "docs-list_volumes-start",
-      "end": "docs-list_volumes-end",
+      "start": "start:list_volumes",
+      "end": "end:list_volumes",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1182,14 +1182,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/list_volumes",
+      "id": "typescript/start:list_volumes",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/volumes.ts",
-      "start": "docs-list_volumes-start",
-      "end": "docs-list_volumes-end",
+      "start": "start:list_volumes",
+      "end": "end:list_volumes",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1197,14 +1197,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/list_volumes",
+      "id": "rust/start:list_volumes",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/volumes.rs",
-      "start": "docs-list_volumes-start",
-      "end": "docs-list_volumes-end",
+      "start": "start:list_volumes",
+      "end": "end:list_volumes",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1212,14 +1212,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/create_volume",
+      "id": "python/start:create_volume",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/volumes.py",
-      "start": "docs-create_volume-start",
-      "end": "docs-create_volume-end",
+      "start": "start:create_volume",
+      "end": "end:create_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1227,14 +1227,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/create_volume",
+      "id": "typescript/start:create_volume",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/volumes.ts",
-      "start": "docs-create_volume-start",
-      "end": "docs-create_volume-end",
+      "start": "start:create_volume",
+      "end": "end:create_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1242,14 +1242,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/create_volume",
+      "id": "rust/start:create_volume",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/volumes.rs",
-      "start": "docs-create_volume-start",
-      "end": "docs-create_volume-end",
+      "start": "start:create_volume",
+      "end": "end:create_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1257,14 +1257,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/get_volume",
+      "id": "python/start:get_volume",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/volumes.py",
-      "start": "docs-get_volume-start",
-      "end": "docs-get_volume-end",
+      "start": "start:get_volume",
+      "end": "end:get_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1272,14 +1272,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/get_volume",
+      "id": "typescript/start:get_volume",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/volumes.ts",
-      "start": "docs-get_volume-start",
-      "end": "docs-get_volume-end",
+      "start": "start:get_volume",
+      "end": "end:get_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1287,14 +1287,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/get_volume",
+      "id": "rust/start:get_volume",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/volumes.rs",
-      "start": "docs-get_volume-start",
-      "end": "docs-get_volume-end",
+      "start": "start:get_volume",
+      "end": "end:get_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1302,14 +1302,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/update_volume",
+      "id": "python/start:update_volume",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/volumes.py",
-      "start": "docs-update_volume-start",
-      "end": "docs-update_volume-end",
+      "start": "start:update_volume",
+      "end": "end:update_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1317,14 +1317,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/update_volume",
+      "id": "typescript/start:update_volume",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/volumes.ts",
-      "start": "docs-update_volume-start",
-      "end": "docs-update_volume-end",
+      "start": "start:update_volume",
+      "end": "end:update_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1332,14 +1332,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/update_volume",
+      "id": "rust/start:update_volume",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/volumes.rs",
-      "start": "docs-update_volume-start",
-      "end": "docs-update_volume-end",
+      "start": "start:update_volume",
+      "end": "end:update_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1347,14 +1347,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/delete_volume",
+      "id": "python/start:delete_volume",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/volumes.py",
-      "start": "docs-delete_volume-start",
-      "end": "docs-delete_volume-end",
+      "start": "start:delete_volume",
+      "end": "end:delete_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1362,14 +1362,14 @@
       "engine_status": "built"
     },
     {
-      "id": "typescript/delete_volume",
+      "id": "typescript/start:delete_volume",
       "engine": "typescript",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/typescript/examples/volumes.ts",
-      "start": "docs-delete_volume-start",
-      "end": "docs-delete_volume-end",
+      "start": "start:delete_volume",
+      "end": "end:delete_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1377,14 +1377,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/delete_volume",
+      "id": "rust/start:delete_volume",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/volumes.rs",
-      "start": "docs-delete_volume-start",
-      "end": "docs-delete_volume-end",
+      "start": "start:delete_volume",
+      "end": "end:delete_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
       ],
@@ -1392,14 +1392,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/object_store_factory",
+      "id": "rust/start:object_store_factory",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/object_store.rs",
-      "start": "docs-object_store_factory-start",
-      "end": "docs-object_store_factory-end",
+      "start": "start:object_store_factory",
+      "end": "end:object_store_factory",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1407,14 +1407,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/object_store_client",
+      "id": "python/start:object_store_client",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/object_store.py",
-      "start": "docs-object_store_client-start",
-      "end": "docs-object_store_client-end",
+      "start": "start:object_store_client",
+      "end": "end:object_store_client",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1422,14 +1422,14 @@
       "engine_status": "built"
     },
     {
-      "id": "python/object_store_for_url",
+      "id": "python/start:object_store_for_url",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/object_store.py",
-      "start": "docs-object_store_for_url-start",
-      "end": "docs-object_store_for_url-end",
+      "start": "start:object_store_for_url",
+      "end": "end:object_store_for_url",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1437,14 +1437,14 @@
       "engine_status": "built"
     },
     {
-      "id": "rust/object_store_for_url",
+      "id": "rust/start:object_store_for_url",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/object_store.rs",
-      "start": "docs-object_store_for_url-start",
-      "end": "docs-object_store_for_url-end",
+      "start": "start:object_store_for_url",
+      "end": "end:object_store_for_url",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1452,14 +1452,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/object_store_for_volume",
+      "id": "python/start:object_store_for_volume",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/object_store.py",
-      "start": "docs-object_store_for_volume-start",
-      "end": "docs-object_store_for_volume-end",
+      "start": "start:object_store_for_volume",
+      "end": "end:object_store_for_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1467,14 +1467,14 @@
       "engine_status": "built"
     },
     {
-      "id": "rust/object_store_for_volume",
+      "id": "rust/start:object_store_for_volume",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/object_store.rs",
-      "start": "docs-object_store_for_volume-start",
-      "end": "docs-object_store_for_volume-end",
+      "start": "start:object_store_for_volume",
+      "end": "end:object_store_for_volume",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1482,14 +1482,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/object_store_for_table",
+      "id": "python/start:object_store_for_table",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/object_store.py",
-      "start": "docs-object_store_for_table-start",
-      "end": "docs-object_store_for_table-end",
+      "start": "start:object_store_for_table",
+      "end": "end:object_store_for_table",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1497,14 +1497,14 @@
       "engine_status": "built"
     },
     {
-      "id": "rust/object_store_for_table",
+      "id": "rust/start:object_store_for_table",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/object_store.rs",
-      "start": "docs-object_store_for_table-start",
-      "end": "docs-object_store_for_table-end",
+      "start": "start:object_store_for_table",
+      "end": "end:object_store_for_table",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1512,14 +1512,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/object_store_for_path",
+      "id": "rust/start:object_store_for_path",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/object_store.rs",
-      "start": "docs-object_store_for_path-start",
-      "end": "docs-object_store_for_path-end",
+      "start": "start:object_store_for_path",
+      "end": "end:object_store_for_path",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1527,14 +1527,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/object_store_datafusion",
+      "id": "rust/start:object_store_datafusion",
       "engine": "rust",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/rust/src/object_store.rs",
-      "start": "docs-object_store_datafusion-start",
-      "end": "docs-object_store_datafusion-end",
+      "start": "start:object_store_datafusion",
+      "end": "end:object_store_datafusion",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
@@ -1542,14 +1542,14 @@
       "engine_status": "stub"
     },
     {
-      "id": "python/object_store_duckdb",
+      "id": "python/start:object_store_duckdb",
       "engine": "python",
       "diataxis": "how-to",
       "delta_features": [],
       "datasets": [],
       "source": "examples/python/object_store.py",
-      "start": "docs-object_store_duckdb-start",
-      "end": "docs-object_store_duckdb-end",
+      "start": "start:object_store_duckdb",
+      "end": "end:object_store_duckdb",
       "referenced_by": [
         "content/unitycatalog/how-to/read-write-governed-data.md"
       ],

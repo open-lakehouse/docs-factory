@@ -8,13 +8,13 @@ still runnable end to end.
 
 
 def read_delta_table(path: str) -> None:
-    # docs-read-delta-table-start
+    # --8<-- [start:read-delta-table]
     import duckdb
 
     duckdb.sql("INSTALL delta; LOAD delta;")
     rel = duckdb.sql(f"SELECT * FROM delta_scan('{path}') LIMIT 5")
     print(rel.fetchall())
-    # docs-read-delta-table-end
+    # --8<-- [end:read-delta-table]
 
 
 if __name__ == "__main__":

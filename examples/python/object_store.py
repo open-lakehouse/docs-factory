@@ -8,7 +8,7 @@ from __future__ import annotations
 import os
 
 
-# docs-object_store_client-start
+# --8<-- [start:object_store_client]
 def build_client():
     """Construct a credential client that points at your UC endpoint.
 
@@ -25,10 +25,10 @@ def build_client():
     )
 
 
-# docs-object_store_client-end
+# --8<-- [end:object_store_client]
 
 
-# docs-object_store_for_url-start
+# --8<-- [start:object_store_for_url]
 def list_via_uc_url() -> None:
     """Address any Unity Catalog securable with a single `uc://` URL.
 
@@ -48,10 +48,10 @@ def list_via_uc_url() -> None:
         print(entry["path"])
 
 
-# docs-object_store_for_url-end
+# --8<-- [end:object_store_for_url]
 
 
-# docs-object_store_for_volume-start
+# --8<-- [start:object_store_for_volume]
 def read_volume_file() -> None:
     """Read a single file from a Unity Catalog volume."""
     import obstore as obs
@@ -63,10 +63,10 @@ def read_volume_file() -> None:
     print(payload.to_bytes().decode())
 
 
-# docs-object_store_for_volume-end
+# --8<-- [end:object_store_for_volume]
 
 
-# docs-object_store_for_table-start
+# --8<-- [start:object_store_for_table]
 def list_table_files() -> None:
     """List a Unity Catalog table's underlying data files."""
     import obstore as obs
@@ -78,10 +78,10 @@ def list_table_files() -> None:
         print(entry["path"])
 
 
-# docs-object_store_for_table-end
+# --8<-- [end:object_store_for_table]
 
 
-# docs-object_store_duckdb-start
+# --8<-- [start:object_store_duckdb]
 def query_with_duckdb() -> None:
     """Hand the vended credentials to DuckDB to query a UC volume.
 
@@ -120,4 +120,4 @@ def query_with_duckdb() -> None:
     print(con.sql(f"SELECT * FROM read_parquet('{credential.url}/*.parquet')").df())
 
 
-# docs-object_store_duckdb-end
+# --8<-- [end:object_store_duckdb]

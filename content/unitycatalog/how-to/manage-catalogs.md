@@ -6,64 +6,64 @@ project: unitycatalog
 engines: [python, typescript, rust]
 snippets:
   - file: ../../../examples/python/catalogs.py
-    start: docs-list_catalogs-start
-    end: docs-list_catalogs-end
+    start: start:list_catalogs
+    end: end:list_catalogs
     engine: python
   - file: ../../../examples/typescript/examples/catalogs.ts
-    start: docs-list_catalogs-start
-    end: docs-list_catalogs-end
+    start: start:list_catalogs
+    end: end:list_catalogs
     engine: typescript
   - file: ../../../examples/rust/src/catalogs.rs
-    start: docs-list_catalogs-start
-    end: docs-list_catalogs-end
+    start: start:list_catalogs
+    end: end:list_catalogs
     engine: rust
   - file: ../../../examples/python/catalogs.py
-    start: docs-create_catalog-start
-    end: docs-create_catalog-end
+    start: start:create_catalog
+    end: end:create_catalog
     engine: python
   - file: ../../../examples/typescript/examples/catalogs.ts
-    start: docs-create_catalog-start
-    end: docs-create_catalog-end
+    start: start:create_catalog
+    end: end:create_catalog
     engine: typescript
   - file: ../../../examples/rust/src/catalogs.rs
-    start: docs-create_catalog-start
-    end: docs-create_catalog-end
+    start: start:create_catalog
+    end: end:create_catalog
     engine: rust
   - file: ../../../examples/python/catalogs.py
-    start: docs-get_catalog-start
-    end: docs-get_catalog-end
+    start: start:get_catalog
+    end: end:get_catalog
     engine: python
   - file: ../../../examples/typescript/examples/catalogs.ts
-    start: docs-get_catalog-start
-    end: docs-get_catalog-end
+    start: start:get_catalog
+    end: end:get_catalog
     engine: typescript
   - file: ../../../examples/rust/src/catalogs.rs
-    start: docs-get_catalog-start
-    end: docs-get_catalog-end
+    start: start:get_catalog
+    end: end:get_catalog
     engine: rust
   - file: ../../../examples/python/catalogs.py
-    start: docs-update_catalog-start
-    end: docs-update_catalog-end
+    start: start:update_catalog
+    end: end:update_catalog
     engine: python
   - file: ../../../examples/typescript/examples/catalogs.ts
-    start: docs-update_catalog-start
-    end: docs-update_catalog-end
+    start: start:update_catalog
+    end: end:update_catalog
     engine: typescript
   - file: ../../../examples/rust/src/catalogs.rs
-    start: docs-update_catalog-start
-    end: docs-update_catalog-end
+    start: start:update_catalog
+    end: end:update_catalog
     engine: rust
   - file: ../../../examples/python/catalogs.py
-    start: docs-delete_catalog-start
-    end: docs-delete_catalog-end
+    start: start:delete_catalog
+    end: end:delete_catalog
     engine: python
   - file: ../../../examples/typescript/examples/catalogs.ts
-    start: docs-delete_catalog-start
-    end: docs-delete_catalog-end
+    start: start:delete_catalog
+    end: end:delete_catalog
     engine: typescript
   - file: ../../../examples/rust/src/catalogs.rs
-    start: docs-delete_catalog-start
-    end: docs-delete_catalog-end
+    start: start:delete_catalog
+    end: end:delete_catalog
     engine: rust
 status: draft
 ---
@@ -80,21 +80,21 @@ Retrieve all catalogs available to the authenticated user.
 
 :::tab[Python]
 
-```python file=../../../examples/python/catalogs.py start=docs-list_catalogs-start end=docs-list_catalogs-end
+```python file=../../../examples/python/catalogs.py start=start:list_catalogs end=end:list_catalogs
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/catalogs.ts start=docs-list_catalogs-start end=docs-list_catalogs-end
+```typescript file=../../../examples/typescript/examples/catalogs.ts start=start:list_catalogs end=end:list_catalogs
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/catalogs.rs start=docs-list_catalogs-start end=docs-list_catalogs-end
+```rust file=../../../examples/rust/src/catalogs.rs start=start:list_catalogs end=end:list_catalogs
 ```
 
 :::
@@ -109,21 +109,21 @@ Create a new catalog with an optional description.
 
 :::tab[Python]
 
-```python file=../../../examples/python/catalogs.py start=docs-create_catalog-start end=docs-create_catalog-end
+```python file=../../../examples/python/catalogs.py start=start:create_catalog end=end:create_catalog
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/catalogs.ts start=docs-create_catalog-start end=docs-create_catalog-end
+```typescript file=../../../examples/typescript/examples/catalogs.ts start=start:create_catalog end=end:create_catalog
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/catalogs.rs start=docs-create_catalog-start end=docs-create_catalog-end
+```rust file=../../../examples/rust/src/catalogs.rs start=start:create_catalog end=end:create_catalog
 ```
 
 :::
@@ -138,21 +138,21 @@ Retrieve details for a specific catalog by name.
 
 :::tab[Python]
 
-```python file=../../../examples/python/catalogs.py start=docs-get_catalog-start end=docs-get_catalog-end
+```python file=../../../examples/python/catalogs.py start=start:get_catalog end=end:get_catalog
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/catalogs.ts start=docs-get_catalog-start end=docs-get_catalog-end
+```typescript file=../../../examples/typescript/examples/catalogs.ts start=start:get_catalog end=end:get_catalog
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/catalogs.rs start=docs-get_catalog-start end=docs-get_catalog-end
+```rust file=../../../examples/rust/src/catalogs.rs start=start:get_catalog end=end:get_catalog
 ```
 
 :::
@@ -167,21 +167,21 @@ Update a catalog's metadata, such as its description or owner.
 
 :::tab[Python]
 
-```python file=../../../examples/python/catalogs.py start=docs-update_catalog-start end=docs-update_catalog-end
+```python file=../../../examples/python/catalogs.py start=start:update_catalog end=end:update_catalog
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/catalogs.ts start=docs-update_catalog-start end=docs-update_catalog-end
+```typescript file=../../../examples/typescript/examples/catalogs.ts start=start:update_catalog end=end:update_catalog
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/catalogs.rs start=docs-update_catalog-start end=docs-update_catalog-end
+```rust file=../../../examples/rust/src/catalogs.rs start=start:update_catalog end=end:update_catalog
 ```
 
 :::
@@ -196,21 +196,21 @@ Delete a catalog. Use the `force` option to delete non-empty catalogs.
 
 :::tab[Python]
 
-```python file=../../../examples/python/catalogs.py start=docs-delete_catalog-start end=docs-delete_catalog-end
+```python file=../../../examples/python/catalogs.py start=start:delete_catalog end=end:delete_catalog
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/catalogs.ts start=docs-delete_catalog-start end=docs-delete_catalog-end
+```typescript file=../../../examples/typescript/examples/catalogs.ts start=start:delete_catalog end=end:delete_catalog
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/catalogs.rs start=docs-delete_catalog-start end=docs-delete_catalog-end
+```rust file=../../../examples/rust/src/catalogs.rs start=start:delete_catalog end=end:delete_catalog
 ```
 
 :::

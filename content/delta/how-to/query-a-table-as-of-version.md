@@ -11,8 +11,8 @@ prerequisites:
   datasets: [orders]
 snippets:
   - file: ../../../examples/python/time_travel_read.py
-    start: docs-time-travel-read-start
-    end: docs-time-travel-read-end
+    start: start:time-travel-read
+    end: end:time-travel-read
     engine: python
 status: published
 ---
@@ -28,7 +28,7 @@ what you copy is what we test.
 
 ## Python (deltalake)
 
-```python file=../../../examples/python/time_travel_read.py start=docs-time-travel-read-start end=docs-time-travel-read-end
+```python file=../../../examples/python/time_travel_read.py start=start:time-travel-read end=end:time-travel-read
 ```
 
 `DeltaTable(path, version=0)` opens the first commit; omitting `version` opens the

@@ -1,7 +1,7 @@
 use unitycatalog_client::UnityCatalogClient;
 use unitycatalog_common::models::tables::v1::{DataSourceFormat, TableType};
 
-// docs-list_tables-start
+// --8<-- [start:list_tables]
 pub async fn list_tables_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let response = client.list_tables("my_catalog", "my_schema").await.unwrap();
@@ -9,9 +9,9 @@ pub async fn list_tables_example(base_url: url::Url) {
         println!("{}", table.name);
     }
 }
-// docs-list_tables-end
+// --8<-- [end:list_tables]
 
-// docs-create_table-start
+// --8<-- [start:create_table]
 pub async fn create_table_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let table = client
@@ -27,9 +27,9 @@ pub async fn create_table_example(base_url: url::Url) {
         .unwrap();
     println!("Created: {}", table.name);
 }
-// docs-create_table-end
+// --8<-- [end:create_table]
 
-// docs-get_table-start
+// --8<-- [start:get_table]
 pub async fn get_table_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     let table = client
@@ -39,9 +39,9 @@ pub async fn get_table_example(base_url: url::Url) {
         .unwrap();
     println!("Got: {}", table.name);
 }
-// docs-get_table-end
+// --8<-- [end:get_table]
 
-// docs-delete_table-start
+// --8<-- [start:delete_table]
 pub async fn delete_table_example(base_url: url::Url) {
     let client = UnityCatalogClient::new_unauthenticated(base_url);
     client
@@ -51,4 +51,4 @@ pub async fn delete_table_example(base_url: url::Url) {
         .unwrap();
     println!("Deleted table");
 }
-// docs-delete_table-end
+// --8<-- [end:delete_table]

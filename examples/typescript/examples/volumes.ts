@@ -1,6 +1,6 @@
 import { UnityCatalogClient } from "@unitycatalog/client";
 
-// docs-list_volumes-start
+// --8<-- [start:list_volumes]
 export async function listVolumesExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   const volumes = await client.listVolumes("my_catalog", "my_schema");
@@ -8,9 +8,9 @@ export async function listVolumesExample(): Promise<void> {
     console.log(volume.name);
   }
 }
-// docs-list_volumes-end
+// --8<-- [end:list_volumes]
 
-// docs-create_volume-start
+// --8<-- [start:create_volume]
 export async function createVolumeExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   // volumeType: 1 = MANAGED
@@ -23,9 +23,9 @@ export async function createVolumeExample(): Promise<void> {
   );
   console.log(`Created: ${volume.name}`);
 }
-// docs-create_volume-end
+// --8<-- [end:create_volume]
 
-// docs-get_volume-start
+// --8<-- [start:get_volume]
 export async function getVolumeExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   const volume = await client
@@ -33,9 +33,9 @@ export async function getVolumeExample(): Promise<void> {
     .get();
   console.log(`Got: ${volume.name}`);
 }
-// docs-get_volume-end
+// --8<-- [end:get_volume]
 
-// docs-update_volume-start
+// --8<-- [start:update_volume]
 export async function updateVolumeExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   const volume = await client
@@ -43,12 +43,12 @@ export async function updateVolumeExample(): Promise<void> {
     .update({ comment: "Updated comment" });
   console.log(`Updated: ${volume.name}`);
 }
-// docs-update_volume-end
+// --8<-- [end:update_volume]
 
-// docs-delete_volume-start
+// --8<-- [start:delete_volume]
 export async function deleteVolumeExample(): Promise<void> {
   const client = new UnityCatalogClient("http://localhost:8080");
   await client.volume("my_catalog", "my_schema", "my_volume").delete();
   console.log("Deleted volume");
 }
-// docs-delete_volume-end
+// --8<-- [end:delete_volume]

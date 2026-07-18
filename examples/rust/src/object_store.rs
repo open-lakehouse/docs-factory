@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use unitycatalog_object_store::{Operation, PathOperation, UnityObjectStoreFactory};
 
-// docs-object_store_factory-start
+// --8<-- [start:object_store_factory]
 /// Build the factory once per process and reuse it across requests.
 ///
 /// In production, pull `base_url` and `token` from your secret store
@@ -25,9 +25,9 @@ pub async fn build_factory() -> UnityObjectStoreFactory {
         .await
         .expect("failed to build factory")
 }
-// docs-object_store_factory-end
+// --8<-- [end:object_store_factory]
 
-// docs-object_store_for_url-start
+// --8<-- [start:object_store_for_url]
 /// Address any Unity Catalog securable with a single `uc://` URL.
 ///
 /// The factory routes:
@@ -45,9 +45,9 @@ pub async fn list_via_uc_url(factory: &UnityObjectStoreFactory) {
     let entries = futures::StreamExt::collect::<Vec<_>>(store.as_dyn().list(None)).await;
     println!("found {} entries", entries.len());
 }
-// docs-object_store_for_url-end
+// --8<-- [end:object_store_for_url]
 
-// docs-object_store_for_table-start
+// --8<-- [start:object_store_for_table]
 /// Read a Unity Catalog table's data files directly from its storage root.
 pub async fn read_table_files(factory: &UnityObjectStoreFactory) {
     let store = factory
@@ -58,9 +58,9 @@ pub async fn read_table_files(factory: &UnityObjectStoreFactory) {
     let entries = futures::StreamExt::collect::<Vec<_>>(store.as_dyn().list(None)).await;
     println!("table data files: {}", entries.len());
 }
-// docs-object_store_for_table-end
+// --8<-- [end:object_store_for_table]
 
-// docs-object_store_for_volume-start
+// --8<-- [start:object_store_for_volume]
 /// Walk a Unity Catalog volume with the prefixed default store.
 ///
 /// `store.as_dyn()` is rooted at the volume's storage location; pass
@@ -74,9 +74,9 @@ pub async fn list_volume_contents(factory: &UnityObjectStoreFactory) {
     let entries = futures::StreamExt::collect::<Vec<_>>(store.as_dyn().list(None)).await;
     println!("volume entries: {}", entries.len());
 }
-// docs-object_store_for_volume-end
+// --8<-- [end:object_store_for_volume]
 
-// docs-object_store_for_path-start
+// --8<-- [start:object_store_for_path]
 /// Fall back to `temporary-path-credentials` for raw cloud URLs.
 pub async fn read_raw_cloud_path(factory: &UnityObjectStoreFactory) {
     let url = url::Url::parse("s3://example-bucket/path/").unwrap();
@@ -88,9 +88,9 @@ pub async fn read_raw_cloud_path(factory: &UnityObjectStoreFactory) {
     let entries = futures::StreamExt::collect::<Vec<_>>(store.as_dyn().list(None)).await;
     println!("path entries: {}", entries.len());
 }
-// docs-object_store_for_path-end
+// --8<-- [end:object_store_for_path]
 
-// docs-object_store_datafusion-start
+// --8<-- [start:object_store_datafusion]
 /// Plug a Unity Catalog-backed store into DataFusion's `RuntimeEnv` so
 /// SQL queries that reference `s3://`/`gs://`/`abfss://` URLs picked from
 /// the vended credential transparently work.
@@ -113,4 +113,4 @@ pub async fn datafusion_registration(_factory: &UnityObjectStoreFactory) {
     // recommended DataFusion wiring.
     let _: Arc<dyn object_store::ObjectStore> = Arc::new(object_store::memory::InMemory::new());
 }
-// docs-object_store_datafusion-end
+// --8<-- [end:object_store_datafusion]

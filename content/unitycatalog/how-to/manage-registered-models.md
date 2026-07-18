@@ -6,76 +6,76 @@ project: unitycatalog
 engines: [python, typescript, rust]
 snippets:
   - file: ../../../examples/python/registered_models.py
-    start: docs-list_registered_models-start
-    end: docs-list_registered_models-end
+    start: start:list_registered_models
+    end: end:list_registered_models
     engine: python
   - file: ../../../examples/typescript/examples/registered_models.ts
-    start: docs-list_registered_models-start
-    end: docs-list_registered_models-end
+    start: start:list_registered_models
+    end: end:list_registered_models
     engine: typescript
   - file: ../../../examples/rust/src/registered_models.rs
-    start: docs-list_registered_models-start
-    end: docs-list_registered_models-end
+    start: start:list_registered_models
+    end: end:list_registered_models
     engine: rust
   - file: ../../../examples/python/registered_models.py
-    start: docs-create_registered_model-start
-    end: docs-create_registered_model-end
+    start: start:create_registered_model
+    end: end:create_registered_model
     engine: python
   - file: ../../../examples/typescript/examples/registered_models.ts
-    start: docs-create_registered_model-start
-    end: docs-create_registered_model-end
+    start: start:create_registered_model
+    end: end:create_registered_model
     engine: typescript
   - file: ../../../examples/rust/src/registered_models.rs
-    start: docs-create_registered_model-start
-    end: docs-create_registered_model-end
+    start: start:create_registered_model
+    end: end:create_registered_model
     engine: rust
   - file: ../../../examples/python/registered_models.py
-    start: docs-get_registered_model-start
-    end: docs-get_registered_model-end
+    start: start:get_registered_model
+    end: end:get_registered_model
     engine: python
   - file: ../../../examples/typescript/examples/registered_models.ts
-    start: docs-get_registered_model-start
-    end: docs-get_registered_model-end
+    start: start:get_registered_model
+    end: end:get_registered_model
     engine: typescript
   - file: ../../../examples/rust/src/registered_models.rs
-    start: docs-get_registered_model-start
-    end: docs-get_registered_model-end
+    start: start:get_registered_model
+    end: end:get_registered_model
     engine: rust
   - file: ../../../examples/python/registered_models.py
-    start: docs-create_model_version-start
-    end: docs-create_model_version-end
+    start: start:create_model_version
+    end: end:create_model_version
     engine: python
   - file: ../../../examples/typescript/examples/registered_models.ts
-    start: docs-create_model_version-start
-    end: docs-create_model_version-end
+    start: start:create_model_version
+    end: end:create_model_version
     engine: typescript
   - file: ../../../examples/rust/src/registered_models.rs
-    start: docs-create_model_version-start
-    end: docs-create_model_version-end
+    start: start:create_model_version
+    end: end:create_model_version
     engine: rust
   - file: ../../../examples/python/registered_models.py
-    start: docs-finalize_model_version-start
-    end: docs-finalize_model_version-end
+    start: start:finalize_model_version
+    end: end:finalize_model_version
     engine: python
   - file: ../../../examples/typescript/examples/registered_models.ts
-    start: docs-finalize_model_version-start
-    end: docs-finalize_model_version-end
+    start: start:finalize_model_version
+    end: end:finalize_model_version
     engine: typescript
   - file: ../../../examples/rust/src/registered_models.rs
-    start: docs-finalize_model_version-start
-    end: docs-finalize_model_version-end
+    start: start:finalize_model_version
+    end: end:finalize_model_version
     engine: rust
   - file: ../../../examples/python/registered_models.py
-    start: docs-list_model_versions-start
-    end: docs-list_model_versions-end
+    start: start:list_model_versions
+    end: end:list_model_versions
     engine: python
   - file: ../../../examples/typescript/examples/registered_models.ts
-    start: docs-list_model_versions-start
-    end: docs-list_model_versions-end
+    start: start:list_model_versions
+    end: end:list_model_versions
     engine: typescript
   - file: ../../../examples/rust/src/registered_models.rs
-    start: docs-list_model_versions-start
-    end: docs-list_model_versions-end
+    start: start:list_model_versions
+    end: end:list_model_versions
     engine: rust
 status: draft
 ---
@@ -98,21 +98,21 @@ Retrieve the registered models in a schema.
 
 :::tab[Python]
 
-```python file=../../../examples/python/registered_models.py start=docs-list_registered_models-start end=docs-list_registered_models-end
+```python file=../../../examples/python/registered_models.py start=start:list_registered_models end=end:list_registered_models
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/registered_models.ts start=docs-list_registered_models-start end=docs-list_registered_models-end
+```typescript file=../../../examples/typescript/examples/registered_models.ts start=start:list_registered_models end=end:list_registered_models
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/registered_models.rs start=docs-list_registered_models-start end=docs-list_registered_models-end
+```rust file=../../../examples/rust/src/registered_models.rs start=start:list_registered_models end=end:list_registered_models
 ```
 
 :::
@@ -128,21 +128,21 @@ under which the model's version artifacts are stored.
 
 :::tab[Python]
 
-```python file=../../../examples/python/registered_models.py start=docs-create_registered_model-start end=docs-create_registered_model-end
+```python file=../../../examples/python/registered_models.py start=start:create_registered_model end=end:create_registered_model
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/registered_models.ts start=docs-create_registered_model-start end=docs-create_registered_model-end
+```typescript file=../../../examples/typescript/examples/registered_models.ts start=start:create_registered_model end=end:create_registered_model
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/registered_models.rs start=docs-create_registered_model-start end=docs-create_registered_model-end
+```rust file=../../../examples/rust/src/registered_models.rs start=start:create_registered_model end=end:create_registered_model
 ```
 
 :::
@@ -157,21 +157,21 @@ Retrieve details for a specific registered model.
 
 :::tab[Python]
 
-```python file=../../../examples/python/registered_models.py start=docs-get_registered_model-start end=docs-get_registered_model-end
+```python file=../../../examples/python/registered_models.py start=start:get_registered_model end=end:get_registered_model
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/registered_models.ts start=docs-get_registered_model-start end=docs-get_registered_model-end
+```typescript file=../../../examples/typescript/examples/registered_models.ts start=start:get_registered_model end=end:get_registered_model
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/registered_models.rs start=docs-get_registered_model-start end=docs-get_registered_model-end
+```rust file=../../../examples/rust/src/registered_models.rs start=start:get_registered_model end=end:get_registered_model
 ```
 
 :::
@@ -188,21 +188,21 @@ artifacts.
 
 :::tab[Python]
 
-```python file=../../../examples/python/registered_models.py start=docs-create_model_version-start end=docs-create_model_version-end
+```python file=../../../examples/python/registered_models.py start=start:create_model_version end=end:create_model_version
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/registered_models.ts start=docs-create_model_version-start end=docs-create_model_version-end
+```typescript file=../../../examples/typescript/examples/registered_models.ts start=start:create_model_version end=end:create_model_version
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/registered_models.rs start=docs-create_model_version-start end=docs-create_model_version-end
+```rust file=../../../examples/rust/src/registered_models.rs start=start:create_model_version end=end:create_model_version
 ```
 
 :::
@@ -218,21 +218,21 @@ transition its status to `READY`.
 
 :::tab[Python]
 
-```python file=../../../examples/python/registered_models.py start=docs-finalize_model_version-start end=docs-finalize_model_version-end
+```python file=../../../examples/python/registered_models.py start=start:finalize_model_version end=end:finalize_model_version
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/registered_models.ts start=docs-finalize_model_version-start end=docs-finalize_model_version-end
+```typescript file=../../../examples/typescript/examples/registered_models.ts start=start:finalize_model_version end=end:finalize_model_version
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/registered_models.rs start=docs-finalize_model_version-start end=docs-finalize_model_version-end
+```rust file=../../../examples/rust/src/registered_models.rs start=start:finalize_model_version end=end:finalize_model_version
 ```
 
 :::
@@ -247,21 +247,21 @@ Retrieve the versions of a registered model.
 
 :::tab[Python]
 
-```python file=../../../examples/python/registered_models.py start=docs-list_model_versions-start end=docs-list_model_versions-end
+```python file=../../../examples/python/registered_models.py start=start:list_model_versions end=end:list_model_versions
 ```
 
 :::
 
 :::tab[TypeScript]
 
-```typescript file=../../../examples/typescript/examples/registered_models.ts start=docs-list_model_versions-start end=docs-list_model_versions-end
+```typescript file=../../../examples/typescript/examples/registered_models.ts start=start:list_model_versions end=end:list_model_versions
 ```
 
 :::
 
 :::tab[Rust]
 
-```rust file=../../../examples/rust/src/registered_models.rs start=docs-list_model_versions-start end=docs-list_model_versions-end
+```rust file=../../../examples/rust/src/registered_models.rs start=start:list_model_versions end=end:list_model_versions
 ```
 
 :::

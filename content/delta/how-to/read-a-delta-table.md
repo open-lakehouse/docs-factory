@@ -13,16 +13,16 @@ prerequisites:
   datasets: [orders]
 snippets:
   - file: ../../../examples/python/read_delta_table.py
-    start: docs-read-delta-table-start
-    end: docs-read-delta-table-end
+    start: start:read-delta-table
+    end: end:read-delta-table
     engine: python
   - file: ../../../examples/polars/read_delta_table.py
-    start: docs-read-delta-table-start
-    end: docs-read-delta-table-end
+    start: start:read-delta-table
+    end: end:read-delta-table
     engine: polars
   - file: ../../../examples/duckdb/read_delta_table.py
-    start: docs-read-delta-table-start
-    end: docs-read-delta-table-end
+    start: start:read-delta-table
+    end: end:read-delta-table
     engine: duckdb
 status: published
 ---
@@ -43,21 +43,21 @@ docs-factory-seed orders   # prints the table path
 
 :::tab[Python (deltalake)]
 
-```python file=../../../examples/python/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
+```python file=../../../examples/python/read_delta_table.py start=start:read-delta-table end=end:read-delta-table
 ```
 
 :::
 
 :::tab[Polars]
 
-```python file=../../../examples/polars/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
+```python file=../../../examples/polars/read_delta_table.py start=start:read-delta-table end=end:read-delta-table
 ```
 
 :::
 
 :::tab[DuckDB]
 
-```python file=../../../examples/duckdb/read_delta_table.py start=docs-read-delta-table-start end=docs-read-delta-table-end
+```python file=../../../examples/duckdb/read_delta_table.py start=start:read-delta-table end=end:read-delta-table
 ```
 
 :::

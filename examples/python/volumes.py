@@ -1,14 +1,14 @@
-# docs-list_volumes-start
+# --8<-- [start:list_volumes]
 from unitycatalog_client import UnityCatalogClient
 
 client = UnityCatalogClient(base_url="http://localhost:8080")
 volumes = client.list_volumes("my_catalog", "my_schema")
 for volume in volumes:
     print(volume.name)
-# docs-list_volumes-end
+# --8<-- [end:list_volumes]
 
 
-# docs-create_volume-start
+# --8<-- [start:create_volume]
 def create_volume_example() -> None:
     from unitycatalog_client import UnityCatalogClient, VolumeType
 
@@ -23,10 +23,10 @@ def create_volume_example() -> None:
     print(f"Created: {volume.name}")
 
 
-# docs-create_volume-end
+# --8<-- [end:create_volume]
 
 
-# docs-get_volume-start
+# --8<-- [start:get_volume]
 def get_volume_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -35,10 +35,10 @@ def get_volume_example() -> None:
     print(f"Got: {volume.name}")
 
 
-# docs-get_volume-end
+# --8<-- [end:get_volume]
 
 
-# docs-update_volume-start
+# --8<-- [start:update_volume]
 def update_volume_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -49,10 +49,10 @@ def update_volume_example() -> None:
     print(f"Updated: {volume.name}")
 
 
-# docs-update_volume-end
+# --8<-- [end:update_volume]
 
 
-# docs-delete_volume-start
+# --8<-- [start:delete_volume]
 def delete_volume_example() -> None:
     from unitycatalog_client import UnityCatalogClient
 
@@ -61,4 +61,4 @@ def delete_volume_example() -> None:
     print("Deleted volume")
 
 
-# docs-delete_volume-end
+# --8<-- [end:delete_volume]

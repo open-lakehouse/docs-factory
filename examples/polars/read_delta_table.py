@@ -7,14 +7,14 @@ Python ``docs_factory_seed`` helper to materialize the table.
 
 
 def read_delta_table() -> None:
-    # docs-read-delta-table-start
+    # --8<-- [start:read-delta-table]
     import polars as pl
     from docs_factory_seed import seed_dataset
 
     path = seed_dataset("orders")
     df = pl.read_delta(path)
     print(df.head())
-    # docs-read-delta-table-end
+    # --8<-- [end:read-delta-table]
 
 
 if __name__ == "__main__":

@@ -1,12 +1,10 @@
-// Pluggable auth provider. The real Neon Auth provider (prod) and the mock
-// provider (local dev) are wired in Phase 2; Phase 0 ships an anonymous
-// provider so the app boots and GetViewer works end to end.
+// Pluggable auth provider. Prod uses Neon Auth + the reviewer allowlist; local
+// dev uses a mock provider driven by an x-dev-persona header (the dev
+// impersonation switcher) so both logged-in and logged-out perspectives are
+// testable with no GitHub OAuth. The mock provider is NEVER selectable under
+// AUTH_MODE=neon — that guard is a security invariant, not a convenience.
 import { create } from "@bufbuild/protobuf";
-import {
-  Role,
-  ViewerSchema,
-  type Viewer,
-} from "../gen/docs_factory/review/v1/messages_pb.js";
+import { Role, ViewerSchema, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
 
 export interface AuthProvider {
   /**
@@ -26,7 +24,17 @@ export function anonymousViewer(): Viewer {
   });
 }
 
-/** Phase 0 provider: everyone is anonymous. Replaced in Phase 2. */
+/** An authenticated viewer at the given role (allowlisted iff not anonymous). */
+export function viewer(login: string, role: Role): Viewer {
+  return create(ViewerSchema, {
+    authenticated: true,
+    login,
+    role,
+    isAllowlisted: role === Role.REVIEWER || role === Role.MAINTAINER,
+  });
+}
+
+/** Everyone is anonymous — the safe default when no auth mode is configured. */
 export const anonymousProvider: AuthProvider = {
   async verify() {
     return anonymousViewer();
@@ -34,18 +42,30 @@ export const anonymousProvider: AuthProvider = {
 };
 
 /**
- * Select the active provider from AUTH_MODE. Phase 0 only knows "anon"; Phase 2
- * adds "neon" (Neon Auth) and "mock" (local impersonation). The mock provider
- * must never be selectable when AUTH_MODE=neon.
+ * Select the active provider from AUTH_MODE:
+ *   - "neon" (prod)  → Neon Auth + allowlist. Mock is refused here.
+ *   - "mock" (local) → x-dev-persona impersonation. Refused unless dev.
+ *   - "anon"         → everyone anonymous (default).
+ * Async because the neon provider needs the DB-backed allowlist lookup.
  */
-export function selectProvider(): AuthProvider {
+export async function selectProvider(): Promise<AuthProvider> {
   const mode = process.env.AUTH_MODE ?? "anon";
   switch (mode) {
     case "anon":
       return anonymousProvider;
+    case "mock": {
+      // Hard guard: a mock identity must never be mintable in a prod-like run.
+      if (process.env.NODE_ENV === "production") {
+        throw new Error("AUTH_MODE=mock is forbidden when NODE_ENV=production.");
+      }
+      const { mockProvider } = await import("./mock.js");
+      return mockProvider;
+    }
+    case "neon": {
+      const { createNeonAuthProvider } = await import("./neon-auth.js");
+      return createNeonAuthProvider();
+    }
     default:
-      // Phase 2 will handle "neon" and "mock". Until then, fail loudly rather
-      // than silently granting or denying access.
-      throw new Error(`AUTH_MODE='${mode}' is not implemented yet (Phase 2).`);
+      throw new Error(`unknown AUTH_MODE='${mode}' (expected neon | mock | anon).`);
   }
 }

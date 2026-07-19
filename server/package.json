@@ -6,7 +6,8 @@
   "description": "Review & release API for docs-factory: a Hono + Connect RPC app served from a Neon Function in prod and a local Node entrypoint in dev. DB-authoritative review layer (Neon Postgres).",
   "scripts": {
     "dev": "bun run src/dev-server.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "bun test"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.9.0",
@@ -17,7 +18,8 @@
     "postgres": "^3.4.9"
   },
   "devDependencies": {
-    "typescript": "^5.8.3",
-    "@types/node": "^26.1.0"
+    "@types/bun": "^1.3.14",
+    "@types/node": "^26.1.0",
+    "typescript": "^5.8.3"
   }
 }

@@ -19,6 +19,7 @@ import {
   CreateCommentResponseSchema,
   ResolveThreadResponseSchema,
   UnresolveThreadResponseSchema,
+  GetSourceFileResponseSchema,
   TransitionReviewResponseSchema,
   ReleaseContentResponseSchema,
   ManageAllowlistRequest_Action,
@@ -30,6 +31,7 @@ import {
   type CreateCommentRequest,
   type ResolveThreadRequest,
   type UnresolveThreadRequest,
+  type GetSourceFileRequest,
   type TransitionReviewRequest,
   type ReleaseContentRequest,
   type ManageAllowlistRequest,
@@ -40,6 +42,7 @@ import {
   DraftSummarySchema,
   ContentRefSchema,
   ThreadSchema,
+  SnippetRefSchema,
   ReviewState,
 } from "../gen/docs_factory/review/v1/messages_pb.js";
 import type { AuthProvider } from "../auth/provider.js";
@@ -57,7 +60,7 @@ import {
   type ContentVersionRow,
 } from "../db-map.js";
 import { roleFromDb } from "../allowlist.js";
-import { reanchorThreads } from "../anchor.js";
+import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
 import { assembleThreads, type CommentRow, type ResolutionRow } from "../comments.js";
 
 const PUBLISHED = "published";
@@ -196,7 +199,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const area = areaToDb(req.ref.area);
         const rows = await sql<CommentRow[]>`
           select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-                 author_login, body_md, created_at, edited_at, orphaned
+                 author_login, body_md, created_at, edited_at, orphaned,
+                 selector_quote, selector_prefix, selector_suffix, selector_start,
+                 code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
           from comment
           where area = ${area} and slug = ${req.ref.slug}
           order by created_at asc
@@ -235,16 +240,30 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           order by cv.created_at desc limit 1
         `;
 
+        // A comment carries at most one fine-grained selector. Prose ranges pin
+        // within a section; code selectors pin to snippet source. Both null =
+        // a heading-level comment (the original behavior).
+        const sel = req.selector;
+        const code = req.codeSelector;
+
         const [row] = await sql<CommentRow[]>`
           insert into comment
             (area, slug, section_id, anchor_slug, anchor_fingerprint, parent_id,
-             author_user_id, author_login, body_md, orphaned)
+             author_user_id, author_login, body_md, orphaned,
+             selector_quote, selector_prefix, selector_suffix, selector_start,
+             code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash)
           values
             (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${req.anchorSlug},
              ${req.anchorFingerprint}, ${req.parentId ?? null},
-             ${viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"}, ${req.bodyMd}, false)
+             ${viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"}, ${req.bodyMd}, false,
+             ${sel?.quote ?? null}, ${sel?.prefix ?? null}, ${sel?.suffix ?? null},
+             ${sel ? sel.start : null},
+             ${code?.path ?? null}, ${code?.region ?? null}, ${code ? code.line : null},
+             ${code ? code.endLine : null}, ${code?.lineHash ?? null}, ${code?.fileHash ?? null})
           returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-                    author_login, body_md, created_at, edited_at, orphaned
+                    author_login, body_md, created_at, edited_at, orphaned,
+                    selector_quote, selector_prefix, selector_suffix, selector_start,
+                    code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
         `;
         const { threads } = assembleThreads(
           { area, slug: req.ref.slug, project: req.ref.project, bucket: req.ref.bucket },
@@ -267,6 +286,53 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         requireAllowlisted(ctx);
         return create(UnresolveThreadResponseSchema, {
           thread: await setResolved(req.threadRootId, false, null),
+        });
+      },
+
+      async getSourceFile(req: GetSourceFileRequest, ctx) {
+        // Full snippet source is a reviewer artifact: allowlist-only.
+        requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        if (!req.path) throw new ConnectError("path is required", Code.InvalidArgument);
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+
+        // The source text + snippet regions of the latest registered version.
+        const [ver] = await sql<{ id: string }[]>`
+          select id from content_version
+          where area = ${area} and slug = ${req.ref.slug}
+          order by created_at desc limit 1
+        `;
+        if (!ver) throw new ConnectError("content not found", Code.NotFound);
+
+        const [src] = await sql<{ text: string; file_hash: string }[]>`
+          select text, file_hash from content_source
+          where version_id = ${ver.id} and path = ${req.path}
+        `;
+        if (!src) throw new ConnectError("source file not found", Code.NotFound);
+
+        const snippetRows = await sql<
+          { path: string; region: string; start_line: number; end_line: number; file_hash: string }[]
+        >`
+          select path, region, start_line, end_line, file_hash
+          from content_snippet
+          where version_id = ${ver.id} and path = ${req.path}
+          order by start_line asc
+        `;
+
+        return create(GetSourceFileResponseSchema, {
+          path: req.path,
+          text: src.text,
+          fileHash: src.file_hash,
+          snippets: snippetRows.map((s) =>
+            create(SnippetRefSchema, {
+              path: s.path,
+              region: s.region,
+              startLine: s.start_line,
+              endLine: s.end_line,
+              fileHash: s.file_hash,
+            }),
+          ),
         });
       },
 
@@ -356,21 +422,77 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                   heading_text: s.headingText,
                   heading_level: s.level,
                   ordinal: s.ordinal,
+                  plain_text: s.text,
+                  char_len: s.charLen,
                 })),
               )}
           `;
         }
 
-        const orphaned = await reanchorThreads(
+        // Replace the version's resolved snippet refs + source files (used to
+        // re-anchor code comments and to back the full-source review pane).
+        await sql`delete from content_snippet where version_id = ${row.id}`;
+        if (req.snippets.length > 0) {
+          await sql`
+            insert into content_snippet
+              ${sql(
+                req.snippets.map((s) => ({
+                  version_id: row.id,
+                  path: s.path,
+                  region: s.region,
+                  start_line: s.startLine,
+                  end_line: s.endLine,
+                  file_hash: s.fileHash,
+                })),
+              )}
+          `;
+        }
+        await sql`delete from content_source where version_id = ${row.id}`;
+        if (req.sourceFiles.length > 0) {
+          await sql`
+            insert into content_source
+              ${sql(
+                req.sourceFiles.map((f) => ({
+                  version_id: row.id,
+                  path: f.path,
+                  text: f.text,
+                  file_hash: f.fileHash,
+                })),
+              )}
+          `;
+        }
+
+        // Re-anchor open threads against the new version. Prose threads match by
+        // quote/fingerprint against the section set; code threads match by
+        // region/line-hash against the snippet set. Both retain unmatched
+        // threads as orphaned (never deleted).
+        const orphanedProse = await reanchorThreads(
           sql,
           area,
           slug,
-          req.sections.map((s) => ({ anchorSlug: s.anchorSlug, fingerprint: s.fingerprint })),
+          req.sections.map((s) => ({
+            anchorSlug: s.anchorSlug,
+            fingerprint: s.fingerprint,
+            text: s.text,
+          })),
+        );
+        const orphanedCode = await reanchorCodeThreads(
+          sql,
+          area,
+          slug,
+          req.snippets.map((s) => ({
+            path: s.path,
+            region: s.region,
+            startLine: s.startLine,
+            endLine: s.endLine,
+            fileHash: s.fileHash,
+          })),
+          req.sourceFiles.map((f) => ({ path: f.path, text: f.text, fileHash: f.fileHash })),
         );
 
         return create(RegisterVersionResponseSchema, {
           version: contentVersionFromRow(row, req.ref),
-          orphanedThreadCount: orphaned,
+          orphanedThreadCount: orphanedProse + orphanedCode,
         });
       },
     },
@@ -383,7 +505,9 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
   const sql = db();
   const [root] = await sql<CommentRow[]>`
     select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-           author_login, body_md, created_at, edited_at, orphaned
+           author_login, body_md, created_at, edited_at, orphaned,
+           selector_quote, selector_prefix, selector_suffix, selector_start,
+           code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
     from comment where id = ${threadRootId} and parent_id is null
   `;
   if (!root) throw new ConnectError("thread not found", Code.NotFound);
@@ -397,7 +521,9 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
   `;
   const replies = await sql<CommentRow[]>`
     select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-           author_login, body_md, created_at, edited_at, orphaned
+           author_login, body_md, created_at, edited_at, orphaned,
+           selector_quote, selector_prefix, selector_suffix, selector_start,
+           code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
     from comment where parent_id = ${threadRootId} order by created_at asc
   `;
   const resolutions = await sql<ResolutionRow[]>`

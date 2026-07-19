@@ -86,13 +86,23 @@ message CodeSelector {
 
 // A resolved `file=` code snippet reference within a content version. Registered
 // alongside sections so the server can re-anchor code comments (against the
-// file/region/line-hash) without repo access at review time.
+// file/region/line-hash) without repo access at review time. Many refs can share
+// one `path`; the full source text is registered once per path as a SourceFile.
 message SnippetRef {
   string path = 1;
   string region = 2;
   int32 start_line = 3;
   int32 end_line = 4;
   string file_hash = 5;
+}
+
+// The full text of a snippet source file, registered once per unique `file=`
+// path in a version. Stored so the server can re-anchor code comments by
+// line-hash and serve the "open full source" review pane without repo access.
+message SourceFile {
+  string path = 1;
+  string text = 2;
+  string file_hash = 3;
 }
 
 // The reviewer-facing review/release state. Distinct from the git authoring

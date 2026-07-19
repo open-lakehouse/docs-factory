@@ -168,6 +168,9 @@ message RegisterVersionRequest {
   repeated Section sections = 7;
   // Resolved `file=` snippet references, for code comment re-anchoring.
   repeated SnippetRef snippets = 8;
+  // Full source text per unique snippet path (for line-hash re-anchoring and the
+  // full-source review pane).
+  repeated SourceFile source_files = 9;
 }
 message RegisterVersionResponse {
   ContentVersion version = 1;

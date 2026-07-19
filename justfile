@@ -71,6 +71,12 @@ db-up:
 db-down:
     cd server && docker compose down
 
+# Purge the local Postgres: drop the container AND its data volume, then bring a
+# fresh one up and re-apply migrations from scratch. Use after a schema rewrite.
+db-reset: _server-deps
+    cd server && docker compose down -v && docker compose up -d --wait
+    just db-migrate
+
 # Apply db/migrations/*.sql. Reads DATABASE_URL or the PG* parts from server/.env.
 db-migrate: _server-deps
     cd server && set -a && [ -f .env ] && . ./.env; set +a; node scripts/migrate.mjs

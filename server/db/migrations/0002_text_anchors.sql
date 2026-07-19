@@ -28,8 +28,8 @@ alter table comment
 -- comments (region present -> line-hash -> orphan) and to back the
 -- "open full source" review pane, without repo access at review time.
 create table if not exists content_snippet (
-  id         bigint generated always as identity primary key,
-  version_id bigint not null references content_version (id) on delete cascade,
+  id         uuid primary key default uuidv7(),
+  version_id uuid not null references content_version (id) on delete cascade,
   path       text not null,
   region     text not null default '',
   start_line int  not null,
@@ -48,8 +48,8 @@ create index if not exists content_snippet_path_idx
 -- code comments and the "open full source" review pane, so no repo access is
 -- needed at review time.
 create table if not exists content_source (
-  id         bigint generated always as identity primary key,
-  version_id bigint not null references content_version (id) on delete cascade,
+  id         uuid primary key default uuidv7(),
+  version_id uuid not null references content_version (id) on delete cascade,
   path       text not null,
   text       text not null,
   file_hash  text not null,

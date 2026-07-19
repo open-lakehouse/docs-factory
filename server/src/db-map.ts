@@ -27,7 +27,7 @@ export function areaFromDb(area: string): ContentArea {
 
 /** A DB content_version row shape (snake_case columns). */
 export interface ContentVersionRow {
-  id: number | string;
+  id: string; // uuid
   area: string;
   slug: string;
   project: string | null;
@@ -42,7 +42,7 @@ export interface ContentVersionRow {
 /** Build the proto ContentVersion message from a DB row + its ref. */
 export function contentVersionFromRow(row: ContentVersionRow, ref: ContentRef): ContentVersion {
   return create(ContentVersionSchema, {
-    id: String(row.id),
+    id: row.id,
     ref,
     contentHash: row.content_hash,
     gitSha: row.git_sha,

@@ -7,7 +7,8 @@
 # string is hardcoded in a tracked file.
 services:
   postgres:
-    image: postgres:17
+    # PostgreSQL 18 for the native uuidv7() function (primary keys default to it).
+    image: postgres:18
     environment:
       POSTGRES_USER: ${PGUSER:-review}
       POSTGRES_PASSWORD: ${PGPASSWORD:-review}

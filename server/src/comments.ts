@@ -5,6 +5,8 @@ import {
   CommentSchema,
   ThreadSchema,
   ContentRefSchema,
+  TextSelectorSchema,
+  CodeSelectorSchema,
   type Comment,
   type Thread,
   type ContentRef,
@@ -26,6 +28,18 @@ export interface CommentRow {
   created_at: Date;
   edited_at: Date | null;
   orphaned: boolean;
+  // Prose text-quote selector (null unless the comment pins to a range).
+  selector_quote: string | null;
+  selector_prefix: string | null;
+  selector_suffix: string | null;
+  selector_start: number | null;
+  // Code source selector (null unless the comment pins to snippet source).
+  code_path: string | null;
+  code_region: string | null;
+  code_line: number | null;
+  code_end_line: number | null;
+  code_line_hash: string | null;
+  code_file_hash: string | null;
 }
 
 export interface ResolutionRow {
@@ -47,6 +61,28 @@ function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
     createdAt: timestampFromDate(row.created_at),
     editedAt: row.edited_at ? timestampFromDate(row.edited_at) : undefined,
     orphaned: row.orphaned,
+    // At most one fine-grained selector; prose takes precedence if both were
+    // somehow set (they never are — create writes exactly one branch).
+    selector:
+      row.selector_quote != null
+        ? create(TextSelectorSchema, {
+            quote: row.selector_quote,
+            prefix: row.selector_prefix ?? "",
+            suffix: row.selector_suffix ?? "",
+            start: row.selector_start ?? 0,
+          })
+        : undefined,
+    codeSelector:
+      row.code_path != null
+        ? create(CodeSelectorSchema, {
+            path: row.code_path,
+            region: row.code_region ?? "",
+            line: row.code_line ?? 0,
+            endLine: row.code_end_line ?? row.code_line ?? 0,
+            lineHash: row.code_line_hash ?? "",
+            fileHash: row.code_file_hash ?? "",
+          })
+        : undefined,
   });
 }
 

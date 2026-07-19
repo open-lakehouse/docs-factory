@@ -16,7 +16,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file docs_factory/review/v1/messages.proto.
  */
 export const file_docs_factory_review_v1_messages: GenFile = /*@__PURE__*/
-  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQizwEKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiaQoHU2VjdGlvbhITCgthbmNob3Jfc2x1ZxgBIAEoCRITCgtmaW5nZXJwcmludBgCIAEoCRIUCgxoZWFkaW5nX3RleHQYAyABKAkSDQoFbGV2ZWwYBCABKAUSDwoHb3JkaW5hbBgFIAEoBSKBAQoGVmlld2VyEhUKDWF1dGhlbnRpY2F0ZWQYASABKAgSEgoFbG9naW4YAiABKAlIAIgBARIqCgRyb2xlGAMgASgOMhwuZG9jc19mYWN0b3J5LnJldmlldy52MS5Sb2xlEhYKDmlzX2FsbG93bGlzdGVkGAQgASgIQggKBl9sb2dpbiLIAgoHQ29tbWVudBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSEwoLYW5jaG9yX3NsdWcYAyABKAkSGgoSYW5jaG9yX2ZpbmdlcnByaW50GAQgASgJEhYKCXBhcmVudF9pZBgFIAEoCUgAiAEBEhQKDGF1dGhvcl9sb2dpbhgGIAEoCRIPCgdib2R5X21kGAcgASgJEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBARIQCghvcnBoYW5lZBgKIAEoCEIMCgpfcGFyZW50X2lkQgwKCl9lZGl0ZWRfYXQi6wEKBlRocmVhZBItCgRyb290GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50EjAKB3JlcGxpZXMYAiADKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbW1lbnQSEAoIcmVzb2x2ZWQYAyABKAgSGAoLcmVzb2x2ZWRfYnkYBCABKAlIAIgBARI0CgtyZXNvbHZlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBAUIOCgxfcmVzb2x2ZWRfYnlCDgoMX3Jlc29sdmVkX2F0IpkCCgxEcmFmdFN1bW1hcnkSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEg0KBXRpdGxlGAIgASgJEhoKEmZyb250bWF0dGVyX3N0YXR1cxgDIAEoCRI5CgxyZXZpZXdfc3RhdGUYBCABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJldmlld1N0YXRlEkMKDmxhdGVzdF92ZXJzaW9uGAUgASgLMiYuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50VmVyc2lvbkgAiAEBEhoKEm9wZW5fY29tbWVudF9jb3VudBgGIAEoBUIRCg9fbGF0ZXN0X3ZlcnNpb24ihgEKDkFsbG93bGlzdEVudHJ5EhkKDGdpdGh1Yl9sb2dpbhgBIAEoCUgAiAEBEhIKBWVtYWlsGAIgASgJSAGIAQESKgoEcm9sZRgDIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZUIPCg1fZ2l0aHViX2xvZ2luQggKBl9lbWFpbCpaCgtDb250ZW50QXJlYRIcChhDT05URU5UX0FSRUFfVU5TUEVDSUZJRUQQABIWChJDT05URU5UX0FSRUFfQkxPR1MQARIVChFDT05URU5UX0FSRUFfRE9DUxACKrgBCgtSZXZpZXdTdGF0ZRIcChhSRVZJRVdfU1RBVEVfVU5TUEVDSUZJRUQQABIVChFSRVZJRVdfU1RBVEVfTk9ORRABEhoKFlJFVklFV19TVEFURV9JTl9SRVZJRVcQAhIiCh5SRVZJRVdfU1RBVEVfQ0hBTkdFU19SRVFVRVNURUQQAxIZChVSRVZJRVdfU1RBVEVfQVBQUk9WRUQQBBIZChVSRVZJRVdfU1RBVEVfUkVMRUFTRUQQBSpYCgRSb2xlEhQKEFJPTEVfVU5TUEVDSUZJRUQQABISCg5ST0xFX0FOT05ZTU9VUxABEhEKDVJPTEVfUkVWSUVXRVIQAhITCg9ST0xFX01BSU5UQUlORVIQA2IGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQihQIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYiiQEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBSJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIoEBCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAhCCAoGX2xvZ2luIuYDCgdDb21tZW50EgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhITCgthbmNob3Jfc2x1ZxgDIAEoCRIaChJhbmNob3JfZmluZ2VycHJpbnQYBCABKAkSFgoJcGFyZW50X2lkGAUgASgJSACIAQESFAoMYXV0aG9yX2xvZ2luGAYgASgJEg8KB2JvZHlfbWQYByABKAkSLgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASMgoJZWRpdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBEhAKCG9ycGhhbmVkGAogASgIEjsKCHNlbGVjdG9yGAsgASgLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5UZXh0U2VsZWN0b3JIAogBARJACg1jb2RlX3NlbGVjdG9yGAwgASgLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db2RlU2VsZWN0b3JIA4gBAUIMCgpfcGFyZW50X2lkQgwKCl9lZGl0ZWRfYXRCCwoJX3NlbGVjdG9yQhAKDl9jb2RlX3NlbGVjdG9yIusBCgZUaHJlYWQSLQoEcm9vdBgBIAEoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIwCgdyZXBsaWVzGAIgAygLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50EhAKCHJlc29sdmVkGAMgASgIEhgKC3Jlc29sdmVkX2J5GAQgASgJSACIAQESNAoLcmVzb2x2ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAGIAQFCDgoMX3Jlc29sdmVkX2J5Qg4KDF9yZXNvbHZlZF9hdCKZAgoMRHJhZnRTdW1tYXJ5Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhINCgV0aXRsZRgCIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYAyABKAkSOQoMcmV2aWV3X3N0YXRlGAQgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZRJDCg5sYXRlc3RfdmVyc2lvbhgFIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb25IAIgBARIaChJvcGVuX2NvbW1lbnRfY291bnQYBiABKAVCEQoPX2xhdGVzdF92ZXJzaW9uIoYBCg5BbGxvd2xpc3RFbnRyeRIZCgxnaXRodWJfbG9naW4YASABKAlIAIgBARISCgVlbWFpbBgCIAEoCUgBiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGVCDwoNX2dpdGh1Yl9sb2dpbkIICgZfZW1haWwqWgoLQ29udGVudEFyZWESHAoYQ09OVEVOVF9BUkVBX1VOU1BFQ0lGSUVEEAASFgoSQ09OVEVOVF9BUkVBX0JMT0dTEAESFQoRQ09OVEVOVF9BUkVBX0RPQ1MQAiq4AQoLUmV2aWV3U3RhdGUSHAoYUkVWSUVXX1NUQVRFX1VOU1BFQ0lGSUVEEAASFQoRUkVWSUVXX1NUQVRFX05PTkUQARIaChZSRVZJRVdfU1RBVEVfSU5fUkVWSUVXEAISIgoeUkVWSUVXX1NUQVRFX0NIQU5HRVNfUkVRVUVTVEVEEAMSGQoVUkVWSUVXX1NUQVRFX0FQUFJPVkVEEAQSGQoVUkVWSUVXX1NUQVRFX1JFTEVBU0VEEAUqWAoEUm9sZRIUChBST0xFX1VOU1BFQ0lGSUVEEAASEgoOUk9MRV9BTk9OWU1PVVMQARIRCg1ST0xFX1JFVklFV0VSEAISEwoPUk9MRV9NQUlOVEFJTkVSEANiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * Stable reference to one piece of content. `project`/`bucket` are set only for
@@ -98,6 +98,13 @@ export type ContentVersion = Message<"docs_factory.review.v1.ContentVersion"> & 
    * @generated from field: google.protobuf.Timestamp created_at = 7;
    */
   createdAt?: Timestamp | undefined;
+
+  /**
+   * Resolved `file=` snippet references in this version, for code re-anchoring.
+   *
+   * @generated from field: repeated docs_factory.review.v1.SnippetRef snippets = 8;
+   */
+  snippets: SnippetRef[];
 };
 
 /**
@@ -110,7 +117,9 @@ export const ContentVersionSchema: GenMessage<ContentVersion> = /*@__PURE__*/
 /**
  * A heading-anchored section within a content version. `anchor_slug` is the
  * rehype-slug id used in the rendered DOM; `fingerprint` is the normalized
- * heading text used to re-anchor comments across versions.
+ * heading text used to re-anchor comments across versions. `text` is the
+ * normalized plain-text body of the section (heading excluded), stored so the
+ * server can re-anchor quote comments without re-fetching source.
  *
  * @generated from message docs_factory.review.v1.Section
  */
@@ -139,6 +148,16 @@ export type Section = Message<"docs_factory.review.v1.Section"> & {
    * @generated from field: int32 ordinal = 5;
    */
   ordinal: number;
+
+  /**
+   * @generated from field: string text = 6;
+   */
+  text: string;
+
+  /**
+   * @generated from field: int32 char_len = 7;
+   */
+  charLen: number;
 };
 
 /**
@@ -147,6 +166,167 @@ export type Section = Message<"docs_factory.review.v1.Section"> & {
  */
 export const SectionSchema: GenMessage<Section> = /*@__PURE__*/
   messageDesc(file_docs_factory_review_v1_messages, 2);
+
+/**
+ * A W3C-style text-quote selector: a comment can pin to a quoted range within
+ * its enclosing section instead of the whole heading. `quote` is the exact
+ * selected text (normalized); `prefix`/`suffix` are a short window of context
+ * used to disambiguate and re-anchor. `start` is the resolved char offset of
+ * the quote within the section text — advisory only, recomputed on render.
+ *
+ * @generated from message docs_factory.review.v1.TextSelector
+ */
+export type TextSelector = Message<"docs_factory.review.v1.TextSelector"> & {
+  /**
+   * @generated from field: string quote = 1;
+   */
+  quote: string;
+
+  /**
+   * @generated from field: string prefix = 2;
+   */
+  prefix: string;
+
+  /**
+   * @generated from field: string suffix = 3;
+   */
+  suffix: string;
+
+  /**
+   * @generated from field: int32 start = 4;
+   */
+  start: number;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.TextSelector.
+ * Use `create(TextSelectorSchema)` to create a new message.
+ */
+export const TextSelectorSchema: GenMessage<TextSelector> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 3);
+
+/**
+ * A source-file anchor for a comment on a `file=` code snippet. Because a
+ * snippet resolves to verbatim git-tracked source, we anchor to the file, not
+ * the rendered DOM: `path` is repo-relative, `region` is the start=/end= marker
+ * name (empty if the fence inlined the whole file), `line`/`end_line` are 1-based
+ * within the source file, `line_hash` is a hash of the anchored line(s) used to
+ * re-anchor when the line moves, and `file_hash` records the source content at
+ * comment time for drift detection.
+ *
+ * @generated from message docs_factory.review.v1.CodeSelector
+ */
+export type CodeSelector = Message<"docs_factory.review.v1.CodeSelector"> & {
+  /**
+   * @generated from field: string path = 1;
+   */
+  path: string;
+
+  /**
+   * @generated from field: string region = 2;
+   */
+  region: string;
+
+  /**
+   * @generated from field: int32 line = 3;
+   */
+  line: number;
+
+  /**
+   * @generated from field: int32 end_line = 4;
+   */
+  endLine: number;
+
+  /**
+   * @generated from field: string line_hash = 5;
+   */
+  lineHash: string;
+
+  /**
+   * @generated from field: string file_hash = 6;
+   */
+  fileHash: string;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.CodeSelector.
+ * Use `create(CodeSelectorSchema)` to create a new message.
+ */
+export const CodeSelectorSchema: GenMessage<CodeSelector> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 4);
+
+/**
+ * A resolved `file=` code snippet reference within a content version. Registered
+ * alongside sections so the server can re-anchor code comments (against the
+ * file/region/line-hash) without repo access at review time. Many refs can share
+ * one `path`; the full source text is registered once per path as a SourceFile.
+ *
+ * @generated from message docs_factory.review.v1.SnippetRef
+ */
+export type SnippetRef = Message<"docs_factory.review.v1.SnippetRef"> & {
+  /**
+   * @generated from field: string path = 1;
+   */
+  path: string;
+
+  /**
+   * @generated from field: string region = 2;
+   */
+  region: string;
+
+  /**
+   * @generated from field: int32 start_line = 3;
+   */
+  startLine: number;
+
+  /**
+   * @generated from field: int32 end_line = 4;
+   */
+  endLine: number;
+
+  /**
+   * @generated from field: string file_hash = 5;
+   */
+  fileHash: string;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.SnippetRef.
+ * Use `create(SnippetRefSchema)` to create a new message.
+ */
+export const SnippetRefSchema: GenMessage<SnippetRef> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 5);
+
+/**
+ * The full text of a snippet source file, registered once per unique `file=`
+ * path in a version. Stored so the server can re-anchor code comments by
+ * line-hash and serve the "open full source" review pane without repo access.
+ *
+ * @generated from message docs_factory.review.v1.SourceFile
+ */
+export type SourceFile = Message<"docs_factory.review.v1.SourceFile"> & {
+  /**
+   * @generated from field: string path = 1;
+   */
+  path: string;
+
+  /**
+   * @generated from field: string text = 2;
+   */
+  text: string;
+
+  /**
+   * @generated from field: string file_hash = 3;
+   */
+  fileHash: string;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.SourceFile.
+ * Use `create(SourceFileSchema)` to create a new message.
+ */
+export const SourceFileSchema: GenMessage<SourceFile> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 6);
 
 /**
  * The current viewer, resolved from the auth provider (Neon Auth in prod, the
@@ -181,7 +361,7 @@ export type Viewer = Message<"docs_factory.review.v1.Viewer"> & {
  * Use `create(ViewerSchema)` to create a new message.
  */
 export const ViewerSchema: GenMessage<Viewer> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 3);
+  messageDesc(file_docs_factory_review_v1_messages, 7);
 
 /**
  * One comment. Thread roots have no `parent_id`. When the section a comment was
@@ -240,6 +420,20 @@ export type Comment = Message<"docs_factory.review.v1.Comment"> & {
    * @generated from field: bool orphaned = 10;
    */
   orphaned: boolean;
+
+  /**
+   * At most one fine-grained selector. `selector` pins to a quoted prose range
+   * within the section; `code_selector` pins to a line/region in a snippet's
+   * source file. Absent for a plain heading-level comment (back-compatible).
+   *
+   * @generated from field: optional docs_factory.review.v1.TextSelector selector = 11;
+   */
+  selector?: TextSelector | undefined;
+
+  /**
+   * @generated from field: optional docs_factory.review.v1.CodeSelector code_selector = 12;
+   */
+  codeSelector?: CodeSelector | undefined;
 };
 
 /**
@@ -247,7 +441,7 @@ export type Comment = Message<"docs_factory.review.v1.Comment"> & {
  * Use `create(CommentSchema)` to create a new message.
  */
 export const CommentSchema: GenMessage<Comment> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 4);
+  messageDesc(file_docs_factory_review_v1_messages, 8);
 
 /**
  * A thread root plus its replies and resolution state.
@@ -286,7 +480,7 @@ export type Thread = Message<"docs_factory.review.v1.Thread"> & {
  * Use `create(ThreadSchema)` to create a new message.
  */
 export const ThreadSchema: GenMessage<Thread> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 5);
+  messageDesc(file_docs_factory_review_v1_messages, 9);
 
 /**
  * A summary row for the drafts list.
@@ -330,7 +524,7 @@ export type DraftSummary = Message<"docs_factory.review.v1.DraftSummary"> & {
  * Use `create(DraftSummarySchema)` to create a new message.
  */
 export const DraftSummarySchema: GenMessage<DraftSummary> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 6);
+  messageDesc(file_docs_factory_review_v1_messages, 10);
 
 /**
  * One allowlist entry.
@@ -359,7 +553,7 @@ export type AllowlistEntry = Message<"docs_factory.review.v1.AllowlistEntry"> & 
  * Use `create(AllowlistEntrySchema)` to create a new message.
  */
 export const AllowlistEntrySchema: GenMessage<AllowlistEntry> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 7);
+  messageDesc(file_docs_factory_review_v1_messages, 11);
 
 /**
  * Which content tree a piece of content lives in.

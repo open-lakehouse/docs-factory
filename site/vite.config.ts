@@ -28,6 +28,9 @@ import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
 // attributes the <Pre> MDX override reads: data-filename (from title="…") and
 // data-lang (the resolved language), applied to Shiki's OUTPUT <pre>.
 const TITLE_RE = /\btitle="([^"]*)"/;
+const SRCPATH_RE = /\bsrcpath="([^"]*)"/;
+const SRCREGION_RE = /\bsrcregion="([^"]*)"/;
+const SRCSTART_RE = /\bsrcstart="([^"]*)"/;
 const codeChromeTransformer: ShikiTransformer = {
   name: "docs-factory:code-chrome",
   pre(node) {
@@ -35,6 +38,15 @@ const codeChromeTransformer: ShikiTransformer = {
     const title = TITLE_RE.exec(raw)?.[1];
     if (title) node.properties["data-filename"] = title;
     if (this.options.lang) node.properties["data-lang"] = this.options.lang;
+    // Source anchoring for review: the repo-relative path, region, and the
+    // 1-based source line the inlined snippet starts at (remark-code-snippets
+    // emits these). The <Pre> override reads them to anchor code comments.
+    const srcPath = SRCPATH_RE.exec(raw)?.[1];
+    if (srcPath) node.properties["data-src-path"] = srcPath;
+    const srcRegion = SRCREGION_RE.exec(raw)?.[1];
+    if (srcRegion) node.properties["data-src-region"] = srcRegion;
+    const srcStart = SRCSTART_RE.exec(raw)?.[1];
+    if (srcStart) node.properties["data-src-start"] = srcStart;
   },
 };
 

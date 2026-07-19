@@ -25,11 +25,31 @@
  * build, not silently render an empty block.
  */
 import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { dirname, resolve, relative } from "node:path";
 
 const FILE_RE = /\bfile=(\S+)/;
 const START_RE = /\bstart=(\S+)/;
 const END_RE = /\bend=(\S+)/;
+
+// Vite runs the site build from `site/`; the repo root is its parent. Used to
+// emit a repo-relative source path on each resolved fence so the rendered block
+// can be anchored back to its git-tracked source for review (matches the path
+// keys the version manifest registers).
+const REPO_ROOT = resolve(process.cwd(), "..");
+
+/** 1-based line just after the unique `marker` line, or -1 if not unique. */
+function lineAfterMarker(text, marker) {
+  const lines = text.split("\n");
+  let idx = -1;
+  let n = 0;
+  for (let i = 0; i < lines.length; i++) {
+    if (lines[i].includes(marker)) {
+      if (n === 0) idx = i;
+      n++;
+    }
+  }
+  return n === 1 ? idx + 2 : -1;
+}
 
 /** Count lines containing `marker` as a substring. */
 function countMarker(text, marker) {
@@ -107,6 +127,15 @@ export default function remarkCodeSnippets() {
             const base = relFile.split("/").pop();
             rest = `${rest} title="${base}"`.trim();
           }
+          // Emit the repo-relative source path (+ region + first inlined line)
+          // so the rendered block can be anchored to its source for review.
+          // `codeChromeTransformer` turns these into data-* on the <pre>.
+          const srcPath = relative(REPO_ROOT, src);
+          const startLine =
+            startM && endM ? lineAfterMarker(srcText.replace(/\r\n/g, "\n"), startM[1]) : 1;
+          const region = startM && endM ? `${startM[1]}..${endM[1]}` : "";
+          rest = `${rest} srcpath="${srcPath}" srcstart="${startLine}"`.trim();
+          if (region) rest = `${rest} srcregion="${region}"`;
           node.meta = rest || null;
         }
       }

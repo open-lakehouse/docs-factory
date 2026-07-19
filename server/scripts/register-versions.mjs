@@ -49,6 +49,20 @@ for (const e of manifest) {
       headingText: h.text,
       level: h.level,
       ordinal: h.order,
+      text: h.bodyText ?? "",
+      charLen: h.charLen ?? 0,
+    })),
+    snippets: (e.snippets ?? []).map((s) => ({
+      path: s.path,
+      region: s.region,
+      startLine: s.startLine,
+      endLine: s.endLine,
+      fileHash: s.fileHash,
+    })),
+    sourceFiles: (e.sources ?? []).map((f) => ({
+      path: f.path,
+      text: f.text,
+      fileHash: f.fileHash,
     })),
   });
   ok++;

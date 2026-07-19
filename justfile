@@ -40,6 +40,30 @@ _emit-deps:
         (cd emit && bun install)
     fi
 
+# --- Review API (proto → Connect RPC; backend on Neon Functions) -----------
+
+# Regenerate TypeScript from proto/ into site/src/gen (client + connect-query
+# hooks) and server/src/gen (message/service types). Uses buf remote plugins.
+buf-gen:
+    cd proto && buf generate
+
+# Lint + breaking-change check the review protos (CI gate).
+buf-check:
+    cd proto && buf lint
+
+# Run the review backend locally (same Hono+Connect app the Neon Function runs),
+# with the mock auth provider so no GitHub OAuth is needed. See server/README.md.
+server-dev: _server-deps
+    cd server && AUTH_MODE=mock bun run dev
+
+_server-deps:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ ! -d server/node_modules ]; then
+        echo "Installing server dependencies…"
+        (cd server && bun install)
+    fi
+
 # --- Content & examples ----------------------------------------------------
 
 # Install every uv workspace package.

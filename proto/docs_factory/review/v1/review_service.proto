@@ -3,6 +3,7 @@ syntax = "proto3";
 package docs_factory.review.v1;
 
 import "docs_factory/review/v1/messages.proto";
+import "google/protobuf/timestamp.proto";
 
 // The review & release API, served over Connect from the Neon Function and
 // called from the React SPA (connect-web + connect-query).
@@ -32,6 +33,10 @@ service ReviewService {
   rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
   rpc ResolveThread(ResolveThreadRequest) returns (ResolveThreadResponse);
   rpc UnresolveThread(UnresolveThreadRequest) returns (UnresolveThreadResponse);
+
+  // Mark a thread read by the current viewer up to `seen_at` (defaults to now).
+  // Clears the thread's unread indicator for that viewer.
+  rpc MarkThreadSeen(MarkThreadSeenRequest) returns (MarkThreadSeenResponse);
 
   // Fetch the full source text of a registered `file=` snippet, for the
   // "open full source" code-review pane (allowlist-gated). Returns the whole
@@ -126,6 +131,13 @@ message UnresolveThreadRequest {
 message UnresolveThreadResponse {
   Thread thread = 1;
 }
+
+message MarkThreadSeenRequest {
+  string thread_root_id = 1;
+  // Watermark; defaults to the server's now() when unset.
+  optional google.protobuf.Timestamp seen_at = 2;
+}
+message MarkThreadSeenResponse {}
 
 message TransitionReviewRequest {
   ContentRef ref = 1;

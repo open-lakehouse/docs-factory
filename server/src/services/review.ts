@@ -9,6 +9,7 @@
 // Auth: an interceptor resolves the viewer once per request; RPCs read it via
 // getViewer(ctx) and enforce with requireAllowlisted / requireMaintainer.
 import { create } from "@bufbuild/protobuf";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type ConnectRouter } from "@connectrpc/connect";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
@@ -19,6 +20,7 @@ import {
   CreateCommentResponseSchema,
   ResolveThreadResponseSchema,
   UnresolveThreadResponseSchema,
+  MarkThreadSeenResponseSchema,
   GetSourceFileResponseSchema,
   TransitionReviewResponseSchema,
   ReleaseContentResponseSchema,
@@ -31,6 +33,7 @@ import {
   type CreateCommentRequest,
   type ResolveThreadRequest,
   type UnresolveThreadRequest,
+  type MarkThreadSeenRequest,
   type GetSourceFileRequest,
   type TransitionReviewRequest,
   type ReleaseContentRequest,
@@ -196,10 +199,11 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       async listComments(req: ListCommentsRequest, ctx) {
         // Comments are a reviewer artifact: allowlist-only, for all content.
-        requireAllowlisted(ctx);
+        const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         const sql = db();
         const area = areaToDb(req.ref.area);
+        const viewerId = viewer.userId ?? viewer.login;
         const rows = await sql<CommentRow[]>`
           select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
                  c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
@@ -219,10 +223,20 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               from comment_resolution where thread_root_id in ${sql(rootIds)}
             `
           : [];
+        // Per-thread read watermark for this viewer, to compute has_unread.
+        const seen =
+          viewerId && rootIds.length
+            ? await sql<{ thread_root_id: string; seen_at: Date }[]>`
+                select thread_root_id, seen_at from comment_seen
+                where viewer_id = ${viewerId} and thread_root_id in ${sql(rootIds)}
+              `
+            : [];
+        const seenByRoot = new Map(seen.map((s) => [s.thread_root_id, s.seen_at]));
         const { threads, orphaned } = assembleThreads(
           { area, slug: req.ref.slug, project: req.ref.project, bucket: req.ref.bucket },
           rows,
           resolutions,
+          seenByRoot,
         );
         return create(ListCommentsResponseSchema, { threads, orphanedThreads: orphaned });
       },
@@ -324,6 +338,26 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         return create(UnresolveThreadResponseSchema, {
           thread: await setResolved(req.threadRootId, false, null),
         });
+      },
+
+      async markThreadSeen(req: MarkThreadSeenRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.threadRootId) {
+          throw new ConnectError("thread_root_id is required", Code.InvalidArgument);
+        }
+        const viewerId = viewer.userId ?? viewer.login;
+        if (!viewerId) throw new ConnectError("no viewer identity", Code.Unauthenticated);
+        const sql = db();
+        // Default the watermark to server now(); a client-supplied seen_at lets
+        // it mark "read as of" a specific moment (e.g. the last render).
+        const seenAt = req.seenAt ? timestampDate(req.seenAt) : null;
+        await sql`
+          insert into comment_seen (viewer_id, thread_root_id, seen_at)
+          values (${viewerId}, ${req.threadRootId}, ${seenAt ?? sql`now()`})
+          on conflict (viewer_id, thread_root_id)
+            do update set seen_at = excluded.seen_at
+        `;
+        return create(MarkThreadSeenResponseSchema, {});
       },
 
       async getSourceFile(req: GetSourceFileRequest, ctx) {

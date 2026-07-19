@@ -177,6 +177,12 @@ message Thread {
   bool resolved = 3;
   optional string resolved_by = 4;
   optional google.protobuf.Timestamp resolved_at = 5;
+  // Read state for the current viewer: unread when any comment in the thread
+  // was created after the viewer's seen-watermark (or the viewer never opened
+  // it). unread_count is how many such comments there are. Both are false/0 for
+  // an anonymous viewer (no read-state is kept).
+  bool has_unread = 6;
+  int32 unread_count = 7;
 }
 
 // A summary row for the drafts list.

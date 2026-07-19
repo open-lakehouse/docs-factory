@@ -15,9 +15,17 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useQuery, createConnectQueryKey, useTransport } from "@connectrpc/connect-query";
+import {
+  useQuery,
+  useMutation,
+  createConnectQueryKey,
+  useTransport,
+} from "@connectrpc/connect-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { listComments } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import {
+  listComments,
+  markThreadSeen,
+} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef, Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import {
@@ -118,10 +126,37 @@ export function ReviewProvider({
     return () => window.removeEventListener(REVIEW_DISPLAY_MODE_EVENT, handler);
   }, []);
 
+  const seen = useMutation(markThreadSeen);
+  const listKey = useMemo(
+    () =>
+      createConnectQueryKey({
+        schema: listComments,
+        transport,
+        input: { ref: contentRef },
+        cardinality: "finite",
+      }),
+    [transport, contentRef],
+  );
+
   const selectThread = useCallback(
-    (id: string | null) =>
-      setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 })),
-    [],
+    (id: string | null) => {
+      setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 }));
+      if (id === null || !isAllowlisted) return;
+      // Mark read on open. Optimistically clear the thread's unread badge in the
+      // cached list so the dot disappears immediately; the next poll confirms.
+      queryClient.setQueryData(listKey, (old: typeof data | undefined) => {
+        if (!old) return old;
+        const clear = (t: Thread): Thread =>
+          t.root?.id === id ? { ...t, hasUnread: false, unreadCount: 0 } : t;
+        return {
+          ...old,
+          threads: old.threads.map(clear),
+          orphanedThreads: old.orphanedThreads.map(clear),
+        };
+      });
+      seen.mutate({ threadRootId: id });
+    },
+    [isAllowlisted, queryClient, listKey, seen, data],
   );
   const hoverThread = useCallback((id: string | null) => setHoveredThreadId(id), []);
   // Invalidate the shared listComments cache entry so every mounted consumer

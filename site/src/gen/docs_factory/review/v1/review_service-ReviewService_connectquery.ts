@@ -52,6 +52,14 @@ export const resolveThread = ReviewService.method.resolveThread;
 export const unresolveThread = ReviewService.method.unresolveThread;
 
 /**
+ * Mark a thread read by the current viewer up to `seen_at` (defaults to now).
+ * Clears the thread's unread indicator for that viewer.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.MarkThreadSeen
+ */
+export const markThreadSeen = ReviewService.method.markThreadSeen;
+
+/**
  * Fetch the full source text of a registered `file=` snippet, for the
  * "open full source" code-review pane (allowlist-gated). Returns the whole
  * file plus its resolved snippet regions so reviewers can comment on any line.

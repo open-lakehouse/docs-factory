@@ -97,3 +97,40 @@ describe("assembleThreads nesting", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 });
+
+describe("assembleThreads unread watermark", () => {
+  const at = (iso: string) => new Date(iso);
+  // A root + two replies at increasing times.
+  const tree: CommentRow[] = [
+    row("r", null, { created_at: at("2026-01-01T00:00:00Z") }),
+    row("a", "r", { created_at: at("2026-01-02T00:00:00Z") }),
+    row("a1", "a", { created_at: at("2026-01-03T00:00:00Z") }),
+  ];
+
+  test("no seenByRoot map → threads carry no unread state", () => {
+    const { threads } = assembleThreads(ref, tree, []);
+    expect(threads[0]!.hasUnread).toBe(false);
+    expect(threads[0]!.unreadCount).toBe(0);
+  });
+
+  test("root absent from the map → whole thread is unread", () => {
+    const { threads } = assembleThreads(ref, tree, [], new Map());
+    expect(threads[0]!.hasUnread).toBe(true);
+    expect(threads[0]!.unreadCount).toBe(3);
+  });
+
+  test("watermark counts only comments created after seen_at", () => {
+    const seen = new Map([["r", at("2026-01-02T00:00:00Z")]]);
+    const { threads } = assembleThreads(ref, tree, [], seen);
+    // r (before) and a (equal, not strictly after) are read; only a1 is unread.
+    expect(threads[0]!.unreadCount).toBe(1);
+    expect(threads[0]!.hasUnread).toBe(true);
+  });
+
+  test("watermark at/after the newest comment → fully read", () => {
+    const seen = new Map([["r", at("2026-01-03T00:00:00Z")]]);
+    const { threads } = assembleThreads(ref, tree, [], seen);
+    expect(threads[0]!.hasUnread).toBe(false);
+    expect(threads[0]!.unreadCount).toBe(0);
+  });
+});

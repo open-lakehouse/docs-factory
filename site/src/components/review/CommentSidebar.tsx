@@ -1,27 +1,16 @@
-// Per-section review comments for a rendered blog/doc page. Only mounts for
-// allowlisted viewers. Discovers headings from the article the same way
-// OnThisPage does (so anchors match the DOM + the version manifest), fetches
-// threads via connect-query (useQuery(listComments)), and lets reviewers post,
-// reply, and resolve — the in-app replacement for Google-Docs comments.
-//
-// Comments can be heading-level (post from a section's box) OR fine-grained: a
-// prose text-quote or a code source anchor captured by the SelectionLayer. A
-// fine-grained thread shows the quoted snippet and, for prose, highlights the
-// range in the article. Threads whose section/quote/line was removed show in a
-// separate "Orphaned" group, never lost.
+// Review comments rail for a rendered blog/doc page. Only mounts for allowlisted
+// viewers in rail display mode. Reads threads + selection from ReviewProvider.
 import { useEffect, useState, type RefObject } from "react";
-import { useQuery, useMutation } from "@connectrpc/connect-query";
-import {
-  listComments,
-  createComment,
-  resolveThread,
-  unresolveThread,
-} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import type { ContentRef, Thread } from "../../gen/docs_factory/review/v1/messages_pb";
+import { useMutation } from "@connectrpc/connect-query";
+import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { fingerprint } from "../../lib/content-ref";
 import { useAuth } from "../../lib/auth-context";
-import { useSelectionState, type PendingAnchor } from "./selection-context";
-import QuoteHighlights from "./QuoteHighlights";
+import { useSelectionState } from "./selection-context";
+import { useReview } from "./review-context";
+import PendingComposer from "./PendingComposer";
+import ReviewComposer from "./ReviewComposer";
+import ThreadCard from "./ThreadCard";
 
 interface Heading {
   id: string;
@@ -29,15 +18,26 @@ interface Heading {
 }
 
 export default function CommentSidebar({
-  contentRef,
   articleRef,
 }: {
-  contentRef: ContentRef;
   articleRef: RefObject<HTMLElement | null>;
 }) {
   const { isAllowlisted } = useAuth();
-  const [headings, setHeadings] = useState<Heading[]>([]);
+  const {
+    contentRef,
+    threads,
+    orphanedThreads: orphaned,
+    openCount,
+    refetch,
+    activeThreadId,
+    selectedThreadId,
+    selectNonce,
+    hoverThread,
+    selectThread,
+    displayMode,
+  } = useReview();
   const { pending, setPending } = useSelectionState();
+  const [headings, setHeadings] = useState<Heading[]>([]);
 
   useEffect(() => {
     const article = articleRef.current;
@@ -49,150 +49,87 @@ export default function CommentSidebar({
     setHeadings(found);
   }, [articleRef, isAllowlisted]);
 
-  const { data, refetch } = useQuery(listComments, { ref: contentRef }, { enabled: isAllowlisted });
+  if (!isAllowlisted || !contentRef || displayMode !== "rail") return null;
 
-  if (!isAllowlisted) return null;
+  const headingText = new Map(headings.map((h) => [h.id, h.text]));
+  const sectionLabelFor = (slug?: string) => (slug && headingText.get(slug)) || "";
 
-  const threadsByAnchor = new Map<string, Thread[]>();
-  for (const t of data?.threads ?? []) {
-    const a = t.root?.anchorSlug ?? "";
-    (threadsByAnchor.get(a) ?? threadsByAnchor.set(a, []).get(a)!).push(t);
-  }
-  const orphaned = data?.orphanedThreads ?? [];
+  const renderCard = (t: (typeof threads)[number]) => (
+    <ThreadCard
+      key={t.root?.id}
+      thread={t}
+      articleRef={articleRef}
+      sectionLabel={sectionLabelFor(t.root?.anchorSlug)}
+      active={activeThreadId === t.root?.id}
+      selected={selectedThreadId === t.root?.id}
+      selectNonce={selectNonce}
+      onHover={() => hoverThread(t.root?.id ?? null)}
+      onLeave={() => hoverThread(null)}
+      onSelect={() => selectThread(t.root?.id ?? null)}
+      onChange={refetch}
+    />
+  );
+
+  const hasAny = threads.length > 0 || orphaned.length > 0;
+  const showRailPending = pending && (pending.kind === "prose" || pending.kind === "code");
 
   return (
     <aside className="review-comments" aria-label="Review comments">
-      <p className="toc-title">Review comments</p>
-      <QuoteHighlights articleRef={articleRef} threads={data?.threads ?? []} />
-      {pending && (
+      <div className="review-comments-head">
+        <p className="review-comments-title">Review comments</p>
+        {headings.length > 0 && (
+          <AddSectionComment contentRef={contentRef} headings={headings} onDone={refetch} />
+        )}
+      </div>
+      {openCount > 0 && (
+        <p className="review-comments-summary">
+          {openCount} open {openCount === 1 ? "thread" : "threads"}
+        </p>
+      )}
+      {showRailPending && (
         <PendingComposer
           contentRef={contentRef}
           pending={pending}
           onDone={() => {
             setPending(null);
-            void refetch();
+            refetch();
           }}
           onCancel={() => setPending(null)}
         />
       )}
-      {headings.map((h) => (
-        <SectionThreads
-          key={h.id}
-          heading={h}
-          contentRef={contentRef}
-          threads={threadsByAnchor.get(h.id) ?? []}
-          onChange={refetch}
-        />
-      ))}
+      {!hasAny && !pending && (
+        <p className="review-empty">
+          No comments yet. Select text or code in the article to start a thread.
+        </p>
+      )}
+      <div className="review-thread-list">{threads.map(renderCard)}</div>
       {orphaned.length > 0 && (
         <div className="review-orphaned">
-          <p className="toc-title">On removed/changed sections</p>
-          {orphaned.map((t) => (
-            <ThreadView key={t.root?.id} thread={t} onChange={refetch} />
-          ))}
+          <p className="review-comments-title">On removed/changed sections</p>
+          <div className="review-thread-list">{orphaned.map(renderCard)}</div>
         </div>
       )}
     </aside>
   );
 }
 
-/** Composer shown when the SelectionLayer captured a prose/code selection. */
-function PendingComposer({
+function AddSectionComment({
   contentRef,
-  pending,
+  headings,
   onDone,
-  onCancel,
 }: {
   contentRef: ContentRef;
-  pending: PendingAnchor;
+  headings: Heading[];
   onDone: () => void;
-  onCancel: () => void;
 }) {
   const create = useMutation(createComment);
-  const [draft, setDraft] = useState("");
-
-  async function post() {
-    if (!draft.trim()) return;
-    if (pending.kind === "prose") {
-      await create.mutateAsync({
-        ref: contentRef,
-        anchorSlug: pending.anchorSlug,
-        anchorFingerprint: fingerprint(pending.headingText),
-        bodyMd: draft,
-        selector: {
-          quote: pending.selector.quote,
-          prefix: pending.selector.prefix,
-          suffix: pending.selector.suffix,
-          start: pending.selector.start,
-        },
-      });
-    } else {
-      await create.mutateAsync({
-        ref: contentRef,
-        anchorSlug: pending.anchorSlug,
-        anchorFingerprint: fingerprint(pending.headingText),
-        bodyMd: draft,
-        codeSelector: {
-          path: pending.path,
-          region: pending.region,
-          line: pending.line,
-          endLine: pending.endLine,
-          lineHash: pending.lineHash,
-          fileHash: pending.fileHash,
-        },
-      });
-    }
-    setDraft("");
-    onDone();
-  }
-
-  const quote = pending.kind === "prose" ? pending.selector.quote : pending.quote;
-  const label = pending.kind === "code" ? `${pending.path}:${pending.line}` : pending.headingText;
-
-  return (
-    <div className="review-composer">
-      <div className="review-composer-target">
-        <span className="review-composer-label">{label || "New comment"}</span>
-        <blockquote className={`review-quote${pending.kind === "code" ? " code" : ""}`}>
-          {quote}
-        </blockquote>
-      </div>
-      <textarea
-        autoFocus
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        placeholder="Comment on this selection…"
-        rows={3}
-      />
-      <div className="review-composer-actions">
-        <button onClick={post} disabled={create.isPending || !draft.trim()}>
-          Comment
-        </button>
-        <button className="secondary" onClick={onCancel}>
-          Cancel
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function SectionThreads({
-  heading,
-  contentRef,
-  threads,
-  onChange,
-}: {
-  heading: Heading;
-  contentRef: ContentRef;
-  threads: Thread[];
-  onChange: () => void;
-}) {
   const [open, setOpen] = useState(false);
-  const create = useMutation(createComment);
+  const [slug, setSlug] = useState(headings[0]?.id ?? "");
   const [draft, setDraft] = useState("");
+  const heading = headings.find((h) => h.id === slug) ?? headings[0];
 
   async function post() {
-    if (!draft.trim()) return;
+    if (!draft.trim() || !heading) return;
     await create.mutateAsync({
       ref: contentRef,
       anchorSlug: heading.id,
@@ -200,115 +137,52 @@ function SectionThreads({
       bodyMd: draft,
     });
     setDraft("");
-    onChange();
+    setOpen(false);
+    onDone();
   }
 
-  return (
-    <div className="review-section">
-      <button className="review-section-head" onClick={() => setOpen((o) => !o)}>
-        <a href={`#${heading.id}`} onClick={(e) => e.stopPropagation()}>
-          {heading.text}
-        </a>
-        {threads.length > 0 && <span className="review-count">{threads.length}</span>}
+  if (!open) {
+    return (
+      <button
+        type="button"
+        className="review-btn ghost review-add-section"
+        onClick={() => setOpen(true)}
+      >
+        + Section
       </button>
-      {open && (
-        <div className="review-section-body">
-          {threads.map((t) => (
-            <ThreadView key={t.root?.id} thread={t} onChange={onChange} />
+    );
+  }
+
+  return (
+    <div className="review-composer pending review-add-section-form">
+      <div className="review-composer-target">
+        <span className="review-composer-label">Comment on section</span>
+        <select
+          className="review-select"
+          value={heading?.id ?? ""}
+          onChange={(e) => setSlug(e.target.value)}
+        >
+          {headings.map((h) => (
+            <option key={h.id} value={h.id}>
+              {h.text}
+            </option>
           ))}
-          <textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder="Comment on this section…"
-            rows={2}
-          />
-          <button onClick={post} disabled={create.isPending || !draft.trim()}>
-            Comment
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ThreadView({ thread, onChange }: { thread: Thread; onChange: () => void }) {
-  const contentRef = thread.root?.ref;
-  const reply = useMutation(createComment);
-  const resolve = useMutation(resolveThread);
-  const unresolve = useMutation(unresolveThread);
-  const [text, setText] = useState("");
-
-  async function postReply() {
-    if (!text.trim() || !contentRef || !thread.root) return;
-    await reply.mutateAsync({
-      ref: contentRef,
-      anchorSlug: thread.root.anchorSlug,
-      anchorFingerprint: thread.root.anchorFingerprint,
-      parentId: thread.root.id,
-      bodyMd: text,
-    });
-    setText("");
-    onChange();
-  }
-
-  async function toggleResolved() {
-    const id = thread.root?.id;
-    if (!id) return;
-    if (thread.resolved) await unresolve.mutateAsync({ threadRootId: id });
-    else await resolve.mutateAsync({ threadRootId: id });
-    onChange();
-  }
-
-  // A fine-grained thread shows its target above the comment: the quoted prose
-  // for a text selector, or the source location for a code selector.
-  const sel = thread.root?.selector;
-  const code = thread.root?.codeSelector;
-  const codeLabel = code
-    ? `${code.path}:${code.line}${code.endLine > code.line ? `-${code.endLine}` : ""}`
-    : undefined;
-
-  return (
-    <div className={`review-thread${thread.resolved ? " resolved" : ""}`}>
-      {sel?.quote && <blockquote className="review-quote">{sel.quote}</blockquote>}
-      {code && (
-        <blockquote className="review-quote code">
-          <span className="review-quote-src">{codeLabel}</span>
-        </blockquote>
-      )}
-      <Comment login={thread.root?.authorLogin} body={thread.root?.bodyMd} />
-      {thread.replies.map((r) => (
-        <Comment key={r.id} login={r.authorLogin} body={r.bodyMd} reply />
-      ))}
-      <div className="review-thread-actions">
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="Reply…"
-        />
-        <button onClick={postReply} disabled={reply.isPending || !text.trim()}>
-          Reply
-        </button>
-        <button onClick={toggleResolved}>
-          {thread.resolved ? "Reopen" : "Resolve"}
-        </button>
+        </select>
       </div>
-    </div>
-  );
-}
-
-function Comment({
-  login,
-  body,
-  reply,
-}: {
-  login?: string;
-  body?: string;
-  reply?: boolean;
-}) {
-  return (
-    <div className={`review-comment${reply ? " reply" : ""}`}>
-      <span className="review-author">{login}</span>
-      <span className="review-body">{body}</span>
+      <ReviewComposer
+        value={draft}
+        onChange={setDraft}
+        onSubmit={() => void post()}
+        onCancel={() => {
+          setOpen(false);
+          setDraft("");
+        }}
+        placeholder="Comment on this section…"
+        rows={3}
+        submitting={create.isPending}
+        autoFocus
+        compact
+      />
     </div>
   );
 }

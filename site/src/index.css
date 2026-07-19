@@ -223,6 +223,21 @@ body {
 .prose h1 { font-size: 2.1rem; font-weight: 500; margin: 0 0 1rem; }
 .prose h2 { font-size: 1.6rem; font-weight: 500; margin: 2.75rem 0 1.25rem; }
 .prose h3 { font-size: 1.25rem; font-weight: 500; margin: 2rem 0 1rem; }
+/* Heading autolinks (rehype-autolink-headings wrap) — de-emphasize link chrome. */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a,
+.prose h4 a {
+  color: inherit;
+  text-decoration: none;
+}
+.prose h1 a:hover,
+.prose h2 a:hover,
+.prose h3 a:hover,
+.prose h4 a:hover {
+  color: inherit;
+  text-decoration: none;
+}
 .prose strong { color: var(--heading); font-weight: 600; }
 .prose a { color: var(--accent); text-decoration: none; }
 .prose a:hover { color: var(--accent-hover); text-decoration: underline; }
@@ -377,6 +392,9 @@ body {
   font-size: 0.9rem;
   line-height: 1.6;
   font-family: var(--font-mono);
+  /* Container so the inline-review row can size to the VISIBLE code width
+     (100cqi) instead of the grid track set by the widest code line. */
+  container-type: inline-size;
 }
 .prose .cb-pre code {
   background: none;
@@ -384,6 +402,93 @@ body {
   color: inherit;
   font-size: inherit;
   font-family: inherit;
+  /* Grid layout makes each `.line` a full-width row (so review highlights span
+     the whole code box) and drops the whitespace-only "\n" nodes between lines,
+     so lines can be block-level rows without doubling the line breaks. */
+  display: grid;
+}
+
+/* Review: commented source lines. The <Pre> code box tags its own
+   <span class="line"> children (from review context) so the highlight lives in
+   the native code surface rather than an overlay. The parent <code> is a grid,
+   so each line is a full-width row; negative margins extend the tint under the
+   <pre> padding to the code box edges, like a diff/highlight line. */
+.prose .cb-pre .line.cb-line-commented {
+  margin: 0 -1.1rem;
+  padding: 0 1.1rem;
+  background: color-mix(in oklab, gold 12%, transparent);
+  box-shadow: inset 3px 0 0 color-mix(in oklab, gold 55%, transparent);
+  cursor: pointer;
+}
+.prose .cb-pre .line.cb-line-commented:hover {
+  background: color-mix(in oklab, gold 20%, transparent);
+}
+.prose .cb-pre .line.cb-line-commented.cb-line-commented-focus {
+  background: color-mix(in oklab, gold 30%, transparent);
+  box-shadow: inset 3px 0 0 gold;
+}
+
+/* Inline review: conversation row inside the code box grid. Full-bleed to the
+   code box edges with just a top border. Width is bounded to the VISIBLE code
+   width (100cqi + the pre's 1.1rem side padding) and pinned left so it stays
+   within the code box even when the code scrolls horizontally, rather than
+   stretching to the widest line's grid track. */
+.cb-inline-review {
+  grid-column: 1 / -1;
+  position: sticky;
+  left: 0;
+  box-sizing: border-box;
+  width: calc(100cqi + 2 * 1.1rem);
+  margin: 0.35rem -1.1rem 0.5rem;
+  padding: 0.75rem 1.1rem;
+  border-top: 1px solid color-mix(in oklab, gold 40%, var(--border));
+  background: color-mix(in oklab, var(--accent) 5%, var(--card));
+  white-space: normal;
+  font-family: var(--font-sans, system-ui);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+/* Inline review: prose portal panel (fixed, below selection) */
+/* Inline review (prose): a portal hovering just under the highlighted text.
+   Echoes the code-box inline row (accent-tinted fill + prominent top border tied
+   to the gold quote highlight), but keeps a faint full border + soft shadow so it
+   reads as floating over the prose — since a portal can't push text down/expand. */
+.review-inline-panel {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid color-mix(in oklab, gold 20%, var(--border));
+  border-top: 2px solid color-mix(in oklab, gold 45%, var(--border));
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--accent) 5%, var(--card));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  max-height: min(50vh, 24rem);
+  overflow-y: auto;
+}
+.review-thread-conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.review-thread-conversation.compact {
+  font-size: 0.84rem;
+}
+.review-thread-conversation-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.review-inline-close {
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.1rem 0.35rem;
+}
+.review-inline-close:hover {
+  color: var(--foreground);
 }
 
 /* Code journeys — a GitHub-style step timeline (see src/components/journey.tsx).
@@ -836,10 +941,10 @@ body {
 /* --- Docs layout --- */
 .docs-grid {
   display: grid;
-  grid-template-columns: 15rem minmax(0, 1fr) 12rem;
+  grid-template-columns: 15rem minmax(0, 1fr) 20rem;
   gap: 2rem;
   align-items: start;
-  max-width: 82rem;
+  max-width: 90rem;
   margin: 0 auto;
 }
 .docs-grid-index {
@@ -1574,9 +1679,9 @@ a.blog-row-title:hover { color: var(--accent); }
 
 .blog-post-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 12rem;
+  grid-template-columns: minmax(0, 1fr) 20rem;
   gap: 2.5rem;
-  max-width: 58rem;
+  max-width: 72rem;
   margin: 0 auto;
 }
 .blog-post-main { min-width: 0; }
@@ -1632,11 +1737,9 @@ a.blog-row-title:hover { color: var(--accent); }
     grid-template-columns: 1fr;
     gap: 0;
   }
-  .docs-grid .review-rail { display: none; }
   .blog-post-layout {
     grid-template-columns: 1fr;
   }
-  .blog-post-layout .review-rail { display: none; }
 
   .sidebar-toggle { display: flex; }
 
@@ -2049,27 +2152,106 @@ a.model-ref-label:hover {
 }
 
 /* Review comments sidebar (allowlisted viewers only) */
-/* Right rail: stacks the "On this page" TOC and the review-comments sidebar in
-   a single grid cell. Without this wrapper the sidebar is a third child of the
-   2/3-column page grid and wraps into an implicit row below the article. */
-.review-rail {
+/* The host is the grid cell and owns the sticky behavior so the rail stays in
+   view while the article scrolls. Sticky must live on the grid item itself
+   (aligned to start) so it can travel within the full-height grid area — a
+   sticky element nested in a content-height wrapper would have no room to move
+   and would scroll away with the page. */
+.review-rail-host {
+  min-width: 0;
+  align-self: start;
   position: sticky;
   top: 3.5rem;
   max-height: calc(100vh - 4rem);
-  overflow-y: auto;
+}
+.review-rail {
+  max-height: calc(100vh - 4rem);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.review-rail-body {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
 }
-/* Inside the rail the TOC no longer owns the sticky/scroll — the rail does. */
 .review-rail .toc {
   position: static;
   max-height: none;
   overflow: visible;
+  flex: none;
 }
 .review-comments {
-  padding-left: 0.5rem;
+  flex: 1;
+  min-height: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+.review-comments-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.review-comments-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted-foreground);
+  margin: 0 0 0.35rem;
+}
+.review-comments-head .review-comments-title { margin-bottom: 0; }
+.review-add-section {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+}
+.review-add-section-form { margin-top: 0.6rem; }
+.review-select {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
   font-size: 0.8rem;
+}
+.review-empty {
+  margin: 0.75rem 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--muted-foreground);
+}
+.review-thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.review-comments-title::before {
+  content: "";
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  flex: none;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--accent) 70%, transparent);
+}
+.review-comments-summary {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
 }
 .review-section {
   border-bottom: 1px solid var(--border);
@@ -2080,54 +2262,203 @@ a.model-ref-label:hover {
   justify-content: space-between;
   gap: 0.5rem;
   width: 100%;
-  padding: 0.4rem 0;
+  padding: 0.55rem 0;
   background: none;
   border: none;
   cursor: pointer;
   color: var(--foreground);
   text-align: left;
+  font: inherit;
 }
-.review-section-head a {
-  color: inherit;
-  text-decoration: none;
+.review-section-title {
+  font-weight: 500;
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--heading);
 }
 .review-count {
-  min-width: 1.2rem;
-  padding: 0 0.35rem;
+  min-width: 1.25rem;
+  padding: 0.05rem 0.4rem;
   border-radius: 999px;
   background: var(--accent);
   color: var(--accent-foreground, #fff);
-  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
   text-align: center;
 }
 .review-section-body {
-  padding: 0 0 0.6rem;
+  padding: 0 0 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.65rem;
 }
-.review-section-body textarea,
-.review-thread-actions input {
-  width: 100%;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--border);
+.review-section-add {
+  align-self: flex-start;
+}
+.review-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem;
   border-radius: 6px;
+  border: 1px solid var(--border);
   background: var(--background);
   color: var(--foreground);
+  cursor: pointer;
   font: inherit;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.review-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.review-btn.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-foreground, #fff);
+}
+.review-btn.primary:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+.review-btn.secondary {
+  background: transparent;
+}
+.review-btn.secondary:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+.review-btn.ghost {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted-foreground);
+  padding-left: 0;
+  padding-right: 0.35rem;
+}
+.review-btn.ghost:hover:not(:disabled) {
+  color: var(--accent);
+  background: transparent;
 }
 .review-thread {
-  padding: 0.4rem 0.5rem;
+  padding: 0.6rem 0.7rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
+  background: var(--card);
+  transition: border-color 0.12s, box-shadow 0.12s, background 0.12s;
+}
+.review-thread.collapsed {
+  padding: 0.45rem 0.6rem;
+  cursor: pointer;
+}
+.review-thread.collapsed:hover {
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--border));
+  background: color-mix(in oklab, var(--accent) 4%, var(--card));
+}
+.review-thread-collapsed {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+}
+.review-thread-section {
+  flex: none;
+  max-width: 42%;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.review-thread-preview {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8rem;
+  color: var(--body);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.review-thread.resolved .review-thread-section { color: var(--muted-foreground); }
+.review-count.small {
+  flex: none;
+  min-width: 1rem;
+  padding: 0 0.3rem;
+  font-size: 0.62rem;
+  background: color-mix(in oklab, var(--foreground) 12%, transparent);
+  color: var(--muted-foreground);
+}
+.review-thread-section-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
+}
+.review-thread.focused {
+  border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+.review-thread.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 30%, transparent);
 }
 .review-thread.resolved {
-  opacity: 0.55;
+  opacity: 0.6;
+}
+.review-target {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  margin: 0 0 0.45rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px dashed color-mix(in oklab, var(--accent) 35%, var(--border));
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--accent) 6%, transparent);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+.review-target:hover {
+  border-color: color-mix(in oklab, var(--accent) 55%, var(--border));
+  background: color-mix(in oklab, var(--accent) 10%, transparent);
+}
+.review-target-quote {
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--muted-foreground);
+  overflow-wrap: anywhere;
+}
+.review-target-code {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted-foreground);
+}
+.review-target-heading {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.review-target-jump {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent);
 }
 .review-comment {
   display: flex;
   flex-direction: column;
-  margin-bottom: 0.35rem;
+  gap: 0.15rem;
+  margin-bottom: 0.4rem;
 }
 .review-comment.reply {
   padding-left: 0.75rem;
@@ -2135,93 +2466,136 @@ a.model-ref-label:hover {
 }
 .review-author {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--muted-foreground);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--heading);
+}
+.review-body {
+  margin: 0;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  color: var(--body);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 .review-thread-actions {
   display: flex;
-  gap: 0.35rem;
-  margin-top: 0.35rem;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
 }
 .review-orphaned {
   margin-top: 1rem;
-  padding-top: 0.6rem;
+  padding-top: 0.75rem;
   border-top: 1px dashed var(--border);
 }
-
-/* Fine-grained review: floating button + context menu shown on a text/code
-   selection in the article (SelectionLayer), the composer the pick opens, the
-   quoted target shown above a thread, and the in-text quote highlight. */
-.sel-float {
-  z-index: 60;
-  padding: 0.25rem 0.55rem;
-  font-size: 0.75rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--foreground);
-  color: var(--background);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  cursor: pointer;
-}
-.sel-menu {
-  z-index: 60;
-  display: flex;
-  flex-direction: column;
-  min-width: 12rem;
-  padding: 0.25rem;
+.review-composer textarea {
+  width: 100%;
+  min-height: 4.5rem;
+  padding: 0.55rem 0.65rem;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--background);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.84rem;
+  line-height: 1.45;
+  resize: vertical;
+  transition: border-color 0.12s, box-shadow 0.12s;
 }
-.sel-menu button {
-  text-align: left;
-  padding: 0.35rem 0.5rem;
-  font-size: 0.8rem;
-  border-radius: 5px;
-  background: transparent;
-  cursor: pointer;
+.review-composer textarea:focus {
+  outline: none;
+  border-color: color-mix(in oklab, var(--accent) 50%, var(--border));
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 18%, transparent);
 }
-.sel-menu button:hover {
-  background: var(--border);
+.review-composer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
 }
-
-.review-composer {
-  margin-bottom: 0.75rem;
-  padding: 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: color-mix(in oklab, var(--foreground) 4%, transparent);
+.review-composer-hint {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--muted-foreground);
+}
+.review-composer.pending {
+  margin-bottom: 0.85rem;
+  padding: 0.65rem;
+  border: 1px solid color-mix(in oklab, var(--accent) 35%, var(--border));
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--accent) 5%, var(--card));
 }
 .review-composer-target {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 .review-composer-label {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 500;
   color: var(--muted-foreground);
 }
-.review-composer textarea {
-  width: 100%;
+.review-composer.compact textarea {
+  min-height: 3rem;
 }
-.review-composer-actions {
-  display: flex;
+
+/* Fine-grained review: floating button + context menu */
+.sel-float {
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
   gap: 0.35rem;
-  margin-top: 0.35rem;
-}
-.review-composer-actions .secondary {
-  background: transparent;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border-radius: 999px;
   border: 1px solid var(--border);
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  cursor: pointer;
+}
+.sel-float:hover {
+  filter: brightness(1.08);
+}
+.sel-menu {
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  min-width: 13rem;
+  padding: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+}
+.sel-menu button {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-align: left;
+  padding: 0.45rem 0.55rem;
+  font-size: 0.82rem;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+}
+.sel-menu button:hover {
+  background: color-mix(in oklab, var(--foreground) 8%, transparent);
 }
 
 .review-quote {
-  margin: 0 0 0.35rem;
-  padding: 0.2rem 0.5rem;
+  margin: 0;
+  padding: 0.3rem 0.55rem;
   border-left: 3px solid color-mix(in oklab, var(--accent, gold) 70%, var(--border));
-  font-size: 0.75rem;
+  font-size: 0.78rem;
   color: var(--muted-foreground);
   font-style: italic;
   overflow-wrap: anywhere;
@@ -2231,37 +2605,124 @@ a.model-ref-label:hover {
   font-family: var(--font-mono);
   white-space: pre-wrap;
 }
-.review-quote-src {
-  display: block;
-  font-size: 0.65rem;
-  opacity: 0.7;
-  margin-bottom: 0.15rem;
-}
 
-/* CSS Custom Highlight API paint for anchored prose quotes. */
+/* CSS Custom Highlight API paint for anchored prose quotes. The dotted
+   underline hints that commented text is clickable (a backlink to its thread);
+   painted highlights can't set a cursor, so the underline is the affordance. */
 ::highlight(review-quote) {
-  background: color-mix(in oklab, gold 35%, transparent);
+  background: color-mix(in oklab, gold 30%, transparent);
+  color: inherit;
+  text-decoration: underline dotted color-mix(in oklab, gold 70%, var(--border));
+  text-underline-offset: 2px;
+}
+::highlight(review-quote-focus) {
+  background: color-mix(in oklab, gold 55%, transparent);
   color: inherit;
 }
 
-/* "Review source" button injected into each `file=` snippet block, and the
-   full-source review pane it opens (SourceFileLauncher / SourceFilePane). */
+/* Mobile review drawer */
+.review-drawer-toggle {
+  display: none;
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 55;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+.review-drawer-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 58;
+  border: none;
+  background: rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+.review-drawer-head {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.review-drawer-close {
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.15rem 0.4rem;
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+@media (max-width: 960px) {
+  .review-drawer-toggle { display: inline-flex; }
+  .review-rail-host {
+    position: static;
+    max-height: none;
+  }
+  .review-rail {
+    display: none;
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 59;
+    width: min(22rem, 92vw);
+    max-height: none;
+    padding: 0;
+    border-left: 1px solid var(--border);
+    background: var(--background);
+    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
+  }
+  .review-rail.review-rail-open {
+    display: flex;
+    flex-direction: column;
+  }
+  .review-rail.review-rail-open .review-drawer-head { display: flex; }
+  .review-drawer-backdrop { display: block; }
+  .review-rail-body {
+    padding: 0.75rem 1rem 1.25rem;
+  }
+}
+
+/* "Review source" button + full-source pane */
 .cb-review-source {
   position: absolute;
   bottom: 0.4rem;
   right: 0.5rem;
-  padding: 0.15rem 0.45rem;
-  font-size: 0.68rem;
-  border-radius: 5px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--background);
   color: var(--muted-foreground);
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.12s;
+  transition: opacity 0.12s, border-color 0.12s, color 0.12s;
 }
 .cb:hover .cb-review-source {
   opacity: 1;
+}
+.cb-review-source:hover {
+  color: var(--accent);
+  border-color: color-mix(in oklab, var(--accent) 45%, var(--border));
 }
 
 .source-pane-backdrop {
@@ -2271,35 +2732,46 @@ a.model-ref-label:hover {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 3rem 1rem;
-  background: rgba(0, 0, 0, 0.45);
+  padding: 2rem 1rem;
+  background: rgba(0, 0, 0, 0.5);
 }
 .source-pane {
   width: min(64rem, 100%);
-  max-height: 100%;
+  max-height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--background);
   overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
 }
 .source-pane-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.75rem;
+  padding: 0.65rem 0.85rem;
   border-bottom: 1px solid var(--border);
+  background: var(--surface);
 }
 .source-pane-path {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 .source-pane-close {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   line-height: 1;
+  padding: 0.15rem 0.45rem;
+  border: none;
+  border-radius: 4px;
   background: transparent;
+  color: var(--muted-foreground);
   cursor: pointer;
+}
+.source-pane-close:hover {
+  color: var(--foreground);
+  background: color-mix(in oklab, var(--foreground) 8%, transparent);
 }
 .source-pane-status {
   padding: 1rem;
@@ -2311,28 +2783,37 @@ a.model-ref-label:hover {
   list-style: none;
   overflow: auto;
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.8rem;
 }
 .source-lines li {
   display: flex;
   align-items: baseline;
   gap: 0.5rem;
-  padding: 0 0.75rem;
+  padding: 0.1rem 0.75rem;
 }
 .source-lines li:hover {
   background: color-mix(in oklab, var(--foreground) 6%, transparent);
 }
 .source-lines li.covered {
-  background: color-mix(in oklab, gold 12%, transparent);
+  background: color-mix(in oklab, gold 14%, transparent);
 }
 .source-line-comment {
   visibility: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  border: none;
   background: transparent;
   cursor: pointer;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
 }
 .source-lines li:hover .source-line-comment {
   visibility: visible;
+}
+.source-line-comment:hover {
+  color: var(--accent);
 }
 .source-line-no {
   width: 2.5rem;

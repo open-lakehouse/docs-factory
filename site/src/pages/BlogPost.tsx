@@ -1,11 +1,12 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
-import OnThisPage from "../components/layout/OnThisPage";
-import CommentSidebar from "../components/review/CommentSidebar";
+import ReviewRail from "../components/review/ReviewRail";
+import InlineReviewSurface from "../components/review/InlineReviewSurface";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
+import { ReviewProvider } from "../components/review/review-context";
 import ReviewControls from "../components/review/ReviewControls";
 import { blogRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
@@ -46,6 +47,7 @@ export default function BlogPost() {
   return (
     <Shell wide>
       <SelectionProvider>
+      <ReviewProvider contentRef={blogRef(slug)}>
       <div className="blog-post-layout">
         <div className="blog-post-main">
           <Breadcrumbs
@@ -100,13 +102,12 @@ export default function BlogPost() {
             }
           />
         </div>
-        <div className="review-rail">
-          <OnThisPage articleRef={articleRef} />
-          <CommentSidebar contentRef={blogRef(slug)} articleRef={articleRef} />
-        </div>
+        <ReviewRail articleRef={articleRef} />
+        <InlineReviewSurface articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={blogRef(slug)} articleRef={articleRef} />
       </div>
+      </ReviewProvider>
       </SelectionProvider>
     </Shell>
   );

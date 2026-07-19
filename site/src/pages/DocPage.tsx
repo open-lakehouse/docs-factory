@@ -2,11 +2,12 @@ import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import DocsSidebar from "../components/layout/DocsSidebar";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
-import OnThisPage from "../components/layout/OnThisPage";
-import CommentSidebar from "../components/review/CommentSidebar";
+import ReviewRail from "../components/review/ReviewRail";
+import InlineReviewSurface from "../components/review/InlineReviewSurface";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
+import { ReviewProvider } from "../components/review/review-context";
 import ReviewControls from "../components/review/ReviewControls";
 import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
@@ -57,6 +58,7 @@ export default function DocPage() {
       accent={project === "unitycatalog" ? "unitycatalog" : "delta"}
     >
       <SelectionProvider>
+      <ReviewProvider contentRef={docRef(project, bucket, slug)}>
       <div className="docs-grid">
         <DocsSidebar activeProject={project} activeBucket={bucket} activeSlug={slug} />
         <div className="docs-main">
@@ -98,13 +100,12 @@ export default function DocPage() {
             next={neighbors.next ? { label: neighbors.next.label, href: neighbors.next.href } : undefined}
           />
         </div>
-        <div className="review-rail">
-          <OnThisPage articleRef={articleRef} />
-          <CommentSidebar contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
-        </div>
+        <ReviewRail articleRef={articleRef} />
+        <InlineReviewSurface articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
       </div>
+      </ReviewProvider>
       </SelectionProvider>
     </Shell>
   );

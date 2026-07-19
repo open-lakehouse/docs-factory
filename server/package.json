@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Review & release API for docs-factory: a Hono + Connect RPC app served from a Neon Function in prod and a local Node entrypoint in dev. DB-authoritative review layer (Neon Postgres).",
   "scripts": {
-    "dev": "bun run src/dev-server.ts",
+    "dev": "bun --watch run src/dev-server.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },

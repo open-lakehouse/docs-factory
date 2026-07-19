@@ -1632,11 +1632,11 @@ a.blog-row-title:hover { color: var(--accent); }
     grid-template-columns: 1fr;
     gap: 0;
   }
-  .docs-grid .toc { display: none; }
+  .docs-grid .review-rail { display: none; }
   .blog-post-layout {
     grid-template-columns: 1fr;
   }
-  .blog-post-layout .toc { display: none; }
+  .blog-post-layout .review-rail { display: none; }
 
   .sidebar-toggle { display: flex; }
 
@@ -2049,11 +2049,25 @@ a.model-ref-label:hover {
 }
 
 /* Review comments sidebar (allowlisted viewers only) */
-.review-comments {
+/* Right rail: stacks the "On this page" TOC and the review-comments sidebar in
+   a single grid cell. Without this wrapper the sidebar is a third child of the
+   2/3-column page grid and wraps into an implicit row below the article. */
+.review-rail {
   position: sticky;
   top: 3.5rem;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+/* Inside the rail the TOC no longer owns the sticky/scroll — the rail does. */
+.review-rail .toc {
+  position: static;
+  max-height: none;
+  overflow: visible;
+}
+.review-comments {
   padding-left: 0.5rem;
   font-size: 0.8rem;
 }

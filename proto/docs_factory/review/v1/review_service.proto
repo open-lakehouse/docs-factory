@@ -33,6 +33,11 @@ service ReviewService {
   rpc ResolveThread(ResolveThreadRequest) returns (ResolveThreadResponse);
   rpc UnresolveThread(UnresolveThreadRequest) returns (UnresolveThreadResponse);
 
+  // Fetch the full source text of a registered `file=` snippet, for the
+  // "open full source" code-review pane (allowlist-gated). Returns the whole
+  // file plus its resolved snippet regions so reviewers can comment on any line.
+  rpc GetSourceFile(GetSourceFileRequest) returns (GetSourceFileResponse);
+
   // Append a review-state transition (validated against the state machine).
   rpc TransitionReview(TransitionReviewRequest) returns (TransitionReviewResponse);
   // Maintainer-only convenience for the terminal RELEASED transition.
@@ -85,9 +90,27 @@ message CreateCommentRequest {
   // Set when replying within a thread.
   optional string parent_id = 4;
   string body_md = 5;
+  // At most one fine-grained selector. Absent for a heading-level comment.
+  optional TextSelector selector = 6;
+  optional CodeSelector code_selector = 7;
 }
 message CreateCommentResponse {
   Comment comment = 1;
+}
+
+message GetSourceFileRequest {
+  ContentRef ref = 1;
+  // Repo-relative source path of a registered snippet in the latest version.
+  string path = 2;
+}
+message GetSourceFileResponse {
+  string path = 1;
+  // Full source file text.
+  string text = 2;
+  string file_hash = 3;
+  // The resolved snippet regions that reference this file (for highlighting the
+  // in-doc window within the full source).
+  repeated SnippetRef snippets = 4;
 }
 
 message ResolveThreadRequest {
@@ -143,6 +166,8 @@ message RegisterVersionRequest {
   string title = 5;
   string frontmatter_status = 6;
   repeated Section sections = 7;
+  // Resolved `file=` snippet references, for code comment re-anchoring.
+  repeated SnippetRef snippets = 8;
 }
 message RegisterVersionResponse {
   ContentVersion version = 1;

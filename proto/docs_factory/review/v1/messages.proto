@@ -37,17 +37,62 @@ message ContentVersion {
   // The git frontmatter authoring status, copied for display only.
   string frontmatter_status = 6;
   google.protobuf.Timestamp created_at = 7;
+  // Resolved `file=` snippet references in this version, for code re-anchoring.
+  repeated SnippetRef snippets = 8;
 }
 
 // A heading-anchored section within a content version. `anchor_slug` is the
 // rehype-slug id used in the rendered DOM; `fingerprint` is the normalized
-// heading text used to re-anchor comments across versions.
+// heading text used to re-anchor comments across versions. `text` is the
+// normalized plain-text body of the section (heading excluded), stored so the
+// server can re-anchor quote comments without re-fetching source.
 message Section {
   string anchor_slug = 1;
   string fingerprint = 2;
   string heading_text = 3;
   int32 level = 4;
   int32 ordinal = 5;
+  string text = 6;
+  int32 char_len = 7;
+}
+
+// A W3C-style text-quote selector: a comment can pin to a quoted range within
+// its enclosing section instead of the whole heading. `quote` is the exact
+// selected text (normalized); `prefix`/`suffix` are a short window of context
+// used to disambiguate and re-anchor. `start` is the resolved char offset of
+// the quote within the section text — advisory only, recomputed on render.
+message TextSelector {
+  string quote = 1;
+  string prefix = 2;
+  string suffix = 3;
+  int32 start = 4;
+}
+
+// A source-file anchor for a comment on a `file=` code snippet. Because a
+// snippet resolves to verbatim git-tracked source, we anchor to the file, not
+// the rendered DOM: `path` is repo-relative, `region` is the start=/end= marker
+// name (empty if the fence inlined the whole file), `line`/`end_line` are 1-based
+// within the source file, `line_hash` is a hash of the anchored line(s) used to
+// re-anchor when the line moves, and `file_hash` records the source content at
+// comment time for drift detection.
+message CodeSelector {
+  string path = 1;
+  string region = 2;
+  int32 line = 3;
+  int32 end_line = 4;
+  string line_hash = 5;
+  string file_hash = 6;
+}
+
+// A resolved `file=` code snippet reference within a content version. Registered
+// alongside sections so the server can re-anchor code comments (against the
+// file/region/line-hash) without repo access at review time.
+message SnippetRef {
+  string path = 1;
+  string region = 2;
+  int32 start_line = 3;
+  int32 end_line = 4;
+  string file_hash = 5;
 }
 
 // The reviewer-facing review/release state. Distinct from the git authoring
@@ -93,6 +138,11 @@ message Comment {
   google.protobuf.Timestamp created_at = 8;
   optional google.protobuf.Timestamp edited_at = 9;
   bool orphaned = 10;
+  // At most one fine-grained selector. `selector` pins to a quoted prose range
+  // within the section; `code_selector` pins to a line/region in a snippet's
+  // source file. Absent for a plain heading-level comment (back-compatible).
+  optional TextSelector selector = 11;
+  optional CodeSelector code_selector = 12;
 }
 
 // A thread root plus its replies and resolution state.

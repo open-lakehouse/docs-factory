@@ -52,6 +52,15 @@ export const resolveThread = ReviewService.method.resolveThread;
 export const unresolveThread = ReviewService.method.unresolveThread;
 
 /**
+ * Fetch the full source text of a registered `file=` snippet, for the
+ * "open full source" code-review pane (allowlist-gated). Returns the whole
+ * file plus its resolved snippet regions so reviewers can comment on any line.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.GetSourceFile
+ */
+export const getSourceFile = ReviewService.method.getSourceFile;
+
+/**
  * Append a review-state transition (validated against the state machine).
  *
  * @generated from rpc docs_factory.review.v1.ReviewService.TransitionReview

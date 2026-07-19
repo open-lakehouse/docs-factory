@@ -81,9 +81,38 @@ jobs:
         with:
           bun-version: latest
       - uses: ./.github/actions/npm-public
-      - name: Build unified preview site
+      - name: Build site (content + review surface)
         run: |
           cd site && bun install --frozen-lockfile && bun run build
+
+  review-api:
+    # Proto → Connect RPC contract + the Neon Function backend. Lints the
+    # protos, verifies committed generated code is in sync, and typechecks the
+    # server (the same Hono+Connect app the Neon Function runs).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+      - uses: bufbuild/buf-setup-action@a47c93e0b1648d5651a065437926377d060baa99 # v1.50.0
+        with:
+          github_token: ${{ github.token }}
+      - uses: ./.github/actions/npm-public
+      - name: Lint protos
+        run: cd proto && buf lint
+      - name: Verify generated code is up to date
+        run: |
+          cd proto && buf generate
+          if ! git diff --quiet -- ../site/src/gen ../server/src/gen; then
+            echo "::error::Generated code is stale. Run 'just buf-gen' and commit the result."
+            git diff --stat -- ../site/src/gen ../server/src/gen
+            exit 1
+          fi
+      - name: Typecheck server
+        run: cd server && bun install --frozen-lockfile && bun run typecheck
 
   architecture:
     runs-on: ubuntu-latest

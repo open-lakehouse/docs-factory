@@ -15,7 +15,8 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useQuery } from "@connectrpc/connect-query";
+import { useQuery, createConnectQueryKey, useTransport } from "@connectrpc/connect-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { listComments } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef, Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
@@ -79,7 +80,23 @@ export function ReviewProvider({
   children: ReactNode;
 }) {
   const { isAllowlisted } = useAuth();
-  const { data, refetch } = useQuery(listComments, { ref: contentRef }, { enabled: isAllowlisted });
+  const transport = useTransport();
+  const queryClient = useQueryClient();
+  // Poll so a reviewer sees other reviewers' comments arrive without a reload.
+  // Gated on being allowlisted; TanStack pauses the interval while the tab is
+  // hidden and refetches on window focus, so background tabs don't hammer the
+  // API. A modest interval keeps the rail live without a push channel (SSE is a
+  // later, on-demand upgrade — see the plan).
+  const { data, refetch } = useQuery(
+    listComments,
+    { ref: contentRef },
+    {
+      enabled: isAllowlisted,
+      refetchInterval: isAllowlisted ? 15_000 : false,
+      refetchIntervalInBackground: false,
+      refetchOnWindowFocus: true,
+    },
+  );
 
   const threads = data?.threads ?? [];
   const orphanedThreads = data?.orphanedThreads ?? [];
@@ -107,9 +124,20 @@ export function ReviewProvider({
     [],
   );
   const hoverThread = useCallback((id: string | null) => setHoveredThreadId(id), []);
+  // Invalidate the shared listComments cache entry so every mounted consumer
+  // (rail, inline, code boxes) refreshes after a local mutation — not just this
+  // provider's own query instance. Falls back to the local refetch.
   const refetchCb = useCallback(() => {
+    void queryClient.invalidateQueries({
+      queryKey: createConnectQueryKey({
+        schema: listComments,
+        transport,
+        input: { ref: contentRef },
+        cardinality: "finite",
+      }),
+    });
     void refetch();
-  }, [refetch]);
+  }, [queryClient, transport, contentRef, refetch]);
 
   const setDisplayMode = useCallback((mode: ReviewDisplayMode) => {
     setDisplayModeState(mode);

@@ -15,14 +15,14 @@ import { areaFromDb } from "./db-map.js";
 
 /** A DB comment row (snake_case columns). */
 export interface CommentRow {
-  id: number | string;
+  id: string; // uuid
   area: string;
   slug: string;
   project?: string | null;
   bucket?: string | null;
   anchor_slug: string;
   anchor_fingerprint: string;
-  parent_id: number | string | null;
+  parent_id: string | null; // uuid
   author_login: string;
   body_md: string;
   created_at: Date;
@@ -43,7 +43,7 @@ export interface CommentRow {
 }
 
 export interface ResolutionRow {
-  thread_root_id: number | string;
+  thread_root_id: string; // uuid
   resolved: boolean;
   resolved_by: string | null;
   resolved_at: Date | null;
@@ -51,11 +51,11 @@ export interface ResolutionRow {
 
 function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
   return create(CommentSchema, {
-    id: String(row.id),
+    id: row.id,
     ref,
     anchorSlug: row.anchor_slug,
     anchorFingerprint: row.anchor_fingerprint,
-    parentId: row.parent_id != null ? String(row.parent_id) : undefined,
+    parentId: row.parent_id ?? undefined,
     authorLogin: row.author_login,
     bodyMd: row.body_md,
     createdAt: timestampFromDate(row.created_at),
@@ -88,8 +88,12 @@ function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
 
 /**
  * Assemble threads from a flat comment list + resolutions for one content ref.
- * Roots (parent_id null) become Thread.root; replies attach to their root in
- * created_at order. Returns non-orphaned and orphaned threads separately.
+ * Roots (parent_id null) become Thread.root. Replies form an N-level tree via
+ * parent_id; `Thread.replies` stays a flat list on the wire but is emitted in
+ * depth-first pre-order (a parent immediately precedes its subtree, siblings in
+ * created_at order), and every reply Comment carries its parent_id so the client
+ * can reconstruct the nesting and indentation. Returns non-orphaned and orphaned
+ * threads separately.
  */
 export function assembleThreads(
   ref: { area: string; slug: string; project?: string | null; bucket?: string | null },
@@ -102,26 +106,48 @@ export function assembleThreads(
     project: ref.project ?? undefined,
     bucket: ref.bucket ?? undefined,
   });
-  const resById = new Map(resolutions.map((r) => [String(r.thread_root_id), r]));
-  const repliesByParent = new Map<string, CommentRow[]>();
+  const resById = new Map(resolutions.map((r) => [r.thread_root_id, r]));
+
+  // Children keyed by parent id, each list in creation order. The caller orders
+  // rows by id asc — UUIDv7 ids are time-ordered, so id order == creation order
+  // but uses the primary-key index directly (no created_at sort), and it's a
+  // strict total order even for rows sharing a transaction timestamp. So push
+  // preserves the intended sibling order.
+  const childrenByParent = new Map<string, CommentRow[]>();
   const roots: CommentRow[] = [];
   for (const c of comments) {
     if (c.parent_id == null) roots.push(c);
     else {
-      const key = String(c.parent_id);
-      (repliesByParent.get(key) ?? repliesByParent.set(key, []).get(key)!).push(c);
+      const list = childrenByParent.get(c.parent_id);
+      if (list) list.push(c);
+      else childrenByParent.set(c.parent_id, [c]);
     }
   }
+
+  // Depth-first pre-order flattening of a root's descendant subtree. Guards
+  // against cycles (a comment can't be its own ancestor) with a visited set.
+  const flattenReplies = (root: CommentRow): Comment[] => {
+    const out: Comment[] = [];
+    const visited = new Set<string>([root.id]);
+    const walk = (parentId: string) => {
+      for (const child of childrenByParent.get(parentId) ?? []) {
+        if (visited.has(child.id)) continue;
+        visited.add(child.id);
+        out.push(commentFromRow(child, protoRef));
+        walk(child.id);
+      }
+    };
+    walk(root.id);
+    return out;
+  };
 
   const threads: Thread[] = [];
   const orphaned: Thread[] = [];
   for (const root of roots) {
-    const res = resById.get(String(root.id));
+    const res = resById.get(root.id);
     const thread = create(ThreadSchema, {
       root: commentFromRow(root, protoRef),
-      replies: (repliesByParent.get(String(root.id)) ?? []).map((r) =>
-        commentFromRow(r, protoRef),
-      ),
+      replies: flattenReplies(root),
       resolved: res?.resolved ?? false,
       resolvedBy: res?.resolved_by ?? undefined,
       resolvedAt: res?.resolved_at ? timestampFromDate(res.resolved_at) : undefined,

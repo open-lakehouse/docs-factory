@@ -29,19 +29,32 @@ export default function ThreadConversation({
   const resolve = useMutation(resolveThread);
   const unresolve = useMutation(unresolveThread);
   const [text, setText] = useState("");
-  const [replyOpen, setReplyOpen] = useState(false);
+  // The comment being replied to. null = composer closed; when open, defaults to
+  // the thread root (a top-level reply) but can target any nested comment.
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+  const replyOpen = replyTo !== null;
+
+  // Depth of each comment (root = 0), derived from the parent_id chain. The wire
+  // list is a flat depth-first pre-order, so we can resolve depths in one pass.
+  const depthById = new Map<string, number>();
+  if (thread.root) depthById.set(thread.root.id, 0);
+  for (const c of thread.replies) {
+    const parentDepth = c.parentId != null ? depthById.get(c.parentId) : 0;
+    depthById.set(c.id, (parentDepth ?? 0) + 1);
+  }
 
   async function postReply() {
-    if (!text.trim() || !contentRef || !thread.root) return;
+    const parentId = replyTo;
+    if (!text.trim() || !contentRef || !thread.root || !parentId) return;
     await reply.mutateAsync({
       ref: contentRef,
       anchorSlug: thread.root.anchorSlug,
       anchorFingerprint: thread.root.anchorFingerprint,
-      parentId: thread.root.id,
+      parentId,
       bodyMd: text,
     });
     setText("");
-    setReplyOpen(false);
+    setReplyTo(null);
     onChange();
   }
 
@@ -78,14 +91,29 @@ export default function ThreadConversation({
           <span className="review-target-code">{codeLabel}</span>
         </blockquote>
       )}
-      <CommentBubble login={thread.root?.authorLogin} body={thread.root?.bodyMd} />
+      <CommentBubble
+        login={thread.root?.authorLogin}
+        body={thread.root?.bodyMd}
+        onReply={thread.root ? () => setReplyTo(thread.root!.id) : undefined}
+      />
       {thread.replies.map((r) => (
-        <CommentBubble key={r.id} login={r.authorLogin} body={r.bodyMd} reply />
+        <CommentBubble
+          key={r.id}
+          login={r.authorLogin}
+          body={r.bodyMd}
+          reply
+          depth={depthById.get(r.id) ?? 1}
+          onReply={() => setReplyTo(r.id)}
+        />
       ))}
       <div className="review-thread-actions">
         {!replyOpen ? (
           <>
-            <button type="button" className="review-btn ghost" onClick={() => setReplyOpen(true)}>
+            <button
+              type="button"
+              className="review-btn ghost"
+              onClick={() => thread.root && setReplyTo(thread.root.id)}
+            >
               Reply
             </button>
             <button type="button" className="review-btn ghost" onClick={() => void toggleResolved()}>
@@ -98,7 +126,7 @@ export default function ThreadConversation({
             onChange={setText}
             onSubmit={() => void postReply()}
             onCancel={() => {
-              setReplyOpen(false);
+              setReplyTo(null);
               setText("");
             }}
             placeholder="Reply…"

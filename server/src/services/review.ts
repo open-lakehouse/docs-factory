@@ -52,7 +52,7 @@ import {
   requireAllowlisted,
   requireMaintainer,
 } from "../auth/context.js";
-import { db } from "../db.js";
+import { db, type Sql } from "../db.js";
 import {
   areaToDb,
   areaFromDb,
@@ -64,6 +64,9 @@ import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
 import { assembleThreads, type CommentRow, type ResolutionRow } from "../comments.js";
 
 const PUBLISHED = "published";
+// Maximum reply nesting under a thread root (root = depth 0). Keeps the tree
+// legible and client indentation bounded; enforced in createComment.
+const MAX_REPLY_DEPTH = 4;
 const REVIEW_STATE_BY_DB: Record<string, ReviewState> = {
   none: ReviewState.NONE,
   "in-review": ReviewState.IN_REVIEW,
@@ -204,7 +207,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
           from comment
           where area = ${area} and slug = ${req.ref.slug}
-          order by created_at asc
+          order by id asc
         `;
         const rootIds = rows.filter((r) => r.parent_id == null).map((r) => r.id);
         const resolutions = rootIds.length
@@ -230,15 +233,42 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const sql = db();
         const area = areaToDb(req.ref.area);
 
-        // Resolve section_id from the latest version's section with this anchor
-        // (nullable — a comment can be posted even if the anchor is unknown).
-        const [section] = await sql<{ id: string }[]>`
-          select cs.id from content_section cs
-          join content_version cv on cv.id = cs.version_id
-          where cv.area = ${area} and cv.slug = ${req.ref.slug}
-            and cs.anchor_slug = ${req.anchorSlug}
-          order by cv.created_at desc limit 1
+        // Nesting is capped so the reply tree stays legible and indentation
+        // bounded. A root is depth 0; a reply is parent.depth + 1. Rejecting at
+        // MAX_REPLY_DEPTH keeps at most that many levels of replies under a root.
+        let parentId: string | null = req.parentId ?? null;
+        if (parentId) {
+          const [parent] = await sql<{ id: string; parent_id: string | null }[]>`
+            select id, parent_id from comment
+            where id = ${parentId} and area = ${area} and slug = ${req.ref.slug}
+          `;
+          if (!parent) {
+            throw new ConnectError("parent comment not found", Code.NotFound);
+          }
+          const depth = await commentDepth(sql, parent.id);
+          if (depth + 1 > MAX_REPLY_DEPTH) {
+            throw new ConnectError(
+              `reply nesting exceeds the maximum depth of ${MAX_REPLY_DEPTH}`,
+              Code.FailedPrecondition,
+            );
+          }
+        }
+
+        // Resolve the latest version for this (area, slug) once: its id both
+        // provides section_id (via the anchor) and freezes authored_version_id —
+        // the git provenance of what the author was looking at, which survives
+        // later re-anchoring (section_id moves; authored_version_id does not).
+        const [latest] = await sql<{ id: string }[]>`
+          select id from content_version
+          where area = ${area} and slug = ${req.ref.slug}
+          order by created_at desc limit 1
         `;
+        const [section] = latest
+          ? await sql<{ id: string }[]>`
+              select id from content_section
+              where version_id = ${latest.id} and anchor_slug = ${req.anchorSlug}
+            `
+          : [];
 
         // A comment carries at most one fine-grained selector. Prose ranges pin
         // within a section; code selectors pin to snippet source. Both null =
@@ -248,13 +278,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
         const [row] = await sql<CommentRow[]>`
           insert into comment
-            (area, slug, section_id, anchor_slug, anchor_fingerprint, parent_id,
+            (area, slug, section_id, authored_version_id, anchor_slug, anchor_fingerprint, parent_id,
              author_user_id, author_login, body_md, orphaned,
              selector_quote, selector_prefix, selector_suffix, selector_start,
              code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash)
           values
-            (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${req.anchorSlug},
-             ${req.anchorFingerprint}, ${req.parentId ?? null},
+            (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${latest?.id ?? null}, ${req.anchorSlug},
+             ${req.anchorFingerprint}, ${parentId},
              ${viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"}, ${req.bodyMd}, false,
              ${sel?.quote ?? null}, ${sel?.prefix ?? null}, ${sel?.suffix ?? null},
              ${sel ? sel.start : null},
@@ -519,12 +549,20 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
           resolved_by = excluded.resolved_by,
           resolved_at = excluded.resolved_at
   `;
+  // The full descendant subtree (N levels), not just direct replies, so
+  // assembleThreads can re-flatten the whole thread after a resolution change.
   const replies = await sql<CommentRow[]>`
+    with recursive descendants as (
+      select c.* from comment c where c.parent_id = ${threadRootId}
+      union all
+      select c.* from comment c
+      join descendants d on c.parent_id = d.id
+    )
     select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
            author_login, body_md, created_at, edited_at, orphaned,
            selector_quote, selector_prefix, selector_suffix, selector_start,
            code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
-    from comment where parent_id = ${threadRootId} order by created_at asc
+    from descendants order by id asc
   `;
   const resolutions = await sql<ResolutionRow[]>`
     select thread_root_id, resolved, resolved_by, resolved_at
@@ -536,6 +574,24 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
     resolutions,
   );
   return [...threads, ...orphaned][0] ?? create(ThreadSchema, {});
+}
+
+/**
+ * Depth of a comment within its thread: 0 for a root (parent_id null), else one
+ * more than its parent. Walks parent links via a recursive CTE so a single query
+ * answers it regardless of nesting depth.
+ */
+async function commentDepth(sql: Sql, id: string): Promise<number> {
+  const [row] = await sql<{ depth: number }[]>`
+    with recursive ancestry as (
+      select id, parent_id, 0 as depth from comment where id = ${id}
+      union all
+      select c.id, c.parent_id, a.depth + 1
+      from comment c join ancestry a on c.id = a.parent_id
+    )
+    select max(depth)::int as depth from ancestry
+  `;
+  return row?.depth ?? 0;
 }
 
 /**

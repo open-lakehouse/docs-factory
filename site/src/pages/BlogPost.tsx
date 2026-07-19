@@ -1,8 +1,7 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
-import OnThisPage from "../components/layout/OnThisPage";
-import CommentSidebar from "../components/review/CommentSidebar";
+import ReviewRail from "../components/review/ReviewRail";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
@@ -100,10 +99,7 @@ export default function BlogPost() {
             }
           />
         </div>
-        <div className="review-rail">
-          <OnThisPage articleRef={articleRef} />
-          <CommentSidebar contentRef={blogRef(slug)} articleRef={articleRef} />
-        </div>
+        <ReviewRail contentRef={blogRef(slug)} articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={blogRef(slug)} articleRef={articleRef} />
       </div>

@@ -2,8 +2,7 @@ import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import DocsSidebar from "../components/layout/DocsSidebar";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
-import OnThisPage from "../components/layout/OnThisPage";
-import CommentSidebar from "../components/review/CommentSidebar";
+import ReviewRail from "../components/review/ReviewRail";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
@@ -98,10 +97,7 @@ export default function DocPage() {
             next={neighbors.next ? { label: neighbors.next.label, href: neighbors.next.href } : undefined}
           />
         </div>
-        <div className="review-rail">
-          <OnThisPage articleRef={articleRef} />
-          <CommentSidebar contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
-        </div>
+        <ReviewRail contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
       </div>

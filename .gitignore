@@ -29,9 +29,14 @@ coverage.xml
 # Rust
 /target/
 
-# Node — the preview site (site/) is the only JS; this root symlink points at
-# site/node_modules so content/*.mdx can resolve Starlight component imports.
+# Node — the site (site/) root symlink points at site/node_modules so
+# content/*.mdx can resolve component imports; server/ and emit/ each have their
+# own. Ignore node_modules anywhere in the tree.
 /node_modules
+node_modules/
+
+# Generated proto code (site/src/gen, server/src/gen) IS committed — CI
+# regenerates and checks it is up to date (see just buf-gen).
 
 # OS
 .DS_Store

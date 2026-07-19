@@ -94,8 +94,10 @@ export default function DocPage() {
             next={neighbors.next ? { label: neighbors.next.label, href: neighbors.next.href } : undefined}
           />
         </div>
-        <OnThisPage articleRef={articleRef} />
-        <CommentSidebar contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
+        <div className="review-rail">
+          <OnThisPage articleRef={articleRef} />
+          <CommentSidebar contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
+        </div>
       </div>
     </Shell>
   );

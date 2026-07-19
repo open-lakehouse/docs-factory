@@ -96,8 +96,10 @@ export default function BlogPost() {
             }
           />
         </div>
-        <OnThisPage articleRef={articleRef} />
-        <CommentSidebar contentRef={blogRef(slug)} articleRef={articleRef} />
+        <div className="review-rail">
+          <OnThisPage articleRef={articleRef} />
+          <CommentSidebar contentRef={blogRef(slug)} articleRef={articleRef} />
+        </div>
       </div>
     </Shell>
   );

@@ -51,6 +51,13 @@ service ReviewService {
   // Maintainer-only allowlist management.
   rpc ManageAllowlist(ManageAllowlistRequest) returns (ManageAllowlistResponse);
 
+  // Maintainer-only right-to-erasure. Removes a user's personal footprint —
+  // tombstones their authored comments (keeping thread structure), scrubs their
+  // identity from review-state and resolution actors, and deletes their
+  // read-state. Content-version provenance (git shas) is not personal data and
+  // is untouched.
+  rpc EraseUser(EraseUserRequest) returns (EraseUserResponse);
+
   // Build-time upsert of a content version + its sections; re-anchors open
   // threads. Guarded by a shared secret, not by viewer auth.
   rpc RegisterVersion(RegisterVersionRequest) returns (RegisterVersionResponse);
@@ -167,6 +174,20 @@ message ManageAllowlistRequest {
 }
 message ManageAllowlistResponse {
   repeated AllowlistEntry entries = 1;
+}
+
+message EraseUserRequest {
+  // Identify the user by stable user id and/or GitHub login. At least one is
+  // required; both are matched so a rename doesn't leave a partial footprint.
+  optional string user_id = 1;
+  optional string login = 2;
+}
+message EraseUserResponse {
+  // How many rows were tombstoned/scrubbed/deleted, for the audit trail.
+  int32 comments_tombstoned = 1;
+  int32 review_states_scrubbed = 2;
+  int32 resolutions_scrubbed = 3;
+  int32 seen_rows_deleted = 4;
 }
 
 message RegisterVersionRequest {

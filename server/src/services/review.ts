@@ -26,6 +26,7 @@ import {
   ReleaseContentResponseSchema,
   ManageAllowlistRequest_Action,
   ManageAllowlistResponseSchema,
+  EraseUserResponseSchema,
   RegisterVersionResponseSchema,
   type ListDraftsRequest,
   type GetDraftContentRequest,
@@ -38,6 +39,7 @@ import {
   type TransitionReviewRequest,
   type ReleaseContentRequest,
   type ManageAllowlistRequest,
+  type EraseUserRequest,
   type RegisterVersionRequest,
 } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
@@ -458,6 +460,65 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               role: roleFromDb(e.role),
             }),
           ),
+        });
+      },
+
+      async eraseUser(req: EraseUserRequest, ctx) {
+        requireMaintainer(ctx);
+        const userId = req.userId?.trim() || null;
+        const login = req.login?.trim() || null;
+        if (!userId && !login) {
+          throw new ConnectError("user_id or login is required", Code.InvalidArgument);
+        }
+        // The tombstone keeps thread structure legible after erasure (hard-delete
+        // would cascade via parent_id and take others' replies with it).
+        const TOMBSTONE = "deleted-user";
+
+        // One transaction so a user is never left half-erased. Every identity
+        // column is matched against BOTH the stable user id and the login, so a
+        // rename before erasure can't leave part of the footprint behind.
+        const counts = await db().begin(async (sql) => {
+          // author_user_id is the stable id; author_login is the login. Match
+          // either. Tombstone content + identity but keep the row + its edges.
+          const tombstoned = await sql`
+            update comment set
+              author_login = ${TOMBSTONE},
+              author_user_id = ${TOMBSTONE},
+              author_name = null,
+              body_md = '[removed]'
+            where (${userId}::text is not null and author_user_id = ${userId})
+               or (${login}::text is not null and author_login = ${login})
+          `;
+          // review_state / resolution actors are written from the login today.
+          const reviewStates = await sql`
+            update review_state set actor_user_id = ${TOMBSTONE}
+            where (${userId}::text is not null and actor_user_id = ${userId})
+               or (${login}::text is not null and actor_user_id = ${login})
+          `;
+          const resolutions = await sql`
+            update comment_resolution set resolved_by = ${TOMBSTONE}
+            where (${userId}::text is not null and resolved_by = ${userId})
+               or (${login}::text is not null and resolved_by = ${login})
+          `;
+          // Read-state is worthless once the user is gone — hard-delete it.
+          const seen = await sql`
+            delete from comment_seen
+            where (${userId}::text is not null and viewer_id = ${userId})
+               or (${login}::text is not null and viewer_id = ${login})
+          `;
+          return {
+            comments: tombstoned.count,
+            reviewStates: reviewStates.count,
+            resolutions: resolutions.count,
+            seen: seen.count,
+          };
+        });
+
+        return create(EraseUserResponseSchema, {
+          commentsTombstoned: counts.comments,
+          reviewStatesScrubbed: counts.reviewStates,
+          resolutionsScrubbed: counts.resolutions,
+          seenRowsDeleted: counts.seen,
         });
       },
 

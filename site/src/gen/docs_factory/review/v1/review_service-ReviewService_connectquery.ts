@@ -90,6 +90,17 @@ export const releaseContent = ReviewService.method.releaseContent;
 export const manageAllowlist = ReviewService.method.manageAllowlist;
 
 /**
+ * Maintainer-only right-to-erasure. Removes a user's personal footprint —
+ * tombstones their authored comments (keeping thread structure), scrubs their
+ * identity from review-state and resolution actors, and deletes their
+ * read-state. Content-version provenance (git shas) is not personal data and
+ * is untouched.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.EraseUser
+ */
+export const eraseUser = ReviewService.method.eraseUser;
+
+/**
  * Build-time upsert of a content version + its sections; re-anchors open
  * threads. Guarded by a shared secret, not by viewer auth.
  *

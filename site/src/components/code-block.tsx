@@ -5,6 +5,7 @@
 // filename (title="…"), so headerless blocks keep their clean lines.
 import { Children, isValidElement, type ReactNode } from "react";
 import CodeCopyButton from "./CodeCopyButton";
+import LanguageIcon from "./LanguageIcon";
 
 interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
   "data-filename"?: string;
@@ -40,6 +41,7 @@ export function Pre({
     <div className="cb" data-lang={lang} data-has-filename={hasFilename ? "true" : undefined}>
       {hasFilename && (
         <div className="cb-head">
+          <LanguageIcon lang={lang} />
           <span className="cb-file">{filename}</span>
         </div>
       )}

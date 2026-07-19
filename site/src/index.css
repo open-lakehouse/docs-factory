@@ -279,6 +279,15 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* Monochrome language glyph before the filename — inherits the header's muted
+   tone, sized to sit on the filename's baseline without crowding it. */
+.prose .cb-file-icon {
+  flex: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-right: 0.45rem;
+  opacity: 0.8;
+}
 /* A whisper of context: the language, top-left, fading in on hover. Skipped for
    plain `text` (noise) and for blocks that already have a filename header, and
    given its own backdrop so it stays legible over the code. */
@@ -327,6 +336,11 @@ body {
   opacity: 0.55;
   backdrop-filter: blur(2px);
   transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+/* With a header bar, center the button within it (header ≈2.25rem, button
+   1.75rem → 0.25rem top) so it doesn't crowd the header's bottom border. */
+.prose .cb[data-has-filename] .cb-copy {
+  top: 0.25rem;
 }
 .prose .cb:hover .cb-copy,
 .prose .cb-copy:focus-visible {

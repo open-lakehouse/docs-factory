@@ -2361,6 +2361,16 @@ a.model-ref-label:hover {
   gap: 0.5rem;
   min-width: 0;
 }
+/* Unread indicator — a small accent dot before the section label when the
+   thread has comments newer than the viewer's read watermark. */
+.review-unread-dot {
+  flex: none;
+  align-self: center;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
 .review-thread-section {
   flex: none;
   max-width: 42%;
@@ -2465,10 +2475,24 @@ a.model-ref-label:hover {
   border-left: 2px solid var(--border);
 }
 .review-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--heading);
+  text-decoration: none;
+}
+a.review-author:hover span {
+  text-decoration: underline;
+}
+.review-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
 }
 .review-body {
   margin: 0;
@@ -2477,6 +2501,14 @@ a.model-ref-label:hover {
   color: var(--body);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+}
+/* Frozen git provenance — the commit a comment was authored against. Subtle,
+   monospace, sits below the body. */
+.review-provenance {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--muted);
 }
 /* Per-comment reply affordance (targets a specific comment for nested threads).
    Hidden until the comment is hovered/focused to keep the rail calm. */

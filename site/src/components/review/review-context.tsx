@@ -15,11 +15,20 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { useQuery, createConnectQueryKey, useTransport } from "@connectrpc/connect-query";
+import {
+  useQuery,
+  useMutation,
+  createConnectQueryKey,
+  useTransport,
+} from "@connectrpc/connect-query";
 import { useQueryClient } from "@tanstack/react-query";
-import { listComments } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import {
+  listComments,
+  markThreadSeen,
+} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef, Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
+import { baseUrl, sseEnabled } from "../../lib/review-client";
 import {
   readReviewDisplayMode,
   setReviewDisplayMode,
@@ -85,14 +94,15 @@ export function ReviewProvider({
   // Poll so a reviewer sees other reviewers' comments arrive without a reload.
   // Gated on being allowlisted; TanStack pauses the interval while the tab is
   // hidden and refetches on window focus, so background tabs don't hammer the
-  // API. A modest interval keeps the rail live without a push channel (SSE is a
-  // later, on-demand upgrade — see the plan).
+  // API. When SSE is enabled the interval drops to a slow backstop (SSE is the
+  // primary path then); otherwise a modest interval keeps the rail live.
+  const pollInterval = sseEnabled ? 60_000 : 15_000;
   const { data, refetch } = useQuery(
     listComments,
     { ref: contentRef },
     {
       enabled: isAllowlisted,
-      refetchInterval: isAllowlisted ? 15_000 : false,
+      refetchInterval: isAllowlisted ? pollInterval : false,
       refetchIntervalInBackground: false,
       refetchOnWindowFocus: true,
     },
@@ -118,10 +128,61 @@ export function ReviewProvider({
     return () => window.removeEventListener(REVIEW_DISPLAY_MODE_EVENT, handler);
   }, []);
 
+  const seen = useMutation(markThreadSeen);
+  const listKey = useMemo(
+    () =>
+      createConnectQueryKey({
+        schema: listComments,
+        transport,
+        input: { ref: contentRef },
+        cardinality: "finite",
+      }),
+    [transport, contentRef],
+  );
+
+  // Live updates (Phase 4B): subscribe to the SSE hint channel and invalidate
+  // the shared listComments cache when a matching ref changes, so other
+  // reviewers' comments appear within ~1s rather than a poll interval. This is
+  // an invalidation hint only — the unary query stays the data source. EventSource
+  // auto-reconnects, and the slow poll interval above is the backstop if the
+  // stream is dropped/evicted. Off unless VITE_REVIEW_SSE is set.
+  useEffect(() => {
+    if (!sseEnabled || !isAllowlisted) return;
+    const url = new URL("/events/comments", baseUrl);
+    url.searchParams.set("ref", `${contentRef.area}:${contentRef.slug}`);
+    const es = new EventSource(url, { withCredentials: true });
+    es.addEventListener("invalidate", (e) => {
+      // Only invalidate when the changed ref matches this page's content.
+      try {
+        const changed = JSON.parse((e as MessageEvent).data) as { area?: string; slug?: string };
+        if (changed.slug && changed.slug !== contentRef.slug) return;
+      } catch {
+        // Malformed payload — fall through and invalidate defensively.
+      }
+      void queryClient.invalidateQueries({ queryKey: listKey });
+    });
+    return () => es.close();
+  }, [isAllowlisted, contentRef.area, contentRef.slug, queryClient, listKey]);
+
   const selectThread = useCallback(
-    (id: string | null) =>
-      setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 })),
-    [],
+    (id: string | null) => {
+      setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 }));
+      if (id === null || !isAllowlisted) return;
+      // Mark read on open. Optimistically clear the thread's unread badge in the
+      // cached list so the dot disappears immediately; the next poll confirms.
+      queryClient.setQueryData(listKey, (old: typeof data | undefined) => {
+        if (!old) return old;
+        const clear = (t: Thread): Thread =>
+          t.root?.id === id ? { ...t, hasUnread: false, unreadCount: 0 } : t;
+        return {
+          ...old,
+          threads: old.threads.map(clear),
+          orphanedThreads: old.orphanedThreads.map(clear),
+        };
+      });
+      seen.mutate({ threadRootId: id });
+    },
+    [isAllowlisted, queryClient, listKey, seen, data],
   );
   const hoverThread = useCallback((id: string | null) => setHoveredThreadId(id), []);
   // Invalidate the shared listComments cache entry so every mounted consumer

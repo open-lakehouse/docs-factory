@@ -9,6 +9,7 @@
 // Auth: an interceptor resolves the viewer once per request; RPCs read it via
 // getViewer(ctx) and enforce with requireAllowlisted / requireMaintainer.
 import { create } from "@bufbuild/protobuf";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type ConnectRouter } from "@connectrpc/connect";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
@@ -19,11 +20,13 @@ import {
   CreateCommentResponseSchema,
   ResolveThreadResponseSchema,
   UnresolveThreadResponseSchema,
+  MarkThreadSeenResponseSchema,
   GetSourceFileResponseSchema,
   TransitionReviewResponseSchema,
   ReleaseContentResponseSchema,
   ManageAllowlistRequest_Action,
   ManageAllowlistResponseSchema,
+  EraseUserResponseSchema,
   RegisterVersionResponseSchema,
   type ListDraftsRequest,
   type GetDraftContentRequest,
@@ -31,10 +34,12 @@ import {
   type CreateCommentRequest,
   type ResolveThreadRequest,
   type UnresolveThreadRequest,
+  type MarkThreadSeenRequest,
   type GetSourceFileRequest,
   type TransitionReviewRequest,
   type ReleaseContentRequest,
   type ManageAllowlistRequest,
+  type EraseUserRequest,
   type RegisterVersionRequest,
 } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
@@ -62,6 +67,7 @@ import {
 import { roleFromDb } from "../allowlist.js";
 import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
 import { assembleThreads, type CommentRow, type ResolutionRow } from "../comments.js";
+import { notifyCommentsChanged } from "../notify.js";
 
 const PUBLISHED = "published";
 // Maximum reply nesting under a thread root (root = depth 0). Keeps the tree
@@ -196,18 +202,22 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       async listComments(req: ListCommentsRequest, ctx) {
         // Comments are a reviewer artifact: allowlist-only, for all content.
-        requireAllowlisted(ctx);
+        const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         const sql = db();
         const area = areaToDb(req.ref.area);
+        const viewerId = viewer.userId ?? viewer.login;
         const rows = await sql<CommentRow[]>`
-          select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-                 author_login, body_md, created_at, edited_at, orphaned,
-                 selector_quote, selector_prefix, selector_suffix, selector_start,
-                 code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
-          from comment
-          where area = ${area} and slug = ${req.ref.slug}
-          order by id asc
+          select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
+                 c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
+                 c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
+                 c.code_path, c.code_region, c.code_line, c.code_end_line,
+                 c.code_line_hash, c.code_file_hash,
+                 c.authored_version_id, cv.git_sha as authored_git_sha
+          from comment c
+          left join content_version cv on cv.id = c.authored_version_id
+          where c.area = ${area} and c.slug = ${req.ref.slug}
+          order by c.id asc
         `;
         const rootIds = rows.filter((r) => r.parent_id == null).map((r) => r.id);
         const resolutions = rootIds.length
@@ -216,10 +226,20 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               from comment_resolution where thread_root_id in ${sql(rootIds)}
             `
           : [];
+        // Per-thread read watermark for this viewer, to compute has_unread.
+        const seen =
+          viewerId && rootIds.length
+            ? await sql<{ thread_root_id: string; seen_at: Date }[]>`
+                select thread_root_id, seen_at from comment_seen
+                where viewer_id = ${viewerId} and thread_root_id in ${sql(rootIds)}
+              `
+            : [];
+        const seenByRoot = new Map(seen.map((s) => [s.thread_root_id, s.seen_at]));
         const { threads, orphaned } = assembleThreads(
           { area, slug: req.ref.slug, project: req.ref.project, bucket: req.ref.bucket },
           rows,
           resolutions,
+          seenByRoot,
         );
         return create(ListCommentsResponseSchema, { threads, orphanedThreads: orphaned });
       },
@@ -279,27 +299,33 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const [row] = await sql<CommentRow[]>`
           insert into comment
             (area, slug, section_id, authored_version_id, anchor_slug, anchor_fingerprint, parent_id,
-             author_user_id, author_login, body_md, orphaned,
+             author_user_id, author_login, author_name, body_md, orphaned,
              selector_quote, selector_prefix, selector_suffix, selector_start,
              code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash)
           values
             (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${latest?.id ?? null}, ${req.anchorSlug},
              ${req.anchorFingerprint}, ${parentId},
-             ${viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"}, ${req.bodyMd}, false,
+             ${viewer.userId ?? viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"},
+             ${viewer.name ?? null}, ${req.bodyMd}, false,
              ${sel?.quote ?? null}, ${sel?.prefix ?? null}, ${sel?.suffix ?? null},
              ${sel ? sel.start : null},
              ${code?.path ?? null}, ${code?.region ?? null}, ${code ? code.line : null},
              ${code ? code.endLine : null}, ${code?.lineHash ?? null}, ${code?.fileHash ?? null})
           returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-                    author_login, body_md, created_at, edited_at, orphaned,
+                    author_login, author_name, body_md, created_at, edited_at, orphaned,
                     selector_quote, selector_prefix, selector_suffix, selector_start,
-                    code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
+                    code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
+                    authored_version_id,
+                    (select git_sha from content_version where id = comment.authored_version_id)
+                      as authored_git_sha
         `;
         const { threads } = assembleThreads(
           { area, slug: req.ref.slug, project: req.ref.project, bucket: req.ref.bucket },
           [row],
           [],
         );
+        // Hint any SSE-subscribed reviewers to refetch (best-effort).
+        await notifyCommentsChanged(sql, { area, slug: req.ref.slug });
         return create(CreateCommentResponseSchema, {
           comment: threads[0]?.root ?? undefined,
         });
@@ -307,16 +333,46 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       async resolveThread(req: ResolveThreadRequest, ctx) {
         const viewer = requireAllowlisted(ctx);
-        return create(ResolveThreadResponseSchema, {
-          thread: await setResolved(req.threadRootId, true, viewer.login ?? "unknown"),
-        });
+        const thread = await setResolved(req.threadRootId, true, viewer.login ?? "unknown");
+        if (thread.root?.ref) {
+          await notifyCommentsChanged(db(), {
+            area: areaToDb(thread.root.ref.area),
+            slug: thread.root.ref.slug,
+          });
+        }
+        return create(ResolveThreadResponseSchema, { thread });
       },
 
       async unresolveThread(req: UnresolveThreadRequest, ctx) {
         requireAllowlisted(ctx);
-        return create(UnresolveThreadResponseSchema, {
-          thread: await setResolved(req.threadRootId, false, null),
-        });
+        const thread = await setResolved(req.threadRootId, false, null);
+        if (thread.root?.ref) {
+          await notifyCommentsChanged(db(), {
+            area: areaToDb(thread.root.ref.area),
+            slug: thread.root.ref.slug,
+          });
+        }
+        return create(UnresolveThreadResponseSchema, { thread });
+      },
+
+      async markThreadSeen(req: MarkThreadSeenRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.threadRootId) {
+          throw new ConnectError("thread_root_id is required", Code.InvalidArgument);
+        }
+        const viewerId = viewer.userId ?? viewer.login;
+        if (!viewerId) throw new ConnectError("no viewer identity", Code.Unauthenticated);
+        const sql = db();
+        // Default the watermark to server now(); a client-supplied seen_at lets
+        // it mark "read as of" a specific moment (e.g. the last render).
+        const seenAt = req.seenAt ? timestampDate(req.seenAt) : null;
+        await sql`
+          insert into comment_seen (viewer_id, thread_root_id, seen_at)
+          values (${viewerId}, ${req.threadRootId}, ${seenAt ?? sql`now()`})
+          on conflict (viewer_id, thread_root_id)
+            do update set seen_at = excluded.seen_at
+        `;
+        return create(MarkThreadSeenResponseSchema, {});
       },
 
       async getSourceFile(req: GetSourceFileRequest, ctx) {
@@ -417,6 +473,65 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               role: roleFromDb(e.role),
             }),
           ),
+        });
+      },
+
+      async eraseUser(req: EraseUserRequest, ctx) {
+        requireMaintainer(ctx);
+        const userId = req.userId?.trim() || null;
+        const login = req.login?.trim() || null;
+        if (!userId && !login) {
+          throw new ConnectError("user_id or login is required", Code.InvalidArgument);
+        }
+        // The tombstone keeps thread structure legible after erasure (hard-delete
+        // would cascade via parent_id and take others' replies with it).
+        const TOMBSTONE = "deleted-user";
+
+        // One transaction so a user is never left half-erased. Every identity
+        // column is matched against BOTH the stable user id and the login, so a
+        // rename before erasure can't leave part of the footprint behind.
+        const counts = await db().begin(async (sql) => {
+          // author_user_id is the stable id; author_login is the login. Match
+          // either. Tombstone content + identity but keep the row + its edges.
+          const tombstoned = await sql`
+            update comment set
+              author_login = ${TOMBSTONE},
+              author_user_id = ${TOMBSTONE},
+              author_name = null,
+              body_md = '[removed]'
+            where (${userId}::text is not null and author_user_id = ${userId})
+               or (${login}::text is not null and author_login = ${login})
+          `;
+          // review_state / resolution actors are written from the login today.
+          const reviewStates = await sql`
+            update review_state set actor_user_id = ${TOMBSTONE}
+            where (${userId}::text is not null and actor_user_id = ${userId})
+               or (${login}::text is not null and actor_user_id = ${login})
+          `;
+          const resolutions = await sql`
+            update comment_resolution set resolved_by = ${TOMBSTONE}
+            where (${userId}::text is not null and resolved_by = ${userId})
+               or (${login}::text is not null and resolved_by = ${login})
+          `;
+          // Read-state is worthless once the user is gone — hard-delete it.
+          const seen = await sql`
+            delete from comment_seen
+            where (${userId}::text is not null and viewer_id = ${userId})
+               or (${login}::text is not null and viewer_id = ${login})
+          `;
+          return {
+            comments: tombstoned.count,
+            reviewStates: reviewStates.count,
+            resolutions: resolutions.count,
+            seen: seen.count,
+          };
+        });
+
+        return create(EraseUserResponseSchema, {
+          commentsTombstoned: counts.comments,
+          reviewStatesScrubbed: counts.reviewStates,
+          resolutionsScrubbed: counts.resolutions,
+          seenRowsDeleted: counts.seen,
         });
       },
 
@@ -534,11 +649,15 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 async function setResolved(threadRootId: string, resolved: boolean, by: string | null) {
   const sql = db();
   const [root] = await sql<CommentRow[]>`
-    select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-           author_login, body_md, created_at, edited_at, orphaned,
-           selector_quote, selector_prefix, selector_suffix, selector_start,
-           code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
-    from comment where id = ${threadRootId} and parent_id is null
+    select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
+           c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
+           c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
+           c.code_path, c.code_region, c.code_line, c.code_end_line,
+           c.code_line_hash, c.code_file_hash,
+           c.authored_version_id, cv.git_sha as authored_git_sha
+    from comment c
+    left join content_version cv on cv.id = c.authored_version_id
+    where c.id = ${threadRootId} and c.parent_id is null
   `;
   if (!root) throw new ConnectError("thread not found", Code.NotFound);
   await sql`
@@ -558,11 +677,15 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
       select c.* from comment c
       join descendants d on c.parent_id = d.id
     )
-    select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-           author_login, body_md, created_at, edited_at, orphaned,
-           selector_quote, selector_prefix, selector_suffix, selector_start,
-           code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
-    from descendants order by id asc
+    select d.id, d.area, d.slug, d.anchor_slug, d.anchor_fingerprint, d.parent_id,
+           d.author_login, d.author_name, d.body_md, d.created_at, d.edited_at, d.orphaned,
+           d.selector_quote, d.selector_prefix, d.selector_suffix, d.selector_start,
+           d.code_path, d.code_region, d.code_line, d.code_end_line,
+           d.code_line_hash, d.code_file_hash,
+           d.authored_version_id, cv.git_sha as authored_git_sha
+    from descendants d
+    left join content_version cv on cv.id = d.authored_version_id
+    order by d.id asc
   `;
   const resolutions = await sql<ResolutionRow[]>`
     select thread_root_id, resolved, resolved_by, resolved_at

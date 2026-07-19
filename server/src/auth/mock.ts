@@ -20,11 +20,16 @@ export const mockProvider: AuthProvider = {
 
     const [kindRaw, loginRaw] = raw.split(":");
     const kind = kindRaw.toLowerCase();
+    // Mint a stable synthetic user id + display name per persona so the
+    // identity/read-state paths behave as they would with a real Neon Auth user.
+    const identity = (login: string) => ({ userId: `mock:${login}`, name: `Dev ${login}` });
     if (kind === "reviewer") {
-      return viewer(loginRaw?.trim() || "dev-reviewer", Role.REVIEWER);
+      const login = loginRaw?.trim() || "dev-reviewer";
+      return viewer(login, Role.REVIEWER, identity(login));
     }
     if (kind === "maintainer") {
-      return viewer(loginRaw?.trim() || "dev-maintainer", Role.MAINTAINER);
+      const login = loginRaw?.trim() || "dev-maintainer";
+      return viewer(login, Role.MAINTAINER, identity(login));
     }
     return anonymousViewer();
   },

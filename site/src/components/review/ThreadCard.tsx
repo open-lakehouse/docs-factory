@@ -79,6 +79,13 @@ export default function ThreadCard({
     >
       {!selected ? (
         <div className="review-thread-collapsed">
+          {thread.hasUnread && (
+            <span
+              className="review-unread-dot"
+              aria-label={`${thread.unreadCount} unread`}
+              title={`${thread.unreadCount} unread`}
+            />
+          )}
           <span className="review-thread-section" title={label}>
             {label}
           </span>

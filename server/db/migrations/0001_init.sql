@@ -7,6 +7,10 @@
 -- (`default uuidv7()`, native in PostgreSQL 18). Clients never send an id; the
 -- handler reads it back via RETURNING. UUIDv7 is naturally sortable by creation
 -- time, so it doubles as a stable cursor and avoids enumerable serial ids.
+--
+-- This is the single authoritative base migration. There is no data to
+-- preserve (local dev purges the DB, prod is not yet deployed), so the schema
+-- is declared in its final shape rather than as a chain of additive migrations.
 
 -- One row per (area, slug, content_hash): a rendered content version, registered
 -- on each deploy whose body changed. content_hash = sha256 of the body only.
@@ -28,6 +32,8 @@ create index if not exists content_version_ref_idx
 
 -- Heading-anchored sections of a version. anchor_slug is the rehype-slug id in
 -- the rendered DOM; fingerprint is normalized heading text for re-anchoring.
+-- plain_text is the normalized section body so the server can re-anchor quote
+-- comments (find the quote in a new version) without re-fetching source.
 create table if not exists content_section (
   id            uuid primary key default uuidv7(),
   version_id    uuid not null references content_version (id) on delete cascade,
@@ -36,6 +42,8 @@ create table if not exists content_section (
   heading_text  text not null,
   heading_level int  not null,
   ordinal       int  not null,
+  plain_text    text not null default '',
+  char_len      int,
   unique (version_id, anchor_slug)
 );
 
@@ -63,6 +71,15 @@ create index if not exists review_state_ref_idx
 -- authored_version_id freezes the content_version a comment was written against,
 -- so its git provenance survives re-anchoring (section_id moves forward across
 -- versions; authored_version_id does not).
+--
+-- Identity: author_user_id is the stable Neon Auth user.id (keying, survives a
+-- GitHub login rename); author_login is the GitHub login (display + avatar via
+-- github.com/<login>.png); author_name is a cached display-name snapshot so a
+-- historical comment renders stably even if the profile later changes.
+--
+-- A comment carries at most one fine-grained selector: `selector_*` pins to a
+-- quoted prose range within the section; `code_*` pins to a line/region in a
+-- snippet's source file. All null = a plain heading-level comment.
 create table if not exists comment (
   id                  uuid primary key default uuidv7(),
   area                text not null,
@@ -74,10 +91,21 @@ create table if not exists comment (
   parent_id           uuid references comment (id) on delete cascade,
   author_user_id      text not null,
   author_login        text not null,
+  author_name         text,
   body_md             text not null,
   created_at          timestamptz not null default now(),
   edited_at           timestamptz,
-  orphaned            boolean not null default false
+  orphaned            boolean not null default false,
+  selector_quote      text,
+  selector_prefix     text,
+  selector_suffix     text,
+  selector_start      int,
+  code_path           text,
+  code_region         text,
+  code_line           int,
+  code_end_line       int,
+  code_line_hash      text,
+  code_file_hash      text
 );
 create index if not exists comment_ref_anchor_idx on comment (area, slug, anchor_slug);
 create index if not exists comment_parent_idx on comment (parent_id);
@@ -85,6 +113,8 @@ create index if not exists comment_parent_idx on comment (parent_id);
 -- is UUIDv7 (time-ordered), this index serves the filter AND the sort with no
 -- separate sort step — id order == creation order.
 create index if not exists comment_ref_id_idx on comment (area, slug, id);
+-- Code comments are queried by their source path when re-anchoring.
+create index if not exists comment_code_path_idx on comment (area, slug, code_path);
 
 -- Resolve/unresolve state per thread root (audit-friendly).
 create table if not exists comment_resolution (
@@ -93,6 +123,52 @@ create table if not exists comment_resolution (
   resolved_by    text,
   resolved_at    timestamptz
 );
+
+-- Per-viewer read watermark, one row per (viewer, thread root). A thread is
+-- unread when any comment in it has created_at > seen_at (or no row exists).
+-- viewer_id is the stable Neon Auth user.id — attribution is intentional
+-- (employees log in via GitHub OAuth), so no HMAC/secret keying is needed.
+-- Erasure (EraseUser) hard-deletes a user's rows here.
+create table if not exists comment_seen (
+  viewer_id      text        not null,
+  thread_root_id uuid        not null references comment (id) on delete cascade,
+  seen_at        timestamptz not null,
+  primary key (viewer_id, thread_root_id)
+);
+
+-- Resolved `file=` snippet references per version. Used to re-anchor code
+-- comments (region present -> line-hash -> orphan) and to back the
+-- "open full source" review pane, without repo access at review time.
+create table if not exists content_snippet (
+  id         uuid primary key default uuidv7(),
+  version_id uuid not null references content_version (id) on delete cascade,
+  path       text not null,
+  region     text not null default '',
+  start_line int  not null,
+  end_line   int  not null,
+  file_hash  text not null
+);
+create index if not exists content_snippet_version_idx
+  on content_snippet (version_id);
+-- Code comments look up snippets by (area, slug, path) via the version join;
+-- index the path for that lookup.
+create index if not exists content_snippet_path_idx
+  on content_snippet (path);
+
+-- Full source text of each unique snippet `path` in a version. Registered once
+-- per path (many snippet refs can share a file). Backs line-hash re-anchoring of
+-- code comments and the "open full source" review pane, so no repo access is
+-- needed at review time.
+create table if not exists content_source (
+  id         uuid primary key default uuidv7(),
+  version_id uuid not null references content_version (id) on delete cascade,
+  path       text not null,
+  text       text not null,
+  file_hash  text not null,
+  unique (version_id, path)
+);
+create index if not exists content_source_version_idx
+  on content_source (version_id);
 
 -- Reviewer allowlist, by github login and/or email.
 create table if not exists reviewer_allowlist (

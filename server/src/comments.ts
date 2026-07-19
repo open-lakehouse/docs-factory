@@ -24,7 +24,12 @@ export interface CommentRow {
   anchor_fingerprint: string;
   parent_id: string | null; // uuid
   author_login: string;
+  author_name: string | null;
   body_md: string;
+  // Frozen git provenance. authored_version_id is the content_version this
+  // comment was written against; authored_git_sha is joined from that version.
+  authored_version_id: string | null; // uuid
+  authored_git_sha: string | null;
   created_at: Date;
   edited_at: Date | null;
   orphaned: boolean;
@@ -57,10 +62,13 @@ function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
     anchorFingerprint: row.anchor_fingerprint,
     parentId: row.parent_id ?? undefined,
     authorLogin: row.author_login,
+    authorName: row.author_name ?? undefined,
     bodyMd: row.body_md,
     createdAt: timestampFromDate(row.created_at),
     editedAt: row.edited_at ? timestampFromDate(row.edited_at) : undefined,
     orphaned: row.orphaned,
+    authoredVersionId: row.authored_version_id ?? undefined,
+    authoredGitSha: row.authored_git_sha ?? undefined,
     // At most one fine-grained selector; prose takes precedence if both were
     // somehow set (they never are — create writes exactly one branch).
     selector:
@@ -99,6 +107,11 @@ export function assembleThreads(
   ref: { area: string; slug: string; project?: string | null; bucket?: string | null },
   comments: CommentRow[],
   resolutions: ResolutionRow[],
+  // Per-thread-root read watermark for the current viewer. A thread is unread
+  // when any of its comments was created after this timestamp; a root absent
+  // from the map is fully unread. Omitted entirely for an anonymous viewer, in
+  // which case no thread carries unread state.
+  seenByRoot?: Map<string, Date>,
 ): { threads: Thread[]; orphaned: Thread[] } {
   const protoRef = create(ContentRefSchema, {
     area: areaFromDb(ref.area),
@@ -141,16 +154,40 @@ export function assembleThreads(
     return out;
   };
 
+  // Count comments in a root's subtree (incl. the root) created after `seen`.
+  // A null watermark means the viewer never opened the thread → all unread.
+  // Reuses the same cycle-safe DFS shape as flattenReplies.
+  const unreadCount = (root: CommentRow, seen: Date | null): number => {
+    let count = 0;
+    const visited = new Set<string>();
+    const consider = (c: CommentRow) => {
+      if (visited.has(c.id)) return;
+      visited.add(c.id);
+      if (seen == null || c.created_at > seen) count += 1;
+      for (const child of childrenByParent.get(c.id) ?? []) consider(child);
+    };
+    consider(root);
+    return count;
+  };
+
   const threads: Thread[] = [];
   const orphaned: Thread[] = [];
   for (const root of roots) {
     const res = resById.get(root.id);
+    // seenByRoot present == an identified viewer we track read-state for. `has`
+    // distinguishes "opened before" (watermark) from "never opened" (fully
+    // unread) — a missing key is not the same as a zero timestamp.
+    const unread = seenByRoot
+      ? unreadCount(root, seenByRoot.has(root.id) ? (seenByRoot.get(root.id) ?? null) : null)
+      : 0;
     const thread = create(ThreadSchema, {
       root: commentFromRow(root, protoRef),
       replies: flattenReplies(root),
       resolved: res?.resolved ?? false,
       resolvedBy: res?.resolved_by ?? undefined,
       resolvedAt: res?.resolved_at ? timestampFromDate(res.resolved_at) : undefined,
+      hasUnread: unread > 0,
+      unreadCount: unread,
     });
     (root.orphaned ? orphaned : threads).push(thread);
   }

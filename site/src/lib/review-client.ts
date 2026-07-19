@@ -7,7 +7,12 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb";
 import { DEV_PERSONA_HEADER, readDevPersona } from "./dev-persona";
 
-const baseUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
+export const baseUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
+
+// Live comment updates via the SSE endpoint (Phase 4B). Off by default; opt in
+// with VITE_REVIEW_SSE=true once the server has REVIEW_SSE_ENABLED. When off,
+// the poll interval alone keeps the rail live.
+export const sseEnabled = import.meta.env.VITE_REVIEW_SSE === "true";
 
 export const transport = createConnectTransport({
   baseUrl,

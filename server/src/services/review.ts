@@ -67,6 +67,7 @@ import {
 import { roleFromDb } from "../allowlist.js";
 import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
 import { assembleThreads, type CommentRow, type ResolutionRow } from "../comments.js";
+import { notifyCommentsChanged } from "../notify.js";
 
 const PUBLISHED = "published";
 // Maximum reply nesting under a thread root (root = depth 0). Keeps the tree
@@ -323,6 +324,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           [row],
           [],
         );
+        // Hint any SSE-subscribed reviewers to refetch (best-effort).
+        await notifyCommentsChanged(sql, { area, slug: req.ref.slug });
         return create(CreateCommentResponseSchema, {
           comment: threads[0]?.root ?? undefined,
         });
@@ -330,16 +333,26 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       async resolveThread(req: ResolveThreadRequest, ctx) {
         const viewer = requireAllowlisted(ctx);
-        return create(ResolveThreadResponseSchema, {
-          thread: await setResolved(req.threadRootId, true, viewer.login ?? "unknown"),
-        });
+        const thread = await setResolved(req.threadRootId, true, viewer.login ?? "unknown");
+        if (thread.root?.ref) {
+          await notifyCommentsChanged(db(), {
+            area: areaToDb(thread.root.ref.area),
+            slug: thread.root.ref.slug,
+          });
+        }
+        return create(ResolveThreadResponseSchema, { thread });
       },
 
       async unresolveThread(req: UnresolveThreadRequest, ctx) {
         requireAllowlisted(ctx);
-        return create(UnresolveThreadResponseSchema, {
-          thread: await setResolved(req.threadRootId, false, null),
-        });
+        const thread = await setResolved(req.threadRootId, false, null);
+        if (thread.root?.ref) {
+          await notifyCommentsChanged(db(), {
+            area: areaToDb(thread.root.ref.area),
+            slug: thread.root.ref.slug,
+          });
+        }
+        return create(UnresolveThreadResponseSchema, { thread });
       },
 
       async markThreadSeen(req: MarkThreadSeenRequest, ctx) {

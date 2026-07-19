@@ -29,7 +29,7 @@ React SPA calls it with `@connectrpc/connect-web` + `@connectrpc/connect-query`.
 ## Local dev
 
 ```bash
-just server-dev            # AUTH_MODE=mock, http://localhost:8787
+just server-dev            # AUTH_MODE=anon (Phase 1), http://localhost:8787
 # smoke test:
 curl -s -X POST localhost:8787/docs_factory.review.v1.ReviewService/GetViewer \
   -H 'Content-Type: application/json' -H 'Connect-Protocol-Version: 1' -d '{}'
@@ -37,6 +37,22 @@ curl -s -X POST localhost:8787/docs_factory.review.v1.ReviewService/GetViewer \
 
 `GetViewer` needs no database. Anything touching Postgres needs `DATABASE_URL`
 pointed at a local Postgres or a Neon branch, and `db/migrations/` applied.
+
+## Content version registry (deploy-per-push)
+
+The review layer keys comments to a content version. On each deploy:
+
+1. `just version-manifest` writes `site/src/generated/content-versions.json`
+   (sha256 of each draft/doc body + its section anchors; heading ids match the
+   rendered DOM exactly — same `github-slugger` as rehype-slug).
+2. `just register-versions` (with `API_URL` + `BUILD_SECRET`) calls
+   `RegisterVersion` per entry: idempotent upsert on `(area, slug, content_hash)`,
+   replaces the version's section rows, and re-anchors open comment threads.
+
+PR CI only checks the committed manifest is fresh (git sha excluded); the
+`register-versions` call runs in the deploy pipeline, where the API and
+`BUILD_SECRET` exist. Locally: `just db-up && just db-migrate && just server-dev`,
+then in another shell `API_URL=http://localhost:8787 BUILD_SECRET=… just register-versions`.
 
 ## Auth modes (`AUTH_MODE`)
 

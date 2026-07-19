@@ -1,0 +1,27 @@
+# Local Postgres for developing the review backend offline. Mirrors the Neon
+# Postgres the Neon Function talks to in prod. Bring up with `just db-up`, apply
+# migrations with `just db-migrate`.
+#
+# Credentials come from server/.env (see .env.example); compose reads that file
+# automatically. The composed DATABASE_URL is also in .env, so no connection
+# string is hardcoded in a tracked file.
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${PGUSER:-review}
+      POSTGRES_PASSWORD: ${PGPASSWORD:-review}
+      POSTGRES_DB: ${PGDATABASE:-review}
+    ports:
+      # Host port to avoid clashing with a system Postgres on 5432.
+      - "${PGPORT:-5433}:5432"
+    volumes:
+      - review-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-review} -d ${PGDATABASE:-review}"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  review-pgdata:

@@ -51,10 +51,35 @@ buf-gen:
 buf-check:
     cd proto && buf lint
 
-# Run the review backend locally (same Hono+Connect app the Neon Function runs),
-# with the mock auth provider so no GitHub OAuth is needed. See server/README.md.
+# Regenerate site/src/generated/content-versions.json (body hashes + section
+# anchors) from blogs/ and content/. Heading ids match the rendered DOM exactly.
+version-manifest: _site-deps
+    cd site && node scripts/build-version-manifest.mjs
+
+# Push the manifest to the review API (RegisterVersion per entry). Run after a
+# deploy; needs API_URL + BUILD_SECRET. Locally, run `just server-dev` first.
+# Uses bun to run the script since it imports the generated TypeScript client.
+register-versions: _server-deps
+    cd server && set -a && [ -f .env ] && . ./.env; set +a; bun run scripts/register-versions.mjs
+
+# Start the local Postgres (docker-compose in server/) and wait until healthy.
+# Credentials come from server/.env (copy server/.env.example first).
+db-up:
+    cd server && docker compose up -d --wait
+
+# Stop the local Postgres (keeps the data volume).
+db-down:
+    cd server && docker compose down
+
+# Apply db/migrations/*.sql. Reads DATABASE_URL or the PG* parts from server/.env.
+db-migrate: _server-deps
+    cd server && set -a && [ -f .env ] && . ./.env; set +a; node scripts/migrate.mjs
+
+# Run the review backend locally (same Hono+Connect app the Neon Function runs).
+# Defaults AUTH_MODE=anon (Phase 1); Phase 2 adds mock impersonation. Reads
+# server/.env if present. See server/README.md.
 server-dev: _server-deps
-    cd server && AUTH_MODE=mock bun run dev
+    cd server && set -a && [ -f .env ] && . ./.env; set +a; AUTH_MODE="${AUTH_MODE:-anon}" bun run dev
 
 _server-deps:
     #!/usr/bin/env bash

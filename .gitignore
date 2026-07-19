@@ -38,6 +38,12 @@ node_modules/
 # Generated proto code (site/src/gen, server/src/gen) IS committed — CI
 # regenerates and checks it is up to date (see just buf-gen).
 
+# Local env files (secrets / connection strings). .env.example is tracked.
+.env
+.env.local
+*.env
+!.env.example
+
 # OS
 .DS_Store
 Thumbs.db

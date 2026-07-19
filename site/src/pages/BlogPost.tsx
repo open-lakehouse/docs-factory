@@ -5,6 +5,7 @@ import ReviewRail from "../components/review/ReviewRail";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
+import { ReviewProvider } from "../components/review/review-context";
 import ReviewControls from "../components/review/ReviewControls";
 import { blogRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
@@ -45,6 +46,7 @@ export default function BlogPost() {
   return (
     <Shell wide>
       <SelectionProvider>
+      <ReviewProvider contentRef={blogRef(slug)}>
       <div className="blog-post-layout">
         <div className="blog-post-main">
           <Breadcrumbs
@@ -99,10 +101,11 @@ export default function BlogPost() {
             }
           />
         </div>
-        <ReviewRail contentRef={blogRef(slug)} articleRef={articleRef} />
+        <ReviewRail articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={blogRef(slug)} articleRef={articleRef} />
       </div>
+      </ReviewProvider>
       </SelectionProvider>
     </Shell>
   );

@@ -6,6 +6,7 @@ import ReviewRail from "../components/review/ReviewRail";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
+import { ReviewProvider } from "../components/review/review-context";
 import ReviewControls from "../components/review/ReviewControls";
 import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
@@ -56,6 +57,7 @@ export default function DocPage() {
       accent={project === "unitycatalog" ? "unitycatalog" : "delta"}
     >
       <SelectionProvider>
+      <ReviewProvider contentRef={docRef(project, bucket, slug)}>
       <div className="docs-grid">
         <DocsSidebar activeProject={project} activeBucket={bucket} activeSlug={slug} />
         <div className="docs-main">
@@ -97,10 +99,11 @@ export default function DocPage() {
             next={neighbors.next ? { label: neighbors.next.label, href: neighbors.next.href } : undefined}
           />
         </div>
-        <ReviewRail contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
+        <ReviewRail articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
       </div>
+      </ReviewProvider>
       </SelectionProvider>
     </Shell>
   );

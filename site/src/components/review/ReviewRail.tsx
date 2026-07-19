@@ -1,22 +1,22 @@
 // Responsive review rail: TOC + comment sidebar on desktop; drawer on narrow screens.
+// Must be rendered inside a ReviewProvider (reads open-thread count from it).
 import { useEffect, useState, type RefObject } from "react";
 import { MessageSquare } from "lucide-react";
-import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import OnThisPage from "../layout/OnThisPage";
 import CommentSidebar from "./CommentSidebar";
 import { useSelectionState } from "./selection-context";
+import { useReview } from "./review-context";
 
 interface ReviewRailProps {
-  contentRef: ContentRef;
   articleRef: RefObject<HTMLElement | null>;
 }
 
-export default function ReviewRail({ contentRef, articleRef }: ReviewRailProps) {
+export default function ReviewRail({ articleRef }: ReviewRailProps) {
   const { isAllowlisted } = useAuth();
+  const { openCount } = useReview();
   const { pending } = useSelectionState();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [openCount, setOpenCount] = useState(0);
 
   // On narrow screens the rail is a drawer — open it when a selection composer appears.
   useEffect(() => {
@@ -26,11 +26,7 @@ export default function ReviewRail({ contentRef, articleRef }: ReviewRailProps) 
   const rail = (
     <>
       <OnThisPage articleRef={articleRef} />
-      <CommentSidebar
-        contentRef={contentRef}
-        articleRef={articleRef}
-        onOpenCountChange={setOpenCount}
-      />
+      <CommentSidebar articleRef={articleRef} />
     </>
   );
 

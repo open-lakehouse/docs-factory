@@ -401,6 +401,29 @@ body {
   font-family: inherit;
 }
 
+/* Review: commented source lines. The <Pre> code box tags its own
+   <span class="line"> children (from review context) so the highlight lives in
+   the native code surface rather than an overlay. inline-block + width:100% lets
+   the tint bleed the full row without a double line break (the `\n` after each
+   line still breaks); negative margins extend it under the <pre> padding, like a
+   diff/highlight line. */
+.prose .cb-pre .line.cb-line-commented {
+  display: inline-block;
+  width: 100%;
+  margin: 0 -1.1rem;
+  padding: 0 1.1rem;
+  background: color-mix(in oklab, gold 12%, transparent);
+  box-shadow: inset 3px 0 0 color-mix(in oklab, gold 55%, transparent);
+  cursor: pointer;
+}
+.prose .cb-pre .line.cb-line-commented:hover {
+  background: color-mix(in oklab, gold 20%, transparent);
+}
+.prose .cb-pre .line.cb-line-commented.cb-line-commented-focus {
+  background: color-mix(in oklab, gold 30%, transparent);
+  box-shadow: inset 3px 0 0 gold;
+}
+
 /* Code journeys — a GitHub-style step timeline (see src/components/journey.tsx).
    A thin MUTED rail runs down a left gutter through subtle grey-ringed bubbles;
    the Delta accent is only a whisper. Each step's bubble, title and code block

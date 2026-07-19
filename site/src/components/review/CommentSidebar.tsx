@@ -1,18 +1,17 @@
-// Per-section review comments for a rendered blog/doc page. Only mounts for
-// allowlisted viewers. Discovers headings from the article the same way
-// OnThisPage does (so anchors match the DOM + the version manifest), fetches
-// threads via connect-query (useQuery(listComments)), and lets reviewers post,
-// reply, and resolve — the in-app replacement for Google-Docs comments.
-import { useCallback, useEffect, useState, type RefObject } from "react";
-import { useQuery, useMutation } from "@connectrpc/connect-query";
-import {
-  listComments,
-  createComment,
-} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+// Review comments rail for a rendered blog/doc page. Only mounts for allowlisted
+// viewers. Reads threads + selection from the page ReviewProvider (shared with
+// the code boxes), discovers headings from the article for labels + the section
+// picker, and lets reviewers post, reply, and resolve — the in-app replacement
+// for Google-Docs comments. Threads render as collapsed one-row cards that
+// expand on selection.
+import { useEffect, useState, type RefObject } from "react";
+import { useMutation } from "@connectrpc/connect-query";
+import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { fingerprint } from "../../lib/content-ref";
 import { useAuth } from "../../lib/auth-context";
 import { useSelectionState, type PendingAnchor } from "./selection-context";
+import { useReview } from "./review-context";
 import QuoteHighlights from "./QuoteHighlights";
 import ReviewComposer from "./ReviewComposer";
 import ThreadCard from "./ThreadCard";
@@ -22,35 +21,26 @@ interface Heading {
   text: string;
 }
 
-interface CommentSidebarProps {
-  contentRef: ContentRef;
-  articleRef: RefObject<HTMLElement | null>;
-  onOpenCountChange?: (count: number) => void;
-}
-
 export default function CommentSidebar({
-  contentRef,
   articleRef,
-  onOpenCountChange,
-}: CommentSidebarProps) {
+}: {
+  articleRef: RefObject<HTMLElement | null>;
+}) {
   const { isAllowlisted } = useAuth();
-  const [headings, setHeadings] = useState<Heading[]>([]);
+  const {
+    contentRef,
+    threads,
+    orphanedThreads: orphaned,
+    openCount,
+    refetch,
+    activeThreadId,
+    selectedThreadId,
+    selectNonce,
+    hoverThread,
+    selectThread,
+  } = useReview();
   const { pending, setPending } = useSelectionState();
-  // Hover focus is ephemeral (just emphasizes the in-text quote); selection is
-  // sticky and scrolls the thread card into view. The active thread (hover, or
-  // else selected) drives the focused in-text highlight. `nonce` bumps on every
-  // selection so re-selecting the same thread (after collapsing/closing it)
-  // re-fires the scroll/expand effects.
-  const [hoveredThreadId, setHoveredThreadId] = useState<string | null>(null);
-  const [selection, setSelection] = useState<{ id: string; nonce: number } | null>(null);
-  const selectedThreadId = selection?.id ?? null;
-  const activeThreadId = hoveredThreadId ?? selectedThreadId;
-
-  const selectThread = useCallback(
-    (id: string | null) =>
-      setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 })),
-    [],
-  );
+  const [headings, setHeadings] = useState<Heading[]>([]);
 
   useEffect(() => {
     const article = articleRef.current;
@@ -62,17 +52,7 @@ export default function CommentSidebar({
     setHeadings(found);
   }, [articleRef, isAllowlisted]);
 
-  const { data, refetch } = useQuery(listComments, { ref: contentRef }, { enabled: isAllowlisted });
-
-  const threads = data?.threads ?? [];
-  const orphaned = data?.orphanedThreads ?? [];
-  const openCount = threads.filter((t) => !t.resolved).length + orphaned.filter((t) => !t.resolved).length;
-
-  useEffect(() => {
-    onOpenCountChange?.(openCount);
-  }, [onOpenCountChange, openCount]);
-
-  if (!isAllowlisted) return null;
+  if (!isAllowlisted || !contentRef) return null;
 
   const headingText = new Map(headings.map((h) => [h.id, h.text]));
   const sectionLabelFor = (slug?: string) => (slug && headingText.get(slug)) || "";
@@ -85,9 +65,9 @@ export default function CommentSidebar({
       sectionLabel={sectionLabelFor(t.root?.anchorSlug)}
       active={activeThreadId === t.root?.id}
       selected={selectedThreadId === t.root?.id}
-      selectNonce={selection?.nonce ?? 0}
-      onHover={() => setHoveredThreadId(t.root?.id ?? null)}
-      onLeave={() => setHoveredThreadId(null)}
+      selectNonce={selectNonce}
+      onHover={() => hoverThread(t.root?.id ?? null)}
+      onLeave={() => hoverThread(null)}
       onSelect={() => selectThread(t.root?.id ?? null)}
       onChange={refetch}
     />
@@ -120,7 +100,7 @@ export default function CommentSidebar({
           pending={pending}
           onDone={() => {
             setPending(null);
-            void refetch();
+            refetch();
           }}
           onCancel={() => setPending(null)}
         />

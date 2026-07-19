@@ -98,9 +98,15 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const areaFilter =
           req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
 
-        // Latest version per (area, slug), its current review state, and open
-        // (unresolved, non-orphaned) thread count. Unpublished rows are shown
-        // only to allowlisted viewers.
+        // Every (area, slug) with either a registered version OR standalone
+        // review activity (a review_state or a comment). Transitions and
+        // comments persist independent of version registration, so a draft can
+        // have a review state before RegisterVersion ever ran; keying off
+        // content_version alone would hide it and strand the state at NONE.
+        // Metadata (title/project/bucket/frontmatter) comes from the latest
+        // version when registered, else null. Unregistered rows have a null
+        // frontmatter_status and so are visible only to allowlisted viewers —
+        // which is fine, since only they can produce review activity.
         const rows = await sql<
           {
             area: string;
@@ -117,20 +123,28 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             select distinct on (area, slug) *
             from content_version
             order by area, slug, created_at desc
+          ),
+          keys as (
+            select area, slug from content_version
+            union
+            select area, slug from review_state
+            union
+            select area, slug from comment
           )
-          select l.area, l.slug, l.project, l.bucket, l.title, l.frontmatter_status,
+          select k.area, k.slug, l.project, l.bucket, l.title, l.frontmatter_status,
             (select rs.state from review_state rs
-              where rs.area = l.area and rs.slug = l.slug
+              where rs.area = k.area and rs.slug = k.slug
               order by rs.created_at desc limit 1) as review_state,
             (select count(*)::int from comment c
               left join comment_resolution cr on cr.thread_root_id = c.id
-              where c.area = l.area and c.slug = l.slug
+              where c.area = k.area and c.slug = k.slug
                 and c.parent_id is null and c.orphaned = false
                 and coalesce(cr.resolved, false) = false) as open_comments
-          from latest l
-          where (${areaFilter}::text is null or l.area = ${areaFilter})
+          from keys k
+          left join latest l on l.area = k.area and l.slug = k.slug
+          where (${areaFilter}::text is null or k.area = ${areaFilter})
             and (${viewer.isAllowlisted} or l.frontmatter_status = ${PUBLISHED})
-          order by l.area, l.project nulls first, l.bucket nulls first, l.slug
+          order by k.area, l.project nulls first, l.bucket nulls first, k.slug
         `;
 
         const drafts = rows.map((r) =>

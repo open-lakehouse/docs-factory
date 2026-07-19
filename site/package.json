@@ -6,6 +6,7 @@
   "description": "docs-factory site: renders ../content (Diátaxis docs) and ../blogs (narrative drafts) in place with site-like styling and interactive LikeC4 diagrams, plus the in-app review/comment/release surface (Connect RPC → Neon Functions). Deployable (Vercel); never edits content.",
   "scripts": {
     "dev": "vite",
+    "prebuild": "node scripts/build-version-manifest.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "check": "likec4 validate ../architecture/model"

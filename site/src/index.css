@@ -2111,3 +2111,50 @@ a.model-ref-label:hover {
   padding-top: 0.6rem;
   border-top: 1px dashed var(--border);
 }
+
+/* Review status + transition controls (allowlisted viewers only) */
+.review-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin: 0.5rem 0;
+  font-size: 0.8rem;
+}
+.review-state-badge {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+.review-state-badge[data-state="4"] {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.review-state-badge[data-state="5"] {
+  background: var(--accent);
+  color: var(--accent-foreground, #fff);
+}
+.review-controls button {
+  padding: 0.15rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--foreground);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.75rem;
+}
+.review-controls button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.review-controls .review-release {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-foreground, #fff);
+}

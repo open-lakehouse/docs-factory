@@ -21,6 +21,13 @@ and no network beyond the one-time LikeC4 PNG export. Actual *delivery* to a tar
 — the `/blog-emit` skill — because that needs the Google MCP tools, which a plain
 Node script can't call.
 
+> **Review now happens in-app, not in Google Docs.** The `site/` app has a
+> per-section commenting + review/release surface (allowlisted reviewers comment
+> on the deployed draft; re-editing re-anchors comments instead of orphaning
+> them — the friction that motivated the move). The `gdocs` target is retained as
+> an **opt-in flat export** (e.g. for a stakeholder who wants a Doc), not the
+> review mechanism. Prefer sharing the deployed draft URL for review.
+
 ## What it produces
 
 Output is written **per target** under `blogs/<slug>/dist/<target>/`, so

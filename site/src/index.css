@@ -2149,6 +2149,101 @@ a.model-ref-label:hover {
   border-top: 1px dashed var(--border);
 }
 
+/* Fine-grained review: floating button + context menu shown on a text/code
+   selection in the article (SelectionLayer), the composer the pick opens, the
+   quoted target shown above a thread, and the in-text quote highlight. */
+.sel-float {
+  z-index: 60;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--foreground);
+  color: var(--background);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+}
+.sel-menu {
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  min-width: 12rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+.sel-menu button {
+  text-align: left;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 5px;
+  background: transparent;
+  cursor: pointer;
+}
+.sel-menu button:hover {
+  background: var(--border);
+}
+
+.review-composer {
+  margin-bottom: 0.75rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--foreground) 4%, transparent);
+}
+.review-composer-target {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 0.4rem;
+}
+.review-composer-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+}
+.review-composer textarea {
+  width: 100%;
+}
+.review-composer-actions {
+  display: flex;
+  gap: 0.35rem;
+  margin-top: 0.35rem;
+}
+.review-composer-actions .secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+}
+
+.review-quote {
+  margin: 0 0 0.35rem;
+  padding: 0.2rem 0.5rem;
+  border-left: 3px solid color-mix(in oklab, var(--accent, gold) 70%, var(--border));
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+  overflow-wrap: anywhere;
+}
+.review-quote.code {
+  font-style: normal;
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+}
+.review-quote-src {
+  display: block;
+  font-size: 0.65rem;
+  opacity: 0.7;
+  margin-bottom: 0.15rem;
+}
+
+/* CSS Custom Highlight API paint for anchored prose quotes. */
+::highlight(review-quote) {
+  background: color-mix(in oklab, gold 35%, transparent);
+  color: inherit;
+}
+
 /* Review status + transition controls (allowlisted viewers only) */
 .review-controls {
   display: inline-flex;

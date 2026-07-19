@@ -4,6 +4,8 @@ import DocsSidebar from "../components/layout/DocsSidebar";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
 import OnThisPage from "../components/layout/OnThisPage";
 import CommentSidebar from "../components/review/CommentSidebar";
+import SelectionLayer from "../components/review/SelectionLayer";
+import { SelectionProvider } from "../components/review/selection-context";
 import ReviewControls from "../components/review/ReviewControls";
 import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
@@ -53,6 +55,7 @@ export default function DocPage() {
       wide
       accent={project === "unitycatalog" ? "unitycatalog" : "delta"}
     >
+      <SelectionProvider>
       <div className="docs-grid">
         <DocsSidebar activeProject={project} activeBucket={bucket} activeSlug={slug} />
         <div className="docs-main">
@@ -98,7 +101,9 @@ export default function DocPage() {
           <OnThisPage articleRef={articleRef} />
           <CommentSidebar contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
         </div>
+        <SelectionLayer articleRef={articleRef} />
       </div>
+      </SelectionProvider>
     </Shell>
   );
 }

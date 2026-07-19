@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
 import OnThisPage from "../components/layout/OnThisPage";
 import CommentSidebar from "../components/review/CommentSidebar";
+import SelectionLayer from "../components/review/SelectionLayer";
+import { SelectionProvider } from "../components/review/selection-context";
 import ReviewControls from "../components/review/ReviewControls";
 import { blogRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
@@ -42,6 +44,7 @@ export default function BlogPost() {
 
   return (
     <Shell wide>
+      <SelectionProvider>
       <div className="blog-post-layout">
         <div className="blog-post-main">
           <Breadcrumbs
@@ -100,7 +103,9 @@ export default function BlogPost() {
           <OnThisPage articleRef={articleRef} />
           <CommentSidebar contentRef={blogRef(slug)} articleRef={articleRef} />
         </div>
+        <SelectionLayer articleRef={articleRef} />
       </div>
+      </SelectionProvider>
     </Shell>
   );
 }

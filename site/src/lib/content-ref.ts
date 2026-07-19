@@ -26,3 +26,148 @@ export function docRef(project: string, bucket: string, slug: string): ContentRe
 export function fingerprint(headingText: string): string {
   return headingText.trim().toLowerCase().replace(/\s+/g, " ");
 }
+
+/**
+ * Normalize prose the same way the manifest builder and server do (lowercase +
+ * collapse whitespace + trim), so a selection captured in the browser matches
+ * the section text the server re-anchors against.
+ */
+export function normalizeText(s: string): string {
+  return s.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Hash of a source line, matching server anchor.ts hashLine(): sha256 of the
+ * line with trailing whitespace trimmed, first 16 hex chars. Async (SubtleCrypto).
+ */
+export async function hashLine(line: string): Promise<string> {
+  const data = new TextEncoder().encode(line.replace(/\s+$/, ""));
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(digest)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 16);
+}
+
+/** How much surrounding context to capture on each side of a quote. */
+const CONTEXT = 32;
+
+export interface CapturedSelector {
+  quote: string;
+  prefix: string;
+  suffix: string;
+  start: number;
+}
+
+/**
+ * Capture a W3C-style text-quote selector for `range` within `sectionEl`. The
+ * quote/prefix/suffix are normalized so they match server-side re-anchoring;
+ * `start` is the quote's offset within the normalized section text (advisory).
+ * Returns null if the selection is empty or lies outside the section.
+ */
+export function captureSelector(
+  range: Range,
+  sectionEl: HTMLElement,
+): CapturedSelector | null {
+  const quoteRaw = range.toString();
+  if (!quoteRaw.trim()) return null;
+
+  // Full section text and the offset of the selection start within it, via a
+  // range from the section start to the selection start.
+  const sectionText = sectionEl.textContent ?? "";
+  const pre = range.cloneRange();
+  pre.selectNodeContents(sectionEl);
+  pre.setEnd(range.startContainer, range.startOffset);
+  const rawStart = pre.toString().length;
+
+  const prefixRaw = sectionText.slice(Math.max(0, rawStart - CONTEXT), rawStart);
+  const suffixRaw = sectionText.slice(rawStart + quoteRaw.length, rawStart + quoteRaw.length + CONTEXT);
+
+  const quote = normalizeText(quoteRaw);
+  if (!quote) return null;
+  const normText = normalizeText(sectionText);
+  const start = normText.indexOf(quote);
+
+  return {
+    quote,
+    prefix: normalizeText(prefixRaw),
+    suffix: normalizeText(suffixRaw),
+    start: start === -1 ? 0 : start,
+  };
+}
+
+/**
+ * Locate a stored text-quote selector within `sectionEl` and return a DOM Range
+ * covering it, or null if not found. Walks text nodes, builds the concatenated
+ * raw text, finds the quote (normalized comparison via a folded index map), and
+ * maps the match back to node offsets. Prefers a match near prefix/suffix when
+ * the quote occurs more than once.
+ */
+export function locateSelector(
+  selector: { quote: string; prefix?: string; suffix?: string },
+  sectionEl: HTMLElement,
+): Range | null {
+  const quote = normalizeText(selector.quote);
+  if (!quote) return null;
+
+  // Collect text nodes and a parallel normalized string with an index map back
+  // to (node, offset) for each normalized char.
+  const nodes: Text[] = [];
+  const walker = document.createTreeWalker(sectionEl, NodeFilter.SHOW_TEXT);
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) nodes.push(n as Text);
+
+  let norm = "";
+  const map: { node: Text; offset: number }[] = []; // norm index -> source pos
+  let lastWasSpace = true; // collapse leading space like normalizeText
+  for (const node of nodes) {
+    const raw = node.textContent ?? "";
+    for (let i = 0; i < raw.length; i++) {
+      const ch = raw[i];
+      if (/\s/.test(ch)) {
+        if (lastWasSpace) continue;
+        norm += " ";
+        map.push({ node, offset: i });
+        lastWasSpace = true;
+      } else {
+        norm += ch.toLowerCase();
+        map.push({ node, offset: i });
+        lastWasSpace = false;
+      }
+    }
+  }
+  // Trim a trailing collapsed space to match normalizeText's trim().
+  const trimmed = norm.replace(/ $/, "");
+
+  const candidates: number[] = [];
+  let from = 0;
+  for (;;) {
+    const at = trimmed.indexOf(quote, from);
+    if (at === -1) break;
+    candidates.push(at);
+    from = at + 1;
+  }
+  if (candidates.length === 0) return null;
+
+  // Disambiguate by prefix/suffix proximity when repeated.
+  let idx = candidates[0];
+  if (candidates.length > 1 && (selector.prefix || selector.suffix)) {
+    const pfx = normalizeText(selector.prefix ?? "");
+    let best = -1;
+    for (const c of candidates) {
+      const before = trimmed.slice(Math.max(0, c - pfx.length), c);
+      if (pfx && before.endsWith(pfx)) {
+        best = c;
+        break;
+      }
+    }
+    if (best !== -1) idx = best;
+  }
+
+  const startPos = map[idx];
+  const endPos = map[idx + quote.length - 1];
+  if (!startPos || !endPos) return null;
+  const range = document.createRange();
+  range.setStart(startPos.node, startPos.offset);
+  range.setEnd(endPos.node, endPos.offset + 1);
+  return range;
+}

@@ -15,11 +15,19 @@ import {
   GetViewerResponseSchema,
   ListDraftsResponseSchema,
   GetDraftContentResponseSchema,
+  ListCommentsResponseSchema,
+  CreateCommentResponseSchema,
+  ResolveThreadResponseSchema,
+  UnresolveThreadResponseSchema,
   ManageAllowlistRequest_Action,
   ManageAllowlistResponseSchema,
   RegisterVersionResponseSchema,
   type ListDraftsRequest,
   type GetDraftContentRequest,
+  type ListCommentsRequest,
+  type CreateCommentRequest,
+  type ResolveThreadRequest,
+  type UnresolveThreadRequest,
   type ManageAllowlistRequest,
   type RegisterVersionRequest,
 } from "../gen/docs_factory/review/v1/review_service_pb.js";
@@ -27,6 +35,7 @@ import {
   AllowlistEntrySchema,
   DraftSummarySchema,
   ContentRefSchema,
+  ThreadSchema,
   ReviewState,
 } from "../gen/docs_factory/review/v1/messages_pb.js";
 import type { AuthProvider } from "../auth/provider.js";
@@ -45,6 +54,7 @@ import {
 } from "../db-map.js";
 import { roleFromDb } from "../allowlist.js";
 import { reanchorThreads } from "../anchor.js";
+import { assembleThreads, type CommentRow, type ResolutionRow } from "../comments.js";
 
 const PUBLISHED = "published";
 const REVIEW_STATE_BY_DB: Record<string, ReviewState> = {
@@ -145,6 +155,88 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         });
       },
 
+      async listComments(req: ListCommentsRequest, ctx) {
+        // Comments are a reviewer artifact: allowlist-only, for all content.
+        requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        const rows = await sql<CommentRow[]>`
+          select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
+                 author_login, body_md, created_at, edited_at, orphaned
+          from comment
+          where area = ${area} and slug = ${req.ref.slug}
+          order by created_at asc
+        `;
+        const rootIds = rows.filter((r) => r.parent_id == null).map((r) => r.id);
+        const resolutions = rootIds.length
+          ? await sql<ResolutionRow[]>`
+              select thread_root_id, resolved, resolved_by, resolved_at
+              from comment_resolution where thread_root_id in ${sql(rootIds)}
+            `
+          : [];
+        const { threads, orphaned } = assembleThreads(
+          { area, slug: req.ref.slug, project: req.ref.project, bucket: req.ref.bucket },
+          rows,
+          resolutions,
+        );
+        return create(ListCommentsResponseSchema, { threads, orphanedThreads: orphaned });
+      },
+
+      async createComment(req: CreateCommentRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        if (!req.bodyMd.trim()) {
+          throw new ConnectError("body_md is required", Code.InvalidArgument);
+        }
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+
+        // Resolve section_id from the latest version's section with this anchor
+        // (nullable — a comment can be posted even if the anchor is unknown).
+        const [section] = await sql<{ id: string }[]>`
+          select cs.id from content_section cs
+          join content_version cv on cv.id = cs.version_id
+          where cv.area = ${area} and cv.slug = ${req.ref.slug}
+            and cs.anchor_slug = ${req.anchorSlug}
+          order by cv.created_at desc limit 1
+        `;
+
+        const [row] = await sql<CommentRow[]>`
+          insert into comment
+            (area, slug, section_id, anchor_slug, anchor_fingerprint, parent_id,
+             author_user_id, author_login, body_md, orphaned)
+          values
+            (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${req.anchorSlug},
+             ${req.anchorFingerprint}, ${req.parentId ?? null},
+             ${viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"}, ${req.bodyMd}, false)
+          returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
+                    author_login, body_md, created_at, edited_at, orphaned
+        `;
+        const { threads } = assembleThreads(
+          { area, slug: req.ref.slug, project: req.ref.project, bucket: req.ref.bucket },
+          [row],
+          [],
+        );
+        return create(CreateCommentResponseSchema, {
+          comment: threads[0]?.root ?? undefined,
+        });
+      },
+
+      async resolveThread(req: ResolveThreadRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        return create(ResolveThreadResponseSchema, {
+          thread: await setResolved(req.threadRootId, true, viewer.login ?? "unknown"),
+        });
+      },
+
+      async unresolveThread(req: UnresolveThreadRequest, ctx) {
+        requireAllowlisted(ctx);
+        return create(UnresolveThreadResponseSchema, {
+          thread: await setResolved(req.threadRootId, false, null),
+        });
+      },
+
       async manageAllowlist(req: ManageAllowlistRequest, ctx) {
         requireMaintainer(ctx);
         const actor = getViewer(ctx).login ?? "unknown";
@@ -238,6 +330,40 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
     },
     { interceptors: [authInterceptor(auth)] },
   );
+}
+
+/** Set a thread's resolution and return the reassembled Thread. */
+async function setResolved(threadRootId: string, resolved: boolean, by: string | null) {
+  const sql = db();
+  const [root] = await sql<CommentRow[]>`
+    select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
+           author_login, body_md, created_at, edited_at, orphaned
+    from comment where id = ${threadRootId} and parent_id is null
+  `;
+  if (!root) throw new ConnectError("thread not found", Code.NotFound);
+  await sql`
+    insert into comment_resolution (thread_root_id, resolved, resolved_by, resolved_at)
+    values (${threadRootId}, ${resolved}, ${by}, ${resolved ? sql`now()` : null})
+    on conflict (thread_root_id) do update
+      set resolved = excluded.resolved,
+          resolved_by = excluded.resolved_by,
+          resolved_at = excluded.resolved_at
+  `;
+  const replies = await sql<CommentRow[]>`
+    select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
+           author_login, body_md, created_at, edited_at, orphaned
+    from comment where parent_id = ${threadRootId} order by created_at asc
+  `;
+  const resolutions = await sql<ResolutionRow[]>`
+    select thread_root_id, resolved, resolved_by, resolved_at
+    from comment_resolution where thread_root_id = ${threadRootId}
+  `;
+  const { threads, orphaned } = assembleThreads(
+    { area: root.area, slug: root.slug },
+    [root, ...replies],
+    resolutions,
+  );
+  return [...threads, ...orphaned][0] ?? create(ThreadSchema, {});
 }
 
 /** Reject unless the request's build secret matches BUILD_SECRET (which must be set). */

@@ -17,7 +17,10 @@ services:
       # Host port to avoid clashing with a system Postgres on 5432.
       - "${PGPORT:-5433}:5432"
     volumes:
-      - review-pgdata:/var/lib/postgresql/data
+      # PostgreSQL 18 images expect the mount at /var/lib/postgresql (data lands
+      # in a major-version subdir); mounting the old .../data path makes a fresh
+      # PG18 refuse to init. See docker-library/postgres#37.
+      - review-pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${PGUSER:-review} -d ${PGDATABASE:-review}"]
       interval: 3s

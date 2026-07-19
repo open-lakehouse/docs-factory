@@ -399,17 +399,18 @@ body {
   color: inherit;
   font-size: inherit;
   font-family: inherit;
+  /* Grid layout makes each `.line` a full-width row (so review highlights span
+     the whole code box) and drops the whitespace-only "\n" nodes between lines,
+     so lines can be block-level rows without doubling the line breaks. */
+  display: grid;
 }
 
 /* Review: commented source lines. The <Pre> code box tags its own
    <span class="line"> children (from review context) so the highlight lives in
-   the native code surface rather than an overlay. inline-block + width:100% lets
-   the tint bleed the full row without a double line break (the `\n` after each
-   line still breaks); negative margins extend it under the <pre> padding, like a
-   diff/highlight line. */
+   the native code surface rather than an overlay. The parent <code> is a grid,
+   so each line is a full-width row; negative margins extend the tint under the
+   <pre> padding to the code box edges, like a diff/highlight line. */
 .prose .cb-pre .line.cb-line-commented {
-  display: inline-block;
-  width: 100%;
   margin: 0 -1.1rem;
   padding: 0 1.1rem;
   background: color-mix(in oklab, gold 12%, transparent);

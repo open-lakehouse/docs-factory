@@ -108,8 +108,11 @@ export function assembleThreads(
   });
   const resById = new Map(resolutions.map((r) => [r.thread_root_id, r]));
 
-  // Children keyed by parent id, each list in created_at order (input is already
-  // ordered by created_at asc, so push preserves it).
+  // Children keyed by parent id, each list in creation order. The caller orders
+  // rows by id asc — UUIDv7 ids are time-ordered, so id order == creation order
+  // but uses the primary-key index directly (no created_at sort), and it's a
+  // strict total order even for rows sharing a transaction timestamp. So push
+  // preserves the intended sibling order.
   const childrenByParent = new Map<string, CommentRow[]>();
   const roots: CommentRow[] = [];
   for (const c of comments) {

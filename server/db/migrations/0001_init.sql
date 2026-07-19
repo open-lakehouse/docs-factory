@@ -81,6 +81,10 @@ create table if not exists comment (
 );
 create index if not exists comment_ref_anchor_idx on comment (area, slug, anchor_slug);
 create index if not exists comment_parent_idx on comment (parent_id);
+-- listComments reads all comments for a (area, slug) ordered by id. Because id
+-- is UUIDv7 (time-ordered), this index serves the filter AND the sort with no
+-- separate sort step — id order == creation order.
+create index if not exists comment_ref_id_idx on comment (area, slug, id);
 
 -- Resolve/unresolve state per thread root (audit-friendly).
 create table if not exists comment_resolution (

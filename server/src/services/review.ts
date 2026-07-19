@@ -207,7 +207,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
           from comment
           where area = ${area} and slug = ${req.ref.slug}
-          order by created_at asc
+          order by id asc
         `;
         const rootIds = rows.filter((r) => r.parent_id == null).map((r) => r.id);
         const resolutions = rootIds.length
@@ -562,7 +562,7 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
            author_login, body_md, created_at, edited_at, orphaned,
            selector_quote, selector_prefix, selector_suffix, selector_start,
            code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
-    from descendants order by created_at asc
+    from descendants order by id asc
   `;
   const resolutions = await sql<ResolutionRow[]>`
     select thread_root_id, resolved, resolved_by, resolved_at

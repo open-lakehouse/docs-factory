@@ -1,0 +1,63 @@
+# Post-merge content-version registration for the review backend.
+#
+# DISABLED ON PURPOSE. We are not deploying the review API yet, so this workflow
+# only runs on a manual `workflow_dispatch` — it never fires automatically. When
+# deploy infra is live, enable automatic runs by uncommenting the `push` trigger
+# below (and set the API_URL / BUILD_SECRET repo secrets).
+#
+# Why post-merge: the version manifest embeds `git rev-parse HEAD`. On a PR
+# branch that is the branch tip, but `main` squash-merges, so the merged commit
+# has a different sha the PR-time manifest never sees. Building + registering
+# once here, after merge, stamps every content_version with the real, stable
+# main sha — the git provenance the app correlates comments to. Note: the
+# manifest is intentionally NOT committed on this path (PR-time CI still verifies
+# the content-derived fields; provenance comes from here).
+
+name: Register content versions
+
+on:
+  workflow_dispatch: {}
+  # ENABLE WHEN DEPLOYING: run once per push to main so registered versions
+  # carry the real merged sha. Kept commented so the job stays disabled.
+  # push:
+  #   branches: [main]
+
+concurrency:
+  group: register-versions
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  register:
+    runs-on: ubuntu-latest
+    # Extra guard: even if the push trigger is later uncommented, only run on
+    # main and only when explicitly enabled via a repo variable. Until
+    # REVIEW_REGISTER_ENABLED is set to 'true', this job is a no-op.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.ref == 'refs/heads/main' && vars.REVIEW_REGISTER_ENABLED == 'true')
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+      - uses: ./.github/actions/npm-public
+      - name: Build version manifest (stamps the real main sha)
+        run: |
+          cd site && bun install --frozen-lockfile
+          node scripts/build-version-manifest.mjs
+      - name: Register versions with the review API
+        env:
+          API_URL: ${{ secrets.REVIEW_API_URL }}
+          BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
+        run: |
+          if [ -z "${API_URL:-}" ] || [ -z "${BUILD_SECRET:-}" ]; then
+            echo "::error::REVIEW_API_URL / REVIEW_BUILD_SECRET secrets are not set."
+            exit 1
+          fi
+          cd server && bun install --frozen-lockfile
+          bun run scripts/register-versions.mjs

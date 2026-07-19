@@ -9,7 +9,14 @@
 //   API_URL       base URL of the review API (default http://localhost:8787)
 //   BUILD_SECRET  shared secret the server checks (required)
 //
-// Run via `just register-versions` (local) or the CI post-deploy step.
+// Run via `just register-versions` (local) or the post-merge GitHub Action
+// (.github/workflows/register-versions.yml, currently DISABLED — manual only).
+//
+// Provenance split: PR-time CI (ci.yml, job `review-api`) only VERIFIES the
+// content-derived fields of the manifest (hashes + section anchors); it does
+// NOT commit the manifest and does NOT register. The authoritative git_sha
+// comes from THIS script running post-merge, where `git rev-parse HEAD` is the
+// real merged main sha (PR branches squash-merge, so their sha never lands).
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";

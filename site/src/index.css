@@ -2465,10 +2465,24 @@ a.model-ref-label:hover {
   border-left: 2px solid var(--border);
 }
 .review-author {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
   font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
   color: var(--heading);
+  text-decoration: none;
+}
+a.review-author:hover span {
+  text-decoration: underline;
+}
+.review-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
 }
 .review-body {
   margin: 0;

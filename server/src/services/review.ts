@@ -202,7 +202,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const area = areaToDb(req.ref.area);
         const rows = await sql<CommentRow[]>`
           select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
-                 c.author_login, c.body_md, c.created_at, c.edited_at, c.orphaned,
+                 c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
                  c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
                  c.code_path, c.code_region, c.code_line, c.code_end_line,
                  c.code_line_hash, c.code_file_hash,
@@ -295,7 +295,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
              ${code?.path ?? null}, ${code?.region ?? null}, ${code ? code.line : null},
              ${code ? code.endLine : null}, ${code?.lineHash ?? null}, ${code?.fileHash ?? null})
           returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-                    author_login, body_md, created_at, edited_at, orphaned,
+                    author_login, author_name, body_md, created_at, edited_at, orphaned,
                     selector_quote, selector_prefix, selector_suffix, selector_start,
                     code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
                     authored_version_id,
@@ -542,7 +542,7 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
   const sql = db();
   const [root] = await sql<CommentRow[]>`
     select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
-           c.author_login, c.body_md, c.created_at, c.edited_at, c.orphaned,
+           c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
            c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
            c.code_path, c.code_region, c.code_line, c.code_end_line,
            c.code_line_hash, c.code_file_hash,
@@ -570,7 +570,7 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
       join descendants d on c.parent_id = d.id
     )
     select d.id, d.area, d.slug, d.anchor_slug, d.anchor_fingerprint, d.parent_id,
-           d.author_login, d.body_md, d.created_at, d.edited_at, d.orphaned,
+           d.author_login, d.author_name, d.body_md, d.created_at, d.edited_at, d.orphaned,
            d.selector_quote, d.selector_prefix, d.selector_suffix, d.selector_start,
            d.code_path, d.code_region, d.code_line, d.code_end_line,
            d.code_line_hash, d.code_file_hash,

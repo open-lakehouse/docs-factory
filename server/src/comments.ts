@@ -24,6 +24,7 @@ export interface CommentRow {
   anchor_fingerprint: string;
   parent_id: string | null; // uuid
   author_login: string;
+  author_name: string | null;
   body_md: string;
   // Frozen git provenance. authored_version_id is the content_version this
   // comment was written against; authored_git_sha is joined from that version.
@@ -61,6 +62,7 @@ function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
     anchorFingerprint: row.anchor_fingerprint,
     parentId: row.parent_id ?? undefined,
     authorLogin: row.author_login,
+    authorName: row.author_name ?? undefined,
     bodyMd: row.body_md,
     createdAt: timestampFromDate(row.created_at),
     editedAt: row.edited_at ? timestampFromDate(row.edited_at) : undefined,

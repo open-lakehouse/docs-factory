@@ -150,6 +150,10 @@ message Comment {
   optional string parent_id = 5;
   string author_login = 6;
   string body_md = 7;
+  // Cached display-name snapshot at authoring time (see comment.author_name).
+  // Absent for a tombstoned/erased author. The UI falls back to author_login,
+  // and derives the avatar from the login (github.com/<login>.png).
+  optional string author_name = 15;
   google.protobuf.Timestamp created_at = 8;
   optional google.protobuf.Timestamp edited_at = 9;
   bool orphaned = 10;

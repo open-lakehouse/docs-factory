@@ -17,6 +17,7 @@ function row(id: string, parentId: string | null, extra: Partial<CommentRow> = {
     anchor_fingerprint: "intro",
     parent_id: parentId,
     author_login: "alice",
+    author_name: null,
     body_md: `body ${id}`,
     authored_version_id: null,
     authored_git_sha: null,

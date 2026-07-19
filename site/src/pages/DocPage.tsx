@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import DocsSidebar from "../components/layout/DocsSidebar";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
 import ReviewRail from "../components/review/ReviewRail";
+import InlineReviewSurface from "../components/review/InlineReviewSurface";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
@@ -100,6 +101,7 @@ export default function DocPage() {
           />
         </div>
         <ReviewRail articleRef={articleRef} />
+        <InlineReviewSurface articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
       </div>

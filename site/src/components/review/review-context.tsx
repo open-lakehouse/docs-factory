@@ -10,6 +10,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
@@ -18,6 +19,12 @@ import { useQuery } from "@connectrpc/connect-query";
 import { listComments } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef, Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
+import {
+  readReviewDisplayMode,
+  setReviewDisplayMode,
+  REVIEW_DISPLAY_MODE_EVENT,
+  type ReviewDisplayMode,
+} from "../../lib/review-display-mode";
 
 /** A commented source-line range within one file/region, for the code box. */
 export interface CommentedLines {
@@ -38,6 +45,9 @@ interface ReviewContextValue {
   selectNonce: number;
   hoverThread: (id: string | null) => void;
   selectThread: (id: string | null) => void;
+  threadById: (id: string) => Thread | undefined;
+  displayMode: ReviewDisplayMode;
+  setDisplayMode: (mode: ReviewDisplayMode) => void;
   /** Commented lines anchored to a given snippet source path (+region). */
   codeLinesFor: (path: string, region: string) => CommentedLines[];
 }
@@ -55,6 +65,9 @@ const ReviewContext = createContext<ReviewContextValue>({
   selectNonce: 0,
   hoverThread: noop,
   selectThread: noop,
+  threadById: () => undefined,
+  displayMode: "rail",
+  setDisplayMode: noop,
   codeLinesFor: () => [],
 });
 
@@ -71,14 +84,22 @@ export function ReviewProvider({
   const threads = data?.threads ?? [];
   const orphanedThreads = data?.orphanedThreads ?? [];
 
-  // Hover focus is ephemeral (emphasize the anchor); selection is sticky and
-  // scrolls the thread card into view. `nonce` bumps on every selection so
-  // re-selecting the same thread re-fires the scroll/expand effects.
   const [hoveredThreadId, setHoveredThreadId] = useState<string | null>(null);
   const [selection, setSelection] = useState<{ id: string; nonce: number } | null>(null);
   const selectedThreadId = selection?.id ?? null;
   const activeThreadId = hoveredThreadId ?? selectedThreadId;
   const selectNonce = selection?.nonce ?? 0;
+
+  const [displayMode, setDisplayModeState] = useState<ReviewDisplayMode>(readReviewDisplayMode);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const mode = (e as CustomEvent<ReviewDisplayMode>).detail;
+      if (mode === "rail" || mode === "inline") setDisplayModeState(mode);
+    };
+    window.addEventListener(REVIEW_DISPLAY_MODE_EVENT, handler);
+    return () => window.removeEventListener(REVIEW_DISPLAY_MODE_EVENT, handler);
+  }, []);
 
   const selectThread = useCallback(
     (id: string | null) =>
@@ -90,6 +111,21 @@ export function ReviewProvider({
     void refetch();
   }, [refetch]);
 
+  const setDisplayMode = useCallback((mode: ReviewDisplayMode) => {
+    setDisplayModeState(mode);
+    setReviewDisplayMode(mode);
+  }, []);
+
+  const allThreads = useMemo(
+    () => [...threads, ...orphanedThreads],
+    [threads, orphanedThreads],
+  );
+
+  const threadById = useCallback(
+    (id: string) => allThreads.find((t) => t.root?.id === id),
+    [allThreads],
+  );
+
   const openCount =
     threads.filter((t) => !t.resolved).length + orphanedThreads.filter((t) => !t.resolved).length;
 
@@ -99,9 +135,6 @@ export function ReviewProvider({
       for (const t of threads) {
         const c = t.root?.codeSelector;
         if (!c?.path || c.path !== path) continue;
-        // A region-scoped comment only matches its own region; a whole-file
-        // comment (region "") matches any block of that path. Line windowing in
-        // the code box does the final scoping.
         if (region && c.region && c.region !== region) continue;
         if (!t.root?.id) continue;
         out.push({
@@ -128,9 +161,11 @@ export function ReviewProvider({
       selectNonce,
       hoverThread,
       selectThread,
+      threadById,
+      displayMode,
+      setDisplayMode,
       codeLinesFor,
     }),
-    // threads/orphaned identity changes with data; the rest are stable or scalars
     [
       contentRef,
       threads,
@@ -142,6 +177,9 @@ export function ReviewProvider({
       selectNonce,
       hoverThread,
       selectThread,
+      threadById,
+      displayMode,
+      setDisplayMode,
       codeLinesFor,
     ],
   );

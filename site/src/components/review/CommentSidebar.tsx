@@ -1,18 +1,14 @@
 // Review comments rail for a rendered blog/doc page. Only mounts for allowlisted
-// viewers. Reads threads + selection from the page ReviewProvider (shared with
-// the code boxes), discovers headings from the article for labels + the section
-// picker, and lets reviewers post, reply, and resolve — the in-app replacement
-// for Google-Docs comments. Threads render as collapsed one-row cards that
-// expand on selection.
+// viewers in rail display mode. Reads threads + selection from ReviewProvider.
 import { useEffect, useState, type RefObject } from "react";
 import { useMutation } from "@connectrpc/connect-query";
 import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { fingerprint } from "../../lib/content-ref";
 import { useAuth } from "../../lib/auth-context";
-import { useSelectionState, type PendingAnchor } from "./selection-context";
+import { useSelectionState } from "./selection-context";
 import { useReview } from "./review-context";
-import QuoteHighlights from "./QuoteHighlights";
+import PendingComposer from "./PendingComposer";
 import ReviewComposer from "./ReviewComposer";
 import ThreadCard from "./ThreadCard";
 
@@ -38,6 +34,7 @@ export default function CommentSidebar({
     selectNonce,
     hoverThread,
     selectThread,
+    displayMode,
   } = useReview();
   const { pending, setPending } = useSelectionState();
   const [headings, setHeadings] = useState<Heading[]>([]);
@@ -52,7 +49,7 @@ export default function CommentSidebar({
     setHeadings(found);
   }, [articleRef, isAllowlisted]);
 
-  if (!isAllowlisted || !contentRef) return null;
+  if (!isAllowlisted || !contentRef || displayMode !== "rail") return null;
 
   const headingText = new Map(headings.map((h) => [h.id, h.text]));
   const sectionLabelFor = (slug?: string) => (slug && headingText.get(slug)) || "";
@@ -74,6 +71,7 @@ export default function CommentSidebar({
   );
 
   const hasAny = threads.length > 0 || orphaned.length > 0;
+  const showRailPending = pending && (pending.kind === "prose" || pending.kind === "code");
 
   return (
     <aside className="review-comments" aria-label="Review comments">
@@ -88,13 +86,7 @@ export default function CommentSidebar({
           {openCount} open {openCount === 1 ? "thread" : "threads"}
         </p>
       )}
-      <QuoteHighlights
-        articleRef={articleRef}
-        threads={threads}
-        focusedThreadId={activeThreadId}
-        onSelectThread={selectThread}
-      />
-      {pending && (
+      {showRailPending && (
         <PendingComposer
           contentRef={contentRef}
           pending={pending}
@@ -121,7 +113,6 @@ export default function CommentSidebar({
   );
 }
 
-/** Compact "comment on a section" picker: a heading dropdown + composer. */
 function AddSectionComment({
   contentRef,
   headings,
@@ -191,81 +182,6 @@ function AddSectionComment({
         submitting={create.isPending}
         autoFocus
         compact
-      />
-    </div>
-  );
-}
-
-/** Composer shown when the SelectionLayer captured a prose/code selection. */
-function PendingComposer({
-  contentRef,
-  pending,
-  onDone,
-  onCancel,
-}: {
-  contentRef: ContentRef;
-  pending: PendingAnchor;
-  onDone: () => void;
-  onCancel: () => void;
-}) {
-  const create = useMutation(createComment);
-  const [draft, setDraft] = useState("");
-
-  async function post() {
-    if (!draft.trim()) return;
-    if (pending.kind === "prose") {
-      await create.mutateAsync({
-        ref: contentRef,
-        anchorSlug: pending.anchorSlug,
-        anchorFingerprint: fingerprint(pending.headingText),
-        bodyMd: draft,
-        selector: {
-          quote: pending.selector.quote,
-          prefix: pending.selector.prefix,
-          suffix: pending.selector.suffix,
-          start: pending.selector.start,
-        },
-      });
-    } else {
-      await create.mutateAsync({
-        ref: contentRef,
-        anchorSlug: pending.anchorSlug,
-        anchorFingerprint: fingerprint(pending.headingText),
-        bodyMd: draft,
-        codeSelector: {
-          path: pending.path,
-          region: pending.region,
-          line: pending.line,
-          endLine: pending.endLine,
-          lineHash: pending.lineHash,
-          fileHash: pending.fileHash,
-        },
-      });
-    }
-    setDraft("");
-    onDone();
-  }
-
-  const quote = pending.kind === "prose" ? pending.selector.quote : pending.quote;
-  const label = pending.kind === "code" ? `${pending.path}:${pending.line}` : pending.headingText;
-
-  return (
-    <div className="review-composer pending">
-      <div className="review-composer-target">
-        <span className="review-composer-label">{label || "New comment"}</span>
-        <blockquote className={`review-quote${pending.kind === "code" ? " code" : ""}`}>
-          {quote}
-        </blockquote>
-      </div>
-      <ReviewComposer
-        value={draft}
-        onChange={setDraft}
-        onSubmit={() => void post()}
-        onCancel={onCancel}
-        placeholder="Comment on this selection…"
-        rows={4}
-        submitting={create.isPending}
-        autoFocus
       />
     </div>
   );

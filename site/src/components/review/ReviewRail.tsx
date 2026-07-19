@@ -1,5 +1,5 @@
 // Responsive review rail: TOC + comment sidebar on desktop; drawer on narrow screens.
-// Must be rendered inside a ReviewProvider (reads open-thread count from it).
+// Hidden entirely when displayMode is inline (InlineReviewSurface handles that UX).
 import { useEffect, useState, type RefObject } from "react";
 import { MessageSquare } from "lucide-react";
 import { useAuth } from "../../lib/auth-context";
@@ -14,14 +14,15 @@ interface ReviewRailProps {
 
 export default function ReviewRail({ articleRef }: ReviewRailProps) {
   const { isAllowlisted } = useAuth();
-  const { openCount } = useReview();
+  const { openCount, displayMode } = useReview();
   const { pending } = useSelectionState();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // On narrow screens the rail is a drawer — open it when a selection composer appears.
   useEffect(() => {
-    if (pending) setDrawerOpen(true);
-  }, [pending]);
+    if (pending && displayMode === "rail") setDrawerOpen(true);
+  }, [pending, displayMode]);
+
+  if (displayMode !== "rail") return null;
 
   const rail = (
     <>

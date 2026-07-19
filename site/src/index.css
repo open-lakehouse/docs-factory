@@ -392,6 +392,9 @@ body {
   font-size: 0.9rem;
   line-height: 1.6;
   font-family: var(--font-mono);
+  /* Container so the inline-review row can size to the VISIBLE code width
+     (100cqi) instead of the grid track set by the widest code line. */
+  container-type: inline-size;
 }
 .prose .cb-pre code {
   background: none;
@@ -423,6 +426,69 @@ body {
 .prose .cb-pre .line.cb-line-commented.cb-line-commented-focus {
   background: color-mix(in oklab, gold 30%, transparent);
   box-shadow: inset 3px 0 0 gold;
+}
+
+/* Inline review: conversation row inside the code box grid. Full-bleed to the
+   code box edges with just a top border. Width is bounded to the VISIBLE code
+   width (100cqi + the pre's 1.1rem side padding) and pinned left so it stays
+   within the code box even when the code scrolls horizontally, rather than
+   stretching to the widest line's grid track. */
+.cb-inline-review {
+  grid-column: 1 / -1;
+  position: sticky;
+  left: 0;
+  box-sizing: border-box;
+  width: calc(100cqi + 2 * 1.1rem);
+  margin: 0.35rem -1.1rem 0.5rem;
+  padding: 0.75rem 1.1rem;
+  border-top: 1px solid color-mix(in oklab, gold 40%, var(--border));
+  background: color-mix(in oklab, var(--accent) 5%, var(--card));
+  white-space: normal;
+  font-family: var(--font-sans, system-ui);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+/* Inline review: prose portal panel (fixed, below selection) */
+/* Inline review (prose): a portal hovering just under the highlighted text.
+   Echoes the code-box inline row (accent-tinted fill + prominent top border tied
+   to the gold quote highlight), but keeps a faint full border + soft shadow so it
+   reads as floating over the prose — since a portal can't push text down/expand. */
+.review-inline-panel {
+  padding: 0.7rem 0.85rem;
+  border: 1px solid color-mix(in oklab, gold 20%, var(--border));
+  border-top: 2px solid color-mix(in oklab, gold 45%, var(--border));
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--accent) 5%, var(--card));
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
+  max-height: min(50vh, 24rem);
+  overflow-y: auto;
+}
+.review-thread-conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+.review-thread-conversation.compact {
+  font-size: 0.84rem;
+}
+.review-thread-conversation-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.review-inline-close {
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0.1rem 0.35rem;
+}
+.review-inline-close:hover {
+  color: var(--foreground);
 }
 
 /* Code journeys — a GitHub-style step timeline (see src/components/journey.tsx).

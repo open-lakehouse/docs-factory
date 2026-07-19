@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
 import ReviewRail from "../components/review/ReviewRail";
+import InlineReviewSurface from "../components/review/InlineReviewSurface";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
@@ -102,6 +103,7 @@ export default function BlogPost() {
           />
         </div>
         <ReviewRail articleRef={articleRef} />
+        <InlineReviewSurface articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={blogRef(slug)} articleRef={articleRef} />
       </div>

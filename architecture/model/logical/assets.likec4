@@ -35,9 +35,7 @@ model {
     table = asset "Table" {
       summary "The classic tabular securable — rows and columns with ACID semantics."
       description "
-        A table is the tabular asset kind: schema'd rows and columns with ACID
-        table semantics. It is the one asset kind every catalog handles, and the
-        only kind a table-format-centric catalog handles.
+        A table is the tabular asset kind: schema'd rows and columns with ACID table semantics.
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
@@ -66,8 +64,7 @@ model {
       summary "A governed ML model — versions, stages, and lineage catalogued like data."
       description "
         A model is the ML asset kind: a trained machine-learning artifact with
-        versions and lifecycle stages, tracked and governed as a catalogued asset
-        rather than living in a separate, ungoverned registry.
+        versions and lifecycle stages, tracked and governed as a catalogued asset.
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
@@ -77,15 +74,12 @@ model {
       description "
         An agent skill is an emerging asset kind on the data & AI value chain: a
         packaged, shareable capability an AI agent can discover and invoke,
-        governed and distributed through the catalog / Open Sharing surface. A
-        flagship example of a catalog augmenting beyond the tabular set.
+        governed and distributed through the catalog / Open Sharing surface.
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
 
     // --- requires: what a platform must do to manage each kind --------------
-    // Every kind requires the catalog to be a governed securable at all; domain
-    // capabilities are what actually materialize each kind.
     schema             -[requires]-> catalog       "governed / namespaced by"
     table              -[requires]-> catalog       "governed / resolved through"
     table              -[requires]-> tableFormat   "materialized as an open table format"
@@ -96,14 +90,11 @@ model {
     registeredFunction -[requires]-> queryEngine   "executed by"
     mlModel            -[requires]-> catalog       "governed / resolved through"
     mlModel            -[requires]-> modelTracking "versioned + promoted by"
-    // agent skills are governed by the catalog and distributed via the sharing
-    // capability (Open Sharing) — the estate's flagship "new resource kind".
     agentSkill         -[requires]-> catalog       "governed / resolved through"
     agentSkill         -[requires]-> sharing       "distributed as a shareable resource via"
   }
 
   // --- governs: which catalog spec covers which asset kinds (breadth) --------
-  // Unity Catalog governs the full data & AI set — the differentiator.
   ucSpec -[governs]-> lakehouse.schema             "governs"
   ucSpec -[governs]-> lakehouse.table              "governs"
   ucSpec -[governs]-> lakehouse.volume             "governs"
@@ -111,7 +102,6 @@ model {
   ucSpec -[governs]-> lakehouse.mlModel            "governs"
   ucSpec -[governs]-> lakehouse.agentSkill         "governs"
 
-  // The Iceberg REST catalog is table-centric: namespaces + tables (+ views).
   icebergRestSpec -[governs]-> lakehouse.schema "governs namespaces"
   icebergRestSpec -[governs]-> lakehouse.table  "governs"
 }

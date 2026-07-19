@@ -68,6 +68,21 @@ model {
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
+    orchestration = capability "Orchestration" {
+      summary "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
+      description "
+        Orchestration turns individual jobs into managed pipelines: it schedules
+        them, resolves their dependencies as a DAG, retries on failure, and fires
+        them on time- or event-based triggers.
+
+        In the lakehouse it drives the compute rather than replacing it: the
+        pipelines it runs resolve tables through the catalog and execute on the
+        query engine, so governance and lineage attach to orchestrated runs the
+        same way they do to ad-hoc queries.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
     tableFormat = capability "Open table format" {
       summary "A metadata layer that gives object-storage files ACID table semantics."
 

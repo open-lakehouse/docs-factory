@@ -21,6 +21,10 @@ capabilities:
   queryEngine:
     element: lakehouse.queryEngine
     doc: design/reference-architecture.md
+  orchestration:
+    element: lakehouse.orchestration
+    doc: design/reference-architecture.md
+    note: Schedules jobs/pipelines that run on the query engine.
   tableFormat:
     element: lakehouse.tableFormat
     doc: design/reference-architecture.md

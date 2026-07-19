@@ -25,6 +25,13 @@ views {
     autoLayout LeftRight
   }
 
+  view explain_orchestration of lakehouse.orchestration {
+    title "Orchestration — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
   view explain_tableFormat of lakehouse.tableFormat {
     title "Open table format — in context"
     include *
@@ -67,6 +74,13 @@ views {
     autoLayout LeftRight
   }
 
+  view explain_sharing of lakehouse.sharing {
+    title "Sharing — in context"
+    include *
+    exclude lakehouse.governance.*
+    autoLayout LeftRight
+  }
+
   // --- Specifications ------------------------------------------------------
   view explain_deltaSpec of deltaSpec {
     title "Delta Lake — in context"
@@ -88,6 +102,12 @@ views {
 
   view explain_icebergRestSpec of icebergRestSpec {
     title "Iceberg REST Catalog — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_openSharingSpec of openSharingSpec {
+    title "Open Sharing — in context"
     include *
     autoLayout LeftRight
   }

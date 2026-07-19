@@ -18,6 +18,8 @@ function row(id: string, parentId: string | null, extra: Partial<CommentRow> = {
     parent_id: parentId,
     author_login: "alice",
     body_md: `body ${id}`,
+    authored_version_id: null,
+    authored_git_sha: null,
     created_at: new Date(`2026-01-01T00:00:0${id.length}Z`),
     edited_at: null,
     orphaned: false,

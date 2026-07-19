@@ -153,6 +153,12 @@ message Comment {
   // source file. Absent for a plain heading-level comment (back-compatible).
   optional TextSelector selector = 11;
   optional CodeSelector code_selector = 12;
+  // Frozen git provenance: the content_version this comment was written against.
+  // `authored_version_id` is the version's opaque id; `authored_git_sha` is the
+  // joined commit sha (what the UI shows). Both survive re-anchoring — unlike the
+  // section anchor, they never move forward to a later version.
+  optional string authored_version_id = 13;
+  optional string authored_git_sha = 14;
 }
 
 // A thread root plus its replies and resolution state.

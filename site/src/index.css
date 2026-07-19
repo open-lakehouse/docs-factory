@@ -2478,6 +2478,14 @@ a.model-ref-label:hover {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+/* Frozen git provenance — the commit a comment was authored against. Subtle,
+   monospace, sits below the body. */
+.review-provenance {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--muted);
+}
 /* Per-comment reply affordance (targets a specific comment for nested threads).
    Hidden until the comment is hovered/focused to keep the rail calm. */
 .review-reply-link {

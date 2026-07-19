@@ -94,6 +94,7 @@ export default function ThreadConversation({
       <CommentBubble
         login={thread.root?.authorLogin}
         body={thread.root?.bodyMd}
+        authoredGitSha={thread.root?.authoredGitSha}
         onReply={thread.root ? () => setReplyTo(thread.root!.id) : undefined}
       />
       {thread.replies.map((r) => (
@@ -103,6 +104,7 @@ export default function ThreadConversation({
           body={r.bodyMd}
           reply
           depth={depthById.get(r.id) ?? 1}
+          authoredGitSha={r.authoredGitSha}
           onReply={() => setReplyTo(r.id)}
         />
       ))}

@@ -25,6 +25,10 @@ export interface CommentRow {
   parent_id: string | null; // uuid
   author_login: string;
   body_md: string;
+  // Frozen git provenance. authored_version_id is the content_version this
+  // comment was written against; authored_git_sha is joined from that version.
+  authored_version_id: string | null; // uuid
+  authored_git_sha: string | null;
   created_at: Date;
   edited_at: Date | null;
   orphaned: boolean;
@@ -61,6 +65,8 @@ function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
     createdAt: timestampFromDate(row.created_at),
     editedAt: row.edited_at ? timestampFromDate(row.edited_at) : undefined,
     orphaned: row.orphaned,
+    authoredVersionId: row.authored_version_id ?? undefined,
+    authoredGitSha: row.authored_git_sha ?? undefined,
     // At most one fine-grained selector; prose takes precedence if both were
     // somehow set (they never are — create writes exactly one branch).
     selector:

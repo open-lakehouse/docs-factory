@@ -201,13 +201,16 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const sql = db();
         const area = areaToDb(req.ref.area);
         const rows = await sql<CommentRow[]>`
-          select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-                 author_login, body_md, created_at, edited_at, orphaned,
-                 selector_quote, selector_prefix, selector_suffix, selector_start,
-                 code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
-          from comment
-          where area = ${area} and slug = ${req.ref.slug}
-          order by id asc
+          select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
+                 c.author_login, c.body_md, c.created_at, c.edited_at, c.orphaned,
+                 c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
+                 c.code_path, c.code_region, c.code_line, c.code_end_line,
+                 c.code_line_hash, c.code_file_hash,
+                 c.authored_version_id, cv.git_sha as authored_git_sha
+          from comment c
+          left join content_version cv on cv.id = c.authored_version_id
+          where c.area = ${area} and c.slug = ${req.ref.slug}
+          order by c.id asc
         `;
         const rootIds = rows.filter((r) => r.parent_id == null).map((r) => r.id);
         const resolutions = rootIds.length
@@ -293,7 +296,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
                     author_login, body_md, created_at, edited_at, orphaned,
                     selector_quote, selector_prefix, selector_suffix, selector_start,
-                    code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
+                    code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
+                    authored_version_id,
+                    (select git_sha from content_version where id = comment.authored_version_id)
+                      as authored_git_sha
         `;
         const { threads } = assembleThreads(
           { area, slug: req.ref.slug, project: req.ref.project, bucket: req.ref.bucket },
@@ -534,11 +540,15 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 async function setResolved(threadRootId: string, resolved: boolean, by: string | null) {
   const sql = db();
   const [root] = await sql<CommentRow[]>`
-    select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-           author_login, body_md, created_at, edited_at, orphaned,
-           selector_quote, selector_prefix, selector_suffix, selector_start,
-           code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
-    from comment where id = ${threadRootId} and parent_id is null
+    select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
+           c.author_login, c.body_md, c.created_at, c.edited_at, c.orphaned,
+           c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
+           c.code_path, c.code_region, c.code_line, c.code_end_line,
+           c.code_line_hash, c.code_file_hash,
+           c.authored_version_id, cv.git_sha as authored_git_sha
+    from comment c
+    left join content_version cv on cv.id = c.authored_version_id
+    where c.id = ${threadRootId} and c.parent_id is null
   `;
   if (!root) throw new ConnectError("thread not found", Code.NotFound);
   await sql`
@@ -558,11 +568,15 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
       select c.* from comment c
       join descendants d on c.parent_id = d.id
     )
-    select id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
-           author_login, body_md, created_at, edited_at, orphaned,
-           selector_quote, selector_prefix, selector_suffix, selector_start,
-           code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash
-    from descendants order by id asc
+    select d.id, d.area, d.slug, d.anchor_slug, d.anchor_fingerprint, d.parent_id,
+           d.author_login, d.body_md, d.created_at, d.edited_at, d.orphaned,
+           d.selector_quote, d.selector_prefix, d.selector_suffix, d.selector_start,
+           d.code_path, d.code_region, d.code_line, d.code_end_line,
+           d.code_line_hash, d.code_file_hash,
+           d.authored_version_id, cv.git_sha as authored_git_sha
+    from descendants d
+    left join content_version cv on cv.id = d.authored_version_id
+    order by d.id asc
   `;
   const resolutions = await sql<ResolutionRow[]>`
     select thread_root_id, resolved, resolved_by, resolved_at

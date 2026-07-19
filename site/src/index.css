@@ -2244,6 +2244,107 @@ a.model-ref-label:hover {
   color: inherit;
 }
 
+/* "Review source" button injected into each `file=` snippet block, and the
+   full-source review pane it opens (SourceFileLauncher / SourceFilePane). */
+.cb-review-source {
+  position: absolute;
+  bottom: 0.4rem;
+  right: 0.5rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.68rem;
+  border-radius: 5px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.cb:hover .cb-review-source {
+  opacity: 1;
+}
+
+.source-pane-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 3rem 1rem;
+  background: rgba(0, 0, 0, 0.45);
+}
+.source-pane {
+  width: min(64rem, 100%);
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--background);
+  overflow: hidden;
+}
+.source-pane-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.source-pane-path {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.source-pane-close {
+  font-size: 1.1rem;
+  line-height: 1;
+  background: transparent;
+  cursor: pointer;
+}
+.source-pane-status {
+  padding: 1rem;
+  color: var(--muted-foreground);
+}
+.source-lines {
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+.source-lines li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0 0.75rem;
+}
+.source-lines li:hover {
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+.source-lines li.covered {
+  background: color-mix(in oklab, gold 12%, transparent);
+}
+.source-line-comment {
+  visibility: hidden;
+  background: transparent;
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+.source-lines li:hover .source-line-comment {
+  visibility: visible;
+}
+.source-line-no {
+  width: 2.5rem;
+  text-align: right;
+  color: var(--muted-foreground);
+  user-select: none;
+}
+.source-line-text {
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
 /* Review status + transition controls (allowlisted viewers only) */
 .review-controls {
   display: inline-flex;

@@ -4,6 +4,7 @@ import Breadcrumbs from "../components/layout/Breadcrumbs";
 import OnThisPage from "../components/layout/OnThisPage";
 import CommentSidebar from "../components/review/CommentSidebar";
 import SelectionLayer from "../components/review/SelectionLayer";
+import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
 import ReviewControls from "../components/review/ReviewControls";
 import { blogRef } from "../lib/content-ref";
@@ -104,6 +105,7 @@ export default function BlogPost() {
           <CommentSidebar contentRef={blogRef(slug)} articleRef={articleRef} />
         </div>
         <SelectionLayer articleRef={articleRef} />
+        <SourceFileLauncher contentRef={blogRef(slug)} articleRef={articleRef} />
       </div>
       </SelectionProvider>
     </Shell>

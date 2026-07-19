@@ -5,6 +5,7 @@ import Breadcrumbs from "../components/layout/Breadcrumbs";
 import OnThisPage from "../components/layout/OnThisPage";
 import CommentSidebar from "../components/review/CommentSidebar";
 import SelectionLayer from "../components/review/SelectionLayer";
+import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
 import ReviewControls from "../components/review/ReviewControls";
 import { docRef } from "../lib/content-ref";
@@ -102,6 +103,7 @@ export default function DocPage() {
           <CommentSidebar contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
         </div>
         <SelectionLayer articleRef={articleRef} />
+        <SourceFileLauncher contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
       </div>
       </SelectionProvider>
     </Shell>

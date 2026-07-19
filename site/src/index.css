@@ -2478,6 +2478,27 @@ a.model-ref-label:hover {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+/* Per-comment reply affordance (targets a specific comment for nested threads).
+   Hidden until the comment is hovered/focused to keep the rail calm. */
+.review-reply-link {
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.72rem;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s ease, color 0.12s ease;
+}
+.review-comment:hover .review-reply-link,
+.review-comment:focus-within .review-reply-link {
+  opacity: 1;
+}
+.review-reply-link:hover {
+  color: var(--heading);
+  text-decoration: underline;
+}
 .review-thread-actions {
   display: flex;
   flex-direction: column;

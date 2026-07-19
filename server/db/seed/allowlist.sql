@@ -1,0 +1,10 @@
+-- Seed the reviewer allowlist. Fill in real GitHub logins before Phase 2 goes
+-- live — the placeholder below is intentionally commented out so no fabricated
+-- identity is granted access. Maintainers can release content and manage the
+-- allowlist; reviewers can view drafts and comment.
+--
+-- insert into reviewer_allowlist (github_login, role, added_by)
+-- values
+--   ('<maintainer-login>', 'maintainer', 'seed'),
+--   ('<reviewer-login>',   'reviewer',   'seed')
+-- on conflict (lower(github_login)) do nothing;

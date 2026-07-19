@@ -1,0 +1,1380 @@
+[
+  {
+    "area": "blogs",
+    "slug": "trust-in-your-open-lakehouse",
+    "contentHash": "40849ab21cd74ac11be535001439acf992a7eb6338d157a6cfef2fd8ac33a9e9",
+    "title": "Trust in your Open Lakehouse",
+    "frontmatterStatus": "drafting",
+    "headings": [
+      {
+        "id": "trust-in-your-lakehouse",
+        "text": "Trust in your Lakehouse",
+        "level": 1,
+        "order": 0,
+        "fingerprint": "trust in your lakehouse"
+      },
+      {
+        "id": "governance-in-todays-lakehouse",
+        "text": "Governance in today's Lakehouse",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "governance in today's lakehouse"
+      },
+      {
+        "id": "credential-vending",
+        "text": "Credential Vending",
+        "level": 3,
+        "order": 2,
+        "fingerprint": "credential vending"
+      },
+      {
+        "id": "server-side-planning",
+        "text": "Server-side planning",
+        "level": 3,
+        "order": 3,
+        "fingerprint": "server-side planning"
+      },
+      {
+        "id": "trusted-compute",
+        "text": "Trusted Compute",
+        "level": 3,
+        "order": 4,
+        "fingerprint": "trusted compute"
+      },
+      {
+        "id": "governance-in-the-agentic-lakehouse",
+        "text": "Governance in the agentic Lakehouse",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "governance in the agentic lakehouse"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "blogs",
+    "slug": "unity-catalog-delta-api",
+    "contentHash": "6b06834a988881c38882e46378050318423af12aa06ee84ca8a99aad09ccedd7",
+    "title": "Introducing the UC Delta API",
+    "frontmatterStatus": "drafting",
+    "headings": [
+      {
+        "id": "introducing-the-uc-delta-api",
+        "text": "Introducing the UC Delta API",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "introducing the uc delta api"
+      },
+      {
+        "id": "getting-started",
+        "text": "Getting started",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "getting started"
+      },
+      {
+        "id": "how-to-read-and-write-data-via-the-uc-delta-api",
+        "text": "How to read and write data via the UC Delta API?",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "how to read and write data via the uc delta api?"
+      },
+      {
+        "id": "configure-spark-with-delta--unity-catalog",
+        "text": "Configure Spark with Delta & Unity Catalog",
+        "level": 3,
+        "order": 3,
+        "fingerprint": "configure spark with delta & unity catalog"
+      },
+      {
+        "id": "create-the-managed-table-and-write-rows",
+        "text": "Create the managed table and write rows",
+        "level": 3,
+        "order": 4,
+        "fingerprint": "create the managed table and write rows"
+      },
+      {
+        "id": "query-your-data",
+        "text": "Query your data",
+        "level": 3,
+        "order": 5,
+        "fingerprint": "query your data"
+      },
+      {
+        "id": "uc-delta-api-in-detail",
+        "text": "UC Delta API in detail",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "uc delta api in detail"
+      },
+      {
+        "id": "engine--catalog-handshake",
+        "text": "Engine <> catalog handshake",
+        "level": 3,
+        "order": 7,
+        "fingerprint": "engine <> catalog handshake"
+      },
+      {
+        "id": "the-managed-table-protocol",
+        "text": "The managed table protocol",
+        "level": 3,
+        "order": 8,
+        "fingerprint": "the managed table protocol"
+      },
+      {
+        "id": "delta-table-features-in-the-uc-delta-api",
+        "text": "Delta table features in the UC Delta API",
+        "level": 3,
+        "order": 9,
+        "fingerprint": "delta table features in the uc delta api"
+      },
+      {
+        "id": "committing-to-a-table",
+        "text": "Committing to a table",
+        "level": 2,
+        "order": 10,
+        "fingerprint": "committing to a table"
+      },
+      {
+        "id": "use-duckdb-to-read-a-managed-table",
+        "text": "Use DuckDB to read a managed table",
+        "level": 2,
+        "order": 11,
+        "fingerprint": "use duckdb to read a managed table"
+      },
+      {
+        "id": "install-the-delta--unity-catalog-extensions",
+        "text": "Install the Delta + Unity Catalog extensions",
+        "level": 3,
+        "order": 12,
+        "fingerprint": "install the delta + unity catalog extensions"
+      },
+      {
+        "id": "point-duckdb-at-the-uc-catalog",
+        "text": "Point DuckDB at the UC catalog",
+        "level": 3,
+        "order": 13,
+        "fingerprint": "point duckdb at the uc catalog"
+      },
+      {
+        "id": "read-the-data",
+        "text": "Read the data",
+        "level": 3,
+        "order": 14,
+        "fingerprint": "read the data"
+      },
+      {
+        "id": "wrap-up",
+        "text": "Wrap-up",
+        "level": 2,
+        "order": 15,
+        "fingerprint": "wrap-up"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "blogs",
+    "slug": "unity-catalog-storage",
+    "contentHash": "651fd858f99dfeaca269d40b04fdcefec5820ede30d99277b5d8dad218d4e0af",
+    "title": "Unity Catalog storage — credentials, external locations, and managed storage",
+    "frontmatterStatus": "drafting",
+    "headings": [
+      {
+        "id": "unity-catalog-storage-credentials-external-locations-and-managed-storage",
+        "text": "Unity Catalog storage: credentials, external locations, and managed storage",
+        "level": 1,
+        "order": 0,
+        "fingerprint": "unity catalog storage: credentials, external locations, and managed storage"
+      },
+      {
+        "id": "key-takeaways",
+        "text": "Key takeaways",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "key takeaways"
+      },
+      {
+        "id": "always-use-the-handrail",
+        "text": "Always use the handrail",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "always use the handrail"
+      },
+      {
+        "id": "its-all-just-files",
+        "text": "It's all just files",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "it's all just files"
+      },
+      {
+        "id": "external-vs-managed-storage-who-owns-the-layout",
+        "text": "External vs. managed storage: who owns the layout?",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "external vs. managed storage: who owns the layout?"
+      },
+      {
+        "id": "identity-first-then-authorization",
+        "text": "Identity first, then authorization",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "identity first, then authorization"
+      },
+      {
+        "id": "grants-and-credential-vending",
+        "text": "Grants and credential vending",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "grants and credential vending"
+      },
+      {
+        "id": "try-this-at-home",
+        "text": "Try this at home",
+        "level": 2,
+        "order": 7,
+        "fingerprint": "try this at home"
+      },
+      {
+        "id": "summary-make-the-safe-path-the-default",
+        "text": "Summary: make the safe path the default",
+        "level": 2,
+        "order": 8,
+        "fingerprint": "summary: make the safe path the default"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "delta-kernel-architecture",
+    "project": "delta",
+    "bucket": "explanation",
+    "contentHash": "c9f47eb022d00c67da317ba39cb015d4c9ba210c88c7a66711c4944f7e0671f8",
+    "title": "Delta kernel architecture",
+    "frontmatterStatus": "published",
+    "headings": [
+      {
+        "id": "the-idea",
+        "text": "The idea",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "the idea"
+      },
+      {
+        "id": "a-two-sided-c-shaped-api",
+        "text": "A two-sided, \"C-shaped\" API",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "a two-sided, \"c-shaped\" api"
+      },
+      {
+        "id": "the-three-layers",
+        "text": "The three layers",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "the three layers"
+      },
+      {
+        "id": "the-engine-side-general-capabilities",
+        "text": "The engine side: general capabilities",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "the engine side: general capabilities"
+      },
+      {
+        "id": "how-a-read-works",
+        "text": "How a read works",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "how a read works"
+      },
+      {
+        "id": "an-example-rewriting-the-data-skipping-predicate",
+        "text": "An example: rewriting the data-skipping predicate",
+        "level": 3,
+        "order": 5,
+        "fingerprint": "an example: rewriting the data-skipping predicate"
+      },
+      {
+        "id": "how-a-write-works",
+        "text": "How a write works",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "how a write works"
+      },
+      {
+        "id": "an-example-assigning-row-ids",
+        "text": "An example: assigning row IDs",
+        "level": 3,
+        "order": 7,
+        "fingerprint": "an example: assigning row ids"
+      },
+      {
+        "id": "staying-data-format-agnostic",
+        "text": "Staying data-format agnostic",
+        "level": 2,
+        "order": 8,
+        "fingerprint": "staying data-format agnostic"
+      },
+      {
+        "id": "reaching-many-languages",
+        "text": "Reaching many languages",
+        "level": 2,
+        "order": 9,
+        "fingerprint": "reaching many languages"
+      },
+      {
+        "id": "two-implementations",
+        "text": "Two implementations",
+        "level": 2,
+        "order": 10,
+        "fingerprint": "two implementations"
+      },
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2,
+        "order": 11,
+        "fingerprint": "related"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "what-is-delta-lake",
+    "project": "delta",
+    "bucket": "explanation",
+    "contentHash": "e5e44e8213fa4a607518145901cb66e84fe804fb99c3ba65909f98ce1142104c",
+    "title": "What is Delta Lake?",
+    "frontmatterStatus": "published",
+    "headings": [
+      {
+        "id": "the-transaction-log",
+        "text": "The transaction log",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "the transaction log"
+      },
+      {
+        "id": "why-open-matters",
+        "text": "Why \"open\" matters",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "why \"open\" matters"
+      },
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "related"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "query-a-table-as-of-version",
+    "project": "delta",
+    "bucket": "how-to",
+    "contentHash": "20eec9fbb1d96e682abae65b5f93bf0dec044ec831484540872462845f11952b",
+    "title": "Query a Delta table as of a version",
+    "frontmatterStatus": "published",
+    "headings": [
+      {
+        "id": "python-deltalake",
+        "text": "Python (deltalake)",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "python (deltalake)"
+      },
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "related"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "read-a-delta-table",
+    "project": "delta",
+    "bucket": "how-to",
+    "contentHash": "9317b317c4268f3ae85f4912a407a76530b5c9a97e656540c18dbe9678654006",
+    "title": "Read a Delta table",
+    "frontmatterStatus": "published",
+    "headings": [
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "related"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "table-features",
+    "project": "delta",
+    "bucket": "reference",
+    "contentHash": "f1603066fa172168e631cf1a23748c768d40daca2f726d438bc4a3242b64079e",
+    "title": "Table features",
+    "frontmatterStatus": "draft",
+    "headings": [],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "explore-table-history",
+    "project": "delta",
+    "bucket": "tutorials",
+    "contentHash": "bd1a10b2eebff6233ece5541eb2fac3ffc57cecb09f77f2cb825921ad5779b4e",
+    "title": "Explore a Delta table's history",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "open-the-table",
+        "text": "Open the table",
+        "level": 3,
+        "order": 0,
+        "fingerprint": "open the table"
+      },
+      {
+        "id": "inspect-the-commit-history",
+        "text": "Inspect the commit history",
+        "level": 3,
+        "order": 1,
+        "fingerprint": "inspect the commit history"
+      },
+      {
+        "id": "time-travel-to-an-earlier-version",
+        "text": "Time-travel to an earlier version",
+        "level": 3,
+        "order": 2,
+        "fingerprint": "time-travel to an earlier version"
+      },
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "related"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "your-first-delta-table",
+    "project": "delta",
+    "bucket": "tutorials",
+    "contentHash": "7e1d51fe33f9595e80fbb189271449f002c55d5dbe455c894e947ceb1283b2f8",
+    "title": "Your first Delta table",
+    "frontmatterStatus": "draft",
+    "headings": [],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "what-is-unity-catalog",
+    "project": "unitycatalog",
+    "bucket": "explanation",
+    "contentHash": "e9c1ff127576c8acb5cae480739d6aacfa363a1c3f60647afae9d0ad88fa2313",
+    "title": "What is Unity Catalog?",
+    "frontmatterStatus": "draft",
+    "headings": [],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "configure-azure-service-principal",
+    "project": "unitycatalog",
+    "bucket": "how-to",
+    "contentHash": "2962da4fc3e657afc2607fceca034598bf86480373a52d7001d61c94902d3f51",
+    "title": "Configure Azure service principal credentials",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "prerequisites",
+        "text": "Prerequisites",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "prerequisites"
+      },
+      {
+        "id": "1-create-the-credential",
+        "text": "1. Create the credential",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "1. create the credential"
+      },
+      {
+        "id": "using-a-federated-token-instead-of-a-client-secret",
+        "text": "Using a federated token instead of a client secret",
+        "level": 3,
+        "order": 2,
+        "fingerprint": "using a federated token instead of a client secret"
+      },
+      {
+        "id": "2-create-an-external-location",
+        "text": "2. Create an external location",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "2. create an external location"
+      },
+      {
+        "id": "3-verify-the-external-location",
+        "text": "3. Verify the external location",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "3. verify the external location"
+      },
+      {
+        "id": "4-rotate-the-credential",
+        "text": "4. Rotate the credential",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "4. rotate the credential"
+      },
+      {
+        "id": "5-clean-up",
+        "text": "5. Clean up",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "5. clean up"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "manage-catalogs",
+    "project": "unitycatalog",
+    "bucket": "how-to",
+    "contentHash": "cb3249ae598afd5e8c9d77c442dae4b6e0a9d9ad0610d5534b09ec803603ce3d",
+    "title": "Work with catalogs",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "list-catalogs",
+        "text": "List catalogs",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "list catalogs"
+      },
+      {
+        "id": "create-a-catalog",
+        "text": "Create a catalog",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "create a catalog"
+      },
+      {
+        "id": "get-a-catalog",
+        "text": "Get a catalog",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "get a catalog"
+      },
+      {
+        "id": "update-a-catalog",
+        "text": "Update a catalog",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "update a catalog"
+      },
+      {
+        "id": "delete-a-catalog",
+        "text": "Delete a catalog",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "delete a catalog"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "manage-registered-models",
+    "project": "unitycatalog",
+    "bucket": "how-to",
+    "contentHash": "3dff14810950291d6df32ccba794f000a236618f646bac9465ec4bb0052e3230",
+    "title": "Work with registered models",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "list-registered-models",
+        "text": "List registered models",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "list registered models"
+      },
+      {
+        "id": "create-a-registered-model",
+        "text": "Create a registered model",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "create a registered model"
+      },
+      {
+        "id": "get-a-registered-model",
+        "text": "Get a registered model",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "get a registered model"
+      },
+      {
+        "id": "create-a-model-version",
+        "text": "Create a model version",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "create a model version"
+      },
+      {
+        "id": "finalize-a-model-version",
+        "text": "Finalize a model version",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "finalize a model version"
+      },
+      {
+        "id": "list-model-versions",
+        "text": "List model versions",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "list model versions"
+      },
+      {
+        "id": "accessing-model-artifacts",
+        "text": "Accessing model artifacts",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "accessing model artifacts"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "manage-schemas",
+    "project": "unitycatalog",
+    "bucket": "how-to",
+    "contentHash": "520a69ab3bfd8200767d5d5a913f6dd5ed7d1e8a6562c83469e1dc3f0ec9834a",
+    "title": "Work with schemas",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "list-schemas",
+        "text": "List schemas",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "list schemas"
+      },
+      {
+        "id": "create-a-schema",
+        "text": "Create a schema",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "create a schema"
+      },
+      {
+        "id": "get-a-schema",
+        "text": "Get a schema",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "get a schema"
+      },
+      {
+        "id": "update-a-schema",
+        "text": "Update a schema",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "update a schema"
+      },
+      {
+        "id": "delete-a-schema",
+        "text": "Delete a schema",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "delete a schema"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "manage-tables",
+    "project": "unitycatalog",
+    "bucket": "how-to",
+    "contentHash": "0b6f08930b1b3d7d3f50052ccf0eb5d06b8495509ebbeddb2d1f9ed925faa024",
+    "title": "Work with tables",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "list-tables",
+        "text": "List tables",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "list tables"
+      },
+      {
+        "id": "create-a-table",
+        "text": "Create a table",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "create a table"
+      },
+      {
+        "id": "get-a-table",
+        "text": "Get a table",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "get a table"
+      },
+      {
+        "id": "delete-a-table",
+        "text": "Delete a table",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "delete a table"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "manage-tag-policies",
+    "project": "unitycatalog",
+    "bucket": "how-to",
+    "contentHash": "2e55801653387d41b70f1d1fb63cd5849f1133b3f518eddd4f8e732a60441061",
+    "title": "Work with tag policies",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "list-tag-policies",
+        "text": "List tag policies",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "list tag policies"
+      },
+      {
+        "id": "create-a-tag-policy",
+        "text": "Create a tag policy",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "create a tag policy"
+      },
+      {
+        "id": "get-a-tag-policy",
+        "text": "Get a tag policy",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "get a tag policy"
+      },
+      {
+        "id": "update-a-tag-policy",
+        "text": "Update a tag policy",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "update a tag policy"
+      },
+      {
+        "id": "delete-a-tag-policy",
+        "text": "Delete a tag policy",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "delete a tag policy"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "manage-volumes",
+    "project": "unitycatalog",
+    "bucket": "how-to",
+    "contentHash": "b19fd9cf6c1efbf570fae0d29cd8044f724ce660de2281502c0c1202b5469f68",
+    "title": "Work with volumes",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "list-volumes",
+        "text": "List volumes",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "list volumes"
+      },
+      {
+        "id": "create-a-volume",
+        "text": "Create a volume",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "create a volume"
+      },
+      {
+        "id": "get-a-volume",
+        "text": "Get a volume",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "get a volume"
+      },
+      {
+        "id": "update-a-volume",
+        "text": "Update a volume",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "update a volume"
+      },
+      {
+        "id": "delete-a-volume",
+        "text": "Delete a volume",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "delete a volume"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "read-write-governed-data",
+    "project": "unitycatalog",
+    "bucket": "how-to",
+    "contentHash": "24a303dced75575416eaef43f8ea1322cdd6228ffe0e55628ed27dc1361e6250",
+    "title": "Read & write UC-governed data",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "the-uc-url-scheme",
+        "text": "The uc:// URL scheme",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "the uc:// url scheme"
+      },
+      {
+        "id": "build-the-factory-once",
+        "text": "Build the factory once",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "build the factory once"
+      },
+      {
+        "id": "read-any-uc-securable-with-one-url",
+        "text": "Read any UC securable with one URL",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "read any uc securable with one url"
+      },
+      {
+        "id": "typed-convenience-constructors",
+        "text": "Typed convenience constructors",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "typed convenience constructors"
+      },
+      {
+        "id": "volumes",
+        "text": "Volumes",
+        "level": 3,
+        "order": 4,
+        "fingerprint": "volumes"
+      },
+      {
+        "id": "tables",
+        "text": "Tables",
+        "level": 3,
+        "order": 5,
+        "fingerprint": "tables"
+      },
+      {
+        "id": "raw-external-paths",
+        "text": "Raw external paths",
+        "level": 3,
+        "order": 6,
+        "fingerprint": "raw external paths"
+      },
+      {
+        "id": "datafusion",
+        "text": "DataFusion",
+        "level": 2,
+        "order": 7,
+        "fingerprint": "datafusion"
+      },
+      {
+        "id": "duckdb",
+        "text": "DuckDB",
+        "level": 2,
+        "order": 8,
+        "fingerprint": "duckdb"
+      },
+      {
+        "id": "credential-lifecycle",
+        "text": "Credential lifecycle",
+        "level": 2,
+        "order": 9,
+        "fingerprint": "credential lifecycle"
+      },
+      {
+        "id": "compatibility-notes",
+        "text": "Compatibility notes",
+        "level": 2,
+        "order": 10,
+        "fingerprint": "compatibility notes"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "configuration",
+    "project": "unitycatalog",
+    "bucket": "reference",
+    "contentHash": "830bda776bfd97d5cac9648ccf4d514af735d9146d01c92d6326fa022e91aabc",
+    "title": "Server configuration reference",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "config",
+        "text": "Config",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "config"
+      },
+      {
+        "id": "backend",
+        "text": "Backend",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "backend"
+      },
+      {
+        "id": "in-memory",
+        "text": "in-memory",
+        "level": 3,
+        "order": 2,
+        "fingerprint": "in-memory"
+      },
+      {
+        "id": "postgres",
+        "text": "postgres",
+        "level": 3,
+        "order": 3,
+        "fingerprint": "postgres"
+      },
+      {
+        "id": "postgresbackendconfig-fields",
+        "text": "PostgresBackendConfig fields",
+        "level": 4,
+        "order": 4,
+        "fingerprint": "postgresbackendconfig fields"
+      },
+      {
+        "id": "secretbackend",
+        "text": "SecretBackend",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "secretbackend"
+      },
+      {
+        "id": "postgres-1",
+        "text": "Postgres",
+        "level": 3,
+        "order": 6,
+        "fingerprint": "postgres"
+      },
+      {
+        "id": "postgressecretconfig-fields",
+        "text": "PostgresSecretConfig fields",
+        "level": 4,
+        "order": 7,
+        "fingerprint": "postgressecretconfig fields"
+      },
+      {
+        "id": "configvalue",
+        "text": "ConfigValue",
+        "level": 2,
+        "order": 8,
+        "fingerprint": "configvalue"
+      },
+      {
+        "id": "complete-examples",
+        "text": "Complete examples",
+        "level": 2,
+        "order": 9,
+        "fingerprint": "complete examples"
+      },
+      {
+        "id": "minimal-in-memory-no-secrets",
+        "text": "Minimal (in-memory, no secrets)",
+        "level": 3,
+        "order": 10,
+        "fingerprint": "minimal (in-memory, no secrets)"
+      },
+      {
+        "id": "postgresql-backend-with-mixed-literalenv-values",
+        "text": "PostgreSQL backend with mixed literal/env values",
+        "level": 3,
+        "order": 11,
+        "fingerprint": "postgresql backend with mixed literal/env values"
+      },
+      {
+        "id": "postgresql-backend-with-secret-storage",
+        "text": "PostgreSQL backend with secret storage",
+        "level": 3,
+        "order": 12,
+        "fingerprint": "postgresql backend with secret storage"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "rest-api",
+    "project": "unitycatalog",
+    "bucket": "reference",
+    "contentHash": "2cbb1a6c0bb5cefa12a6aef099d82a378be5811e8f81ab8b7c674203cf6c817a",
+    "title": "REST API reference",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "catalogs",
+        "text": "Catalogs",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "catalogs"
+      },
+      {
+        "id": "schemas",
+        "text": "Schemas",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "schemas"
+      },
+      {
+        "id": "tables",
+        "text": "Tables",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "tables"
+      },
+      {
+        "id": "volumes",
+        "text": "Volumes",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "volumes"
+      },
+      {
+        "id": "credentials",
+        "text": "Credentials",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "credentials"
+      },
+      {
+        "id": "external-locations",
+        "text": "External locations",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "external locations"
+      },
+      {
+        "id": "recipients",
+        "text": "Recipients",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "recipients"
+      },
+      {
+        "id": "shares",
+        "text": "Shares",
+        "level": 2,
+        "order": 7,
+        "fingerprint": "shares"
+      },
+      {
+        "id": "temporary-credentials",
+        "text": "Temporary credentials",
+        "level": 2,
+        "order": 8,
+        "fingerprint": "temporary credentials"
+      },
+      {
+        "id": "error-codes",
+        "text": "Error codes",
+        "level": 2,
+        "order": 9,
+        "fingerprint": "error codes"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "first-server",
+    "project": "unitycatalog",
+    "bucket": "tutorials",
+    "contentHash": "5574aa5faa4c00dd74849cd9c485504521a1500e0b2bb9843fc4ea36859abbab",
+    "title": "Start your first Unity Catalog server",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "prerequisites",
+        "text": "Prerequisites",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "prerequisites"
+      },
+      {
+        "id": "step-1--clone-the-repository",
+        "text": "Step 1 — Clone the repository",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "step 1 — clone the repository"
+      },
+      {
+        "id": "step-2--start-the-in-memory-server",
+        "text": "Step 2 — Start the in-memory server",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "step 2 — start the in-memory server"
+      },
+      {
+        "id": "step-3--create-a-catalog",
+        "text": "Step 3 — Create a catalog",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "step 3 — create a catalog"
+      },
+      {
+        "id": "step-4--create-a-schema",
+        "text": "Step 4 — Create a schema",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "step 4 — create a schema"
+      },
+      {
+        "id": "step-5--create-a-table",
+        "text": "Step 5 — Create a table",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "step 5 — create a table"
+      },
+      {
+        "id": "step-6--list-resources-to-verify",
+        "text": "Step 6 — List resources to verify",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "step 6 — list resources to verify"
+      },
+      {
+        "id": "list-catalogs",
+        "text": "List catalogs",
+        "level": 3,
+        "order": 7,
+        "fingerprint": "list catalogs"
+      },
+      {
+        "id": "list-schemas",
+        "text": "List schemas",
+        "level": 3,
+        "order": 8,
+        "fingerprint": "list schemas"
+      },
+      {
+        "id": "list-tables",
+        "text": "List tables",
+        "level": 3,
+        "order": 9,
+        "fingerprint": "list tables"
+      },
+      {
+        "id": "step-7--shut-down-the-server",
+        "text": "Step 7 — Shut down the server",
+        "level": 2,
+        "order": 10,
+        "fingerprint": "step 7 — shut down the server"
+      },
+      {
+        "id": "next-steps",
+        "text": "Next steps",
+        "level": 2,
+        "order": 11,
+        "fingerprint": "next steps"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "postgres-server",
+    "project": "unitycatalog",
+    "bucket": "tutorials",
+    "contentHash": "b05e71654d7ad2f2b3ddf65f3cc46964003794c70a1114f3955a8fba37e70f75",
+    "title": "Run a PostgreSQL-backed server",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "prerequisites",
+        "text": "Prerequisites",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "prerequisites"
+      },
+      {
+        "id": "how-it-works",
+        "text": "How it works",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "how it works"
+      },
+      {
+        "id": "step-1--start-the-postgresql-backed-server",
+        "text": "Step 1 — Start the PostgreSQL-backed server",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "step 1 — start the postgresql-backed server"
+      },
+      {
+        "id": "step-2--create-a-catalog",
+        "text": "Step 2 — Create a catalog",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "step 2 — create a catalog"
+      },
+      {
+        "id": "step-3--stop-the-server",
+        "text": "Step 3 — Stop the server",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "step 3 — stop the server"
+      },
+      {
+        "id": "step-4--restart-the-server",
+        "text": "Step 4 — Restart the server",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "step 4 — restart the server"
+      },
+      {
+        "id": "step-5--verify-data-persisted",
+        "text": "Step 5 — Verify data persisted",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "step 5 — verify data persisted"
+      },
+      {
+        "id": "step-6--create-a-schema-and-table",
+        "text": "Step 6 — Create a schema and table",
+        "level": 2,
+        "order": 7,
+        "fingerprint": "step 6 — create a schema and table"
+      },
+      {
+        "id": "shut-down-everything",
+        "text": "Shut down everything",
+        "level": 2,
+        "order": 8,
+        "fingerprint": "shut down everything"
+      },
+      {
+        "id": "next-steps",
+        "text": "Next steps",
+        "level": 2,
+        "order": 9,
+        "fingerprint": "next steps"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  },
+  {
+    "area": "docs",
+    "slug": "python-client",
+    "project": "unitycatalog",
+    "bucket": "tutorials",
+    "contentHash": "56546441b1ccc84d77957b50d60e9ee7135feb536cd53da20f1cd0dc7fad2851",
+    "title": "Use the Python client",
+    "frontmatterStatus": "draft",
+    "headings": [
+      {
+        "id": "prerequisites",
+        "text": "Prerequisites",
+        "level": 2,
+        "order": 0,
+        "fingerprint": "prerequisites"
+      },
+      {
+        "id": "step-1--build-the-python-wheel",
+        "text": "Step 1 — Build the Python wheel",
+        "level": 2,
+        "order": 1,
+        "fingerprint": "step 1 — build the python wheel"
+      },
+      {
+        "id": "step-2--install-the-wheel",
+        "text": "Step 2 — Install the wheel",
+        "level": 2,
+        "order": 2,
+        "fingerprint": "step 2 — install the wheel"
+      },
+      {
+        "id": "step-3--connect-to-the-server",
+        "text": "Step 3 — Connect to the server",
+        "level": 2,
+        "order": 3,
+        "fingerprint": "step 3 — connect to the server"
+      },
+      {
+        "id": "step-4--list-catalogs",
+        "text": "Step 4 — List catalogs",
+        "level": 2,
+        "order": 4,
+        "fingerprint": "step 4 — list catalogs"
+      },
+      {
+        "id": "step-5--create-a-schema",
+        "text": "Step 5 — Create a schema",
+        "level": 2,
+        "order": 5,
+        "fingerprint": "step 5 — create a schema"
+      },
+      {
+        "id": "step-6--create-a-table",
+        "text": "Step 6 — Create a table",
+        "level": 2,
+        "order": 6,
+        "fingerprint": "step 6 — create a table"
+      },
+      {
+        "id": "step-7--handle-errors",
+        "text": "Step 7 — Handle errors",
+        "level": 2,
+        "order": 7,
+        "fingerprint": "step 7 — handle errors"
+      },
+      {
+        "id": "step-8--clean-up-resources",
+        "text": "Step 8 — Clean up resources",
+        "level": 2,
+        "order": 8,
+        "fingerprint": "step 8 — clean up resources"
+      },
+      {
+        "id": "next-steps",
+        "text": "Next steps",
+        "level": 2,
+        "order": 9,
+        "fingerprint": "next steps"
+      }
+    ],
+    "gitSha": "2dacf4c0ca848d9c8321a97f734ffc96af9df482"
+  }
+]

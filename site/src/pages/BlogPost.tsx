@@ -2,6 +2,9 @@ import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
 import OnThisPage from "../components/layout/OnThisPage";
+import CommentSidebar from "../components/review/CommentSidebar";
+import ReviewControls from "../components/review/ReviewControls";
+import { blogRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
 import ConceptHeader from "../components/ConceptHeader";
@@ -65,6 +68,7 @@ export default function BlogPost() {
               )}
               <BlogReadingTime articleRef={articleRef} />
             </div>
+            <ReviewControls contentRef={blogRef(slug)} />
             <TagList tags={frontmatter.tags ?? []} />
           </header>
           <ConceptHeader references={frontmatter.references} />
@@ -93,6 +97,7 @@ export default function BlogPost() {
           />
         </div>
         <OnThisPage articleRef={articleRef} />
+        <CommentSidebar contentRef={blogRef(slug)} articleRef={articleRef} />
       </div>
     </Shell>
   );

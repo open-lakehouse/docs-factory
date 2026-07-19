@@ -5,10 +5,15 @@
     "": {
       "name": "docs-factory-site",
       "dependencies": {
+        "@bufbuild/protobuf": "^2.12.1",
+        "@connectrpc/connect": "^2.1.2",
+        "@connectrpc/connect-query": "^2.2.0",
+        "@connectrpc/connect-web": "^2.1.2",
         "@mdx-js/react": "^3.1.1",
         "@mdx-js/rollup": "^3.1.1",
         "@radix-ui/react-use-controllable-state": "^1.2.3",
         "@tailwindcss/vite": "^4.3.2",
+        "@tanstack/react-query": "^5.101.2",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "js-yaml": "^4.1.0",
@@ -46,6 +51,16 @@
     },
   },
   "packages": {
+    "@bufbuild/protobuf": ["@bufbuild/protobuf@2.12.1", "https://npm-proxy.cloud.databricks.com/@bufbuild/protobuf/-/protobuf-2.12.1.tgz", {}, "sha512-BvAMfS6LrgZiryOAZ4pBYucu4wG/Ei/9o9DZ9akbREnMLbPJiom2i8b9C8IsKErQoiKqVhrerzt3kOT/RrzLHg=="],
+
+    "@connectrpc/connect": ["@connectrpc/connect@2.1.2", "https://npm-proxy.cloud.databricks.com/@connectrpc/connect/-/connect-2.1.2.tgz", { "peerDependencies": { "@bufbuild/protobuf": "^2.7.0" } }, "sha512-MXkBijtcX09R10Eb6sFeIetc6w6746eio6xtfuyVOH7oQAacT1X0GzMIQFux6Qy8cq3W/T5qX5Bei8YbFtmRGA=="],
+
+    "@connectrpc/connect-query": ["@connectrpc/connect-query@2.2.0", "https://npm-proxy.cloud.databricks.com/@connectrpc/connect-query/-/connect-query-2.2.0.tgz", { "dependencies": { "@connectrpc/connect-query-core": "^2.2.0" }, "peerDependencies": { "@bufbuild/protobuf": "2.x", "@connectrpc/connect": "^2.0.1", "@tanstack/react-query": ">=5.62.0", "react": "^18 || ^19", "react-dom": "^18 || ^19" } }, "sha512-oQ+coXOwBmfl4/t6EOrTfzW0zdoGDe3kvUYqZHrbzORkRFd693Cz8PxuDBjRCjmBPhDRCQMxFhR1jn2+SbgEKQ=="],
+
+    "@connectrpc/connect-query-core": ["@connectrpc/connect-query-core@2.2.0", "https://npm-proxy.cloud.databricks.com/@connectrpc/connect-query-core/-/connect-query-core-2.2.0.tgz", { "peerDependencies": { "@bufbuild/protobuf": "2.x", "@connectrpc/connect": "^2.0.1", "@tanstack/query-core": ">=5.62.0" } }, "sha512-t/CuxW/vP84y2iyS+PnbAnBwgOTYMzHXTSoBUKC1vIn706aNiZP40Y6mGJybglyH63RhAPcOdUgzG7DjzaAHCw=="],
+
+    "@connectrpc/connect-web": ["@connectrpc/connect-web@2.1.2", "https://npm-proxy.cloud.databricks.com/@connectrpc/connect-web/-/connect-web-2.1.2.tgz", { "peerDependencies": { "@bufbuild/protobuf": "^2.7.0", "@connectrpc/connect": "2.1.2" } }, "sha512-1tfaK85MU+gJjwwmL31d2rzdf0XCYX99chZf63uG89SGBUd4XuZ4ZzhGo2u79TPXOE6nLIZQ2okrpyey42PYdg=="],
+
     "@emnapi/core": ["@emnapi/core@1.11.1", "https://npm-proxy.cloud.databricks.com/@emnapi/core/-/core-1.11.1.tgz", { "dependencies": { "@emnapi/wasi-threads": "1.2.2", "tslib": "^2.4.0" } }, "sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ=="],
 
     "@emnapi/runtime": ["@emnapi/runtime@1.11.1", "https://npm-proxy.cloud.databricks.com/@emnapi/runtime/-/runtime-1.11.1.tgz", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-vgj7R3y3Wgx24IQaGPA/R6YFXLHVMOZ0uVEyIQPaWs+rd1AzfEMXlAC22FYwO1XkKR6NPsq7mUandH8oIRdZFw=="],
@@ -423,6 +438,10 @@
     "@tailwindcss/typography": ["@tailwindcss/typography@0.5.20", "https://npm-proxy.cloud.databricks.com/@tailwindcss/typography/-/typography-0.5.20.tgz", { "dependencies": { "postcss-selector-parser": "6.0.10" }, "peerDependencies": { "tailwindcss": ">=3.0.0 || >=4.0.0 || insiders" } }, "sha512-hwbzQuNUfcPvbegQFatVPl/MY/tcM9KLl963hQ5laJKPh81TEZ1+dNG9PirGvcaDBkp+BCshExAyKVPW91dozw=="],
 
     "@tailwindcss/vite": ["@tailwindcss/vite@4.3.2", "https://npm-proxy.cloud.databricks.com/@tailwindcss/vite/-/vite-4.3.2.tgz", { "dependencies": { "@tailwindcss/node": "4.3.2", "@tailwindcss/oxide": "4.3.2", "tailwindcss": "4.3.2" }, "peerDependencies": { "vite": "^5.2.0 || ^6 || ^7 || ^8" } }, "sha512-eHpMeX4JXfVNJDEcsouTeCBubJBTcTLigeaw/NTUW6PB5ATKKXdyonnXgTBX2VuRbjz1hjfz6C5XAhr52ImQXA=="],
+
+    "@tanstack/query-core": ["@tanstack/query-core@5.101.2", "https://npm-proxy.cloud.databricks.com/@tanstack/query-core/-/query-core-5.101.2.tgz", {}, "sha512-hH5MLoJhF7KaIGd7q3xTXGXvslI+GYlM1Z/35aSHHWaCJWB7XvTSHYuV3eM7tw+aE0mT/xMro4M4Q9rCGHT0lw=="],
+
+    "@tanstack/react-query": ["@tanstack/react-query@5.101.2", "https://npm-proxy.cloud.databricks.com/@tanstack/react-query/-/react-query-5.101.2.tgz", { "dependencies": { "@tanstack/query-core": "5.101.2" }, "peerDependencies": { "react": "^18 || ^19" } }, "sha512-seDkr6kzGzX1okaaTtZPtgA688CDPlXUz1C6xSg0ESqn04Vuc8tlrYms1s3de+znBqhPVxFRfpAfUf+6XvfPWg=="],
 
     "@tybys/wasm-util": ["@tybys/wasm-util@0.10.3", "https://npm-proxy.cloud.databricks.com/@tybys/wasm-util/-/wasm-util-0.10.3.tgz", { "dependencies": { "tslib": "^2.4.0" } }, "sha512-F3fo1MYrRJYL3zER0OUOmkutjr1Vp23m7OsSgp7nq4SP6OqX6C/56XFIPAl5bt3zaBRjmW7SGz3u/6LwFpYcOg=="],
 

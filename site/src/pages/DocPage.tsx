@@ -3,6 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import DocsSidebar from "../components/layout/DocsSidebar";
 import Breadcrumbs from "../components/layout/Breadcrumbs";
 import OnThisPage from "../components/layout/OnThisPage";
+import CommentSidebar from "../components/review/CommentSidebar";
+import ReviewControls from "../components/review/ReviewControls";
+import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
 import ConceptHeader from "../components/ConceptHeader";
@@ -80,6 +83,7 @@ export default function DocPage() {
             {frontmatter.summary && (
               <p className="lead muted">{frontmatter.summary}</p>
             )}
+            <ReviewControls contentRef={docRef(project, bucket, slug)} />
             <ConceptHeader references={frontmatter.references} />
             <MdxProvider>
               <Component />
@@ -91,6 +95,7 @@ export default function DocPage() {
           />
         </div>
         <OnThisPage articleRef={articleRef} />
+        <CommentSidebar contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
       </div>
     </Shell>
   );

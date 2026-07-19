@@ -1,0 +1,34 @@
+# Codegen for the review API. Emits TypeScript for two consumers:
+#   - the React client (site/src/gen): message types + Connect clients +
+#     connect-query hooks (TanStack Query integration).
+#   - the Neon Function backend (server/src/gen): message types + Connect
+#     service definitions to implement against.
+#
+# Run via `just buf-gen` (which shells `buf generate` from proto/).
+# Uses remote plugins so no local protoc toolchain is required.
+version: v2
+inputs:
+  - directory: .
+plugins:
+  # --- shared: message types (used by both client and server) ---------------
+  - remote: buf.build/bufbuild/es
+    out: ../site/src/gen
+    opt:
+      - target=ts
+      - import_extension=js
+  - remote: buf.build/bufbuild/es
+    out: ../server/src/gen
+    opt:
+      - target=ts
+      - import_extension=js
+
+  # --- client: connect-query query options / hooks for TanStack Query -------
+  - remote: buf.build/connectrpc/query-es
+    out: ../site/src/gen
+    opt:
+      - target=ts
+      - import_extension=js
+
+  # --- server: connect service definitions to register handlers against -----
+  # (bufbuild/es above already emits the service descriptors connect-node needs;
+  #  no separate connect-es plugin is required for the server with es v2.)

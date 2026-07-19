@@ -1,0 +1,13 @@
+# buf module for the docs-factory review API.
+# The proto here is the source of truth for the in-app review/release lifecycle
+# API (Connect RPC). Codegen fans out to the React client (site/) and the Neon
+# Function backend (server/) — see buf.gen.yaml.
+version: v2
+modules:
+  - path: .
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE

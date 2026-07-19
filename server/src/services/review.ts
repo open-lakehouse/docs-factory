@@ -19,6 +19,8 @@ import {
   CreateCommentResponseSchema,
   ResolveThreadResponseSchema,
   UnresolveThreadResponseSchema,
+  TransitionReviewResponseSchema,
+  ReleaseContentResponseSchema,
   ManageAllowlistRequest_Action,
   ManageAllowlistResponseSchema,
   RegisterVersionResponseSchema,
@@ -28,6 +30,8 @@ import {
   type CreateCommentRequest,
   type ResolveThreadRequest,
   type UnresolveThreadRequest,
+  type TransitionReviewRequest,
+  type ReleaseContentRequest,
   type ManageAllowlistRequest,
   type RegisterVersionRequest,
 } from "../gen/docs_factory/review/v1/review_service_pb.js";
@@ -63,6 +67,21 @@ const REVIEW_STATE_BY_DB: Record<string, ReviewState> = {
   "changes-requested": ReviewState.CHANGES_REQUESTED,
   approved: ReviewState.APPROVED,
   released: ReviewState.RELEASED,
+};
+const DB_BY_REVIEW_STATE: Record<number, string> = {
+  [ReviewState.NONE]: "none",
+  [ReviewState.IN_REVIEW]: "in-review",
+  [ReviewState.CHANGES_REQUESTED]: "changes-requested",
+  [ReviewState.APPROVED]: "approved",
+  [ReviewState.RELEASED]: "released",
+};
+// Allowed transitions. RELEASED is terminal and maintainer-only (enforced below).
+const ALLOWED_TRANSITIONS: Record<string, string[]> = {
+  none: ["in-review"],
+  "in-review": ["changes-requested", "approved"],
+  "changes-requested": ["in-review"],
+  approved: ["released", "in-review"],
+  released: [],
 };
 
 export function registerReviewService(router: ConnectRouter, auth: AuthProvider): void {
@@ -237,6 +256,19 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         });
       },
 
+      async transitionReview(req: TransitionReviewRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        const state = await transition(req.ref, req.toState, req.note, ctx, viewer.login);
+        return create(TransitionReviewResponseSchema, { state });
+      },
+
+      async releaseContent(req: ReleaseContentRequest, ctx) {
+        // Release is maintainer-only and terminal.
+        const viewer = requireMaintainer(ctx);
+        const state = await transition(req.ref, ReviewState.RELEASED, req.note, ctx, viewer.login);
+        return create(ReleaseContentResponseSchema, { state });
+      },
+
       async manageAllowlist(req: ManageAllowlistRequest, ctx) {
         requireMaintainer(ctx);
         const actor = getViewer(ctx).login ?? "unknown";
@@ -364,6 +396,56 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
     resolutions,
   );
   return [...threads, ...orphaned][0] ?? create(ThreadSchema, {});
+}
+
+/**
+ * Validate + append a review-state transition. Returns the new state. Enforces
+ * the state machine and that RELEASED is only reachable by a maintainer. The
+ * caller has already done the allowlist/maintainer auth check for the entry
+ * point; this re-checks RELEASED so no path can release without maintainer.
+ */
+async function transition(
+  ref: { area: number; slug: string } | undefined,
+  toState: ReviewState,
+  note: string | undefined,
+  ctx: Parameters<typeof getViewer>[0],
+  actorLogin: string | undefined,
+): Promise<ReviewState> {
+  if (!ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+  const toDb = DB_BY_REVIEW_STATE[toState];
+  if (!toDb || toDb === "none") {
+    throw new ConnectError("invalid target review state", Code.InvalidArgument);
+  }
+  if (toDb === "released") requireMaintainer(ctx);
+
+  const sql = db();
+  const area = areaToDb(ref.area);
+  const [current] = await sql<{ state: string }[]>`
+    select state from review_state
+    where area = ${area} and slug = ${ref.slug}
+    order by created_at desc limit 1
+  `;
+  const from = current?.state ?? "none";
+  if (from === toDb) return toState; // idempotent no-op
+  if (!(ALLOWED_TRANSITIONS[from] ?? []).includes(toDb)) {
+    throw new ConnectError(
+      `illegal transition ${from} -> ${toDb}`,
+      Code.FailedPrecondition,
+    );
+  }
+
+  // Stamp against the latest version for provenance (nullable if unregistered).
+  const [ver] = await sql<{ id: string }[]>`
+    select id from content_version
+    where area = ${area} and slug = ${ref.slug}
+    order by created_at desc limit 1
+  `;
+  await sql`
+    insert into review_state (area, slug, state, version_id, actor_user_id, note)
+    values (${area}, ${ref.slug}, ${toDb}, ${ver?.id ?? null},
+            ${actorLogin ?? "unknown"}, ${note ?? null})
+  `;
+  return toState;
 }
 
 /** Reject unless the request's build secret matches BUILD_SECRET (which must be set). */

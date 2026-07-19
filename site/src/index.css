@@ -247,11 +247,13 @@ body {
   padding: 0.12em 0.38em;
   border-radius: 0.3rem;
 }
-/* Code blocks — the Kibo <CodeBlock> (client-side Shiki) wrapped by our chrome
-   (src/components/code-block.tsx). The .cb-* classes give it the DevHub console
-   look; the highlighted <pre class="shiki"> comes from Shiki, whose per-token
-   colors are inline, so we only style the chrome + the block surface. */
+/* Code blocks — build-time Shiki <pre> wrapped by our chrome
+   (src/components/code-block.tsx). Sleek, DevHub-style: no header bar, just a
+   clean surface with a floating copy button in the top-right. The highlighted
+   <pre class="shiki"> comes from Shiki (per-token colors are inline), so we only
+   style the block surface + the copy affordance. */
 .prose .cb {
+  position: relative;
   margin: 1.5rem 0;
   border: 1px solid var(--code-border);
   border-radius: 0.4rem;
@@ -259,85 +261,92 @@ body {
   background: var(--code-bg);
   color: var(--code-fg);
 }
+/* Slim header — rendered only when the fence has a filename (title="…"). Keeps
+   the copy button floating in the top-right, so we reserve room on the right. */
 .prose .cb-head {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.6rem 0;
+  min-height: 2.25rem;
+  padding: 0.3rem 2.75rem 0.3rem 0.85rem;
   background: var(--code-surface);
   border-bottom: 1px solid var(--code-border);
   font-family: var(--font-mono);
   font-size: 0.72rem;
   color: var(--muted-foreground);
-  min-height: 2rem;
 }
-.prose .cb-dots {
-  display: flex;
-  gap: 0.35rem;
-  flex: none;
-  padding-right: 0.25rem;
-}
-.prose .cb-dot {
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: #3a3f4a;
-  opacity: 0.6;
-}
-.prose .cb-dot-red { background: #c65a54; }
-.prose .cb-dot-yellow { background: #c99a42; }
-.prose .cb-dot-green { background: #4f9c5a; }
-.prose .cb-tabs {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  margin-left: 0.25rem;
-  flex: 1;
-  min-width: 0;
-}
-.prose .cb-tab {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.35rem 0.65rem;
-  background: var(--code-bg);
-  border: 1px solid var(--code-border);
-  border-bottom: none;
-  border-radius: 0.3rem 0.3rem 0 0;
-  color: var(--code-fg);
-  font-weight: 500;
-  font-size: 0.72rem;
-  max-width: 14rem;
+.prose .cb-file {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.prose .cb-head-nameonly .cb-tabs { display: none; }
-.prose .cb-head:not(:has(.cb-tab)) .cb-tabs { display: none; }
-.prose .cb-name { display: none; }
-.prose .cb-lang {
-  margin-left: auto;
+/* A whisper of context: the language, top-left, fading in on hover. Skipped for
+   plain `text` (noise) and for blocks that already have a filename header, and
+   given its own backdrop so it stays legible over the code. */
+.prose .cb:not([data-lang="text"]):not([data-has-filename])::before {
+  content: attr(data-lang);
+  position: absolute;
+  top: 0.45rem;
+  left: 0.55rem;
+  z-index: 1;
+  padding: 0.05rem 0.35rem;
+  border-radius: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.03em;
   text-transform: lowercase;
-  letter-spacing: 0.02em;
-  opacity: 0.65;
-  padding-bottom: 0.35rem;
+  color: var(--muted-foreground);
+  background: color-mix(in srgb, var(--code-bg) 72%, transparent);
+  backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
 }
-.prose .cb-head .cb-copy { margin-bottom: 0.2rem; }
-/* The copy button is a Kibo/shadcn ghost <button>; retint it to the console. */
+.prose .cb:not([data-lang="text"]):not([data-has-filename]):hover::before,
+.prose .cb:not([data-lang="text"]):not([data-has-filename]):focus-within::before {
+  opacity: 0.85;
+}
+/* Floating copy button — top-right of the box, no header bar. Subtle by
+   default, clearer on hover/focus; its own translucent backdrop keeps code
+   scrolling underneath legible. */
 .prose .cb-copy {
-  flex: none;
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 1.75rem;
   height: 1.75rem;
+  padding: 0;
   color: var(--muted-foreground);
-  background: transparent;
+  background: color-mix(in srgb, var(--code-bg) 72%, transparent);
   border: 1px solid transparent;
   border-radius: 0.4rem;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  opacity: 0.55;
+  backdrop-filter: blur(2px);
+  transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+.prose .cb:hover .cb-copy,
+.prose .cb-copy:focus-visible {
+  opacity: 1;
 }
 .prose .cb-copy:hover {
   color: var(--code-fg);
-  background: rgb(255 255 255 / 0.08);
+  background: color-mix(in srgb, var(--code-bg) 82%, #ffffff 12%);
   border-color: var(--code-border);
+}
+/* Copied: the check reads as success (matches the tip-callout green), and wins
+   over :hover since the cursor is usually still on the button after a click. */
+.prose .cb-copy[data-copied="true"],
+.prose .cb-copy[data-copied="true"]:hover {
+  color: #16a34a;
+  opacity: 1;
+}
+:root.dark .prose .cb-copy[data-copied="true"],
+:root.dark .prose .cb-copy[data-copied="true"]:hover {
+  color: #22c55e;
 }
 .prose .cb-copy svg { width: 0.95rem; height: 0.95rem; }
 /* Build-time Shiki renders <pre class="shiki"><code>…</code></pre> inside our
@@ -349,7 +358,7 @@ body {
   border: 0;
   border-radius: 0;
   background: transparent !important;
-  padding: 1rem 0;
+  padding: 1rem 1.1rem;
   overflow-x: auto;
   font-size: 0.9rem;
   line-height: 1.6;

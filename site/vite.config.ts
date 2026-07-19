@@ -11,6 +11,7 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeShiki from "@shikijs/rehype";
+import type { ShikiTransformer } from "shiki";
 import remarkResolveImages from "./src/plugins/remark-resolve-images.mjs";
 import remarkLikeC4Views from "./src/plugins/remark-likec4-views.mjs";
 import remarkCodeSnippets from "./src/plugins/remark-code-snippets.mjs";
@@ -20,7 +21,22 @@ import remarkCallouts from "./src/plugins/remark-callouts.mjs";
 import remarkFenceMeta from "./src/plugins/remark-fence-meta.mjs";
 import remarkTabs from "./src/plugins/remark-tabs.mjs";
 import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
-import rehypePreMeta from "./src/plugins/rehype-pre-meta.mjs";
+
+// Shiki rebuilds the <pre>/<code> subtree, so any data-* set upstream is lost.
+// remark-fence-meta preserves the fence meta as <code metastring="…">, which
+// Shiki re-exposes here as this.options.meta.__raw. Turn it into the chrome
+// attributes the <Pre> MDX override reads: data-filename (from title="…") and
+// data-lang (the resolved language), applied to Shiki's OUTPUT <pre>.
+const TITLE_RE = /\btitle="([^"]*)"/;
+const codeChromeTransformer: ShikiTransformer = {
+  name: "docs-factory:code-chrome",
+  pre(node) {
+    const raw = (this.options.meta?.__raw as string | undefined) ?? "";
+    const title = TITLE_RE.exec(raw)?.[1];
+    if (title) node.properties["data-filename"] = title;
+    if (this.options.lang) node.properties["data-lang"] = this.options.lang;
+  },
+};
 
 export default defineConfig({
   server: {
@@ -62,9 +78,9 @@ export default defineConfig({
                 light: "github-dark-dimmed",
                 dark: "github-dark-dimmed",
               },
+              transformers: [codeChromeTransformer],
             },
           ],
-          rehypePreMeta,
         ],
       }),
     },

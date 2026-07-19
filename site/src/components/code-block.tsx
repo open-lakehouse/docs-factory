@@ -1,7 +1,8 @@
-// code-block.tsx — console chrome around build-time Shiki <pre> output.
+// code-block.tsx — sleek chrome around build-time Shiki <pre> output.
 // remark-fence-meta + @shikijs/rehype highlight fences at compile time;
-// MdxProvider maps `pre` here so every block gets traffic-light dots,
-// filename, language label, and a copy button.
+// MdxProvider maps `pre` here. Clean surface with a floating copy button in the
+// top-right; a slim header bar is rendered ONLY when the fence carries a
+// filename (title="…"), so headerless blocks keep their clean lines.
 import { Children, isValidElement, type ReactNode } from "react";
 import CodeCopyButton from "./CodeCopyButton";
 
@@ -36,24 +37,16 @@ export function Pre({
   const hasFilename = Boolean(filename);
 
   return (
-    <div className="cb">
-      <div className={hasFilename ? "cb-head" : "cb-head cb-head-nameonly"}>
-        <div className="cb-dots" aria-hidden="true">
-          <span className="cb-dot cb-dot-red" />
-          <span className="cb-dot cb-dot-yellow" />
-          <span className="cb-dot cb-dot-green" />
+    <div className="cb" data-lang={lang} data-has-filename={hasFilename ? "true" : undefined}>
+      {hasFilename && (
+        <div className="cb-head">
+          <span className="cb-file">{filename}</span>
         </div>
-        {hasFilename && (
-          <div className="cb-tabs">
-            <span className="cb-tab">{filename}</span>
-          </div>
-        )}
-        <span className="cb-lang">{lang}</span>
-        <CodeCopyButton code={code} />
-      </div>
+      )}
       <pre {...props} className={className ? `cb-pre ${className}` : "cb-pre"}>
         {children}
       </pre>
+      <CodeCopyButton code={code} />
     </div>
   );
 }

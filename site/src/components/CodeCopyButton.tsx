@@ -19,7 +19,13 @@ export default function CodeCopyButton({ code }: { code: string }) {
   const Icon = copied ? Check : Copy;
 
   return (
-    <button type="button" className="cb-copy" onClick={copy} aria-label="Copy code">
+    <button
+      type="button"
+      className="cb-copy"
+      data-copied={copied ? "true" : undefined}
+      onClick={copy}
+      aria-label="Copy code"
+    >
       <Icon aria-hidden="true" />
     </button>
   );

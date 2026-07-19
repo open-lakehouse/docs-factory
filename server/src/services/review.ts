@@ -282,13 +282,14 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const [row] = await sql<CommentRow[]>`
           insert into comment
             (area, slug, section_id, authored_version_id, anchor_slug, anchor_fingerprint, parent_id,
-             author_user_id, author_login, body_md, orphaned,
+             author_user_id, author_login, author_name, body_md, orphaned,
              selector_quote, selector_prefix, selector_suffix, selector_start,
              code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash)
           values
             (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${latest?.id ?? null}, ${req.anchorSlug},
              ${req.anchorFingerprint}, ${parentId},
-             ${viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"}, ${req.bodyMd}, false,
+             ${viewer.userId ?? viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"},
+             ${viewer.name ?? null}, ${req.bodyMd}, false,
              ${sel?.quote ?? null}, ${sel?.prefix ?? null}, ${sel?.suffix ?? null},
              ${sel ? sel.start : null},
              ${code?.path ?? null}, ${code?.region ?? null}, ${code ? code.line : null},

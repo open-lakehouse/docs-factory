@@ -132,6 +132,11 @@ message Viewer {
   optional string login = 2;
   Role role = 3;
   bool is_allowlisted = 4;
+  // Stable Neon Auth user id — survives a GitHub login rename, so authorship
+  // and read-state key on it rather than the mutable login. Display name is a
+  // convenience for the UI (falls back to the login when absent).
+  optional string user_id = 5;
+  optional string name = 6;
 }
 
 // One comment. Thread roots have no `parent_id`. When the section a comment was

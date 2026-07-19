@@ -18,7 +18,10 @@ import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 
 interface NeonIdentity {
+  /** Stable Neon Auth user id — the key for authorship + read-state. */
+  userId: string;
   login: string;
+  name?: string;
   email?: string;
 }
 
@@ -45,8 +48,10 @@ function sessionToken(header: Headers): string | undefined {
 async function resolveIdentity(token: string): Promise<NeonIdentity | null> {
   const sql = db();
   try {
-    const rows = await sql<{ login: string | null; email: string | null }[]>`
-      select acc."providerAccountId" as login, u.email as email
+    const rows = await sql<
+      { user_id: string; login: string | null; name: string | null; email: string | null }[]
+    >`
+      select u.id as user_id, acc."providerAccountId" as login, u.name as name, u.email as email
       from neon_auth.session s
       join neon_auth."user" u on u.id = s."userId"
       join neon_auth.account acc on acc."userId" = u.id and acc.provider = 'github'
@@ -56,7 +61,12 @@ async function resolveIdentity(token: string): Promise<NeonIdentity | null> {
     `;
     const row = rows[0];
     if (!row?.login) return null;
-    return { login: row.login, email: row.email ?? undefined };
+    return {
+      userId: row.user_id,
+      login: row.login,
+      name: row.name ?? undefined,
+      email: row.email ?? undefined,
+    };
   } catch {
     // neon_auth not present (e.g. not yet provisioned) → treat as logged out.
     return null;
@@ -71,11 +81,12 @@ export function createNeonAuthProvider(): AuthProvider {
       const identity = await resolveIdentity(token);
       if (!identity) return anonymousViewer();
       const role = await lookupRole(db(), identity);
+      const ident = { userId: identity.userId, name: identity.name };
       // Authenticated but not allowlisted: known identity, published-only access.
       if (role === Role.ANONYMOUS) {
-        return viewer(identity.login, Role.ANONYMOUS);
+        return viewer(identity.login, Role.ANONYMOUS, ident);
       }
-      return viewer(identity.login, role);
+      return viewer(identity.login, role, ident);
     },
   };
 }

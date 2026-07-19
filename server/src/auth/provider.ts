@@ -24,13 +24,23 @@ export function anonymousViewer(): Viewer {
   });
 }
 
+/** Optional stable-identity fields carried alongside a viewer's login/role. */
+export interface ViewerIdentity {
+  /** Stable Neon Auth user id (keys authorship + read-state across renames). */
+  userId?: string;
+  /** Display name for the UI (falls back to the login when absent). */
+  name?: string;
+}
+
 /** An authenticated viewer at the given role (allowlisted iff not anonymous). */
-export function viewer(login: string, role: Role): Viewer {
+export function viewer(login: string, role: Role, identity: ViewerIdentity = {}): Viewer {
   return create(ViewerSchema, {
     authenticated: true,
     login,
     role,
     isAllowlisted: role === Role.REVIEWER || role === Role.MAINTAINER,
+    userId: identity.userId,
+    name: identity.name,
   });
 }
 

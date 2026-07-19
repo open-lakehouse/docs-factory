@@ -440,9 +440,15 @@ body {
   box-sizing: border-box;
   width: calc(100cqi + 2 * 1.1rem);
   margin: 0.35rem -1.1rem 0.5rem;
-  padding: 0.75rem 1.1rem;
+  /* Slim top gutter: the close button floats here in the top-right (height: 0
+     head) instead of a full-width band, so comments keep the space. */
+  padding: 0.5rem 1.1rem 0.75rem;
+  --rp-pad-x: 1.1rem;
+  --rp-bg: color-mix(in oklab, var(--accent) 5%, var(--card));
+  max-height: min(60vh, 26rem);
+  overflow-y: auto;
   border-top: 1px solid color-mix(in oklab, gold 40%, var(--border));
-  background: color-mix(in oklab, var(--accent) 5%, var(--card));
+  background: var(--rp-bg);
   white-space: normal;
   font-family: var(--font-sans, system-ui);
   font-size: 0.84rem;
@@ -455,11 +461,15 @@ body {
    to the gold quote highlight), but keeps a faint full border + soft shadow so it
    reads as floating over the prose — since a portal can't push text down/expand. */
 .review-inline-panel {
-  padding: 0.7rem 0.85rem;
+  /* Slim top gutter: the close button floats in the top-right (see
+     .cb-inline-review) rather than reserving a full-width header band. */
+  padding: 0.5rem 0.85rem 0.7rem;
+  --rp-pad-x: 0.85rem;
+  --rp-bg: color-mix(in oklab, var(--accent) 5%, var(--card));
   border: 1px solid color-mix(in oklab, gold 20%, var(--border));
   border-top: 2px solid color-mix(in oklab, gold 45%, var(--border));
   border-radius: 4px;
-  background: color-mix(in oklab, var(--accent) 5%, var(--card));
+  background: var(--rp-bg);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
   max-height: min(50vh, 24rem);
   overflow-y: auto;
@@ -478,17 +488,71 @@ body {
   justify-content: space-between;
   gap: 0.5rem;
 }
-.review-inline-close {
+/* Inline/compact surfaces drop the repeated section tag + quote (context is the
+   adjacent prose/code), so the head is just the close button. It's pinned to the
+   top-right and reserves NO vertical space (height: 0) — comments use the full
+   height and flow underneath, rather than being pushed down by a header band. */
+.review-thread-conversation.compact .review-thread-conversation-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+/* Icon actions in the conversation head: resolve toggle (✓) + close (×). */
+.review-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  flex: none;
+}
+.review-inline-close,
+.review-inline-resolve {
   border: none;
   background: transparent;
   color: var(--muted-foreground);
-  font-size: 1.1rem;
   line-height: 1;
   cursor: pointer;
   padding: 0.1rem 0.35rem;
 }
-.review-inline-close:hover {
+.review-inline-close {
+  font-size: 1.1rem;
+}
+.review-inline-resolve {
+  font-size: 0.95rem;
+}
+.review-inline-close:hover,
+.review-inline-resolve:hover {
   color: var(--foreground);
+}
+/* Resolved: the checkmark stays lit in the accent so the state reads at a glance. */
+.review-inline-resolve.active,
+.review-inline-resolve.active:hover {
+  color: var(--accent);
+}
+/* Compact: the resolve + close icons float over the top-right corner of the
+   scrolling thread. Small rounded chips (panel background) keep the glyphs
+   legible over whatever comment scrolls behind them, without masking a row. */
+.review-thread-conversation.compact .review-head-actions {
+  pointer-events: none;
+  /* Nudge down off the top edge and out toward the panel's right corner (the
+     negative right margin bleeds into the panel's side padding). */
+  margin-top: 0.65rem;
+  margin-right: calc(0.35rem - var(--rp-pad-x, 0.85rem));
+}
+.review-thread-conversation.compact .review-head-actions button {
+  pointer-events: auto;
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--rp-bg, var(--card)), transparent 12%);
+}
+.review-thread-conversation.compact .review-head-actions button:hover {
+  background: var(--rp-bg, var(--card));
 }
 
 /* Code journeys — a GitHub-style step timeline (see src/components/journey.tsx).
@@ -2595,6 +2659,48 @@ a.review-author:hover span {
 }
 .review-composer.compact textarea {
   min-height: 3rem;
+}
+/* Inline composer: an always-on reply field with an embedded send button in the
+   bottom-right corner. No reveal step — type and hit send (or ⌘/Ctrl+Enter). */
+.review-composer.inline {
+  position: relative;
+  display: flex;
+}
+/* Single-row field that grows with content (height set via JS on input). The
+   resize grip is removed so the box tracks the text, not a manual drag. */
+.review-composer.inline textarea {
+  box-sizing: border-box;
+  min-height: 0;
+  height: 2.1rem;
+  padding: 0.4rem 2.5rem 0.4rem 0.65rem;
+  line-height: 1.4;
+  resize: none;
+  overflow-y: auto;
+  max-height: 11rem;
+}
+.review-send {
+  position: absolute;
+  right: 0.3rem;
+  bottom: 0.3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-foreground, #fff);
+  cursor: pointer;
+  transition: filter 0.12s, opacity 0.12s;
+}
+.review-send:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+.review-send:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 /* Fine-grained review: floating button + context menu */

@@ -1,4 +1,4 @@
-import { useCallback, type KeyboardEvent } from "react";
+import { useCallback, useLayoutEffect, useRef, type KeyboardEvent } from "react";
 
 interface ReviewComposerProps {
   value: string;
@@ -12,6 +12,8 @@ interface ReviewComposerProps {
   submitting?: boolean;
   autoFocus?: boolean;
   compact?: boolean;
+  /** Always-on single field with an embedded send button (no reveal step). */
+  inline?: boolean;
 }
 
 export default function ReviewComposer({
@@ -26,6 +28,7 @@ export default function ReviewComposer({
   submitting = false,
   autoFocus = false,
   compact = false,
+  inline = false,
 }: ReviewComposerProps) {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -36,6 +39,58 @@ export default function ReviewComposer({
     },
     [disabled, onSubmit, submitting, value],
   );
+
+  // Auto-grow the inline field: start at one row and expand as lines wrap/break,
+  // so the box height tracks the content instead of a fixed two-row min-height.
+  const inlineRef = useRef<HTMLTextAreaElement>(null);
+  useLayoutEffect(() => {
+    if (!inline) return;
+    const el = inlineRef.current;
+    if (!el) return;
+    // scrollHeight covers content + padding; add the (border-box) borders so the
+    // measured height matches exactly and doesn't leave a 1–2px phantom scroll.
+    const cs = window.getComputedStyle(el);
+    const border = parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight + border}px`;
+  }, [inline, value]);
+
+  if (inline) {
+    const canSend = !disabled && !submitting && Boolean(value.trim());
+    return (
+      <div className="review-composer inline">
+        <textarea
+          ref={inlineRef}
+          autoFocus={autoFocus}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          rows={1}
+          disabled={disabled || submitting}
+          aria-label={placeholder}
+        />
+        <button
+          type="button"
+          className="review-send"
+          onClick={onSubmit}
+          disabled={!canSend}
+          aria-label={submitLabel}
+          title={`${submitLabel} (⌘/Ctrl+Enter)`}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M4 12l16-8-6 16-3.2-6.4L4 12z"
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="1.2"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className={`review-composer${compact ? " compact" : ""}`}>

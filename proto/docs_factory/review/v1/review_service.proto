@@ -1,0 +1,151 @@
+syntax = "proto3";
+
+package docs_factory.review.v1;
+
+import "docs_factory/review/v1/messages.proto";
+
+// The review & release API, served over Connect from the Neon Function and
+// called from the React SPA (connect-web + connect-query).
+//
+// Authorization (enforced server-side per method):
+//   - published-content reads: public
+//   - unpublished-content reads + all writes: allowlisted reviewers
+//   - release + allowlist management: maintainers
+//   - RegisterVersion: build-time only, guarded by a shared secret
+service ReviewService {
+  // Resolve the current viewer (identity + role). Drives client UI gating and
+  // the local dev impersonation switcher.
+  rpc GetViewer(GetViewerRequest) returns (GetViewerResponse);
+
+  // List content with review state + open-comment counts. Unpublished entries
+  // are included only for allowlisted viewers.
+  rpc ListDrafts(ListDraftsRequest) returns (ListDraftsResponse);
+
+  // Fetch the rendered body of unpublished content (allowlist-gated). Published
+  // content is served statically and does not use this.
+  rpc GetDraftContent(GetDraftContentRequest) returns (GetDraftContentResponse);
+
+  // Threads (roots + replies + resolution) for a content ref, plus orphaned
+  // threads whose section no longer exists in the latest version.
+  rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse);
+
+  rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
+  rpc ResolveThread(ResolveThreadRequest) returns (ResolveThreadResponse);
+  rpc UnresolveThread(UnresolveThreadRequest) returns (UnresolveThreadResponse);
+
+  // Append a review-state transition (validated against the state machine).
+  rpc TransitionReview(TransitionReviewRequest) returns (TransitionReviewResponse);
+  // Maintainer-only convenience for the terminal RELEASED transition.
+  rpc ReleaseContent(ReleaseContentRequest) returns (ReleaseContentResponse);
+
+  // Maintainer-only allowlist management.
+  rpc ManageAllowlist(ManageAllowlistRequest) returns (ManageAllowlistResponse);
+
+  // Build-time upsert of a content version + its sections; re-anchors open
+  // threads. Guarded by a shared secret, not by viewer auth.
+  rpc RegisterVersion(RegisterVersionRequest) returns (RegisterVersionResponse);
+}
+
+message GetViewerRequest {}
+message GetViewerResponse {
+  Viewer viewer = 1;
+}
+
+message ListDraftsRequest {
+  // When set, restrict to one area.
+  optional ContentArea area = 1;
+}
+message ListDraftsResponse {
+  repeated DraftSummary drafts = 1;
+}
+
+message GetDraftContentRequest {
+  ContentRef ref = 1;
+}
+message GetDraftContentResponse {
+  // Rendered HTML body of the draft.
+  string html = 1;
+  ContentVersion version = 2;
+}
+
+message ListCommentsRequest {
+  ContentRef ref = 1;
+}
+message ListCommentsResponse {
+  // Threads anchored to sections present in the latest version.
+  repeated Thread threads = 1;
+  // Threads whose section no longer exists (shown but not lost).
+  repeated Thread orphaned_threads = 2;
+}
+
+message CreateCommentRequest {
+  ContentRef ref = 1;
+  string anchor_slug = 2;
+  string anchor_fingerprint = 3;
+  // Set when replying within a thread.
+  optional string parent_id = 4;
+  string body_md = 5;
+}
+message CreateCommentResponse {
+  Comment comment = 1;
+}
+
+message ResolveThreadRequest {
+  string thread_root_id = 1;
+}
+message ResolveThreadResponse {
+  Thread thread = 1;
+}
+
+message UnresolveThreadRequest {
+  string thread_root_id = 1;
+}
+message UnresolveThreadResponse {
+  Thread thread = 1;
+}
+
+message TransitionReviewRequest {
+  ContentRef ref = 1;
+  ReviewState to_state = 2;
+  optional string note = 3;
+}
+message TransitionReviewResponse {
+  ReviewState state = 1;
+}
+
+message ReleaseContentRequest {
+  ContentRef ref = 1;
+  optional string note = 2;
+}
+message ReleaseContentResponse {
+  ReviewState state = 1;
+}
+
+message ManageAllowlistRequest {
+  enum Action {
+    ACTION_UNSPECIFIED = 0;
+    ACTION_ADD = 1;
+    ACTION_REMOVE = 2;
+  }
+  Action action = 1;
+  AllowlistEntry entry = 2;
+}
+message ManageAllowlistResponse {
+  repeated AllowlistEntry entries = 1;
+}
+
+message RegisterVersionRequest {
+  // Shared build-time secret; rejected if it does not match the server env.
+  string build_secret = 1;
+  ContentRef ref = 2;
+  string content_hash = 3;
+  string git_sha = 4;
+  string title = 5;
+  string frontmatter_status = 6;
+  repeated Section sections = 7;
+}
+message RegisterVersionResponse {
+  ContentVersion version = 1;
+  // Threads that could not be re-anchored to a section in this version.
+  int32 orphaned_thread_count = 2;
+}

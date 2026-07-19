@@ -1,5 +1,12 @@
 # Google Docs delivery runbook
 
+> **gdocs is now an opt-in flat export, not the review mechanism.** Blog/doc
+> review happens in-app: the `site/` app renders the deployed draft and lets
+> allowlisted reviewers leave per-section comments that survive edits (re-anchored
+> by heading fingerprint, not orphaned on re-emit — the exact gdocs friction we
+> left behind). Use this target only when someone specifically wants a Google Doc;
+> for review, share the deployed draft URL.
+
 The fixed MCP sequence the `blog-emit` skill follows to deliver a flattened draft
 to Google Docs — **create** the first time, **update in place** every time after,
 with images inserted inline. All `mcp__google__*` tools; a plain Node script can't

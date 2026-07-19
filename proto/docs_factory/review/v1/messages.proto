@@ -1,0 +1,122 @@
+syntax = "proto3";
+
+// The review & release lifecycle domain for docs-factory content (blog drafts
+// and Diátaxis docs). The database is authoritative for everything defined here;
+// git frontmatter carries only the orthogonal authoring `status`.
+package docs_factory.review.v1;
+
+import "google/protobuf/timestamp.proto";
+
+// Which content tree a piece of content lives in.
+enum ContentArea {
+  CONTENT_AREA_UNSPECIFIED = 0;
+  // blogs/<slug>/draft.md
+  CONTENT_AREA_BLOGS = 1;
+  // content/<project>/<bucket>/<slug>.md
+  CONTENT_AREA_DOCS = 2;
+}
+
+// Stable reference to one piece of content. `project`/`bucket` are set only for
+// docs; blogs are keyed by slug alone.
+message ContentRef {
+  ContentArea area = 1;
+  string slug = 2;
+  optional string project = 3;
+  optional string bucket = 4;
+}
+
+// A rendered content version, identified by a content hash of the body. A new
+// row is registered on each deploy whose body changed.
+message ContentVersion {
+  string id = 1;
+  ContentRef ref = 2;
+  // sha256 of the markdown body (frontmatter excluded).
+  string content_hash = 3;
+  string git_sha = 4;
+  string title = 5;
+  // The git frontmatter authoring status, copied for display only.
+  string frontmatter_status = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+// A heading-anchored section within a content version. `anchor_slug` is the
+// rehype-slug id used in the rendered DOM; `fingerprint` is the normalized
+// heading text used to re-anchor comments across versions.
+message Section {
+  string anchor_slug = 1;
+  string fingerprint = 2;
+  string heading_text = 3;
+  int32 level = 4;
+  int32 ordinal = 5;
+}
+
+// The reviewer-facing review/release state. Distinct from the git authoring
+// `status`; RELEASED is a database action, never a frontmatter write.
+enum ReviewState {
+  REVIEW_STATE_UNSPECIFIED = 0;
+  REVIEW_STATE_NONE = 1;
+  REVIEW_STATE_IN_REVIEW = 2;
+  REVIEW_STATE_CHANGES_REQUESTED = 3;
+  REVIEW_STATE_APPROVED = 4;
+  REVIEW_STATE_RELEASED = 5;
+}
+
+// Access role resolved from the reviewer allowlist.
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  // Not on the allowlist; can see published content only.
+  ROLE_ANONYMOUS = 1;
+  ROLE_REVIEWER = 2;
+  ROLE_MAINTAINER = 3;
+}
+
+// The current viewer, resolved from the auth provider (Neon Auth in prod, the
+// mock provider locally).
+message Viewer {
+  bool authenticated = 1;
+  optional string login = 2;
+  Role role = 3;
+  bool is_allowlisted = 4;
+}
+
+// One comment. Thread roots have no `parent_id`. When the section a comment was
+// written against disappears from a later version, `orphaned` is set true and
+// the comment is retained (never deleted).
+message Comment {
+  string id = 1;
+  ContentRef ref = 2;
+  string anchor_slug = 3;
+  string anchor_fingerprint = 4;
+  optional string parent_id = 5;
+  string author_login = 6;
+  string body_md = 7;
+  google.protobuf.Timestamp created_at = 8;
+  optional google.protobuf.Timestamp edited_at = 9;
+  bool orphaned = 10;
+}
+
+// A thread root plus its replies and resolution state.
+message Thread {
+  Comment root = 1;
+  repeated Comment replies = 2;
+  bool resolved = 3;
+  optional string resolved_by = 4;
+  optional google.protobuf.Timestamp resolved_at = 5;
+}
+
+// A summary row for the drafts list.
+message DraftSummary {
+  ContentRef ref = 1;
+  string title = 2;
+  string frontmatter_status = 3;
+  ReviewState review_state = 4;
+  optional ContentVersion latest_version = 5;
+  int32 open_comment_count = 6;
+}
+
+// One allowlist entry.
+message AllowlistEntry {
+  optional string github_login = 1;
+  optional string email = 2;
+  Role role = 3;
+}

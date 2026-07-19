@@ -15,7 +15,7 @@ runs:
     - name: Point bun.lock at public npm
       shell: bash
       run: |
-        locks=(site/bun.lock architecture/bun.lock emit/bun.lock)
+        locks=(site/bun.lock architecture/bun.lock emit/bun.lock server/bun.lock)
         rewrote=0
         for lock in "${locks[@]}"; do
           [ -f "$lock" ] || continue

@@ -10,6 +10,21 @@ import {
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { ReviewState, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
+import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+
+type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
+
+// Badge tone per review state: released = solid, approved = default accent,
+// changes-requested = destructive, in-review/none = muted outline/secondary.
+const BADGE_VARIANT: Record<number, BadgeVariant> = {
+  [ReviewState.NONE]: "outline",
+  [ReviewState.IN_REVIEW]: "secondary",
+  [ReviewState.CHANGES_REQUESTED]: "destructive",
+  [ReviewState.APPROVED]: "default",
+  [ReviewState.RELEASED]: "default",
+};
 
 const LABEL: Record<number, string> = {
   [ReviewState.NONE]: "not in review",
@@ -31,15 +46,19 @@ const NEXT: Record<number, { to: ReviewState; label: string }[]> = {
   [ReviewState.RELEASED]: [],
 };
 
-function sameRef(a: ContentRef, b: ContentRef): boolean {
-  return a.area === b.area && a.slug === b.slug && (a.project ?? "") === (b.project ?? "") && (a.bucket ?? "") === (b.bucket ?? "");
-}
-
 export default function ReviewControls({ contentRef }: { contentRef: ContentRef }) {
   const { isAllowlisted, isMaintainer } = useAuth();
-  const { data, refetch } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
-  const transition = useMutation(transitionReview);
-  const release = useMutation(releaseContent);
+  const { invalidateDrafts } = useReviewInvalidation();
+  const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
+  // Both mutations invalidate the shared listDrafts cache on success, so every
+  // mounted consumer (this badge, an index list) refreshes — not just this
+  // component's own query instance.
+  const transition = useMutation(transitionReview, {
+    onSuccess: () => void invalidateDrafts(),
+  });
+  const release = useMutation(releaseContent, {
+    onSuccess: () => void invalidateDrafts(),
+  });
 
   if (!isAllowlisted) return null;
 
@@ -48,29 +67,27 @@ export default function ReviewControls({ contentRef }: { contentRef: ContentRef 
 
   async function go(to: ReviewState) {
     await transition.mutateAsync({ ref: contentRef, toState: to });
-    refetch();
   }
   async function doRelease() {
     await release.mutateAsync({ ref: contentRef });
-    refetch();
   }
 
   const busy = transition.isPending || release.isPending;
 
   return (
-    <span className="review-controls">
-      <span className="review-state-badge" data-state={state}>
+    <span className="my-2 inline-flex flex-wrap items-center gap-2 text-sm">
+      <Badge variant={BADGE_VARIANT[state] ?? "secondary"}>
         review: {LABEL[state] ?? "unknown"}
-      </span>
+      </Badge>
       {(NEXT[state] ?? []).map((t) => (
-        <button key={t.to} onClick={() => go(t.to)} disabled={busy}>
+        <Button key={t.to} variant="outline" size="xs" onClick={() => go(t.to)} disabled={busy}>
           {t.label}
-        </button>
+        </Button>
       ))}
       {state === ReviewState.APPROVED && isMaintainer && (
-        <button className="review-release" onClick={doRelease} disabled={busy}>
+        <Button size="xs" onClick={doRelease} disabled={busy}>
           Release
-        </button>
+        </Button>
       )}
     </span>
   );

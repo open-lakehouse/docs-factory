@@ -7,6 +7,7 @@
 import { useEffect, useRef, useState, type RefObject } from "react";
 import { MessageSquare, Link2 } from "lucide-react";
 import { captureSelector, hashLine } from "../../lib/content-ref";
+import { copyToClipboard } from "../../lib/clipboard";
 import { useAuth } from "../../lib/auth-context";
 import { useSelectionState, type PendingAnchor } from "./selection-context";
 
@@ -82,12 +83,16 @@ export default function SelectionLayer({
           const path = codeBlock.dataset.srcPath ?? "";
           const region = codeBlock.dataset.srcRegion ?? "";
           const startLine = Number(codeBlock.dataset.srcStart ?? "1");
-          const blockText =
-            codeBlock.querySelector("code")?.textContent ?? codeBlock.textContent ?? "";
-          const before = blockText.slice(
-            0,
-            blockText.indexOf(text) === -1 ? 0 : blockText.indexOf(text),
-          );
+          // Line offset from the ACTUAL selection start within the block, not a
+          // text search: indexOf(text) would find the first identical line, so a
+          // selection of a repeated line (a bare `}`, a duplicated identifier)
+          // would anchor to the wrong line. Measure the text preceding the range
+          // start via a Range from the block's start to the selection start.
+          const codeEl = codeBlock.querySelector("code") ?? codeBlock;
+          const pre = range.cloneRange();
+          pre.selectNodeContents(codeEl);
+          pre.setEnd(range.startContainer, range.startOffset);
+          const before = pre.toString();
           const lineOffset = before ? before.split("\n").length - 1 : 0;
           const selLines = text.replace(/\n$/, "").split("\n");
           const firstLine = selLines[0] ?? "";
@@ -199,7 +204,7 @@ export default function SelectionLayer({
     url.hash = anchor.anchorSlug;
     if (anchor.kind === "prose") url.searchParams.set("sel", anchor.selector.quote);
     else url.searchParams.set("code", `${anchor.path}:${anchor.line}`);
-    void navigator.clipboard?.writeText(url.toString());
+    void copyToClipboard(url.toString());
   }
 
   return (

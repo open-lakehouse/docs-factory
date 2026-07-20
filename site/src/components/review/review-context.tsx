@@ -15,13 +15,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  useQuery,
-  useMutation,
-  createConnectQueryKey,
-  useTransport,
-} from "@connectrpc/connect-query";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@connectrpc/connect-query";
 import {
   listComments,
   markThreadSeen,
@@ -29,6 +23,7 @@ import {
 import type { ContentRef, Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { baseUrl, sseEnabled } from "../../lib/review-client";
+import { useReviewInvalidation, refKey } from "../../lib/review-queries";
 import {
   readReviewDisplayMode,
   setReviewDisplayMode,
@@ -89,15 +84,14 @@ export function ReviewProvider({
   children: ReactNode;
 }) {
   const { isAllowlisted } = useAuth();
-  const transport = useTransport();
-  const queryClient = useQueryClient();
+  const { commentsKey, invalidateComments, queryClient } = useReviewInvalidation();
   // Poll so a reviewer sees other reviewers' comments arrive without a reload.
   // Gated on being allowlisted; TanStack pauses the interval while the tab is
   // hidden and refetches on window focus, so background tabs don't hammer the
   // API. When SSE is enabled the interval drops to a slow backstop (SSE is the
   // primary path then); otherwise a modest interval keeps the rail live.
   const pollInterval = sseEnabled ? 60_000 : 15_000;
-  const { data, refetch } = useQuery(
+  const { data } = useQuery(
     listComments,
     { ref: contentRef },
     {
@@ -128,17 +122,34 @@ export function ReviewProvider({
     return () => window.removeEventListener(REVIEW_DISPLAY_MODE_EVENT, handler);
   }, []);
 
-  const seen = useMutation(markThreadSeen);
-  const listKey = useMemo(
-    () =>
-      createConnectQueryKey({
-        schema: listComments,
-        transport,
-        input: { ref: contentRef },
-        cardinality: "finite",
-      }),
-    [transport, contentRef],
-  );
+  const listKey = useMemo(() => commentsKey(contentRef), [commentsKey, contentRef]);
+
+  // Mark-read is optimistic: clear the thread's unread badge in the cached list
+  // immediately (so the dot disappears on open), snapshot for rollback if the
+  // RPC fails, and invalidate on settle so the next fetch confirms. Owning the
+  // optimistic update in the mutation lifecycle (rather than the click handler)
+  // gives us the onError rollback a bare mutate() would skip.
+  const seen = useMutation(markThreadSeen, {
+    onMutate: async ({ threadRootId }) => {
+      await queryClient.cancelQueries({ queryKey: listKey });
+      const previous = queryClient.getQueryData<typeof data>(listKey);
+      queryClient.setQueryData(listKey, (old: typeof data | undefined) => {
+        if (!old) return old;
+        const clear = (t: Thread): Thread =>
+          t.root?.id === threadRootId ? { ...t, hasUnread: false, unreadCount: 0 } : t;
+        return {
+          ...old,
+          threads: old.threads.map(clear),
+          orphanedThreads: old.orphanedThreads.map(clear),
+        };
+      });
+      return { previous };
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx?.previous) queryClient.setQueryData(listKey, ctx.previous);
+    },
+    onSettled: () => void invalidateComments(contentRef),
+  });
 
   // Live updates (Phase 4B): subscribe to the SSE hint channel and invalidate
   // the shared listComments cache when a matching ref changes, so other
@@ -149,56 +160,61 @@ export function ReviewProvider({
   useEffect(() => {
     if (!sseEnabled || !isAllowlisted) return;
     const url = new URL("/events/comments", baseUrl);
-    url.searchParams.set("ref", `${contentRef.area}:${contentRef.slug}`);
+    // Full ref identity in the subscription so the server can scope the stream;
+    // area:slug alone collides across areas/projects sharing a slug.
+    url.searchParams.set(
+      "ref",
+      `${contentRef.area}:${contentRef.slug}:${contentRef.project ?? ""}:${contentRef.bucket ?? ""}`,
+    );
     const es = new EventSource(url, { withCredentials: true });
     es.addEventListener("invalidate", (e) => {
-      // Only invalidate when the changed ref matches this page's content.
+      // Only invalidate when the changed ref matches this page's content across
+      // ALL identity fields — not slug alone — so a same-slug page in another
+      // area/project doesn't cross-invalidate. Any field the payload omits is
+      // treated as matching (defensive), and a malformed payload falls through
+      // to invalidate rather than silently drop a live update.
       try {
-        const changed = JSON.parse((e as MessageEvent).data) as { area?: string; slug?: string };
-        if (changed.slug && changed.slug !== contentRef.slug) return;
+        const changed = JSON.parse((e as MessageEvent).data) as {
+          area?: number;
+          slug?: string;
+          project?: string;
+          bucket?: string;
+        };
+        const mismatch =
+          (changed.area != null && changed.area !== contentRef.area) ||
+          (changed.slug != null && changed.slug !== contentRef.slug) ||
+          (changed.project != null && changed.project !== (contentRef.project ?? "")) ||
+          (changed.bucket != null && changed.bucket !== (contentRef.bucket ?? ""));
+        if (mismatch) return;
       } catch {
         // Malformed payload — fall through and invalidate defensively.
       }
-      void queryClient.invalidateQueries({ queryKey: listKey });
+      void invalidateComments(contentRef);
     });
     return () => es.close();
-  }, [isAllowlisted, contentRef.area, contentRef.slug, queryClient, listKey]);
+    // Re-subscribe on ANY ref-identity change (refKey covers all four fields),
+    // not just area/slug — otherwise a project/bucket change leaves a stale sub.
+  }, [isAllowlisted, contentRef, refKey(contentRef), invalidateComments]);
 
   const selectThread = useCallback(
     (id: string | null) => {
       setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 }));
       if (id === null || !isAllowlisted) return;
-      // Mark read on open. Optimistically clear the thread's unread badge in the
-      // cached list so the dot disappears immediately; the next poll confirms.
-      queryClient.setQueryData(listKey, (old: typeof data | undefined) => {
-        if (!old) return old;
-        const clear = (t: Thread): Thread =>
-          t.root?.id === id ? { ...t, hasUnread: false, unreadCount: 0 } : t;
-        return {
-          ...old,
-          threads: old.threads.map(clear),
-          orphanedThreads: old.orphanedThreads.map(clear),
-        };
-      });
+      // Mark read on open; the mutation's onMutate owns the optimistic unread
+      // clear + rollback (see the markThreadSeen useMutation above).
       seen.mutate({ threadRootId: id });
     },
-    [isAllowlisted, queryClient, listKey, seen, data],
+    [isAllowlisted, seen],
   );
   const hoverThread = useCallback((id: string | null) => setHoveredThreadId(id), []);
   // Invalidate the shared listComments cache entry so every mounted consumer
   // (rail, inline, code boxes) refreshes after a local mutation — not just this
-  // provider's own query instance. Falls back to the local refetch.
-  const refetchCb = useCallback(() => {
-    void queryClient.invalidateQueries({
-      queryKey: createConnectQueryKey({
-        schema: listComments,
-        transport,
-        input: { ref: contentRef },
-        cardinality: "finite",
-      }),
-    });
-    void refetch();
-  }, [queryClient, transport, contentRef, refetch]);
+  // provider's own query instance. invalidateQueries already refetches the
+  // active query, so we do NOT also call the local refetch() (double fetch).
+  const refetchCb = useCallback(
+    () => void invalidateComments(contentRef),
+    [invalidateComments, contentRef],
+  );
 
   const setDisplayMode = useCallback((mode: ReviewDisplayMode) => {
     setDisplayModeState(mode);

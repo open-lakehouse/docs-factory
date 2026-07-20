@@ -1,52 +1,21 @@
 // backlinks.ts — reverse index from a model element id to the content pages
-// that reference it. A page references an element two ways:
-//   • explicit `references:` frontmatter (docs + blogs)
-//   • (blogs) a `tags:` entry whose tags.yml registry carries an `element:`
-//     anchor — the ADR-0004 hybrid join, so posts surface via their topics
-//     without hand-writing `references:`.
+// that reference it.
 //
-// Kept SEPARATE from model-refs.ts on purpose: this module imports content.ts
-// (which eagerly imports every doc/blog MDX). Those MDX modules can import
-// <ModelRef>, so if model-refs.ts imported content.ts we'd form a cycle
-// (content -> MDX -> ModelRef -> model-refs -> content) that leaves `pages`
-// uninitialised at eval time and blanks the whole app. Only the explain page
-// consumes backlinks, and no MDX imports this module, so the chain stays acyclic.
-// (tags.ts imports model-refs/EntityCard, neither of which imports content, so
-// pulling in getTag here does not reintroduce the cycle.)
+// The join and the index now live in graph.ts (the single unifier), which owns
+// `effectiveRefIds` and the element-id → pages map so the reverse index and the
+// facet filters can never disagree. This module stays as the stable import
+// surface for consumers that only need the reverse lookup (e.g. ExplainPage).
+//
+// A page references an element three ways (all handled by graph.effectiveRefIds):
+//   • explicit `references:` frontmatter (docs + blogs),
+//   • an `engines:` slug mapped to its model element (docs + blogs), so a
+//     multi-engine how-to surfaces under every engine node it exercises,
+//   • (blogs) a `tags:` entry whose tags.yml registry carries an `element:`
+//     anchor — the ADR-0004 hybrid join.
+//
+// IMPORT-CYCLE NOTE: graph.ts imports content.ts (which eagerly imports every
+// doc/blog MDX, and those MDX modules import <ModelRef> → model-refs). So
+// neither graph.ts nor this module may be imported by any MDX file — only
+// route/index components consume them, keeping the chain acyclic.
 
-import { pages, type ContentPage } from "./content";
-import { getTag } from "./tags";
-
-function toRefIds(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.filter((v): v is string => typeof v === "string");
-  }
-  if (typeof value === "string") return [value];
-  return [];
-}
-
-/** Element ids a page references: explicit `references:` ∪ tag-derived (blogs). */
-function effectiveRefIds(page: ContentPage): string[] {
-  const ids = new Set(toRefIds(page.frontmatter.references));
-  if (page.area === "blogs") {
-    for (const tag of page.frontmatter.tags ?? []) {
-      const element = getTag(tag).element;
-      if (element) ids.add(element);
-    }
-  }
-  return [...ids];
-}
-
-const backlinks = new Map<string, ContentPage[]>();
-for (const page of pages) {
-  for (const id of effectiveRefIds(page)) {
-    const list = backlinks.get(id);
-    if (list) list.push(page);
-    else backlinks.set(id, [page]);
-  }
-}
-
-/** Content pages that reference this element id (explicit or tag-derived). */
-export function backlinksFor(id: string): ContentPage[] {
-  return backlinks.get(id) ?? [];
-}
+export { backlinksFor, effectiveRefIds } from "./graph";

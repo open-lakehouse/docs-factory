@@ -19,6 +19,7 @@ export interface Frontmatter {
   project?: string;
   summary?: string;
   references?: string[];
+  engines?: string[];
   [key: string]: unknown;
 }
 

@@ -47,13 +47,31 @@ def _paths(root: Path | None):
 
 def cmd_validate(p) -> int:
     errors: list[str] = []
+    coverage_gaps: list[str] = []
     model_ids = load_model_element_ids(p["arch_model"])
-    for page in iter_pages(p["content"]):
-        errors.extend(validate(page, model_ids))
+    content_pages = list(iter_pages(p["content"]))
+    for page in content_pages:
+        result = validate(page, model_ids)
+        errors.extend(result.errors)
+        coverage_gaps.extend(result.coverage_gaps)
     known_tags = load_tag_registry(p["blogs"])
     errors.extend(validate_tag_registry(p["blogs"], model_ids))
     for page in iter_blog_drafts(p["blogs"]):
         errors.extend(validate_blog(page, known_tags))
+
+    # Tier-2 coverage ratchet: report how many content pages relate to at least
+    # one model node. Gaps are surfaced but never fail CI (see PageValidation).
+    covered = len(content_pages) - len(coverage_gaps)
+    print(
+        f"model-reference coverage: {covered}/{len(content_pages)} content pages",
+        file=sys.stderr,
+    )
+    if coverage_gaps:
+        print(
+            f"{len(coverage_gaps)} coverage gap(s) (not failing):", file=sys.stderr
+        )
+        print("\n".join(coverage_gaps), file=sys.stderr)
+
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} frontmatter error(s)", file=sys.stderr)

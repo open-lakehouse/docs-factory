@@ -13,8 +13,10 @@ import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
 import ConceptHeader from "../components/ConceptHeader";
+import RelatedContent from "../components/RelatedContent";
 import MdxProvider from "../MdxProvider";
 import { findDoc } from "../content";
+import { effectiveRefIds } from "../graph";
 import { docNav, docNeighbors } from "../sidebar";
 
 export default function DocPage() {
@@ -90,10 +92,11 @@ export default function DocPage() {
               <p className="lead muted">{frontmatter.summary}</p>
             )}
             <ReviewControls contentRef={docRef(project, bucket, slug)} />
-            <ConceptHeader references={frontmatter.references} />
+            <ConceptHeader references={effectiveRefIds(page)} />
             <MdxProvider>
               <Component />
             </MdxProvider>
+            <RelatedContent page={page} />
           </article>
           <Pager
             prev={neighbors.prev ? { label: neighbors.prev.label, href: neighbors.prev.href } : undefined}

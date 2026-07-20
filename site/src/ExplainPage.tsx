@@ -14,6 +14,11 @@ import ExplainDiagram from "./components/ExplainDiagram";
 import MdxProvider from "./MdxProvider";
 import { backlinksFor } from "./backlinks";
 import {
+  bucketByDiataxis,
+  DIATAXIS_LABELS,
+  DIATAXIS_ORDER,
+} from "./graph";
+import {
   getExplainElement,
   explainDocLoader,
   elementSummary,
@@ -371,21 +376,50 @@ export function ExplainPage() {
             <ExplainDiagram elementId={elementId} />
           </section>
 
-          {backlinks.length > 0 && (
-            <section className="explain-section">
-              <h3>Referenced by</h3>
-              <ul className="draft-list compact">
-                {backlinks.map((page) => (
-                  <li key={page.href}>
-                    <Link to={page.href}>
-                      {page.frontmatter.title ?? page.slug}
-                    </Link>
-                    <span className="muted"> — {page.area}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
+          {backlinks.length > 0 &&
+            (() => {
+              // Group doc backlinks by Diátaxis so a concept page answers
+              // "how do I learn / do / look up / understand this?"; blogs go in
+              // their own subsection.
+              const docBacklinks = backlinks.filter((p) => p.area === "docs");
+              const blogBacklinks = backlinks.filter((p) => p.area === "blogs");
+              const buckets = bucketByDiataxis(docBacklinks);
+              return (
+                <section className="explain-section">
+                  <h3>Referenced by</h3>
+                  {DIATAXIS_ORDER.filter((key) => buckets[key].length > 0).map(
+                    (key) => (
+                      <div key={key} className="nav-bucket">
+                        <h4>{DIATAXIS_LABELS[key]}</h4>
+                        <ul className="draft-list compact">
+                          {buckets[key].map((page) => (
+                            <li key={page.href}>
+                              <Link to={page.href}>
+                                {page.frontmatter.title ?? page.slug}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ),
+                  )}
+                  {blogBacklinks.length > 0 && (
+                    <div className="nav-bucket">
+                      <h4>From the blog</h4>
+                      <ul className="draft-list compact">
+                        {blogBacklinks.map((page) => (
+                          <li key={page.href}>
+                            <Link to={page.href}>
+                              {page.frontmatter.title ?? page.slug}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </section>
+              );
+            })()}
         </div>
       </div>
     </Shell>

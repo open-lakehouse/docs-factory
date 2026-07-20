@@ -440,9 +440,15 @@ body {
   box-sizing: border-box;
   width: calc(100cqi + 2 * 1.1rem);
   margin: 0.35rem -1.1rem 0.5rem;
-  padding: 0.75rem 1.1rem;
+  /* Slim top gutter: the close button floats here in the top-right (height: 0
+     head) instead of a full-width band, so comments keep the space. */
+  padding: 0.5rem 1.1rem 0.75rem;
+  --rp-pad-x: 1.1rem;
+  --rp-bg: color-mix(in oklab, var(--accent) 5%, var(--card));
+  max-height: min(60vh, 26rem);
+  overflow-y: auto;
   border-top: 1px solid color-mix(in oklab, gold 40%, var(--border));
-  background: color-mix(in oklab, var(--accent) 5%, var(--card));
+  background: var(--rp-bg);
   white-space: normal;
   font-family: var(--font-sans, system-ui);
   font-size: 0.84rem;
@@ -455,11 +461,15 @@ body {
    to the gold quote highlight), but keeps a faint full border + soft shadow so it
    reads as floating over the prose — since a portal can't push text down/expand. */
 .review-inline-panel {
-  padding: 0.7rem 0.85rem;
+  /* Slim top gutter: the close button floats in the top-right (see
+     .cb-inline-review) rather than reserving a full-width header band. */
+  padding: 0.5rem 0.85rem 0.7rem;
+  --rp-pad-x: 0.85rem;
+  --rp-bg: color-mix(in oklab, var(--accent) 5%, var(--card));
   border: 1px solid color-mix(in oklab, gold 20%, var(--border));
   border-top: 2px solid color-mix(in oklab, gold 45%, var(--border));
   border-radius: 4px;
-  background: color-mix(in oklab, var(--accent) 5%, var(--card));
+  background: var(--rp-bg);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.22);
   max-height: min(50vh, 24rem);
   overflow-y: auto;
@@ -478,17 +488,47 @@ body {
   justify-content: space-between;
   gap: 0.5rem;
 }
-.review-inline-close {
-  border: none;
-  background: transparent;
-  color: var(--muted-foreground);
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0.1rem 0.35rem;
+/* Inline/compact surfaces drop the repeated section tag + quote (context is the
+   adjacent prose/code), so the head is just the close button. It's pinned to the
+   top-right and reserves NO vertical space (height: 0) — comments use the full
+   height and flow underneath, rather than being pushed down by a header band. */
+.review-thread-conversation.compact .review-thread-conversation-head {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  justify-content: flex-end;
+  pointer-events: none;
 }
-.review-inline-close:hover {
-  color: var(--foreground);
+/* Icon actions in the conversation head: resolve toggle (✓) + close (×). */
+.review-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  flex: none;
+}
+/* Compact: the resolve + close icons float over the top-right corner of the
+   scrolling thread. Small rounded chips (panel background) keep the glyphs
+   legible over whatever comment scrolls behind them, without masking a row. */
+.review-thread-conversation.compact .review-head-actions {
+  pointer-events: none;
+  /* Nudge down off the top edge and out toward the panel's right corner (the
+     negative right margin bleeds into the panel's side padding). */
+  margin-top: 0.65rem;
+  margin-right: calc(0.35rem - var(--rp-pad-x, 0.85rem));
+}
+.review-thread-conversation.compact .review-head-actions button {
+  pointer-events: auto;
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--rp-bg, var(--card)), transparent 12%);
+}
+.review-thread-conversation.compact .review-head-actions button:hover {
+  background: var(--rp-bg, var(--card));
 }
 
 /* Code journeys — a GitHub-style step timeline (see src/components/journey.tsx).
@@ -2216,16 +2256,6 @@ a.model-ref-label:hover {
   font-size: 0.7rem;
 }
 .review-add-section-form { margin-top: 0.6rem; }
-.review-select {
-  width: 100%;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--background);
-  color: var(--foreground);
-  font: inherit;
-  font-size: 0.8rem;
-}
 .review-empty {
   margin: 0.75rem 0;
   font-size: 0.8rem;
@@ -2295,50 +2325,6 @@ a.model-ref-label:hover {
 }
 .review-section-add {
   align-self: flex-start;
-}
-.review-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--background);
-  color: var(--foreground);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.78rem;
-  line-height: 1.2;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
-}
-.review-btn:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-.review-btn.primary {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-foreground, #fff);
-}
-.review-btn.primary:hover:not(:disabled) {
-  filter: brightness(1.05);
-}
-.review-btn.secondary {
-  background: transparent;
-}
-.review-btn.secondary:hover:not(:disabled) {
-  background: color-mix(in oklab, var(--foreground) 6%, transparent);
-}
-.review-btn.ghost {
-  border-color: transparent;
-  background: transparent;
-  color: var(--muted-foreground);
-  padding-left: 0;
-  padding-right: 0.35rem;
-}
-.review-btn.ghost:hover:not(:disabled) {
-  color: var(--accent);
-  background: transparent;
 }
 .review-thread {
   padding: 0.6rem 0.7rem;
@@ -2487,13 +2473,6 @@ a.model-ref-label:hover {
 a.review-author:hover span {
   text-decoration: underline;
 }
-.review-avatar {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex: none;
-}
 .review-body {
   margin: 0;
   font-size: 0.84rem;
@@ -2510,27 +2489,6 @@ a.review-author:hover span {
   font-size: 0.66rem;
   color: var(--muted);
 }
-/* Per-comment reply affordance (targets a specific comment for nested threads).
-   Hidden until the comment is hovered/focused to keep the rail calm. */
-.review-reply-link {
-  align-self: flex-start;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-size: 0.72rem;
-  color: var(--muted);
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity 0.12s ease, color 0.12s ease;
-}
-.review-comment:hover .review-reply-link,
-.review-comment:focus-within .review-reply-link {
-  opacity: 1;
-}
-.review-reply-link:hover {
-  color: var(--heading);
-  text-decoration: underline;
-}
 .review-thread-actions {
   display: flex;
   flex-direction: column;
@@ -2541,38 +2499,6 @@ a.review-author:hover span {
   margin-top: 1rem;
   padding-top: 0.75rem;
   border-top: 1px dashed var(--border);
-}
-.review-composer textarea {
-  width: 100%;
-  min-height: 4.5rem;
-  padding: 0.55rem 0.65rem;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--background);
-  color: var(--foreground);
-  font: inherit;
-  font-size: 0.84rem;
-  line-height: 1.45;
-  resize: vertical;
-  transition: border-color 0.12s, box-shadow 0.12s;
-}
-.review-composer textarea:focus {
-  outline: none;
-  border-color: color-mix(in oklab, var(--accent) 50%, var(--border));
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--accent) 18%, transparent);
-}
-.review-composer-actions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.45rem;
-}
-.review-composer-hint {
-  margin-left: auto;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--muted-foreground);
 }
 .review-composer.pending {
   margin-bottom: 0.85rem;
@@ -2592,9 +2518,6 @@ a.review-author:hover span {
   font-size: 0.72rem;
   font-weight: 500;
   color: var(--muted-foreground);
-}
-.review-composer.compact textarea {
-  min-height: 3rem;
 }
 
 /* Fine-grained review: floating button + context menu */
@@ -2674,83 +2597,13 @@ a.review-author:hover span {
 }
 
 /* Mobile review drawer */
-.review-drawer-toggle {
-  display: none;
-  position: fixed;
-  right: 1rem;
-  bottom: 1rem;
-  z-index: 55;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.55rem 0.85rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  background: var(--card);
-  color: var(--foreground);
-  font: inherit;
-  font-size: 0.82rem;
-  font-weight: 500;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  cursor: pointer;
-}
-.review-drawer-backdrop {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: 58;
-  border: none;
-  background: rgba(0, 0, 0, 0.45);
-  cursor: pointer;
-}
-.review-drawer-head {
-  display: none;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-.review-drawer-close {
-  font-size: 1.25rem;
-  line-height: 1;
-  padding: 0.15rem 0.4rem;
-  border: none;
-  background: transparent;
-  color: var(--muted-foreground);
-  cursor: pointer;
-}
+/* Narrow screens: the desktop rail is hidden (Tailwind max-[960px]:hidden on the
+   .review-rail element) and the comments open in a Sheet drawer instead. The
+   host reverts to static flow so it doesn't reserve the sticky column. */
 @media (max-width: 960px) {
-  .review-drawer-toggle { display: inline-flex; }
   .review-rail-host {
     position: static;
     max-height: none;
-  }
-  .review-rail {
-    display: none;
-    position: fixed;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 59;
-    width: min(22rem, 92vw);
-    max-height: none;
-    padding: 0;
-    border-left: 1px solid var(--border);
-    background: var(--background);
-    box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
-  }
-  .review-rail.review-rail-open {
-    display: flex;
-    flex-direction: column;
-  }
-  .review-rail.review-rail-open .review-drawer-head { display: flex; }
-  .review-drawer-backdrop { display: block; }
-  .review-rail-body {
-    padding: 0.75rem 1rem 1.25rem;
   }
 }
 
@@ -2778,53 +2631,15 @@ a.review-author:hover span {
   border-color: color-mix(in oklab, var(--accent) 45%, var(--border));
 }
 
-.source-pane-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 80;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 2rem 1rem;
-  background: rgba(0, 0, 0, 0.5);
-}
-.source-pane {
-  width: min(64rem, 100%);
-  max-height: calc(100vh - 4rem);
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  background: var(--background);
-  overflow: hidden;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
-}
+/* The source pane frame is a shadcn Dialog (overlay, focus trap, Escape, close
+   button provided). These rules style only the content inside it. */
 .source-pane-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.65rem 0.85rem;
-  border-bottom: 1px solid var(--border);
   background: var(--surface);
 }
 .source-pane-path {
   font-family: var(--font-mono);
   font-size: 0.82rem;
   font-weight: 500;
-}
-.source-pane-close {
-  font-size: 1.25rem;
-  line-height: 1;
-  padding: 0.15rem 0.45rem;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--muted-foreground);
-  cursor: pointer;
-}
-.source-pane-close:hover {
-  color: var(--foreground);
-  background: color-mix(in oklab, var(--foreground) 8%, transparent);
 }
 .source-pane-status {
   padding: 1rem;
@@ -2879,49 +2694,5 @@ a.review-author:hover span {
   overflow-wrap: normal;
 }
 
-/* Review status + transition controls (allowlisted viewers only) */
-.review-controls {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  flex-wrap: wrap;
-  margin: 0.5rem 0;
-  font-size: 0.8rem;
-}
-.review-state-badge {
-  padding: 0.15rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted-foreground);
-}
-.review-state-badge[data-state="4"] {
-  border-color: var(--accent);
-  color: var(--accent);
-}
-.review-state-badge[data-state="5"] {
-  background: var(--accent);
-  color: var(--accent-foreground, #fff);
-}
-.review-controls button {
-  padding: 0.15rem 0.6rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--background);
-  color: var(--foreground);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.75rem;
-}
-.review-controls button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-.review-controls .review-release {
-  border-color: var(--accent);
-  background: var(--accent);
-  color: var(--accent-foreground, #fff);
-}
+/* Review status + transition controls are shadcn Badge + Button (allowlisted
+   viewers only); their layout lives inline on the component via Tailwind. */

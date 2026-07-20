@@ -6,6 +6,10 @@ import {
   unresolveThread,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
+import { Check, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useReviewInvalidation } from "../../lib/review-queries";
 import CommentBubble from "./CommentBubble";
 import ReviewComposer from "./ReviewComposer";
 
@@ -25,14 +29,16 @@ export default function ThreadConversation({
   compact = false,
 }: ThreadConversationProps) {
   const contentRef = thread.root?.ref;
-  const reply = useMutation(createComment);
-  const resolve = useMutation(resolveThread);
-  const unresolve = useMutation(unresolveThread);
+  const { invalidateComments } = useReviewInvalidation();
+  // Each mutation invalidates the shared listComments cache on success, so all
+  // mounted consumers refresh from here rather than a threaded refetch prop.
+  const mutationOpts = contentRef
+    ? { onSuccess: () => void invalidateComments(contentRef) }
+    : undefined;
+  const createReply = useMutation(createComment, mutationOpts);
+  const resolve = useMutation(resolveThread, mutationOpts);
+  const unresolve = useMutation(unresolveThread, mutationOpts);
   const [text, setText] = useState("");
-  // The comment being replied to. null = composer closed; when open, defaults to
-  // the thread root (a top-level reply) but can target any nested comment.
-  const [replyTo, setReplyTo] = useState<string | null>(null);
-  const replyOpen = replyTo !== null;
 
   // Depth of each comment (root = 0), derived from the parent_id chain. The wire
   // list is a flat depth-first pre-order, so we can resolve depths in one pass.
@@ -43,18 +49,18 @@ export default function ThreadConversation({
     depthById.set(c.id, (parentDepth ?? 0) + 1);
   }
 
+  // Replies are linear: every new comment threads off the root and lands at the
+  // bottom, so the always-on composer keeps the discussion flowing top-to-bottom.
   async function postReply() {
-    const parentId = replyTo;
-    if (!text.trim() || !contentRef || !thread.root || !parentId) return;
-    await reply.mutateAsync({
+    if (!text.trim() || !contentRef || !thread.root) return;
+    await createReply.mutateAsync({
       ref: contentRef,
       anchorSlug: thread.root.anchorSlug,
       anchorFingerprint: thread.root.anchorFingerprint,
-      parentId,
+      parentId: thread.root.id,
       bodyMd: text,
     });
     setText("");
-    setReplyTo(null);
     onChange();
   }
 
@@ -73,20 +79,47 @@ export default function ThreadConversation({
     : undefined;
   const label = sectionLabel || (thread.root?.orphaned ? "Removed section" : "Section");
 
+  // Inline surfaces (compact) sit directly under the highlighted prose/code, so
+  // the section tag + quoted target would just repeat the surrounding context.
+  const showContext = !compact;
+
   return (
-    <div className={`review-thread-conversation${thread.resolved ? " resolved" : ""}${compact ? " compact" : ""}`}>
-      <div className="review-thread-conversation-head">
-        <span className="review-thread-section-tag">{label}</span>
-        {onClose && (
-          <button type="button" className="review-inline-close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
-        )}
-      </div>
-      {sel?.quote && (
+    <div className={cn("review-thread-conversation", thread.resolved && "resolved", compact && "compact")}>
+      {(showContext || onClose) && (
+        <div className="review-thread-conversation-head">
+          {showContext && <span className="review-thread-section-tag">{label}</span>}
+          <div className="review-head-actions">
+            {thread.root && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                className={cn(thread.resolved && "text-accent hover:text-accent")}
+                onClick={() => void toggleResolved()}
+                aria-label={thread.resolved ? "Reopen thread" : "Resolve thread"}
+                title={thread.resolved ? "Reopen" : "Resolve"}
+              >
+                <Check />
+              </Button>
+            )}
+            {onClose && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                onClick={onClose}
+                aria-label="Close"
+              >
+                <X />
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+      {showContext && sel?.quote && (
         <blockquote className="review-quote">{sel.quote}</blockquote>
       )}
-      {code && (
+      {showContext && code && (
         <blockquote className="review-quote code">
           <span className="review-target-code">{codeLabel}</span>
         </blockquote>
@@ -96,7 +129,6 @@ export default function ThreadConversation({
         name={thread.root?.authorName}
         body={thread.root?.bodyMd}
         authoredGitSha={thread.root?.authoredGitSha}
-        onReply={thread.root ? () => setReplyTo(thread.root!.id) : undefined}
       />
       {thread.replies.map((r) => (
         <CommentBubble
@@ -107,39 +139,19 @@ export default function ThreadConversation({
           reply
           depth={depthById.get(r.id) ?? 1}
           authoredGitSha={r.authoredGitSha}
-          onReply={() => setReplyTo(r.id)}
         />
       ))}
       <div className="review-thread-actions">
-        {!replyOpen ? (
-          <>
-            <button
-              type="button"
-              className="review-btn ghost"
-              onClick={() => thread.root && setReplyTo(thread.root.id)}
-            >
-              Reply
-            </button>
-            <button type="button" className="review-btn ghost" onClick={() => void toggleResolved()}>
-              {thread.resolved ? "Reopen" : "Resolve"}
-            </button>
-          </>
-        ) : (
-          <ReviewComposer
-            value={text}
-            onChange={setText}
-            onSubmit={() => void postReply()}
-            onCancel={() => {
-              setReplyTo(null);
-              setText("");
-            }}
-            placeholder="Reply…"
-            rows={2}
-            submitLabel="Reply"
-            submitting={reply.isPending}
-            compact
-          />
-        )}
+        <ReviewComposer
+          value={text}
+          onChange={setText}
+          onSubmit={() => void postReply()}
+          placeholder="Reply…"
+          rows={2}
+          submitLabel="Reply"
+          submitting={createReply.isPending}
+          inline
+        />
       </div>
     </div>
   );

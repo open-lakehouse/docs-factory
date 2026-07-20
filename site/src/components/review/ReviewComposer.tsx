@@ -1,4 +1,8 @@
 import { useCallback, type KeyboardEvent } from "react";
+import { Send } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ReviewComposerProps {
   value: string;
@@ -12,6 +16,8 @@ interface ReviewComposerProps {
   submitting?: boolean;
   autoFocus?: boolean;
   compact?: boolean;
+  /** Always-on single field with an embedded send button (no reveal step). */
+  inline?: boolean;
 }
 
 export default function ReviewComposer({
@@ -26,6 +32,7 @@ export default function ReviewComposer({
   submitting = false,
   autoFocus = false,
   compact = false,
+  inline = false,
 }: ReviewComposerProps) {
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -37,9 +44,42 @@ export default function ReviewComposer({
     [disabled, onSubmit, submitting, value],
   );
 
+  if (inline) {
+    const canSend = !disabled && !submitting && Boolean(value.trim());
+    return (
+      <div className="relative flex">
+        {/* Auto-grow via the Textarea's field-sizing-content, so the box tracks
+            content without the old JS scrollHeight measurement. */}
+        <Textarea
+          autoFocus={autoFocus}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          rows={1}
+          disabled={disabled || submitting}
+          aria-label={placeholder}
+          className="max-h-44 min-h-9 resize-none pr-11"
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          onClick={onSubmit}
+          disabled={!canSend}
+          aria-label={submitLabel}
+          title={`${submitLabel} (⌘/Ctrl+Enter)`}
+          className="absolute right-1.5 bottom-1.5 text-muted-foreground hover:text-foreground"
+        >
+          <Send />
+        </Button>
+      </div>
+    );
+  }
+
   return (
-    <div className={`review-composer${compact ? " compact" : ""}`}>
-      <textarea
+    <div className={cn("flex flex-col gap-2", compact && "gap-1.5")}>
+      <Textarea
         autoFocus={autoFocus}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -49,21 +89,21 @@ export default function ReviewComposer({
         disabled={disabled || submitting}
         aria-label={placeholder}
       />
-      <div className="review-composer-actions">
-        <button
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
           type="button"
-          className="review-btn primary"
+          size="sm"
           onClick={onSubmit}
           disabled={disabled || submitting || !value.trim()}
         >
           {submitting ? "Posting…" : submitLabel}
-        </button>
+        </Button>
         {onCancel && (
-          <button type="button" className="review-btn secondary" onClick={onCancel}>
+          <Button type="button" variant="secondary" size="sm" onClick={onCancel}>
             Cancel
-          </button>
+          </Button>
         )}
-        <span className="review-composer-hint">⌘/Ctrl+Enter to post</span>
+        <span className="text-xs text-muted-foreground">⌘/Ctrl+Enter to post</span>
       </div>
     </div>
   );

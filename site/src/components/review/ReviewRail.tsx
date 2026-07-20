@@ -1,7 +1,17 @@
-// Responsive review rail: TOC + comment sidebar on desktop; drawer on narrow screens.
-// Hidden entirely when displayMode is inline (InlineReviewSurface handles that UX).
+// Responsive review rail: TOC + comment sidebar as an inline sticky column on
+// desktop; a Sheet drawer on narrow screens (brings its own overlay, focus trap,
+// and Escape-to-close). Hidden entirely when displayMode is inline
+// (InlineReviewSurface handles that UX).
 import { useEffect, useState, type RefObject } from "react";
 import { MessageSquare } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { useAuth } from "../../lib/auth-context";
 import OnThisPage from "../layout/OnThisPage";
 import CommentSidebar from "./CommentSidebar";
@@ -33,42 +43,43 @@ export default function ReviewRail({ articleRef }: ReviewRailProps) {
 
   return (
     <div className="review-rail-host">
-      {isAllowlisted && (
-        <button
-          type="button"
-          className="review-drawer-toggle"
-          onClick={() => setDrawerOpen(true)}
-          aria-label="Open review comments"
-        >
-          <MessageSquare size={16} aria-hidden />
-          <span>Review</span>
-          {openCount > 0 && <span className="review-count">{openCount}</span>}
-        </button>
-      )}
-      {drawerOpen && (
-        <button
-          type="button"
-          className="review-drawer-backdrop"
-          aria-label="Close review comments"
-          onClick={() => setDrawerOpen(false)}
-        />
-      )}
-      <div className={`review-rail${drawerOpen ? " review-rail-open" : ""}`}>
-        {drawerOpen && (
-          <div className="review-drawer-head">
-            <span>Review</span>
-            <button
-              type="button"
-              className="review-drawer-close"
-              onClick={() => setDrawerOpen(false)}
-              aria-label="Close"
-            >
-              ×
-            </button>
-          </div>
-        )}
+      {/* Desktop: inline sticky rail in its layout column (keeps the existing
+          .review-rail sticky/scroll layout). Hidden on narrow screens. */}
+      <div className="review-rail max-[960px]:hidden">
         <div className="review-rail-body">{rail}</div>
       </div>
+
+      {/* Narrow screens: a floating toggle opens the rail in a Sheet drawer. */}
+      {isAllowlisted && (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Open review comments"
+          className="fixed right-4 bottom-4 z-[55] hidden gap-2 rounded-full shadow-lg max-[960px]:inline-flex"
+        >
+          <MessageSquare className="size-4" aria-hidden />
+          <span>Review</span>
+          {openCount > 0 && (
+            <Badge variant="secondary" className="ml-1">
+              {openCount}
+            </Badge>
+          )}
+        </Button>
+      )}
+      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <SheetContent
+          side="right"
+          className="w-[min(22rem,92vw)] gap-0 overflow-y-auto p-0"
+        >
+          <SheetHeader className="border-b">
+            <SheetTitle className="font-mono text-xs uppercase tracking-[0.06em]">
+              Review
+            </SheetTitle>
+          </SheetHeader>
+          <div className="review-rail-body p-4">{rail}</div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }

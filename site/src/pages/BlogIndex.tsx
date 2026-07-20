@@ -1,8 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Shell from "../components/layout/Shell";
 import BlogTable from "../components/BlogTable";
 import TagList from "../components/TagList";
-import { blogPosts, blogsBySeries, blogTags, readingTimeMinutes } from "../content";
+import {
+  blogPosts,
+  blogsBySeriesFiltered,
+  blogsByTags,
+  blogTags,
+  readingTimeMinutes,
+} from "../content";
 
 function BlogReadingTime({
   articleRef,
@@ -22,8 +29,28 @@ function BlogReadingTime({
 export { BlogReadingTime };
 
 export default function BlogIndex() {
-  const { series, standalone } = blogsBySeries();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTags = [
+    ...new Set(searchParams.getAll("tag").map((t) => t.trim()).filter(Boolean)),
+  ];
+  const filteredPosts = blogsByTags(activeTags);
+  const { series, standalone } = blogsBySeriesFiltered(filteredPosts);
   const allTags = blogTags();
+
+  const setTags = (tags: string[]) => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("tag");
+    for (const tag of tags) next.append("tag", tag);
+    setSearchParams(next, { replace: true });
+  };
+
+  const toggleTag = (slug: string) => {
+    setTags(
+      activeTags.includes(slug)
+        ? activeTags.filter((t) => t !== slug)
+        : [...activeTags, slug],
+    );
+  };
 
   return (
     <Shell wide>
@@ -35,9 +62,26 @@ export default function BlogIndex() {
 
       {allTags.length > 0 && (
         <div className="blog-tags-section">
-          <p className="blog-tags-label">Topics</p>
-          <TagList tags={allTags} />
+          <div className="blog-tags-heading">
+            <p className="blog-tags-label">Topics</p>
+            {activeTags.length > 0 && (
+              <button
+                type="button"
+                className="blog-tags-clear"
+                onClick={() => setTags([])}
+              >
+                Clear all
+              </button>
+            )}
+          </div>
+          <TagList tags={allTags} activeTags={activeTags} onToggle={toggleTag} />
         </div>
+      )}
+
+      {activeTags.length > 0 && filteredPosts.length === 0 && (
+        <p className="muted blog-tag-filter-empty">
+          No posts match all selected topics.
+        </p>
       )}
 
       <BlogTable series={series} standalone={standalone} />

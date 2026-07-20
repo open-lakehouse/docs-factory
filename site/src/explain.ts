@@ -2,10 +2,13 @@
 //
 // Reads the estate model straight from the LikeC4 Vite plugin's virtual module
 // (`likec4:single-project`, workspace = ../architecture/model) — no graph.json,
-// no second codegen. Two page levels for v1:
+// no second codegen. Three page-worthy kinds:
 //   capability        (level 1)  → /explain/<id>
 //   openSpecification (level 2)  → /explain/<id>
-// Specs are grouped under the capability they `specifies`. Long-form bodies
+//   implementation    (level 3)  → /explain/<id>
+// Specs are grouped under the capability they `specifies`; implementations
+// under the spec they `implements` (or surfaced separately when they only
+// `realize` a capability). Long-form bodies
 // come from `explainDoc` metadata (architecture/explain/*.md); nodes without
 // one fall back to their model summary/description.
 
@@ -19,9 +22,13 @@ const likec4model = $likec4model.get();
 
 export { likec4model };
 
-/** Element kinds that get an explanation page in v1. */
-export type ExplainKind = "capability" | "openSpecification";
-const EXPLAIN_KINDS = new Set<string>(["capability", "openSpecification"]);
+/** Element kinds that get an explanation page. */
+export type ExplainKind = "capability" | "openSpecification" | "implementation";
+const EXPLAIN_KINDS = new Set<string>([
+  "capability",
+  "openSpecification",
+  "implementation",
+]);
 
 export interface ExplainEntry {
   id: string;
@@ -30,10 +37,16 @@ export interface ExplainEntry {
   summary: string;
 }
 
+export interface ExplainSpecificationNode extends ExplainEntry {
+  kind: "openSpecification";
+  /** Implementations that `implements` this specification. */
+  implementations: ExplainEntry[];
+}
+
 export interface ExplainCapabilityNode extends ExplainEntry {
   kind: "capability";
   /** Specifications that `specifies` this capability. */
-  specs: ExplainEntry[];
+  specs: ExplainSpecificationNode[];
 }
 
 interface MdxModule {
@@ -75,6 +88,39 @@ const capabilities = allElements
 const specifications = allElements
   .filter((el) => el.kind === "openSpecification")
   .sort(byTitle);
+const implementations = allElements
+  .filter((el) => el.kind === "implementation")
+  .sort(byTitle);
+
+// Group each implementation under the specification it `implements`.
+const implementationsBySpec = new Map<string, ElementModel[]>();
+const orphanImplementationElements: ElementModel[] = [];
+
+for (const impl of implementations) {
+  const implementsTarget = [...impl.outgoing()]
+    .filter((rel) => rel.kind === "implements")
+    .map((rel) => rel.target)
+    .find((target) => target.kind === "openSpecification");
+
+  if (implementsTarget) {
+    const key = String(implementsTarget.id);
+    const list = implementationsBySpec.get(key);
+    if (list) list.push(impl);
+    else implementationsBySpec.set(key, [impl]);
+  } else {
+    orphanImplementationElements.push(impl);
+  }
+}
+
+function toSpecNode(spec: ElementModel): ExplainSpecificationNode {
+  return {
+    ...toEntry(spec),
+    kind: "openSpecification",
+    implementations: (implementationsBySpec.get(String(spec.id)) ?? [])
+      .sort(byTitle)
+      .map(toEntry),
+  };
+}
 
 // Group each specification under the capability it `specifies`.
 const specsByCapability = new Map<string, ElementModel[]>();
@@ -96,17 +142,22 @@ for (const spec of specifications) {
   }
 }
 
-/** Capability → its specifications, both sorted by title (for the sidebar). */
+/** Capability → its specifications → implementations (for the sidebar). */
 export const explainNav: ExplainCapabilityNode[] = capabilities.map((cap) => ({
   ...toEntry(cap),
   kind: "capability",
   specs: (specsByCapability.get(String(cap.id)) ?? [])
     .sort(byTitle)
-    .map(toEntry),
+    .map(toSpecNode),
 }));
 
 /** Specifications that don't `specifies` any capability (surfaced separately). */
-export const orphanSpecs: ExplainEntry[] = orphanSpecElements
+export const orphanSpecs: ExplainSpecificationNode[] = orphanSpecElements
+  .sort(byTitle)
+  .map(toSpecNode);
+
+/** Implementations that don't `implements` any specification (surfaced separately). */
+export const orphanImplementations: ExplainEntry[] = orphanImplementationElements
   .sort(byTitle)
   .map(toEntry);
 
@@ -114,6 +165,7 @@ export const orphanSpecs: ExplainEntry[] = orphanSpecElements
 export const explainEntries: ExplainEntry[] = [
   ...capabilities.map(toEntry),
   ...specifications.map(toEntry),
+  ...implementations.map(toEntry),
 ];
 
 // --- Explanation doc bodies (build-time MDX) --------------------------------

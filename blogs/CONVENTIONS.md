@@ -91,6 +91,21 @@ a new one; if none fits, add the new tag to `tags.yml` (with its one-line
 description) **in the same change** — never introduce a tag that lives only in a
 post. This keeps the vocabulary deduplicated and discoverable.
 
+Optionally, a tag entry may also carry a model anchor and curated external links
+(ADR-0004 hybrid join). These are additive — description-only entries stay valid:
+
+```yaml
+unity-catalog:
+  description: "Unity Catalog / data governance"
+  element: ucSpec                # optional: LikeC4 element id for hover cards
+  externalRefs:                  # optional: curated expert links
+    - { role: upstream, url: "https://www.unitycatalog.io" }
+```
+
+In the preview, topic tags render as clickable pills (filtered blog index on
+click) with a hover card showing the description and, when `element:` is set,
+the linked model object's summary and kind.
+
 **Authors.** The `author` byline is a real person's full name and stays plain
 text in the source (it degrades to a byline on GitHub). Rich rendering — avatar,
 role, and social links — is a *renderer* concern, driven by the author registry

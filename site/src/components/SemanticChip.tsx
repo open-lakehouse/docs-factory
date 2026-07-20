@@ -13,20 +13,40 @@ function isExternal(href: string): boolean {
 
 /**
  * A recognizable "semantic tag" pill — the shared chip used by blog topic tags
- * and model concept references. Renders as a `.tag` link (or plain pill when it
- * has no destination) and reveals an EntityCard on hover when `card` is set.
+ * and model concept references. In link mode it renders a `.tag` link (or plain
+ * pill when it has no destination); in toggle mode (`onToggle` set) it renders a
+ * pressable filter button reflecting `active`. Reveals an EntityCard on hover
+ * when `card` is set.
  */
 export default function SemanticChip({
   label,
   href,
   card,
+  active,
+  onToggle,
 }: {
   label: string;
   href?: string | null;
   card?: EntityCardData | null;
+  active?: boolean;
+  onToggle?: () => void;
 }) {
   let pill: ReactNode;
-  if (href && isExternal(href)) {
+  if (onToggle) {
+    pill = (
+      <button
+        type="button"
+        className={`tag tag-link${active ? " tag-active" : ""}`}
+        aria-pressed={active}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle();
+        }}
+      >
+        {label}
+      </button>
+    );
+  } else if (href && isExternal(href)) {
     pill = (
       <a
         href={href}

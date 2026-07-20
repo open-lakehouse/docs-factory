@@ -140,6 +140,16 @@ export function blogsByTag(tag: string): ContentPage[] {
   return blogPosts.filter((post) => (post.frontmatter.tags ?? []).includes(slug));
 }
 
+/** Posts carrying ALL of the given tags (AND semantics). Empty = all posts. */
+export function blogsByTags(tags: string[]): ContentPage[] {
+  const slugs = tags.map((t) => t.trim()).filter(Boolean);
+  if (slugs.length === 0) return blogPosts;
+  return blogPosts.filter((post) => {
+    const postTags = post.frontmatter.tags ?? [];
+    return slugs.every((slug) => postTags.includes(slug));
+  });
+}
+
 export function blogsBySeriesFiltered(
   posts: ContentPage[],
 ): { series: BlogSeriesGroup[]; standalone: ContentPage[] } {

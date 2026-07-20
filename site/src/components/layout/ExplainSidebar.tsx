@@ -37,7 +37,11 @@ export default function ExplainSidebar({ activeId }: ExplainSidebarProps) {
           </Link>
           {explainNav.map((cap) => (
             <section key={cap.id} className="sidebar-section">
-              <h2 className="sidebar-project">
+              <h2
+                className={
+                  isActive(cap.id) ? "sidebar-project active" : "sidebar-project"
+                }
+              >
                 <Link
                   to={explainHref(cap.id)}
                   className={

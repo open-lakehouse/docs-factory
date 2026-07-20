@@ -75,7 +75,6 @@ export default function Shell({
           )}
           <Link to="/" className="brand">
             ~/open-lakehouse
-            <span className="brand-tag">preview</span>
           </Link>
           <nav className="topnav">
             <NavLink

@@ -1,3 +1,8 @@
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { initials } from "../../lib/initials";
+
 interface CommentBubbleProps {
   login?: string;
   /** Cached display name; falls back to the login when absent. */
@@ -35,7 +40,7 @@ export default function CommentBubble({
   const displayName = name || login;
   return (
     <div
-      className={`review-comment${reply ? " reply" : ""}`}
+      className={cn("review-comment", reply && "reply")}
       style={depth > 0 ? { marginLeft: `${indent}rem` } : undefined}
     >
       {login &&
@@ -46,14 +51,12 @@ export default function CommentBubble({
             target="_blank"
             rel="noreferrer"
           >
-            <img
-              className="review-avatar"
-              src={`https://github.com/${login}.png?size=40`}
-              alt=""
-              width={20}
-              height={20}
-              loading="lazy"
-            />
+            <Avatar className="size-5">
+              <AvatarImage src={`https://github.com/${login}.png?size=40`} alt="" />
+              <AvatarFallback className="text-[0.6rem]">
+                {initials(displayName ?? login)}
+              </AvatarFallback>
+            </Avatar>
             <span>{displayName}</span>
           </a>
         ) : (
@@ -66,9 +69,15 @@ export default function CommentBubble({
         </span>
       )}
       {onReply && (
-        <button type="button" className="review-reply-link" onClick={onReply}>
+        <Button
+          type="button"
+          variant="link"
+          size="xs"
+          className="h-auto px-0 text-muted-foreground"
+          onClick={onReply}
+        >
           Reply
-        </button>
+        </Button>
       )}
     </div>
   );

@@ -2,10 +2,20 @@
 // viewers in rail display mode. Reads threads + selection from ReviewProvider.
 import { useEffect, useState, type RefObject } from "react";
 import { useMutation } from "@connectrpc/connect-query";
+import { Plus } from "lucide-react";
 import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { fingerprint } from "../../lib/content-ref";
 import { useAuth } from "../../lib/auth-context";
+import { useReviewInvalidation } from "../../lib/review-queries";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useSelectionState } from "./selection-context";
 import { useReview } from "./review-context";
 import PendingComposer from "./PendingComposer";
@@ -122,7 +132,12 @@ function AddSectionComment({
   headings: Heading[];
   onDone: () => void;
 }) {
-  const create = useMutation(createComment);
+  const { invalidateComments } = useReviewInvalidation();
+  // The mutation owns cache invalidation on success; onDone is UI-only (closes
+  // the composer / clears pending), not a refetch trigger.
+  const create = useMutation(createComment, {
+    onSuccess: () => void invalidateComments(contentRef),
+  });
   const [open, setOpen] = useState(false);
   const [slug, setSlug] = useState(headings[0]?.id ?? "");
   const [draft, setDraft] = useState("");
@@ -143,13 +158,16 @@ function AddSectionComment({
 
   if (!open) {
     return (
-      <button
+      <Button
         type="button"
-        className="review-btn ghost review-add-section"
+        variant="ghost"
+        size="xs"
+        className="review-add-section"
         onClick={() => setOpen(true)}
       >
-        + Section
-      </button>
+        <Plus />
+        Section
+      </Button>
     );
   }
 
@@ -157,17 +175,18 @@ function AddSectionComment({
     <div className="review-composer pending review-add-section-form">
       <div className="review-composer-target">
         <span className="review-composer-label">Comment on section</span>
-        <select
-          className="review-select"
-          value={heading?.id ?? ""}
-          onChange={(e) => setSlug(e.target.value)}
-        >
-          {headings.map((h) => (
-            <option key={h.id} value={h.id}>
-              {h.text}
-            </option>
-          ))}
-        </select>
+        <Select value={heading?.id ?? ""} onValueChange={setSlug}>
+          <SelectTrigger size="sm" className="w-full">
+            <SelectValue placeholder="Choose a section" />
+          </SelectTrigger>
+          <SelectContent>
+            {headings.map((h) => (
+              <SelectItem key={h.id} value={h.id}>
+                {h.text}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <ReviewComposer
         value={draft}

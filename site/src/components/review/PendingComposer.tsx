@@ -2,7 +2,9 @@ import { useState } from "react";
 import { useMutation } from "@connectrpc/connect-query";
 import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
+import { cn } from "@/lib/utils";
 import { fingerprint } from "../../lib/content-ref";
+import { useReviewInvalidation } from "../../lib/review-queries";
 import { type PendingAnchor } from "./selection-context";
 import ReviewComposer from "./ReviewComposer";
 
@@ -20,7 +22,10 @@ export default function PendingComposer({
   onCancel: () => void;
   compact?: boolean;
 }) {
-  const create = useMutation(createComment);
+  const { invalidateComments } = useReviewInvalidation();
+  const create = useMutation(createComment, {
+    onSuccess: () => void invalidateComments(contentRef),
+  });
   const [draft, setDraft] = useState("");
 
   async function post() {
@@ -62,10 +67,10 @@ export default function PendingComposer({
   const label = pending.kind === "code" ? `${pending.path}:${pending.line}` : pending.headingText;
 
   return (
-    <div className={`review-composer pending${compact ? " compact" : ""}`}>
+    <div className={cn("review-composer pending", compact && "compact")}>
       <div className="review-composer-target">
         <span className="review-composer-label">{label || "New comment"}</span>
-        <blockquote className={`review-quote${pending.kind === "code" ? " code" : ""}`}>
+        <blockquote className={cn("review-quote", pending.kind === "code" && "code")}>
           {quote}
         </blockquote>
       </div>

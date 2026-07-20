@@ -7,9 +7,17 @@
 // resulting thread lands in the same sidebar as in-doc code comments.
 import { useState } from "react";
 import { useQuery } from "@connectrpc/connect-query";
+import { MessageSquarePlus } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { getSourceFile } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { hashLine } from "../../lib/content-ref";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useSelectionState } from "./selection-context";
 
 export default function SourceFilePane({
@@ -55,29 +63,26 @@ export default function SourceFilePane({
   }
 
   return (
-    <div className="source-pane-backdrop" onClick={onClose}>
-      <div className="source-pane" onClick={(e) => e.stopPropagation()} role="dialog" aria-label={`Source: ${path}`}>
-        <div className="source-pane-head">
-          <span className="source-pane-path">{path}</span>
-          <button className="source-pane-close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
-        </div>
-        {isLoading && <p className="source-pane-status">Loading source…</p>}
-        {error && <p className="source-pane-status">Could not load source.</p>}
+    <Dialog open onOpenChange={(next) => { if (!next) onClose(); }}>
+      <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0">
+        <DialogHeader className="source-pane-head shrink-0 border-b px-4 py-3">
+          <DialogTitle className="source-pane-path font-mono text-sm">{path}</DialogTitle>
+        </DialogHeader>
+        {isLoading && <p className="source-pane-status px-4 py-3">Loading source…</p>}
+        {error && <p className="source-pane-status px-4 py-3">Could not load source.</p>}
         {!isLoading && !error && (
-          <ol className="source-lines">
+          <ol className="source-lines overflow-y-auto">
             {lines.map((text, i) => {
               const lineNo = i + 1;
               return (
-                <li key={lineNo} className={covered.has(lineNo) ? "covered" : undefined}>
+                <li key={lineNo} className={cn(covered.has(lineNo) && "covered")}>
                   <button
                     className="source-line-comment"
                     title="Comment on this line"
                     disabled={selecting}
                     onClick={() => void commentOnLine(lineNo, text)}
                   >
-                    💬
+                    <MessageSquarePlus className="size-3.5" aria-hidden />
                   </button>
                   <span className="source-line-no">{lineNo}</span>
                   <code className="source-line-text">{text || " "}</code>
@@ -86,7 +91,7 @@ export default function SourceFilePane({
             })}
           </ol>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

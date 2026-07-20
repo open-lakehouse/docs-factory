@@ -1,18 +1,15 @@
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { copyToClipboard } from "../lib/clipboard";
 
 /** Copy button for a build-time-highlighted code block. */
 export default function CodeCopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
-    if (!code || typeof navigator === "undefined" || !navigator.clipboard) return;
-    try {
-      await navigator.clipboard.writeText(code);
+    if (await copyToClipboard(code)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      /* ignore */
     }
   };
 

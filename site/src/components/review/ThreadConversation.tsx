@@ -6,6 +6,10 @@ import {
   unresolveThread,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
+import { Check, X } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { useReviewInvalidation } from "../../lib/review-queries";
 import CommentBubble from "./CommentBubble";
 import ReviewComposer from "./ReviewComposer";
 
@@ -25,9 +29,15 @@ export default function ThreadConversation({
   compact = false,
 }: ThreadConversationProps) {
   const contentRef = thread.root?.ref;
-  const createReply = useMutation(createComment);
-  const resolve = useMutation(resolveThread);
-  const unresolve = useMutation(unresolveThread);
+  const { invalidateComments } = useReviewInvalidation();
+  // Each mutation invalidates the shared listComments cache on success, so all
+  // mounted consumers refresh from here rather than a threaded refetch prop.
+  const mutationOpts = contentRef
+    ? { onSuccess: () => void invalidateComments(contentRef) }
+    : undefined;
+  const createReply = useMutation(createComment, mutationOpts);
+  const resolve = useMutation(resolveThread, mutationOpts);
+  const unresolve = useMutation(unresolveThread, mutationOpts);
   const [text, setText] = useState("");
 
   // Depth of each comment (root = 0), derived from the parent_id chain. The wire
@@ -74,26 +84,34 @@ export default function ThreadConversation({
   const showContext = !compact;
 
   return (
-    <div className={`review-thread-conversation${thread.resolved ? " resolved" : ""}${compact ? " compact" : ""}`}>
+    <div className={cn("review-thread-conversation", thread.resolved && "resolved", compact && "compact")}>
       {(showContext || onClose) && (
         <div className="review-thread-conversation-head">
           {showContext && <span className="review-thread-section-tag">{label}</span>}
           <div className="review-head-actions">
             {thread.root && (
-              <button
+              <Button
                 type="button"
-                className={`review-inline-resolve${thread.resolved ? " active" : ""}`}
+                variant="ghost"
+                size="icon-xs"
+                className={cn(thread.resolved && "text-accent hover:text-accent")}
                 onClick={() => void toggleResolved()}
                 aria-label={thread.resolved ? "Reopen thread" : "Resolve thread"}
                 title={thread.resolved ? "Reopen" : "Resolve"}
               >
-                ✓
-              </button>
+                <Check />
+              </Button>
             )}
             {onClose && (
-              <button type="button" className="review-inline-close" onClick={onClose} aria-label="Close">
-                ×
-              </button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-xs"
+                onClick={onClose}
+                aria-label="Close"
+              >
+                <X />
+              </Button>
             )}
           </div>
         </div>

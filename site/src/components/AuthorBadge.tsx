@@ -6,15 +6,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { getAuthors, type Author, type AuthorLinks } from "../authors";
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
-    .join("");
-}
+import { initials } from "../lib/initials";
 
 /* lucide-react ships no brand marks, so inline the three we need. */
 const LinkedInIcon = () => (

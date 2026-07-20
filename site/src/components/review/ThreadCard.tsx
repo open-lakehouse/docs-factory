@@ -6,6 +6,7 @@ import {
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { scrollToThreadContext } from "../../lib/scroll-to-context";
+import { cn } from "@/lib/utils";
 import ThreadConversation from "./ThreadConversation";
 
 interface ThreadCardProps {
@@ -66,7 +67,12 @@ export default function ThreadCard({
   return (
     <div
       ref={cardRef}
-      className={`review-thread${thread.resolved ? " resolved" : ""}${active ? " focused" : ""}${selected ? " selected expanded" : " collapsed"}`}
+      className={cn(
+        "review-thread",
+        thread.resolved && "resolved",
+        active && "focused",
+        selected ? "selected expanded" : "collapsed",
+      )}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       onFocus={onHover}

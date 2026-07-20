@@ -1,4 +1,8 @@
-import { useCallback, useLayoutEffect, useRef, type KeyboardEvent } from "react";
+import { useCallback, type KeyboardEvent } from "react";
+import { Send } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 
 interface ReviewComposerProps {
   value: string;
@@ -40,27 +44,13 @@ export default function ReviewComposer({
     [disabled, onSubmit, submitting, value],
   );
 
-  // Auto-grow the inline field: start at one row and expand as lines wrap/break,
-  // so the box height tracks the content instead of a fixed two-row min-height.
-  const inlineRef = useRef<HTMLTextAreaElement>(null);
-  useLayoutEffect(() => {
-    if (!inline) return;
-    const el = inlineRef.current;
-    if (!el) return;
-    // scrollHeight covers content + padding; add the (border-box) borders so the
-    // measured height matches exactly and doesn't leave a 1–2px phantom scroll.
-    const cs = window.getComputedStyle(el);
-    const border = parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
-    el.style.height = "auto";
-    el.style.height = `${el.scrollHeight + border}px`;
-  }, [inline, value]);
-
   if (inline) {
     const canSend = !disabled && !submitting && Boolean(value.trim());
     return (
-      <div className="review-composer inline">
-        <textarea
-          ref={inlineRef}
+      <div className="relative flex">
+        {/* Auto-grow via the Textarea's field-sizing-content, so the box tracks
+            content without the old JS scrollHeight measurement. */}
+        <Textarea
           autoFocus={autoFocus}
           value={value}
           onChange={(e) => onChange(e.target.value)}
@@ -69,32 +59,27 @@ export default function ReviewComposer({
           rows={1}
           disabled={disabled || submitting}
           aria-label={placeholder}
+          className="max-h-44 min-h-9 resize-none pr-11"
         />
-        <button
+        <Button
           type="button"
-          className="review-send"
+          variant="ghost"
+          size="icon-sm"
           onClick={onSubmit}
           disabled={!canSend}
           aria-label={submitLabel}
           title={`${submitLabel} (⌘/Ctrl+Enter)`}
+          className="absolute right-1.5 bottom-1.5 text-muted-foreground hover:text-foreground"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path
-              d="M4 12l16-8-6 16-3.2-6.4L4 12z"
-              fill="currentColor"
-              stroke="currentColor"
-              strokeWidth="1.2"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
+          <Send />
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className={`review-composer${compact ? " compact" : ""}`}>
-      <textarea
+    <div className={cn("flex flex-col gap-2", compact && "gap-1.5")}>
+      <Textarea
         autoFocus={autoFocus}
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -104,21 +89,21 @@ export default function ReviewComposer({
         disabled={disabled || submitting}
         aria-label={placeholder}
       />
-      <div className="review-composer-actions">
-        <button
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
           type="button"
-          className="review-btn primary"
+          size="sm"
           onClick={onSubmit}
           disabled={disabled || submitting || !value.trim()}
         >
           {submitting ? "Posting…" : submitLabel}
-        </button>
+        </Button>
         {onCancel && (
-          <button type="button" className="review-btn secondary" onClick={onCancel}>
+          <Button type="button" variant="secondary" size="sm" onClick={onCancel}>
             Cancel
-          </button>
+          </Button>
         )}
-        <span className="review-composer-hint">⌘/Ctrl+Enter to post</span>
+        <span className="text-xs text-muted-foreground">⌘/Ctrl+Enter to post</span>
       </div>
     </div>
   );

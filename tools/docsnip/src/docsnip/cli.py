@@ -17,7 +17,7 @@ import tempfile
 from pathlib import Path
 
 from . import llmstxt, manifest
-from .blog import iter_blog_drafts, load_tag_registry, validate_blog
+from .blog import iter_blog_drafts, load_tag_registry, validate_blog, validate_tag_registry
 from .frontmatter import iter_pages, load_model_element_ids, validate
 from .snippetcheck import check_blogs, check_content
 
@@ -51,6 +51,7 @@ def cmd_validate(p) -> int:
     for page in iter_pages(p["content"]):
         errors.extend(validate(page, model_ids))
     known_tags = load_tag_registry(p["blogs"])
+    errors.extend(validate_tag_registry(p["blogs"], model_ids))
     for page in iter_blog_drafts(p["blogs"]):
         errors.extend(validate_blog(page, known_tags))
     if errors:

@@ -31,6 +31,41 @@ def load_tag_registry(blogs_root: Path) -> set[str]:
     return {k for k in data if isinstance(k, str) and k != "description"}
 
 
+def validate_tag_registry(blogs_root: Path, model_ids: set[str]) -> list[str]:
+    """Validate optional ``element:`` / ``externalRefs:`` on tag registry entries."""
+    tags_path = blogs_root / "tags.yml"
+    if not tags_path.is_file():
+        return []
+    data = yaml.safe_load(tags_path.read_text()) or {}
+    errors: list[str] = []
+    for tag, entry in data.items():
+        if not isinstance(tag, str) or not isinstance(entry, dict):
+            continue
+        element = entry.get("element")
+        if element is not None:
+            if not isinstance(element, str):
+                errors.append(f"tags.yml: tag '{tag}' element must be a string")
+            elif element not in model_ids:
+                errors.append(
+                    f"tags.yml: tag '{tag}' element '{element}' not found in the estate model"
+                )
+        refs = entry.get("externalRefs")
+        if refs is None:
+            continue
+        if not isinstance(refs, list):
+            errors.append(f"tags.yml: tag '{tag}' externalRefs must be a list")
+            continue
+        for i, ref in enumerate(refs):
+            if not isinstance(ref, dict):
+                errors.append(f"tags.yml: tag '{tag}' externalRefs[{i}] must be an object")
+                continue
+            if not ref.get("role") or not ref.get("url"):
+                errors.append(
+                    f"tags.yml: tag '{tag}' externalRefs[{i}] must have role and url"
+                )
+    return errors
+
+
 def iter_blog_drafts(blogs_root: Path):
     """Yield parsed :class:`Page` objects for every ``blogs/*/draft.md``."""
     if not blogs_root.is_dir():

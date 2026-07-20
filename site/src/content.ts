@@ -134,6 +134,43 @@ export function blogTags(): string[] {
   return [...tags].sort();
 }
 
+export function blogsByTag(tag: string): ContentPage[] {
+  const slug = tag.trim();
+  if (!slug) return blogPosts;
+  return blogPosts.filter((post) => (post.frontmatter.tags ?? []).includes(slug));
+}
+
+export function blogsBySeriesFiltered(
+  posts: ContentPage[],
+): { series: BlogSeriesGroup[]; standalone: ContentPage[] } {
+  const seriesMap = new Map<string, ContentPage[]>();
+  const standalone: ContentPage[] = [];
+
+  for (const post of posts) {
+    const series = post.frontmatter.series;
+    if (series) {
+      const list = seriesMap.get(series) ?? [];
+      list.push(post);
+      seriesMap.set(series, list);
+    } else {
+      standalone.push(post);
+    }
+  }
+
+  const series: BlogSeriesGroup[] = [...seriesMap.entries()]
+    .map(([name, grouped]) => ({
+      series: name,
+      posts: [...grouped].sort(
+        (a, b) =>
+          (a.frontmatter.series_order ?? 0) - (b.frontmatter.series_order ?? 0) ||
+          (b.frontmatter.date ?? "").localeCompare(a.frontmatter.date ?? ""),
+      ),
+    }))
+    .sort((a, b) => a.series.localeCompare(b.series));
+
+  return { series, standalone };
+}
+
 export function blogNeighbors(slug: string): { prev?: ContentPage; next?: ContentPage } {
   const idx = blogPosts.findIndex((p) => p.slug === slug);
   if (idx < 0) return {};

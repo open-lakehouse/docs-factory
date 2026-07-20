@@ -20,6 +20,7 @@ import {
   explainHref,
   explainNav,
   orphanSpecs,
+  orphanImplementations,
   kindLabel,
 } from "./explain";
 
@@ -87,6 +88,10 @@ function contextSections(el: ElementModel): ContextSection[] {
   } else if (el.kind === "openSpecification") {
     sections.push({ label: "Specifies", neighbors: outgoingBy(el, "specifies") });
     sections.push({ label: "Implemented by", neighbors: incomingBy(el, "implements") });
+    sections.push({ label: "Consumed by", neighbors: incomingBy(el, "consumes") });
+  } else if (el.kind === "implementation") {
+    sections.push({ label: "Implements", neighbors: outgoingBy(el, "implements") });
+    sections.push({ label: "Realizes", neighbors: outgoingBy(el, "realizes") });
     sections.push({ label: "Consumed by", neighbors: incomingBy(el, "consumes") });
   }
 
@@ -213,8 +218,9 @@ export function ExplainIndex() {
           <h1>Explain</h1>
           <p className="muted">
             The Open Lakehouse reference model as navigable explanations —
-            capabilities and the open specifications that specify them, drawn
-            live from the LikeC4 estate model.
+            capabilities, the open specifications that specify them, and the
+            implementations that realize them, drawn live from the LikeC4 estate
+            model.
           </p>
           {explainNav.map((cap) => (
             <section key={cap.id} className="nav-section">
@@ -227,6 +233,15 @@ export function ExplainIndex() {
                   {cap.specs.map((spec) => (
                     <li key={spec.id}>
                       <Link to={explainHref(spec.id)}>{spec.title}</Link>
+                      {spec.implementations.length > 0 && (
+                        <ul className="draft-list compact nested">
+                          {spec.implementations.map((impl) => (
+                            <li key={impl.id}>
+                              <Link to={explainHref(impl.id)}>{impl.title}</Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -240,6 +255,27 @@ export function ExplainIndex() {
                 {orphanSpecs.map((spec) => (
                   <li key={spec.id}>
                     <Link to={explainHref(spec.id)}>{spec.title}</Link>
+                    {spec.implementations.length > 0 && (
+                      <ul className="draft-list compact nested">
+                        {spec.implementations.map((impl) => (
+                          <li key={impl.id}>
+                            <Link to={explainHref(impl.id)}>{impl.title}</Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {orphanImplementations.length > 0 && (
+            <section className="nav-section">
+              <h2>Implementations</h2>
+              <ul className="draft-list compact">
+                {orphanImplementations.map((impl) => (
+                  <li key={impl.id}>
+                    <Link to={explainHref(impl.id)}>{impl.title}</Link>
                   </li>
                 ))}
               </ul>

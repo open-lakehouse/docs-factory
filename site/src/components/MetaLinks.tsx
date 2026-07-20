@@ -7,7 +7,7 @@ export interface MetaLinkItem {
   externalUrl?: string | null;
 }
 
-/** Console-style inline links shared by ConceptHeader and ExplainPage. */
+/** Console-style inline links for the Explain metadata table (neighbors, links). */
 export default function MetaLinks({ items }: { items: MetaLinkItem[] }) {
   if (items.length === 0) return null;
 

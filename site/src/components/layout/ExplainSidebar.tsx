@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { explainNav, orphanSpecs, explainHref } from "../../explain";
+import { explainNav, orphanSpecs, orphanImplementations, explainHref } from "../../explain";
 import { useSidebar } from "./Shell";
 
 interface ExplainSidebarProps {
@@ -65,6 +65,26 @@ export default function ExplainSidebar({ activeId }: ExplainSidebarProps) {
                       >
                         {spec.title}
                       </Link>
+                      {spec.implementations.length > 0 && (
+                        <ul className="sidebar-links sidebar-links-nested">
+                          {spec.implementations.map((impl) => (
+                            <li key={impl.id}>
+                              <Link
+                                to={explainHref(impl.id)}
+                                className={
+                                  isActive(impl.id)
+                                    ? "sidebar-link active"
+                                    : "sidebar-link"
+                                }
+                                aria-current={isActive(impl.id) ? "page" : undefined}
+                                onClick={() => setMobileOpen(false)}
+                              >
+                                {impl.title}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -87,6 +107,47 @@ export default function ExplainSidebar({ activeId }: ExplainSidebarProps) {
                       onClick={() => setMobileOpen(false)}
                     >
                       {spec.title}
+                    </Link>
+                    {spec.implementations.length > 0 && (
+                      <ul className="sidebar-links sidebar-links-nested">
+                        {spec.implementations.map((impl) => (
+                          <li key={impl.id}>
+                            <Link
+                              to={explainHref(impl.id)}
+                              className={
+                                isActive(impl.id)
+                                  ? "sidebar-link active"
+                                  : "sidebar-link"
+                              }
+                              onClick={() => setMobileOpen(false)}
+                            >
+                              {impl.title}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+          {orphanImplementations.length > 0 && (
+            <section className="sidebar-section">
+              <h2 className="sidebar-project">Implementations</h2>
+              <ul className="sidebar-links">
+                {orphanImplementations.map((impl) => (
+                  <li key={impl.id}>
+                    <Link
+                      to={explainHref(impl.id)}
+                      className={
+                        isActive(impl.id)
+                          ? "sidebar-link active"
+                          : "sidebar-link"
+                      }
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      {impl.title}
                     </Link>
                   </li>
                 ))}

@@ -6,35 +6,62 @@
 # This keeps the vocabulary deduplicated and discoverable. Mirrors the
 # Docusaurus `tags.yml` pattern. Keep it lean — grow it as posts introduce
 # genuinely new topics.
+#
+# Optional fields (ADR-0004 hybrid join):
+#   element:       a LikeC4 model element id — powers hover-card metadata and
+#                  links to /explain/<id> from the filtered blog index
+#   externalRefs:  curated expert links [{ role, url }] shown in hover cards
 
 delta-lake:
   description: "Delta Lake table format & ecosystem"
+  element: deltaSpec
+  externalRefs:
+    - { role: upstream, url: "https://delta.io" }
 iceberg:
   description: "Apache Iceberg table format"
+  element: icebergSpec
+  externalRefs:
+    - { role: upstream, url: "https://iceberg.apache.org" }
 delta-kernel:
   description: "delta-kernel-rs and engine integrations"
+  element: deltaRs
 table-formats:
   description: "Open table formats in general (Delta, Iceberg, Hudi, …)"
+  element: lakehouse.tableFormat
 rust:
   description: "Rust implementation / internals"
 datafusion:
   description: "Apache DataFusion query engine"
+  element: datafusion
+  externalRefs:
+    - { role: upstream, url: "https://datafusion.apache.org" }
 unity-catalog:
   description: "Unity Catalog / data governance"
+  element: ucSpec
+  externalRefs:
+    - { role: upstream, url: "https://www.unitycatalog.io" }
 lakehouse:
   description: "Open lakehouse architecture"
+  element: lakehouse
 devrel:
   description: "Developer-relations narrative / tutorial"
 observability:
   description: "Tracing, MLflow, monitoring"
+  element: lakehouse.observability
 file-formats:
   description: "Columnar and on-disk file formats (Parquet, ORC, …)"
+  element: parquetSpec
+  externalRefs:
+    - { role: upstream, url: "https://parquet.apache.org" }
 data-lineage:
   description: "OpenLineage and data-lineage tooling"
+  element: lakehouse.lineage
 governance:
   description: "Access control, policy, security & trust across the platform"
+  element: lakehouse.governance
 agents:
   description: "Agentic AI workloads and their platform implications"
+  element: omnigent
 codegen:
   description: "Proto-driven / build-time code generation"
 wasm:

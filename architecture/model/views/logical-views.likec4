@@ -42,7 +42,6 @@ views {
       apacheSpark,
       lakekeeper,
       unityCatalogOSS,
-      minio,
       mlflow,
       omnigent,
 

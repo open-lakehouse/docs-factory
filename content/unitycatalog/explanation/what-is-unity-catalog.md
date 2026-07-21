@@ -7,6 +7,6 @@ engines: []
 status: draft
 ---
 
-> **Draft stub.** The unitycatalog content mirrors the Delta skeleton
-> (tutorials / how-to / reference / explanation). Built out after the Delta
-> vertical slice lands.
+Unity Catalog is a unified and open governance solution for data and AI assets.
+It helps teams and organizations discover, secure, govern, and share trusted data
+and AI across clouds and platforms from a single control plane.

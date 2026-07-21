@@ -117,6 +117,15 @@ block in [estate.yml](./estate.yml).)_
   structural property of the model. See
   [design/asset-kinds.md](./design/asset-kinds.md) and
   [ADR-0006](./adr/ADR-0006-governed-asset-kinds.md).
+- **estate boundary (`lakehouse`)** — the root `lakehouse` element is the estate's
+  boundary: the C4 **SoftwareSystem** / Backstage **System-Domain** analog. It also
+  hosts the capability nesting; asset kinds relate to it via `requires`, not
+  composition. See [ADR-0007](./adr/ADR-0007-system-boundary-and-generic-relations.md).
+- **`partOf` / `dependsOn`** — the generic relationship backbone. `partOf` is
+  generic composition, added only where the nesting tree doesn't already imply it;
+  `dependsOn` is the generic dependency fallback, refined by the specific edges
+  (`resolves`, `reads`, `vends`, `consumes`, `enforces`). See
+  [ADR-0007](./adr/ADR-0007-system-boundary-and-generic-relations.md).
 - **credential vending** — the catalog issues short-lived, scoped storage
   credentials at resolution time instead of clients holding long-lived keys; the
   safe-by-default storage path.

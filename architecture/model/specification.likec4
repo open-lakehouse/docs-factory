@@ -127,16 +127,30 @@ specification {
 
   // --- Relationship kinds --------------------------------------------------
 
+  // Generic backbone (ADR-0007): the coarse composition + dependency edges C4 /
+  // Backstage assume, so agents can reason over the graph coarsely before
+  // drilling into a specific kind.
+  //   partOf    — generic COMPOSITION. Added only where nesting does NOT already
+  //               imply it (cross-type composition, e.g. impl composed of impl);
+  //               never duplicate the containment tree. Asset "belonging" is NOT
+  //               partOf — it is carried by `requires` (asset -> capability).
+  //   dependsOn — generic DEPENDENCY (fallback when no specific edge fits). The
+  //               specific edges below (resolves / reads / vends / consumes /
+  //               enforces) are REFINEMENTS of dependsOn and stay the primary
+  //               rendering; use dependsOn only when none of them apply.
+  relationship partOf                      // generic composition (cross-type)
+  relationship dependsOn { line dashed }   // generic dependency; specific edges refine it
+
   relationship flows                       // generic data / control flow
   relationship realizes { line dotted }    // concrete realizes abstract capability
-  relationship resolves                    // query engine resolves via catalog
-  relationship reads                       // reads bytes / files
-  relationship vends { color amber }       // catalog vends a scoped credential
+  relationship resolves                    // query engine resolves via catalog (a dependsOn)
+  relationship reads                       // reads bytes / files (a dependsOn)
+  relationship vends { color amber }       // catalog vends a scoped credential (a dependsOn)
 
   // Altitude edges (concept <- specification <- implementation):
   relationship specifies                   // a specification specifies a capability
   relationship implements { line dotted }  // an implementation implements a spec (Backstage providesApi)
-  relationship consumes { line dashed }    // an implementation consumes a spec (Backstage consumesApi)
+  relationship consumes { line dashed }    // an implementation consumes a spec (Backstage consumesApi; a dependsOn)
 
   // Governed-asset edges (the subject axis — see ADR-0006):
   relationship requires                    // an asset kind requires a capability to be managed

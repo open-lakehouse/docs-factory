@@ -11,6 +11,9 @@ model {
   extend lakehouse {
 
     // --- The core query path -----------------------------------------------
+    // The edges below are the SPECIFIC query-path kinds; each is a refinement of
+    // the generic `dependsOn` (ADR-0007). They stay the primary rendering — use
+    // `dependsOn` only where no specific kind fits.
 
     queryEngine -[resolves]-> catalog "resolves tables through"
     catalog -[flows]-> tableFormat "resolves a table to its format + location"
@@ -42,6 +45,8 @@ model {
   // --- People --------------------------------------------------------------
 
   practitioner -[flows]-> lakehouse.queryEngine "queries + governs data"
+  // person -> the estate BOUNDARY. `lakehouse` is the C4 SoftwareSystem /
+  // Backstage System-Domain analog for the whole estate (ADR-0007).
   platformEngineer -[flows]-> lakehouse "builds + operates"
   agent -[flows]-> lakehouse.lineage "investigates"
 }

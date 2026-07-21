@@ -12,10 +12,12 @@ import { blogRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
 import ConceptHeader from "../components/ConceptHeader";
+import RelatedContent from "../components/RelatedContent";
 import TagList from "../components/TagList";
 import AuthorBadge from "../components/AuthorBadge";
 import MdxProvider from "../MdxProvider";
 import { blogNeighbors, findBlog, blogPosts } from "../content";
+import { effectiveRefIds } from "../graph";
 import { BlogReadingTime } from "./BlogIndex";
 
 export default function BlogPost() {
@@ -77,11 +79,12 @@ export default function BlogPost() {
             <ReviewControls contentRef={blogRef(slug)} />
             <TagList tags={frontmatter.tags ?? []} />
           </header>
-          <ConceptHeader references={frontmatter.references} />
+          <ConceptHeader references={effectiveRefIds(page)} />
           <article className="prose" ref={articleRef}>
             <MdxProvider>
               <Component />
             </MdxProvider>
+            <RelatedContent page={page} />
           </article>
           <Pager
             prev={

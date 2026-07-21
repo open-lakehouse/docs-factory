@@ -84,6 +84,12 @@ export default function Shell({
               Docs
             </NavLink>
             <NavLink
+              to="/concepts"
+              className={({ isActive }) => (isActive ? "active" : undefined)}
+            >
+              Concepts
+            </NavLink>
+            <NavLink
               to="/blog"
               className={({ isActive }) => (isActive ? "active" : undefined)}
             >

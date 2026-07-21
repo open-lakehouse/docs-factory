@@ -74,10 +74,7 @@ specification {
   }
 
   // A governed asset KIND — the noun the platform manages along the data & AI
-  // value chain (table, volume, function, model, agent skill, schema). This is
-  // the technology-agnostic name; Unity Catalog's term for the same concept is a
-  // "securable". Type-level only: a specific table is an instance and lives in
-  // the runtime/deployment world, never here (see ADR-0003, ADR-0006).
+  // value chain (table, volume, function, model, agent skill, schema).
   element asset {
     notation "Data & AI asset kind"
     style {
@@ -88,9 +85,6 @@ specification {
 
   // A concrete implementation: software that realizes a capability and/or
   // implements a specification. May run as a service or embed as a library.
-  // The compute posture is carried by the deployment layer (a running instance
-  // is a `service`/`datastore` node) plus an optional #service / #library /
-  // #infra marker for third-party tech that never deploys in our estate.
   element implementation {
     notation "Implementation (software / service)"
     style {
@@ -106,7 +100,10 @@ specification {
 
   // A browser / client-side runtime.
   deploymentNode browser {
+    #untrusted
+
     notation "Browser runtime"
+
     style {
       shape browser
       color sky

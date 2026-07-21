@@ -20,7 +20,6 @@
 model {
   extend lakehouse {
 
-    // schema is the CONTAINER kind — the namespace other securables live in.
     schema = asset "Schema / namespace" {
       summary "The namespace container other asset kinds are organized under."
       description "
@@ -33,7 +32,7 @@ model {
     }
 
     table = asset "Table" {
-      summary "The classic tabular securable — rows and columns with ACID semantics."
+      summary "The tabular securable — rows and columns with ACID semantics."
       description "
         A table is the tabular asset kind: schema'd rows and columns with ACID table semantics.
       "
@@ -41,27 +40,26 @@ model {
     }
 
     volume = asset "Volume" {
-      summary "Governed non-tabular files — a catalogued path in object storage."
+      summary "Governed storage location with non-tabular files."
       description "
         A volume is the non-tabular asset kind: a governed location of arbitrary
         files (images, PDFs, checkpoints) in object storage, catalogued and
-        access-controlled like a table rather than left as ungoverned raw storage.
+        access-controlled like a table.
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
 
     registeredFunction = asset "Function" {
-      summary "A governed, reusable unit of computation registered in the catalog."
+      summary "A governed, reusable unit of computation."
       description "
         A function is the executable asset kind: a registered, reusable unit of
-        computation (a UDF or routine) that the query engine can resolve and run,
-        governed and versioned through the catalog like data.
+        computation (a UDF or routine) that the query engine can resolve and run.
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
 
     mlModel = asset "Model" {
-      summary "A governed ML model — versions, stages, and lineage catalogued like data."
+      summary "A governed ML model."
       description "
         A model is the ML asset kind: a trained machine-learning artifact with
         versions and lifecycle stages, tracked and governed as a catalogued asset.
@@ -80,17 +78,11 @@ model {
     }
 
     // --- requires: what a platform must do to manage each kind --------------
-    schema             -[requires]-> catalog       "governed / namespaced by"
-    table              -[requires]-> catalog       "governed / resolved through"
     table              -[requires]-> tableFormat   "materialized as an open table format"
     table              -[requires]-> queryEngine   "read + written by"
-    volume             -[requires]-> catalog       "governed / resolved through"
     volume             -[requires]-> objectStorage "materialized as files in"
-    registeredFunction -[requires]-> catalog       "governed / resolved through"
     registeredFunction -[requires]-> queryEngine   "executed by"
-    mlModel            -[requires]-> catalog       "governed / resolved through"
     mlModel            -[requires]-> modelTracking "versioned + promoted by"
-    agentSkill         -[requires]-> catalog       "governed / resolved through"
     agentSkill         -[requires]-> sharing       "distributed as a shareable resource via"
   }
 

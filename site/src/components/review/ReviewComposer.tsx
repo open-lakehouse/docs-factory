@@ -1,4 +1,4 @@
-import { useCallback, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,90 @@ interface ReviewComposerProps {
   compact?: boolean;
   /** Always-on single field with an embedded send button (no reveal step). */
   inline?: boolean;
+}
+
+function InlineReviewComposer({
+  value,
+  onChange,
+  onSubmit,
+  placeholder,
+  submitLabel,
+  disabled,
+  submitting,
+  autoFocus,
+}: Pick<
+  ReviewComposerProps,
+  "value" | "onChange" | "onSubmit" | "placeholder" | "submitLabel" | "disabled" | "submitting" | "autoFocus"
+>) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const singleLineHeightRef = useRef<number | null>(null);
+  const [multiline, setMultiline] = useState(false);
+
+  const syncSendAlignment = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const height = el.getBoundingClientRect().height;
+    if (singleLineHeightRef.current == null) {
+      singleLineHeightRef.current = height;
+    }
+    setMultiline(height > singleLineHeightRef.current + 2);
+  }, []);
+
+  useEffect(() => {
+    syncSendAlignment();
+  }, [value, syncSendAlignment]);
+
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => syncSendAlignment());
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [syncSendAlignment]);
+
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (!disabled && !submitting && value.trim()) onSubmit();
+      }
+    },
+    [disabled, onSubmit, submitting, value],
+  );
+
+  const canSend = !disabled && !submitting && Boolean(value.trim());
+
+  return (
+    <div className="relative flex">
+      <Textarea
+        ref={textareaRef}
+        autoFocus={autoFocus}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        rows={1}
+        disabled={disabled || submitting}
+        aria-label={placeholder}
+        className="max-h-44 min-h-9 resize-none pr-11"
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon-sm"
+        onClick={onSubmit}
+        disabled={!canSend}
+        aria-label={submitLabel}
+        title={`${submitLabel} (⌘/Ctrl+Enter)`}
+        className={cn(
+          "absolute right-1.5 text-muted-foreground hover:text-foreground",
+          multiline ? "bottom-1.5" : "top-1/2 -translate-y-1/2",
+        )}
+      >
+        <Send />
+      </Button>
+    </div>
+  );
 }
 
 export default function ReviewComposer({
@@ -45,35 +129,17 @@ export default function ReviewComposer({
   );
 
   if (inline) {
-    const canSend = !disabled && !submitting && Boolean(value.trim());
     return (
-      <div className="relative flex">
-        {/* Auto-grow via the Textarea's field-sizing-content, so the box tracks
-            content without the old JS scrollHeight measurement. */}
-        <Textarea
-          autoFocus={autoFocus}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={placeholder}
-          rows={1}
-          disabled={disabled || submitting}
-          aria-label={placeholder}
-          className="max-h-44 min-h-9 resize-none pr-11"
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon-sm"
-          onClick={onSubmit}
-          disabled={!canSend}
-          aria-label={submitLabel}
-          title={`${submitLabel} (⌘/Ctrl+Enter)`}
-          className="absolute right-1.5 bottom-1.5 text-muted-foreground hover:text-foreground"
-        >
-          <Send />
-        </Button>
-      </div>
+      <InlineReviewComposer
+        value={value}
+        onChange={onChange}
+        onSubmit={onSubmit}
+        placeholder={placeholder}
+        submitLabel={submitLabel}
+        disabled={disabled}
+        submitting={submitting}
+        autoFocus={autoFocus}
+      />
     );
   }
 

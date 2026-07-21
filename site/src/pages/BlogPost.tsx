@@ -1,6 +1,5 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import Breadcrumbs from "../components/layout/Breadcrumbs";
 import BlogAside from "../components/layout/BlogAside";
 import InlineReviewSurface from "../components/review/InlineReviewSurface";
 import SelectionLayer from "../components/review/SelectionLayer";
@@ -14,7 +13,7 @@ import Shell from "../components/layout/Shell";
 import RelatedContent from "../components/RelatedContent";
 import AuthorBadge from "../components/AuthorBadge";
 import MdxProvider from "../MdxProvider";
-import { blogNeighbors, findBlog, blogPosts } from "../content";
+import { blogNeighbors, findBlog } from "../content";
 import { BlogReadingTime } from "./BlogIndex";
 
 export default function BlogPost() {
@@ -35,32 +34,11 @@ export default function BlogPost() {
   const { Component, frontmatter } = page;
   const neighbors = blogNeighbors(slug);
 
-  const siblingPosts = frontmatter.series
-    ? blogPosts.filter((p) => p.frontmatter.series === frontmatter.series)
-    : blogPosts.filter((p) => !p.frontmatter.series);
-  const postSiblings = siblingPosts.map((p) => ({
-    label: p.frontmatter.title ?? p.slug,
-    href: p.href,
-  }));
-
   return (
     <Shell wide>
       <SelectionProvider>
       <ReviewProvider contentRef={blogRef(slug)}>
       <div className="blog-post-layout">
-        <div className="blog-post-header-block">
-          <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: "Blog", href: "/blog" },
-              {
-                label: frontmatter.title ?? slug,
-                siblings: postSiblings,
-                activeHref: page.href,
-              },
-            ]}
-          />
-        </div>
         <div className="blog-post-body">
           <BlogAside
             articleRef={articleRef}

@@ -5,7 +5,6 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {
   DropdownMenu,
@@ -30,9 +29,10 @@ export interface BreadcrumbItemData {
 
 interface BreadcrumbsProps {
   items: BreadcrumbItemData[];
+  className?: string;
 }
 
-function CrumbDropdown({
+export function CrumbDropdown({
   item,
   isCurrent,
 }: {
@@ -71,9 +71,22 @@ function CrumbDropdown({
   );
 }
 
-export default function Breadcrumbs({ items }: BreadcrumbsProps) {
+function PathSeparator() {
   return (
-    <Breadcrumb className="breadcrumbs">
+    <li
+      data-slot="breadcrumb-separator"
+      role="presentation"
+      aria-hidden="true"
+      className="breadcrumb-path-sep"
+    >
+      /
+    </li>
+  );
+}
+
+export default function Breadcrumbs({ items, className }: BreadcrumbsProps) {
+  return (
+    <Breadcrumb className={className ? `breadcrumbs ${className}` : "breadcrumbs"}>
       <BreadcrumbList>
         {items.map((item, i) => {
           const isLast = i === items.length - 1;
@@ -81,7 +94,7 @@ export default function Breadcrumbs({ items }: BreadcrumbsProps) {
 
           return (
             <Fragment key={`${item.label}-${i}`}>
-              {i > 0 && <BreadcrumbSeparator />}
+              {i > 0 && <PathSeparator />}
               <BreadcrumbItem>
                 {hasSiblings ? (
                   <CrumbDropdown item={item} isCurrent={isLast} />

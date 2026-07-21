@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { useTheme } from "next-themes";
+import TopbarPath from "./TopbarPath";
 
 interface SidebarContextValue {
   mobileOpen: boolean;
@@ -73,9 +74,7 @@ export default function Shell({
               <span className="sidebar-toggle-bar" />
             </button>
           )}
-          <Link to="/" className="brand">
-            ~/open-lakehouse
-          </Link>
+          <TopbarPath />
           <nav className="topnav">
             <NavLink
               to="/docs"

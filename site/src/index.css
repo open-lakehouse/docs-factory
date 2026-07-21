@@ -154,7 +154,8 @@ body {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.5rem 1.25rem;
+  min-height: 3rem;
+  padding: 0.625rem 1.5rem;
   background: var(--navbar);
   border-bottom: 1px solid #1a1d24;
   position: sticky;
@@ -170,15 +171,94 @@ body {
   color: #c8ccd4;
 }
 .brand:hover { color: #f5f7f8; }
+.topbar-crumbtrail {
+  display: flex;
+  align-items: baseline;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  line-height: 1.3;
+}
+.topbar-path-root {
+  flex: none;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  color: #c8ccd4;
+}
+.topbar-path-root:hover {
+  color: #f5f7f8;
+}
+.topbar-path-seg {
+  flex: none;
+  color: #9ca3af;
+  text-decoration: none;
+}
+.topbar-path-seg:hover {
+  color: #e8eaed;
+}
+.topbar-path-current {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #e8eaed;
+}
+.topbar-path-sep {
+  flex: none;
+  color: #4b5563;
+  padding: 0 0.2rem;
+  user-select: none;
+}
+.topbar-crumbtrail .crumb-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: #9ca3af;
+  cursor: pointer;
+  vertical-align: baseline;
+}
+.topbar-crumbtrail .crumb-trigger:hover,
+.topbar-crumbtrail .crumb-trigger[aria-expanded="true"] {
+  color: #e8eaed;
+  background: transparent;
+  border-color: transparent;
+}
+.topbar-crumbtrail .crumb-trigger-current {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 28rem;
+  color: #e8eaed;
+}
+.topbar-crumbtrail .crumb-trigger-current span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.topbar-crumbtrail .crumb-caret {
+  flex: none;
+  width: 0.7rem;
+  height: 0.7rem;
+}
 .theme-toggle {
   background: transparent;
   border: 1px solid #2a2f38;
   border-radius: 0.3rem;
-  padding: 0.2rem 0.5rem;
+  padding: 0.3rem 0.55rem;
   cursor: pointer;
   color: #9ca3af;
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.8rem;
 }
 .theme-toggle:hover {
   border-color: var(--accent);
@@ -706,7 +786,7 @@ body {
   font-family: var(--font-mono);
   color: #6b7280;
   text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.82rem;
   text-transform: lowercase;
   letter-spacing: 0.01em;
 }
@@ -837,6 +917,32 @@ body {
   padding: 1.25rem 1.5rem 1.5rem;
   color: var(--code-fg);
 }
+.terminal-hero-boot {
+  max-height: 11.5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(232 234 237 / 0.15) transparent;
+}
+.terminal-hero-boot::-webkit-scrollbar {
+  width: 0.35rem;
+}
+.terminal-hero-boot::-webkit-scrollbar-thumb {
+  background: rgb(232 234 237 / 0.15);
+  border-radius: 999px;
+}
+.terminal-hero-body--end {
+  padding-top: 1rem;
+  padding-bottom: 1.25rem;
+}
+.terminal-hero-end {
+  animation: terminal-line-in 0.2s ease-out;
+}
+.terminal-hero-end .terminal-hero-ok {
+  margin-top: 0;
+  margin-bottom: 0.65rem;
+}
 .terminal-hero-prompt {
   color: var(--accent);
   user-select: none;
@@ -856,8 +962,61 @@ body {
 .terminal-hero-line {
   margin: 0.35rem 0;
 }
+.terminal-hero-line--in {
+  animation: terminal-line-in 0.12s ease-out;
+}
+@keyframes terminal-line-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 .terminal-hero-line.muted {
   color: rgb(232 234 237 / 0.5);
+}
+.terminal-hero-load {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  padding-left: 0.35rem;
+}
+.terminal-hero-load-tag {
+  flex: none;
+  min-width: 6.5rem;
+  font-size: 0.72rem;
+  text-transform: lowercase;
+  color: rgb(232 234 237 / 0.38);
+}
+.terminal-hero-load-name {
+  flex: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px dashed rgb(232 234 237 / 0.15);
+  transition: color 0.12s, border-color 0.12s;
+}
+.terminal-hero-load-name:hover {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.terminal-hero-load-ok {
+  flex: none;
+  font-size: 0.72rem;
+  color: #4f9c5a;
+}
+.terminal-hero-ok {
+  color: #7dd3a0;
+}
+.terminal-hero-explore {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
 }
 .terminal-hero-cmd {
   color: inherit;
@@ -868,6 +1027,16 @@ body {
 .terminal-hero-cmd:hover {
   color: var(--accent);
   border-bottom-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .terminal-hero-line--in {
+    animation: none;
+  }
+  .terminal-hero-cursor {
+    animation: none;
+    opacity: 0;
+  }
 }
 .terminal-hero-title {
   font-size: 1.1rem;
@@ -1125,7 +1294,7 @@ body {
 /* --- On this page TOC --- */
 .toc {
   position: sticky;
-  top: 3.5rem;
+  top: 3.75rem;
   max-height: calc(100vh - 4rem);
   overflow-y: auto;
   padding-left: 0.5rem;
@@ -1851,7 +2020,6 @@ a.blog-row-title:hover { color: var(--accent); }
   max-width: 84rem;
   margin: 0 auto;
 }
-.blog-post-header-block { min-width: 0; }
 .blog-post-body {
   display: grid;
   grid-template-columns: minmax(17rem, 20rem) minmax(0, 1fr);
@@ -1862,7 +2030,7 @@ a.blog-row-title:hover { color: var(--accent); }
   min-width: 0;
   align-self: start;
   position: sticky;
-  top: 3.5rem;
+  top: 3.75rem;
   max-height: calc(100vh - 4rem);
 }
 .blog-aside-panel {
@@ -2421,7 +2589,7 @@ a.model-ref-label:hover {
   min-width: 0;
   align-self: start;
   position: sticky;
-  top: 3.5rem;
+  top: 3.75rem;
   max-height: calc(100vh - 4rem);
 }
 .review-rail {
@@ -2676,9 +2844,40 @@ a.model-ref-label:hover {
   gap: 0.15rem;
   margin-bottom: 0.4rem;
 }
+.review-comment-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 1.25rem;
+}
+.review-comment-foot.reply-only {
+  justify-content: flex-end;
+}
 .review-comment.reply {
   padding-left: 0.75rem;
   border-left: 2px solid var(--border);
+}
+.review-reply-action {
+  flex: none;
+  height: auto;
+  min-height: 0;
+  margin-left: auto;
+  padding: 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+.review-reply-action:hover {
+  color: var(--muted-foreground);
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
+}
+.review-inline-reply {
+  margin: 0.15rem 0 0.35rem;
+}
+.review-comment-thread {
+  display: flex;
+  flex-direction: column;
 }
 .review-author {
   display: inline-flex;

@@ -38,7 +38,14 @@ ENGINE_ELEMENT = {
 # The accepted engine-slug vocabulary is exactly the keys of the map, so the
 # vocabulary and the join can never drift apart.
 ENGINES = set(ENGINE_ELEMENT)
-STATUSES = {"draft", "published"}
+# Git authoring intent — orthogonal to the DB-canonical review lifecycle
+# (review_state). `draft` = still being written (reviewers can see it, not in
+# llms.txt, never shown to anonymous site visitors); `ready` = the author asserts
+# it is publishable. `ready` gates llms.txt inclusion, but a page is shown to
+# anonymous visitors ONLY when it is `ready` AND its DB review_state is
+# `released` — publication is the intersection of author intent (git) and review
+# outcome (DB), never git alone. See server/src/services/review.ts.
+STATUSES = {"draft", "ready"}
 
 
 # Content pages are Markdown (``.md``) or MDX (``.mdx``). MDX pages may embed

@@ -5,7 +5,7 @@ diataxis: explanation
 project: delta
 engines: []
 delta_features: []
-status: published
+status: ready
 ---
 
 As more engines read and write Delta, each one reimplementing the protocol risks

@@ -9,7 +9,8 @@
 //     fingerprint is the normalized heading text used to re-anchor comments
 //     across versions when a heading id changes.
 //
-// Output: site/src/generated/content-versions.json. Run via `just version-manifest`.
+// Output: site/src/generated/content-versions.json (gitignored). Run via
+// `just version-manifest`, or implicitly via `just register-versions`.
 // Node-only (no Vite): path parsing mirrors site/src/lib/content-source.ts but
 // is re-implemented here because that module depends on import.meta.glob.
 import { createHash } from "node:crypto";

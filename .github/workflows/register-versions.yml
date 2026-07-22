@@ -10,8 +10,9 @@
 # has a different sha the PR-time manifest never sees. Building + registering
 # once here, after merge, stamps every content_version with the real, stable
 # main sha — the git provenance the app correlates comments to. Note: the
-# manifest is intentionally NOT committed on this path (PR-time CI still verifies
-# the content-derived fields; provenance comes from here).
+# manifest is intentionally NOT committed on this path (generated at build time
+# from blogs/ and content/; see `just version-manifest`). Provenance comes from
+# the real merged sha stamped here.
 
 name: Register content versions
 

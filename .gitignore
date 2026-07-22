@@ -44,6 +44,9 @@ node_modules/
 *.env
 !.env.example
 
+# Generated site artifacts (built locally / in CI; not committed).
+site/src/generated/content-versions.json
+
 # OS
 .DS_Store
 Thumbs.db

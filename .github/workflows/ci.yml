@@ -113,19 +113,10 @@ jobs:
           fi
       - name: Typecheck server
         run: cd server && bun install --frozen-lockfile && bun run typecheck
-      - name: Verify content version manifest is up to date
-        # The manifest embeds the HEAD git sha (provenance), which legitimately
-        # changes every commit, so compare only the content-derived fields
-        # (hashes + section anchors) — those must match the committed manifest.
+      - name: Build content version manifest
         run: |
           cd site && bun install --frozen-lockfile
           node scripts/build-version-manifest.mjs
-          strip() { jq 'map(del(.gitSha))' "$1"; }
-          if ! diff <(git show HEAD:site/src/generated/content-versions.json | jq 'map(del(.gitSha))') \
-                    <(strip src/generated/content-versions.json) > /dev/null; then
-            echo "::error::content-versions.json is stale. Run 'just version-manifest' and commit."
-            exit 1
-          fi
 
   architecture:
     runs-on: ubuntu-latest

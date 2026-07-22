@@ -59,7 +59,7 @@ version-manifest: _site-deps
 # Push the manifest to the review API (RegisterVersion per entry). Run after a
 # deploy; needs API_URL + BUILD_SECRET. Locally, run `just server-dev` first.
 # Uses bun to run the script since it imports the generated TypeScript client.
-register-versions: _server-deps
+register-versions: version-manifest _server-deps
     cd server && set -a && [ -f .env ] && . ./.env; set +a; bun run scripts/register-versions.mjs
 
 # Start the local Postgres (docker-compose in server/) and wait until healthy.

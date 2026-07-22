@@ -8,7 +8,7 @@ ones marked ``built`` in docsnip's BUILT_ENGINES.
 
 from __future__ import annotations
 
-from conftest import load_example
+from _helpers import load_example
 from docs_factory_seed import seed_dataset
 
 

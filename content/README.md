@@ -56,10 +56,13 @@ to run and test it inline, in a [PEP 723](https://peps.python.org/pep-0723/)
 ```
 
 A reader runs it with `uv run catalog_flow.py` — deps come from the header, no
-project sync. The `[tool.docs-factory]` table (parsed by `docsnip.scriptmeta`) is
-the single source of truth for the script's *runtime* prerequisites; the test
-harness reads it to know which compose to start. Omit the whole table if the
-script needs no services.
+project sync. The PEP 723 `dependencies` and the `[tool.docs-factory]` table
+(parsed by `docsnip.scriptmeta`) are the **single source of truth** for the
+script's Python deps and its *runtime* prerequisites — do **not** duplicate them
+in the page's frontmatter (`prerequisites.packages` / `.services` are not read by
+anything; only `prerequisites.datasets` is, for seed-dataset examples). The test
+harness reads `[tool.docs-factory]` to know which compose to start; omit the
+whole table if the script needs no services.
 
 Structure a script as a flat, top-to-bottom program with the flow in one
 `main(base_url)` function (`async def` for async SDKs) plus an

@@ -4,10 +4,6 @@ summary: Install the official unitycatalog-client, connect to a running server, 
 diataxis: tutorial
 project: unitycatalog
 engines: [python]
-prerequisites:
-  packages:
-    python: [unitycatalog-client]
-  services: [unitycatalog]
 references:
   - unityCatalogOSS
   - lakehouse.catalog

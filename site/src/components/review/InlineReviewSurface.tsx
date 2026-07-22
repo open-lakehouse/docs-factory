@@ -32,7 +32,7 @@ export default function InlineReviewSurface({
 }: {
   articleRef: RefObject<HTMLElement | null>;
 }) {
-  const { isAllowlisted } = useAuth();
+  const { reviewActive } = useAuth();
   const {
     contentRef,
     threads,
@@ -60,7 +60,7 @@ export default function InlineReviewSurface({
       if (n.id) map.set(n.id, n.textContent ?? "");
     });
     setHeadings(map);
-  }, [articleRef, isAllowlisted]);
+  }, [articleRef, reviewActive]);
 
   const showProsePending = displayMode === "inline" && pending?.kind === "prose";
   const selected = selectedThreadId ? threadById(selectedThreadId) : undefined;
@@ -123,7 +123,7 @@ export default function InlineReviewSurface({
     selectNonce,
   ]);
 
-  if (!isAllowlisted || !contentRef) return null;
+  if (!reviewActive || !contentRef) return null;
 
   const panel =
     placement && (showProsePending || showProseThread) ? (

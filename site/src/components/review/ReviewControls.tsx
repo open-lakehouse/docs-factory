@@ -37,7 +37,7 @@ export default function ReviewControls({
   contentRef: ContentRef;
   layout?: ReviewControlsLayout;
 }) {
-  const { isAllowlisted, isMaintainer } = useAuth();
+  const { isAllowlisted, isMaintainer, reviewActive } = useAuth();
   const { invalidateDrafts } = useReviewInvalidation();
   const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
   // Both mutations invalidate the shared listDrafts cache on success, so every
@@ -50,7 +50,7 @@ export default function ReviewControls({
     onSuccess: () => void invalidateDrafts(),
   });
 
-  if (!isAllowlisted) return null;
+  if (!reviewActive) return null;
 
   const summary = data?.drafts.find((d) => d.ref && sameRef(d.ref, contentRef));
   const state = summary?.reviewState ?? ReviewState.NONE;

@@ -32,7 +32,7 @@ export default function CommentSidebar({
 }: {
   articleRef: RefObject<HTMLElement | null>;
 }) {
-  const { isAllowlisted } = useAuth();
+  const { reviewActive } = useAuth();
   const {
     contentRef,
     threads,
@@ -57,9 +57,9 @@ export default function CommentSidebar({
       if (n.id) found.push({ id: n.id, text: n.textContent ?? "" });
     });
     setHeadings(found);
-  }, [articleRef, isAllowlisted]);
+  }, [articleRef, reviewActive]);
 
-  if (!isAllowlisted || !contentRef || displayMode !== "rail") return null;
+  if (!reviewActive || !contentRef || displayMode !== "rail") return null;
 
   const headingText = new Map(headings.map((h) => [h.id, h.text]));
   const sectionLabelFor = (slug?: string) => (slug && headingText.get(slug)) || "";

@@ -83,20 +83,22 @@ export function ReviewProvider({
   contentRef: ContentRef;
   children: ReactNode;
 }) {
-  const { isAllowlisted } = useAuth();
+  const { reviewActive } = useAuth();
   const { commentsKey, invalidateComments, queryClient } = useReviewInvalidation();
   // Poll so a reviewer sees other reviewers' comments arrive without a reload.
-  // Gated on being allowlisted; TanStack pauses the interval while the tab is
-  // hidden and refetches on window focus, so background tabs don't hammer the
-  // API. When SSE is enabled the interval drops to a slow backstop (SSE is the
-  // primary path then); otherwise a modest interval keeps the rail live.
+  // Gated on `reviewActive` (allowlisted AND Site review mode on) — a reviewer
+  // browsing in regular mode has no comment chrome mounted, so there's nothing
+  // to keep live and no reason to fetch. TanStack pauses the interval while the
+  // tab is hidden and refetches on window focus, so background tabs don't hammer
+  // the API. When SSE is enabled the interval drops to a slow backstop (SSE is
+  // the primary path then); otherwise a modest interval keeps the rail live.
   const pollInterval = sseEnabled ? 60_000 : 15_000;
   const { data } = useQuery(
     listComments,
     { ref: contentRef },
     {
-      enabled: isAllowlisted,
-      refetchInterval: isAllowlisted ? pollInterval : false,
+      enabled: reviewActive,
+      refetchInterval: reviewActive ? pollInterval : false,
       refetchIntervalInBackground: false,
       refetchOnWindowFocus: true,
     },
@@ -158,7 +160,7 @@ export function ReviewProvider({
   // auto-reconnects, and the slow poll interval above is the backstop if the
   // stream is dropped/evicted. Off unless VITE_REVIEW_SSE is set.
   useEffect(() => {
-    if (!sseEnabled || !isAllowlisted) return;
+    if (!sseEnabled || !reviewActive) return;
     const url = new URL("/events/comments", baseUrl);
     // Full ref identity in the subscription so the server can scope the stream;
     // area:slug alone collides across areas/projects sharing a slug.
@@ -194,17 +196,17 @@ export function ReviewProvider({
     return () => es.close();
     // Re-subscribe on ANY ref-identity change (refKey covers all four fields),
     // not just area/slug — otherwise a project/bucket change leaves a stale sub.
-  }, [isAllowlisted, contentRef, refKey(contentRef), invalidateComments]);
+  }, [reviewActive, contentRef, refKey(contentRef), invalidateComments]);
 
   const selectThread = useCallback(
     (id: string | null) => {
       setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 }));
-      if (id === null || !isAllowlisted) return;
+      if (id === null || !reviewActive) return;
       // Mark read on open; the mutation's onMutate owns the optimistic unread
       // clear + rollback (see the markThreadSeen useMutation above).
       seen.mutate({ threadRootId: id });
     },
-    [isAllowlisted, seen],
+    [reviewActive, seen],
   );
   const hoverThread = useCallback((id: string | null) => setHoveredThreadId(id), []);
   // Invalidate the shared listComments cache entry so every mounted consumer

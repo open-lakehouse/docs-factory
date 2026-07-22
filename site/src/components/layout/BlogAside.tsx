@@ -2,7 +2,6 @@
 // mode only. Inline mode keeps the aside but comments render in the article.
 import { useEffect, useState, type RefObject } from "react";
 import { MessageSquare } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -29,7 +28,7 @@ interface BlogAsideProps {
 }
 
 export default function BlogAside({ articleRef, contentRef, byline, tags = [] }: BlogAsideProps) {
-  const { isAllowlisted } = useAuth();
+  const { reviewActive } = useAuth();
   const { openCount, displayMode } = useReview();
   const { pending } = useSelectionState();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -59,10 +58,9 @@ export default function BlogAside({ articleRef, contentRef, byline, tags = [] }:
     </>
   );
 
-  const reviewRail = isAllowlisted ? (
+  const reviewRail = reviewActive ? (
     <section className="blog-aside-review" aria-label="Review actions">
-      <p className="blog-aside-title">Review</p>
-      <ReviewControls contentRef={contentRef} layout="aside" />
+      <ReviewControls contentRef={contentRef} layout="aside" heading="Review" />
     </section>
   ) : null;
 
@@ -70,8 +68,8 @@ export default function BlogAside({ articleRef, contentRef, byline, tags = [] }:
     <div className="blog-post-aside">
       {/* Desktop: sticky left aside. Hidden on narrow screens. */}
       <div className="blog-aside-panel">
-        <div className="blog-aside-body">{asideContent}</div>
         {reviewRail}
+        <div className="blog-aside-body">{asideContent}</div>
       </div>
 
       {/* Narrow screens: TOC + contributors visible above article; comments in drawer. */}
@@ -79,22 +77,19 @@ export default function BlogAside({ articleRef, contentRef, byline, tags = [] }:
         <div className="blog-aside-body">{navContent}</div>
       </div>
 
-      {isAllowlisted && (
-        <div className="blog-review-dock" aria-label="Review actions">
+      {reviewActive && (
+        <div className="review-dock" aria-label="Review actions">
           <ReviewControls contentRef={contentRef} layout="dock" />
         </div>
       )}
 
-      {showComments && isAllowlisted && (
+      {showComments && reviewActive && (
         <Button
           type="button"
           variant="outline"
           onClick={() => setDrawerOpen(true)}
           aria-label="Open review comments"
-          className={cn(
-            "fixed right-4 z-[55] hidden gap-2 rounded-full shadow-lg max-[960px]:inline-flex",
-            isAllowlisted ? "bottom-[4.75rem]" : "bottom-4",
-          )}
+          className="fixed bottom-[4.75rem] right-4 z-[55] hidden gap-2 rounded-full shadow-lg max-[960px]:inline-flex"
         >
           <MessageSquare className="size-4" aria-hidden />
           <span>Review</span>

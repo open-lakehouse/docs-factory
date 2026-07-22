@@ -187,28 +187,46 @@ function ModelMeta({
 
 // --- Panel ------------------------------------------------------------------
 
+/** Which part of the model context to render. The compact `summary` meta table
+ * sits at the top of the page; the richer `context` (diagram + backlinks) stays
+ * at the bottom. */
+type ModelContextSlot = "summary" | "context";
+
 /**
  * The model-context panel for a doc page that `explains` element `id`. Renders
  * nothing if the id doesn't resolve to a page-worthy model element (so a stray
  * `explains:` never blows up the page). `selfHref` is the current page's href,
  * excluded from the "Referenced by" list so a page doesn't cite itself.
+ *
+ * `slot` selects which part renders so the summary can lead the page while the
+ * diagram + backlinks trail it (see DocPage).
  */
 export default function ModelContext({
   id,
   selfHref,
+  slot = "context",
 }: {
   id: string;
   selfHref?: string;
+  slot?: ModelContextSlot;
 }) {
   const el = getExplainElement(id);
   if (!el) return null;
 
-  const maturity = MATURITY_TAGS.find((t) => el.tags.includes(t));
-  const sections = contextSections(el);
-  const views: ViewItem[] = [...el.views()].map((v) => ({
-    id: String(v.id),
-    title: v.title ?? String(v.id),
-  }));
+  if (slot === "summary") {
+    const maturity = MATURITY_TAGS.find((t) => el.tags.includes(t));
+    const sections = contextSections(el);
+    const views: ViewItem[] = [...el.views()].map((v) => ({
+      id: String(v.id),
+      title: v.title ?? String(v.id),
+    }));
+    return (
+      <aside className="model-context model-context--summary">
+        <ModelMeta el={el} sections={sections} maturity={maturity} views={views} />
+      </aside>
+    );
+  }
+
   const backlinks = backlinksFor(id).filter((p) => p.href !== selfHref);
   const docBacklinks = backlinks.filter((p) => p.area === "docs");
   const blogBacklinks = backlinks.filter((p) => p.area === "blogs");
@@ -216,8 +234,6 @@ export default function ModelContext({
 
   return (
     <aside className="model-context">
-      <ModelMeta el={el} sections={sections} maturity={maturity} views={views} />
-
       <section className="explain-section">
         <h2 className="section-heading">In context</h2>
         <ExplainDiagram elementId={id} />

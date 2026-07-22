@@ -54,38 +54,6 @@
       "engine_status": "built"
     },
     {
-      "id": "python/create_model_version",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/registered_models.py",
-      "start": "start:create_model_version",
-      "end": "end:create_model_version",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/create_registered_model",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/registered_models.py",
-      "start": "start:create_registered_model",
-      "end": "end:create_registered_model",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
       "id": "python/create_schema",
       "engine": "python",
       "implements": "deltaRs",
@@ -113,22 +81,6 @@
       "end": "end:create_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/create_tag_policy",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/tag_policies.py",
-      "start": "start:create_tag_policy",
-      "end": "end:create_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -198,22 +150,6 @@
       "engine_status": "built"
     },
     {
-      "id": "python/delete_tag_policy",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/tag_policies.py",
-      "start": "start:delete_tag_policy",
-      "end": "end:delete_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
       "id": "python/delete_volume",
       "engine": "python",
       "implements": "deltaRs",
@@ -230,22 +166,6 @@
       "engine_status": "built"
     },
     {
-      "id": "python/finalize_model_version",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/registered_models.py",
-      "start": "start:finalize_model_version",
-      "end": "end:finalize_model_version",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
       "id": "python/get_catalog",
       "engine": "python",
       "implements": "deltaRs",
@@ -257,22 +177,6 @@
       "end": "end:get_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/get_registered_model",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/registered_models.py",
-      "start": "start:get_registered_model",
-      "end": "end:get_registered_model",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -305,22 +209,6 @@
       "end": "end:get_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/get_tag_policy",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/tag_policies.py",
-      "start": "start:get_tag_policy",
-      "end": "end:get_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -378,38 +266,6 @@
       "engine_status": "built"
     },
     {
-      "id": "python/list_model_versions",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/registered_models.py",
-      "start": "start:list_model_versions",
-      "end": "end:list_model_versions",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/list_registered_models",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/registered_models.py",
-      "start": "start:list_registered_models",
-      "end": "end:list_registered_models",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
       "id": "python/list_schemas",
       "engine": "python",
       "implements": "deltaRs",
@@ -442,22 +298,6 @@
       "engine_status": "built"
     },
     {
-      "id": "python/list_tag_policies",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/tag_policies.py",
-      "start": "start:list_tag_policies",
-      "end": "end:list_tag_policies",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
       "id": "python/list_volumes",
       "engine": "python",
       "implements": "deltaRs",
@@ -469,86 +309,6 @@
       "end": "end:list_volumes",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/object_store_client",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/object_store.py",
-      "start": "start:object_store_client",
-      "end": "end:object_store_client",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/object_store_duckdb",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/object_store.py",
-      "start": "start:object_store_duckdb",
-      "end": "end:object_store_duckdb",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/object_store_for_table",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/object_store.py",
-      "start": "start:object_store_for_table",
-      "end": "end:object_store_for_table",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/object_store_for_url",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/object_store.py",
-      "start": "start:object_store_for_url",
-      "end": "end:object_store_for_url",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
-      "id": "python/object_store_for_volume",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/object_store.py",
-      "start": "start:object_store_for_volume",
-      "end": "end:object_store_for_volume",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -664,22 +424,6 @@
       "engine_status": "built"
     },
     {
-      "id": "python/update_tag_policy",
-      "engine": "python",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/python/tag_policies.py",
-      "start": "start:update_tag_policy",
-      "end": "end:update_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": true,
-      "engine_status": "built"
-    },
-    {
       "id": "python/update_volume",
       "engine": "python",
       "implements": "deltaRs",
@@ -712,38 +456,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/create_model_version",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/registered_models.rs",
-      "start": "start:create_model_version",
-      "end": "end:create_model_version",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/create_registered_model",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/registered_models.rs",
-      "start": "start:create_registered_model",
-      "end": "end:create_registered_model",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "rust/create_schema",
       "engine": "rust",
       "implements": "deltaRs",
@@ -771,22 +483,6 @@
       "end": "end:create_table",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/create_tag_policy",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/tag_policies.rs",
-      "start": "start:create_tag_policy",
-      "end": "end:create_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -856,22 +552,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/delete_tag_policy",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/tag_policies.rs",
-      "start": "start:delete_tag_policy",
-      "end": "end:delete_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "rust/delete_volume",
       "engine": "rust",
       "implements": "deltaRs",
@@ -888,22 +568,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/finalize_model_version",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/registered_models.rs",
-      "start": "start:finalize_model_version",
-      "end": "end:finalize_model_version",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "rust/get_catalog",
       "engine": "rust",
       "implements": "deltaRs",
@@ -915,22 +579,6 @@
       "end": "end:get_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/get_registered_model",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/registered_models.rs",
-      "start": "start:get_registered_model",
-      "end": "end:get_registered_model",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -968,22 +616,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/get_tag_policy",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/tag_policies.rs",
-      "start": "start:get_tag_policy",
-      "end": "end:get_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "rust/get_volume",
       "engine": "rust",
       "implements": "deltaRs",
@@ -1011,38 +643,6 @@
       "end": "end:list_catalogs",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/list_model_versions",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/registered_models.rs",
-      "start": "start:list_model_versions",
-      "end": "end:list_model_versions",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/list_registered_models",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/registered_models.rs",
-      "start": "start:list_registered_models",
-      "end": "end:list_registered_models",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -1080,22 +680,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/list_tag_policies",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/tag_policies.rs",
-      "start": "start:list_tag_policies",
-      "end": "end:list_tag_policies",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "rust/list_volumes",
       "engine": "rust",
       "implements": "deltaRs",
@@ -1107,102 +691,6 @@
       "end": "end:list_volumes",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-volumes.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/object_store_datafusion",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/object_store.rs",
-      "start": "start:object_store_datafusion",
-      "end": "end:object_store_datafusion",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/object_store_factory",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/object_store.rs",
-      "start": "start:object_store_factory",
-      "end": "end:object_store_factory",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/object_store_for_path",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/object_store.rs",
-      "start": "start:object_store_for_path",
-      "end": "end:object_store_for_path",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/object_store_for_table",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/object_store.rs",
-      "start": "start:object_store_for_table",
-      "end": "end:object_store_for_table",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/object_store_for_url",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/object_store.rs",
-      "start": "start:object_store_for_url",
-      "end": "end:object_store_for_url",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "rust/object_store_for_volume",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/object_store.rs",
-      "start": "start:object_store_for_volume",
-      "end": "end:object_store_for_volume",
-      "referenced_by": [
-        "content/unitycatalog/how-to/read-write-governed-data.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -1240,22 +728,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "rust/update_tag_policy",
-      "engine": "rust",
-      "implements": "deltaRs",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/rust/src/tag_policies.rs",
-      "start": "start:update_tag_policy",
-      "end": "end:update_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "rust/update_volume",
       "engine": "rust",
       "implements": "deltaRs",
@@ -1283,38 +755,6 @@
       "end": "end:create_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "typescript/create_model_version",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/registered_models.ts",
-      "start": "start:create_model_version",
-      "end": "end:create_model_version",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "typescript/create_registered_model",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/registered_models.ts",
-      "start": "start:create_registered_model",
-      "end": "end:create_registered_model",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -1416,22 +856,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "typescript/delete_tag_policy",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/tag_policies.ts",
-      "start": "start:delete_tag_policy",
-      "end": "end:delete_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "typescript/delete_volume",
       "engine": "typescript",
       "implements": "unityCatalogOSS",
@@ -1448,22 +872,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "typescript/finalize_model_version",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/registered_models.ts",
-      "start": "start:finalize_model_version",
-      "end": "end:finalize_model_version",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "typescript/get_catalog",
       "engine": "typescript",
       "implements": "unityCatalogOSS",
@@ -1475,22 +883,6 @@
       "end": "end:get_catalog",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-catalogs.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "typescript/get_registered_model",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/registered_models.ts",
-      "start": "start:get_registered_model",
-      "end": "end:get_registered_model",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -1528,22 +920,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "typescript/get_tag_policy",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/tag_policies.ts",
-      "start": "start:get_tag_policy",
-      "end": "end:get_tag_policy",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "typescript/get_volume",
       "engine": "typescript",
       "implements": "unityCatalogOSS",
@@ -1576,38 +952,6 @@
       "engine_status": "stub"
     },
     {
-      "id": "typescript/list_model_versions",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/registered_models.ts",
-      "start": "start:list_model_versions",
-      "end": "end:list_model_versions",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "typescript/list_registered_models",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/registered_models.ts",
-      "start": "start:list_registered_models",
-      "end": "end:list_registered_models",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-registered-models.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
       "id": "typescript/list_schemas",
       "engine": "typescript",
       "implements": "unityCatalogOSS",
@@ -1635,22 +979,6 @@
       "end": "end:list_tables",
       "referenced_by": [
         "content/unitycatalog/how-to/manage-tables.md"
-      ],
-      "tested": false,
-      "engine_status": "stub"
-    },
-    {
-      "id": "typescript/list_tag_policies",
-      "engine": "typescript",
-      "implements": "unityCatalogOSS",
-      "diataxis": "how-to",
-      "delta_features": [],
-      "datasets": [],
-      "source": "examples/typescript/examples/tag_policies.ts",
-      "start": "start:list_tag_policies",
-      "end": "end:list_tag_policies",
-      "referenced_by": [
-        "content/unitycatalog/how-to/manage-tag-policies.md"
       ],
       "tested": false,
       "engine_status": "stub"

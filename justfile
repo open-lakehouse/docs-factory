@@ -101,9 +101,17 @@ _server-deps:
 sync:
     uv sync --all-packages
 
-# Run + verify the Python examples.
+# Run the default test lane: engine examples + service-free tutorial tests.
+# Service-backed tutorial tests are excluded by the pytest addopts marker
+# filter, so this stays green with no Docker.
 test:
-    uv run pytest examples/tests
+    uv run pytest
+
+# Run the service-backed tutorial tests (opt-in). Needs Docker; each tutorial
+# script's [tool.docs-factory] metadata names the compose the harness starts.
+# Fails hard (never skips) if Docker/the server is unavailable.
+test-services:
+    uv run --group test-services pytest -m "needs_docker or needs_uc_server"
 
 # Validate frontmatter, snippets, and site-artifact freshness (CI gate).
 check:

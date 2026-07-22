@@ -16,7 +16,11 @@ from pathlib import Path
 import yaml
 
 DIATAXIS = {"tutorial", "how-to", "reference", "explanation"}
-PROJECTS = {"delta", "unitycatalog"}
+# `open-lakehouse` holds estate-wide, engine-neutral explanations of the
+# reference model — the concepts that aren't specific to a single upstream
+# project. It mirrors the site's implicit "all" scope (site/src/scope.ts
+# ALL_SCOPE) and reuses the same content/<project>/<bucket>/<slug> shape.
+PROJECTS = {"delta", "unitycatalog", "open-lakehouse"}
 
 # Frontmatter engine slug -> LikeC4 `implementation` element id. Mirror of the
 # site's site/src/engine-map.ts ENGINE_ELEMENT. An engine a page exercises
@@ -58,6 +62,28 @@ def load_model_element_ids(model_json: Path) -> set[str]:
         return set()
     data = json.loads(model_json.read_text())
     return set((data.get("elements") or {}).keys())
+
+
+# Element kinds that are "page-worthy" — the concepts that warrant a long-form
+# explanation page. Mirrors EXPLAIN_KINDS in the site's site/src/explain.ts.
+PAGE_WORTHY_KINDS = {"capability", "openSpecification", "implementation"}
+
+
+def load_page_worthy_elements(model_json: Path) -> dict[str, str]:
+    """Map ``element id -> title`` for every page-worthy element in the model.
+
+    Used to report coverage: which concepts have no ``explains:`` content page.
+    Returns an empty dict if the model has not been built.
+    """
+    if not model_json.is_file():
+        return {}
+    data = json.loads(model_json.read_text())
+    elements = data.get("elements") or {}
+    return {
+        eid: (el.get("title") or eid)
+        for eid, el in elements.items()
+        if el.get("kind") in PAGE_WORTHY_KINDS
+    }
 
 
 def _as_str_list(value: object) -> list[str]:
@@ -131,6 +157,13 @@ def effective_reference_ids(meta: dict) -> set[str]:
     what the navigation actually surfaces.
     """
     ids = set(_as_str_list(meta.get("references")))
+    # The element a page is the canonical explanation of (``explains:``) is a
+    # first-class reference: it binds the page to that node the way the old
+    # ``explainDoc`` metadata used to, so an explanation page is never a
+    # coverage gap and shows up in the model's backlinks / related content.
+    explains = meta.get("explains")
+    if isinstance(explains, str) and explains:
+        ids.add(explains)
     for eng in meta.get("engines", []) or []:
         element = ENGINE_ELEMENT.get(eng)
         if element:
@@ -186,10 +219,21 @@ def validate(page: Page, model_ids: set[str] | None = None) -> PageValidation:
             "the inline file= fences are the source of truth"
         )
 
+    # ``explains:`` binds this page to the single model element it canonically
+    # explains. It must be one string (not a list) and resolve against the model.
+    explains = m.get("explains")
+    if explains is not None and not isinstance(explains, str):
+        errors.append(
+            "explains must be a single model element id (string), not a list — "
+            "use references: for secondary correlations"
+        )
+
     if model_ids:
         for ref in _as_str_list(m.get("references")):
             if ref not in model_ids:
                 errors.append(f"references id '{ref}' not found in the estate model")
+        if isinstance(explains, str) and explains and explains not in model_ids:
+            errors.append(f"explains id '{explains}' not found in the estate model")
         for ref in MODEL_LINK_RE.findall(page.body):
             if ref not in model_ids:
                 errors.append(

@@ -17,8 +17,18 @@ import tempfile
 from pathlib import Path
 
 from . import llmstxt, manifest
-from .blog import iter_blog_drafts, load_tag_registry, validate_blog, validate_tag_registry
-from .frontmatter import iter_pages, load_model_element_ids, validate
+from .blog import (
+    iter_blog_drafts,
+    load_tag_registry,
+    validate_blog,
+    validate_tag_registry,
+)
+from .frontmatter import (
+    iter_pages,
+    load_model_element_ids,
+    load_page_worthy_elements,
+    validate,
+)
 from .snippetcheck import check_blogs, check_content
 
 # Per-project published-site URL base for llms.txt links. Placeholder until the
@@ -50,10 +60,25 @@ def cmd_validate(p) -> int:
     coverage_gaps: list[str] = []
     model_ids = load_model_element_ids(p["arch_model"])
     content_pages = list(iter_pages(p["content"]))
+    # id -> pages that claim to canonically explain it, for the duplicate check.
+    explains_pages: dict[str, list[str]] = {}
     for page in content_pages:
         result = validate(page, model_ids)
         errors.extend(result.errors)
         coverage_gaps.extend(result.coverage_gaps)
+        explains = page.meta.get("explains")
+        if isinstance(explains, str) and explains:
+            explains_pages.setdefault(explains, []).append(str(page.path))
+
+    # An element has exactly one canonical explanation page. Two pages claiming
+    # the same `explains:` id is a hard error — there's no single ground truth.
+    for eid, paths in explains_pages.items():
+        if len(paths) > 1:
+            errors.append(
+                f"explains id '{eid}' claimed by multiple pages "
+                f"(canonical explanation must be unique): {', '.join(sorted(paths))}"
+            )
+
     known_tags = load_tag_registry(p["blogs"])
     errors.extend(validate_tag_registry(p["blogs"], model_ids))
     for page in iter_blog_drafts(p["blogs"]):
@@ -71,6 +96,30 @@ def cmd_validate(p) -> int:
             f"{len(coverage_gaps)} coverage gap(s) (not failing):", file=sys.stderr
         )
         print("\n".join(coverage_gaps), file=sys.stderr)
+
+    # Explanation coverage ratchet: which page-worthy model concepts
+    # (capabilities / specs / implementations) have no `explains:` page yet.
+    # Reported as a warning — authoring lags the model, and that's fine — but it
+    # makes the "no explanation yet" gaps visible instead of silent.
+    page_worthy = load_page_worthy_elements(p["arch_model"])
+    if page_worthy:
+        uncovered = sorted(
+            f"{eid} ({title})"
+            for eid, title in page_worthy.items()
+            if eid not in explains_pages
+        )
+        explained = len(page_worthy) - len(uncovered)
+        print(
+            f"explanation coverage: {explained}/{len(page_worthy)} "
+            "page-worthy model concepts have an explanation page",
+            file=sys.stderr,
+        )
+        if uncovered:
+            print(
+                f"{len(uncovered)} concept(s) with no explanation yet (not failing):",
+                file=sys.stderr,
+            )
+            print("\n".join(f"  - {u}" for u in uncovered), file=sys.stderr)
 
     if errors:
         print("\n".join(errors), file=sys.stderr)

@@ -1,6 +1,16 @@
 /**
  * Build docs navigation from each project's content/<project>/_meta.yaml.
+ *
+ * The nav structure (`docNav`, `docSequence`, and the derived neighbor/first-doc
+ * lookups) is a build-time constant listing EVERY doc, drafts included. That's
+ * the right source for allowlisted viewers, but anonymous viewers must see only
+ * published docs — the same DB-canonical rule the overview surfaces obey (see
+ * lib/content-visibility.ts, PR #41). Rather than bake visibility into the
+ * constant (it's viewer-dependent and resolves async), we keep the full build
+ * structure here and expose viewer-aware hooks that filter it at render time:
+ * `useVisibleDocNav`, `useDocNeighbors`, `useFirstVisibleDocForProject`.
  */
+import { useMemo } from "react";
 import yaml from "js-yaml";
 import {
   bucketFromPath,
@@ -8,6 +18,11 @@ import {
   projectFromPath,
   slugFromPath,
 } from "./lib/content-source";
+import { findDoc } from "./content";
+import {
+  useContentVisibility,
+  type ContentVisibility,
+} from "./lib/content-visibility";
 
 export interface DocNavItem {
   project: string;
@@ -179,5 +194,71 @@ export function docNeighbors(href: string): { prev?: DocNavItem; next?: DocNavIt
 
 export function firstDocForProject(project: string): DocNavItem | undefined {
   const group = docNav.find((g) => g.project === project);
+  return group?.buckets[0]?.items[0];
+}
+
+// ── Viewer-aware accessors ────────────────────────────────────────────────
+// The build-time structure above lists every doc; these narrow it to what the
+// current viewer may see, joining each nav item back to its ContentPage so the
+// shared visibility rule (lib/content-visibility.ts) applies. Allowlisted
+// viewers keep the full structure unchanged.
+
+/** True when the doc behind a nav item is visible to this viewer. */
+function navItemVisible(item: DocNavItem, vis: ContentVisibility): boolean {
+  const page = findDoc(item.project, item.bucket, item.slug);
+  // A nav item with no matching ContentPage shouldn't happen (both derive from
+  // the same doc glob), but if it did we hide it from anonymous viewers rather
+  // than leak an un-checkable link.
+  return page ? vis.isVisible(page) : vis.isAllowlisted;
+}
+
+/** `docNav` narrowed to the current viewer: buckets/sections with no visible
+ * items are dropped so the sidebar never shows an empty group. */
+export function filterDocNav(groups: DocNavGroup[], vis: ContentVisibility): DocNavGroup[] {
+  return groups
+    .map((group) => ({
+      ...group,
+      buckets: group.buckets
+        .map((bucket) => ({
+          ...bucket,
+          items: bucket.items.filter((item) => navItemVisible(item, vis)),
+        }))
+        .filter((bucket) => bucket.items.length > 0),
+    }))
+    .filter((group) => group.buckets.length > 0);
+}
+
+/** Viewer-aware `docNav` for the sidebar and homepage cards. */
+export function useVisibleDocNav(): { nav: DocNavGroup[]; isLoading: boolean } {
+  const vis = useContentVisibility();
+  const nav = useMemo(() => filterDocNav(docNav, vis), [vis]);
+  return { nav, isLoading: vis.isLoading };
+}
+
+/** Viewer-aware prev/next: neighbors are computed over the visible sequence, so
+ * anonymous viewers never page into an unpublished doc. */
+export function useDocNeighbors(href: string): {
+  prev?: DocNavItem;
+  next?: DocNavItem;
+  isLoading: boolean;
+} {
+  const { nav, isLoading } = useVisibleDocNav();
+  const neighbors = useMemo(() => {
+    const sequence = nav.flatMap((g) => g.buckets.flatMap((b) => b.items));
+    const idx = sequence.findIndex((item) => item.href === href);
+    if (idx < 0) return {};
+    return {
+      prev: idx > 0 ? sequence[idx - 1] : undefined,
+      next: idx < sequence.length - 1 ? sequence[idx + 1] : undefined,
+    };
+  }, [nav, href]);
+  return { ...neighbors, isLoading };
+}
+
+/** Viewer-aware homepage product-card target: the first doc a viewer may open
+ * for a project (undefined while loading or when the project has none visible). */
+export function useFirstVisibleDocForProject(project: string): DocNavItem | undefined {
+  const { nav } = useVisibleDocNav();
+  const group = nav.find((g) => g.project === project);
   return group?.buckets[0]?.items[0];
 }

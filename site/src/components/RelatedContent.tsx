@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import type { ContentPage } from "../content";
 import { relatedPages } from "../graph";
+import { useContentVisibility } from "../lib/content-visibility";
 
 // Diátaxis / area label for a related item, so readers see what *kind* of page
 // they'd be jumping to.
@@ -27,7 +28,11 @@ function pageKind(page: ContentPage): string {
  * related pages, so it's safe to drop at the foot of any content page.
  */
 export default function RelatedContent({ page }: { page: ContentPage }) {
-  const related = relatedPages(page);
+  const vis = useContentVisibility();
+  // Respect viewer visibility: anonymous viewers must not see links to
+  // unpublished related pages. While listDrafts resolves, filterVisible returns
+  // the empty set for anon, so the block simply doesn't render until it's safe.
+  const related = vis.filterVisible(relatedPages(page));
   if (related.length === 0) return null;
 
   return (

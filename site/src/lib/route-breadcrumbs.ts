@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import type { BreadcrumbItemData, BreadcrumbSibling } from "../components/layout/Breadcrumbs";
 import { blogPosts, findBlog, findDoc } from "../content";
-import { docNav } from "../sidebar";
+import { docNav, useVisibleDocNav, type DocNavGroup } from "../sidebar";
 import { withScope } from "../scope";
 
 /**
@@ -51,11 +51,15 @@ function enrichSectionCrumb(
   ];
 }
 
-/** Derive global topbar breadcrumbs from the current route. */
+/** Derive global topbar breadcrumbs from the current route. The doc-sibling
+ * dropdowns are built from `nav`, which callers pass viewer-filtered so an
+ * anonymous viewer never sees draft docs listed as siblings; it defaults to the
+ * full build-time `docNav` for non-viewer callers (tests, SSR fallbacks). */
 export function resolveRouteBreadcrumbs(
   pathname: string,
   params: Record<string, string | undefined>,
   scopeParam: string | null = null,
+  nav: DocNavGroup[] = docNav,
 ): BreadcrumbItemData[] {
   let items: BreadcrumbItemData[] = [];
 
@@ -101,9 +105,9 @@ export function resolveRouteBreadcrumbs(
     const axisHref = BUCKET_TO_AXIS[bucket] ?? "/reference";
     const axisLabel = axisHref.slice(1);
 
-    const group = docNav.find((g) => g.project === project);
+    const group = nav.find((g) => g.project === project);
     const activeBucket = group?.buckets.find((b) => b.bucket === bucket);
-    const projectSiblings = docNav
+    const projectSiblings = nav
       .map((g) => ({ label: g.projectLabel, href: g.buckets[0]?.items[0]?.href }))
       .filter((s): s is { label: string; href: string } => Boolean(s.href));
     const projectActiveHref = group?.buckets[0]?.items[0]?.href;
@@ -140,8 +144,11 @@ export function useRouteBreadcrumbs(): BreadcrumbItemData[] {
   const { pathname, search } = useLocation();
   const params = useParams();
   const scopeParam = new URLSearchParams(search).get("scope");
+  // Viewer-filtered nav so the breadcrumb sibling dropdowns match the sidebar:
+  // anonymous viewers see only published docs as project/page siblings.
+  const { nav } = useVisibleDocNav();
   return useMemo(
-    () => resolveRouteBreadcrumbs(pathname, params, scopeParam),
-    [pathname, params, scopeParam],
+    () => resolveRouteBreadcrumbs(pathname, params, scopeParam, nav),
+    [pathname, params, scopeParam, nav],
   );
 }

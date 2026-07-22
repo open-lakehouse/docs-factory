@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { docNav } from "../../sidebar";
+import { useVisibleDocNav } from "../../sidebar";
 import { useSidebar } from "./Shell";
 
 interface DocsSidebarProps {
@@ -15,6 +15,10 @@ export default function DocsSidebar({
 }: DocsSidebarProps) {
   const location = useLocation();
   const { mobileOpen, setMobileOpen } = useSidebar();
+  // Viewer-aware nav: anonymous viewers see only published docs; while the
+  // drafts list resolves the nav is empty, so show a placeholder instead of an
+  // empty rail (matches the overview surfaces' loading handling).
+  const { nav, isLoading } = useVisibleDocNav();
 
   const isActive = (href: string) => location.pathname === href;
 
@@ -33,7 +37,13 @@ export default function DocsSidebar({
           <Link to="/reference" className="sidebar-home" onClick={() => setMobileOpen(false)}>
             Documentation
           </Link>
-          {docNav.map((group) => (
+          {isLoading && nav.length === 0 && (
+            <p className="sidebar-empty muted">Loading…</p>
+          )}
+          {!isLoading && nav.length === 0 && (
+            <p className="sidebar-empty muted">No published docs yet.</p>
+          )}
+          {nav.map((group) => (
             <section key={group.project} className="sidebar-section">
               <h2 className="sidebar-project">{group.projectLabel}</h2>
               {group.buckets.map((bucket) => (

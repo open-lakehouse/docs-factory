@@ -10,6 +10,7 @@ import {
   readingTimeMinutes,
 } from "../content";
 import { filterByScope, useScope } from "../scope";
+import { useContentVisibility } from "../lib/content-visibility";
 
 function BlogReadingTime({
   articleRef,
@@ -31,11 +32,14 @@ export { BlogReadingTime };
 export default function BlogIndex() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { scopeId } = useScope();
+  const vis = useContentVisibility();
   const activeTags = [
     ...new Set(searchParams.getAll("tag").map((t) => t.trim()).filter(Boolean)),
   ];
-  // Scope narrows first (blog is the fifth axis), then topic tags (AND).
-  const scopedPosts = filterByScope(blogPosts, scopeId);
+  // Scope narrows first (blog is the fifth axis), then topic tags (AND), then
+  // viewer visibility (anonymous viewers see only published posts). Filtering
+  // before series grouping keeps hidden posts out of both series and standalone.
+  const scopedPosts = vis.filterVisible(filterByScope(blogPosts, scopeId));
   const filteredPosts =
     activeTags.length === 0
       ? scopedPosts
@@ -89,16 +93,20 @@ export default function BlogIndex() {
             </div>
           )}
 
-          {activeTags.length > 0 && filteredPosts.length === 0 && (
+          {filteredPosts.length === 0 && (
             <p className="muted blog-tag-filter-empty">
-              No posts match all selected topics.
+              {vis.isLoading
+                ? "Loading posts…"
+                : activeTags.length > 0
+                  ? "No posts match all selected topics."
+                  : "No published posts yet."}
             </p>
           )}
         </div>
 
-        {!(activeTags.length > 0 && filteredPosts.length === 0) && (
+        {filteredPosts.length > 0 && (
           <div className="index-scroll-body">
-            <BlogTable series={series} standalone={standalone} />
+            <BlogTable series={series} standalone={standalone} vis={vis} />
           </div>
         )}
       </div>

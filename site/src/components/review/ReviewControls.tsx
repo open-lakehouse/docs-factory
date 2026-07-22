@@ -11,30 +11,12 @@ import {
 import { ReviewState, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
+import { REVIEW_BADGE_VARIANT, REVIEW_STATE_LABEL } from "../../lib/review-status";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 type ReviewControlsLayout = "inline" | "aside" | "dock";
-
-// Badge tone per review state: released = solid, approved = default accent,
-// changes-requested = destructive, in-review/none = muted outline/secondary.
-const BADGE_VARIANT: Record<number, BadgeVariant> = {
-  [ReviewState.NONE]: "outline",
-  [ReviewState.IN_REVIEW]: "secondary",
-  [ReviewState.CHANGES_REQUESTED]: "destructive",
-  [ReviewState.APPROVED]: "default",
-  [ReviewState.RELEASED]: "default",
-};
-
-const LABEL: Record<number, string> = {
-  [ReviewState.NONE]: "not in review",
-  [ReviewState.IN_REVIEW]: "in review",
-  [ReviewState.CHANGES_REQUESTED]: "changes requested",
-  [ReviewState.APPROVED]: "approved",
-  [ReviewState.RELEASED]: "released",
-};
 
 // Reviewer-available transitions from each state (Release handled separately).
 const NEXT: Record<number, { to: ReviewState; label: string }[]> = {
@@ -91,8 +73,8 @@ export default function ReviewControls({
         layout === "dock" && "review-controls--dock",
       )}
     >
-      <Badge variant={BADGE_VARIANT[state] ?? "secondary"} className="review-controls-badge">
-        review: {LABEL[state] ?? "unknown"}
+      <Badge variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"} className="review-controls-badge">
+        review: {REVIEW_STATE_LABEL[state] ?? "unknown"}
       </Badge>
       {actions.length > 0 && (
         <div className="review-controls-actions">

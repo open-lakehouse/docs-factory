@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import TagList from "./TagList";
 import AuthorBadge from "./AuthorBadge";
 import ContentTable, { type ContentRow } from "./ContentTable";
+import type { ContentVisibility } from "../lib/content-visibility";
 import type { BlogSeriesGroup, ContentPage } from "../content";
 
 interface BlogTableProps {
   series: BlogSeriesGroup[];
   standalone: ContentPage[];
+  /** Viewer-aware status/columns. When allowlisted, rows carry status columns. */
+  vis: ContentVisibility;
 }
 
 function latestDate(posts: ContentPage[]): string | undefined {
@@ -93,8 +96,10 @@ function SeriesDetail({ posts }: { posts: ContentPage[] }) {
   );
 }
 
-export default function BlogTable({ series, standalone }: BlogTableProps) {
+export default function BlogTable({ series, standalone, vis }: BlogTableProps) {
   const rows: ContentRow[] = [
+    // A series row aggregates several posts, so it has no single review state —
+    // it carries only the "series" label in the author-status column.
     ...series.map((group) => ({
       id: `series:${group.series}`,
       icon: <Layers className="blog-row-icon" aria-hidden="true" />,
@@ -102,11 +107,12 @@ export default function BlogTable({ series, standalone }: BlogTableProps) {
       titleBadge: `${group.posts.length} posts`,
       author: <span className="author-badge-empty">—</span>,
       date: latestDate(group.posts),
-      status: "series",
+      frontmatterStatus: "series",
       detail: <SeriesDetail posts={group.posts} />,
     })),
     ...standalone.map((post) => {
       const fm = post.frontmatter;
+      const status = vis.statusFor(post);
       return {
         id: `post:${post.slug}`,
         icon: <FileText className="blog-row-icon" aria-hidden="true" />,
@@ -114,11 +120,12 @@ export default function BlogTable({ series, standalone }: BlogTableProps) {
         titleHref: post.href,
         author: <AuthorBadge byline={fm.author} />,
         date: fm.date,
-        status: fm.status,
+        frontmatterStatus: status.frontmatter,
+        reviewState: status.reviewState,
         detail: <PostDetail post={post} />,
       };
     }),
   ];
 
-  return <ContentTable rows={rows} />;
+  return <ContentTable rows={rows} showStatus={vis.showStatusColumns} />;
 }

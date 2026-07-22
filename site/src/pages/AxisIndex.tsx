@@ -35,6 +35,10 @@ import {
   scopeAccent,
   useScope,
 } from "../scope";
+import {
+  useContentVisibility,
+  type ContentVisibility,
+} from "../lib/content-visibility";
 import type { ContentPage } from "../content";
 
 interface AxisMeta {
@@ -120,8 +124,9 @@ function docDetail(page: ContentPage) {
   );
 }
 
-function docRow(page: ContentPage): ContentRow {
+function docRow(page: ContentPage, vis: ContentVisibility): ContentRow {
   const fm = page.frontmatter;
+  const status = vis.statusFor(page);
   return {
     id: `doc:${page.href}`,
     icon: <FileText className="blog-row-icon" aria-hidden="true" />,
@@ -129,7 +134,8 @@ function docRow(page: ContentPage): ContentRow {
     titleHref: page.href,
     author: fm.author ? <AuthorBadge byline={fm.author} /> : <span className="author-badge-empty">—</span>,
     date: fm.date,
-    status: fm.status ?? page.project,
+    frontmatterStatus: status.frontmatter || page.project,
+    reviewState: status.reviewState,
     detail: docDetail(page),
   };
 }
@@ -149,7 +155,7 @@ function coverageGapRows(scopeId: string): ContentRow[] {
       titleHref: undefined,
       author: <span className="author-badge-empty">—</span>,
       date: undefined,
-      status: "No explanation yet",
+      frontmatterStatus: "No explanation yet",
       detail: (
         <div className="blog-detail">
           {e.summary && <p className="blog-detail-summary">{e.summary}</p>}
@@ -165,6 +171,7 @@ function coverageGapRows(scopeId: string): ContentRow[] {
 export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
   const meta = AXES[axis];
   const { scopeId } = useScope();
+  const vis = useContentVisibility();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const activeRefs = [
@@ -195,10 +202,13 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
     setSearchParams(next, { replace: true });
   };
 
-  // Content pages of this Diátaxis type, scope- then facet-filtered.
+  // Content pages of this Diátaxis type, scope- then facet-filtered, then
+  // narrowed to what the current viewer may see (anonymous viewers get only
+  // published content; reviewers get everything — see useContentVisibility).
   const scoped = filterByScope(pages, scopeId);
   const bucketed = bucketByDiataxis(scoped)[axis];
-  const filtered = pagesByRefs(bucketed, activeRefs, activeEngines)
+  const filtered = vis
+    .filterVisible(pagesByRefs(bucketed, activeRefs, activeEngines))
     .slice()
     .sort((a, b) =>
       (a.frontmatter.title ?? a.slug).localeCompare(b.frontmatter.title ?? b.slug),
@@ -206,10 +216,13 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
 
   const conceptFacets = referencedConcepts("docs");
   const rows: ContentRow[] = [
-    ...filtered.map(docRow),
-    // Coverage-gap rows only appear on the explanation axis, and only when
-    // facets (which key off content pages) are not active.
-    ...(axis === "explanation" && !faceted ? coverageGapRows(scopeId) : []),
+    ...filtered.map((page) => docRow(page, vis)),
+    // Coverage-gap rows are an authoring/review aid (what's still unexplained),
+    // so they appear only for allowlisted viewers, only on the explanation axis,
+    // and only when facets (which key off content pages) are not active.
+    ...(vis.isAllowlisted && axis === "explanation" && !faceted
+      ? coverageGapRows(scopeId)
+      : []),
   ];
 
   return (
@@ -263,14 +276,21 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
             </div>
           </div>
 
-          {rows.length === 0 && (
-            <p className="muted">No {meta.title.toLowerCase()} match the current filters.</p>
+          {vis.isLoading && rows.length === 0 && (
+            <p className="muted">Loading {meta.title.toLowerCase()}…</p>
+          )}
+          {!vis.isLoading && rows.length === 0 && (
+            <p className="muted">
+              {faceted
+                ? `No ${meta.title.toLowerCase()} match the current filters.`
+                : `No published ${meta.title.toLowerCase()} yet.`}
+            </p>
           )}
         </div>
 
         {rows.length > 0 && (
           <div className="index-scroll-body">
-            <ContentTable rows={rows} />
+            <ContentTable rows={rows} showStatus={vis.showStatusColumns} />
           </div>
         )}
       </div>

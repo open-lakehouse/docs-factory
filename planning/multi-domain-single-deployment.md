@@ -146,6 +146,45 @@ concern, not an architecture concern.
 Per-domain accent (`data-accent`) already follows the scope, so each domain
 gets its project's visual identity for free.
 
+### 5. The authed surface lives on ONE domain: `docs.openlakehouse.io`
+
+Login and the authoring/review experience (comments, review threads, release
+controls) are **pinned to a single domain** rather than replicated across all
+three. The chosen home is **`docs.openlakehouse.io`**, because it is the
+**fullest scope** — `open-lakehouse` is the implicit "all", so this domain sees
+*every* page across all three projects (the superset), while `docs.delta.io`
+and `docs.unitycatalog.io` each see only their scoped subset. An authenticated
+contributor works against the whole corpus, so the domain that shows the whole
+corpus is where the write experience belongs.
+
+`docs.delta.io` and `docs.unitycatalog.io` are **read-only**: full docs for
+their scope, correctly filtered, but no login prompt and no review affordances.
+
+Why this is clean, not a special case:
+
+- **One chokepoint, not fifteen.** `AuthProvider` wraps the whole app in
+  `main.tsx`, and every review affordance gates on `useAuth()` (backed by the
+  `getViewer` RPC in `lib/auth-context.tsx`). Gating "is this the authed host?"
+  is a single predicate at the provider / review-mount boundary — the 15
+  `components/review/*` components need no per-component change.
+- **It sidesteps the cross-domain auth problem entirely.** The three domains are
+  subdomains of *different* apexes (`openlakehouse.io` / `delta.io` /
+  `unitycatalog.io`), so a session cookie can never span them (see Risks). By
+  confining login to one host, there is nothing to share — the OAuth app
+  registers exactly one origin/redirect (`docs.openlakehouse.io`), and the
+  cross-domain cookie question disappears instead of being solved.
+- **It composes with scoping, doesn't fight it.** Scope (what content shows) and
+  auth-home (where you can write) are independent predicates over the same host.
+  `docs.openlakehouse.io` is both the "all" scope *and* the authed host; that's a
+  deliberate alignment (write against everything from the superset domain), not a
+  coupling — the resolver for each is separate config.
+
+Concretely, add an `authHost` constant (defaulting to `docs.openlakehouse.io`)
+and one guard: `AuthProvider` only issues `getViewer` / mounts review UI when
+`location.hostname === authHost`. On the other two hosts `useAuth()` resolves to
+the anonymous state it already returns today, so those domains render exactly as
+an unauthenticated visitor sees them now.
+
 ---
 
 ## What does *not* need to change
@@ -162,20 +201,20 @@ gets its project's visual identity for free.
 
 ## Risks & open questions
 
-1. **Auth callback origin (needs verification).** Neon Auth / the GitHub OAuth
-   app registers redirect/callback URLs. A single OAuth app may need all three
-   hosts registered as authorized origins/redirects, or the login flow pinned to
-   one canonical auth host (e.g. always `docs.openlakehouse.io`) with the session
-   shared. **This is the one item to confirm before committing** — cross-subdomain
-   cookie/session behavior and the OAuth app's allowed-origins list. It is a
-   config question, not a blocker to the architecture.
+1. **Auth callback origin — resolved by §5, one item to confirm.** Because the
+   authed surface is pinned to `docs.openlakehouse.io` (§5), the GitHub OAuth app
+   registers exactly one authorized origin/redirect and there is no
+   cross-subdomain session to share. The remaining confirmation is simply that
+   Neon Auth / the OAuth app is configured for that single origin — a config
+   check, not an architectural question, and no longer a blocker.
 
-2. **Cross-domain cookies.** The three are sibling subdomains of *different*
-   apex domains (`openlakehouse.io` vs `delta.io` vs `unitycatalog.io`), so a
-   single cookie cannot span them. If in-page authed actions (voting, comments)
-   are wanted on `docs.delta.io` as well, either (a) each domain runs its own
-   login against the shared backend, or (b) authed actions live only on the
-   canonical host and the scoped domains are read-only. Recommend (b) initially.
+2. **Cross-domain cookies — sidestepped, not solved.** The three are sibling
+   subdomains of *different* apex domains (`openlakehouse.io` vs `delta.io` vs
+   `unitycatalog.io`), so a single cookie cannot span them. Rather than solve
+   this, §5 confines login and all authed actions to `docs.openlakehouse.io`;
+   `docs.delta.io` and `docs.unitycatalog.io` are read-only. Nothing needs to
+   span domains. Revisit only if we later want in-page authed actions on the
+   scoped domains (then each would run its own login against the shared backend).
 
 3. **SEO duplicate content** — handled by the per-page canonical tag (§3). Worth
    a follow-up to confirm canonical generation covers the axis-index pages, not
@@ -198,10 +237,13 @@ end-to-end. The work is:
 1. Add a `homeHost` to each scope and make `useScope()` fall back host → scope.
 2. Add the three domains to one Vercel project + DNS.
 3. Add per-page `rel=canonical` keyed on the page's home scope.
-4. Confirm the Neon Auth / GitHub OAuth allowed-origins story for three hosts
-   (the one thing to verify before building).
+4. Pin the authed surface to `docs.openlakehouse.io` (the fullest scope): one
+   `authHost` guard at `AuthProvider` / review-mount; the other two hosts stay
+   read-only (§5). This resolves the cross-domain auth question rather than
+   leaving it open — the OAuth app needs exactly one origin.
 
-Items 1–3 are a small, well-scoped change over the existing site; item 4 is a
-config verification. There is no re-architecture and no content duplication.
+All four are small, well-scoped changes over the existing site — items 1–3 in
+the SPA, item 4 a single guard plus one OAuth-origin config. There is no
+re-architecture and no content duplication.
 ```
 

@@ -6,7 +6,6 @@ import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
-import ReviewControls from "../components/review/ReviewControls";
 import { blogRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
@@ -42,6 +41,7 @@ export default function BlogPost() {
         <div className="blog-post-body">
           <BlogAside
             articleRef={articleRef}
+            contentRef={blogRef(slug)}
             byline={frontmatter.author}
             tags={frontmatter.tags ?? []}
           />
@@ -59,7 +59,6 @@ export default function BlogPost() {
                 )}
                 <BlogReadingTime articleRef={articleRef} />
               </div>
-              <ReviewControls contentRef={blogRef(slug)} />
             </header>
             <article className="prose" ref={articleRef}>
               <MdxProvider>

@@ -63,7 +63,12 @@ const blogPages: ContentPage[] = Object.entries(blogModules).map(([path, mod]) =
 const docPages: ContentPage[] = Object.entries(docModules)
   .filter(([path]) => !path.endsWith("/README.md"))
   .map(([path, mod]) => {
-    const { project, bucket, slug } = parseDocPath(path);
+    const { project, bucket, slug: pathSlug } = parseDocPath(path);
+    // A `slug:` frontmatter field overrides the on-disk name so a folder can be
+    // renamed without breaking its URL (see content-source.ts). Falls back to
+    // the directory/file name otherwise.
+    const fmSlug = mod.frontmatter?.slug;
+    const slug = typeof fmSlug === "string" && fmSlug ? fmSlug : pathSlug;
     return {
       area: "docs",
       slug,

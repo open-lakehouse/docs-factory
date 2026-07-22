@@ -14,7 +14,6 @@ import { useMemo } from "react";
 import yaml from "js-yaml";
 import {
   bucketFromPath,
-  docPaths,
   projectFromPath,
   slugFromPath,
 } from "./lib/content-source";
@@ -49,7 +48,7 @@ interface MetaYaml {
 }
 
 interface MdxModule {
-  frontmatter?: { title?: string };
+  frontmatter?: { title?: string; slug?: string };
 }
 
 const DEFAULT_BUCKET_ORDER = ["explanation", "tutorials", "how-to", "reference"];
@@ -71,17 +70,41 @@ const docTitleModules = import.meta.glob<MdxModule>(
   { eager: true },
 );
 
+interface DiscoveredDoc {
+  project: string;
+  bucket: string;
+  slug: string;
+  title: string;
+}
+
+/**
+ * Every doc discovered at build time as {project, bucket, slug, title}. Derived
+ * from the same modules — and with the same folder-mode + `slug:` frontmatter
+ * override rules — as content.ts, so the sidebar's slugs match the hrefs and
+ * `findDoc` keys exactly. Path parsing alone can't see the frontmatter override,
+ * so we resolve it here where the frontmatter is in hand.
+ */
+const discoveredDocs: DiscoveredDoc[] = Object.entries(docTitleModules)
+  .filter(([path]) => !path.endsWith("/README.md"))
+  .map(([path, mod]) => {
+    const project = projectFromPath(path);
+    const bucket = bucketFromPath(path);
+    const pathSlug = slugFromPath(path);
+    const fmSlug = mod.frontmatter?.slug;
+    const slug = typeof fmSlug === "string" && fmSlug ? fmSlug : pathSlug;
+    return {
+      project,
+      bucket,
+      slug,
+      title: mod.frontmatter?.title ?? slug.replace(/-/g, " "),
+    };
+  });
+
 function titleForDoc(project: string, bucket: string, slug: string): string {
-  for (const [path, mod] of Object.entries(docTitleModules)) {
-    if (
-      projectFromPath(path) === project &&
-      bucketFromPath(path) === bucket &&
-      slugFromPath(path) === slug
-    ) {
-      return mod.frontmatter?.title ?? slug.replace(/-/g, " ");
-    }
-  }
-  return slug.replace(/-/g, " ");
+  const doc = discoveredDocs.find(
+    (d) => d.project === project && d.bucket === bucket && d.slug === slug,
+  );
+  return doc?.title ?? slug.replace(/-/g, " ");
 }
 
 function orderedSlugs(declared: string[] | undefined, present: string[]): string[] {
@@ -100,17 +123,16 @@ function orderedSlugs(declared: string[] | undefined, present: string[]): string
 }
 
 function presentSlugs(project: string, bucket: string): string[] {
-  return docPaths
-    .filter((p) => projectFromPath(p) === project && bucketFromPath(p) === bucket)
-    .map(slugFromPath)
+  return discoveredDocs
+    .filter((d) => d.project === project && d.bucket === bucket)
+    .map((d) => d.slug)
     .filter((s) => s.toLowerCase() !== "readme");
 }
 
 function allProjectsWithDocs(): string[] {
   const projects = new Set<string>();
-  for (const p of docPaths) {
-    const slug = slugFromPath(p);
-    if (slug.toLowerCase() !== "readme") projects.add(projectFromPath(p));
+  for (const d of discoveredDocs) {
+    if (d.slug.toLowerCase() !== "readme") projects.add(d.project);
   }
   return [...projects].sort();
 }

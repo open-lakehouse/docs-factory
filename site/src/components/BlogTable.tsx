@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { ChevronDown, ChevronRight, FileText, Layers } from "lucide-react";
+import { FileText, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
 import TagList from "./TagList";
 import AuthorBadge from "./AuthorBadge";
+import ContentTable, { type ContentRow } from "./ContentTable";
 import type { BlogSeriesGroup, ContentPage } from "../content";
 
 interface BlogTableProps {
@@ -94,129 +94,31 @@ function SeriesDetail({ posts }: { posts: ContentPage[] }) {
 }
 
 export default function BlogTable({ series, standalone }: BlogTableProps) {
-  const [open, setOpen] = useState<string | null>(null);
-  const toggle = (id: string) => setOpen((cur) => (cur === id ? null : id));
+  const rows: ContentRow[] = [
+    ...series.map((group) => ({
+      id: `series:${group.series}`,
+      icon: <Layers className="blog-row-icon" aria-hidden="true" />,
+      title: group.series,
+      titleBadge: `${group.posts.length} posts`,
+      author: <span className="author-badge-empty">—</span>,
+      date: latestDate(group.posts),
+      status: "series",
+      detail: <SeriesDetail posts={group.posts} />,
+    })),
+    ...standalone.map((post) => {
+      const fm = post.frontmatter;
+      return {
+        id: `post:${post.slug}`,
+        icon: <FileText className="blog-row-icon" aria-hidden="true" />,
+        title: fm.title ?? post.slug,
+        titleHref: post.href,
+        author: <AuthorBadge byline={fm.author} />,
+        date: fm.date,
+        status: fm.status,
+        detail: <PostDetail post={post} />,
+      };
+    }),
+  ];
 
-  return (
-    <div className="blog-table-wrap">
-      <table className="blog-table">
-        <thead>
-          <tr>
-            <th className="blog-th-chevron" aria-hidden="true" />
-            <th>Title</th>
-            <th className="blog-th-author">Author</th>
-            <th className="blog-th-date">Date</th>
-            <th className="blog-th-status">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {series.map((group) => {
-            const id = `series:${group.series}`;
-            return (
-              <BlogRow
-                key={id}
-                isOpen={open === id}
-                onToggle={() => toggle(id)}
-                icon={<Layers className="blog-row-icon" aria-hidden="true" />}
-                title={group.series}
-                titleBadge={`${group.posts.length} posts`}
-                author={<span className="author-badge-empty">—</span>}
-                date={latestDate(group.posts)}
-                status="series"
-                detail={<SeriesDetail posts={group.posts} />}
-              />
-            );
-          })}
-          {standalone.map((post) => {
-            const id = `post:${post.slug}`;
-            const fm = post.frontmatter;
-            return (
-              <BlogRow
-                key={id}
-                isOpen={open === id}
-                onToggle={() => toggle(id)}
-                icon={<FileText className="blog-row-icon" aria-hidden="true" />}
-                title={fm.title ?? post.slug}
-                titleHref={post.href}
-                author={<AuthorBadge byline={fm.author} />}
-                date={fm.date}
-                status={fm.status}
-                detail={<PostDetail post={post} />}
-              />
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  );
-}
-
-function BlogRow({
-  isOpen,
-  onToggle,
-  icon,
-  title,
-  titleHref,
-  titleBadge,
-  author,
-  date,
-  status,
-  detail,
-}: {
-  isOpen: boolean;
-  onToggle: () => void;
-  icon: React.ReactNode;
-  title: string;
-  titleHref?: string;
-  titleBadge?: string;
-  author?: React.ReactNode;
-  date?: string;
-  status?: string;
-  detail: React.ReactNode;
-}) {
-  return (
-    <>
-      <tr
-        className={isOpen ? "blog-row open" : "blog-row"}
-        onClick={onToggle}
-        aria-expanded={isOpen}
-      >
-        <td className="blog-row-chevron">
-          {isOpen ? (
-            <ChevronDown className="blog-chevron" aria-hidden="true" />
-          ) : (
-            <ChevronRight className="blog-chevron" aria-hidden="true" />
-          )}
-        </td>
-        <td className="blog-row-name">
-          <span className="blog-row-title-wrap">
-            {icon}
-            {titleHref ? (
-              <Link
-                to={titleHref}
-                className="blog-row-title"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {title}
-              </Link>
-            ) : (
-              <span className="blog-row-title">{title}</span>
-            )}
-            {titleBadge && <span className="blog-row-count">{titleBadge}</span>}
-          </span>
-        </td>
-        <td className="blog-row-author">{author}</td>
-        <td className="blog-row-date mono">{date ?? "—"}</td>
-        <td className="blog-row-status">
-          {status && <span className="blog-badge">{status}</span>}
-        </td>
-      </tr>
-      {isOpen && (
-        <tr className="blog-detail-row">
-          <td />
-          <td colSpan={4}>{detail}</td>
-        </tr>
-      )}
-    </>
-  );
+  return <ContentTable rows={rows} />;
 }

@@ -1,7 +1,7 @@
 ---
 title: Introducing the UC Delta API
 slug: unity-catalog-delta-api
-status: drafting
+status: ready
 date: 2026-07-03
 tags: [unity-catalog, delta-lake, lakehouse]
 series:
@@ -13,13 +13,15 @@ target: company blog
 **TL;DR**
 
 - The UC Delta API is a **versioned, intent-based, atomic** REST surface for the Delta
-  ecosystem, shipped in open source [Unity Catalog](https://github.com/unitycatalog/unitycatalog) 0.5.
+ecosystem, shipped in open source [Unity Catalog](https://github.com/unitycatalog/unitycatalog) 0.5.
 - It's **discoverable**: the first call, `GET /delta/v1/config`, negotiates the protocol
-  version and platform supported and required table features.
+version and platform supported and required table features.
 - Simple to integrate. The wire format is **native Delta** — Delta's own schema,
-  protocol, and column metadata travel over the wire. 
+protocol, and column metadata travel over the wire. 
 - You can **run all of it locally today** against OSS UC 0.5 — with Spark and DuckDB support
-  out of the box. More to follow.
+out of the box. More to follow.
+
+
 
 ## Introducing the UC Delta API
 
@@ -45,6 +47,7 @@ Via a `server.properties` file we configure managed tables and
 negotiate the managed storage location.
 
 ```properties file=./snippets/server.properties
+
 ```
 
 :::warning
@@ -70,17 +73,22 @@ a managed table via `pyspark` is largely just following what we
 have been doing all along, with a few minor tweaks.
 
 ::::journey
+
 ### Configure Spark with Delta & Unity Catalog
 
 Configure a `SparkSession` with the UC + Delta packages and point the catalog at
 the local server. This is the only setup step; the rest is plain SQL.
 
 ```python file=./snippets/read_write_delta_spark.py start=start:session end=end:session
+
 ```
+
+
 
 ### Create the managed table and write rows
 
 ```python file=./snippets/read_write_delta_spark.py start=start:create end=end:create
+
 ```
 
 :::info
@@ -90,6 +98,7 @@ Managed tables **require** `delta.feature.catalogManaged = 'supported'`
 ### Query your data
 
 ```python file=./snippets/read_write_delta_spark.py start=start:read end=end:read
+
 ```
 
 ```
@@ -100,6 +109,7 @@ Managed tables **require** `delta.feature.catalogManaged = 'supported'`
 |  2| beta|
 +---+-----+
 ```
+
 ::::
 
 ## UC Delta API in detail
@@ -139,7 +149,7 @@ between the client and server supported versions, note how we specified the
 ```
 
 UC Delta API being an open specification, there is of course some meaning attached
-to the protocol version. The official [protocol specification][ManagedTablesSpec]
+to the protocol version. The official [protocol specification](https://github.com/unitycatalog/unitycatalog/blob/v0.5.0/spec/protocols/ManagedTablesSpec.md)
 defines how these endpoints are to be used to read and write data.
 
 ### The managed table protocol
@@ -148,7 +158,7 @@ The interactive diagram below explains the full end to end flow of creating
 a table and writing data into a table via the UC Delta API. Expand it and 
 click through the sequence to get the full picture.
 
-![Sequence diagram](./assets/managedTableFlow.png "likec4=ucDeltaApi_managedTableFlow")
+Sequence diagram
 
 Rather than reiterating the full sequence piece by piece, we'll focus on
 two moments in that sequence which highlight some Delta specifics in the specification.
@@ -219,19 +229,27 @@ wanting to use a different engine sometimes, here is how to
 read that same data using DuckDB. 
 
 ::::journey
+
 ### Install the Delta + Unity Catalog extensions
 
 ```python file=./snippets/read_delta_duckdb.py start=start:install end=end:install
+
 ```
+
+
 
 ### Point DuckDB at the UC catalog
 
 ```python file=./snippets/read_delta_duckdb.py start=start:attach end=end:attach
+
 ```
+
+
 
 ### Read the data
 
 ```python file=./snippets/read_delta_duckdb.py start=start:read end=end:read
+
 ```
 
 with the expected result
@@ -239,6 +257,7 @@ with the expected result
 ```
 [(1, 'alpha'), (2, 'beta')]
 ```
+
 ::::
 
 ## Wrap-up
@@ -250,8 +269,5 @@ flattening any of them.
 If you want to see it yourself: stand up OSS UC 0.5, run `GET /delta/v1/config`, and
 walk the create → commit → load lifecycle. Point your own Delta engine at it. 
 
-If you are building a client, read the [openapi spec][delta-yaml] and the
-[managed-tables protocol][ManagedTablesSpec].
-
-[ManagedTablesSpec]: https://github.com/unitycatalog/unitycatalog/blob/v0.5.0/spec/protocols/ManagedTablesSpec.md
-[delta-yaml]: https://github.com/unitycatalog/unitycatalog/blob/v0.5.0/api/delta.yaml
+If you are building a client, read the [openapi spec](https://github.com/unitycatalog/unitycatalog/blob/v0.5.0/api/delta.yaml) and the
+[managed-tables protocol](https://github.com/unitycatalog/unitycatalog/blob/v0.5.0/spec/protocols/ManagedTablesSpec.md).

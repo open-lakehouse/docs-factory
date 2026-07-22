@@ -1978,6 +1978,11 @@ a.blog-row-title:hover { color: var(--accent); }
   border: 1px solid var(--border);
   border-radius: 4px;
 }
+.blog-badge-ready {
+  color: #4f9c5a;
+  background: color-mix(in srgb, #4f9c5a 12%, transparent);
+  border-color: color-mix(in srgb, #4f9c5a 30%, transparent);
+}
 
 /* Review-state badge in the index tables' reviewer-only "Review" column. Uses
  * the shadcn Badge tones (via ReviewStateBadge) but shrinks the type and lets

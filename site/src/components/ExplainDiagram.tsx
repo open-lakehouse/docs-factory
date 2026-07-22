@@ -1,5 +1,4 @@
-import ModelDiagram, { RefitOnResize } from "./ModelDiagram";
-import ExpandableDiagram from "./ExpandableDiagram";
+import ModelDiagram from "./ModelDiagram";
 import { pickScopedViewId } from "../model-refs";
 
 export default function ExplainDiagram({ elementId }: { elementId: string }) {
@@ -14,16 +13,8 @@ export default function ExplainDiagram({ elementId }: { elementId: string }) {
   }
 
   return (
-    <ExpandableDiagram>
-      {(expanded) => (
-        <ModelDiagram
-          key={expanded ? "expanded" : "inline"}
-          viewId={viewId}
-          showExplainActions
-        >
-          <RefitOnResize expanded={expanded} />
-        </ModelDiagram>
-      )}
-    </ExpandableDiagram>
+    <div className="diagram-frame">
+      <ModelDiagram viewId={viewId} />
+    </div>
   );
 }

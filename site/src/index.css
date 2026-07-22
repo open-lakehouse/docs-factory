@@ -2603,44 +2603,6 @@ a.meta-link:hover {
   min-height: 26rem;
   max-height: 80vh;
 }
-.diagram-frame-expanded {
-  width: min(1200px, calc(100vw - 2rem)) !important;
-  max-width: none !important;
-  height: min(85vh, 900px) !important;
-  padding: 0 !important;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.diagram-frame-expanded .diagram-expand-btn { z-index: 10; }
-.diagram-frame-expanded > :not(.diagram-expand-btn) {
-  flex: 1;
-  min-height: 0;
-}
-.diagram-expand-btn {
-  position: absolute;
-  top: 0.6rem;
-  right: 0.6rem;
-  z-index: 5;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.6rem;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--foreground);
-  background: color-mix(in srgb, var(--sidebar) 82%, transparent);
-  border: 1px solid var(--border);
-  border-radius: 0.4rem;
-  cursor: pointer;
-  backdrop-filter: blur(4px);
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-.diagram-expand-btn:hover {
-  background: var(--sidebar);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
-}
 .explain-diagram-empty {
   padding: 1.5rem;
   border: 1px dashed var(--border);

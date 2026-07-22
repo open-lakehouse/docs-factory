@@ -18,21 +18,15 @@
 // IMPORT-CYCLE DISCIPLINE (see backlinks.ts): this module imports content.ts
 // (which eagerly imports every doc/blog MDX, and those MDX modules import
 // <ModelRef> → model-refs.ts). So this module MUST NOT be imported by any MDX
-// file — only route/index components (DocsIndex, ConceptIndex, ExplainPage,
-// DocPage) import it. explain.ts / model-refs.ts / tags.ts / engine-map.ts do
+// file — only route/index components (AxisIndex, ExplainPage, DocPage) import
+// it. explain.ts / model-refs.ts / tags.ts / engine-map.ts do
 // not import content.ts, so pulling them in here is safe.
 
 import { pages, docs, type ContentPage } from "./content";
 import { getTag } from "./tags";
 import { resolveRef, type ModelRefInfo } from "./model-refs";
-import {
-  explainEntries,
-  getExplainElement,
-  explainHref,
-  kindLabel,
-  type ExplainEntry,
-} from "./explain";
-import { ENGINE_ELEMENT, ENGINE_ELEMENT_IDS, isEngineElement } from "./engine-map";
+import { getExplainElement } from "./explain";
+import { ENGINE_ELEMENT } from "./engine-map";
 
 // --- Effective references ---------------------------------------------------
 
@@ -79,71 +73,25 @@ export function backlinksFor(id: string): ContentPage[] {
   return backlinks.get(id) ?? [];
 }
 
-// --- Concept index (model nodes grouped by kind) ----------------------------
-
-export interface ConceptNode {
-  id: string;
-  title: string;
-  kind: string;
-  kindLabel: string;
-  summary: string;
-  href: string;
-  isEngine: boolean;
-  /** Number of content pages that reference this node. */
-  pageCount: number;
-}
-
-export interface ConceptGroups {
-  capabilities: ConceptNode[];
-  specifications: ConceptNode[];
-  /** Implementations that an engine slug maps to (query engines / libraries). */
-  engines: ConceptNode[];
-  /** Remaining implementations (catalog servers, storage, etc.). */
-  implementations: ConceptNode[];
-}
-
-function toConceptNode(entry: ExplainEntry): ConceptNode {
-  return {
-    id: entry.id,
-    title: entry.title,
-    kind: entry.kind,
-    kindLabel: kindLabel(entry.kind),
-    summary: entry.summary,
-    href: explainHref(entry.id),
-    isEngine: isEngineElement(entry.id),
-    pageCount: backlinksFor(entry.id).length,
-  };
-}
-
-const conceptNodes = explainEntries.map(toConceptNode);
-
-/** Model nodes grouped for the concept-first index. */
-export function conceptGroups(): ConceptGroups {
-  return {
-    capabilities: conceptNodes.filter((n) => n.kind === "capability"),
-    specifications: conceptNodes.filter((n) => n.kind === "openSpecification"),
-    engines: conceptNodes.filter((n) => n.kind === "implementation" && n.isEngine),
-    implementations: conceptNodes.filter(
-      (n) => n.kind === "implementation" && !n.isEngine,
-    ),
-  };
-}
-
-// --- Facet filtering (docs index) -------------------------------------------
+// --- Facet filtering (axis indexes) -----------------------------------------
 
 /**
- * Docs matching the active facets.
+ * Pages (from any set) matching the active facets.
  *   • refIds  → AND: a page must reference *all* selected concept nodes.
  *   • engineIds (slugs) → OR: a page shown if it exercises *any* selected engine
  *     ("show me pages that cover Polars or DuckDB" is the natural query).
- * Empty facets → all docs. The AND/OR asymmetry is deliberate.
+ * Empty facets → the input set unchanged. The AND/OR asymmetry is deliberate.
  */
-export function docsByRefs(refIds: string[], engineSlugs: string[]): ContentPage[] {
+export function pagesByRefs(
+  pageSet: ContentPage[],
+  refIds: string[],
+  engineSlugs: string[],
+): ContentPage[] {
   const refs = refIds.map((r) => r.trim()).filter(Boolean);
   const engines = engineSlugs.map((e) => e.trim()).filter(Boolean);
-  if (refs.length === 0 && engines.length === 0) return docs;
+  if (refs.length === 0 && engines.length === 0) return pageSet;
 
-  return docs.filter((page) => {
+  return pageSet.filter((page) => {
     const effective = new Set(effectiveRefIds(page));
     const refsOk = refs.every((r) => effective.has(r));
     const enginesOk =
@@ -154,6 +102,11 @@ export function docsByRefs(refIds: string[], engineSlugs: string[]): ContentPage
       });
     return refsOk && enginesOk;
   });
+}
+
+/** All docs matching the active facets (thin wrapper over `pagesByRefs`). */
+export function docsByRefs(refIds: string[], engineSlugs: string[]): ContentPage[] {
+  return pagesByRefs(docs, refIds, engineSlugs);
 }
 
 // --- Diátaxis bucketing -----------------------------------------------------

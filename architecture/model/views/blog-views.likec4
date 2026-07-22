@@ -1,137 +1,114 @@
-// Blog-specific LikeC4 views rendered by the site preview.
-//
-// These views intentionally live beside the estate model so the preview uses
-// one LikeC4 Vite plugin/runtime. They may contain protocol-level participants
-// that are too concrete for the reference architecture, but their ids are
-// prefixed by post/topic to avoid polluting the main vocabulary.
-
-model {
-  blogUcDeltaApiClient = participant "Delta client / engine" {
-    description "A Delta-compatible writer proposing commits through the UC Delta API."
-    link https://delta.io
-    style {
-      icon https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg
-    }
-  }
-
-  blogUcDeltaApiServer = participant "Unity Catalog" {
-    summary "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
-    description "Open source catalog for Data & AI — governs tables, files, functions, and all AI assets."
-    link https://www.unitycatalog.io
-    style {
-      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
-    }
-  }
-
-  blogUcDeltaApiStorage = store "Cloud storage" {
-    description "Where the table's data files and _delta_log live (S3 / ABFS / GCS, or a local file:// root)."
-  }
-}
-
 views {
 
-  // The create + first-commit path the Spark lead example actually exercises.
-  // Backfill-notify and credential-refresh edge cases are omitted for clarity
-  // (they are in the spec; this is the happy path the code walks).
   dynamic view ucDeltaApi_managedTableFlow {
-    title "UC Delta API — create a managed table, then commit"
-    description "The end-to-end managed-table lifecycle from the Unity Catalog managed-tables spec: discover, allocate a staging table, write version 0, promote it, then commit an INSERT — staged first, ratified by the catalog, then published."
+    title "UC Delta API"
+    description "
+      The end-to-end managed-table lifecycle from the Unity Catalog managed-tables spec.
+    "
 
     // --- Discovery ---------------------------------------------------------
-    blogUcDeltaApiClient -> blogUcDeltaApiServer "GET /delta/v1/config (negotiate endpoints + protocol-version)" {
-      notes '''
+    lakehouse.queryEngine -> ucSpec "GET /delta/v1/config (negotiate endpoints + protocol-version)" {
+      notes "
         **Handshake.** Before touching any table, the client asks the catalog
-        two things: *"which API endpoints do you support?"* and *"which
-        protocol version should we speak?"* The client sends the highest
+        two things: *'which API endpoints do you support?'* and *'which
+        protocol version should we speak?'* The client sends the highest
         versions it can handle; the server replies with the version they'll
         both use. This keeps a new client and an older server (or vice versa)
         talking the same language.
-      '''
+      "
     }
 
     // --- CREATE ------------------------------------------------------------
-    blogUcDeltaApiClient -> blogUcDeltaApiServer "POST .../staging-tables { name }" {
-      notes '''
+    lakehouse.queryEngine -> ucSpec "POST .../staging-tables { name }" {
+      notes "
         **Reserve a spot.** The client asks the catalog to set aside a place
         for a brand-new table, passing just the name. Nothing is committed
         yet — think of it as claiming a plot of land before you build on it.
-      '''
+      "
     }
-    blogUcDeltaApiServer -> blogUcDeltaApiClient "table-id, location, READ_WRITE credential, required-protocol" {
-      notes '''
+
+    ucSpec -> lakehouse.queryEngine "table-id, location, READ_WRITE credential, required-protocol" {
+      notes "
         **The starter kit.** The catalog hands back everything the client
         needs to build the table: a unique **table-id**, the **location** in
         cloud storage where files will go, a short-lived **READ_WRITE
         credential** to write there, and the **required-protocol** — the
         minimum Delta features this table must declare.
-      '''
+      "
     }
-    blogUcDeltaApiClient -> blogUcDeltaApiStorage "write _delta_log/0.json (schema, protocol, io.unitycatalog.tableId)" {
-      notes '''
+
+    lakehouse.queryEngine -> lakehouse.objectStorage "write _delta_log/0.json (schema, protocol, io.unitycatalog.tableId)" {
+      notes "
         **Lay the foundation.** Using the vended credential, the client writes
         the very first Delta log file, `0.json`, directly to storage. It
         records the table's schema, the required protocol, and stamps in the
         `io.unitycatalog.tableId` so the file is provably tied to the id the
         catalog just reserved.
-      '''
+      "
     }
-    blogUcDeltaApiClient -> blogUcDeltaApiServer "POST .../tables (promote: columns, protocol, properties)" {
-      notes '''
-        **Make it official.** The client tells the catalog *"I've written
+
+    lakehouse.queryEngine -> ucSpec "POST .../tables (promote: columns, protocol, properties)" {
+      notes "
+        **Make it official.** The client tells the catalog *'I've written
         version 0 — please promote this staging table into a real, managed
-        table."* It echoes back the columns, protocol, and properties so the
+        table.'* It echoes back the columns, protocol, and properties so the
         catalog's record matches what's on disk.
-      '''
+      "
     }
-    blogUcDeltaApiServer -> blogUcDeltaApiClient "loadTable response (table-uuid, etag, version 0)" {
-      notes '''
+
+    ucSpec -> lakehouse.queryEngine "loadTable response (table-uuid, etag, version 0)" {
+      notes "
         **Table is live.** The catalog confirms the table now exists and
         returns its current state: the **table-uuid**, an **etag** (a version
         fingerprint used to detect conflicts), and the fact that it sits at
         **version 0**. Creation is done.
-      '''
+      "
     }
 
     // --- COMMIT (INSERT) ---------------------------------------------------
-    blogUcDeltaApiClient -> blogUcDeltaApiServer "GET .../tables/{table} (loadTable: current etag + uuid)" {
-      notes '''
+    lakehouse.queryEngine -> ucSpec "GET .../tables/{table} (loadTable: current etag + uuid)" {
+      notes "
         **Check the current state.** To append data, the client first reads
         the table to learn where it stands — the latest **etag** and
         **uuid**. It needs these so the catalog can later verify that nothing
         else changed the table in the meantime.
-      '''
+      "
     }
-    blogUcDeltaApiClient -> blogUcDeltaApiStorage "write _delta_log/_staged_commits/<v>.<uuid>.json" {
-      notes '''
+
+    lakehouse.queryEngine -> lakehouse.objectStorage "write _delta_log/_staged_commits/<v>.<uuid>.json" {
+      notes "
         **Stage the change.** The client writes its new commit as a *staged*
         file (`<version>.<uuid>.json`) in the `_staged_commits` folder. It's
         fully written but not yet part of the table's official history — the
         catalog hasn't blessed it, so no reader will see it.
-      '''
+      "
     }
-    blogUcDeltaApiClient -> blogUcDeltaApiServer "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }" {
-      notes '''
+
+    lakehouse.queryEngine -> ucSpec "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }" {
+      notes "
         **Ask for a ratify.** The client asks the catalog to accept the staged
-        commit. The **requirements** are safety guards — *"only if the table
-        is still this uuid and this etag"* — so two writers can't clobber each
+        commit. The **requirements** are safety guards — *'only if the table
+        is still this uuid and this etag'* — so two writers can't clobber each
         other. The **add-commit** update points at the staged file. The
         catalog is the referee: it approves at most one commit per version.
-      '''
+      "
     }
-    blogUcDeltaApiServer -> blogUcDeltaApiClient "ratified — loadTable with the new commit" {
-      notes '''
+
+    ucSpec -> lakehouse.queryEngine "ratified — loadTable with the new commit" {
+      notes "
         **Accepted.** The catalog ratified the commit: it's now the official
         version, even though the file still lives in `_staged_commits`. The
         catalog returns the updated table state, including the new etag.
-      '''
+      "
     }
-    blogUcDeltaApiClient -> blogUcDeltaApiStorage "publish _delta_log/<v>.json (vended credential)" {
-      notes '''
+
+    lakehouse.queryEngine -> lakehouse.objectStorage "publish _delta_log/<v>.json (vended credential)" {
+      notes "
         **Publish.** As a final tidy-up, the client copies the ratified staged
         file to its permanent name, `_delta_log/<v>.json`. Now a plain
         filesystem listing shows the commit too. Publishing happens strictly
         in version order, so the log always reads cleanly from 0 upward.
-      '''
+      "
     }
   }
 }

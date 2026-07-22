@@ -158,7 +158,7 @@ The interactive diagram below explains the full end to end flow of creating
 a table and writing data into a table via the UC Delta API. Expand it and 
 click through the sequence to get the full picture.
 
-Sequence diagram
+![Sequence diagram](./assets/managedTableFlow.png "likec4=ucDeltaApi_managedTableFlow")
 
 Rather than reiterating the full sequence piece by piece, we'll focus on
 two moments in that sequence which highlight some Delta specifics in the specification.

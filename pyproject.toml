@@ -19,24 +19,21 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.6",
 ]
-# Harness deps for the service-backed tutorial tests (opt-in). Tutorial-script
-# deps (e.g. unitycatalog-client) live inline in each script's PEP 723 block, not
-# here — but the import-and-assert path needs the client importable in the pytest
-# env too, so it's mirrored here as the one deliberate bridge between the two.
+# Harness deps for the service-backed tutorial tests (opt-in). Only the compose
+# runner is needed here: each tutorial script is executed via `uv run`, which
+# resolves the script's own PEP 723 deps in an ephemeral env — so tutorial-script
+# deps (e.g. unitycatalog-client) never need to be installed in the pytest env.
 test-services = [
     "testcontainers>=4",
-    "pytest-asyncio>=0.24",
-    "unitycatalog-client>=0.5",
 ]
 
 [tool.pytest.ini_options]
-# Collect the engine-example suite and the colocated tutorial tests under content/.
+# Collect the engine-example suite and the colocated tutorial scripts under
+# content/ (the content/ plugin turns each # /// script into a test).
 testpaths = ["examples/tests", "content"]
 # examples/tests is on the path so its test module can import the shared
-# `_helpers` loader; content/ tutorials get their loader from content/conftest.py.
+# `_helpers` loader.
 pythonpath = ["examples/tests"]
-# UC client tutorials are async; auto mode means no per-test @mark.asyncio.
-asyncio_mode = "auto"
 # Service-backed tests are opt-in: excluded by default so a Docker-less `pytest`
 # stays green; CI's tutorials-services job selects them with `-m`.
 addopts = "-m 'not needs_docker and not needs_uc_server'"

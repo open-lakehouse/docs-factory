@@ -1,130 +1,132 @@
-"""Shared fixtures for colocated tutorial tests under ``content/``.
+"""Pytest plugin: run each colocated tutorial script as its own test.
 
-Tutorials colocate a runnable, self-describing script with their prose and a
-``test_*.py`` beside it. The script's PEP 723 ``[tool.docs-factory]`` metadata
-declares its runtime prerequisites (which docker-compose file to start, the env
-var to hand it the server URL); these fixtures read that metadata — via the same
-``docsnip.scriptmeta`` reader ``docsnip check`` uses — and provision accordingly.
+A tutorial's script is self-contained and self-testing — it declares its own
+dependencies (PEP 723) and its runtime prerequisites (a ``[tool.docs-factory]``
+table naming the docker-compose to start). *Running the script to completion is
+the test*: exit 0 passes; any inline ``assert`` or unhandled exception fails it.
+So there are no per-tutorial ``test_*.py`` files — this plugin discovers every
+``# /// script`` under ``content/`` and generates one test per script:
 
-Fixtures:
-- ``load_sibling`` — import a script that sits next to the test file, by path.
-- ``uv_run`` — run a script standalone with ``uv run`` (the reader's path).
-- ``uc_server`` — start the compose the colocated script declares (testcontainers),
-  wait for health, and yield its base URL. Gated ``needs_uc_server``; on a machine
-  without Docker it raises (never skips) so an opted-in CI run can't quietly pass.
+    start the declared compose (if any) → `uv run script.py` → assert exit 0
 
-Prereq gating is opt-in-then-fail-hard: tests carrying ``needs_uc_server`` /
-``needs_docker`` are deselected by default (see the root pytest config's default
-``-m`` filter), so a doc author's plain ``pytest`` stays green with no Docker.
+Scripts that declare a ``compose`` are marked ``needs_uc_server`` (derived, not
+hand-written), so the default ``pytest`` — which the root config filters with
+``-m "not needs_docker and not needs_uc_server"`` — skips them on a Docker-less
+machine, while the opt-in service lane runs them for real and fails hard if the
+compose can't start.
 """
 
 from __future__ import annotations
 
-import importlib.util
+import os
 import subprocess
-import sys
-from dataclasses import dataclass
-from pathlib import Path
-from types import ModuleType
+from typing import TYPE_CHECKING
 
 import pytest
+
+if TYPE_CHECKING:
+    from testcontainers.compose import DockerCompose
 
 # tools/docsnip is a workspace package; its scriptmeta reader is the single
 # source of truth for discovering + parsing a script's inline metadata.
 from docsnip.scriptmeta import ScriptMeta, parse_script
 
 
-def _colocated_script(test_file: Path) -> ScriptMeta:
-    """The single ``# /// script`` tutorial script sitting next to a test file."""
-    candidates = [
-        parsed
-        for py in sorted(test_file.parent.glob("*.py"))
-        if py.name != test_file.name
-        for parsed in (parse_script(py),)
-        if parsed is not None
-    ]
-    if not candidates:
-        raise RuntimeError(f"no PEP 723 tutorial script found beside {test_file}")
-    if len(candidates) > 1:
-        names = ", ".join(c.path.name for c in candidates)
-        raise RuntimeError(f"multiple tutorial scripts beside {test_file}: {names}")
-    return candidates[0]
+def pytest_collect_file(parent, file_path):
+    """Collect any ``*.py`` under content/ that carries a PEP 723 script block."""
+    if file_path.suffix != ".py":
+        return None
+    meta = parse_script(file_path)
+    if meta is None:
+        return None
+    return TutorialScriptFile.from_parent(parent, path=file_path, script_meta=meta)
 
 
-@pytest.fixture
-def load_sibling():
-    """Return a loader that imports a script by absolute path (not as a package).
+class TutorialScriptFile(pytest.File):
+    """A discovered tutorial script, collected as a single runnable test."""
 
-    Tutorial scripts are intentionally standalone files, not installed modules,
-    so we import them by location — mirroring ``examples/tests/conftest.py``'s
-    ``load_example`` but keyed on a path rather than an engine/name layout.
-    """
+    def __init__(self, *args, script_meta: ScriptMeta, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.script_meta = script_meta
 
-    def _load(script_path: Path) -> ModuleType:
-        script_path = Path(script_path)
-        mod_name = f"tutorial_{script_path.parent.name}_{script_path.stem}"
-        spec = importlib.util.spec_from_file_location(mod_name, script_path)
-        assert spec and spec.loader
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[mod_name] = module
-        spec.loader.exec_module(module)
-        return module
-
-    return _load
-
-
-@dataclass
-class UvRunResult:
-    returncode: int
-    stdout: str
-    stderr: str
-
-
-@pytest.fixture
-def uv_run():
-    """Return a runner that executes a script via ``uv run`` (the reader's path).
-
-    ``uv run --no-project`` resolves the script's own PEP 723 dependencies in an
-    ephemeral env, so this exercises exactly what a reader gets from copy-pasting
-    the tutorial's ``uv run catalog_flow.py`` command.
-    """
-
-    def _run(script_path: Path, env: dict[str, str] | None = None) -> UvRunResult:
-        import os
-
-        proc = subprocess.run(
-            ["uv", "run", "--no-project", str(script_path)],
-            capture_output=True,
-            text=True,
-            env={**os.environ, **(env or {})},
+    def collect(self):
+        yield TutorialScriptItem.from_parent(
+            self, name="run", script_meta=self.script_meta
         )
-        return UvRunResult(proc.returncode, proc.stdout, proc.stderr)
-
-    return _run
 
 
-@pytest.fixture
-def uc_server(request):
-    """Start the compose the colocated tutorial script declares; yield its base URL.
+class TutorialScriptItem(pytest.Item):
+    """Run one tutorial script with ``uv run`` and assert it exits 0."""
 
-    Reads ``[tool.docs-factory]`` from the script beside the requesting test,
-    starts that compose with testcontainers (``wait=True`` → ``docker compose up
-    --wait``, honoring the healthcheck), and yields the server base URL. Raising
-    on a missing Docker daemon is deliberate: these tests are opt-in
-    (``needs_uc_server``), so once selected they must run for real or fail loudly.
+    def __init__(self, *args, script_meta: ScriptMeta, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.script_meta = script_meta
+        # A script needing services is Docker-gated; derive the marker so the
+        # default lane's -m filter deselects it without any hand-marking.
+        if script_meta.docs_factory.needs_services:
+            self.add_marker(pytest.mark.needs_uc_server)
+
+    def runtest(self):
+        env = dict(os.environ)
+        base_url = _start_services(self.script_meta)
+        try:
+            if base_url is not None and self.script_meta.docs_factory.base_url_env:
+                env[self.script_meta.docs_factory.base_url_env] = base_url
+            proc = subprocess.run(
+                ["uv", "run", "--no-project", str(self.script_meta.path)],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+            if proc.returncode != 0:
+                raise TutorialScriptFailure(self.script_meta, proc)
+        finally:
+            _stop_services(self.script_meta)
+
+    def repr_failure(self, excinfo, style=None):
+        if isinstance(excinfo.value, TutorialScriptFailure):
+            return str(excinfo.value)
+        return super().repr_failure(excinfo, style=style)
+
+    def reportinfo(self):
+        return self.path, 0, f"tutorial script: {self.path.name}"
+
+
+class TutorialScriptFailure(Exception):
+    """A tutorial script exited non-zero; carries its captured output."""
+
+    def __init__(self, meta: ScriptMeta, proc: subprocess.CompletedProcess):
+        self.meta = meta
+        self.proc = proc
+
+    def __str__(self) -> str:
+        return (
+            f"`uv run {self.meta.path.name}` exited {self.proc.returncode}\n"
+            f"--- stdout ---\n{self.proc.stdout}\n"
+            f"--- stderr ---\n{self.proc.stderr}"
+        )
+
+
+# --- compose lifecycle, keyed on the script's [tool.docs-factory] --------------
+#
+# Cached per compose file so several scripts sharing one compose start it once.
+_ACTIVE: dict[str, DockerCompose] = {}
+
+
+def _start_services(meta: ScriptMeta) -> str | None:
+    """Start the compose the script declares (if any); return the server base URL.
+
+    Raising on a missing Docker daemon is deliberate: these tests are opt-in
+    (``needs_uc_server``), so once selected they must run for real or fail loudly
+    — never skip.
     """
+    compose_path = meta.compose_path()
+    if compose_path is None:
+        return None
+
     from testcontainers.compose import DockerCompose
 
-    meta = _colocated_script(Path(str(request.fspath)))
-    cfg = meta.docs_factory
-    if not cfg.compose:
-        raise RuntimeError(
-            f"{meta.path.name} declares no [tool.docs-factory].compose; "
-            "uc_server has nothing to start"
-        )
-
-    compose_path = meta.compose_path()
-    assert compose_path is not None  # guaranteed by the cfg.compose check above
+    key = str(compose_path)
     compose = DockerCompose(
         context=str(compose_path.parent),
         compose_file_name=compose_path.name,
@@ -132,8 +134,15 @@ def uc_server(request):
         wait=True,
     )
     compose.start()
-    try:
-        host, port = compose.get_service_host_and_port("unitycatalog", 8080)
-        yield f"http://{host}:{port}/api/2.1/unity-catalog"
-    finally:
+    _ACTIVE[key] = compose
+    host, port = compose.get_service_host_and_port("unitycatalog", 8080)
+    return f"http://{host}:{port}/api/2.1/unity-catalog"
+
+
+def _stop_services(meta: ScriptMeta) -> None:
+    compose_path = meta.compose_path()
+    if compose_path is None:
+        return
+    compose = _ACTIVE.pop(str(compose_path), None)
+    if compose is not None:
         compose.stop()

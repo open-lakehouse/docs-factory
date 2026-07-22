@@ -135,4 +135,13 @@ async def _delete_demo_catalog(catalogs: CatalogsApi) -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main(os.environ.get("UC_BASE_URL", DEFAULT_URL)))
+    # Running the script IS the test: main() returns the server-confirmed names
+    # only if every create round-tripped, so these asserts (outside the rendered
+    # regions, so readers never see them) turn a silent regression into a
+    # non-zero exit the harness catches.
+    created = asyncio.run(main(os.environ.get("UC_BASE_URL", DEFAULT_URL)))
+    assert created == {
+        "catalog": "demo_catalog",
+        "schema": "demo_catalog.demo_schema",
+        "table": "demo_catalog.demo_schema.demo_table",
+    }, created

@@ -23,13 +23,13 @@ fences, so what the site shows is always what CI runs. See the repo `AGENTS.md`.
 A how-to references shared `examples/` code across engines. A *tutorial* is one
 narrative with one script, so it colocates its code with its prose: instead of a
 standalone `tutorials/foo.md`, use a folder with an `index.md` plus the script(s)
-it teaches and a colocated test.
+it teaches. There is **no separate test file** — running the script *is* the
+test (see below).
 
 ```
 content/unitycatalog/tutorials/python-client/
   index.md              inlines its script via  file=./catalog_flow.py
-  catalog_flow.py       runnable, self-describing script (PEP 723 header)
-  test_catalog_flow.py  colocated pytest, driven by the script's metadata
+  catalog_flow.py       runnable, self-describing, self-testing script (PEP 723)
   docker-compose.uc.yml the service the script declares it needs
 ```
 
@@ -67,18 +67,27 @@ whole table if the script needs no services.
 Structure a script as a flat, top-to-bottom program with the flow in one
 `main(base_url)` function (`async def` for async SDKs) plus an
 `if __name__ == "__main__":` footer — so the same code reads linearly on the
-page, runs via `uv run`, and is importable by the test.
+page and runs via `uv run`.
 
-### Testing tiers
+### The script is the test
 
-- **Default lane** (`just test`): engine examples + tutorial tests that need no
+There are no `test_*.py` files. A pytest plugin in `content/conftest.py`
+discovers every `# /// script` script under `content/` and turns each into a
+test: it starts the compose the script's `[tool.docs-factory]` names (if any),
+runs the script with `uv run` (which resolves the script's own PEP 723 deps),
+and passes if it exits 0. Put assertions in the script — the `if __name__ ==
+"__main__":` footer is outside the rendered regions, so `assert`s there run on
+every `uv run` (turning a silent regression into a non-zero exit) without
+appearing in the docs.
+
+Two lanes:
+
+- **Default** (`just test`): engine examples + tutorial scripts that need no
   services. Stays green with no Docker.
-- **Service lane** (`just test-services`, opt-in): tests marked `needs_uc_server`
-  / `needs_docker`. The `uc_server` fixture reads the colocated script's
-  `[tool.docs-factory]`, starts that compose with testcontainers, waits for
-  health, and yields the base URL. **Fails hard** (never skips) if Docker is
-  unavailable, so an opted-in CI run can't quietly pass. Shared fixtures live in
-  `content/conftest.py`.
+- **Service** (`just test-services`, opt-in): scripts that declare a `compose`
+  are auto-marked `needs_uc_server`, so they're deselected by default and run
+  here. The plugin **fails hard** (never skips) if Docker is unavailable, so an
+  opted-in CI run can't quietly pass.
 
 `docsnip check` validates every script's PEP 723 block parses and that any
 declared `compose` file exists.

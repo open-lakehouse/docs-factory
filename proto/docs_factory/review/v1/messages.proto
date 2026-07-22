@@ -204,3 +204,20 @@ message AllowlistEntry {
   optional string email = 2;
   Role role = 3;
 }
+
+// A recent comment for the reviewer dashboard's "latest comments" feed. Carries
+// the comment plus enough context to link back to where it lives: its content
+// `ref` and `anchor_slug` (the rehype-slug heading id) resolve to a deep link
+// (/docs/<project>/<bucket>/<slug>#<anchor_slug>), and `heading_text` gives a
+// human-readable section label. `resolved` reflects the thread's current state so
+// the feed can de-emphasize handled comments.
+message RecentComment {
+  Comment comment = 1;
+  ContentRef ref = 2;
+  string anchor_slug = 3;
+  string heading_text = 4;
+  bool resolved = 5;
+  // The content title (from the latest version), for a friendlier row label than
+  // the slug. Falls back to the slug on the client when empty.
+  string content_title = 6;
+}

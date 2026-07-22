@@ -37,6 +37,15 @@ export const getDraftContent = ReviewService.method.getDraftContent;
 export const listComments = ReviewService.method.listComments;
 
 /**
+ * Most-recent comments across all content, for the reviewer dashboard's
+ * "latest comments" feed. Allowlist-gated; each entry links back to its
+ * content + heading anchor.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListRecentComments
+ */
+export const listRecentComments = ReviewService.method.listRecentComments;
+
+/**
  * @generated from rpc docs_factory.review.v1.ReviewService.CreateComment
  */
 export const createComment = ReviewService.method.createComment;

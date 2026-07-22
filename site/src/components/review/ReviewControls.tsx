@@ -18,24 +18,34 @@ import { Button } from "@/components/ui/button";
 
 type ReviewControlsLayout = "inline" | "aside" | "dock";
 
+type TransitionVariant = "default" | "outline";
+
 // Reviewer-available transitions from each state (Release handled separately).
-const NEXT: Record<number, { to: ReviewState; label: string }[]> = {
-  [ReviewState.NONE]: [{ to: ReviewState.IN_REVIEW, label: "Start review" }],
+// `variant` gives each state one accented primary action; secondary/caution
+// actions stay outline so the control block reads with a clear hierarchy.
+const NEXT: Record<number, { to: ReviewState; label: string; variant: TransitionVariant }[]> = {
+  [ReviewState.NONE]: [{ to: ReviewState.IN_REVIEW, label: "Start review", variant: "default" }],
   [ReviewState.IN_REVIEW]: [
-    { to: ReviewState.APPROVED, label: "Approve" },
-    { to: ReviewState.CHANGES_REQUESTED, label: "Request changes" },
+    { to: ReviewState.APPROVED, label: "Approve", variant: "default" },
+    { to: ReviewState.CHANGES_REQUESTED, label: "Request changes", variant: "outline" },
   ],
-  [ReviewState.CHANGES_REQUESTED]: [{ to: ReviewState.IN_REVIEW, label: "Back to review" }],
-  [ReviewState.APPROVED]: [{ to: ReviewState.IN_REVIEW, label: "Reopen review" }],
+  [ReviewState.CHANGES_REQUESTED]: [
+    { to: ReviewState.IN_REVIEW, label: "Back to review", variant: "default" },
+  ],
+  [ReviewState.APPROVED]: [{ to: ReviewState.IN_REVIEW, label: "Reopen review", variant: "outline" }],
   [ReviewState.RELEASED]: [],
 };
 
 export default function ReviewControls({
   contentRef,
   layout = "inline",
+  heading,
 }: {
   contentRef: ContentRef;
   layout?: ReviewControlsLayout;
+  /** When set, renders a section heading with the state badge beside it (used
+   * by the blog aside) instead of a standalone `review: <state>` badge. */
+  heading?: string;
 }) {
   const { isAllowlisted, isMaintainer, reviewActive } = useAuth();
   const { invalidateDrafts } = useReviewInvalidation();
@@ -64,6 +74,12 @@ export default function ReviewControls({
 
   const busy = transition.isPending || release.isPending;
   const actions = NEXT[state] ?? [];
+  const stateLabel = REVIEW_STATE_LABEL[state] ?? "unknown";
+  const badge = (
+    <Badge variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"} className="review-controls-badge">
+      {heading ? stateLabel : `review: ${stateLabel}`}
+    </Badge>
+  );
 
   return (
     <div
@@ -73,15 +89,20 @@ export default function ReviewControls({
         layout === "dock" && "review-controls--dock",
       )}
     >
-      <Badge variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"} className="review-controls-badge">
-        review: {REVIEW_STATE_LABEL[state] ?? "unknown"}
-      </Badge>
+      {heading ? (
+        <div className="review-controls-header">
+          <p className="blog-aside-title">{heading}</p>
+          {badge}
+        </div>
+      ) : (
+        badge
+      )}
       {actions.length > 0 && (
         <div className="review-controls-actions">
           {actions.map((t) => (
             <Button
               key={t.to}
-              variant="outline"
+              variant={t.variant}
               size={layout === "inline" ? "xs" : "sm"}
               onClick={() => go(t.to)}
               disabled={busy}

@@ -1,13 +1,13 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import DocsSidebar from "../components/layout/DocsSidebar";
-import ReviewRail from "../components/review/ReviewRail";
+import DocAside from "../components/layout/DocAside";
+import OnThisPage from "../components/layout/OnThisPage";
 import InlineReviewSurface from "../components/review/InlineReviewSurface";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
-import ReviewControls from "../components/review/ReviewControls";
 import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
@@ -78,18 +78,25 @@ export default function DocPage() {
       <div className="docs-grid">
         <DocsSidebar activeProject={project} activeBucket={bucket} activeSlug={slug} />
         <div className="docs-main">
+          {/* Narrow screens: heading nav above the article (desktop shows it in
+              the right aside instead). */}
+          <div className="docs-aside-mobile">
+            <OnThisPage articleRef={articleRef} />
+          </div>
           <article className="prose" ref={articleRef}>
             {frontmatter.title && <h1>{frontmatter.title}</h1>}
             {frontmatter.summary && (
               <p className="lead muted">{frontmatter.summary}</p>
             )}
-            <ReviewControls contentRef={docRef(project, bucket, slug)} />
             <ConceptHeader references={effectiveRefIds(page)} />
+            {frontmatter.explains && (
+              <ModelContext id={frontmatter.explains} slot="summary" />
+            )}
             <MdxProvider>
               <Component />
             </MdxProvider>
             {frontmatter.explains && (
-              <ModelContext id={frontmatter.explains} selfHref={page.href} />
+              <ModelContext id={frontmatter.explains} selfHref={page.href} slot="context" />
             )}
             <RelatedContent page={page} />
           </article>
@@ -98,7 +105,7 @@ export default function DocPage() {
             next={neighbors.next ? { label: neighbors.next.label, href: neighbors.next.href } : undefined}
           />
         </div>
-        <ReviewRail articleRef={articleRef} />
+        <DocAside articleRef={articleRef} contentRef={docRef(project, bucket, slug)} />
         <InlineReviewSurface articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />

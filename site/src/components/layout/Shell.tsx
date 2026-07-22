@@ -38,9 +38,9 @@ export function useSidebar() {
 // of content actively in review so a reviewer sees pending work at a glance. The
 // listDrafts query is shared (cached) with the dashboard and content-visibility.
 function ReviewNavItem() {
-  const { isAllowlisted } = useAuth();
-  const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
-  if (!isAllowlisted) return null;
+  const { reviewActive } = useAuth();
+  const { data } = useQuery(listDrafts, {}, { enabled: reviewActive });
+  if (!reviewActive) return null;
   const pending = (data?.drafts ?? []).filter(
     (d) =>
       d.reviewState === ReviewState.IN_REVIEW ||

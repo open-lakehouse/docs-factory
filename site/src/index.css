@@ -2167,7 +2167,8 @@ a.blog-row-title:hover { color: var(--accent); }
   flex-direction: column;
   min-width: 0;
 }
-.blog-aside-mobile { display: none; }
+.blog-aside-mobile,
+.docs-aside-mobile { display: none; }
 .blog-aside-body {
   display: flex;
   flex-direction: column;
@@ -2225,11 +2226,20 @@ a.blog-row-title:hover { color: var(--accent); }
 }
 .blog-aside-review {
   flex: none;
-  border-top: 1px solid var(--border);
-  padding-top: 1rem;
-  margin-top: 0.25rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
 }
-.blog-review-dock {
+.review-controls-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.review-controls-header .blog-aside-title {
+  margin: 0;
+}
+.review-dock {
   display: none;
 }
 .review-controls {
@@ -2340,11 +2350,25 @@ a.blog-row-title:hover { color: var(--accent); }
     max-height: none;
   }
   .blog-aside-panel { display: none; }
-  .blog-aside-mobile { display: block; }
-  .blog-post-layout:has(.blog-review-dock) {
+  .blog-aside-mobile,
+  .docs-aside-mobile { display: block; }
+  /* Docs mobile TOC sits above the article; give it the same separated,
+     boxed-in treatment the blog aside uses for its heading nav. */
+  .docs-aside-mobile {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .docs-aside-mobile .toc {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+  .blog-post-layout:has(.review-dock),
+  .docs-grid:has(.review-dock) {
     padding-bottom: 4.5rem;
   }
-  .blog-review-dock {
+  .review-dock {
     display: flex;
     position: fixed;
     left: 0;
@@ -2579,20 +2603,8 @@ a.meta-link:hover {
   min-height: 26rem;
   max-height: 80vh;
 }
-.diagram-frame-expanded {
-  width: min(1200px, calc(100vw - 2rem)) !important;
-  max-width: none !important;
-  height: min(85vh, 900px) !important;
-  padding: 0 !important;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.diagram-frame-expanded .diagram-expand-btn { z-index: 10; }
-.diagram-frame-expanded > :not(.diagram-expand-btn) {
-  flex: 1;
-  min-height: 0;
-}
+/* Expand affordance: opens the same native diagram in a larger modal so dense
+   neighborhoods stay legible. Only the button + modal shell are custom. */
 .diagram-expand-btn {
   position: absolute;
   top: 0.6rem;
@@ -2616,6 +2628,19 @@ a.meta-link:hover {
 .diagram-expand-btn:hover {
   background: var(--sidebar);
   border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+}
+.diagram-frame-expanded {
+  width: min(1200px, calc(100vw - 2rem)) !important;
+  max-width: none !important;
+  height: min(85vh, 900px) !important;
+  padding: 0 !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.diagram-expanded-body {
+  flex: 1;
+  min-height: 0;
 }
 .explain-diagram-empty {
   padding: 1.5rem;

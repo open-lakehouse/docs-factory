@@ -38,5 +38,5 @@ export function slugFromPath(filePath: string): string {
 /** All doc file paths discovered at build time (keys from import.meta.glob).
  * This file is one level deeper than src/, hence `../../../content`. */
 export const docPaths = Object.keys(
-  import.meta.glob("../../../content/{delta,unitycatalog}/**/*.{md,mdx}", { eager: true }),
+  import.meta.glob("../../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}", { eager: true }),
 ).filter((p) => !p.endsWith("/README.md"));

@@ -4,7 +4,6 @@ import AxisIndex from "./pages/AxisIndex";
 import DocPage from "./pages/DocPage";
 import BlogIndex from "./pages/BlogIndex";
 import BlogPost from "./pages/BlogPost";
-import { ExplainPage } from "./ExplainPage";
 import DevPersonaSwitcher from "./components/DevPersonaSwitcher";
 
 export default function App() {
@@ -21,10 +20,11 @@ export default function App() {
         <Route path="/explanation" element={<AxisIndex axis="explanation" />} />
         <Route path="/blog" element={<BlogIndex />} />
 
-        {/* Detail routes (content locations unchanged). */}
+        {/* Detail routes. Explanation concepts are ordinary doc pages that
+            declare `explains: <id>`; there is no separate /explain route — the
+            model context folds into the doc page (see components/ModelContext). */}
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/docs/:project/:bucket/:slug" element={<DocPage />} />
-        <Route path="/explain/:elementId" element={<ExplainPage />} />
       </Routes>
     </>
   );

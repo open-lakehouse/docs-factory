@@ -2,7 +2,6 @@ import { useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import type { BreadcrumbItemData, BreadcrumbSibling } from "../components/layout/Breadcrumbs";
 import { blogPosts, findBlog, findDoc } from "../content";
-import { getExplainElement, explainHref } from "../explain";
 import { docNav } from "../sidebar";
 import { withScope } from "../scope";
 
@@ -130,18 +129,6 @@ export function resolveRouteBreadcrumbs(
           siblings: pageSiblings,
           activeHref: page.href,
         },
-      ];
-    }
-  } else if (pathname.startsWith("/explain/")) {
-    // Model explanation entries are reached from the /explanation axis.
-    const elementId = params.elementId ?? "";
-    const el = getExplainElement(elementId);
-    if (!el) {
-      items = [{ label: "explanation", href: "/explanation" }, { label: elementId }];
-    } else {
-      items = [
-        { label: "explanation", href: "/explanation" },
-        { label: el.title, activeHref: explainHref(elementId) },
       ];
     }
   }

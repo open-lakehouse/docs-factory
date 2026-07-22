@@ -42,6 +42,7 @@ const DEFAULT_BUCKET_ORDER = ["explanation", "tutorials", "how-to", "reference"]
 const PROJECT_LABELS: Record<string, string> = {
   delta: "Delta Lake",
   unitycatalog: "Unity Catalog",
+  "open-lakehouse": "Open Lakehouse",
 };
 
 const metaModules = import.meta.glob("../../content/*/_meta.yaml", {
@@ -51,7 +52,7 @@ const metaModules = import.meta.glob("../../content/*/_meta.yaml", {
 }) as Record<string, string>;
 
 const docTitleModules = import.meta.glob<MdxModule>(
-  "../../content/{delta,unitycatalog}/**/*.{md,mdx}",
+  "../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}",
   { eager: true },
 );
 

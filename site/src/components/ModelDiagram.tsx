@@ -12,7 +12,8 @@ import {
   useDiagram,
   useUpdateEffect,
 } from "likec4/react";
-import { likec4model, hasExplainPage, explainHref } from "../explain";
+import { likec4model } from "../explain";
+import { explanationHref } from "../explain-bindings";
 
 /** Refit viewport when the diagram container resizes (expand/collapse). */
 export function RefitOnResize({ expanded }: { expanded: boolean }) {
@@ -66,7 +67,8 @@ export default function ModelDiagram({
     if (!showExplainActions) return undefined;
     const ExplainNode = elementNode(({ nodeProps, nodeModel }) => {
       const nodeId = String(nodeModel.element.id);
-      const canExplain = hasExplainPage(nodeId);
+      const explainTo = explanationHref(nodeId);
+      const canExplain = explainTo !== null;
       return (
         <ElementNodeContainer nodeProps={nodeProps}>
           <ElementShape {...nodeProps} />
@@ -81,7 +83,7 @@ export default function ModelDiagram({
                       icon: <ExplainArrowIcon />,
                       onClick: (e) => {
                         e.stopPropagation();
-                        navigate(explainHref(nodeId));
+                        if (explainTo) navigate(explainTo);
                       },
                     },
                   ]
@@ -101,9 +103,8 @@ export default function ModelDiagram({
     ((to: string) => {
       const view = likec4model.findView(to);
       const of = view?.viewOf;
-      if (of && hasExplainPage(String(of.id))) {
-        navigate(explainHref(String(of.id)));
-      }
+      const to2 = of ? explanationHref(String(of.id)) : null;
+      if (to2) navigate(to2);
     });
 
   return (

@@ -4,6 +4,7 @@ import {
   parseDocPath,
   slugFromBlogPath,
 } from "./lib/content-source";
+import { registerExplanation } from "./explain-bindings";
 
 export interface Frontmatter {
   title?: string;
@@ -20,6 +21,10 @@ export interface Frontmatter {
   summary?: string;
   references?: string[];
   engines?: string[];
+  /** The single C4 element id this page is the canonical explanation of.
+   * Binds the page to that node (see graph.ts effectiveRefIds + the ModelContext
+   * panel on the doc page); replaces the old model-side `explainDoc` metadata. */
+  explains?: string;
   [key: string]: unknown;
 }
 
@@ -40,7 +45,7 @@ interface MdxModule {
 
 const blogModules = import.meta.glob<MdxModule>("../../blogs/*/draft.md", { eager: true });
 const docModules = import.meta.glob<MdxModule>(
-  "../../content/{delta,unitycatalog}/**/*.{md,mdx}",
+  "../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}",
   { eager: true },
 );
 
@@ -69,6 +74,16 @@ const docPages: ContentPage[] = Object.entries(docModules)
       href: `/docs/${project}/${bucket}/${slug}`,
     };
   });
+
+// Register each explanation page's element binding so the model-side navigation
+// (inline model: links, diagrams, breadcrumbs) can resolve a concept to its doc
+// page without importing content.ts (see explain-bindings.ts cycle note).
+for (const page of docPages) {
+  const explains = page.frontmatter.explains;
+  if (typeof explains === "string" && explains) {
+    registerExplanation(explains, page.href);
+  }
+}
 
 export const pages: ContentPage[] = [...blogPages, ...docPages].sort((a, b) => {
   if (a.area !== b.area) return a.area.localeCompare(b.area);

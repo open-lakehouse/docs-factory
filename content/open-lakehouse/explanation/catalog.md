@@ -1,6 +1,6 @@
 ---
 title: Catalog
-summary: The metadata authority of the lakehouse — the registry every query resolves a table name through before any bytes are read.
+summary: The metadata authority of the lakehouse
 diataxis: explanation
 project: open-lakehouse
 engines: []

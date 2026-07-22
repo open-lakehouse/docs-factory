@@ -1,7 +1,12 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
 import { useTheme } from "next-themes";
+import { useQuery } from "@connectrpc/connect-query";
 import TopbarPath from "./TopbarPath";
+import StatusMenu from "./StatusMenu";
+import { useAuth } from "../../lib/auth-context";
+import { listDrafts } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { ReviewState } from "../../gen/docs_factory/review/v1/messages_pb";
 import { scopeAccent, useScope, withScope } from "../../scope";
 
 /** The five content axes, in Diátaxis reading order + blog. */
@@ -27,6 +32,26 @@ export function useSidebar() {
     throw new Error("useSidebar must be used within Shell");
   }
   return ctx;
+}
+
+// Reviewer-only top-nav entry linking to the /review dashboard. Badges the count
+// of content actively in review so a reviewer sees pending work at a glance. The
+// listDrafts query is shared (cached) with the dashboard and content-visibility.
+function ReviewNavItem() {
+  const { isAllowlisted } = useAuth();
+  const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
+  if (!isAllowlisted) return null;
+  const pending = (data?.drafts ?? []).filter(
+    (d) =>
+      d.reviewState === ReviewState.IN_REVIEW ||
+      d.reviewState === ReviewState.CHANGES_REQUESTED,
+  ).length;
+  return (
+    <NavLink to="/review" className={({ isActive }) => (isActive ? "active" : undefined)}>
+      Review
+      {pending > 0 && <span className="topnav-badge">{pending}</span>}
+    </NavLink>
+  );
 }
 
 function ThemeToggle() {
@@ -61,6 +86,7 @@ export default function Shell({
 }: ShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { scopeId } = useScope();
+  const { reviewActive } = useAuth();
   // Explicit accent wins; otherwise the active scope drives it site-wide.
   const effectiveAccent = accent ?? scopeAccent(scopeId);
 
@@ -72,7 +98,7 @@ export default function Shell({
         toggleMobile: () => setMobileOpen((o) => !o),
       }}
     >
-      <div className="shell" data-accent={effectiveAccent}>
+      <div className="shell" data-accent={effectiveAccent} data-review-active={reviewActive}>
         <header className="topbar">
           {showSidebarToggle && (
             <button
@@ -98,8 +124,10 @@ export default function Shell({
                 {label}
               </NavLink>
             ))}
+            <ReviewNavItem />
           </nav>
           <ThemeToggle />
+          <StatusMenu />
         </header>
         <main className={wide ? "content content-wide" : "content"}>{children}</main>
       </div>

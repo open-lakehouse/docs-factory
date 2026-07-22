@@ -30,7 +30,7 @@ export default function DocsSidebar({
       )}
       <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`} aria-label="Docs navigation">
         <div className="sidebar-inner">
-          <Link to="/docs" className="sidebar-home" onClick={() => setMobileOpen(false)}>
+          <Link to="/reference" className="sidebar-home" onClick={() => setMobileOpen(false)}>
             Documentation
           </Link>
           {docNav.map((group) => (

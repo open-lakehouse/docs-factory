@@ -1,7 +1,17 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useTheme } from "next-themes";
 import TopbarPath from "./TopbarPath";
+import { scopeAccent, useScope, withScope } from "../../scope";
+
+/** The five content axes, in Diátaxis reading order + blog. */
+const NAV_AXES: { to: string; label: string }[] = [
+  { to: "/tutorials", label: "Tutorials" },
+  { to: "/how-to", label: "How-to" },
+  { to: "/reference", label: "Reference" },
+  { to: "/explanation", label: "Explanation" },
+  { to: "/blog", label: "Blog" },
+];
 
 interface SidebarContextValue {
   mobileOpen: boolean;
@@ -50,6 +60,9 @@ export default function Shell({
   accent,
 }: ShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { scopeId } = useScope();
+  // Explicit accent wins; otherwise the active scope drives it site-wide.
+  const effectiveAccent = accent ?? scopeAccent(scopeId);
 
   return (
     <SidebarContext.Provider
@@ -59,7 +72,7 @@ export default function Shell({
         toggleMobile: () => setMobileOpen((o) => !o),
       }}
     >
-      <div className="shell" data-accent={accent}>
+      <div className="shell" data-accent={effectiveAccent}>
         <header className="topbar">
           {showSidebarToggle && (
             <button
@@ -76,30 +89,15 @@ export default function Shell({
           )}
           <TopbarPath />
           <nav className="topnav">
-            <NavLink
-              to="/docs"
-              className={({ isActive }) => (isActive ? "active" : undefined)}
-            >
-              Docs
-            </NavLink>
-            <NavLink
-              to="/concepts"
-              className={({ isActive }) => (isActive ? "active" : undefined)}
-            >
-              Concepts
-            </NavLink>
-            <NavLink
-              to="/blog"
-              className={({ isActive }) => (isActive ? "active" : undefined)}
-            >
-              Blog
-            </NavLink>
-            <NavLink
-              to="/explain"
-              className={({ isActive }) => (isActive ? "active" : undefined)}
-            >
-              Explain
-            </NavLink>
+            {NAV_AXES.map(({ to, label }) => (
+              <NavLink
+                key={to}
+                to={withScope(to, scopeId)}
+                className={({ isActive }) => (isActive ? "active" : undefined)}
+              >
+                {label}
+              </NavLink>
+            ))}
           </nav>
           <ThemeToggle />
         </header>

@@ -6,10 +6,10 @@ import TagList from "../components/TagList";
 import {
   blogPosts,
   blogsBySeriesFiltered,
-  blogsByTags,
   blogTags,
   readingTimeMinutes,
 } from "../content";
+import { filterByScope, useScope } from "../scope";
 
 function BlogReadingTime({
   articleRef,
@@ -30,10 +30,19 @@ export { BlogReadingTime };
 
 export default function BlogIndex() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const { scopeId } = useScope();
   const activeTags = [
     ...new Set(searchParams.getAll("tag").map((t) => t.trim()).filter(Boolean)),
   ];
-  const filteredPosts = blogsByTags(activeTags);
+  // Scope narrows first (blog is the fifth axis), then topic tags (AND).
+  const scopedPosts = filterByScope(blogPosts, scopeId);
+  const filteredPosts =
+    activeTags.length === 0
+      ? scopedPosts
+      : scopedPosts.filter((post) => {
+          const postTags = post.frontmatter.tags ?? [];
+          return activeTags.every((slug) => postTags.includes(slug));
+        });
   const { series, standalone } = blogsBySeriesFiltered(filteredPosts);
   const allTags = blogTags();
 

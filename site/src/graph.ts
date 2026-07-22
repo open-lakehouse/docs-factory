@@ -9,6 +9,7 @@
 //
 // A page's effective references are the union of:
 //   • explicit `references:` frontmatter (docs + blogs),
+//   • the `explains:` element an explanation page is canonical for (docs),
 //   • the engine elements its `engines:` slugs map to (docs + blogs), so a
 //     multi-engine how-to joins every engine node it exercises without the
 //     author hand-writing them,
@@ -18,9 +19,10 @@
 // IMPORT-CYCLE DISCIPLINE (see backlinks.ts): this module imports content.ts
 // (which eagerly imports every doc/blog MDX, and those MDX modules import
 // <ModelRef> → model-refs.ts). So this module MUST NOT be imported by any MDX
-// file — only route/index components (AxisIndex, ExplainPage, DocPage) import
-// it. explain.ts / model-refs.ts / tags.ts / engine-map.ts do
-// not import content.ts, so pulling them in here is safe.
+// file — only route/index components (AxisIndex, DocPage) import it. explain.ts
+// / model-refs.ts / tags.ts / engine-map.ts / explain-bindings.ts do not import
+// content.ts (content.ts registers into explain-bindings, not vice-versa), so
+// pulling them in here is safe.
 
 import { pages, docs, type ContentPage } from "./content";
 import { getTag } from "./tags";
@@ -44,6 +46,12 @@ function toRefIds(value: unknown): string[] {
  */
 export function effectiveRefIds(page: ContentPage): string[] {
   const ids = new Set<string>(toRefIds(page.frontmatter.references));
+  // The element a page is the canonical explanation of is a first-class
+  // reference — it binds the page to that node the way the old model-side
+  // `explainDoc` metadata used to. Mirrors frontmatter.py effective_reference_ids.
+  if (typeof page.frontmatter.explains === "string" && page.frontmatter.explains) {
+    ids.add(page.frontmatter.explains);
+  }
   if (page.area === "blogs") {
     for (const tag of page.frontmatter.tags ?? []) {
       const element = getTag(tag).element;

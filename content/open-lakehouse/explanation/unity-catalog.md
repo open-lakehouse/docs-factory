@@ -1,7 +1,12 @@
-# Unity Catalog
-
-> Stub explanation body. Long-form prose is intentionally deferred; this file
-> exists to exercise the `explainDoc` wiring for a **specification** node.
+---
+title: Unity Catalog
+summary: An open catalog specification for data and AI — a REST contract that governs tables, files, functions, and models across engines.
+diataxis: explanation
+project: open-lakehouse
+engines: []
+status: draft
+explains: ucSpec
+---
 
 Unity Catalog is an open catalog specification for data and AI: a REST API that
 governs tables, files, functions, and models across engines. As a

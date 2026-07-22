@@ -9,7 +9,8 @@
 // content frontmatter, so the model becomes a bidirectional navigation index.
 
 import type { ElementModel } from "likec4/model";
-import { likec4model, hasExplainPage, explainHref, kindLabel } from "./explain";
+import { likec4model, kindLabel } from "./explain";
+import { explanationHref } from "./explain-bindings";
 
 // Fallback reference views (whole-estate) if an element has no scoped view.
 const PREFERRED_VIEWS = ["capabilityMap", "technologyCatalog", "referenceContext"];
@@ -19,9 +20,10 @@ export function findModelElement(id: string): ElementModel | null {
   return likec4model.findElement(id) ?? null;
 }
 
-/** Route to an element's explanation page, or null if its kind has no page. */
+/** Route to the content page that canonically explains this element, or null if
+ * no page declares `explains: <id>` yet (see explain-bindings.ts). */
 export function modelHref(id: string): string | null {
-  return hasExplainPage(id) ? explainHref(id) : null;
+  return explanationHref(id);
 }
 
 /** Human label for the element (title), or the raw id if unknown. */

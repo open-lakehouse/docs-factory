@@ -16,7 +16,7 @@ references:
   - deltaRs
   - polars
   - duckdb
-status: published
+status: ready
 ---
 
 Reading a Delta table means loading its current version into an in-memory

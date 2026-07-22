@@ -54,6 +54,21 @@ proto/            existing trestle tracker API (leave alone)
    `project`. Blog drafts require `title`, `slug`, `status`, `date`, `tags`, `author`,
    `target` (tags must exist in `blogs/tags.yml`).
 
+   **Status is two orthogonal axes — don't conflate them.** A content page's git
+   `status` is *authoring intent* only: `draft` (still being written) or `ready`
+   (the author asserts it's publishable). The *review/release lifecycle* is
+   DB-canonical (`review_state`: none → in-review → changes-requested → approved
+   → released), owned by the review server, never written back to git. A page is
+   shown to **anonymous** site visitors only when it is **`ready` AND its DB
+   `review_state` is `released`** — publication is the intersection of author
+   intent (git) and review outcome (DB); neither alone exposes content.
+   Allowlisted reviewers see everything, so review can start while a page is
+   still `draft`. `llms.txt` keys on git `ready` alone (build-time, no DB), so a
+   `ready` page can enter the agent index slightly before it's publicly viewable
+   — an accepted skew that keeps authoring decoupled from the deploy DB. An
+   explanation page also declares `explains: <c4-element-id>` (its canonical
+   model concept); see `content/README.md`.
+
 6. **Richness is a property of the renderer.** Blog constructs (`:::tip`, `::::journey`,
    LikeC4 diagrams) degrade to plain Markdown on GitHub; the preview upgrades them.
    See `blogs/CONVENTIONS.md` §5 and `site/README.md`.

@@ -1,9 +1,14 @@
 """Generate per-project ``llms.txt`` files following the llmstxt.org convention.
 
-An ``llms.txt`` gives agents a curated, link-first index of the published docs:
+An ``llms.txt`` gives agents a curated, link-first index of the ready docs:
 an H1 title, a blockquote summary, then H2 sections grouped by Diátaxis quadrant.
-Only ``status: published`` pages are included. URLs are built from a configurable
-``url_base`` so the generator is independent of the final site's routing.
+Only ``status: ready`` pages are included — this keys on git authoring intent
+alone so llms.txt stays build-time and DB-free (no live review DB at build).
+A ``ready`` page therefore enters llms.txt as soon as the author marks it, which
+may briefly precede its DB ``released`` state (the gate for anonymous site
+visibility); that small skew is accepted to keep authoring and deploy decoupled.
+URLs are built from a configurable ``url_base`` so the generator is independent
+of the final site's routing.
 """
 
 from __future__ import annotations
@@ -47,7 +52,7 @@ def render(project: str, content_root: Path, url_base: str) -> str:
     by_section: dict[str, list[str]] = {k: [] for k in _SECTION_ORDER}
     project_root = content_root / project
     for page in iter_pages(project_root):
-        if page.meta.get("status", "draft") != "published":
+        if page.meta.get("status", "draft") != "ready":
             continue
         quadrant = page.meta.get("diataxis")
         if quadrant not in by_section:

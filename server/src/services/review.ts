@@ -1,7 +1,7 @@
 // ReviewService registration. Implemented so far:
 //   - GetViewer       (Phase 0/2) — the resolved viewer (from the interceptor).
 //   - RegisterVersion (Phase 1)   — build-time content version + section upsert.
-//   - ListDrafts      (Phase 2)   — published to all; unpublished to allowlist.
+//   - ListDrafts      (Phase 2)   — public (ready + released) to all; else allowlist.
 //   - GetDraftContent (Phase 2)   — allowlist-gated draft access.
 //   - ManageAllowlist (Phase 2)   — maintainer-only reviewer management.
 // Omitted RPCs auto-respond `unimplemented`.
@@ -69,7 +69,12 @@ import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
 import { assembleThreads, type CommentRow, type ResolutionRow } from "../comments.js";
 import { notifyCommentsChanged } from "../notify.js";
 
-const PUBLISHED = "published";
+// A page is shown to anonymous (non-allowlisted) viewers only when BOTH hold:
+// its git authoring intent is `ready` (frontmatter_status) AND its DB review
+// lifecycle has reached `released`. Publication is the intersection of author
+// intent and review outcome — neither git nor the DB alone exposes content.
+const READY_STATUS = "ready";
+const RELEASED_STATE = "released";
 // Maximum reply nesting under a thread root (root = depth 0). Keeps the tree
 // legible and client indentation bounded; enforced in createComment.
 const MAX_REPLY_DEPTH = 4;
@@ -155,7 +160,17 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           from keys k
           left join latest l on l.area = k.area and l.slug = k.slug
           where (${areaFilter}::text is null or k.area = ${areaFilter})
-            and (${viewer.isAllowlisted} or l.frontmatter_status = ${PUBLISHED})
+            and (
+              ${viewer.isAllowlisted}
+              or (
+                l.frontmatter_status = ${READY_STATUS}
+                and (
+                  select rs.state from review_state rs
+                  where rs.area = k.area and rs.slug = k.slug
+                  order by rs.created_at desc limit 1
+                ) = ${RELEASED_STATE}
+              )
+            )
           order by k.area, l.project nulls first, l.bucket nulls first, k.slug
         `;
 
@@ -187,8 +202,17 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         `;
         if (!row) throw new ConnectError("content not found", Code.NotFound);
 
-        // Published content is public; unpublished requires allowlist.
-        if (row.frontmatter_status !== PUBLISHED) requireAllowlisted(ctx);
+        // Public content requires BOTH author intent (frontmatter `ready`) AND a
+        // `released` DB review state; anything short of that is allowlist-gated.
+        const [latestState] = await sql<{ state: string }[]>`
+          select state from review_state
+          where area = ${area} and slug = ${req.ref.slug}
+          order by created_at desc limit 1
+        `;
+        const isPublic =
+          row.frontmatter_status === READY_STATUS &&
+          latestState?.state === RELEASED_STATE;
+        if (!isPublic) requireAllowlisted(ctx);
 
         // The rendered HTML lives in the SPA bundle; this RPC authorizes access
         // and returns the version. Body delivery is wired when the bundle is

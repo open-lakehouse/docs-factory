@@ -1,18 +1,21 @@
-// explain.ts — turn the estate LikeC4 model into navigable explanation pages.
+// explain.ts — enumerate the estate LikeC4 model's page-worthy concepts.
 //
 // Reads the estate model straight from the LikeC4 Vite plugin's virtual module
 // (`likec4:single-project`, workspace = ../architecture/model) — no graph.json,
 // no second codegen. Three page-worthy kinds:
-//   capability        (level 1)  → /explain/<id>
-//   openSpecification (level 2)  → /explain/<id>
-//   implementation    (level 3)  → /explain/<id>
+//   capability        (level 1)
+//   openSpecification (level 2)
+//   implementation    (level 3)
 // Specs are grouped under the capability they `specifies`; implementations
 // under the spec they `implements` (or surfaced separately when they only
-// `realize` a capability). Long-form bodies
-// come from `explainDoc` metadata (architecture/explain/*.md); nodes without
-// one fall back to their model summary/description.
+// `realize` a capability).
+//
+// This module is MODEL-ONLY on purpose (it stays free of content.ts so it's
+// safe in the MDX import chain). The element → explanation-page binding and its
+// href live in explain-bindings.ts; long-form explanation PROSE lives as an
+// ordinary content page under content/**/explanation/ (frontmatter
+// `explains: <id>`), not in the model.
 
-import type { ComponentType } from "react";
 import type { ElementModel } from "likec4/model";
 import { $likec4model } from "likec4:single-project";
 
@@ -47,11 +50,6 @@ export interface ExplainCapabilityNode extends ExplainEntry {
   kind: "capability";
   /** Specifications that `specifies` this capability. */
   specs: ExplainSpecificationNode[];
-}
-
-interface MdxModule {
-  default: ComponentType;
-  frontmatter?: Record<string, unknown>;
 }
 
 // --- Plain-text projection of a RichText field -----------------------------
@@ -168,45 +166,13 @@ export const explainEntries: ExplainEntry[] = [
   ...implementations.map(toEntry),
 ];
 
-// --- Explanation doc bodies (build-time MDX) --------------------------------
-
-const explainDocModules = import.meta.glob<MdxModule>(
-  "../../architecture/explain/**/*.md",
-);
-
-// Key loaders by their `explainDoc` value (path relative to architecture/),
-// e.g. "explain/catalog.md".
-const docLoaders = new Map<string, () => Promise<MdxModule>>();
-for (const [path, loader] of Object.entries(explainDocModules)) {
-  const rel = path.replace(/^.*\/architecture\//, "");
-  docLoaders.set(rel, loader);
-}
-
-/** Resolve the lazy MDX loader for an element's `explainDoc`, if any. */
-export function explainDocLoader(
-  el: ElementModel,
-): (() => Promise<MdxModule>) | null {
-  const meta = el.getMetadata("explainDoc");
-  const key = Array.isArray(meta) ? meta[0] : meta;
-  if (!key) return null;
-  return docLoaders.get(key) ?? null;
-}
-
 // --- Lookups ----------------------------------------------------------------
 
-/** Element for an explain route, or null if the id isn't a page-worthy kind. */
+/** Element for a page-worthy explain kind, or null otherwise. The relationship
+ * to a content page (and its href) is resolved in explain-bindings.ts. */
 export function getExplainElement(id: string): ElementModel | null {
   const el = byId.get(id);
   return el && EXPLAIN_KINDS.has(el.kind) ? el : null;
-}
-
-/** Whether a given element id has an explanation page (drives diagram links). */
-export function hasExplainPage(id: string): boolean {
-  return getExplainElement(id) !== null;
-}
-
-export function explainHref(id: string): string {
-  return `/explain/${id}`;
 }
 
 /** Human label for a kind badge. */

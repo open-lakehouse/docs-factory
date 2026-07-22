@@ -4,7 +4,10 @@
 
 // The review & release lifecycle domain for docs-factory content (blog drafts
 // and Diátaxis docs). The database is authoritative for everything defined here;
-// git frontmatter carries only the orthogonal authoring `status`.
+// git frontmatter carries only the orthogonal authoring `status` (`draft` /
+// `ready`), which is author intent — not review state. Content is shown to
+// anonymous viewers only when its frontmatter is `ready` AND its review_state
+// is RELEASED; allowlisted reviewers see everything.
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";

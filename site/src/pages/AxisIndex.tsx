@@ -4,10 +4,13 @@
 // active site scope (breadcrumb root) and the concept/engine facet chips
 // carried over from the old /docs index.
 //
-// The `explanation` axis additionally folds in the model-derived explanation
-// entries (capabilities / specifications / implementations) from the LikeC4
-// estate model — the old "explain" section — so authored and model explanation
-// live under one axis. Their detail pages remain at /explain/:id.
+// The `explanation` axis lists authored explanation pages like any other axis.
+// It additionally surfaces the LikeC4 estate concepts (capabilities /
+// specifications / implementations) that have NO explanation page yet as
+// explicit "No explanation yet" coverage-gap rows — so the axis is the ground
+// truth for what's explained AND what's still missing. Concepts that DO have a
+// page are already represented by their content-page row (no duplicate). There
+// is no /explain route: a concept's canonical URL is its doc page.
 import { Link, useSearchParams } from "react-router-dom";
 import { BookOpen, FileText, GraduationCap, Library, Wrench } from "lucide-react";
 import Shell from "../components/layout/Shell";
@@ -22,7 +25,8 @@ import {
   referencedConcepts,
   type DiataxisKey,
 } from "../graph";
-import { explainEntries, explainHref, kindLabel } from "../explain";
+import { explainEntries, kindLabel } from "../explain";
+import { hasExplanationPage } from "../explain-bindings";
 import { ENGINE_SLUGS } from "../engine-map";
 import { tagLabel } from "../tags";
 import {
@@ -130,25 +134,29 @@ function docRow(page: ContentPage): ContentRow {
   };
 }
 
-/** Model explanation entries as rows (explanation axis only). */
-function modelRows(scopeId: string): ContentRow[] {
+/** Coverage-gap rows: estate concepts with no explanation page yet (explanation
+ * axis only). Concepts that HAVE a page are already shown as their content-page
+ * row, so they're excluded here to avoid duplicates. These rows are not
+ * clickable — there's nothing to open until someone authors the page. */
+function coverageGapRows(scopeId: string): ContentRow[] {
   return explainEntries
     .filter((e) => elementInScope(e.id, scopeId))
+    .filter((e) => !hasExplanationPage(e.id))
     .map((e) => ({
       id: `model:${e.id}`,
       icon: <BookOpen className="blog-row-icon" aria-hidden="true" />,
       title: e.title,
-      titleHref: explainHref(e.id),
+      titleHref: undefined,
       author: <span className="author-badge-empty">—</span>,
       date: undefined,
-      status: kindLabel(e.kind),
+      status: "No explanation yet",
       detail: (
         <div className="blog-detail">
           {e.summary && <p className="blog-detail-summary">{e.summary}</p>}
-          <p className="muted">From the Open Lakehouse reference model.</p>
-          <Link to={explainHref(e.id)} className="blog-detail-cta">
-            Explain →
-          </Link>
+          <p className="muted">
+            {kindLabel(e.kind)} in the Open Lakehouse reference model — no
+            explanation page authored yet.
+          </p>
         </div>
       ),
     }));
@@ -199,9 +207,9 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
   const conceptFacets = referencedConcepts("docs");
   const rows: ContentRow[] = [
     ...filtered.map(docRow),
-    // Model entries only appear on the explanation axis, and only when facets
-    // (which key off content pages) are not active.
-    ...(axis === "explanation" && !faceted ? modelRows(scopeId) : []),
+    // Coverage-gap rows only appear on the explanation axis, and only when
+    // facets (which key off content pages) are not active.
+    ...(axis === "explanation" && !faceted ? coverageGapRows(scopeId) : []),
   ];
 
   return (

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { explainHref } from "../explain";
+import { explanationHref } from "../explain-bindings";
 import {
   bootLineDelay,
   buildBootSequence,
@@ -38,17 +38,23 @@ function BootLineView({
           {showCursor && <span className="terminal-hero-cursor" aria-hidden="true" />}
         </p>
       );
-    case "load":
+    case "load": {
+      const href = explanationHref(line.entry.id);
       return (
         <p className="terminal-hero-line terminal-hero-line--in terminal-hero-load">
           <span className="terminal-hero-load-tag">{kindTag(line.entry.kind)}</span>
-          <Link to={explainHref(line.entry.id)} className="terminal-hero-load-name">
-            {line.entry.title}
-          </Link>
+          {href ? (
+            <Link to={href} className="terminal-hero-load-name">
+              {line.entry.title}
+            </Link>
+          ) : (
+            <span className="terminal-hero-load-name">{line.entry.title}</span>
+          )}
           <span className="terminal-hero-load-ok">ok</span>
           {showCursor && <span className="terminal-hero-cursor" aria-hidden="true" />}
         </p>
       );
+    }
     case "summary":
       return (
         <p className="terminal-hero-line terminal-hero-line--in terminal-hero-ok">

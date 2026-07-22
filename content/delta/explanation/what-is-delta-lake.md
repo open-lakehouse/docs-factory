@@ -5,7 +5,7 @@ diataxis: explanation
 project: delta
 engines: []
 delta_features: []
-status: published
+status: ready
 references:
   - deltaSpec
   - parquetSpec

@@ -12,6 +12,7 @@ import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
 import ConceptHeader from "../components/ConceptHeader";
+import ModelContext from "../components/ModelContext";
 import RelatedContent from "../components/RelatedContent";
 import MdxProvider from "../MdxProvider";
 import { findDoc } from "../content";
@@ -40,7 +41,13 @@ export default function DocPage() {
     <Shell
       showSidebarToggle
       wide
-      accent={project === "unitycatalog" ? "unitycatalog" : "delta"}
+      accent={
+        project === "unitycatalog"
+          ? "unitycatalog"
+          : project === "delta"
+            ? "delta"
+            : undefined // open-lakehouse (estate scope) carries no product accent
+      }
     >
       <SelectionProvider>
       <ReviewProvider contentRef={docRef(project, bucket, slug)}>
@@ -57,6 +64,9 @@ export default function DocPage() {
             <MdxProvider>
               <Component />
             </MdxProvider>
+            {frontmatter.explains && (
+              <ModelContext id={frontmatter.explains} selfHref={page.href} />
+            )}
             <RelatedContent page={page} />
           </article>
           <Pager

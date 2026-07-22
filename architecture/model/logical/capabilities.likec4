@@ -50,7 +50,6 @@ model {
 
       metadata {
         canonicalDoc "design/catalog-plane.md"
-        explainDoc "explain/catalog.md"
       }
     }
 

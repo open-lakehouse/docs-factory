@@ -12,7 +12,7 @@ prerequisites:
 references:
   - deltaSpec
   - deltaRs
-status: published
+status: ready
 ---
 
 Every write to a [Delta](model:deltaSpec) table produces a new **version**. Delta

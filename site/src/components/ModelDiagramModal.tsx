@@ -7,7 +7,8 @@ import {
 } from "@/components/ui/dialog";
 import ModelDiagram from "./ModelDiagram";
 import { resolveRef, focusedViewId } from "../model-refs";
-import { hasExplainPage, explainHref, likec4model } from "../explain";
+import { likec4model } from "../explain";
+import { explanationHref } from "../explain-bindings";
 
 function viewSubjectId(viewId: string): string | null {
   const of = likec4model.findView(viewId)?.viewOf;
@@ -33,9 +34,10 @@ export default function ModelDiagramModal({
 
   const handleNavigateTo = (to: string) => {
     const subject = viewSubjectId(to);
-    if (subject && hasExplainPage(subject)) {
+    const target = subject ? explanationHref(subject) : null;
+    if (target) {
       onClose();
-      navigate(explainHref(subject));
+      navigate(target);
     }
   };
 

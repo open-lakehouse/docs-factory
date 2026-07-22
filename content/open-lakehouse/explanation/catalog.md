@@ -1,7 +1,12 @@
-# Catalog
-
-> Stub explanation body. Long-form prose is intentionally deferred; this file
-> exists to exercise the `explainDoc` wiring for a **capability** node.
+---
+title: Catalog
+summary: The metadata authority of the lakehouse — the registry every query resolves a table name through before any bytes are read.
+diataxis: explanation
+project: open-lakehouse
+engines: []
+status: draft
+explains: lakehouse.catalog
+---
 
 The catalog is the metadata authority of the lakehouse: the registry every
 query resolves a table name through before a single byte is read. It records

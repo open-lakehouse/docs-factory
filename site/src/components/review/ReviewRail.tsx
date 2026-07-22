@@ -23,7 +23,7 @@ interface ReviewRailProps {
 }
 
 export default function ReviewRail({ articleRef }: ReviewRailProps) {
-  const { isAllowlisted } = useAuth();
+  const { reviewActive } = useAuth();
   const { openCount, displayMode } = useReview();
   const { pending } = useSelectionState();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -32,7 +32,7 @@ export default function ReviewRail({ articleRef }: ReviewRailProps) {
     if (pending && displayMode === "rail") setDrawerOpen(true);
   }, [pending, displayMode]);
 
-  if (displayMode !== "rail") return null;
+  if (!reviewActive || displayMode !== "rail") return null;
 
   const rail = (
     <>
@@ -50,23 +50,21 @@ export default function ReviewRail({ articleRef }: ReviewRailProps) {
       </div>
 
       {/* Narrow screens: a floating toggle opens the rail in a Sheet drawer. */}
-      {isAllowlisted && (
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => setDrawerOpen(true)}
-          aria-label="Open review comments"
-          className="fixed right-4 bottom-4 z-[55] hidden gap-2 rounded-full shadow-lg max-[960px]:inline-flex"
-        >
-          <MessageSquare className="size-4" aria-hidden />
-          <span>Review</span>
-          {openCount > 0 && (
-            <Badge variant="secondary" className="ml-1">
-              {openCount}
-            </Badge>
-          )}
-        </Button>
-      )}
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => setDrawerOpen(true)}
+        aria-label="Open review comments"
+        className="fixed right-4 bottom-4 z-[55] hidden gap-2 rounded-full shadow-lg max-[960px]:inline-flex"
+      >
+        <MessageSquare className="size-4" aria-hidden />
+        <span>Review</span>
+        {openCount > 0 && (
+          <Badge variant="secondary" className="ml-1">
+            {openCount}
+          </Badge>
+        )}
+      </Button>
       <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
         <SheetContent
           side="right"

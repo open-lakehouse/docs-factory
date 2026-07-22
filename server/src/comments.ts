@@ -5,11 +5,13 @@ import {
   CommentSchema,
   ThreadSchema,
   ContentRefSchema,
+  RecentCommentSchema,
   TextSelectorSchema,
   CodeSelectorSchema,
   type Comment,
   type Thread,
   type ContentRef,
+  type RecentComment,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
 import { areaFromDb } from "./db-map.js";
 
@@ -54,7 +56,7 @@ export interface ResolutionRow {
   resolved_at: Date | null;
 }
 
-function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
+export function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
   return create(CommentSchema, {
     id: row.id,
     ref,
@@ -91,6 +93,39 @@ function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
             fileHash: row.code_file_hash ?? "",
           })
         : undefined,
+  });
+}
+
+/**
+ * A comment row for the recent-comments feed: a CommentRow plus the joined
+ * context columns (latest-version title, the anchor's heading text, and whether
+ * the owning thread is resolved).
+ */
+export interface RecentCommentRow extends CommentRow {
+  content_title: string | null;
+  heading_text: string | null;
+  resolved: boolean;
+}
+
+/**
+ * Map a recent-comment row into a RecentComment message. Pure — the SQL that
+ * produces the row lives in the listRecentComments handler; this is the wire
+ * mapping, kept here (and unit-tested) alongside commentFromRow.
+ */
+export function recentCommentFromRow(row: RecentCommentRow): RecentComment {
+  const ref = create(ContentRefSchema, {
+    area: areaFromDb(row.area),
+    slug: row.slug,
+    project: row.project ?? undefined,
+    bucket: row.bucket ?? undefined,
+  });
+  return create(RecentCommentSchema, {
+    comment: commentFromRow(row, ref),
+    ref,
+    anchorSlug: row.anchor_slug,
+    headingText: row.heading_text ?? "",
+    resolved: row.resolved,
+    contentTitle: row.content_title ?? "",
   });
 }
 

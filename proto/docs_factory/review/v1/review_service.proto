@@ -30,6 +30,11 @@ service ReviewService {
   // threads whose section no longer exists in the latest version.
   rpc ListComments(ListCommentsRequest) returns (ListCommentsResponse);
 
+  // Most-recent comments across all content, for the reviewer dashboard's
+  // "latest comments" feed. Allowlist-gated; each entry links back to its
+  // content + heading anchor.
+  rpc ListRecentComments(ListRecentCommentsRequest) returns (ListRecentCommentsResponse);
+
   rpc CreateComment(CreateCommentRequest) returns (CreateCommentResponse);
   rpc ResolveThread(ResolveThreadRequest) returns (ResolveThreadResponse);
   rpc UnresolveThread(UnresolveThreadRequest) returns (UnresolveThreadResponse);
@@ -93,6 +98,17 @@ message ListCommentsResponse {
   repeated Thread threads = 1;
   // Threads whose section no longer exists (shown but not lost).
   repeated Thread orphaned_threads = 2;
+}
+
+message ListRecentCommentsRequest {
+  // Max comments to return (server clamps; defaults to a modest page).
+  optional int32 limit = 1;
+  // When set, restrict to one area.
+  optional ContentArea area = 2;
+}
+message ListRecentCommentsResponse {
+  // Most-recent first.
+  repeated RecentComment comments = 1;
 }
 
 message CreateCommentRequest {

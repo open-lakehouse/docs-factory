@@ -4,6 +4,7 @@ import AxisIndex from "./pages/AxisIndex";
 import DocPage from "./pages/DocPage";
 import BlogIndex from "./pages/BlogIndex";
 import BlogPost from "./pages/BlogPost";
+import ReviewDashboard from "./pages/ReviewDashboard";
 import DevPersonaSwitcher from "./components/DevPersonaSwitcher";
 
 export default function App() {
@@ -19,6 +20,9 @@ export default function App() {
         <Route path="/reference" element={<AxisIndex axis="reference" />} />
         <Route path="/explanation" element={<AxisIndex axis="explanation" />} />
         <Route path="/blog" element={<BlogIndex />} />
+
+        {/* Reviewer-only consolidated dashboard (guarded inside the page). */}
+        <Route path="/review" element={<ReviewDashboard />} />
 
         {/* Detail routes. Explanation concepts are ordinary doc pages that
             declare `explains: <id>`; there is no separate /explain route — the

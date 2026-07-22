@@ -40,11 +40,11 @@ export default function SourceFileLauncher({
   contentRef: ContentRef;
   articleRef: RefObject<HTMLElement | null>;
 }) {
-  const { isAllowlisted } = useAuth();
+  const { reviewActive } = useAuth();
   const [open, setOpen] = useState<OpenTarget | null>(null);
 
   useEffect(() => {
-    if (!isAllowlisted) return;
+    if (!reviewActive) return;
     const article = articleRef.current;
     if (!article) return;
 
@@ -70,9 +70,9 @@ export default function SourceFileLauncher({
     return () => {
       for (const b of added) b.remove();
     };
-  }, [articleRef, isAllowlisted]);
+  }, [articleRef, reviewActive]);
 
-  if (!isAllowlisted || !open) return null;
+  if (!reviewActive || !open) return null;
   return (
     <SourceFilePane
       contentRef={contentRef}

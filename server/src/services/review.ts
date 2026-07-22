@@ -17,6 +17,7 @@ import {
   ListDraftsResponseSchema,
   GetDraftContentResponseSchema,
   ListCommentsResponseSchema,
+  ListRecentCommentsResponseSchema,
   CreateCommentResponseSchema,
   ResolveThreadResponseSchema,
   UnresolveThreadResponseSchema,
@@ -31,6 +32,7 @@ import {
   type ListDraftsRequest,
   type GetDraftContentRequest,
   type ListCommentsRequest,
+  type ListRecentCommentsRequest,
   type CreateCommentRequest,
   type ResolveThreadRequest,
   type UnresolveThreadRequest,
@@ -66,7 +68,13 @@ import {
 } from "../db-map.js";
 import { roleFromDb } from "../allowlist.js";
 import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
-import { assembleThreads, type CommentRow, type ResolutionRow } from "../comments.js";
+import {
+  assembleThreads,
+  recentCommentFromRow,
+  type CommentRow,
+  type RecentCommentRow,
+  type ResolutionRow,
+} from "../comments.js";
 import { notifyCommentsChanged } from "../notify.js";
 
 // A page is shown to anonymous (non-allowlisted) viewers only when BOTH hold:
@@ -78,6 +86,12 @@ const RELEASED_STATE = "released";
 // Maximum reply nesting under a thread root (root = depth 0). Keeps the tree
 // legible and client indentation bounded; enforced in createComment.
 const MAX_REPLY_DEPTH = 4;
+// Tombstone login/id for an erased author (see eraseUser). Recent-comment feeds
+// skip these — there's no identity to show and the body is "[removed]".
+const TOMBSTONE_LOGIN = "deleted-user";
+// The "latest comments" feed page size (default + hard cap).
+const RECENT_COMMENTS_DEFAULT = 20;
+const RECENT_COMMENTS_MAX = 100;
 const REVIEW_STATE_BY_DB: Record<string, ReviewState> = {
   none: ReviewState.NONE,
   "in-review": ReviewState.IN_REVIEW,
@@ -266,6 +280,58 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           seenByRoot,
         );
         return create(ListCommentsResponseSchema, { threads, orphanedThreads: orphaned });
+      },
+
+      async listRecentComments(req: ListRecentCommentsRequest, ctx) {
+        // A cross-content reviewer artifact: allowlist-only.
+        requireAllowlisted(ctx);
+        const sql = db();
+        const areaFilter =
+          req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
+        const limit = Math.min(
+          Math.max(req.limit && req.limit > 0 ? req.limit : RECENT_COMMENTS_DEFAULT, 1),
+          RECENT_COMMENTS_MAX,
+        );
+
+        // Most-recent comments (roots AND replies) across all content, each with
+        // the context needed to deep-link back: the latest version's title +
+        // project/bucket (so the client can build the right route), the heading
+        // text for the comment's anchor, and the thread-root resolution. The
+        // section join is against the LATEST version's sections (a comment on a
+        // since-removed heading simply gets an empty label). Tombstoned authors
+        // are skipped. UUIDv7 ids order-match created_at, giving a stable tiebreak.
+        const rows = await sql<RecentCommentRow[]>`
+          with latest as (
+            select distinct on (area, slug) id, area, slug, project, bucket, title
+            from content_version
+            order by area, slug, created_at desc
+          )
+          select c.id, c.area, c.slug,
+                 l.project, l.bucket,
+                 c.anchor_slug, c.anchor_fingerprint, c.parent_id,
+                 c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
+                 c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
+                 c.code_path, c.code_region, c.code_line, c.code_end_line,
+                 c.code_line_hash, c.code_file_hash,
+                 c.authored_version_id, cv.git_sha as authored_git_sha,
+                 l.title as content_title,
+                 sec.heading_text as heading_text,
+                 coalesce(cr.resolved, false) as resolved
+          from comment c
+          left join latest l on l.area = c.area and l.slug = c.slug
+          left join content_version cv on cv.id = c.authored_version_id
+          left join content_section sec
+            on sec.version_id = l.id and sec.anchor_slug = c.anchor_slug
+          left join comment_resolution cr
+            on cr.thread_root_id = coalesce(c.parent_id, c.id)
+          where c.author_login <> ${TOMBSTONE_LOGIN}
+            and (${areaFilter}::text is null or c.area = ${areaFilter})
+          order by c.created_at desc, c.id desc
+          limit ${limit}
+        `;
+
+        const comments = rows.map(recentCommentFromRow);
+        return create(ListRecentCommentsResponseSchema, { comments });
       },
 
       async createComment(req: CreateCommentRequest, ctx) {

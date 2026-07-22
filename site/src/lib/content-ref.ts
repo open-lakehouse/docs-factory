@@ -22,6 +22,19 @@ export function docRef(project: string, bucket: string, slug: string): ContentRe
   });
 }
 
+/**
+ * The in-app route for a ContentRef, matching App.tsx: `/blog/<slug>` for blogs
+ * and `/docs/<project>/<bucket>/<slug>` for docs. Pass `anchorSlug` to deep-link
+ * to a section (the reviewer dashboard links comments back to their heading).
+ */
+export function refHref(ref: ContentRef, anchorSlug?: string): string {
+  const base =
+    ref.area === ContentArea.BLOGS
+      ? `/blog/${ref.slug}`
+      : `/docs/${ref.project ?? ""}/${ref.bucket ?? ""}/${ref.slug}`;
+  return anchorSlug ? `${base}#${anchorSlug}` : base;
+}
+
 /** Match build-version-manifest.mjs: lowercase + collapse whitespace. */
 export function fingerprint(headingText: string): string {
   return headingText.trim().toLowerCase().replace(/\s+/g, " ");

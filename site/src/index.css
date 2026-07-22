@@ -279,6 +279,88 @@ body {
   color: #f5f7f8;
 }
 
+/* Top-bar account/status control. */
+.status-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0.15rem;
+  cursor: pointer;
+}
+.status-menu-trigger:hover {
+  border-color: var(--accent);
+}
+.status-menu-loading {
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  background: #2a2f38;
+}
+
+/* When a reviewer opts into Site review mode, tint the top bar so the whole
+   surface signals that the comment chrome is live. */
+.shell[data-review-active="true"] .topbar {
+  border-bottom-color: var(--accent);
+  box-shadow: inset 0 -2px 0 0 var(--accent);
+}
+
+/* Count badge on the reviewer "Review" nav item. */
+.topnav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.1rem;
+  height: 1.1rem;
+  margin-left: 0.35rem;
+  padding: 0 0.3rem;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Reviewer dashboard (/review). */
+.review-dashboard { max-width: 52rem; }
+.review-dash-section { margin-top: 2.25rem; }
+.review-dash-section h2 { font-size: 1rem; margin-bottom: 0.5rem; }
+.review-dash-hint { margin-top: -0.25rem; margin-bottom: 0.75rem; font-size: 0.85rem; }
+.review-dash-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.review-dash-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #1f232b;
+  border-radius: 0.45rem;
+}
+.review-dash-title { font-weight: 500; text-decoration: none; color: inherit; }
+.review-dash-title:hover { color: var(--accent); }
+.review-dash-meta { display: inline-flex; align-items: center; gap: 0.6rem; flex: none; }
+.review-dash-count { color: var(--muted-foreground); font-size: 0.8rem; }
+.review-dash-comment {
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #1f232b;
+  border-radius: 0.45rem;
+}
+.review-dash-comment-target { font-size: 0.8rem; text-decoration: none; color: var(--muted-foreground); }
+.review-dash-comment-target:hover { color: var(--accent); }
+.review-dash-comment-body { margin: 0.3rem 0 0; font-size: 0.9rem; }
+.review-dash-comment-author { font-weight: 600; }
+.review-dash-resolved {
+  display: inline-block;
+  margin-top: 0.35rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+
 .content { max-width: 60rem; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
 .muted { color: var(--muted-foreground); }
 

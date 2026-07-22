@@ -55,7 +55,7 @@ export default function SelectionLayer({
 }: {
   articleRef: RefObject<HTMLElement | null>;
 }) {
-  const { isAllowlisted } = useAuth();
+  const { reviewActive } = useAuth();
   const { setPending } = useSelectionState();
   const [float, setFloat] = useState<FloatUI | null>(null);
   const [menu, setMenu] = useState<FloatUI | null>(null);
@@ -63,7 +63,7 @@ export default function SelectionLayer({
   floatRef.current = float;
 
   useEffect(() => {
-    if (!isAllowlisted) return;
+    if (!reviewActive) return;
     const article = articleRef.current;
     if (!article) return;
     const art = article;
@@ -183,9 +183,9 @@ export default function SelectionLayer({
       window.removeEventListener("scroll", reposition, true);
       window.removeEventListener("resize", reposition);
     };
-  }, [articleRef, isAllowlisted]);
+  }, [articleRef, reviewActive]);
 
-  if (!isAllowlisted) return null;
+  if (!reviewActive) return null;
 
   async function commit(ui: FloatUI) {
     const anchor = await ui.build();

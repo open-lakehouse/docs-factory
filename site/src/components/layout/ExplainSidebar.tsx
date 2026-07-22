@@ -29,11 +29,11 @@ export default function ExplainSidebar({ activeId }: ExplainSidebarProps) {
       >
         <div className="sidebar-inner">
           <Link
-            to="/explain"
+            to="/explanation"
             className="sidebar-home"
             onClick={() => setMobileOpen(false)}
           >
-            Explain
+            Explanation
           </Link>
           {explainNav.map((cap) => (
             <section key={cap.id} className="sidebar-section">

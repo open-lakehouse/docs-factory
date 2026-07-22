@@ -17,7 +17,7 @@ export default function Index() {
 
       <section className="product-grid">
         <Link
-          to={deltaEntry?.href ?? "/docs"}
+          to={deltaEntry?.href ?? "/reference"}
           className="product-card"
           data-accent="delta"
         >
@@ -28,7 +28,7 @@ export default function Index() {
           <span className="product-card-link">cd delta →</span>
         </Link>
         <Link
-          to={ucEntry?.href ?? "/docs"}
+          to={ucEntry?.href ?? "/reference"}
           className="product-card"
           data-accent="unitycatalog"
         >
@@ -43,7 +43,7 @@ export default function Index() {
       <div className="index-grid">
         <section>
           <h2 className="section-heading">
-            <Link to="/docs">Start reading</Link>
+            <Link to="/reference">Start reading</Link>
           </h2>
           <p className="muted">Diátaxis reference content under <code>content/</code>.</p>
           <ul className="draft-list compact card-list">

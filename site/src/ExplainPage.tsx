@@ -22,9 +22,6 @@ import {
   explainDocLoader,
   elementSummary,
   explainHref,
-  explainNav,
-  orphanSpecs,
-  orphanImplementations,
   kindLabel,
 } from "./explain";
 
@@ -211,86 +208,6 @@ function FallbackBody({ el }: { el: ElementModel }) {
   );
 }
 
-// --- Index ------------------------------------------------------------------
-
-export function ExplainIndex() {
-  return (
-    <Shell showSidebarToggle wide>
-      <div className="docs-grid docs-grid-index">
-        <ExplainSidebar />
-        <div className="docs-main">
-          <h1>Explain</h1>
-          <p className="muted">
-            The Open Lakehouse reference model as navigable explanations —
-            capabilities, the open specifications that specify them, and the
-            implementations that realize them, drawn live from the LikeC4 estate
-            model.
-          </p>
-          {explainNav.map((cap) => (
-            <section key={cap.id} className="nav-section">
-              <h2>
-                <Link to={explainHref(cap.id)}>{cap.title}</Link>
-              </h2>
-              {cap.summary && <p className="muted">{cap.summary}</p>}
-              {cap.specs.length > 0 && (
-                <ul className="draft-list compact">
-                  {cap.specs.map((spec) => (
-                    <li key={spec.id}>
-                      <Link to={explainHref(spec.id)}>{spec.title}</Link>
-                      {spec.implementations.length > 0 && (
-                        <ul className="draft-list compact nested">
-                          {spec.implementations.map((impl) => (
-                            <li key={impl.id}>
-                              <Link to={explainHref(impl.id)}>{impl.title}</Link>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          ))}
-          {orphanSpecs.length > 0 && (
-            <section className="nav-section">
-              <h2>Other specifications</h2>
-              <ul className="draft-list compact">
-                {orphanSpecs.map((spec) => (
-                  <li key={spec.id}>
-                    <Link to={explainHref(spec.id)}>{spec.title}</Link>
-                    {spec.implementations.length > 0 && (
-                      <ul className="draft-list compact nested">
-                        {spec.implementations.map((impl) => (
-                          <li key={impl.id}>
-                            <Link to={explainHref(impl.id)}>{impl.title}</Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-          {orphanImplementations.length > 0 && (
-            <section className="nav-section">
-              <h2>Implementations</h2>
-              <ul className="draft-list compact">
-                {orphanImplementations.map((impl) => (
-                  <li key={impl.id}>
-                    <Link to={explainHref(impl.id)}>{impl.title}</Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-        </div>
-      </div>
-    </Shell>
-  );
-}
-
 // --- Detail -----------------------------------------------------------------
 
 const MATURITY_TAGS = ["built", "designed", "prototype"] as const;
@@ -316,7 +233,7 @@ export function ExplainPage() {
           <div className="docs-main">
             <p>
               Not found: explain/{elementId}.{" "}
-              <Link to="/explain">Back to Explain.</Link>
+              <Link to="/explanation">Back to Explanation.</Link>
             </p>
           </div>
         </div>

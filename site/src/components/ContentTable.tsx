@@ -159,7 +159,15 @@ function TableRow({
           <>
             <td className="blog-row-status">
               {row.frontmatterStatus && (
-                <span className="blog-badge">{row.frontmatterStatus}</span>
+                <span
+                  className={
+                    row.frontmatterStatus.toLowerCase() === "ready"
+                      ? "blog-badge blog-badge-ready"
+                      : "blog-badge"
+                  }
+                >
+                  {row.frontmatterStatus}
+                </span>
               )}
             </td>
             <td className="blog-row-status">

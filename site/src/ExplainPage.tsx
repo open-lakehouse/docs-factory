@@ -9,7 +9,6 @@ import {
 import type { ElementModel } from "likec4/model";
 import Shell from "./components/layout/Shell";
 import ExplainSidebar from "./components/layout/ExplainSidebar";
-import Breadcrumbs from "./components/layout/Breadcrumbs";
 import ExplainDiagram from "./components/ExplainDiagram";
 import MdxProvider from "./MdxProvider";
 import { backlinksFor } from "./backlinks";
@@ -338,13 +337,6 @@ export function ExplainPage() {
       <div className="docs-grid docs-grid-index">
         <ExplainSidebar activeId={elementId} />
         <div className="docs-main">
-          <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: "Explain", href: "/explain" },
-              { label: el.title, activeHref: explainHref(elementId) },
-            ]}
-          />
           <header className="explain-header">
             <div className="explain-title-row">
               <h1>{el.title}</h1>

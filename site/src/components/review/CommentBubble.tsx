@@ -63,21 +63,25 @@ export default function CommentBubble({
           <span className="review-author">{displayName}</span>
         ))}
       {body && <p className="review-body">{body}</p>}
-      {authoredGitSha && (
-        <span className="review-provenance" title={`Authored against ${authoredGitSha}`}>
-          on {authoredGitSha.slice(0, 7)}
-        </span>
-      )}
-      {onReply && (
-        <Button
-          type="button"
-          variant="link"
-          size="xs"
-          className="h-auto px-0 text-muted-foreground"
-          onClick={onReply}
-        >
-          Reply
-        </Button>
+      {(authoredGitSha || onReply) && (
+        <div className={cn("review-comment-foot", !authoredGitSha && "reply-only")}>
+          {authoredGitSha && (
+            <span className="review-provenance" title={`Authored against ${authoredGitSha}`}>
+              on {authoredGitSha.slice(0, 7)}
+            </span>
+          )}
+          {onReply && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="xs"
+              className="review-reply-action"
+              onClick={onReply}
+            >
+              Reply
+            </Button>
+          )}
+        </div>
       )}
     </div>
   );

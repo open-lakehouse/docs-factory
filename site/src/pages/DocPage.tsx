@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import DocsSidebar from "../components/layout/DocsSidebar";
-import Breadcrumbs from "../components/layout/Breadcrumbs";
 import ReviewRail from "../components/review/ReviewRail";
 import InlineReviewSurface from "../components/review/InlineReviewSurface";
 import SelectionLayer from "../components/review/SelectionLayer";
@@ -17,7 +16,7 @@ import RelatedContent from "../components/RelatedContent";
 import MdxProvider from "../MdxProvider";
 import { findDoc } from "../content";
 import { effectiveRefIds } from "../graph";
-import { docNav, docNeighbors } from "../sidebar";
+import { docNeighbors } from "../sidebar";
 
 export default function DocPage() {
   const { project = "", bucket = "", slug = "" } = useParams();
@@ -36,22 +35,6 @@ export default function DocPage() {
 
   const { Component, frontmatter } = page;
   const neighbors = docNeighbors(page.href);
-  const group = docNav.find((g) => g.project === project);
-  const activeBucket = group?.buckets.find((b) => b.bucket === bucket);
-  const bucketLabel = activeBucket?.label ?? bucket;
-  const projectLabel = group?.projectLabel ?? page.project ?? project;
-
-  const projectSiblings = docNav
-    .map((g) => ({ label: g.projectLabel, href: g.buckets[0]?.items[0]?.href }))
-    .filter((s): s is { label: string; href: string } => Boolean(s.href));
-  const projectActiveHref = group?.buckets[0]?.items[0]?.href;
-  const bucketSiblings =
-    group?.buckets
-      .map((b) => ({ label: b.label, href: b.items[0]?.href }))
-      .filter((s): s is { label: string; href: string } => Boolean(s.href)) ?? [];
-  const bucketActiveHref = activeBucket?.items[0]?.href;
-  const pageSiblings =
-    activeBucket?.items.map((it) => ({ label: it.label, href: it.href })) ?? [];
 
   return (
     <Shell
@@ -64,28 +47,6 @@ export default function DocPage() {
       <div className="docs-grid">
         <DocsSidebar activeProject={project} activeBucket={bucket} activeSlug={slug} />
         <div className="docs-main">
-          <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: "Docs", href: "/docs" },
-              {
-                label: projectLabel,
-                href: "/docs",
-                siblings: projectSiblings,
-                activeHref: projectActiveHref,
-              },
-              {
-                label: bucketLabel,
-                siblings: bucketSiblings,
-                activeHref: bucketActiveHref,
-              },
-              {
-                label: frontmatter.title ?? slug,
-                siblings: pageSiblings,
-                activeHref: page.href,
-              },
-            ]}
-          />
           <article className="prose" ref={articleRef}>
             {frontmatter.title && <h1>{frontmatter.title}</h1>}
             {frontmatter.summary && (

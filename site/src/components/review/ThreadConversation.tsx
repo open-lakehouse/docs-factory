@@ -39,6 +39,7 @@ export default function ThreadConversation({
   const resolve = useMutation(resolveThread, mutationOpts);
   const unresolve = useMutation(unresolveThread, mutationOpts);
   const [text, setText] = useState("");
+  const [replyingToId, setReplyingToId] = useState<string | null>(null);
 
   // Depth of each comment (root = 0), derived from the parent_id chain. The wire
   // list is a flat depth-first pre-order, so we can resolve depths in one pass.
@@ -49,19 +50,44 @@ export default function ThreadConversation({
     depthById.set(c.id, (parentDepth ?? 0) + 1);
   }
 
-  // Replies are linear: every new comment threads off the root and lands at the
-  // bottom, so the always-on composer keeps the discussion flowing top-to-bottom.
-  async function postReply() {
+  async function postReply(parentId: string) {
     if (!text.trim() || !contentRef || !thread.root) return;
     await createReply.mutateAsync({
       ref: contentRef,
       anchorSlug: thread.root.anchorSlug,
       anchorFingerprint: thread.root.anchorFingerprint,
-      parentId: thread.root.id,
+      parentId,
       bodyMd: text,
     });
     setText("");
+    setReplyingToId(null);
     onChange();
+  }
+
+  function renderReplyComposer(parentId: string, depth: number) {
+    const indent = Math.min(depth + 1, 4) * 0.85;
+    return (
+      <div
+        className="review-inline-reply"
+        style={depth > 0 ? { marginLeft: `${indent}rem` } : undefined}
+      >
+        <ReviewComposer
+          value={text}
+          onChange={setText}
+          onSubmit={() => void postReply(parentId)}
+          onCancel={() => {
+            setReplyingToId(null);
+            setText("");
+          }}
+          placeholder="Reply…"
+          rows={2}
+          submitLabel="Reply"
+          submitting={createReply.isPending}
+          compact
+          autoFocus
+        />
+      </div>
+    );
   }
 
   async function toggleResolved() {
@@ -124,35 +150,48 @@ export default function ThreadConversation({
           <span className="review-target-code">{codeLabel}</span>
         </blockquote>
       )}
-      <CommentBubble
-        login={thread.root?.authorLogin}
-        name={thread.root?.authorName}
-        body={thread.root?.bodyMd}
-        authoredGitSha={thread.root?.authoredGitSha}
-      />
-      {thread.replies.map((r) => (
+      {thread.root && (
         <CommentBubble
-          key={r.id}
-          login={r.authorLogin}
-          name={r.authorName}
-          body={r.bodyMd}
-          reply
-          depth={depthById.get(r.id) ?? 1}
-          authoredGitSha={r.authoredGitSha}
+          login={thread.root.authorLogin}
+          name={thread.root.authorName}
+          body={thread.root.bodyMd}
+          authoredGitSha={thread.root.authoredGitSha}
         />
-      ))}
-      <div className="review-thread-actions">
-        <ReviewComposer
-          value={text}
-          onChange={setText}
-          onSubmit={() => void postReply()}
-          placeholder="Reply…"
-          rows={2}
-          submitLabel="Reply"
-          submitting={createReply.isPending}
-          inline
-        />
-      </div>
+      )}
+      {thread.replies.map((r) => {
+        const depth = depthById.get(r.id) ?? 1;
+        return (
+          <div key={r.id} className="review-comment-thread">
+            <CommentBubble
+              login={r.authorLogin}
+              name={r.authorName}
+              body={r.bodyMd}
+              reply
+              depth={depth}
+              authoredGitSha={r.authoredGitSha}
+              onReply={() => {
+                setReplyingToId(r.id);
+                setText("");
+              }}
+            />
+            {replyingToId === r.id && renderReplyComposer(r.id, depth)}
+          </div>
+        );
+      })}
+      {replyingToId == null && thread.root && (
+        <div className="review-thread-actions">
+          <ReviewComposer
+            value={text}
+            onChange={setText}
+            onSubmit={() => void postReply(thread.root!.id)}
+            placeholder="Reply…"
+            rows={2}
+            submitLabel="Reply"
+            submitting={createReply.isPending}
+            inline
+          />
+        </div>
+      )}
     </div>
   );
 }

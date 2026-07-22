@@ -1,23 +1,18 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
-import Breadcrumbs from "../components/layout/Breadcrumbs";
-import ReviewRail from "../components/review/ReviewRail";
+import BlogAside from "../components/layout/BlogAside";
 import InlineReviewSurface from "../components/review/InlineReviewSurface";
 import SelectionLayer from "../components/review/SelectionLayer";
 import SourceFileLauncher from "../components/review/SourceFileLauncher";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
-import ReviewControls from "../components/review/ReviewControls";
 import { blogRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
-import ConceptHeader from "../components/ConceptHeader";
 import RelatedContent from "../components/RelatedContent";
-import TagList from "../components/TagList";
 import AuthorBadge from "../components/AuthorBadge";
 import MdxProvider from "../MdxProvider";
-import { blogNeighbors, findBlog, blogPosts } from "../content";
-import { effectiveRefIds } from "../graph";
+import { blogNeighbors, findBlog } from "../content";
 import { BlogReadingTime } from "./BlogIndex";
 
 export default function BlogPost() {
@@ -38,74 +33,59 @@ export default function BlogPost() {
   const { Component, frontmatter } = page;
   const neighbors = blogNeighbors(slug);
 
-  const siblingPosts = frontmatter.series
-    ? blogPosts.filter((p) => p.frontmatter.series === frontmatter.series)
-    : blogPosts.filter((p) => !p.frontmatter.series);
-  const postSiblings = siblingPosts.map((p) => ({
-    label: p.frontmatter.title ?? p.slug,
-    href: p.href,
-  }));
-
   return (
     <Shell wide>
       <SelectionProvider>
       <ReviewProvider contentRef={blogRef(slug)}>
       <div className="blog-post-layout">
-        <div className="blog-post-main">
-          <Breadcrumbs
-            items={[
-              { label: "Home", href: "/" },
-              { label: "Blog", href: "/blog" },
-              {
-                label: frontmatter.title ?? slug,
-                siblings: postSiblings,
-                activeHref: page.href,
-              },
-            ]}
+        <div className="blog-post-body">
+          <BlogAside
+            articleRef={articleRef}
+            contentRef={blogRef(slug)}
+            byline={frontmatter.author}
+            tags={frontmatter.tags ?? []}
           />
-          <header className="blog-post-header">
-            {frontmatter.series && (
-              <p className="blog-post-series">{frontmatter.series}</p>
-            )}
-            {frontmatter.title && <h1>{frontmatter.title}</h1>}
-            <div className="blog-post-meta">
-              {frontmatter.author && <AuthorBadge byline={frontmatter.author} />}
-              {frontmatter.date && <span>{frontmatter.date}</span>}
-              {frontmatter.status && (
-                <span className="blog-post-status">{frontmatter.status}</span>
+          <div className="blog-post-article">
+            <header className="blog-post-header">
+              {frontmatter.series && (
+                <p className="blog-post-series">{frontmatter.series}</p>
               )}
-              <BlogReadingTime articleRef={articleRef} />
-            </div>
-            <ReviewControls contentRef={blogRef(slug)} />
-            <TagList tags={frontmatter.tags ?? []} />
-          </header>
-          <ConceptHeader references={effectiveRefIds(page)} />
-          <article className="prose" ref={articleRef}>
-            <MdxProvider>
-              <Component />
-            </MdxProvider>
-            <RelatedContent page={page} />
-          </article>
-          <Pager
-            prev={
-              neighbors.prev
-                ? {
-                    label: neighbors.prev.frontmatter.title ?? neighbors.prev.slug,
-                    href: neighbors.prev.href,
-                  }
-                : undefined
-            }
-            next={
-              neighbors.next
-                ? {
-                    label: neighbors.next.frontmatter.title ?? neighbors.next.slug,
-                    href: neighbors.next.href,
-                  }
-                : undefined
-            }
-          />
+              {frontmatter.title && <h1>{frontmatter.title}</h1>}
+              <div className="blog-post-meta">
+                {frontmatter.author && <AuthorBadge byline={frontmatter.author} />}
+                {frontmatter.date && <span>{frontmatter.date}</span>}
+                {frontmatter.status && (
+                  <span className="blog-post-status">{frontmatter.status}</span>
+                )}
+                <BlogReadingTime articleRef={articleRef} />
+              </div>
+            </header>
+            <article className="prose" ref={articleRef}>
+              <MdxProvider>
+                <Component />
+              </MdxProvider>
+              <RelatedContent page={page} />
+            </article>
+            <Pager
+              prev={
+                neighbors.prev
+                  ? {
+                      label: neighbors.prev.frontmatter.title ?? neighbors.prev.slug,
+                      href: neighbors.prev.href,
+                    }
+                  : undefined
+              }
+              next={
+                neighbors.next
+                  ? {
+                      label: neighbors.next.frontmatter.title ?? neighbors.next.slug,
+                      href: neighbors.next.href,
+                    }
+                  : undefined
+              }
+            />
+          </div>
         </div>
-        <ReviewRail articleRef={articleRef} />
         <InlineReviewSurface articleRef={articleRef} />
         <SelectionLayer articleRef={articleRef} />
         <SourceFileLauncher contentRef={blogRef(slug)} articleRef={articleRef} />

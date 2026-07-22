@@ -11,10 +11,12 @@ import {
 import { ReviewState, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
+type ReviewControlsLayout = "inline" | "aside" | "dock";
 
 // Badge tone per review state: released = solid, approved = default accent,
 // changes-requested = destructive, in-review/none = muted outline/secondary.
@@ -46,7 +48,13 @@ const NEXT: Record<number, { to: ReviewState; label: string }[]> = {
   [ReviewState.RELEASED]: [],
 };
 
-export default function ReviewControls({ contentRef }: { contentRef: ContentRef }) {
+export default function ReviewControls({
+  contentRef,
+  layout = "inline",
+}: {
+  contentRef: ContentRef;
+  layout?: ReviewControlsLayout;
+}) {
   const { isAllowlisted, isMaintainer } = useAuth();
   const { invalidateDrafts } = useReviewInvalidation();
   const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
@@ -73,22 +81,44 @@ export default function ReviewControls({ contentRef }: { contentRef: ContentRef 
   }
 
   const busy = transition.isPending || release.isPending;
+  const actions = NEXT[state] ?? [];
 
   return (
-    <span className="my-2 inline-flex flex-wrap items-center gap-2 text-sm">
-      <Badge variant={BADGE_VARIANT[state] ?? "secondary"}>
+    <div
+      className={cn(
+        "review-controls",
+        layout === "aside" && "review-controls--aside",
+        layout === "dock" && "review-controls--dock",
+      )}
+    >
+      <Badge variant={BADGE_VARIANT[state] ?? "secondary"} className="review-controls-badge">
         review: {LABEL[state] ?? "unknown"}
       </Badge>
-      {(NEXT[state] ?? []).map((t) => (
-        <Button key={t.to} variant="outline" size="xs" onClick={() => go(t.to)} disabled={busy}>
-          {t.label}
-        </Button>
-      ))}
+      {actions.length > 0 && (
+        <div className="review-controls-actions">
+          {actions.map((t) => (
+            <Button
+              key={t.to}
+              variant="outline"
+              size={layout === "inline" ? "xs" : "sm"}
+              onClick={() => go(t.to)}
+              disabled={busy}
+            >
+              {t.label}
+            </Button>
+          ))}
+        </div>
+      )}
       {state === ReviewState.APPROVED && isMaintainer && (
-        <Button size="xs" onClick={doRelease} disabled={busy}>
+        <Button
+          size={layout === "inline" ? "xs" : "sm"}
+          onClick={doRelease}
+          disabled={busy}
+          className={layout !== "inline" ? "w-full" : undefined}
+        >
           Release
         </Button>
       )}
-    </span>
+    </div>
   );
 }

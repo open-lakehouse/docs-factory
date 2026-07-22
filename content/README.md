@@ -18,6 +18,80 @@ Code in how-to guides is **not** inlined — it is referenced from tested exampl
 files in `examples/` via [`remark-code-snippets`](https://github.com/jknoxville/remark-code-snippets)
 fences, so what the site shows is always what CI runs. See the repo `AGENTS.md`.
 
+## Tutorials: colocated, self-testing folder mode
+
+A how-to references shared `examples/` code across engines. A *tutorial* is one
+narrative with one script, so it colocates its code with its prose: instead of a
+standalone `tutorials/foo.md`, use a folder with an `index.md` plus the script(s)
+it teaches. There is **no separate test file** — running the script *is* the
+test (see below).
+
+```
+content/unitycatalog/tutorials/python-client/
+  index.md              inlines its script via  file=./catalog_flow.py
+  catalog_flow.py       runnable, self-describing, self-testing script (PEP 723)
+  docker-compose.uc.yml the service the script declares it needs
+```
+
+The `file=` fences use the same `# --8<-- [start:region]/[end:region]` markers as
+`examples/` code and resolve relative to `index.md`, so nothing special is needed
+to render them.
+
+### Self-describing scripts (PEP 723 + `[tool.docs-factory]`)
+
+Each tutorial script is **standalone-runnable** and declares everything about how
+to run and test it inline, in a [PEP 723](https://peps.python.org/pep-0723/)
+`# /// script` header:
+
+```python
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["unitycatalog-client>=0.5"]   # resolved by `uv run`
+#
+# [tool.docs-factory]                            # our runtime contract:
+# compose = "docker-compose.uc.yml"              #   compose file to start (rel. to script)
+# services = ["unitycatalog"]                    #   service(s) to wait on
+# base-url-env = "UC_BASE_URL"                   #   env the harness sets to the server URL
+# ///
+```
+
+A reader runs it with `uv run catalog_flow.py` — deps come from the header, no
+project sync. The PEP 723 `dependencies` and the `[tool.docs-factory]` table
+(parsed by `docsnip.scriptmeta`) are the **single source of truth** for the
+script's Python deps and its *runtime* prerequisites — do **not** duplicate them
+in the page's frontmatter (`prerequisites.packages` / `.services` are not read by
+anything; only `prerequisites.datasets` is, for seed-dataset examples). The test
+harness reads `[tool.docs-factory]` to know which compose to start; omit the
+whole table if the script needs no services.
+
+Structure a script as a flat, top-to-bottom program with the flow in one
+`main(base_url)` function (`async def` for async SDKs) plus an
+`if __name__ == "__main__":` footer — so the same code reads linearly on the
+page and runs via `uv run`.
+
+### The script is the test
+
+There are no `test_*.py` files. A pytest plugin in `content/conftest.py`
+discovers every `# /// script` script under `content/` and turns each into a
+test: it starts the compose the script's `[tool.docs-factory]` names (if any),
+runs the script with `uv run` (which resolves the script's own PEP 723 deps),
+and passes if it exits 0. Put assertions in the script — the `if __name__ ==
+"__main__":` footer is outside the rendered regions, so `assert`s there run on
+every `uv run` (turning a silent regression into a non-zero exit) without
+appearing in the docs.
+
+Two lanes:
+
+- **Default** (`just test`): engine examples + tutorial scripts that need no
+  services. Stays green with no Docker.
+- **Service** (`just test-services`, opt-in): scripts that declare a `compose`
+  are auto-marked `needs_uc_server`, so they're deselected by default and run
+  here. The plugin **fails hard** (never skips) if Docker is unavailable, so an
+  opted-in CI run can't quietly pass.
+
+`docsnip check` validates every script's PEP 723 block parses and that any
+declared `compose` file exists.
+
 ## Linking prose to the architecture model
 
 Pages connect to the [estate model](../architecture/) (LikeC4) two ways. Both are

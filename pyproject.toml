@@ -19,3 +19,25 @@ dev = [
     "pytest>=8.0",
     "ruff>=0.6",
 ]
+# Harness deps for the service-backed tutorial tests (opt-in). Only the compose
+# runner is needed here: each tutorial script is executed via `uv run`, which
+# resolves the script's own PEP 723 deps in an ephemeral env — so tutorial-script
+# deps (e.g. unitycatalog-client) never need to be installed in the pytest env.
+test-services = [
+    "testcontainers>=4",
+]
+
+[tool.pytest.ini_options]
+# Collect the engine-example suite and the colocated tutorial scripts under
+# content/ (the content/ plugin turns each # /// script into a test).
+testpaths = ["examples/tests", "content"]
+# examples/tests is on the path so its test module can import the shared
+# `_helpers` loader.
+pythonpath = ["examples/tests"]
+# Service-backed tests are opt-in: excluded by default so a Docker-less `pytest`
+# stays green; CI's tutorials-services job selects them with `-m`.
+addopts = "-m 'not needs_docker and not needs_uc_server'"
+markers = [
+    "needs_docker: requires a running Docker daemon (opt-in)",
+    "needs_uc_server: requires a Unity Catalog server via docker-compose (opt-in)",
+]

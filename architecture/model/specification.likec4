@@ -8,10 +8,13 @@
 // METADATA CONVENTIONS (free-form key/values on elements):
 //   canonicalDoc  — path (relative to architecture/) of the NAVIGATION design
 //                   doc for this element; used by canonicals.yaml / update skill.
-//   explainDoc    — path (relative to architecture/) of the EXPLANATION-PAGE
-//                   body rendered by the site's /explain/<id> route. Distinct
-//                   from canonicalDoc so navigation and explanation can diverge.
 //   sourceRepo    — org/repo identity of a deployment service.
+//
+// EXPLANATION BINDING: an element's long-form explanation is no longer owned by
+// the model. It lives as an ordinary reviewable content page under
+// content/**/explanation/ whose frontmatter declares `explains: <element-id>`.
+// The site resolves the element ↔ page correlation from that relationship (see
+// site/src/graph.ts effectiveRefIds + the ModelContext panel on the doc page).
 
 specification {
 

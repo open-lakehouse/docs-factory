@@ -38,8 +38,6 @@ model {
 
     link https://www.unitycatalog.io
 
-    metadata { explainDoc "explain/unity-catalog.md" }
-
     style {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }

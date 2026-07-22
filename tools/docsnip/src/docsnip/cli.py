@@ -29,6 +29,7 @@ from .frontmatter import (
     load_page_worthy_elements,
     validate,
 )
+from .scriptmeta import check as check_scripts
 from .snippetcheck import check_blogs, check_content
 
 # Per-project published-site URL base for llms.txt links. Placeholder until the
@@ -132,6 +133,10 @@ def cmd_validate(p) -> int:
 def cmd_snippetcheck(p) -> int:
     errors = check_content(p["content"])
     errors.extend(check_blogs(p["blogs"]))
+    # Colocated tutorial scripts carry PEP 723 metadata (deps + a
+    # [tool.docs-factory] runtime contract); validate the block parses and any
+    # declared compose file exists, alongside the snippet-fence checks.
+    errors.extend(check_scripts(p["content"]))
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} snippet error(s)", file=sys.stderr)

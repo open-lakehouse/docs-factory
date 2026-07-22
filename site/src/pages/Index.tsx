@@ -3,13 +3,17 @@ import Shell from "../components/layout/Shell";
 import TerminalHero from "../components/TerminalHero";
 import { blogPosts } from "../content";
 import { useContentVisibility } from "../lib/content-visibility";
-import { docNav, firstDocForProject } from "../sidebar";
+import { useFirstVisibleDocForProject, useVisibleDocNav } from "../sidebar";
 
 export default function Index() {
   const vis = useContentVisibility();
-  const deltaEntry = firstDocForProject("delta");
-  const ucEntry = firstDocForProject("unitycatalog");
-  const featuredDocs = docNav
+  // Product-card targets and the "Start reading" list are overview surfaces, so
+  // they follow the same viewer rule as the sidebar — anonymous viewers only
+  // ever land on published docs.
+  const { nav: visibleNav } = useVisibleDocNav();
+  const deltaEntry = useFirstVisibleDocForProject("delta");
+  const ucEntry = useFirstVisibleDocForProject("unitycatalog");
+  const featuredDocs = visibleNav
     .flatMap((g) => g.buckets.flatMap((b) => b.items.slice(0, 1)))
     .slice(0, 4);
   // "Latest from the blog" is an overview surface, so it obeys the same viewer
@@ -63,6 +67,9 @@ export default function Index() {
                 </Link>
               </li>
             ))}
+            {!vis.isLoading && featuredDocs.length === 0 && (
+              <li className="muted">No published docs yet.</li>
+            )}
           </ul>
         </section>
         <section>

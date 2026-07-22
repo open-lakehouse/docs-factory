@@ -115,6 +115,10 @@
 }
 
 html, body, #root { height: 100%; }
+body:has(.index-scroll-layout),
+#root:has(.index-scroll-layout) {
+  overflow: hidden;
+}
 /* The root element's background paints the whole canvas (incl. below the fold
    and overscroll) and tracks the theme token, so it never two-tones when the
    content is taller than one viewport. */
@@ -148,6 +152,16 @@ body {
 }
 
 .shell { min-height: 100%; }
+/* Index pages: fill the viewport below the sticky topbar; table scrolls inside. */
+.shell:has(.index-scroll-layout) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.shell:has(.index-scroll-layout) .topbar {
+  flex: none;
+}
 
 /* Console navbar — pure black, mono-forward */
 .topbar {
@@ -1690,7 +1704,19 @@ button.tag {
 .blog-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
   font-size: 0.9rem;
+}
+.blog-col-chevron { width: 2.25rem; }
+.blog-col-author { width: 9rem; }
+.blog-col-date { width: 7rem; }
+.blog-col-status { width: 7rem; }
+.blog-table-head { flex: none; }
+.blog-table-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .blog-table thead th {
   padding: 0.55rem 0.85rem;
@@ -3187,6 +3213,47 @@ a.review-author:hover span {
 }
 .docs-facets .blog-tags-section {
   margin: 0 0 1rem;
+}
+
+/* Axis/blog indexes — pin title + facet filters; scroll the table only. */
+.content:has(.index-scroll-layout) {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 1.5rem;
+}
+.index-scroll-layout {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.index-scroll-header {
+  flex: none;
+}
+.index-scroll-header .blog-tags-section:last-child,
+.index-scroll-header .docs-facets {
+  margin-bottom: 0;
+}
+.index-scroll-body {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+.index-scroll-body .blog-table-wrap {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  margin-top: 0;
 }
 
 /* Concept index — model nodes browsed by kind. */

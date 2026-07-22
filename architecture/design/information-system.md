@@ -194,8 +194,8 @@ The gate is tiered:
   want to allow while the model is reworked.
 - **Tier 3 — resolved (counts toward coverage).**
 
-The `coverage` block mirrors the ledger discipline already established in
-[`content/coverage/`](../../content/coverage/README.md):
+The `coverage` block in `graph.json` records resolved vs unresolved references and
+modeled-but-unreferenced elements:
 
 ```jsonc
 "coverage": {

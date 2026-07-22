@@ -51,8 +51,8 @@ Also relevant:
   build it now.
 - The `<Tabs>`/`<TabItem>` engine-tab pattern is already used in
   `content/delta/how-to/read-a-delta-table.mdx` — the existing "island" precedent.
-- The feature-matrix data source is the coverage backlog
-  (`content/coverage/delta.yaml`) + `research/delta-matrix.json`.
+- The feature-matrix data source is `research/delta-matrix.json` (secondary;
+  unverified — see `research/table-formats/report.md`).
 - The `content/delta/explanation/delta-kernel-architecture.md` "C-shaped API /
   three layers" prose is the strongest interactive-diagram candidate.
 
@@ -223,15 +223,14 @@ OAuth. Findings from the Neon docs (sources at bottom):
    data + reactions). The only component exercising state + API.
 1. **Feature / engine support matrix** *(highest ROI)* — filterable/sortable table:
    rows = features, columns = engines, cells = support + source link. Data generated
-   at build from `content/coverage/delta.yaml` + `research/delta-matrix.json` (no
-   hand-authored data). Fills the `reference/table-features.md` stub. Degrades to a
+   at build from `research/delta-matrix.json` (no hand-authored data). Fills the `reference/table-features.md` stub. Degrades to a
    static table.
 2. **Interactive delta-kernel architecture diagram** — the "C-shaped API" + "three
    layers" as an SVG; hover Table/Engine APIs / kernel / engine to highlight + reveal
    a callout, click to pin. Pure SVG + React state. Degrades to the static prose.
 3. **Protocol / feature timeline** — protocol reader/writer versions and when
    features landed (deletion vectors, column mapping, variant, liquid clustering…).
-   Hover a feature → requirements + doc link. Same coverage YAML as the matrix.
+   Hover a feature → requirements + doc link. Same matrix data as #1.
 
 ### Tier 2 — after Tier 1 proves the island pattern
 
@@ -280,7 +279,7 @@ OAuth. Findings from the Neon docs (sources at bottom):
 - `site/src/plugins/remark-code-snippets.mjs` + `tools/docsnip/…/snippetcheck.py` — snippet contract (preserve).
 - `site/src/sidebar.mjs`, `content/*/_meta.yaml` — nav ordering (preserve).
 - `content/delta/explanation/delta-kernel-architecture.md` — source for diagram #2.
-- `content/coverage/delta.yaml`, `research/delta-matrix.json` — data for #1 & #3.
+- `research/delta-matrix.json` — data for #1 & #3.
 - `content/delta/reference/table-features.md` — stub the matrix (#1) fills.
 - `content/delta/how-to/read-a-delta-table.mdx` — existing island (`<Tabs>`) precedent.
 - `proto/docs_factory/tracker/v1/{models,service}.proto` — roadmap domain + backend
@@ -290,7 +289,7 @@ OAuth. Findings from the Neon docs (sources at bottom):
 
 1. `just preview` renders the feature-matrix island; filtering by engine works in-browser.
 2. With JS disabled, the same page still shows a complete static table (degradation check).
-3. Editing `content/coverage/delta.yaml` and rebuilding changes the rendered matrix
+3. Editing `research/delta-matrix.json` and rebuilding changes the rendered matrix
    (data-source-of-truth check — no duplicated data).
 4. `docsnip check` still passes and no Starlight/React import leaked into `content/`
    (builder-agnostic check).

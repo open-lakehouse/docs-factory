@@ -19,7 +19,6 @@ reference docs (`content/`).
 
 ```
 content/          Diátaxis-organized Markdown (tutorials / how-to / reference / explanation)
-content/coverage/ coverage tracker — backlog + per-page/example status (YAML, not published)
 blogs/            narrative blog drafts (draft.md + assets/ + snippets/ per post)
 emit/             deterministic blog draft → flattened Markdown (Google Docs today)
 examples/         real, tested example source — the single source of truth for doc snippets
@@ -55,10 +54,7 @@ proto/            existing trestle tracker API (leave alone)
    `project`. Blog drafts require `title`, `slug`, `status`, `date`, `tags`, `author`,
    `target` (tags must exist in `blogs/tags.yml`).
 
-6. **`content/coverage/` is the backlog + status ledger.** Update coverage status
-   in the *same PR* as content changes. See `content/coverage/README.md`.
-
-7. **Richness is a property of the renderer.** Blog constructs (`:::tip`, `::::journey`,
+6. **Richness is a property of the renderer.** Blog constructs (`:::tip`, `::::journey`,
    LikeC4 diagrams) degrade to plain Markdown on GitHub; the preview upgrades them.
    See `blogs/CONVENTIONS.md` §5 and `site/README.md`.
 

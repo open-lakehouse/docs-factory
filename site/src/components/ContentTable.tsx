@@ -21,33 +21,57 @@ export interface ContentRow {
   detail: ReactNode;
 }
 
+function TableColgroup() {
+  return (
+    <colgroup>
+      <col className="blog-col-chevron" />
+      <col className="blog-col-title" />
+      <col className="blog-col-author" />
+      <col className="blog-col-date" />
+      <col className="blog-col-status" />
+    </colgroup>
+  );
+}
+
+function TableHead() {
+  return (
+    <thead>
+      <tr>
+        <th className="blog-th-chevron" aria-hidden="true" />
+        <th>Title</th>
+        <th className="blog-th-author">Author</th>
+        <th className="blog-th-date">Date</th>
+        <th className="blog-th-status">Status</th>
+      </tr>
+    </thead>
+  );
+}
+
 export default function ContentTable({ rows }: { rows: ContentRow[] }) {
   const [open, setOpen] = useState<string | null>(null);
   const toggle = (id: string) => setOpen((cur) => (cur === id ? null : id));
 
   return (
     <div className="blog-table-wrap">
-      <table className="blog-table">
-        <thead>
-          <tr>
-            <th className="blog-th-chevron" aria-hidden="true" />
-            <th>Title</th>
-            <th className="blog-th-author">Author</th>
-            <th className="blog-th-date">Date</th>
-            <th className="blog-th-status">Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.id}
-              row={row}
-              isOpen={open === row.id}
-              onToggle={() => toggle(row.id)}
-            />
-          ))}
-        </tbody>
+      <table className="blog-table blog-table-head">
+        <TableColgroup />
+        <TableHead />
       </table>
+      <div className="blog-table-scroll">
+        <table className="blog-table blog-table-body">
+          <TableColgroup />
+          <tbody>
+            {rows.map((row) => (
+              <TableRow
+                key={row.id}
+                row={row}
+                isOpen={open === row.id}
+                onToggle={() => toggle(row.id)}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

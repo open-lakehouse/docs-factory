@@ -82,8 +82,7 @@ the model does not yet encode), so its value as a distinct layer is in doubt.
   hard-blocks model rework and punishes authoring ahead of the model.
 - **Tiered coverage gate (chosen)** — malformed references fail CI; references to
   not-yet-modeled (but well-formed) elements are recorded as **coverage gaps** in
-  a ledger (mirroring [`content/coverage/`](../../content/coverage/README.md)).
-  Correctness *ratchets upward* over time instead of blocking change.
+  `graph.json`. Correctness *ratchets upward* over time instead of blocking change.
 
 **The `canonicals.yaml` layer:**
 
@@ -129,7 +128,7 @@ UX surfaces, agent surface) is specified in
   validated graph rather than hand-maintained "see also" lists.
 - The join is decoupled from the model's current shape: authors can reference
   stable specifications today while the logical layer is reworked, and the
-  coverage ledger shows exactly where linkage is still thin.
+  `graph.json` coverage block shows exactly where linkage is still thin.
 - Agents and LLMs get a canonical, maturity-honest, machine-readable index —
   grounding retrieval and citations in fact, directly serving the estate's own
   agentic tooling.

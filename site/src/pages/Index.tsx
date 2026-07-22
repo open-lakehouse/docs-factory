@@ -2,14 +2,20 @@ import { Link } from "react-router-dom";
 import Shell from "../components/layout/Shell";
 import TerminalHero from "../components/TerminalHero";
 import { blogPosts } from "../content";
+import { useContentVisibility } from "../lib/content-visibility";
 import { docNav, firstDocForProject } from "../sidebar";
 
 export default function Index() {
+  const vis = useContentVisibility();
   const deltaEntry = firstDocForProject("delta");
   const ucEntry = firstDocForProject("unitycatalog");
   const featuredDocs = docNav
     .flatMap((g) => g.buckets.flatMap((b) => b.items.slice(0, 1)))
     .slice(0, 4);
+  // "Latest from the blog" is an overview surface, so it obeys the same viewer
+  // visibility rule as the blog index — anonymous viewers see only published
+  // posts. The frontmatter status meta line is likewise reviewer-only.
+  const latestPosts = vis.filterVisible(blogPosts).slice(0, 4);
 
   return (
     <Shell wide>
@@ -65,17 +71,20 @@ export default function Index() {
           </h2>
           <p className="muted">Narrative drafts under <code>blogs/</code>.</p>
           <ul className="draft-list compact card-list">
-            {blogPosts.slice(0, 4).map((d) => (
+            {latestPosts.map((d) => (
               <li key={d.href}>
                 <Link to={d.href} className="draft-card">
                   <span className="draft-card-title">{d.frontmatter.title ?? d.slug}</span>
                   <span className="meta">
-                    {d.frontmatter.status ?? ""}
+                    {vis.showStatusColumns ? vis.statusFor(d).frontmatter : ""}
                     {d.frontmatter.date ? ` · ${d.frontmatter.date}` : ""}
                   </span>
                 </Link>
               </li>
             ))}
+            {!vis.isLoading && latestPosts.length === 0 && (
+              <li className="muted">No published posts yet.</li>
+            )}
           </ul>
         </section>
       </div>

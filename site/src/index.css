@@ -1710,7 +1710,9 @@ button.tag {
 .blog-col-chevron { width: 2.25rem; }
 .blog-col-author { width: 9rem; }
 .blog-col-date { width: 7rem; }
-.blog-col-status { width: 7rem; }
+/* Reviewer-only status columns. Two of these render side by side (author status
+ * + review state); the review-state label ("changes requested") is the widest. */
+.blog-col-status { width: 8.5rem; }
 .blog-table-head { flex: none; }
 .blog-table-scroll {
   flex: 1 1 auto;
@@ -1733,7 +1735,7 @@ button.tag {
 .blog-th-chevron { width: 2.25rem; }
 .blog-th-author { width: 9rem; }
 .blog-th-date { width: 7rem; }
-.blog-th-status { width: 7rem; }
+.blog-th-status { width: 8.5rem; }
 
 .blog-row {
   border-bottom: 1px solid var(--border);
@@ -1893,6 +1895,18 @@ a.blog-row-title:hover { color: var(--accent); }
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 4px;
+}
+
+/* Review-state badge in the index tables' reviewer-only "Review" column. Uses
+ * the shadcn Badge tones (via ReviewStateBadge) but shrinks the type and lets
+ * the longest label ("changes requested") wrap instead of clipping in the
+ * fixed-width column. */
+.review-state-badge {
+  font-size: 0.62rem;
+  line-height: 1.15;
+  text-transform: lowercase;
+  white-space: normal;
+  text-align: center;
 }
 
 /* Expanded detail row */

@@ -1,8 +1,28 @@
 # The docs site as a model-driven information system
 
-**Status:** design (proposed alongside [ADR-0004](../adr/ADR-0004-model-driven-information-system.md)).
+**Status:** design (proposed alongside [ADR-0004](../adr/ADR-0004-model-driven-information-system.md)); **partially superseded by implementation** — see As-built.
 **Scope:** cross-cutting — spans the LikeC4 model, `blogs/`, `content/`,
 `tools/docsnip`, and `site/`.
+
+> **As-built note (2026-07).** The central artifact this document specifies —
+> a generated `site-artifacts/graph.json` knowledge index carrying a `coverage`
+> block (§3, §4) — **was never built.** The implementation kept the *contracts*
+> (the hybrid tag/`references:` join, the tiered validation gate) but materialized
+> them differently, so §3, §7's `graph.json` input, and the §8 "reading from
+> `graph.json`" framing describe a plan, not the code:
+>
+> - **`site/` reads the LikeC4 model live**, not a `graph.json`. Estate views and
+>   entity/backlink data come from the `likec4:single-project` Vite plugin over
+>   `../architecture/model` plus content frontmatter (see `site/src/explain.ts`,
+>   which states "no graph.json"). `docsnip generate` emits only
+>   `examples-manifest.json` and the per-project `*.llms.txt`.
+> - **The tier-2 coverage result is ephemeral**, printed to stderr by
+>   `docsnip validate` (`model-reference coverage: X/Y`, `explanation coverage:
+>   X/Y`) and never persisted or failed on — there is no on-disk `coverage`
+>   block. The live "No explanation yet" gap rows in `site/src/pages/AxisIndex.tsx`
+>   are the UI-side equivalent.
+>
+> The rest of the document is retained as the design record.
 
 This document specifies the **connection mechanism** that lets the estate LikeC4
 model impose structure and internal linkage on the documentation site. It is
@@ -55,6 +75,10 @@ flowchart LR
   modeljson --> graph["site-artifacts/graph.json (+ coverage)"]
   graph --> ui["entity pages · backlinks · focused diagrams · llms.txt"]
 ```
+
+> As-built: the `graph.json` node was never realized. `site/` reads
+> `dist/model.json` live (via the `likec4:single-project` Vite plugin) to drive
+> `ui`; only `*.llms.txt` and `examples-manifest.json` are generated artifacts.
 
 ### 2.1 Tags gain optional structure (backward-compatible)
 
@@ -118,6 +142,11 @@ identity in the estate, so the page's linkage survives even if `lakehouse.catalo
 is renamed in a model rework.
 
 ## 3. The knowledge index (`site-artifacts/graph.json`)
+
+> **As-built: not implemented.** This entire section describes a generated
+> artifact that was never built. `site/` instead reads the LikeC4 model live and
+> joins it to content frontmatter at build/render time; `docsnip` gained no
+> `graph.json` generator. Retained as the original design.
 
 `docsnip` gains a generator that joins the model export with content frontmatter
 into a single artifact under [`site-artifacts/`](../../site-artifacts), alongside
@@ -193,6 +222,15 @@ The gate is tiered:
   block and surfaced as a warning — this is authoring ahead of the model, which we
   want to allow while the model is reworked.
 - **Tier 3 — resolved (counts toward coverage).**
+
+> **As-built: the tiered gate shipped; the persisted `coverage` block did not.**
+> `docsnip validate` classifies references tier-1 (fatal) vs tier-2 (non-fatal
+> coverage gap) as designed, but the tier-2 result is printed to stderr
+> (`model-reference coverage: X/Y`, `explanation coverage: X/Y`) rather than
+> written into a `graph.json` `coverage` block. The `unresolved` /
+> `unreferencedElements` structure below is illustrative of the plan, not an
+> on-disk artifact; the live UI equivalent is the "No explanation yet" gap rows
+> in `site/src/pages/AxisIndex.tsx`.
 
 The `coverage` block in `graph.json` records resolved vs unresolved references and
 modeled-but-unreferenced elements:
@@ -347,8 +385,10 @@ workloads.
 - **Phase 3 — reconcile & subsume.** Reconcile the `canonicals.yaml`↔`.likec4`
   drift and subsume the registry into the generated index (§6). Expand references
   into capabilities/roles as the logical layer settles.
-- **Ratcheting.** At every phase the coverage block (§4) reports where linkage is
+- **Ratcheting.** At every phase the coverage gate (§4) reports where linkage is
   thin; correctness is expected to improve monotonically, not arrive complete.
+  (As-built: this is the ephemeral `docsnip validate` stderr report, not a
+  persisted `graph.json` coverage block.)
 
 ## 11. Open questions
 

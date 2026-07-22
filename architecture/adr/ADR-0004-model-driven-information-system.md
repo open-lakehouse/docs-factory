@@ -2,10 +2,35 @@
 
 | Field | Value |
 |---|---|
-| Status | Proposed |
+| Status | Partially superseded by implementation (see As-built) |
 | Date | 2026-07-18 |
 | Supersedes | — |
 | Superseded by | — |
+
+## As-built (2026-07 update)
+
+This ADR proposed materializing the join as a build-time
+`site-artifacts/graph.json` knowledge index carrying a `coverage` block. **That
+artifact was never built.** The implementation diverged in two ways, and the
+`graph.json` decision below should be read as *historical* — the alternative it
+rejected ("runtime model query") is closer to what actually shipped:
+
+- **No `graph.json`.** `site/` consumes the LikeC4 estate model *live* at build
+  time via the `likec4:single-project` Vite plugin (workspace
+  `../architecture/model`), rather than reading a generated join artifact. Entity
+  pages, backlinks, and focused diagrams derive from that live model plus content
+  frontmatter — see `site/src/explain.ts`, which notes explicitly there is "no
+  graph.json." `docsnip generate` emits only `examples-manifest.json` and the
+  per-project `*.llms.txt`.
+- **The coverage "block" is an ephemeral CI signal, not a persisted artifact.**
+  The tiered gate did ship, but the tier-2 result is printed to stderr by
+  `docsnip validate` (`model-reference coverage: X/Y`, `explanation coverage:
+  X/Y`) and never written to a file or failed on. There is no persisted coverage
+  record and no `unresolved`/`unreferencedElements` structure on disk.
+
+The hybrid join, the `references:`/`explains:` frontmatter contract, and the
+tiered (tier-1 fatal / tier-2 non-fatal) validation are all real and current;
+only the `graph.json` materialization and its on-disk coverage block are not.
 
 ## Context
 

@@ -17,11 +17,14 @@ import RelatedContent from "../components/RelatedContent";
 import MdxProvider from "../MdxProvider";
 import { findDoc } from "../content";
 import { effectiveRefIds } from "../graph";
-import { docNeighbors } from "../sidebar";
+import { useDocNeighbors } from "../sidebar";
+import { useContentVisibility } from "../lib/content-visibility";
 
 export default function DocPage() {
   const { project = "", bucket = "", slug = "" } = useParams();
   const page = findDoc(project, bucket, slug);
+  const vis = useContentVisibility();
+  const neighbors = useDocNeighbors(page?.href ?? "");
   const articleRef = useRef<HTMLElement>(null);
 
   if (!page) {
@@ -34,8 +37,29 @@ export default function DocPage() {
     );
   }
 
+  // Route guard: direct-URL access to an unpublished doc. Visibility is
+  // DB-canonical (listDrafts), so we wait for it to resolve before deciding —
+  // rendering the draft first and hiding it after would leak content. Anonymous
+  // viewers hitting a draft URL get the same "Not found" as a bad slug;
+  // allowlisted viewers pass straight through.
+  if (vis.isLoading) {
+    return (
+      <Shell showSidebarToggle wide>
+        <p className="muted">Loading…</p>
+      </Shell>
+    );
+  }
+  if (!vis.isVisible(page)) {
+    return (
+      <Shell showSidebarToggle wide>
+        <p>
+          Not found: docs/{project}/{bucket}/{slug}. <Link to="/reference">Back to reference.</Link>
+        </p>
+      </Shell>
+    );
+  }
+
   const { Component, frontmatter } = page;
-  const neighbors = docNeighbors(page.href);
 
   return (
     <Shell

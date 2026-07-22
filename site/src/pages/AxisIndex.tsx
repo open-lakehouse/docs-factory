@@ -206,58 +206,66 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
 
   return (
     <Shell wide accent={scopeAccent(scopeId)}>
-      <h1>{meta.title}</h1>
-      <p className="muted">{meta.blurb}</p>
+      <div className="index-scroll-layout">
+        <div className="index-scroll-header">
+          <h1>{meta.title}</h1>
+          <p className="muted">{meta.blurb}</p>
 
-      <div className="docs-facets">
-        <div className="blog-tags-section">
-          <div className="blog-tags-heading">
-            <p className="blog-tags-label">Concepts</p>
-            {faceted && (
-              <button type="button" className="blog-tags-clear" onClick={clearAll}>
-                Clear all
-              </button>
-            )}
+          <div className="docs-facets">
+            <div className="blog-tags-section">
+              <div className="blog-tags-heading">
+                <p className="blog-tags-label">Concepts</p>
+                {faceted && (
+                  <button type="button" className="blog-tags-clear" onClick={clearAll}>
+                    Clear all
+                  </button>
+                )}
+              </div>
+              <div className="tag-list">
+                {conceptFacets.map((c) => (
+                  <SemanticChip
+                    key={c.id}
+                    label={c.title}
+                    active={activeRefs.includes(c.id)}
+                    onToggle={() => toggleRef(c.id)}
+                    card={{
+                      title: c.title,
+                      kindLabel: c.kindLabel,
+                      summary: c.summary,
+                      href: c.href ?? c.externalUrl,
+                      externalUrl: c.href ? c.externalUrl : null,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="blog-tags-section">
+              <p className="blog-tags-label">Engines</p>
+              <div className="tag-list">
+                {ENGINE_SLUGS.map((slug) => (
+                  <SemanticChip
+                    key={slug}
+                    label={tagLabel(slug)}
+                    active={activeEngines.includes(slug)}
+                    onToggle={() => toggleEngine(slug)}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-          <div className="tag-list">
-            {conceptFacets.map((c) => (
-              <SemanticChip
-                key={c.id}
-                label={c.title}
-                active={activeRefs.includes(c.id)}
-                onToggle={() => toggleRef(c.id)}
-                card={{
-                  title: c.title,
-                  kindLabel: c.kindLabel,
-                  summary: c.summary,
-                  href: c.href ?? c.externalUrl,
-                  externalUrl: c.href ? c.externalUrl : null,
-                }}
-              />
-            ))}
-          </div>
+
+          {rows.length === 0 && (
+            <p className="muted">No {meta.title.toLowerCase()} match the current filters.</p>
+          )}
         </div>
 
-        <div className="blog-tags-section">
-          <p className="blog-tags-label">Engines</p>
-          <div className="tag-list">
-            {ENGINE_SLUGS.map((slug) => (
-              <SemanticChip
-                key={slug}
-                label={tagLabel(slug)}
-                active={activeEngines.includes(slug)}
-                onToggle={() => toggleEngine(slug)}
-              />
-            ))}
+        {rows.length > 0 && (
+          <div className="index-scroll-body">
+            <ContentTable rows={rows} />
           </div>
-        </div>
+        )}
       </div>
-
-      {rows.length === 0 ? (
-        <p className="muted">No {meta.title.toLowerCase()} match the current filters.</p>
-      ) : (
-        <ContentTable rows={rows} />
-      )}
     </Shell>
   );
 }

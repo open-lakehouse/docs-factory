@@ -9,7 +9,7 @@
 // Auth: an interceptor resolves the viewer once per request; RPCs read it via
 // getViewer(ctx) and enforce with requireAllowlisted / requireMaintainer.
 import { create } from "@bufbuild/protobuf";
-import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
+import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type ConnectRouter } from "@connectrpc/connect";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
@@ -55,6 +55,7 @@ import {
   ThreadSchema,
   SnippetRefSchema,
   ReviewState,
+  Role,
 } from "../gen/docs_factory/review/v1/messages_pb.js";
 import type { AuthProvider } from "../auth/provider.js";
 import {
@@ -68,12 +69,14 @@ import {
   areaToDb,
   areaFromDb,
   contentVersionFromRow,
+  dateOnlyToUtcTimestamp,
   type ContentVersionRow,
 } from "../db-map.js";
 import { roleFromDb } from "../allowlist.js";
 import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
 import {
   assembleThreads,
+  commentFromRow,
   recentCommentFromRow,
   type CommentRow,
   type RecentCommentRow,
@@ -121,6 +124,8 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
 
 // The joined shape behind a DraftSummary: latest version metadata + current
 // review state + open-comment count + RevOps pipeline fields (content_revops).
+// The `version_*` columns are the latest content_version (null when a draft has
+// review activity but no registered version yet); they back latest_version.
 type DraftSummaryRow = {
   area: string;
   slug: string;
@@ -132,28 +137,47 @@ type DraftSummaryRow = {
   target_release_date: Date | string | null;
   review_state: string | null;
   open_comments: number;
+  version_id: string | null;
+  version_content_hash: string | null;
+  version_git_sha: string | null;
+  version_created_at: Date | null;
 };
 
 function draftSummaryFromRow(r: DraftSummaryRow) {
-  // The `date` column comes back as a Date (postgres.js) or an ISO date string;
-  // normalize to a Timestamp at the date's midnight for the wire.
   const target =
-    r.target_release_date == null
-      ? undefined
-      : timestampFromDate(new Date(r.target_release_date));
+    r.target_release_date == null ? undefined : dateOnlyToUtcTimestamp(r.target_release_date);
+  const ref = create(ContentRefSchema, {
+    area: areaFromDb(r.area),
+    slug: r.slug,
+    project: r.project ?? undefined,
+    bucket: r.bucket ?? undefined,
+  });
   return create(DraftSummarySchema, {
-    ref: create(ContentRefSchema, {
-      area: areaFromDb(r.area),
-      slug: r.slug,
-      project: r.project ?? undefined,
-      bucket: r.bucket ?? undefined,
-    }),
+    ref,
     title: r.title ?? r.slug,
     frontmatterStatus: r.frontmatter_status ?? "",
     reviewState: REVIEW_STATE_BY_DB[r.review_state ?? "none"] ?? ReviewState.NONE,
     openCommentCount: r.open_comments,
     priority: r.priority ?? undefined,
     targetReleaseDate: target,
+    latestVersion:
+      r.version_id == null
+        ? undefined
+        : contentVersionFromRow(
+            {
+              id: r.version_id,
+              area: r.area,
+              slug: r.slug,
+              project: r.project,
+              bucket: r.bucket,
+              content_hash: r.version_content_hash ?? "",
+              git_sha: r.version_git_sha ?? "",
+              title: r.title,
+              frontmatter_status: r.frontmatter_status,
+              created_at: r.version_created_at ?? new Date(0),
+            },
+            ref,
+          ),
   });
 }
 
@@ -170,6 +194,8 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string) {
     )
     select ${area}::text as area, ${slug}::text as slug,
       l.project, l.bucket, l.title, l.frontmatter_status,
+      l.id as version_id, l.content_hash as version_content_hash,
+      l.git_sha as version_git_sha, l.created_at as version_created_at,
       rv.priority, rv.target_release_date,
       (select rs.state from review_state rs
         where rs.area = ${area} and rs.slug = ${slug}
@@ -223,6 +249,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             select area, slug from comment
           )
           select k.area, k.slug, l.project, l.bucket, l.title, l.frontmatter_status,
+            l.id as version_id, l.content_hash as version_content_hash,
+            l.git_sha as version_git_sha, l.created_at as version_created_at,
             rv.priority, rv.target_release_date,
             (select rs.state from review_state rs
               where rs.area = k.area and rs.slug = k.slug
@@ -248,8 +276,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               )
             )
           order by
+            k.area,
             case when ${req.orderByPriority ?? false} then rv.priority end asc nulls last,
-            k.area, l.project nulls first, l.bucket nulls first, k.slug
+            l.project nulls first, l.bucket nulls first, k.slug
         `;
 
         const drafts = rows.map(draftSummaryFromRow);
@@ -351,11 +380,23 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // section join is against the LATEST version's sections (a comment on a
         // since-removed heading simply gets an empty label). Tombstoned authors
         // are skipped. UUIDv7 ids order-match created_at, giving a stable tiebreak.
+        // `roots` climbs each comment's parent chain to its thread root, so the
+        // resolution join keys on the real root — coalesce(parent_id, id) would
+        // only be correct one level deep and returns the wrong id for a reply
+        // nested two or more levels down (its parent is another reply, not the
+        // root that comment_resolution is keyed by).
         const rows = await sql<RecentCommentRow[]>`
           with latest as (
             select distinct on (area, slug) id, area, slug, project, bucket, title
             from content_version
             order by area, slug, created_at desc
+          ),
+          roots as (
+            select c.id, c.id as root_id, c.parent_id from comment c
+            where c.parent_id is null
+            union all
+            select c.id, r.root_id, c.parent_id
+            from comment c join roots r on c.parent_id = r.id
           )
           select c.id, c.area, c.slug,
                  l.project, l.bucket,
@@ -369,12 +410,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  sec.heading_text as heading_text,
                  coalesce(cr.resolved, false) as resolved
           from comment c
+          left join roots r on r.id = c.id
           left join latest l on l.area = c.area and l.slug = c.slug
           left join content_version cv on cv.id = c.authored_version_id
           left join content_section sec
             on sec.version_id = l.id and sec.anchor_slug = c.anchor_slug
           left join comment_resolution cr
-            on cr.thread_root_id = coalesce(c.parent_id, c.id)
+            on cr.thread_root_id = r.root_id
           where c.author_login <> ${TOMBSTONE_LOGIN}
             and (${areaFilter}::text is null or c.area = ${areaFilter})
           order by c.created_at desc, c.id desc
@@ -460,21 +502,26 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                     (select git_sha from content_version where id = comment.authored_version_id)
                       as authored_git_sha
         `;
-        const { threads } = assembleThreads(
-          { area, slug: req.ref.slug, project: req.ref.project, bucket: req.ref.bucket },
-          [row],
-          [],
-        );
+        // Return the just-created comment directly. assembleThreads only surfaces
+        // roots (a reply lands under childrenByParent with no root in this
+        // single-row batch), so map the row itself — this is correct for both a
+        // new root and a reply.
+        const protoRef = create(ContentRefSchema, {
+          area: areaFromDb(area),
+          slug: req.ref.slug,
+          project: req.ref.project ?? undefined,
+          bucket: req.ref.bucket ?? undefined,
+        });
         // Hint any SSE-subscribed reviewers to refetch (best-effort).
         await notifyCommentsChanged(sql, { area, slug: req.ref.slug });
         return create(CreateCommentResponseSchema, {
-          comment: threads[0]?.root ?? undefined,
+          comment: commentFromRow(row, protoRef),
         });
       },
 
       async resolveThread(req: ResolveThreadRequest, ctx) {
         const viewer = requireAllowlisted(ctx);
-        const thread = await setResolved(req.threadRootId, true, viewer.login ?? "unknown");
+        const thread = await setResolved(req.threadRootId, true, actorId(viewer));
         if (thread.root?.ref) {
           await notifyCommentsChanged(db(), {
             area: areaToDb(thread.root.ref.area),
@@ -565,14 +612,14 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       async transitionReview(req: TransitionReviewRequest, ctx) {
         const viewer = requireAllowlisted(ctx);
-        const state = await transition(req.ref, req.toState, req.note, ctx, viewer.login);
+        const state = await transition(req.ref, req.toState, req.note, ctx, actorId(viewer));
         return create(TransitionReviewResponseSchema, { state });
       },
 
       async releaseContent(req: ReleaseContentRequest, ctx) {
         // Release is maintainer-only and terminal.
         const viewer = requireMaintainer(ctx);
-        const state = await transition(req.ref, ReviewState.RELEASED, req.note, ctx, viewer.login);
+        const state = await transition(req.ref, ReviewState.RELEASED, req.note, ctx, actorId(viewer));
         return create(ReleaseContentResponseSchema, { state });
       },
 
@@ -630,18 +677,55 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         }
 
         if (req.action === ManageAllowlistRequest_Action.ADD) {
-          const role = req.entry.role === 3 ? "maintainer" : "reviewer";
-          await sql`
-            insert into reviewer_allowlist (github_login, email, role, added_by)
-            values (${githubLogin ?? null}, ${email ?? null}, ${role}, ${actor})
-            on conflict (lower(github_login)) do update set role = excluded.role
+          if (req.entry.role === Role.UNSPECIFIED || req.entry.role === Role.ANONYMOUS) {
+            throw new ConnectError(
+              "role must be REVIEWER or MAINTAINER",
+              Code.InvalidArgument,
+            );
+          }
+          const role = req.entry.role === Role.MAINTAINER ? "maintainer" : "reviewer";
+          // An entry can key on github_login, email, or both, and each has its
+          // own partial-unique index — so no single `on conflict` target covers
+          // both. Match an existing row by EITHER identifier and update it;
+          // otherwise insert. Idempotent for a re-add by login or by email.
+          const [existing] = await sql<{ id: string }[]>`
+            select id from reviewer_allowlist
+            where (${githubLogin ?? null}::text is not null
+                     and lower(github_login) = lower(${githubLogin ?? null}))
+               or (${email ?? null}::text is not null
+                     and lower(email) = lower(${email ?? null}))
+            limit 1
           `;
+          if (existing) {
+            await sql`
+              update reviewer_allowlist
+              set github_login = coalesce(${githubLogin ?? null}, github_login),
+                  email = coalesce(${email ?? null}, email),
+                  role = ${role}
+              where id = ${existing.id}
+            `;
+          } else {
+            await sql`
+              insert into reviewer_allowlist (github_login, email, role, added_by)
+              values (${githubLogin ?? null}, ${email ?? null}, ${role}, ${actor})
+            `;
+          }
         } else if (req.action === ManageAllowlistRequest_Action.REMOVE) {
-          await sql`
-            delete from reviewer_allowlist
-            where (${githubLogin ?? null}::text is not null and lower(github_login) = lower(${githubLogin ?? null}))
-               or (${email ?? null}::text is not null and lower(email) = lower(${email ?? null}))
-          `;
+          // Remove targets ONE identity. When both are supplied we key on the
+          // github_login (the primary identifier); OR-ing across both could
+          // delete two unrelated entries if the caller passed a login and an
+          // email belonging to different people.
+          if (githubLogin) {
+            await sql`
+              delete from reviewer_allowlist
+              where lower(github_login) = lower(${githubLogin})
+            `;
+          } else {
+            await sql`
+              delete from reviewer_allowlist
+              where lower(email) = lower(${email ?? null})
+            `;
+          }
         } else {
           throw new ConnectError("unknown allowlist action", Code.InvalidArgument);
         }
@@ -912,7 +996,7 @@ async function transition(
   toState: ReviewState,
   note: string | undefined,
   ctx: Parameters<typeof getViewer>[0],
-  actorLogin: string | undefined,
+  actor: string,
 ): Promise<ReviewState> {
   if (!ref) throw new ConnectError("ref is required", Code.InvalidArgument);
   const toDb = DB_BY_REVIEW_STATE[toState];
@@ -946,9 +1030,19 @@ async function transition(
   await sql`
     insert into review_state (area, slug, state, version_id, actor_user_id, note)
     values (${area}, ${ref.slug}, ${toDb}, ${ver?.id ?? null},
-            ${actorLogin ?? "unknown"}, ${note ?? null})
+            ${actor}, ${note ?? null})
   `;
   return toState;
+}
+
+/**
+ * The stable actor identity to persist in *_user_id columns: the Neon Auth user
+ * id when present, else the login (which is all the mock/anon providers carry).
+ * Keeps actor_user_id / resolved_by matching author_user_id's semantics —
+ * previously these were written from the login, contradicting their name.
+ */
+function actorId(viewer: { userId?: string; login?: string }): string {
+  return viewer.userId ?? viewer.login ?? "unknown";
 }
 
 /** Reject unless the request's build secret matches BUILD_SECRET (which must be set). */

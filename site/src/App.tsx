@@ -5,6 +5,7 @@ import DocPage from "./pages/DocPage";
 import BlogIndex from "./pages/BlogIndex";
 import BlogPost from "./pages/BlogPost";
 import ReviewDashboard from "./pages/ReviewDashboard";
+import RevOpsDashboard from "./pages/RevOpsDashboard";
 import DevPersonaSwitcher from "./components/DevPersonaSwitcher";
 
 export default function App() {
@@ -23,6 +24,8 @@ export default function App() {
 
         {/* Reviewer-only consolidated dashboard (guarded inside the page). */}
         <Route path="/review" element={<ReviewDashboard />} />
+        {/* Reviewer-only blog pipeline: priority order + target release dates. */}
+        <Route path="/review/revops" element={<RevOpsDashboard />} />
 
         {/* Detail routes. Explanation concepts are ordinary doc pages that
             declare `explains: <id>`; there is no separate /explain route — the

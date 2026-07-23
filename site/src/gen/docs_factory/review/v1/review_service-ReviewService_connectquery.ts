@@ -92,6 +92,22 @@ export const transitionReview = ReviewService.method.transitionReview;
 export const releaseContent = ReviewService.method.releaseContent;
 
 /**
+ * RevOps pipeline: set a content item's ordered priority (allowlist-gated).
+ * Absent priority clears the rank. Returns the refreshed summary row.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.SetPriority
+ */
+export const setPriority = ReviewService.method.setPriority;
+
+/**
+ * RevOps pipeline: set (or clear) a content item's target release date
+ * (allowlist-gated). Absent date clears it. Returns the refreshed summary row.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.SetTargetReleaseDate
+ */
+export const setTargetReleaseDate = ReviewService.method.setTargetReleaseDate;
+
+/**
  * Maintainer-only allowlist management.
  *
  * @generated from rpc docs_factory.review.v1.ReviewService.ManageAllowlist

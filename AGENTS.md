@@ -13,22 +13,27 @@ CI-tested examples here, then migrate docs into the sites later. Content is
 local preview harness, not from JSX or site-specific syntax in the source files.
 
 Narrative (blogs) stays separate from architectural fact (`architecture/`) and from
-reference docs (`content/`).
+reference docs (`content/`). A fourth scope is kept apart too: decisions and design
+about **the factory itself** (the site, emitters, review server, authoring pipeline)
+live in `docs/`, not in `architecture/` — the latter is *only* fact about the
+lakehouse we document. The dividing line is `architecture/adr/ADR-0002`.
 
 ## Layout
 
 ```
 content/          Diátaxis-organized Markdown (tutorials / how-to / reference / explanation)
-blogs/            narrative blog drafts (draft.md + assets/ + snippets/ per post)
+blogs/            narrative blog drafts (draft.md + assets/ + snippets/ per post) + STORYLINE
 emit/             deterministic blog draft → flattened Markdown (Google Docs today)
 examples/         real, tested example source — the single source of truth for doc snippets
 seed/             docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
 tools/docsnip/    content tooling (frontmatter validate, snippet check, manifest, llms.txt)
 site/             throwaway Vite + React + MDX preview (docs + blogs; not wired into CI)
 site-artifacts/   GENERATED — llms.txt + examples-manifest.json (do not hand-edit)
-architecture/     LikeC4 model + design docs + ADRs + estate facts (estate.yml, glossary)
+architecture/     LAKEHOUSE FACT: LikeC4 model + design docs + ADRs + estate facts (estate.yml, glossary)
+docs/             FACTORY META: design + decisions about the factory itself (site/emit/server/authoring)
+server/           review/release backend (Connect RPC + Postgres) for the in-app review layer
+proto/            review/release service proto (docs_factory/review/v1)
 research/         existing research reports (leave alone)
-proto/            existing trestle tracker API (leave alone)
 ```
 
 ## Load-bearing conventions

@@ -1,4 +1,4 @@
-# ADR-0007: System boundary semantics and generic relationships
+# ADR-0006: System boundary semantics and generic relationships
 
 | Field | Value |
 |---|---|
@@ -40,7 +40,7 @@ Two industry references frame the boundary question. Classical **C4** uses
 `Domain → System → Component → API/Resource`. Both give a first-class top-level
 *system boundary*, which is precisely the (c) role `lakehouse` is playing
 informally. But our logical layer is richer than either default hierarchy: it has
-three axes — capability *verbs*, governed-asset *nouns* (ADR-0006), and the
+three axes — capability *verbs*, governed-asset *nouns* (ADR-0005), and the
 zero-trust governance-role decomposition. Flattening those to fit
 SoftwareSystem→Container→Component would lose the very structure that makes the
 model useful for the docs site.
@@ -81,7 +81,7 @@ The two meanings that nesting was conflating are separated:
   and is now nameable by the generic **`partOf`** edge where a tree edge does not
   already imply it.
 - **Asset belonging** was never composition: it is carried by the existing
-  **`requires`** edge (asset → capability, ADR-0006) — an asset kind is a
+  **`requires`** edge (asset → capability, ADR-0005) — an asset kind is a
   governed *subject*, not a *part* of the platform.
 
 Two generic relationship kinds are added:
@@ -98,7 +98,7 @@ was an implementation→implementation edge misusing the spec-consumption kind
 (`consumes` is impl→specification); it becomes `polars -[dependsOn]-> deltaRs`.
 
 **`implementation` is affirmed unchanged.** It maps cleanly to the Backstage
-**Component** (ADR-0005) and is not a stand-in for a system. The
+**Component** (ADR-0004) and is not a stand-in for a system. The
 implementation↔deployment-service distinction (`datafusion` the logical
 implementation vs `hydrofoil` the deployed `service`) is intentional per
 ADR-0003 and is retained.

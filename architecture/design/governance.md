@@ -45,7 +45,7 @@ with tradeoffs, not a single prescription."* Much of the distributed topology is
 |---|---|
 | decide/enforce split (breakwater `PolicyEngine` + `PolicyQueryPlanner`) | **Built** |
 | Two-layer Cedar enforcement (coarse gate + in-plan RLS/CM) | **Built** |
-| Catalog as authoritative resource PIP (`TableFacts`, ADR-0007) | **Built** |
+| Catalog as authoritative resource PIP (`TableFacts`, ADR-0006) | **Built** |
 | Identity PIP (v1) | **Built** |
 | Authorize-then-vend (the PA) | **Built** |
 | OCI Cedar bundle (the PAP artifact) | **Built** |

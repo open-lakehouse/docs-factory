@@ -1,4 +1,4 @@
-# ADR-0005: Capability / specification / implementation typing
+# ADR-0004: Capability / specification / implementation typing
 
 | Field | Value |
 |---|---|
@@ -100,8 +100,8 @@ altitude and `service → datastore` at the runtime altitude.
 - The model expresses "X implements spec Y" and "engine Z consumes API Y" — the
   distinctions the Lance stack and Backstage treat as first-class.
 - Specifications are the most stable, most externally-documented anchors in the
-  estate, which strengthens the content-to-model join in
-  [ADR-0004](./ADR-0004-model-driven-information-system.md).
+  estate, which strengthens the content-to-model join in the docs-factory
+  [information-system decision](../../docs/decisions/ADR-0001-model-driven-information-system.md).
 - The infrastructure-modeling question has one reusable answer.
 - The reference chain gained `fileFormat` and `observability`, closing obvious gaps.
 

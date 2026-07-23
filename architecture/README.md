@@ -26,8 +26,10 @@ source-level implementation.
   rendered through views. The `.likec4` files are the source of truth; `dist/` is
   generated.
 
-Narrative (the "why", framing, naming) lives on the writing side and references
-this model. If it's a fact about how the software is *structured*, it lives here.
+Narrative (the "why", framing, naming) lives in [`blogs/`](../blogs/) (`STORYLINE.md`
+and the drafts) and references this model; decisions about the docs factory itself
+live in [`docs/`](../docs/README.md). If it's a fact about how the software is
+*structured*, it lives here. See [ADR-0002](./adr/ADR-0002-facts-here-narrative-separate.md).
 
 ## Layout
 

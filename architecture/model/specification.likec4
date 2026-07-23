@@ -130,7 +130,7 @@ specification {
 
   // --- Relationship kinds --------------------------------------------------
 
-  // Generic backbone (ADR-0007): the coarse composition + dependency edges C4 /
+  // Generic backbone (ADR-0006): the coarse composition + dependency edges C4 /
   // Backstage assume, so agents can reason over the graph coarsely before
   // drilling into a specific kind.
   //   partOf    — generic COMPOSITION. Added only where nesting does NOT already
@@ -155,7 +155,7 @@ specification {
   relationship implements { line dotted }  // an implementation implements a spec (Backstage providesApi)
   relationship consumes { line dashed }    // an implementation consumes a spec (Backstage consumesApi; a dependsOn)
 
-  // Governed-asset edges (the subject axis — see ADR-0006):
+  // Governed-asset edges (the subject axis — see ADR-0005):
   relationship requires                    // an asset kind requires a capability to be managed
   relationship governs                     // a catalog specification governs an asset kind
 

@@ -49,7 +49,8 @@ The pieces the question needs are already in place:
 4. **The model already anchors the three.** In the LikeC4 model, Delta and Unity
    Catalog are `openSpecification` elements (`deltaSpec`, `ucSpec`) with
    `link`s to `https://delta.io` / `https://www.unitycatalog.io`, and
-   `open-lakehouse` is the estate boundary that contains everything (ADR-0007).
+   `open-lakehouse` is the estate boundary that contains everything
+   (`architecture/adr/ADR-0006`).
    The containment the question assumes — `open-lakehouse ⊇ {delta, unitycatalog}`
    — is exactly how the model is already structured. Nothing about the domain
    split needs to be expressed as a new model tag or kind.

@@ -64,7 +64,7 @@ breadth of Unity Catalog shows against a table-centric catalog. Agent skills, th
 newest kind, surfaced a new capability of their own: **Sharing** (specified by
 Open Sharing), the distribution surface a catalog reuses to vend a new resource
 kind. See [`asset-kinds.md`](./asset-kinds.md) and
-[ADR-0006](../adr/ADR-0006-governed-asset-kinds.md).
+[ADR-0005](../adr/ADR-0005-governed-asset-kinds.md).
 
 ## The foundations (assemble on)
 

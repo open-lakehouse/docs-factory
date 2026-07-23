@@ -1,8 +1,14 @@
 # Interactive docs site — planning & findings
 
-> **Status:** planning / ideation. No implementation yet — this document is the
-> deliverable and the basis for further planning.
-> **Last updated:** 2026-07-12
+> **Status:** planning / ideation, partly overtaken by implementation. This is the
+> original feasibility study; the island-based site (`site/`) and the review/release
+> backend (`server/`) have since shipped. Two things named here have since changed:
+> nav ordering no longer uses `_meta.yaml` (it derives from filename prefixes — see
+> [`../../content/README.md`](../../content/README.md)), and the roadmap's backend
+> is **not** a `tracker` proto — that was superseded by the review service
+> (`proto/docs_factory/review/v1/`, `server/`); the roadmap component itself remains
+> unbuilt. Read the roadmap section below as a design sketch whose backend has moved.
+> **Last updated:** 2026-07-12 (status note added 2026-07-23)
 
 ## Context
 
@@ -40,8 +46,10 @@ decision must preserve — they are the real asset, not the SSG:
    `examples/`, with rules mirrored between the remark plugin
    (`site/src/plugins/remark-code-snippets.mjs`) and the Python `docsnip` CI tool
    (`tools/docsnip/…/snippetcheck.py`). Docs never inline code.
-3. **Sidebar ordering** in each `content/<project>/_meta.yaml`
-   (`site/src/sidebar.mjs`) — ordering lives with content, not the builder.
+3. **Sidebar ordering** from each doc's **filename numeric prefix**
+   (`site/src/sidebar.ts`, e.g. `001-…`, `002-…`; the prefix is stripped from the
+   URL) — ordering lives with content, not the builder. See
+   [`../../content/README.md`](../../content/README.md).
 
 Also relevant:
 - The **live in-browser Delta+DataFusion query engine already exists** as
@@ -62,7 +70,7 @@ Also relevant:
 
 | Dimension | Astro + React islands (recommended) | Full custom React site |
 |---|---|---|
-| Content pipeline (3 contracts above) | **Reused as-is** | Rebuilt (MDX loader, snippet resolver, `_meta.yaml` nav) |
+| Content pipeline (3 contracts above) | **Reused as-is** | Rebuilt (MDX loader, snippet resolver, filename-prefix nav) |
 | Routing / nav / search / theming | **Free** (Starlight + pagefind) | Rebuilt from scratch |
 | Interactivity ceiling | High — any React component mounts as an island in MDX | Highest (marginally) |
 | JS shipped to reader | **Zero by default**; only islands hydrate | Whole-app hydration unless SSG'd carefully |
@@ -100,9 +108,16 @@ voting UX needs a server — the SSG shell does not.
 The one component with a **data structure + backend** — and the repo already models
 most of its domain.
 
-### Reuse the existing trestle tracker proto — do not invent a new schema
+### Reuse an existing proto — do not invent a new schema
 
-`proto/docs_factory/tracker/v1/models.proto` already defines the roadmap domain:
+> **Superseded (2026-07-23).** This section was written against a
+> `proto/docs_factory/tracker/v1/` schema that **no longer exists** — the repo's
+> proto is now `proto/docs_factory/review/v1/` (the review/release service, backed by
+> `server/`). The roadmap component itself was never built. The domain sketch below
+> is retained as design intent; a real roadmap backend would extend the review
+> service's proto rather than resurrect a `tracker` one.
+
+The (now-removed) tracker proto once defined the roadmap domain:
 - **`Project`** — "Unity Catalog", "Delta Lake" (the two roadmaps).
 - **`Release`** — the roadmap item, *already* with quarterly-vague timing: a target
   **window** (`target_earliest`..`target_latest`) + graded **`ReleaseConfidence`**
@@ -277,12 +292,13 @@ OAuth. Findings from the Neon docs (sources at bottom):
 
 - `site/src/content.config.ts` — neutral frontmatter contract (preserve).
 - `site/src/plugins/remark-code-snippets.mjs` + `tools/docsnip/…/snippetcheck.py` — snippet contract (preserve).
-- `site/src/sidebar.mjs`, `content/*/_meta.yaml` — nav ordering (preserve).
+- `site/src/sidebar.ts` — nav ordering from filename numeric prefixes (preserve; no `_meta.yaml`).
 - `content/delta/explanation/delta-kernel-architecture.md` — source for diagram #2.
 - `research/delta-matrix.json` — data for #1 & #3.
 - `content/delta/reference/table-features.md` — stub the matrix (#1) fills.
 - `content/delta/how-to/read-a-delta-table.mdx` — existing island (`<Tabs>`) precedent.
-- `proto/docs_factory/tracker/v1/{models,service}.proto` — roadmap domain + backend
+- roadmap domain + backend — *originally* `proto/docs_factory/tracker/v1/`, since
+  removed; the live proto is `proto/docs_factory/review/v1/` (review/release service)
   (read-only; "leave alone" per `AGENTS.md`).
 
 ## Verification (acceptance criteria for the first component)

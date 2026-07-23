@@ -3,7 +3,7 @@
 The model is **layered** (logical vs deployment; see
 [`reference-architecture.md`](./reference-architecture.md)) and, within the
 logical layer, **typed by altitude** (capability ← specification ←
-implementation; see [ADR-0005](../adr/ADR-0005-capability-specification-implementation.md)).
+implementation; see [ADR-0004](../adr/ADR-0004-capability-specification-implementation.md)).
 This doc describes a third dimension the logical layer carries: the **governed
 asset kinds** — the *nouns* the lakehouse manages along the data & AI value chain.
 

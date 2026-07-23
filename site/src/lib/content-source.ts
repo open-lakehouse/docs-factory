@@ -11,10 +11,13 @@
  * helpers below normalize a folder-mode path down to its directory first, so
  * both layouts yield the same {project, bucket, slug}.
  *
- * A doc may also override its URL slug with a `slug:` frontmatter field so the
- * folder can be renamed without breaking the URL. Path parsing here only knows
- * the on-disk name; the frontmatter override is applied by callers that have the
- * frontmatter (see content.ts docSlug / sidebar.ts slugForDoc).
+ * A leading `NNN-` prefix on the slug-bearing segment is an ordering signal, not
+ * identity, so `parseDocPath` strips it from the slug (`002-python-client` →
+ * `python-client`); `orderKeyFromPath` returns the prefixed name for the sidebar
+ * to sort on. A doc may still override its URL slug with a `slug:` frontmatter
+ * field so it can be renamed without breaking the URL. Path parsing here only
+ * knows the on-disk name; the frontmatter override is applied by callers that
+ * have the frontmatter (see content.ts / sidebar.ts).
  *
  * NOTE: `import.meta.glob(...)` requires a LITERAL string argument (Vite static
  * analysis), so the glob patterns are inlined at each call site; they cannot be
@@ -41,13 +44,34 @@ export function slugFromBlogPath(path: string): string {
   return parts[parts.length - 2] ?? path;
 }
 
+/**
+ * A leading `NNN-` numeric prefix on a filename/folder is an ORDERING signal for
+ * the sidebar (see sidebar.ts), not part of the identity — strip it so the slug
+ * (and thus the URL) is clean without every doc needing a `slug:` override.
+ * `002-python-client` → `python-client`, `01-intro` → `intro`. A doc can still
+ * set `slug:` in frontmatter to override this derived slug (see content.ts).
+ */
+function stripOrderPrefix(segment: string): string {
+  return segment.replace(/^\d+-/, "");
+}
+
 export function parseDocPath(path: string): { project: string; bucket: string; slug: string } {
   const parts = normalizeDocPath(path).split("/");
   return {
     project: parts[parts.length - 3] ?? "",
     bucket: parts[parts.length - 2] ?? "",
-    slug: parts[parts.length - 1] ?? "",
+    slug: stripOrderPrefix(parts[parts.length - 1] ?? ""),
   };
+}
+
+/**
+ * The raw last path segment WITH its `NNN-` order prefix intact — the sidebar's
+ * within-bucket sort key. Kept separate from `slug` (which strips the prefix for
+ * the URL) so ordering lives on disk while routes stay clean.
+ */
+export function orderKeyFromPath(path: string): string {
+  const parts = normalizeDocPath(path).split("/");
+  return parts[parts.length - 1] ?? "";
 }
 
 export function projectFromPath(filePath: string): string {

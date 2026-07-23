@@ -93,9 +93,7 @@ def cmd_validate(p) -> int:
         file=sys.stderr,
     )
     if coverage_gaps:
-        print(
-            f"{len(coverage_gaps)} coverage gap(s) (not failing):", file=sys.stderr
-        )
+        print(f"{len(coverage_gaps)} coverage gap(s) (not failing):", file=sys.stderr)
         print("\n".join(coverage_gaps), file=sys.stderr)
 
     # Explanation coverage ratchet: which page-worthy model concepts

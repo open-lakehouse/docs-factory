@@ -53,7 +53,9 @@ def validate_tag_registry(blogs_root: Path, model_ids: set[str]) -> list[str]:
             continue
         for i, ref in enumerate(refs):
             if not isinstance(ref, dict):
-                errors.append(f"tags.yml: tag '{tag}' externalRefs[{i}] must be an object")
+                errors.append(
+                    f"tags.yml: tag '{tag}' externalRefs[{i}] must be an object"
+                )
                 continue
             if not ref.get("role") or not ref.get("url"):
                 errors.append(

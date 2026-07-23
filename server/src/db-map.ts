@@ -1,6 +1,7 @@
 // Mapping helpers between proto enums/messages and the DB's text columns.
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { create } from "@bufbuild/protobuf";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import {
   ContentArea,
   ContentVersionSchema,
@@ -37,6 +38,19 @@ export interface ContentVersionRow {
   title: string | null;
   frontmatter_status: string | null;
   created_at: Date;
+}
+
+/**
+ * Interpret a date-only column as UTC midnight and build a wire Timestamp.
+ * postgres.js returns a `date` column as either 'YYYY-MM-DD' or a Date the
+ * driver localized to local midnight; either way we take just the calendar
+ * date and pin it to UTC midnight, so the value lands on the intended day
+ * regardless of the server's timezone. Writers store the UTC calendar date
+ * (see setTargetReleaseDate), so reads must interpret it as UTC to round-trip.
+ */
+export function dateOnlyToUtcTimestamp(value: Date | string): Timestamp {
+  const ymd = typeof value === "string" ? value.slice(0, 10) : value.toISOString().slice(0, 10);
+  return timestampFromDate(new Date(`${ymd}T00:00:00.000Z`));
 }
 
 /** Build the proto ContentVersion message from a DB row + its ref. */

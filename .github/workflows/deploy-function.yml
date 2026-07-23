@@ -57,7 +57,6 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
-      - uses: ./.github/actions/npm-public
       - name: Install server deps
         run: cd server && bun install --frozen-lockfile
       - name: Guard required secrets
@@ -69,14 +68,20 @@ jobs:
       # NOTE: exact Neon CLI invocation is finalized at provisioning (the CLI is
       # in beta). Sketch — deploy the single Function from server/, passing the
       # non-injected env. DATABASE_URL is injected by Neon, not passed here.
+      # All ${{ }} expansions are passed via env, never interpolated into the
+      # shell body, so untrusted input can't inject commands (zizmor).
       - name: Deploy Neon Function
+        env:
+          SLUG: ${{ inputs.slug || 'review' }}
+          ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
+          NEON_AUTH_COOKIE_NAME: ${{ vars.NEON_AUTH_COOKIE_NAME }}
         run: |
           echo "TODO(provisioning #18): install + run the Neon CLI, e.g.:"
-          echo "  neon functions deploy \"${{ inputs.slug || 'review' }}\" \\"
+          echo "  neon functions deploy \"$SLUG\" \\"
           echo "    --src server \\"
           echo "    --env AUTH_MODE=neon \\"
           echo "    --env NODE_ENV=production \\"
-          echo "    --env ALLOWED_ORIGIN=\"${{ vars.REVIEW_ALLOWED_ORIGIN }}\" \\"
+          echo "    --env ALLOWED_ORIGIN=\"$ALLOWED_ORIGIN\" \\"
           echo "    --env BUILD_SECRET=\"\$REVIEW_BUILD_SECRET\" \\"
-          echo "    --env NEON_AUTH_COOKIE_NAME=\"${{ vars.NEON_AUTH_COOKIE_NAME }}\""
+          echo "    --env NEON_AUTH_COOKIE_NAME=\"$NEON_AUTH_COOKIE_NAME\""
           echo "::notice::deploy-function.yml is a scaffold — wire the CLI at provisioning."

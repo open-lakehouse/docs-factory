@@ -1,7 +1,7 @@
 ---
 title: A lakehouse in the browser tab — DataFusion + Delta on WASM
 slug: wasm-lakehouse-preview
-status: brief
+status: draft
 date: 2026-07-10
 tags: [wasm, datafusion, delta-lake, unity-catalog, lakehouse, rust]
 series:

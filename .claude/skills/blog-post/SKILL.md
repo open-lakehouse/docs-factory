@@ -11,9 +11,12 @@ argument-hint: 'An idea (slug, IDEAS.md entry, or one-line pitch) or an existing
 # blog-post: author a blog through its lifecycle
 
 Drive a post through the lifecycle in
-[`blogs/CONVENTIONS.md`](../../../blogs/CONVENTIONS.md): **idea → brief → draft →
-refine/humanize → review → publish-ready → published**. This skill owns
-everything up to review; the review pass is a separate hand-off to `/blog-review`.
+[`blogs/CONVENTIONS.md`](../../../blogs/CONVENTIONS.md): **idea → draft → ready**
+(review happens in the DB review lifecycle, not via frontmatter status). This skill
+owns everything up to review; the review pass is a separate hand-off to
+`/blog-review`. Writing the brief and drafting are the *activities* within `draft`;
+which files exist (a `brief.md` present but thin `draft.md`, vs. a full `draft.md`)
+signals how far along the post is.
 
 Two documents are the source of truth — read them, don't restate them:
 
@@ -37,9 +40,12 @@ argument; none of it flattens it into neutral prose.
 
 1. Read `blogs/CONVENTIONS.md` and `blogs/QUALITY.md` in full.
 2. Figure out where this post is:
-   - **No folder yet** (a bare idea or an `IDEAS.md` entry) → start at step 2.
-   - **`brief.md` exists** → the `status` front-matter field tells you (`brief` →
-     step 3; `drafting`/`refining` → step 4).
+   - **No folder yet** (a bare idea or an `IDEAS.md` entry) → start at step 2. An
+     idea worth ranking/reviewing early can get an on-disk folder at `status: idea`
+     before it's fully briefed.
+   - **`brief.md` exists** → the `status` is `idea` or `draft`; which files exist
+     tells you the stage (a `brief.md` with a thin/absent `draft.md` → step 3; a
+     substantial `draft.md` → step 4).
    - Read the existing `brief.md`/`draft.md` before touching anything.
 3. Confirm the stage and the intended slug with the user if it's ambiguous.
 
@@ -52,7 +58,8 @@ its audience — CONVENTIONS §1–2).
 2. Write `brief.md` from the ten-section template in
    [`references/brief-template.md`](references/brief-template.md), opening with the
    front matter in [`references/front-matter-schema.md`](references/front-matter-schema.md)
-   (`status: brief`).
+   (`status: draft` — or `status: idea` if the folder started as an early idea folder
+   before it was fully briefed).
 3. **Walk the real source material** — open the cited repos/PRs/docs and cite them
    with pinned pointers (CONVENTIONS §6). A brief built on unread sources is not a
    brief.
@@ -64,7 +71,7 @@ its audience — CONVENTIONS §1–2).
 
 1. Write `draft.md` from the brief's outline. **Baseline first**: thesis + core
    sections; defer depth (CONVENTIONS §5).
-2. Open with the front matter (`status: drafting`), then the hook/thesis.
+2. Open with the front matter (`status: draft`), then the hook/thesis.
 3. Pull code samples from the **pinned** refs the brief cites; show only the
    load-bearing lines; verify each against its ref (CONVENTIONS §5–§6). Keep a
    preserved, compilable excerpt in `snippets/` only when it's worth keeping
@@ -106,14 +113,16 @@ CLI). Details in
 1. Tighten structure and prose.
 2. Run the **`/humanizer`** skill over the draft — do **not** reimplement it. It
    removes the AI tells (CONVENTIONS §8); it must **not** remove the author's
-   stance. Set `status: refining`.
+   stance. (Refining is an activity, not a status — the post stays `status: draft`.)
 3. Re-verify every code sample and factual claim against its cited ref.
 
 ### 7. Hand off to review
 
-Tell the user to run **`/blog-review`** on `blogs/<slug>/` before setting
-`publish-ready`. Do **not** run the review yourself and do **not** self-certify the
-post as publish-ready — the author owns that call after resolving review findings.
+Tell the user to run **`/blog-review`** on `blogs/<slug>/`. The author sets
+`status: ready` once the post is publishable; the actual release is gated by the
+DB review state reaching `approved`/`released`, not by a frontmatter value. Do
+**not** run the review yourself and do **not** self-certify the post as ready — the
+author owns the `status: ready` call after resolving review findings.
 
 ### 8. Series & tags (throughout)
 

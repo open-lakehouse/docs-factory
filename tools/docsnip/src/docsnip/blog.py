@@ -1,7 +1,9 @@
 """Parse and validate YAML frontmatter on blog drafts (``blogs/*/draft.md``).
 
-Blog frontmatter is separate from Diátaxis content frontmatter: different required
-fields, status vocabulary, and tag registry (``blogs/tags.yml``).
+Blog frontmatter has its own required fields and tag registry (``blogs/tags.yml``),
+but shares the single canonical status vocabulary with content pages. An idea is
+just an early blog folder at ``status: idea`` — the earliest reviewable artifact,
+where structural feedback is still expected. See :data:`docsnip.frontmatter.STATUSES`.
 """
 
 from __future__ import annotations
@@ -10,16 +12,10 @@ from pathlib import Path
 
 import yaml
 
-from .frontmatter import Page, parse
+from .frontmatter import STATUSES, Page, parse
 
-BLOG_STATUSES = {
-    "idea",
-    "brief",
-    "drafting",
-    "refining",
-    "publish-ready",
-    "published",
-}
+# Blogs use the same canonical vocabulary as content pages (idea/draft/ready).
+BLOG_STATUSES = STATUSES
 
 
 def load_tag_registry(blogs_root: Path) -> set[str]:
@@ -57,7 +53,9 @@ def validate_tag_registry(blogs_root: Path, model_ids: set[str]) -> list[str]:
             continue
         for i, ref in enumerate(refs):
             if not isinstance(ref, dict):
-                errors.append(f"tags.yml: tag '{tag}' externalRefs[{i}] must be an object")
+                errors.append(
+                    f"tags.yml: tag '{tag}' externalRefs[{i}] must be an object"
+                )
                 continue
             if not ref.get("role") or not ref.get("url"):
                 errors.append(
@@ -99,7 +97,10 @@ def validate_blog(page: Page, known_tags: set[str]) -> list[str]:
         pass
     if not require("author"):
         pass
-    if not require("target"):
+    # An idea is the earliest folder: it hasn't chosen a publish target yet, so
+    # `target` is only required once the post is a real draft. Everything else
+    # (title/slug/date/author/tags) is required even for ideas.
+    if status != "idea" and not require("target"):
         pass
 
     tags = m.get("tags")

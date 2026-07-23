@@ -63,6 +63,23 @@ create table if not exists review_state (
 create index if not exists review_state_ref_idx
   on review_state (area, slug, created_at desc);
 
+-- RevOps pipeline metadata, one row per (area, slug). Distinct from the
+-- append-only version/review history: priority and target date are editorial
+-- decisions set from the review app, not derived from git or a build. priority
+-- is an ordered rank (lower = higher priority; null = unranked);
+-- target_release_date is the intended ship date (date-only).
+create table if not exists content_revops (
+  area                text not null check (area in ('blogs', 'docs')),
+  slug                text not null,
+  priority            int,
+  target_release_date date,
+  updated_by          text,
+  updated_at          timestamptz not null default now(),
+  primary key (area, slug)
+);
+create index if not exists content_revops_priority_idx
+  on content_revops (area, priority);
+
 -- Threaded, section-anchored, resolvable comments. Thread roots have parent_id
 -- null; nesting is a self-referential tree (assembleThreads walks it N levels
 -- deep). When a section disappears from a later version the thread is marked

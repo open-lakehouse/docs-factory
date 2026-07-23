@@ -1,7 +1,7 @@
 ---
 title: Trust in your Open Lakehouse
 slug: trust-in-your-open-lakehouse
-status: drafting
+status: draft
 date: 2026-07-02
 tags: [governance, lakehouse, agents, unity-catalog, delta-lake, data-lineage]
 series: Building the Open Lakehouse

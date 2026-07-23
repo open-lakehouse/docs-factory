@@ -1,6 +1,6 @@
 # Conventions — writing blogs
 
-How we take a blog from a parked idea to a publish-ready post: the lifecycle,
+How we take a blog from a parked idea to a post that's ready to publish: the lifecycle,
 what a brief must capture, how we draft and refine, how we cite code that lives
 in other repos, and the multi-agent review we run before calling a post done.
 This is the reusable playbook; follow it when adding a new post or improving an
@@ -24,41 +24,58 @@ blogs keep one canonical Markdown file — `draft.md` *is* the source of truth.
 
 ## 1. Lifecycle of a post
 
+The frontmatter `status` has exactly three canonical values — **`idea | draft |
+ready`** — unified with content pages. Review is tracked in the DB review lifecycle
+(in-review → approved → released), *not* in frontmatter.
+
 1. **Idea.** Park a one-liner in `IDEAS.md`. No folder, no commitment — ideas
-   can sit indefinitely.
-2. **Brief.** When an idea earns investment, create `blogs/<slug>/` and fill
-   `brief.md` (template in §4) — especially thesis, audience, and source
-   material (walk the real repos/PRs). This fixes *what* the post argues before
-   any prose. Check the idea off in `IDEAS.md` and note the slug.
+   can sit indefinitely. An idea worth ranking or reviewing early can graduate to
+   an on-disk `blogs/<slug>/` folder at `status: idea` (the earliest reviewable
+   artifact, where structural feedback is welcome) while still coexisting with its
+   `IDEAS.md` entry.
+2. **Brief (still `status: draft`, or `idea` if very early).** When an idea earns
+   investment, create `blogs/<slug>/` and fill `brief.md` (template in §4) —
+   especially thesis, audience, and source material (walk the real repos/PRs). This
+   fixes *what* the post argues before any prose. Check the idea off in `IDEAS.md`
+   and note the slug. Writing the brief is an activity *within* `draft`; the stage
+   is signalled by which files exist (a `brief.md` with a thin/absent `draft.md`),
+   not by a distinct status value.
 3. **Draft.** Write `draft.md` from the outline. Baseline first (thesis + core
    sections); defer depth. Pull code samples from the cited refs.
 4. **Refine / humanize.** Tighten structure and prose, then run the humanizer
    pass (§8). Verify every code sample and factual claim against its cited ref.
+   (Refining is an activity, not a status — the post stays `status: draft`.)
 5. **Review.** Run the multi-agent quality-review pass (§9), scored against
-   [`QUALITY.md`](./QUALITY.md), and resolve its findings.
-6. **Publish-ready → published.** Finalize front-matter/target, CTA, and links;
-   set `status: publish-ready`. When rendering to an HTML target, run the
-   **publish-target checklist** in [`QUALITY.md`](./QUALITY.md) (Schema.org
-   Microdata, validated in Google's Rich Results Test) against the rendered page —
-   this is a publishing concern, not a draft one. After publishing, set
-   `published` and record the live URL in the post's `.emitted.json` (per target)
-   and in `README.md`. The SEO canonical `<link>` is emitted by the publishing
-   site at render time — not a draft field (§5, "Emit to a downstream target").
+   [`QUALITY.md`](./QUALITY.md), and resolve its findings. The review outcome is
+   recorded DB-side (in-review → approved → released), not in frontmatter.
+6. **Ready → released.** Finalize front-matter/target, CTA, and links; the author
+   sets `status: ready` once the post is publishable. Actual release is gated by the
+   DB review state reaching `approved`/`released` — not by a frontmatter value. When
+   rendering to an HTML target, run the **publish-target checklist** in
+   [`QUALITY.md`](./QUALITY.md) (Schema.org Microdata, validated in Google's Rich
+   Results Test) against the rendered page — this is a publishing concern, not a
+   draft one. After publishing, record the live URL in the post's `.emitted.json`
+   (per target) and in `README.md`. The SEO canonical `<link>` is emitted by the
+   publishing site at render time — not a draft field (§5, "Emit to a downstream
+   target").
 
 **Folder rule.** One folder per post, keyed by a kebab-case slug
-(`blogs/<slug>/`). Ideas live in `IDEAS.md`, not in folders — a `<slug>/` folder
-is created only when an idea graduates to a brief. Each folder holds `brief.md`
-and `draft.md`; `assets/` (images) and `snippets/` (extracted, runnable, verified
-code — §5) are created on demand, not scaffolded up front.
+(`blogs/<slug>/`). Raw ideas live in `IDEAS.md`; a `<slug>/` folder is created when
+an idea graduates — either to an early `status: idea` folder (worth ranking/reviewing
+before it's briefed) or straight to a brief at `status: draft`. Each folder holds
+`brief.md` and `draft.md`; `assets/` (images) and `snippets/` (extracted, runnable,
+verified code — §5) are created on demand, not scaffolded up front.
 
 ## 2. Ideas backlog (`IDEAS.md`)
 
 A single flat, low-ceremony list of one-liners — deliberately lighter than a
-brief. Park anything; no commitment. An idea **graduates to a brief** (earns its
-own `blogs/<slug>/` folder) once you can write its one-line thesis and name its
-audience. Entry format: a title, a thesis line, and optional inline
-`repos:` / `audience:` / `src:` tags pointing at origin material. The moment an
-idea needs more structure than that, it wants a brief.
+brief. Park anything; no commitment. An idea **graduates to its own
+`blogs/<slug>/` folder** once you can write its one-line thesis and name its
+audience — as an early `status: idea` folder (worth ranking/reviewing before it's
+fully fleshed) or straight to a brief at `status: draft`. Either way `IDEAS.md`
+stays the home for raw, un-fleshed parking. Entry format: a title, a thesis line,
+and optional inline `repos:` / `audience:` / `src:` tags pointing at origin
+material. The moment an idea needs more structure than that, it wants a folder.
 
 ## 3. Front matter & tags
 
@@ -70,7 +87,7 @@ target with minimal reshaping — we are not inventing a metadata scheme.
 ---
 title: <Working title>
 slug: <kebab-slug>
-status: idea | brief | drafting | refining | publish-ready | published
+status: idea | draft | ready
 date: <YYYY-MM-DD>            # last touched; advances as the post matures
 tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone
@@ -425,12 +442,13 @@ of view.
 
 ## 9. Quality-review pass
 
-Before a post is `publish-ready`, run a multi-agent review modeled on the
+Before a post is marked `status: ready`, run a multi-agent review modeled on the
 `/code-review` skill's **dispatch → score → consolidate** shape, adapted to
 blogs. This is implemented as the [`blog-review`](../.claude/skills/blog-review/)
 skill; the criteria each facet is graded against live in
 [`QUALITY.md`](./QUALITY.md). The review is **advisory** — it produces scores and
-findings; the author decides `publish-ready`.
+findings; the author decides when to set `status: ready`, and the DB review state
+(in-review → approved → released) gates the actual release.
 
 1. **Dispatch parallel facet reviewers** over `draft.md` + `brief.md`, one
    concern each, so no single pass has to hold everything. Each is scored against
@@ -459,7 +477,7 @@ findings; the author decides `publish-ready`.
    rather than flatten the stance.
 4. **Consolidate** the survivors into one prioritized report against `draft.md`,
    with a per-facet 0–100 score. The author resolves the findings before setting
-   `publish-ready`.
+   `status: ready`; the DB review state gates the actual release.
 
 ## 10. Accuracy & disclosure
 

@@ -1,7 +1,7 @@
 ---
 title: One proto file, a whole app — the Trestle golden path
 slug: trestle-golden-path
-status: brief
+status: draft
 date: 2026-07-10
 tags: [lakehouse, rust, devrel, codegen, unity-catalog]
 series: Chef Casper's Ghost Kitchen

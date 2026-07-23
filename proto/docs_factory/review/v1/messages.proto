@@ -2,10 +2,10 @@ syntax = "proto3";
 
 // The review & release lifecycle domain for docs-factory content (blog drafts
 // and Diátaxis docs). The database is authoritative for everything defined here;
-// git frontmatter carries only the orthogonal authoring `status` (`draft` /
-// `ready`), which is author intent — not review state. Content is shown to
-// anonymous viewers only when its frontmatter is `ready` AND its review_state
-// is RELEASED; allowlisted reviewers see everything.
+// git frontmatter carries only the orthogonal authoring `status` (`idea` /
+// `draft` / `ready`), which is author intent — not review state. Content is
+// shown to anonymous viewers only when its frontmatter is `ready` AND its
+// review_state is RELEASED; allowlisted reviewers see everything.
 package docs_factory.review.v1;
 
 import "google/protobuf/timestamp.proto";
@@ -196,6 +196,12 @@ message DraftSummary {
   ReviewState review_state = 4;
   optional ContentVersion latest_version = 5;
   int32 open_comment_count = 6;
+  // RevOps pipeline metadata (DB-authoritative, set from the review app — not
+  // git frontmatter). `priority` is an ordered rank within the blog pipeline
+  // (lower = higher priority; absent = unranked). `target_release_date` is the
+  // intended ship date; date-only, carried at UTC midnight in the timestamp.
+  optional int32 priority = 7;
+  optional google.protobuf.Timestamp target_release_date = 8;
 }
 
 // One allowlist entry.

@@ -80,7 +80,10 @@ export default function ReviewDashboard() {
     <Shell wide>
       <div className="review-dashboard">
         <h1>Review</h1>
-        <p className="muted">Pending work and recent activity across all content.</p>
+        <p className="muted">
+          Pending work and recent activity across all content.{" "}
+          <Link to="/review/revops">Blog pipeline →</Link>
+        </p>
 
         <section className="review-dash-section">
           <h2>Pending review</h2>

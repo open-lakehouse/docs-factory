@@ -1,6 +1,6 @@
 // LOGICAL LAYER — governed asset kinds (the "securable" subjects).
 //
-// The subject axis of the model (see ADR-0006). Capabilities are the VERBS the
+// The subject axis of the model (see ADR-0005). Capabilities are the VERBS the
 // lakehouse performs; asset kinds are the NOUNS it manages along the data & AI
 // value chain. Each kind is technology-agnostic and TYPE-LEVEL — a specific
 // table / model is an instance and lives in the runtime world, never here.

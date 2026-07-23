@@ -62,4 +62,6 @@ purpose-built view with protocol-level participants.
 ## Adding a content area
 
 Register a new `import.meta.glob` in `src/content.ts` and a route in `src/App.tsx`.
-Docs nav comes from `content/<project>/_meta.yaml` via `src/sidebar.ts`.
+Docs nav order comes from each doc's **filename numeric prefix** (`001-…`, `002-…`;
+stripped from the URL) via `src/sidebar.ts` — there is no `_meta.yaml`. See
+[`../content/README.md`](../content/README.md).

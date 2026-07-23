@@ -1,8 +1,13 @@
 # Architecture Decision Records
 
-Estate-level architecture decisions — the ones that span repos or constrain how
-the open-lakehouse architecture is documented. Per-repo implementation decisions
+Estate-level architecture decisions about the **open-lakehouse** — the systems we
+document (its capabilities, governance, table formats, and the sibling repos) and
+the ground rules for the model that records them. Per-repo implementation decisions
 stay in each repo's own `docs/adr/`.
+
+Decisions about the **docs factory itself** (the site, emitters, review server,
+authoring pipeline) live in [`../../docs/decisions/`](../../docs/decisions/README.md) —
+see `ADR-0002` for the fact-vs-factory dividing line.
 
 **Canonical references:** [MADR](https://adr.github.io/madr/) ·
 [Nygard (2011)](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions)
@@ -14,12 +19,11 @@ stay in each repo's own `docs/adr/`.
 | ADR | Title | Status | Date |
 |---|---|---|---|
 | [ADR-0001](./ADR-0001-likec4-over-structurizr.md) | LikeC4 over Structurizr for the architecture model | Accepted | 2026-07-13 |
-| [ADR-0002](./ADR-0002-facts-here-narrative-in-writing.md) | Architectural facts live here; narrative stays in the writing estate | Accepted | 2026-07-13 |
+| [ADR-0002](./ADR-0002-facts-here-narrative-separate.md) | Architectural facts live in the model; narrative lives separately | Accepted | 2026-07-13 |
 | [ADR-0003](./ADR-0003-logical-abstract-deployment-concrete.md) | Logical layer is abstract; deployment layer is concrete | Accepted | 2026-07-13 |
-| [ADR-0004](./ADR-0004-model-driven-information-system.md) | The docs site is a model-driven information system | Proposed | 2026-07-18 |
-| [ADR-0005](./ADR-0005-capability-specification-implementation.md) | Capability / specification / implementation typing | Accepted | 2026-07-18 |
-| [ADR-0006](./ADR-0006-governed-asset-kinds.md) | Governed asset kinds (securables) as a logical dimension | Accepted | 2026-07-18 |
-| [ADR-0007](./ADR-0007-system-boundary-and-generic-relations.md) | System boundary semantics and generic relationships | Accepted | 2026-07-21 |
+| [ADR-0004](./ADR-0004-capability-specification-implementation.md) | Capability / specification / implementation typing | Accepted | 2026-07-18 |
+| [ADR-0005](./ADR-0005-governed-asset-kinds.md) | Governed asset kinds (securables) as a logical dimension | Accepted | 2026-07-18 |
+| [ADR-0006](./ADR-0006-system-boundary-and-generic-relations.md) | System boundary semantics and generic relationships | Accepted | 2026-07-21 |
 
 ---
 

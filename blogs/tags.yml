@@ -7,7 +7,7 @@
 # Docusaurus `tags.yml` pattern. Keep it lean — grow it as posts introduce
 # genuinely new topics.
 #
-# Optional fields (ADR-0004 hybrid join):
+# Optional fields (docs/decisions/ADR-0001 hybrid join):
 #   element:       a LikeC4 model element id — powers hover-card metadata and
 #                  links to /explain/<id> from the filtered blog index
 #   externalRefs:  curated expert links [{ role, url }] shown in hover cards

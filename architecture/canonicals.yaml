@@ -28,7 +28,7 @@ capabilities:
   tableFormat:
     element: lakehouse.tableFormat
     doc: design/reference-architecture.md
-    note: Delta & Iceberg are peer specifications of this (see ADR-0005).
+    note: Delta & Iceberg are peer specifications of this (see ADR-0004).
   fileFormat:
     element: lakehouse.fileFormat
     doc: design/reference-architecture.md
@@ -36,7 +36,7 @@ capabilities:
   objectStorage:
     element: lakehouse.objectStorage
     doc: design/reference-architecture.md
-    note: The S3 API specifies it; buckets are deployment datastores (ADR-0005).
+    note: The S3 API specifies it; buckets are deployment datastores (ADR-0004).
   lineage:
     element: lakehouse.lineage
     doc: design/lineage-plane.md
@@ -46,11 +46,11 @@ capabilities:
   modelTracking:
     element: lakehouse.modelTracking
     doc: design/reference-architecture.md
-    note: Renamed from mlLifecycle (ADR-0005); realized by MLflow.
+    note: Renamed from mlLifecycle (ADR-0004); realized by MLflow.
   sharing:
     element: lakehouse.sharing
     doc: design/reference-architecture.md
-    note: Specified by Open Sharing (Delta Sharing protocol); agent skills require it (ADR-0006).
+    note: Specified by Open Sharing (Delta Sharing protocol); agent skills require it (ADR-0005).
   observability:
     element: lakehouse.observability
     doc: design/reference-architecture.md
@@ -64,7 +64,7 @@ governance_roles:
   pa:  { element: lakehouse.governance.pa,  doc: design/governance.md }
 
 # --- Logical layer: governed asset kinds (securables) ---------------------
-# The subject axis (ADR-0006). "securable" is UC's term; `asset` is neutral.
+# The subject axis (ADR-0005). "securable" is UC's term; `asset` is neutral.
 asset_kinds:
   schema:     { element: lakehouse.schema,             doc: design/asset-kinds.md }
   table:      { element: lakehouse.table,              doc: design/asset-kinds.md }

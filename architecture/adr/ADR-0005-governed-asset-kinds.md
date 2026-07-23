@@ -1,4 +1,4 @@
-# ADR-0006: Governed asset kinds (securables) as a logical dimension
+# ADR-0005: Governed asset kinds (securables) as a logical dimension
 
 | Field | Value |
 |---|---|
@@ -11,7 +11,7 @@
 
 The logical layer modeled the *verbs* of the lakehouse — capabilities, typed by
 altitude into capability / specification / implementation
-([ADR-0005](./ADR-0005-capability-specification-implementation.md)) — plus the
+([ADR-0004](./ADR-0004-capability-specification-implementation.md)) — plus the
 zero-trust governance-role decomposition. It did **not** model the *nouns*: the
 kinds of thing the platform actually governs. Those existed only as prose (the
 catalog "governs tables, schemas, and credentials") or in the glossary ("agent

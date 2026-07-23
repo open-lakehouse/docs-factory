@@ -92,7 +92,7 @@ description) **in the same change** — never introduce a tag that lives only in
 post. This keeps the vocabulary deduplicated and discoverable.
 
 Optionally, a tag entry may also carry a model anchor and curated external links
-(ADR-0004 hybrid join). These are additive — description-only entries stay valid:
+(docs/decisions/ADR-0001 hybrid join). These are additive — description-only entries stay valid:
 
 ```yaml
 unity-catalog:

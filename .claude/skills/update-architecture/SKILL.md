@@ -10,6 +10,12 @@ Your job: fold a structural change into the LikeC4 model as a **minimal** patch,
 show it for human approval, then regenerate the committed artifacts. You never
 invent facts — you read them from the estate.
 
+**Scope:** `architecture/` holds *only* fact about the lakehouse we document (the
+model, its design docs, its ADRs, `estate.yml`, `glossary.md`, `canonicals.yaml`).
+Decisions about the **docs factory itself** (site, emitters, review server, authoring
+pipeline) live in `docs/` and are **out of scope for this skill** — do not touch them.
+See `architecture/adr/ADR-0002` for the dividing line.
+
 ## Invocation
 
 ```

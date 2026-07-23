@@ -144,7 +144,7 @@ model {
     }
   }
   polars -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
-  // impl -> impl is a DEPENDENCY, not spec-consumption (`consumes` is impl -> spec). See ADR-0007.
+  // impl -> impl is a DEPENDENCY, not spec-consumption (`consumes` is impl -> spec). See ADR-0006.
   polars -[dependsOn]-> deltaRs "reads/writes Delta via"
 
   // Catalog implementations --------------------------------------------------

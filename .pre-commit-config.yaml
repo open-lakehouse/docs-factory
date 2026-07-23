@@ -1,0 +1,16 @@
+# Pre-commit hooks. Install once with `pre-commit install` (or run via
+# `pre-commit run --all-files`). See https://pre-commit.com.
+repos:
+  - repo: local
+    hooks:
+      # Strip internal npm-proxy URLs out of any staged bun.lock so the
+      # committed lockfiles stay host-agnostic (empty resolution = default
+      # registry). CI verifies this with `--check`; this hook fixes it at commit
+      # time so a proxy URL never lands in a PR. Replaces the old npm-public
+      # rewrite-at-CI action.
+      - id: strip-bun-lock-proxy
+        name: strip bun.lock proxy URLs
+        entry: bun scripts/strip-bun-lock-proxy.ts
+        language: system
+        files: (^|/)bun\.lock$
+        pass_filenames: true

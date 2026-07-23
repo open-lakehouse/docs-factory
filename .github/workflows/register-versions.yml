@@ -46,7 +46,8 @@ jobs:
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
         with:
           bun-version: latest
-      - uses: ./.github/actions/npm-public
+      - name: Check bun.lock has no proxy URLs
+        run: bun scripts/strip-bun-lock-proxy.ts --check
       - name: Build version manifest (stamps the real main sha)
         run: |
           cd site && bun install --frozen-lockfile

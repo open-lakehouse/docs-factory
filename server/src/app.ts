@@ -13,15 +13,21 @@ import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 export async function createApp(): Promise<Hono> {
   const app = new Hono();
 
-  // The SPA is served from a different origin (Vercel) than the API (Neon
-  // Function), so the browser needs CORS with credentials. ALLOWED_ORIGIN is set
-  // per deploy; default to permissive in local dev only. When credentials are
-  // sent, the origin cannot be "*", so echo the request origin in that case.
-  const allowed = process.env.ALLOWED_ORIGIN;
+  // In prod the browser reaches the API same-origin (Vercel rewrites `/api/*` →
+  // this Function), so CORS is inert on that path — it stays as defense-in-depth
+  // for the raw Function URL and as the mechanism for any additional first-party
+  // origins. ALLOWED_ORIGIN is a comma-separated allowlist set per deploy: a
+  // single Vercel origin in the soft launch; the custom docs domains
+  // (openlakehouse.io / delta.io / unitycatalog.io) added later — no code change,
+  // just the env value. Credentials forbid "*", so hono/cors echoes the matching
+  // allowlisted origin. Unset ⇒ permissive echo, local dev only.
+  const allowed = process.env.ALLOWED_ORIGIN?.split(",")
+    .map((o) => o.trim())
+    .filter(Boolean);
   app.use(
     "*",
     cors({
-      origin: allowed ? allowed : (o) => o,
+      origin: allowed && allowed.length ? allowed : (o) => o,
       credentials: true,
       allowHeaders: ["Content-Type", "Connect-Protocol-Version", "Authorization", "x-dev-persona"],
     }),

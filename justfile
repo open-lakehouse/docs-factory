@@ -51,6 +51,12 @@ buf-gen:
 buf-check:
     cd proto && buf lint
 
+# Strip internal npm-proxy URLs from every committed bun.lock (host-agnostic;
+# empty resolution = default registry). Run before opening a PR; the pre-commit
+# hook does this automatically on staged lockfiles, and CI --checks it.
+strip-lock-proxy:
+    bun scripts/strip-bun-lock-proxy.ts
+
 # Regenerate site/src/generated/content-versions.json (body hashes + section
 # anchors) from blogs/ and content/. Heading ids match the rendered DOM exactly.
 version-manifest: _site-deps

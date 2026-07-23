@@ -7,7 +7,12 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb";
 import { DEV_PERSONA_HEADER, readDevPersona } from "./dev-persona";
 
-export const baseUrl = import.meta.env.VITE_API_URL ?? "http://localhost:8787";
+// Same-origin in prod: Vercel rewrites `/api/*` → the Neon Function (see
+// site/vercel.json), so the browser never makes a cross-origin request and the
+// session cookie stays first-party. VITE_API_URL still overrides when set; in
+// local dev we fall back to the cross-origin dev server on :8787.
+export const baseUrl =
+  import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? "http://localhost:8787" : "/api");
 
 // Live comment updates via the SSE endpoint (Phase 4B). Off by default; opt in
 // with VITE_REVIEW_SSE=true once the server has REVIEW_SSE_ENABLED. When off,

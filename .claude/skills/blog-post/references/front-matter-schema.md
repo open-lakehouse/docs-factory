@@ -9,7 +9,7 @@ ever diverge.
 ---
 title: <Working title>
 slug: <kebab-slug>
-status: idea | brief | drafting | refining | publish-ready | published
+status: idea | draft | ready
 date: <YYYY-MM-DD>            # last touched; advances as the post matures
 tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone

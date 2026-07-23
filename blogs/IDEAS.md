@@ -1,9 +1,11 @@
 # Blog ideas
 
-Raw, un-fleshed ideas. Park anything here; no commitment. An idea graduates to a
-brief (its own `blogs/<slug>/` folder) once you can write its one-line thesis and
-name its audience — see [`CONVENTIONS.md`](./CONVENTIONS.md) §1–2. When it
-graduates, check it off and note the slug.
+Raw, un-fleshed ideas. Park anything here; no commitment. This file stays the home
+for raw parking. An idea graduates to its own `blogs/<slug>/` folder once you can
+write its one-line thesis and name its audience — either as an early `status: idea`
+folder (worth ranking/reviewing before it's fully fleshed) or straight to a brief at
+`status: draft` — see [`CONVENTIONS.md`](./CONVENTIONS.md) §1–2. When it graduates,
+check it off and note the slug.
 
 Entry format: a **title**, a one-line thesis, and optional inline tags —
 `repos:` (local code the post draws on), `audience:`, `src:` (existing draft or

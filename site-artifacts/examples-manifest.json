@@ -14,7 +14,7 @@
       "start": "start:read-delta-table",
       "end": "end:read-delta-table",
       "referenced_by": [
-        "content/delta/how-to/read-a-delta-table.md"
+        "content/delta/how-to/001-read-a-delta-table.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -32,7 +32,7 @@
       "start": "start:read-delta-table",
       "end": "end:read-delta-table",
       "referenced_by": [
-        "content/delta/how-to/read-a-delta-table.md"
+        "content/delta/how-to/001-read-a-delta-table.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -48,7 +48,7 @@
       "start": "start:create_catalog",
       "end": "end:create_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -64,7 +64,7 @@
       "start": "start:create_schema",
       "end": "end:create_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -80,7 +80,7 @@
       "start": "start:create_table",
       "end": "end:create_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -96,7 +96,7 @@
       "start": "start:create_volume",
       "end": "end:create_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -112,7 +112,7 @@
       "start": "start:delete_catalog",
       "end": "end:delete_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -128,7 +128,7 @@
       "start": "start:delete_schema",
       "end": "end:delete_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -144,7 +144,7 @@
       "start": "start:delete_table",
       "end": "end:delete_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -160,7 +160,7 @@
       "start": "start:delete_volume",
       "end": "end:delete_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -176,7 +176,7 @@
       "start": "start:get_catalog",
       "end": "end:get_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -192,7 +192,7 @@
       "start": "start:get_schema",
       "end": "end:get_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -208,7 +208,7 @@
       "start": "start:get_table",
       "end": "end:get_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -224,7 +224,7 @@
       "start": "start:get_volume",
       "end": "end:get_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -244,7 +244,7 @@
       "start": "start:history",
       "end": "end:history",
       "referenced_by": [
-        "content/delta/tutorials/explore-table-history.md"
+        "content/delta/tutorials/002-explore-table-history.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -260,7 +260,7 @@
       "start": "start:list_catalogs",
       "end": "end:list_catalogs",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -276,7 +276,7 @@
       "start": "start:list_schemas",
       "end": "end:list_schemas",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -292,7 +292,7 @@
       "start": "start:list_tables",
       "end": "end:list_tables",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -308,7 +308,7 @@
       "start": "start:list_volumes",
       "end": "end:list_volumes",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -328,7 +328,7 @@
       "start": "start:open",
       "end": "end:open",
       "referenced_by": [
-        "content/delta/tutorials/explore-table-history.md"
+        "content/delta/tutorials/002-explore-table-history.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -346,7 +346,7 @@
       "start": "start:read-delta-table",
       "end": "end:read-delta-table",
       "referenced_by": [
-        "content/delta/how-to/read-a-delta-table.md"
+        "content/delta/how-to/001-read-a-delta-table.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -366,7 +366,7 @@
       "start": "start:time-travel",
       "end": "end:time-travel",
       "referenced_by": [
-        "content/delta/tutorials/explore-table-history.md"
+        "content/delta/tutorials/002-explore-table-history.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -386,7 +386,7 @@
       "start": "start:time-travel-read",
       "end": "end:time-travel-read",
       "referenced_by": [
-        "content/delta/how-to/query-a-table-as-of-version.md"
+        "content/delta/how-to/002-query-a-table-as-of-version.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -402,7 +402,7 @@
       "start": "start:update_catalog",
       "end": "end:update_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -418,7 +418,7 @@
       "start": "start:update_schema",
       "end": "end:update_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -434,7 +434,7 @@
       "start": "start:update_volume",
       "end": "end:update_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": true,
       "engine_status": "built"
@@ -450,7 +450,7 @@
       "start": "start:create_catalog",
       "end": "end:create_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -466,7 +466,7 @@
       "start": "start:create_schema",
       "end": "end:create_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -482,7 +482,7 @@
       "start": "start:create_table",
       "end": "end:create_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -498,7 +498,7 @@
       "start": "start:create_volume",
       "end": "end:create_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -514,7 +514,7 @@
       "start": "start:delete_catalog",
       "end": "end:delete_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -530,7 +530,7 @@
       "start": "start:delete_schema",
       "end": "end:delete_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -546,7 +546,7 @@
       "start": "start:delete_table",
       "end": "end:delete_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -562,7 +562,7 @@
       "start": "start:delete_volume",
       "end": "end:delete_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -578,7 +578,7 @@
       "start": "start:get_catalog",
       "end": "end:get_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -594,7 +594,7 @@
       "start": "start:get_schema",
       "end": "end:get_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -610,7 +610,7 @@
       "start": "start:get_table",
       "end": "end:get_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -626,7 +626,7 @@
       "start": "start:get_volume",
       "end": "end:get_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -642,7 +642,7 @@
       "start": "start:list_catalogs",
       "end": "end:list_catalogs",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -658,7 +658,7 @@
       "start": "start:list_schemas",
       "end": "end:list_schemas",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -674,7 +674,7 @@
       "start": "start:list_tables",
       "end": "end:list_tables",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -690,7 +690,7 @@
       "start": "start:list_volumes",
       "end": "end:list_volumes",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -706,7 +706,7 @@
       "start": "start:update_catalog",
       "end": "end:update_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -722,7 +722,7 @@
       "start": "start:update_schema",
       "end": "end:update_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -738,7 +738,7 @@
       "start": "start:update_volume",
       "end": "end:update_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -754,7 +754,7 @@
       "start": "start:create_catalog",
       "end": "end:create_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -770,7 +770,7 @@
       "start": "start:create_schema",
       "end": "end:create_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -786,7 +786,7 @@
       "start": "start:create_table",
       "end": "end:create_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -802,7 +802,7 @@
       "start": "start:create_volume",
       "end": "end:create_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -818,7 +818,7 @@
       "start": "start:delete_catalog",
       "end": "end:delete_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -834,7 +834,7 @@
       "start": "start:delete_schema",
       "end": "end:delete_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -850,7 +850,7 @@
       "start": "start:delete_table",
       "end": "end:delete_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -866,7 +866,7 @@
       "start": "start:delete_volume",
       "end": "end:delete_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -882,7 +882,7 @@
       "start": "start:get_catalog",
       "end": "end:get_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -898,7 +898,7 @@
       "start": "start:get_schema",
       "end": "end:get_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -914,7 +914,7 @@
       "start": "start:get_table",
       "end": "end:get_table",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -930,7 +930,7 @@
       "start": "start:get_volume",
       "end": "end:get_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -946,7 +946,7 @@
       "start": "start:list_catalogs",
       "end": "end:list_catalogs",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -962,7 +962,7 @@
       "start": "start:list_schemas",
       "end": "end:list_schemas",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -978,7 +978,7 @@
       "start": "start:list_tables",
       "end": "end:list_tables",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-tables.md"
+        "content/unitycatalog/how-to/003-manage-tables.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -994,7 +994,7 @@
       "start": "start:list_volumes",
       "end": "end:list_volumes",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -1010,7 +1010,7 @@
       "start": "start:update_catalog",
       "end": "end:update_catalog",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-catalogs.md"
+        "content/unitycatalog/how-to/001-manage-catalogs.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -1026,7 +1026,7 @@
       "start": "start:update_schema",
       "end": "end:update_schema",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-schemas.md"
+        "content/unitycatalog/how-to/002-manage-schemas.md"
       ],
       "tested": false,
       "engine_status": "stub"
@@ -1042,7 +1042,7 @@
       "start": "start:update_volume",
       "end": "end:update_volume",
       "referenced_by": [
-        "content/unitycatalog/how-to/manage-volumes.md"
+        "content/unitycatalog/how-to/004-manage-volumes.md"
       ],
       "tested": false,
       "engine_status": "stub"

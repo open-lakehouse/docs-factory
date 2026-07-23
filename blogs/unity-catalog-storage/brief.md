@@ -1,7 +1,7 @@
 ---
 title: Unity Catalog storage — credentials, external locations, and managed storage
 slug: unity-catalog-storage
-status: brief
+status: draft
 date: 2026-07-03
 tags: [unity-catalog, governance, lakehouse, devrel]
 author: Robert Pack

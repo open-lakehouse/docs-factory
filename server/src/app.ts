@@ -6,7 +6,7 @@ import { streamSSE } from "hono/streaming";
 import { mountConnect } from "./connect-hono.js";
 import { registerReviewService } from "./services/review.js";
 import { selectProvider } from "./auth/provider.js";
-import { db } from "./db.js";
+import { listenerClient } from "./db.js";
 import { COMMENTS_CHANNEL, sseEnabled } from "./notify.js";
 import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 
@@ -54,17 +54,25 @@ export async function createApp(): Promise<Hono> {
       }
       const ref = c.req.query("ref");
       return streamSSE(c, async (stream) => {
-        // A dedicated listener connection (postgres.js manages it). Each NOTIFY
-        // carries the changed ref; we forward it as an `invalidate` event and
-        // let the client decide whether it matches its current ref.
-        const sql = db();
+        // A dedicated single-connection listener, NOT the shared query pool: a
+        // LISTEN holds its connection for the whole stream lifetime, so drawing
+        // from the max-5 pool would let a few open streams starve every unary
+        // RPC of a connection. Each NOTIFY carries the changed ref; we forward
+        // it as an `invalidate` event and let the client decide whether it
+        // matches its current ref.
+        const sql = listenerClient();
         const sub = await sql.listen(COMMENTS_CHANNEL, (payload) => {
           void stream.writeSSE({ event: "invalidate", data: payload });
         });
-        // Keep the stream open until the client disconnects; unlisten on abort.
+        // Keep the stream open until the client disconnects; unlisten and close
+        // the dedicated connection on abort so it isn't leaked.
         await new Promise<void>((resolve) => {
           stream.onAbort(() => {
-            void sub.unlisten().finally(resolve);
+            void sub
+              .unlisten()
+              .catch(() => {})
+              .finally(() => sql.end().catch(() => {}))
+              .finally(resolve);
           });
         });
         // `ref` is accepted for symmetry/logging; filtering happens client-side.

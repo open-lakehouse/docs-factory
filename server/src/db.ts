@@ -38,3 +38,18 @@ export function db(): Sql {
   cached = postgres(url, { max: 5 });
   return cached;
 }
+
+/**
+ * A dedicated single-connection client for a long-lived LISTEN. Each open SSE
+ * stream needs its own connection for the duration it's held; taking that from
+ * the shared query pool (max 5) would let a handful of streams starve every
+ * unary RPC of a connection. This is NOT cached — the caller owns its lifetime
+ * and must `await client.end()` when the stream closes.
+ */
+export function listenerClient(): Sql {
+  const url = resolveDatabaseUrl();
+  if (!url) {
+    throw new Error("No database connection for the SSE listener (see db()).");
+  }
+  return postgres(url, { max: 1 });
+}

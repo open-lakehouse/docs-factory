@@ -42,12 +42,35 @@ function enclosingCodeBlock(node: Node): HTMLElement | null {
   return null;
 }
 
+/**
+ * Geometry for the floating Comment button.
+ *
+ * Prefer Range.getClientRects() over getBoundingClientRect(). Chromium (and
+ * sometimes Safari) often returns a 0×0 bounding rect for reverse mouse
+ * selections that end at a line/block start — exactly the "highlight a
+ * paragraph end→start until the left edge" case — even though the selection
+ * is valid and getClientRects() still has usable boxes. Mid-line reverse
+ * selections usually keep a non-zero bounding rect, which matched the
+ * observed intermittent failure.
+ */
 function selectionRect(): DOMRect | null {
   const sel = window.getSelection();
   if (!sel || sel.isCollapsed || sel.rangeCount === 0) return null;
-  const rect = sel.getRangeAt(0).getBoundingClientRect();
-  if (rect.width === 0 && rect.height === 0) return null;
-  return rect;
+  const rects = Array.from(sel.getRangeAt(0).getClientRects()).filter(
+    (r) => r.width > 0 || r.height > 0,
+  );
+  if (rects.length === 0) return null;
+  let top = Infinity;
+  let left = Infinity;
+  let right = -Infinity;
+  let bottom = -Infinity;
+  for (const r of rects) {
+    top = Math.min(top, r.top);
+    left = Math.min(left, r.left);
+    right = Math.max(right, r.right);
+    bottom = Math.max(bottom, r.bottom);
+  }
+  return new DOMRect(left, top, right - left, bottom - top);
 }
 
 export default function SelectionLayer({
@@ -136,7 +159,15 @@ export default function SelectionLayer({
       setMenu(null);
     }
 
-    function onMouseUp() {
+    // Listen on document, not the article: reverse (end→start) drags often
+    // release in the left gutter/sidebar once the selection hits the line
+    // edge, so an article-only mouseup never fires even though the selection
+    // inside the article is valid.
+    function onMouseUp(e: MouseEvent) {
+      const t = e.target;
+      if (t instanceof Element && (t.closest(".sel-float") || t.closest(".sel-menu"))) {
+        return;
+      }
       setTimeout(() => {
         const build = buildFromSelection();
         if (!build) {
@@ -171,13 +202,13 @@ export default function SelectionLayer({
       setFloat((f) => (f ? { ...f, x: rect.left + rect.width / 2, y: rect.top - 10 } : null));
     }
 
-    article.addEventListener("mouseup", onMouseUp);
+    document.addEventListener("mouseup", onMouseUp);
     article.addEventListener("contextmenu", onContextMenu);
     document.addEventListener("mousedown", onDocMouseDown);
     window.addEventListener("scroll", reposition, true);
     window.addEventListener("resize", reposition);
     return () => {
-      article.removeEventListener("mouseup", onMouseUp);
+      document.removeEventListener("mouseup", onMouseUp);
       article.removeEventListener("contextmenu", onContextMenu);
       document.removeEventListener("mousedown", onDocMouseDown);
       window.removeEventListener("scroll", reposition, true);

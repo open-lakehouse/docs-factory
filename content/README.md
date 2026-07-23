@@ -11,8 +11,29 @@ content/<project>/
   how-to/        task-oriented, multi-engine (engine-tabbed snippets)
   reference/     information-oriented, language-agnostic
   explanation/   understanding-oriented, language-agnostic (incl. kernel architecture)
-  _meta.yaml     nav ordering hints for the downstream site
 ```
+
+## Navigation order (filename prefix + `slug:`)
+
+There is no `_meta.yaml`. Nav order comes entirely from the tree:
+
+- **Section order** — the four folders above map 1:1 to the Diátaxis buckets and
+  render in a fixed order (Explanation → Tutorials → How-to → Reference). Their
+  sidebar headings are constants in `site/src/sidebar.ts`, not content.
+- **Order within a section** — the filename's numeric prefix. Name docs
+  `001-first-server.md`, `002-python-client/`, `003-postgres-server.md`; the
+  sidebar sorts by that prefix. Zero-pad to three digits so the lexicographic
+  sort holds well past nine docs.
+- **Clean URLs (prefix auto-stripped)** — the `NNN-` prefix is stripped from the
+  slug automatically (like Docusaurus/Nextra), so `003-postgres-server.md` serves
+  at `/docs/unitycatalog/tutorials/postgres-server` with **no `slug:` needed**.
+  Renumbering a doc reorders it without changing its URL. Folder-mode tutorials
+  prefix the *folder* (`002-python-client/index.md` → `.../python-client`).
+  Set a `slug:` in frontmatter only to make the URL differ from the (stripped)
+  filename — e.g. to keep an old URL after a rename.
+
+To reorder, renumber the prefixes in that folder; to insert, pick an unused
+number (or renumber neighbors). Nothing else needs editing.
 
 Code in how-to guides is **not** inlined — it is referenced from tested example
 files in `examples/` via [`remark-code-snippets`](https://github.com/jknoxville/remark-code-snippets)

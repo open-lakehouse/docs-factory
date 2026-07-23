@@ -86,6 +86,10 @@ export async function reanchorThreads(
 ): Promise<number> {
   const bySlug = new Map(sections.map((s) => [s.anchorSlug, s]));
   const byFingerprint = new Map(sections.map((s) => [s.fingerprint, s]));
+  // Normalize each section's text ONCE, not once per orphan-candidate root — the
+  // Tier-2 scan below runs over the whole section set for every drifted root, so
+  // caching turns O(roots × sections) normalize() calls into O(sections).
+  const normBySlug = new Map(sections.map((s) => [s.anchorSlug, normalize(s.text)]));
 
   const roots = await sql<
     {
@@ -108,9 +112,9 @@ export async function reanchorThreads(
 
     // Tier 1: quote still lives in its own section.
     if (quote) {
-      const own = bySlug.get(root.anchor_slug);
-      if (own) {
-        const at = findQuote(normalize(own.text), quote);
+      const ownNorm = normBySlug.get(root.anchor_slug);
+      if (ownNorm !== undefined) {
+        const at = findQuote(ownNorm, quote);
         if (at !== -1) {
           await refreshStart(sql, root, at);
           continue;
@@ -120,7 +124,7 @@ export async function reanchorThreads(
       let matched: { slug: string; start: number } | null = null;
       for (const s of sections) {
         if (s.anchorSlug === root.anchor_slug) continue;
-        const at = findQuote(normalize(s.text), quote);
+        const at = findQuote(normBySlug.get(s.anchorSlug) ?? normalize(s.text), quote);
         if (at !== -1) {
           matched = { slug: s.anchorSlug, start: at };
           break;

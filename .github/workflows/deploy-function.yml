@@ -1,0 +1,82 @@
+# Deploy the review backend (server/) to a Neon Function.
+#
+# DISABLED ON PURPOSE. The Neon project + Function are not provisioned yet
+# (issue #18), so this workflow only runs on a manual `workflow_dispatch` — it
+# never fires automatically. When deploy infra is live, enable automatic runs by
+# uncommenting the `push` trigger below and setting the repo secrets/vars noted
+# under `env`. Mirrors the disabled-by-default posture of register-versions.yml.
+#
+# What it does: bundles server/ and deploys it as a Neon Function via the Neon
+# CLI. The Function entrypoint is server/src/handler.ts (`export default { fetch }`).
+# DATABASE_URL is injected by Neon at runtime; the other env below is set on the
+# Function at deploy time. Migrations (server/scripts/migrate.mjs) must be applied
+# to the target branch BEFORE the Function serves new schema — do that in a step
+# here or manually, against the branch's DATABASE_URL.
+
+name: Deploy review Function
+
+on:
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "Neon Function slug to deploy to"
+        required: true
+        default: "review"
+  # ENABLE WHEN DEPLOYING: deploy on push to main once the Function exists and
+  # NEON_API_KEY is set. Kept commented so the job stays disabled.
+  # push:
+  #   branches: [main]
+
+concurrency:
+  group: deploy-function
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # Extra guard: even if the push trigger is later uncommented, only run on
+    # main and only when explicitly enabled via a repo variable. Until
+    # REVIEW_DEPLOY_ENABLED is set to 'true', this job is a no-op.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.ref == 'refs/heads/main' && vars.REVIEW_DEPLOY_ENABLED == 'true')
+    env:
+      # Set as repo secrets/vars when provisioning (issue #18):
+      #   NEON_API_KEY            secret — authenticates the Neon CLI
+      #   REVIEW_BUILD_SECRET     secret — shared secret RegisterVersion checks
+      #   NEON_AUTH_COOKIE_NAME   var    — the live Better Auth session cookie name
+      #   REVIEW_ALLOWED_ORIGIN   var    — comma-separated CORS allowlist (Vercel origin)
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+      - uses: ./.github/actions/npm-public
+      - name: Install server deps
+        run: cd server && bun install --frozen-lockfile
+      - name: Guard required secrets
+        run: |
+          if [ -z "${NEON_API_KEY:-}" ]; then
+            echo "::error::NEON_API_KEY secret is not set — provision the Neon project first (issue #18)."
+            exit 1
+          fi
+      # NOTE: exact Neon CLI invocation is finalized at provisioning (the CLI is
+      # in beta). Sketch — deploy the single Function from server/, passing the
+      # non-injected env. DATABASE_URL is injected by Neon, not passed here.
+      - name: Deploy Neon Function
+        run: |
+          echo "TODO(provisioning #18): install + run the Neon CLI, e.g.:"
+          echo "  neon functions deploy \"${{ inputs.slug || 'review' }}\" \\"
+          echo "    --src server \\"
+          echo "    --env AUTH_MODE=neon \\"
+          echo "    --env NODE_ENV=production \\"
+          echo "    --env ALLOWED_ORIGIN=\"${{ vars.REVIEW_ALLOWED_ORIGIN }}\" \\"
+          echo "    --env BUILD_SECRET=\"\$REVIEW_BUILD_SECRET\" \\"
+          echo "    --env NEON_AUTH_COOKIE_NAME=\"${{ vars.NEON_AUTH_COOKIE_NAME }}\""
+          echo "::notice::deploy-function.yml is a scaffold — wire the CLI at provisioning."

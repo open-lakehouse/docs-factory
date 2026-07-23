@@ -53,6 +53,13 @@ service ReviewService {
   // Maintainer-only convenience for the terminal RELEASED transition.
   rpc ReleaseContent(ReleaseContentRequest) returns (ReleaseContentResponse);
 
+  // RevOps pipeline: set a content item's ordered priority (allowlist-gated).
+  // Absent priority clears the rank. Returns the refreshed summary row.
+  rpc SetPriority(SetPriorityRequest) returns (SetPriorityResponse);
+  // RevOps pipeline: set (or clear) a content item's target release date
+  // (allowlist-gated). Absent date clears it. Returns the refreshed summary row.
+  rpc SetTargetReleaseDate(SetTargetReleaseDateRequest) returns (SetTargetReleaseDateResponse);
+
   // Maintainer-only allowlist management.
   rpc ManageAllowlist(ManageAllowlistRequest) returns (ManageAllowlistResponse);
 
@@ -76,6 +83,9 @@ message GetViewerResponse {
 message ListDraftsRequest {
   // When set, restrict to one area.
   optional ContentArea area = 1;
+  // When true, order by RevOps priority (ranked first, unranked last) instead
+  // of the default area/path ordering. Drives the pipeline view.
+  optional bool order_by_priority = 2;
 }
 message ListDraftsResponse {
   repeated DraftSummary drafts = 1;
@@ -177,6 +187,24 @@ message ReleaseContentRequest {
 }
 message ReleaseContentResponse {
   ReviewState state = 1;
+}
+
+message SetPriorityRequest {
+  ContentRef ref = 1;
+  // Ordered rank (lower = higher priority). Absent clears the rank.
+  optional int32 priority = 2;
+}
+message SetPriorityResponse {
+  DraftSummary draft = 1;
+}
+
+message SetTargetReleaseDateRequest {
+  ContentRef ref = 1;
+  // Target ship date, date-only at UTC midnight. Absent clears the date.
+  optional google.protobuf.Timestamp target_release_date = 2;
+}
+message SetTargetReleaseDateResponse {
+  DraftSummary draft = 1;
 }
 
 message ManageAllowlistRequest {

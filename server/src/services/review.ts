@@ -9,7 +9,7 @@
 // Auth: an interceptor resolves the viewer once per request; RPCs read it via
 // getViewer(ctx) and enforce with requireAllowlisted / requireMaintainer.
 import { create } from "@bufbuild/protobuf";
-import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type ConnectRouter } from "@connectrpc/connect";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
@@ -25,6 +25,8 @@ import {
   GetSourceFileResponseSchema,
   TransitionReviewResponseSchema,
   ReleaseContentResponseSchema,
+  SetPriorityResponseSchema,
+  SetTargetReleaseDateResponseSchema,
   ManageAllowlistRequest_Action,
   ManageAllowlistResponseSchema,
   EraseUserResponseSchema,
@@ -40,6 +42,8 @@ import {
   type GetSourceFileRequest,
   type TransitionReviewRequest,
   type ReleaseContentRequest,
+  type SetPriorityRequest,
+  type SetTargetReleaseDateRequest,
   type ManageAllowlistRequest,
   type EraseUserRequest,
   type RegisterVersionRequest,
@@ -115,6 +119,73 @@ const ALLOWED_TRANSITIONS: Record<string, string[]> = {
   released: [],
 };
 
+// The joined shape behind a DraftSummary: latest version metadata + current
+// review state + open-comment count + RevOps pipeline fields (content_revops).
+type DraftSummaryRow = {
+  area: string;
+  slug: string;
+  project: string | null;
+  bucket: string | null;
+  title: string | null;
+  frontmatter_status: string | null;
+  priority: number | null;
+  target_release_date: Date | string | null;
+  review_state: string | null;
+  open_comments: number;
+};
+
+function draftSummaryFromRow(r: DraftSummaryRow) {
+  // The `date` column comes back as a Date (postgres.js) or an ISO date string;
+  // normalize to a Timestamp at the date's midnight for the wire.
+  const target =
+    r.target_release_date == null
+      ? undefined
+      : timestampFromDate(new Date(r.target_release_date));
+  return create(DraftSummarySchema, {
+    ref: create(ContentRefSchema, {
+      area: areaFromDb(r.area),
+      slug: r.slug,
+      project: r.project ?? undefined,
+      bucket: r.bucket ?? undefined,
+    }),
+    title: r.title ?? r.slug,
+    frontmatterStatus: r.frontmatter_status ?? "",
+    reviewState: REVIEW_STATE_BY_DB[r.review_state ?? "none"] ?? ReviewState.NONE,
+    openCommentCount: r.open_comments,
+    priority: r.priority ?? undefined,
+    targetReleaseDate: target,
+  });
+}
+
+// Re-read one (area, slug)'s DraftSummary row after a RevOps mutation, so the
+// setters return the same shape ListDrafts produces (with the fresh priority /
+// target date joined in). Returns null if the ref has no known content at all.
+async function loadDraftSummary(sql: Sql, area: string, slug: string) {
+  const [row] = await sql<DraftSummaryRow[]>`
+    with latest as (
+      select distinct on (area, slug) *
+      from content_version
+      where area = ${area} and slug = ${slug}
+      order by area, slug, created_at desc
+    )
+    select ${area}::text as area, ${slug}::text as slug,
+      l.project, l.bucket, l.title, l.frontmatter_status,
+      rv.priority, rv.target_release_date,
+      (select rs.state from review_state rs
+        where rs.area = ${area} and rs.slug = ${slug}
+        order by rs.created_at desc limit 1) as review_state,
+      (select count(*)::int from comment c
+        left join comment_resolution cr on cr.thread_root_id = c.id
+        where c.area = ${area} and c.slug = ${slug}
+          and c.parent_id is null and c.orphaned = false
+          and coalesce(cr.resolved, false) = false) as open_comments
+    from (select 1) one
+    left join latest l on true
+    left join content_revops rv on rv.area = ${area} and rv.slug = ${slug}
+  `;
+  return row ? draftSummaryFromRow(row) : null;
+}
+
 export function registerReviewService(router: ConnectRouter, auth: AuthProvider): void {
   router.service(
     ReviewService,
@@ -138,18 +209,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // version when registered, else null. Unregistered rows have a null
         // frontmatter_status and so are visible only to allowlisted viewers —
         // which is fine, since only they can produce review activity.
-        const rows = await sql<
-          {
-            area: string;
-            slug: string;
-            project: string | null;
-            bucket: string | null;
-            title: string | null;
-            frontmatter_status: string | null;
-            review_state: string | null;
-            open_comments: number;
-          }[]
-        >`
+        const rows = await sql<DraftSummaryRow[]>`
           with latest as (
             select distinct on (area, slug) *
             from content_version
@@ -163,6 +223,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             select area, slug from comment
           )
           select k.area, k.slug, l.project, l.bucket, l.title, l.frontmatter_status,
+            rv.priority, rv.target_release_date,
             (select rs.state from review_state rs
               where rs.area = k.area and rs.slug = k.slug
               order by rs.created_at desc limit 1) as review_state,
@@ -173,6 +234,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 and coalesce(cr.resolved, false) = false) as open_comments
           from keys k
           left join latest l on l.area = k.area and l.slug = k.slug
+          left join content_revops rv on rv.area = k.area and rv.slug = k.slug
           where (${areaFilter}::text is null or k.area = ${areaFilter})
             and (
               ${viewer.isAllowlisted}
@@ -185,23 +247,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 ) = ${RELEASED_STATE}
               )
             )
-          order by k.area, l.project nulls first, l.bucket nulls first, k.slug
+          order by
+            case when ${req.orderByPriority ?? false} then rv.priority end asc nulls last,
+            k.area, l.project nulls first, l.bucket nulls first, k.slug
         `;
 
-        const drafts = rows.map((r) =>
-          create(DraftSummarySchema, {
-            ref: create(ContentRefSchema, {
-              area: areaFromDb(r.area),
-              slug: r.slug,
-              project: r.project ?? undefined,
-              bucket: r.bucket ?? undefined,
-            }),
-            title: r.title ?? r.slug,
-            frontmatterStatus: r.frontmatter_status ?? "",
-            reviewState: REVIEW_STATE_BY_DB[r.review_state ?? "none"] ?? ReviewState.NONE,
-            openCommentCount: r.open_comments,
-          }),
-        );
+        const drafts = rows.map(draftSummaryFromRow);
         return create(ListDraftsResponseSchema, { drafts });
       },
 
@@ -523,6 +574,49 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const viewer = requireMaintainer(ctx);
         const state = await transition(req.ref, ReviewState.RELEASED, req.note, ctx, viewer.login);
         return create(ReleaseContentResponseSchema, { state });
+      },
+
+      // RevOps: setting priority/target date is routine reviewer work, so both
+      // are allowlist-gated (release stays maintainer-only). The upsert creates
+      // the content_revops row on first use — a piece of content can be ranked
+      // before it has any registered version.
+      async setPriority(req: SetPriorityRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        const priority = req.priority ?? null;
+        await sql`
+          insert into content_revops (area, slug, priority, updated_by)
+          values (${area}, ${req.ref.slug}, ${priority}, ${viewer.login ?? "unknown"})
+          on conflict (area, slug) do update
+            set priority = ${priority},
+                updated_by = ${viewer.login ?? "unknown"},
+                updated_at = now()
+        `;
+        const draft = await loadDraftSummary(sql, area, req.ref.slug);
+        return create(SetPriorityResponseSchema, { draft: draft ?? undefined });
+      },
+
+      async setTargetReleaseDate(req: SetTargetReleaseDateRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        // Date-only: take the timestamp's calendar date (UTC) for the `date` column.
+        const date = req.targetReleaseDate
+          ? timestampDate(req.targetReleaseDate).toISOString().slice(0, 10)
+          : null;
+        await sql`
+          insert into content_revops (area, slug, target_release_date, updated_by)
+          values (${area}, ${req.ref.slug}, ${date}, ${viewer.login ?? "unknown"})
+          on conflict (area, slug) do update
+            set target_release_date = ${date},
+                updated_by = ${viewer.login ?? "unknown"},
+                updated_at = now()
+        `;
+        const draft = await loadDraftSummary(sql, area, req.ref.slug);
+        return create(SetTargetReleaseDateResponseSchema, { draft: draft ?? undefined });
       },
 
       async manageAllowlist(req: ManageAllowlistRequest, ctx) {

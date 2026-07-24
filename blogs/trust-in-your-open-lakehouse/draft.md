@@ -10,18 +10,6 @@ author: Robert Pack
 target: company blog
 ---
 
-<!--
-Imported from Google Doc "Trust in your Open Lakehouse" (tab "Tab 2"), 2026-07-02.
-Prose is the author's draft, kept faithful on import. Known rough spots (cut-off
-sentences, a typo, the "CDAR" policy-engine name, and the still-open CTA) are
-tracked in brief.md §7/§9/§10, not silently edited here.
-
-Diagrams are authored in D2 (assets/*.d2 — the source of truth) and rendered to
-assets/*.svg by ../render-diagrams.sh. The Google Doc embedded PNG renders of
-these same sources; here we reference the local SVGs. Re-run the render script
-after editing any .d2 source.
--->
-
 # Trust in your Lakehouse
 
 A key responsibility of senior architects is communicating with management, which may often be non-technical. One key tool architects love for communication is architectural diagrams. In fact, we can use an architecture diagram to illustrate this situation.

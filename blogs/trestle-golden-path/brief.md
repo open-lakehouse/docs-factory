@@ -227,5 +227,3 @@ running). Diagrams (the one-core/two-adapter mount) authored in D2 if used.
 - Does the driver check-in app exist at draft time, or do we tell the story
   against `golden-path-app` and frame Casper as the illustrative framing? Decide
   before drafting (affects how literal the screenshots/snippets can be).
-- COI/disclosure: author is at Databricks; trestle is an open-lakehouse project —
-  disclose affiliation per the publishing target.

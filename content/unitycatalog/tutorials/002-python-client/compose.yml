@@ -1,0 +1,37 @@
+# Unity Catalog OSS server for the python-client tutorial's tests.
+#
+# The official published image (https://github.com/unitycatalog/unitycatalog),
+# so the test harness pulls it rather than building anything. The test fixture
+# starts this compose, waits on the healthcheck, and points the tutorial script
+# at it via UC_BASE_URL. A reader can start the same server by hand with
+# `docker compose -f docker-compose.uc.yml up`.
+#
+# EXTERNAL tables in the tutorial vend file:///tmp/uc-test/... locations; that
+# path is bind-mounted 1:1 host<->container so the location resolves the same on
+# both sides. It must match `storage-root.tables` in uc-oss/server.properties.
+name: uc-python-client-tutorial
+
+services:
+  unitycatalog:
+    image: unitycatalog/unitycatalog:v0.5.0
+    hostname: unitycatalog
+    ports:
+      - "8080:8080"
+    volumes:
+      - type: bind
+        source: ./uc-oss/server.properties
+        target: /home/unitycatalog/etc/conf/server.properties
+        read_only: true
+      - type: bind
+        source: /tmp/uc-test
+        target: /tmp/uc-test
+    healthcheck:
+      # Ready once it answers the catalogs list endpoint. The image ships wget,
+      # not curl.
+      test:
+        - CMD-SHELL
+        - "wget -q -O /dev/null http://localhost:8080/api/2.1/unity-catalog/catalogs || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s

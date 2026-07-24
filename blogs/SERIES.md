@@ -47,14 +47,7 @@ responsibility *and* the pieces that deliver it are walked through as architectu
 The governance foundation posts anchor the arc; the technology deep-dives (the
 store, the codegen, the services) extend it; the DAIS demos continue the storyline.
 
-> **Reframed** (was "Trust in the Open Lakehouse"): broadened from a
-> governance/security thesis to an architecture-and-technology walkthrough of the
-> whole stack. The trust posts remain the arc's anchor; security is now a thread
-> through a larger story rather than the only one.
-
 **Posts (in order):**
-1. Bytes Proxy and the in-browser wasm query engine
-2. Volumes + Files API.
 1. Trust in your Open Lakehouse — `blogs/trust-in-your-open-lakehouse/` —
    drafting — the foundation: the three governance patterns (credential
    vending, server-side planning, trusted compute) and why agents force
@@ -74,6 +67,27 @@ component of the stack walked through as architecture, with the security-by-defa
 thread running through it. It is the design-side counterpart to the Casper
 golden-path post that *uses* the store; if promoted, cross-link the two rather than
 duplicate.
+
+## Build on Unity Catalog
+
+**Register:** practical integrations with Unity Catalog
+**Through-line:** Unity Cagtalog Securables are building blocks which allow building
+much richer and user aligned experiences. This series features simple services
+and examples that leverage the different UC surfaces to create enhanced experiences.
+
+**Posts (in order):**
+1. Bytes Proxy and the in-browser wasm query engine
+2. Volumes + Files API.
+
+## Kernel Inside
+
+**Register:** practical integrations with Unity Catalog
+**Through-line:** THe kernel architecture is simplifying how
+Engines integrate with open table formats. Showcase how.
+
+**Posts (in order):**
+1. Bytes Proxy and the in-browser wasm query engine
+2. Volumes + Files API.
 
 ## Chef Casper's Ghost Kitchen
 

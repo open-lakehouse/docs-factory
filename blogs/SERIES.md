@@ -53,6 +53,8 @@ store, the codegen, the services) extend it; the DAIS demos continue the storyli
 > through a larger story rather than the only one.
 
 **Posts (in order):**
+1. Bytes Proxy and the in-browser wasm query engine
+2. Volumes + Files API.
 1. Trust in your Open Lakehouse — `blogs/trust-in-your-open-lakehouse/` —
    drafting — the foundation: the three governance patterns (credential
    vending, server-side planning, trusted compute) and why agents force

@@ -9,6 +9,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   listComments,
   listDrafts,
+  listReviewRequests,
+  listContentEvents,
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../gen/docs_factory/review/v1/messages_pb";
 
@@ -67,5 +69,39 @@ export function useReviewInvalidation() {
     [queryClient, transport],
   );
 
-  return { commentsKey, invalidateComments, invalidateDrafts, queryClient };
+  // Invalidate every listReviewRequests query (all scopes: mine/by_me/per-ref),
+  // so an accepted/created/cancelled request refreshes the dashboard and the
+  // per-artifact request list. Partial key match covers all input variants.
+  const invalidateReviewRequests = useCallback(
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: createConnectQueryKey({
+          schema: listReviewRequests,
+          transport,
+          cardinality: "finite",
+        }),
+      }),
+    [queryClient, transport],
+  );
+
+  const invalidateContentEvents = useCallback(
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: createConnectQueryKey({
+          schema: listContentEvents,
+          transport,
+          cardinality: "finite",
+        }),
+      }),
+    [queryClient, transport],
+  );
+
+  return {
+    commentsKey,
+    invalidateComments,
+    invalidateDrafts,
+    invalidateReviewRequests,
+    invalidateContentEvents,
+    queryClient,
+  };
 }

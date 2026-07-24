@@ -7,14 +7,34 @@
 // (frontmatter_status "idea") show up here as first-class rows, so a post can be
 // ranked and given a target date while it's still an early on-disk idea folder.
 //
-// Reorder is up/down swaps over an integer rank: moving a row swaps its priority
-// with its neighbour's. Rows without a priority yet ("unranked") sort last and
-// get a dense rank assigned the first time they're moved into the ranked list.
-import { useMemo } from "react";
+// Reorder is drag-and-drop over an integer rank: dropping a row assigns a dense
+// 1..N rank across the whole list. Rows without a priority yet ("unranked") sort
+// last and get a dense rank assigned the first time they're moved into the ranked
+// list.
+//
+// Rows expand (one at a time) to show the blog metadata header + event timeline.
+import { useEffect, useMemo, useState, type MouseEvent } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation } from "@connectrpc/connect-query";
 import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  type DragEndEvent,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { ChevronDown, ChevronRight, GripVertical } from "lucide-react";
 import {
   listDrafts,
   setPriority,
@@ -30,18 +50,172 @@ import { refHref } from "../lib/content-ref";
 import { ReviewStateBadge } from "../lib/review-status";
 import { statusBadgeClass } from "../lib/frontmatter-status";
 import { useReviewInvalidation } from "../lib/review-queries";
+import { findBlog } from "../content";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
+import BlogPostDetail from "../components/BlogPostDetail";
+import ContentEventTimeline from "../components/review/ContentEventTimeline";
 import Shell from "../components/layout/Shell";
+
+/** Columns in the main row (for detail colspan). */
+const COL_COUNT = 7;
 
 function draftLabel(d: DraftSummary): string {
   return d.title || d.ref?.slug || "(untitled)";
+}
+
+function rowId(d: DraftSummary): string {
+  return d.ref ? refHref(d.ref) : draftLabel(d);
 }
 
 /** A Timestamp -> "YYYY-MM-DD" for the date input (UTC calendar date). */
 function toDateInput(ts: DraftSummary["targetReleaseDate"]): string {
   if (!ts) return "";
   return timestampDate(ts).toISOString().slice(0, 10);
+}
+
+type SortableRowProps = {
+  draft: DraftSummary;
+  busy: boolean;
+  isOpen: boolean;
+  onToggle: () => void;
+  onDateChange: (ref: ContentRef | undefined, value: string) => void;
+};
+
+function SortableRow({
+  draft: d,
+  busy,
+  isOpen,
+  onToggle,
+  onDateChange,
+}: SortableRowProps) {
+  const id = rowId(d);
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    setActivatorNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id, disabled: busy });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const post = d.ref?.slug ? findBlog(d.ref.slug) : undefined;
+
+  function onRowClick(e: MouseEvent) {
+    // Interactive cells (links, date, drag handle) own their clicks.
+    const target = e.target as HTMLElement;
+    if (target.closest("a, button, input, label")) return;
+    onToggle();
+  }
+
+  return (
+    <>
+      <tr
+        ref={setNodeRef}
+        style={style}
+        className={cn(
+          "revops-row",
+          isOpen && "open",
+          isDragging && "revops-row-dragging",
+        )}
+        onClick={onRowClick}
+        aria-expanded={isOpen}
+      >
+        <td className="revops-col-move">
+          <button
+            ref={setActivatorNodeRef}
+            type="button"
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "icon-xs" }),
+              "revops-drag-handle",
+            )}
+            aria-label={`Reorder ${draftLabel(d)}`}
+            disabled={busy}
+            {...attributes}
+            {...listeners}
+          >
+            <GripVertical className="size-3" />
+          </button>
+        </td>
+        <td className="revops-col-chevron">
+          {isOpen ? (
+            <ChevronDown className="revops-chevron" aria-hidden="true" />
+          ) : (
+            <ChevronRight className="revops-chevron" aria-hidden="true" />
+          )}
+        </td>
+        <td className="revops-col-rank mono">
+          {d.priority != null ? d.priority : "—"}
+        </td>
+        <td>
+          {d.ref ? (
+            <Link to={refHref(d.ref)} className="revops-title">
+              {draftLabel(d)}
+            </Link>
+          ) : (
+            <span className="revops-title">{draftLabel(d)}</span>
+          )}
+          {post?.frontmatter.series && (
+            <span className="revops-series">({post.frontmatter.series})</span>
+          )}
+        </td>
+        <td>
+          {d.frontmatterStatus && (
+            <span className={cn("blog-badge", statusBadgeClass(d.frontmatterStatus))}>
+              {d.frontmatterStatus}
+            </span>
+          )}
+        </td>
+        <td>
+          <ReviewStateBadge state={d.reviewState} />
+        </td>
+        <td>
+          <input
+            type="date"
+            className="revops-date"
+            value={toDateInput(d.targetReleaseDate)}
+            disabled={busy}
+            onChange={(e) => void onDateChange(d.ref, e.target.value)}
+            // Empty date inputs select the dd/mm/yyyy segments on click instead of
+            // opening the calendar. Force the native picker for a consistent hit target.
+            onClick={(e) => {
+              const input = e.currentTarget;
+              try {
+                input.showPicker();
+              } catch {
+                // Unsupported / not allowed — fall through to native behavior.
+              }
+            }}
+          />
+        </td>
+      </tr>
+      {isOpen && (
+        <tr className="revops-detail-row">
+          <td colSpan={COL_COUNT}>
+            <div className="revops-detail">
+              {post ? (
+                <BlogPostDetail post={post} />
+              ) : (
+                <p className="muted">No on-disk metadata for this post yet.</p>
+              )}
+              {d.ref && (
+                <div className="revops-detail-timeline">
+                  <ContentEventTimeline contentRef={d.ref} />
+                </div>
+              )}
+            </div>
+          </td>
+        </tr>
+      )}
+    </>
+  );
 }
 
 export default function RevOpsDashboard() {
@@ -60,10 +234,26 @@ export default function RevOpsDashboard() {
     onSuccess: () => void invalidateDrafts(),
   });
 
-  // Server already orders ranked-first / unranked-last; keep that order and just
-  // track which rows are ranked so the up/down affordances know their bounds.
-  const rows = useMemo(() => data?.drafts ?? [], [data]);
+  // Server already orders ranked-first / unranked-last; keep a local copy for
+  // optimistic drag-and-drop reordering.
+  const serverRows = useMemo(() => data?.drafts ?? [], [data]);
+  const [rows, setRows] = useState<DraftSummary[]>(serverRows);
+  // Accordion: at most one expanded row (matches ContentTable).
+  const [openId, setOpenId] = useState<string | null>(null);
+
+  useEffect(() => {
+    setRows(serverRows);
+  }, [serverRows]);
+
   const busy = prioritize.isPending || retarget.isPending;
+  const rowIds = useMemo(() => rows.map(rowId), [rows]);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   // Route guard: reviewer-only (mirrors ReviewDashboard). Wait for the viewer to
   // resolve before deciding so we don't flash "not found" at a reviewer.
@@ -84,28 +274,30 @@ export default function RevOpsDashboard() {
     );
   }
 
-  // Reorder by swapping priorities with the neighbour. Assign a dense 1..N rank
-  // across the whole list first (idempotent — re-sending a row's current rank is
-  // a no-op) so unranked rows get a concrete priority the moment they move.
-  async function move(index: number, dir: -1 | 1) {
-    const target = index + dir;
-    if (target < 0 || target >= rows.length) return;
-    const a = rows[index];
-    const b = rows[target];
-    if (!a.ref || !b.ref) return;
-    // Dense ranks over the current visual order; a and b swap their slots.
-    const ranks = rows.map((_, i) => i + 1);
-    const aRank = ranks[target]; // a moves into b's slot
-    const bRank = ranks[index]; // b moves into a's slot
-    // Persist every row's baseline rank once (cheap upserts) so the ordering is
-    // fully materialized, then the swapped pair land in their new slots.
+  // Reorder by dragging to a new position. Assign a dense 1..N rank across the
+  // whole list (idempotent — re-sending a row's current rank is a no-op) so
+  // unranked rows get a concrete priority the moment they move.
+  async function persistOrder(nextRows: DraftSummary[]) {
     await Promise.all(
-      rows.map((r, i) => {
+      nextRows.map((r, i) => {
         if (!r.ref) return Promise.resolve();
-        const rank = i === index ? aRank : i === target ? bRank : ranks[i];
+        const rank = i + 1;
         return prioritize.mutateAsync({ ref: r.ref, priority: rank });
       }),
     );
+  }
+
+  async function onDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = rows.findIndex((r) => rowId(r) === active.id);
+    const newIndex = rows.findIndex((r) => rowId(r) === over.id);
+    if (oldIndex < 0 || newIndex < 0) return;
+
+    const nextRows = arrayMove(rows, oldIndex, newIndex);
+    setRows(nextRows);
+    await persistOrder(nextRows);
   }
 
   async function onDateChange(ref: ContentRef | undefined, value: string) {
@@ -137,71 +329,42 @@ export default function RevOpsDashboard() {
           <table className="revops-table">
             <thead>
               <tr>
+                <th className="revops-col-move">
+                  <span className="sr-only">Order</span>
+                </th>
+                <th className="revops-col-chevron" aria-hidden="true" />
                 <th className="revops-col-rank">#</th>
                 <th>Post</th>
                 <th>Status</th>
                 <th>Review</th>
                 <th>Target release</th>
-                <th className="revops-col-move">Order</th>
               </tr>
             </thead>
-            <tbody>
-              {rows.map((d, i) => (
-                <tr key={d.ref && refHref(d.ref)} className="revops-row">
-                  <td className="revops-col-rank mono">
-                    {d.priority != null ? d.priority : "—"}
-                  </td>
-                  <td>
-                    {d.ref ? (
-                      <Link to={refHref(d.ref)} className="revops-title">
-                        {draftLabel(d)}
-                      </Link>
-                    ) : (
-                      <span className="revops-title">{draftLabel(d)}</span>
-                    )}
-                  </td>
-                  <td>
-                    {d.frontmatterStatus && (
-                      <span className={cn("blog-badge", statusBadgeClass(d.frontmatterStatus))}>
-                        {d.frontmatterStatus}
-                      </span>
-                    )}
-                  </td>
-                  <td>
-                    <ReviewStateBadge state={d.reviewState} />
-                  </td>
-                  <td>
-                    <input
-                      type="date"
-                      className="revops-date"
-                      value={toDateInput(d.targetReleaseDate)}
-                      disabled={busy}
-                      onChange={(e) => void onDateChange(d.ref, e.target.value)}
-                    />
-                  </td>
-                  <td className="revops-col-move">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      aria-label="Move up"
-                      disabled={busy || i === 0}
-                      onClick={() => void move(i, -1)}
-                    >
-                      <ChevronUp className="size-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      aria-label="Move down"
-                      disabled={busy || i === rows.length - 1}
-                      onClick={() => void move(i, 1)}
-                    >
-                      <ChevronDown className="size-4" />
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(e) => void onDragEnd(e)}
+            >
+              <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
+                <tbody>
+                  {rows.map((d) => {
+                    const id = rowId(d);
+                    return (
+                      <SortableRow
+                        key={id}
+                        draft={d}
+                        busy={busy}
+                        isOpen={openId === id}
+                        onToggle={() =>
+                          setOpenId((cur) => (cur === id ? null : id))
+                        }
+                        onDateChange={onDateChange}
+                      />
+                    );
+                  })}
+                </tbody>
+              </SortableContext>
+            </DndContext>
           </table>
         )}
       </div>

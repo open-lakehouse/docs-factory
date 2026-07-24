@@ -1,0 +1,141 @@
+// Mapping helpers for the review-request and content-event layer: DB row shapes
+// (snake_case) <-> proto messages, plus the enum <-> text conversions. Kept out
+// of review.ts so the service file stays focused on handlers, mirroring how
+// comments.ts / db-map.ts factor out row mapping.
+import { create } from "@bufbuild/protobuf";
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+import {
+  ReviewRequestSchema,
+  ContentEventSchema,
+  ContentRefSchema,
+  Requirement,
+  RequestStatus,
+  EventKind,
+  ReviewState,
+  type ContentRef,
+  type ReviewRequest,
+  type ContentEvent,
+} from "./gen/docs_factory/review/v1/messages_pb.js";
+import { areaFromDb } from "./db-map.js";
+
+// --- Requirement <-> DB text ------------------------------------------------
+
+export function requirementToDb(r: Requirement): "required" | "optional" {
+  // Default (UNSPECIFIED) is treated as required — the conservative choice for a
+  // release gate: an ambiguous request should block, not silently pass.
+  return r === Requirement.OPTIONAL ? "optional" : "required";
+}
+
+const REQUIREMENT_BY_DB: Record<string, Requirement> = {
+  required: Requirement.REQUIRED,
+  optional: Requirement.OPTIONAL,
+};
+
+const REQUEST_STATUS_BY_DB: Record<string, RequestStatus> = {
+  open: RequestStatus.OPEN,
+  satisfied: RequestStatus.SATISFIED,
+  cancelled: RequestStatus.CANCELLED,
+};
+
+// --- EventKind <-> DB text --------------------------------------------------
+
+const EVENT_KIND_BY_DB: Record<string, EventKind> = {
+  "review-requested": EventKind.REVIEW_REQUESTED,
+  "request-satisfied": EventKind.REQUEST_SATISFIED,
+  "request-cancelled": EventKind.REQUEST_CANCELLED,
+  "state-in-review": EventKind.STATE_IN_REVIEW,
+  "state-changes-requested": EventKind.STATE_CHANGES_REQUESTED,
+  "state-approved": EventKind.STATE_APPROVED,
+  released: EventKind.RELEASED,
+  unpublished: EventKind.UNPUBLISHED,
+  republished: EventKind.REPUBLISHED,
+};
+
+/**
+ * The content_event `kind` for a review-state transition, keyed on the DB state
+ * string it lands in. Only the states that are timeline-worthy are mapped;
+ * `none` and any unmapped state return null (not logged). `released` is logged
+ * from releaseContent (with the published latch) rather than here.
+ */
+export const EVENT_KIND_BY_STATE: Record<string, string | null> = {
+  "in-review": "state-in-review",
+  "changes-requested": "state-changes-requested",
+  approved: "state-approved",
+  released: "released",
+  none: null,
+};
+
+// --- Row shapes -------------------------------------------------------------
+
+export interface ReviewRequestRow {
+  id: string;
+  area: string;
+  slug: string;
+  reviewer_login: string | null;
+  reviewer_email: string | null;
+  requirement: string;
+  status: string;
+  requested_by: string;
+  note: string | null;
+  created_at: Date;
+  satisfied_at: Date | null;
+}
+
+export interface ContentEventRow {
+  id: string;
+  area: string;
+  slug: string;
+  kind: string;
+  actor: string;
+  payload: {
+    note?: string;
+    from_state?: string;
+    to_state?: string;
+    reviewer_login?: string;
+  } | null;
+  created_at: Date;
+}
+
+// --- Row -> proto -----------------------------------------------------------
+
+function refFor(area: string, slug: string): ContentRef {
+  return create(ContentRefSchema, { area: areaFromDb(area), slug });
+}
+
+export function reviewRequestFromRow(r: ReviewRequestRow): ReviewRequest {
+  return create(ReviewRequestSchema, {
+    id: r.id,
+    ref: refFor(r.area, r.slug),
+    reviewerLogin: r.reviewer_login ?? undefined,
+    reviewerEmail: r.reviewer_email ?? undefined,
+    requirement: REQUIREMENT_BY_DB[r.requirement] ?? Requirement.REQUIRED,
+    status: REQUEST_STATUS_BY_DB[r.status] ?? RequestStatus.OPEN,
+    requestedBy: r.requested_by,
+    note: r.note ?? "",
+    createdAt: timestampFromDate(r.created_at),
+    satisfiedAt: r.satisfied_at ? timestampFromDate(r.satisfied_at) : undefined,
+  });
+}
+
+const STATE_BY_DB: Record<string, ReviewState> = {
+  none: ReviewState.NONE,
+  "in-review": ReviewState.IN_REVIEW,
+  "changes-requested": ReviewState.CHANGES_REQUESTED,
+  approved: ReviewState.APPROVED,
+  released: ReviewState.RELEASED,
+};
+
+export function contentEventFromRow(r: ContentEventRow): ContentEvent {
+  const p = r.payload ?? {};
+  return create(ContentEventSchema, {
+    id: r.id,
+    ref: refFor(r.area, r.slug),
+    kind: EVENT_KIND_BY_DB[r.kind] ?? EventKind.UNSPECIFIED,
+    actor: r.actor,
+    note: p.note ?? "",
+    fromState: p.from_state ? STATE_BY_DB[p.from_state] : undefined,
+    toState: p.to_state ? STATE_BY_DB[p.to_state] : undefined,
+    reviewerLogin: p.reviewer_login ?? undefined,
+    createdAt: timestampFromDate(r.created_at),
+  });
+}

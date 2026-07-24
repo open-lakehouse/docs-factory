@@ -4,7 +4,7 @@
 
 import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
-import type { AllowlistEntry, CodeSelector, Comment, ContentArea, ContentRef, ContentVersion, DraftSummary, RecentComment, ReviewState, Section, SnippetRef, SourceFile, TextSelector, Thread, Viewer } from "./messages_pb.js";
+import type { AllowlistEntry, CodeSelector, Comment, ContentArea, ContentEvent, ContentRef, ContentVersion, DraftSummary, RecentComment, Requirement, ReviewRequest, ReviewState, Section, SnippetRef, SourceFile, TextSelector, Thread, Viewer } from "./messages_pb.js";
 import { file_docs_factory_review_v1_messages } from "./messages_pb.js";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file docs_factory/review/v1/review_service.proto.
  */
 export const file_docs_factory_review_v1_review_service: GenFile = /*@__PURE__*/
-  fileDesc("Citkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL3Jldmlld19zZXJ2aWNlLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIhIKEEdldFZpZXdlclJlcXVlc3QiQwoRR2V0Vmlld2VyUmVzcG9uc2USLgoGdmlld2VyGAEgASgLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5WaWV3ZXIiigEKEUxpc3REcmFmdHNSZXF1ZXN0EjYKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhSACIAQESHgoRb3JkZXJfYnlfcHJpb3JpdHkYAiABKAhIAYgBAUIHCgVfYXJlYUIUChJfb3JkZXJfYnlfcHJpb3JpdHkiSgoSTGlzdERyYWZ0c1Jlc3BvbnNlEjQKBmRyYWZ0cxgBIAMoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuRHJhZnRTdW1tYXJ5IkkKFkdldERyYWZ0Q29udGVudFJlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmImAKF0dldERyYWZ0Q29udGVudFJlc3BvbnNlEgwKBGh0bWwYASABKAkSNwoHdmVyc2lvbhgCIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb24iRgoTTGlzdENvbW1lbnRzUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYigQEKFExpc3RDb21tZW50c1Jlc3BvbnNlEi8KB3RocmVhZHMYASADKAsyHi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRocmVhZBI4ChBvcnBoYW5lZF90aHJlYWRzGAIgAygLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5UaHJlYWQiegoZTGlzdFJlY2VudENvbW1lbnRzUmVxdWVzdBISCgVsaW1pdBgBIAEoBUgAiAEBEjYKBGFyZWEYAiABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhSAGIAQFCCAoGX2xpbWl0QgcKBV9hcmVhIlUKGkxpc3RSZWNlbnRDb21tZW50c1Jlc3BvbnNlEjcKCGNvbW1lbnRzGAEgAygLMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWNlbnRDb21tZW50Is0CChRDcmVhdGVDb21tZW50UmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSEwoLYW5jaG9yX3NsdWcYAiABKAkSGgoSYW5jaG9yX2ZpbmdlcnByaW50GAMgASgJEhYKCXBhcmVudF9pZBgEIAEoCUgAiAEBEg8KB2JvZHlfbWQYBSABKAkSOwoIc2VsZWN0b3IYBiABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRleHRTZWxlY3RvckgBiAEBEkAKDWNvZGVfc2VsZWN0b3IYByABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvZGVTZWxlY3RvckgCiAEBQgwKCl9wYXJlbnRfaWRCCwoJX3NlbGVjdG9yQhAKDl9jb2RlX3NlbGVjdG9yIkkKFUNyZWF0ZUNvbW1lbnRSZXNwb25zZRIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50IlUKFEdldFNvdXJjZUZpbGVSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIMCgRwYXRoGAIgASgJInwKFUdldFNvdXJjZUZpbGVSZXNwb25zZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJEjQKCHNuaXBwZXRzGAQgAygLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5TbmlwcGV0UmVmIi4KFFJlc29sdmVUaHJlYWRSZXF1ZXN0EhYKDnRocmVhZF9yb290X2lkGAEgASgJIkcKFVJlc29sdmVUaHJlYWRSZXNwb25zZRIuCgZ0aHJlYWQYASABKAsyHi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRocmVhZCIwChZVbnJlc29sdmVUaHJlYWRSZXF1ZXN0EhYKDnRocmVhZF9yb290X2lkGAEgASgJIkkKF1VucmVzb2x2ZVRocmVhZFJlc3BvbnNlEi4KBnRocmVhZBgBIAEoCzIeLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGhyZWFkIm0KFU1hcmtUaHJlYWRTZWVuUmVxdWVzdBIWCg50aHJlYWRfcm9vdF9pZBgBIAEoCRIwCgdzZWVuX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBQgoKCF9zZWVuX2F0IhgKFk1hcmtUaHJlYWRTZWVuUmVzcG9uc2UinQEKF1RyYW5zaXRpb25SZXZpZXdSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhI1Cgh0b19zdGF0ZRgCIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSEQoEbm90ZRgDIAEoCUgAiAEBQgcKBV9ub3RlIk4KGFRyYW5zaXRpb25SZXZpZXdSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUiZAoVUmVsZWFzZUNvbnRlbnRSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIRCgRub3RlGAIgASgJSACIAQFCBwoFX25vdGUiTAoWUmVsZWFzZUNvbnRlbnRSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUiaQoSU2V0UHJpb3JpdHlSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIVCghwcmlvcml0eRgCIAEoBUgAiAEBQgsKCV9wcmlvcml0eSJKChNTZXRQcmlvcml0eVJlc3BvbnNlEjMKBWRyYWZ0GAEgASgLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5EcmFmdFN1bW1hcnkipAEKG1NldFRhcmdldFJlbGVhc2VEYXRlUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSPAoTdGFyZ2V0X3JlbGVhc2VfZGF0ZRgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBAUIWChRfdGFyZ2V0X3JlbGVhc2VfZGF0ZSJTChxTZXRUYXJnZXRSZWxlYXNlRGF0ZVJlc3BvbnNlEjMKBWRyYWZ0GAEgASgLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5EcmFmdFN1bW1hcnki2wEKFk1hbmFnZUFsbG93bGlzdFJlcXVlc3QSRQoGYWN0aW9uGAEgASgOMjUuZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXF1ZXN0LkFjdGlvbhI1CgVlbnRyeRgCIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQWxsb3dsaXN0RW50cnkiQwoGQWN0aW9uEhYKEkFDVElPTl9VTlNQRUNJRklFRBAAEg4KCkFDVElPTl9BREQQARIRCg1BQ1RJT05fUkVNT1ZFEAIiUgoXTWFuYWdlQWxsb3dsaXN0UmVzcG9uc2USNwoHZW50cmllcxgBIAMoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQWxsb3dsaXN0RW50cnkiUgoQRXJhc2VVc2VyUmVxdWVzdBIUCgd1c2VyX2lkGAEgASgJSACIAQESEgoFbG9naW4YAiABKAlIAYgBAUIKCghfdXNlcl9pZEIICgZfbG9naW4iiQEKEUVyYXNlVXNlclJlc3BvbnNlEhsKE2NvbW1lbnRzX3RvbWJzdG9uZWQYASABKAUSHgoWcmV2aWV3X3N0YXRlc19zY3J1YmJlZBgCIAEoBRIcChRyZXNvbHV0aW9uc19zY3J1YmJlZBgDIAEoBRIZChFzZWVuX3Jvd3NfZGVsZXRlZBgEIAEoBSLUAgoWUmVnaXN0ZXJWZXJzaW9uUmVxdWVzdBIUCgxidWlsZF9zZWNyZXQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhQKDGNvbnRlbnRfaGFzaBgDIAEoCRIPCgdnaXRfc2hhGAQgASgJEg0KBXRpdGxlGAUgASgJEhoKEmZyb250bWF0dGVyX3N0YXR1cxgGIAEoCRIxCghzZWN0aW9ucxgHIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2VjdGlvbhI0CghzbmlwcGV0cxgIIAMoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU25pcHBldFJlZhI4Cgxzb3VyY2VfZmlsZXMYCSADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNvdXJjZUZpbGUicQoXUmVnaXN0ZXJWZXJzaW9uUmVzcG9uc2USNwoHdmVyc2lvbhgBIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb24SHQoVb3JwaGFuZWRfdGhyZWFkX2NvdW50GAIgASgFMv8OCg1SZXZpZXdTZXJ2aWNlEmAKCUdldFZpZXdlchIoLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuR2V0Vmlld2VyUmVxdWVzdBopLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuR2V0Vmlld2VyUmVzcG9uc2USYwoKTGlzdERyYWZ0cxIpLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdERyYWZ0c1JlcXVlc3QaKi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3REcmFmdHNSZXNwb25zZRJyCg9HZXREcmFmdENvbnRlbnQSLi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldERyYWZ0Q29udGVudFJlcXVlc3QaLy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldERyYWZ0Q29udGVudFJlc3BvbnNlEmkKDExpc3RDb21tZW50cxIrLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdENvbW1lbnRzUmVxdWVzdBosLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdENvbW1lbnRzUmVzcG9uc2USewoSTGlzdFJlY2VudENvbW1lbnRzEjEuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0UmVjZW50Q29tbWVudHNSZXF1ZXN0GjIuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0UmVjZW50Q29tbWVudHNSZXNwb25zZRJsCg1DcmVhdGVDb21tZW50EiwuZG9jc19mYWN0b3J5LnJldmlldy52MS5DcmVhdGVDb21tZW50UmVxdWVzdBotLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ3JlYXRlQ29tbWVudFJlc3BvbnNlEmwKDVJlc29sdmVUaHJlYWQSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlc29sdmVUaHJlYWRSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXNvbHZlVGhyZWFkUmVzcG9uc2UScgoPVW5yZXNvbHZlVGhyZWFkEi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5VbnJlc29sdmVUaHJlYWRSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5VbnJlc29sdmVUaHJlYWRSZXNwb25zZRJvCg5NYXJrVGhyZWFkU2VlbhItLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTWFya1RocmVhZFNlZW5SZXF1ZXN0Gi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYXJrVGhyZWFkU2VlblJlc3BvbnNlEmwKDUdldFNvdXJjZUZpbGUSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldFNvdXJjZUZpbGVSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5HZXRTb3VyY2VGaWxlUmVzcG9uc2USdQoQVHJhbnNpdGlvblJldmlldxIvLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVHJhbnNpdGlvblJldmlld1JlcXVlc3QaMC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRyYW5zaXRpb25SZXZpZXdSZXNwb25zZRJvCg5SZWxlYXNlQ29udGVudBItLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVsZWFzZUNvbnRlbnRSZXF1ZXN0Gi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWxlYXNlQ29udGVudFJlc3BvbnNlEmYKC1NldFByaW9yaXR5EiouZG9jc19mYWN0b3J5LnJldmlldy52MS5TZXRQcmlvcml0eVJlcXVlc3QaKy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNldFByaW9yaXR5UmVzcG9uc2USgQEKFFNldFRhcmdldFJlbGVhc2VEYXRlEjMuZG9jc19mYWN0b3J5LnJldmlldy52MS5TZXRUYXJnZXRSZWxlYXNlRGF0ZVJlcXVlc3QaNC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNldFRhcmdldFJlbGVhc2VEYXRlUmVzcG9uc2UScgoPTWFuYWdlQWxsb3dsaXN0Ei4uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXNwb25zZRJgCglFcmFzZVVzZXISKC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkVyYXNlVXNlclJlcXVlc3QaKS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkVyYXNlVXNlclJlc3BvbnNlEnIKD1JlZ2lzdGVyVmVyc2lvbhIuLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVnaXN0ZXJWZXJzaW9uUmVxdWVzdBovLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVnaXN0ZXJWZXJzaW9uUmVzcG9uc2ViBnByb3RvMw", [file_docs_factory_review_v1_messages, file_google_protobuf_timestamp]);
+  fileDesc("Citkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL3Jldmlld19zZXJ2aWNlLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIhIKEEdldFZpZXdlclJlcXVlc3QiQwoRR2V0Vmlld2VyUmVzcG9uc2USLgoGdmlld2VyGAEgASgLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5WaWV3ZXIiigEKEUxpc3REcmFmdHNSZXF1ZXN0EjYKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhSACIAQESHgoRb3JkZXJfYnlfcHJpb3JpdHkYAiABKAhIAYgBAUIHCgVfYXJlYUIUChJfb3JkZXJfYnlfcHJpb3JpdHkiSgoSTGlzdERyYWZ0c1Jlc3BvbnNlEjQKBmRyYWZ0cxgBIAMoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuRHJhZnRTdW1tYXJ5IkkKFkdldERyYWZ0Q29udGVudFJlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmImAKF0dldERyYWZ0Q29udGVudFJlc3BvbnNlEgwKBGh0bWwYASABKAkSNwoHdmVyc2lvbhgCIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb24iRgoTTGlzdENvbW1lbnRzUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYigQEKFExpc3RDb21tZW50c1Jlc3BvbnNlEi8KB3RocmVhZHMYASADKAsyHi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRocmVhZBI4ChBvcnBoYW5lZF90aHJlYWRzGAIgAygLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5UaHJlYWQiegoZTGlzdFJlY2VudENvbW1lbnRzUmVxdWVzdBISCgVsaW1pdBgBIAEoBUgAiAEBEjYKBGFyZWEYAiABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhSAGIAQFCCAoGX2xpbWl0QgcKBV9hcmVhIlUKGkxpc3RSZWNlbnRDb21tZW50c1Jlc3BvbnNlEjcKCGNvbW1lbnRzGAEgAygLMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWNlbnRDb21tZW50Is0CChRDcmVhdGVDb21tZW50UmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSEwoLYW5jaG9yX3NsdWcYAiABKAkSGgoSYW5jaG9yX2ZpbmdlcnByaW50GAMgASgJEhYKCXBhcmVudF9pZBgEIAEoCUgAiAEBEg8KB2JvZHlfbWQYBSABKAkSOwoIc2VsZWN0b3IYBiABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRleHRTZWxlY3RvckgBiAEBEkAKDWNvZGVfc2VsZWN0b3IYByABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvZGVTZWxlY3RvckgCiAEBQgwKCl9wYXJlbnRfaWRCCwoJX3NlbGVjdG9yQhAKDl9jb2RlX3NlbGVjdG9yIkkKFUNyZWF0ZUNvbW1lbnRSZXNwb25zZRIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50IlUKFEdldFNvdXJjZUZpbGVSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIMCgRwYXRoGAIgASgJInwKFUdldFNvdXJjZUZpbGVSZXNwb25zZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJEjQKCHNuaXBwZXRzGAQgAygLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5TbmlwcGV0UmVmIi4KFFJlc29sdmVUaHJlYWRSZXF1ZXN0EhYKDnRocmVhZF9yb290X2lkGAEgASgJIkcKFVJlc29sdmVUaHJlYWRSZXNwb25zZRIuCgZ0aHJlYWQYASABKAsyHi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRocmVhZCIwChZVbnJlc29sdmVUaHJlYWRSZXF1ZXN0EhYKDnRocmVhZF9yb290X2lkGAEgASgJIkkKF1VucmVzb2x2ZVRocmVhZFJlc3BvbnNlEi4KBnRocmVhZBgBIAEoCzIeLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGhyZWFkIm0KFU1hcmtUaHJlYWRTZWVuUmVxdWVzdBIWCg50aHJlYWRfcm9vdF9pZBgBIAEoCRIwCgdzZWVuX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBQgoKCF9zZWVuX2F0IhgKFk1hcmtUaHJlYWRTZWVuUmVzcG9uc2UinQEKF1RyYW5zaXRpb25SZXZpZXdSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhI1Cgh0b19zdGF0ZRgCIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSEQoEbm90ZRgDIAEoCUgAiAEBQgcKBV9ub3RlIk4KGFRyYW5zaXRpb25SZXZpZXdSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUiZAoVUmVsZWFzZUNvbnRlbnRSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIRCgRub3RlGAIgASgJSACIAQFCBwoFX25vdGUiTAoWUmVsZWFzZUNvbnRlbnRSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUiaQoSU2V0UHJpb3JpdHlSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIVCghwcmlvcml0eRgCIAEoBUgAiAEBQgsKCV9wcmlvcml0eSJKChNTZXRQcmlvcml0eVJlc3BvbnNlEjMKBWRyYWZ0GAEgASgLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5EcmFmdFN1bW1hcnkipAEKG1NldFRhcmdldFJlbGVhc2VEYXRlUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSPAoTdGFyZ2V0X3JlbGVhc2VfZGF0ZRgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBAUIWChRfdGFyZ2V0X3JlbGVhc2VfZGF0ZSJTChxTZXRUYXJnZXRSZWxlYXNlRGF0ZVJlc3BvbnNlEjMKBWRyYWZ0GAEgASgLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5EcmFmdFN1bW1hcnkiTAoOUmV2aWV3ZXJUYXJnZXQSEgoFbG9naW4YASABKAlIAIgBARISCgVlbWFpbBgCIAEoCUgBiAEBQggKBl9sb2dpbkIICgZfZW1haWwi2AEKFFJlcXVlc3RSZXZpZXdSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhI5CglyZXZpZXdlcnMYAiADKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJldmlld2VyVGFyZ2V0EjgKC3JlcXVpcmVtZW50GAMgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1aXJlbWVudBIRCgRub3RlGAQgASgJSACIAQFCBwoFX25vdGUiUAoVUmVxdWVzdFJldmlld1Jlc3BvbnNlEjcKCHJlcXVlc3RzGAEgAygLMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdSZXF1ZXN0IjAKGkNhbmNlbFJldmlld1JlcXVlc3RSZXF1ZXN0EhIKCnJlcXVlc3RfaWQYASABKAkiVQobQ2FuY2VsUmV2aWV3UmVxdWVzdFJlc3BvbnNlEjYKB3JlcXVlc3QYASABKAsyJS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJldmlld1JlcXVlc3QiuQEKGUxpc3RSZXZpZXdSZXF1ZXN0c1JlcXVlc3QSNAoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmSACIAQESEQoEbWluZRgCIAEoCEgBiAEBEhIKBWJ5X21lGAMgASgISAKIAQESFgoJb3Blbl9vbmx5GAQgASgISAOIAQFCBgoEX3JlZkIHCgVfbWluZUIICgZfYnlfbWVCDAoKX29wZW5fb25seSJVChpMaXN0UmV2aWV3UmVxdWVzdHNSZXNwb25zZRI3CghyZXF1ZXN0cxgBIAMoCzIlLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3UmVxdWVzdCJpChhMaXN0Q29udGVudEV2ZW50c1JlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhIKBWxpbWl0GAIgASgFSACIAQFCCAoGX2xpbWl0IlEKGUxpc3RDb250ZW50RXZlbnRzUmVzcG9uc2USNAoGZXZlbnRzGAEgAygLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50RXZlbnQiggEKIFJlcXVlc3RDaGFuZ2VzT25QdWJsaXNoZWRSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIRCgRub3RlGAIgASgJSACIAQESEQoJdW5wdWJsaXNoGAMgASgIQgcKBV9ub3RlImoKIVJlcXVlc3RDaGFuZ2VzT25QdWJsaXNoZWRSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSEQoJcHVibGlzaGVkGAIgASgIItsBChZNYW5hZ2VBbGxvd2xpc3RSZXF1ZXN0EkUKBmFjdGlvbhgBIAEoDjI1LmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTWFuYWdlQWxsb3dsaXN0UmVxdWVzdC5BY3Rpb24SNQoFZW50cnkYAiABKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkFsbG93bGlzdEVudHJ5IkMKBkFjdGlvbhIWChJBQ1RJT05fVU5TUEVDSUZJRUQQABIOCgpBQ1RJT05fQUREEAESEQoNQUNUSU9OX1JFTU9WRRACIlIKF01hbmFnZUFsbG93bGlzdFJlc3BvbnNlEjcKB2VudHJpZXMYASADKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkFsbG93bGlzdEVudHJ5IlIKEEVyYXNlVXNlclJlcXVlc3QSFAoHdXNlcl9pZBgBIAEoCUgAiAEBEhIKBWxvZ2luGAIgASgJSAGIAQFCCgoIX3VzZXJfaWRCCAoGX2xvZ2luIokBChFFcmFzZVVzZXJSZXNwb25zZRIbChNjb21tZW50c190b21ic3RvbmVkGAEgASgFEh4KFnJldmlld19zdGF0ZXNfc2NydWJiZWQYAiABKAUSHAoUcmVzb2x1dGlvbnNfc2NydWJiZWQYAyABKAUSGQoRc2Vlbl9yb3dzX2RlbGV0ZWQYBCABKAUi1AIKFlJlZ2lzdGVyVmVyc2lvblJlcXVlc3QSFAoMYnVpbGRfc2VjcmV0GAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSMQoIc2VjdGlvbnMYByADKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNlY3Rpb24SNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYSOAoMc291cmNlX2ZpbGVzGAkgAygLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Tb3VyY2VGaWxlInEKF1JlZ2lzdGVyVmVyc2lvblJlc3BvbnNlEjcKB3ZlcnNpb24YASABKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRWZXJzaW9uEh0KFW9ycGhhbmVkX3RocmVhZF9jb3VudBgCIAEoBTL3EwoNUmV2aWV3U2VydmljZRJgCglHZXRWaWV3ZXISKC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldFZpZXdlclJlcXVlc3QaKS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldFZpZXdlclJlc3BvbnNlEmMKCkxpc3REcmFmdHMSKS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3REcmFmdHNSZXF1ZXN0GiouZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0RHJhZnRzUmVzcG9uc2UScgoPR2V0RHJhZnRDb250ZW50Ei4uZG9jc19mYWN0b3J5LnJldmlldy52MS5HZXREcmFmdENvbnRlbnRSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5HZXREcmFmdENvbnRlbnRSZXNwb25zZRJpCgxMaXN0Q29tbWVudHMSKy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RDb21tZW50c1JlcXVlc3QaLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RDb21tZW50c1Jlc3BvbnNlEnsKEkxpc3RSZWNlbnRDb21tZW50cxIxLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdFJlY2VudENvbW1lbnRzUmVxdWVzdBoyLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdFJlY2VudENvbW1lbnRzUmVzcG9uc2USbAoNQ3JlYXRlQ29tbWVudBIsLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ3JlYXRlQ29tbWVudFJlcXVlc3QaLS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNyZWF0ZUNvbW1lbnRSZXNwb25zZRJsCg1SZXNvbHZlVGhyZWFkEiwuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXNvbHZlVGhyZWFkUmVxdWVzdBotLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVzb2x2ZVRocmVhZFJlc3BvbnNlEnIKD1VucmVzb2x2ZVRocmVhZBIuLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVW5yZXNvbHZlVGhyZWFkUmVxdWVzdBovLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVW5yZXNvbHZlVGhyZWFkUmVzcG9uc2USbwoOTWFya1RocmVhZFNlZW4SLS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLk1hcmtUaHJlYWRTZWVuUmVxdWVzdBouLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTWFya1RocmVhZFNlZW5SZXNwb25zZRJsCg1HZXRTb3VyY2VGaWxlEiwuZG9jc19mYWN0b3J5LnJldmlldy52MS5HZXRTb3VyY2VGaWxlUmVxdWVzdBotLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuR2V0U291cmNlRmlsZVJlc3BvbnNlEnUKEFRyYW5zaXRpb25SZXZpZXcSLy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRyYW5zaXRpb25SZXZpZXdSZXF1ZXN0GjAuZG9jc19mYWN0b3J5LnJldmlldy52MS5UcmFuc2l0aW9uUmV2aWV3UmVzcG9uc2USbwoOUmVsZWFzZUNvbnRlbnQSLS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlbGVhc2VDb250ZW50UmVxdWVzdBouLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVsZWFzZUNvbnRlbnRSZXNwb25zZRJmCgtTZXRQcmlvcml0eRIqLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2V0UHJpb3JpdHlSZXF1ZXN0GisuZG9jc19mYWN0b3J5LnJldmlldy52MS5TZXRQcmlvcml0eVJlc3BvbnNlEoEBChRTZXRUYXJnZXRSZWxlYXNlRGF0ZRIzLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2V0VGFyZ2V0UmVsZWFzZURhdGVSZXF1ZXN0GjQuZG9jc19mYWN0b3J5LnJldmlldy52MS5TZXRUYXJnZXRSZWxlYXNlRGF0ZVJlc3BvbnNlEmwKDVJlcXVlc3RSZXZpZXcSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RSZXZpZXdSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0UmV2aWV3UmVzcG9uc2USfgoTQ2FuY2VsUmV2aWV3UmVxdWVzdBIyLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ2FuY2VsUmV2aWV3UmVxdWVzdFJlcXVlc3QaMy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNhbmNlbFJldmlld1JlcXVlc3RSZXNwb25zZRJ7ChJMaXN0UmV2aWV3UmVxdWVzdHMSMS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RSZXZpZXdSZXF1ZXN0c1JlcXVlc3QaMi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RSZXZpZXdSZXF1ZXN0c1Jlc3BvbnNlEngKEUxpc3RDb250ZW50RXZlbnRzEjAuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0Q29udGVudEV2ZW50c1JlcXVlc3QaMS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RDb250ZW50RXZlbnRzUmVzcG9uc2USkAEKGVJlcXVlc3RDaGFuZ2VzT25QdWJsaXNoZWQSOC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RDaGFuZ2VzT25QdWJsaXNoZWRSZXF1ZXN0GjkuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0Q2hhbmdlc09uUHVibGlzaGVkUmVzcG9uc2UScgoPTWFuYWdlQWxsb3dsaXN0Ei4uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXNwb25zZRJgCglFcmFzZVVzZXISKC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkVyYXNlVXNlclJlcXVlc3QaKS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkVyYXNlVXNlclJlc3BvbnNlEnIKD1JlZ2lzdGVyVmVyc2lvbhIuLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVnaXN0ZXJWZXJzaW9uUmVxdWVzdBovLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVnaXN0ZXJWZXJzaW9uUmVzcG9uc2ViBnByb3RvMw", [file_docs_factory_review_v1_messages, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message docs_factory.review.v1.GetViewerRequest
@@ -619,6 +619,265 @@ export const SetTargetReleaseDateResponseSchema: GenMessage<SetTargetReleaseDate
   messageDesc(file_docs_factory_review_v1_review_service, 27);
 
 /**
+ * One reviewer to request a review from. At least one of login/email must be
+ * set, and it must resolve to an allowlist entry.
+ *
+ * @generated from message docs_factory.review.v1.ReviewerTarget
+ */
+export type ReviewerTarget = Message<"docs_factory.review.v1.ReviewerTarget"> & {
+  /**
+   * @generated from field: optional string login = 1;
+   */
+  login?: string | undefined;
+
+  /**
+   * @generated from field: optional string email = 2;
+   */
+  email?: string | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ReviewerTarget.
+ * Use `create(ReviewerTargetSchema)` to create a new message.
+ */
+export const ReviewerTargetSchema: GenMessage<ReviewerTarget> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 28);
+
+/**
+ * @generated from message docs_factory.review.v1.RequestReviewRequest
+ */
+export type RequestReviewRequest = Message<"docs_factory.review.v1.RequestReviewRequest"> & {
+  /**
+   * @generated from field: docs_factory.review.v1.ContentRef ref = 1;
+   */
+  ref?: ContentRef | undefined;
+
+  /**
+   * @generated from field: repeated docs_factory.review.v1.ReviewerTarget reviewers = 2;
+   */
+  reviewers: ReviewerTarget[];
+
+  /**
+   * @generated from field: docs_factory.review.v1.Requirement requirement = 3;
+   */
+  requirement: Requirement;
+
+  /**
+   * @generated from field: optional string note = 4;
+   */
+  note?: string | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.RequestReviewRequest.
+ * Use `create(RequestReviewRequestSchema)` to create a new message.
+ */
+export const RequestReviewRequestSchema: GenMessage<RequestReviewRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 29);
+
+/**
+ * @generated from message docs_factory.review.v1.RequestReviewResponse
+ */
+export type RequestReviewResponse = Message<"docs_factory.review.v1.RequestReviewResponse"> & {
+  /**
+   * @generated from field: repeated docs_factory.review.v1.ReviewRequest requests = 1;
+   */
+  requests: ReviewRequest[];
+};
+
+/**
+ * Describes the message docs_factory.review.v1.RequestReviewResponse.
+ * Use `create(RequestReviewResponseSchema)` to create a new message.
+ */
+export const RequestReviewResponseSchema: GenMessage<RequestReviewResponse> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 30);
+
+/**
+ * @generated from message docs_factory.review.v1.CancelReviewRequestRequest
+ */
+export type CancelReviewRequestRequest = Message<"docs_factory.review.v1.CancelReviewRequestRequest"> & {
+  /**
+   * @generated from field: string request_id = 1;
+   */
+  requestId: string;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.CancelReviewRequestRequest.
+ * Use `create(CancelReviewRequestRequestSchema)` to create a new message.
+ */
+export const CancelReviewRequestRequestSchema: GenMessage<CancelReviewRequestRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 31);
+
+/**
+ * @generated from message docs_factory.review.v1.CancelReviewRequestResponse
+ */
+export type CancelReviewRequestResponse = Message<"docs_factory.review.v1.CancelReviewRequestResponse"> & {
+  /**
+   * @generated from field: docs_factory.review.v1.ReviewRequest request = 1;
+   */
+  request?: ReviewRequest | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.CancelReviewRequestResponse.
+ * Use `create(CancelReviewRequestResponseSchema)` to create a new message.
+ */
+export const CancelReviewRequestResponseSchema: GenMessage<CancelReviewRequestResponse> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 32);
+
+/**
+ * @generated from message docs_factory.review.v1.ListReviewRequestsRequest
+ */
+export type ListReviewRequestsRequest = Message<"docs_factory.review.v1.ListReviewRequestsRequest"> & {
+  /**
+   * Scope to one artifact when set.
+   *
+   * @generated from field: optional docs_factory.review.v1.ContentRef ref = 1;
+   */
+  ref?: ContentRef | undefined;
+
+  /**
+   * When true, only requests addressed to the current viewer.
+   *
+   * @generated from field: optional bool mine = 2;
+   */
+  mine?: boolean | undefined;
+
+  /**
+   * When true, only requests opened by the current viewer.
+   *
+   * @generated from field: optional bool by_me = 3;
+   */
+  byMe?: boolean | undefined;
+
+  /**
+   * When true, only OPEN requests (default returns all statuses).
+   *
+   * @generated from field: optional bool open_only = 4;
+   */
+  openOnly?: boolean | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ListReviewRequestsRequest.
+ * Use `create(ListReviewRequestsRequestSchema)` to create a new message.
+ */
+export const ListReviewRequestsRequestSchema: GenMessage<ListReviewRequestsRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 33);
+
+/**
+ * @generated from message docs_factory.review.v1.ListReviewRequestsResponse
+ */
+export type ListReviewRequestsResponse = Message<"docs_factory.review.v1.ListReviewRequestsResponse"> & {
+  /**
+   * @generated from field: repeated docs_factory.review.v1.ReviewRequest requests = 1;
+   */
+  requests: ReviewRequest[];
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ListReviewRequestsResponse.
+ * Use `create(ListReviewRequestsResponseSchema)` to create a new message.
+ */
+export const ListReviewRequestsResponseSchema: GenMessage<ListReviewRequestsResponse> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 34);
+
+/**
+ * @generated from message docs_factory.review.v1.ListContentEventsRequest
+ */
+export type ListContentEventsRequest = Message<"docs_factory.review.v1.ListContentEventsRequest"> & {
+  /**
+   * @generated from field: docs_factory.review.v1.ContentRef ref = 1;
+   */
+  ref?: ContentRef | undefined;
+
+  /**
+   * Max events (server clamps; defaults to a modest page).
+   *
+   * @generated from field: optional int32 limit = 2;
+   */
+  limit?: number | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ListContentEventsRequest.
+ * Use `create(ListContentEventsRequestSchema)` to create a new message.
+ */
+export const ListContentEventsRequestSchema: GenMessage<ListContentEventsRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 35);
+
+/**
+ * @generated from message docs_factory.review.v1.ListContentEventsResponse
+ */
+export type ListContentEventsResponse = Message<"docs_factory.review.v1.ListContentEventsResponse"> & {
+  /**
+   * Most-recent first.
+   *
+   * @generated from field: repeated docs_factory.review.v1.ContentEvent events = 1;
+   */
+  events: ContentEvent[];
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ListContentEventsResponse.
+ * Use `create(ListContentEventsResponseSchema)` to create a new message.
+ */
+export const ListContentEventsResponseSchema: GenMessage<ListContentEventsResponse> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 36);
+
+/**
+ * @generated from message docs_factory.review.v1.RequestChangesOnPublishedRequest
+ */
+export type RequestChangesOnPublishedRequest = Message<"docs_factory.review.v1.RequestChangesOnPublishedRequest"> & {
+  /**
+   * @generated from field: docs_factory.review.v1.ContentRef ref = 1;
+   */
+  ref?: ContentRef | undefined;
+
+  /**
+   * @generated from field: optional string note = 2;
+   */
+  note?: string | undefined;
+
+  /**
+   * When true, also unpublish (hide) the artifact. Default keeps it visible.
+   *
+   * @generated from field: bool unpublish = 3;
+   */
+  unpublish: boolean;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.RequestChangesOnPublishedRequest.
+ * Use `create(RequestChangesOnPublishedRequestSchema)` to create a new message.
+ */
+export const RequestChangesOnPublishedRequestSchema: GenMessage<RequestChangesOnPublishedRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 37);
+
+/**
+ * @generated from message docs_factory.review.v1.RequestChangesOnPublishedResponse
+ */
+export type RequestChangesOnPublishedResponse = Message<"docs_factory.review.v1.RequestChangesOnPublishedResponse"> & {
+  /**
+   * @generated from field: docs_factory.review.v1.ReviewState state = 1;
+   */
+  state: ReviewState;
+
+  /**
+   * @generated from field: bool published = 2;
+   */
+  published: boolean;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.RequestChangesOnPublishedResponse.
+ * Use `create(RequestChangesOnPublishedResponseSchema)` to create a new message.
+ */
+export const RequestChangesOnPublishedResponseSchema: GenMessage<RequestChangesOnPublishedResponse> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 38);
+
+/**
  * @generated from message docs_factory.review.v1.ManageAllowlistRequest
  */
 export type ManageAllowlistRequest = Message<"docs_factory.review.v1.ManageAllowlistRequest"> & {
@@ -638,7 +897,7 @@ export type ManageAllowlistRequest = Message<"docs_factory.review.v1.ManageAllow
  * Use `create(ManageAllowlistRequestSchema)` to create a new message.
  */
 export const ManageAllowlistRequestSchema: GenMessage<ManageAllowlistRequest> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_review_service, 28);
+  messageDesc(file_docs_factory_review_v1_review_service, 39);
 
 /**
  * @generated from enum docs_factory.review.v1.ManageAllowlistRequest.Action
@@ -664,7 +923,7 @@ export enum ManageAllowlistRequest_Action {
  * Describes the enum docs_factory.review.v1.ManageAllowlistRequest.Action.
  */
 export const ManageAllowlistRequest_ActionSchema: GenEnum<ManageAllowlistRequest_Action> = /*@__PURE__*/
-  enumDesc(file_docs_factory_review_v1_review_service, 28, 0);
+  enumDesc(file_docs_factory_review_v1_review_service, 39, 0);
 
 /**
  * @generated from message docs_factory.review.v1.ManageAllowlistResponse
@@ -681,7 +940,7 @@ export type ManageAllowlistResponse = Message<"docs_factory.review.v1.ManageAllo
  * Use `create(ManageAllowlistResponseSchema)` to create a new message.
  */
 export const ManageAllowlistResponseSchema: GenMessage<ManageAllowlistResponse> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_review_service, 29);
+  messageDesc(file_docs_factory_review_v1_review_service, 40);
 
 /**
  * @generated from message docs_factory.review.v1.EraseUserRequest
@@ -706,7 +965,7 @@ export type EraseUserRequest = Message<"docs_factory.review.v1.EraseUserRequest"
  * Use `create(EraseUserRequestSchema)` to create a new message.
  */
 export const EraseUserRequestSchema: GenMessage<EraseUserRequest> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_review_service, 30);
+  messageDesc(file_docs_factory_review_v1_review_service, 41);
 
 /**
  * @generated from message docs_factory.review.v1.EraseUserResponse
@@ -740,7 +999,7 @@ export type EraseUserResponse = Message<"docs_factory.review.v1.EraseUserRespons
  * Use `create(EraseUserResponseSchema)` to create a new message.
  */
 export const EraseUserResponseSchema: GenMessage<EraseUserResponse> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_review_service, 31);
+  messageDesc(file_docs_factory_review_v1_review_service, 42);
 
 /**
  * @generated from message docs_factory.review.v1.RegisterVersionRequest
@@ -804,7 +1063,7 @@ export type RegisterVersionRequest = Message<"docs_factory.review.v1.RegisterVer
  * Use `create(RegisterVersionRequestSchema)` to create a new message.
  */
 export const RegisterVersionRequestSchema: GenMessage<RegisterVersionRequest> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_review_service, 32);
+  messageDesc(file_docs_factory_review_v1_review_service, 43);
 
 /**
  * @generated from message docs_factory.review.v1.RegisterVersionResponse
@@ -828,7 +1087,7 @@ export type RegisterVersionResponse = Message<"docs_factory.review.v1.RegisterVe
  * Use `create(RegisterVersionResponseSchema)` to create a new message.
  */
 export const RegisterVersionResponseSchema: GenMessage<RegisterVersionResponse> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_review_service, 33);
+  messageDesc(file_docs_factory_review_v1_review_service, 44);
 
 /**
  * The review & release API, served over Connect from the Neon Function and
@@ -987,6 +1246,63 @@ export const ReviewService: GenService<{
     methodKind: "unary";
     input: typeof SetTargetReleaseDateRequestSchema;
     output: typeof SetTargetReleaseDateResponseSchema;
+  },
+  /**
+   * Request a review of one artifact from one or more allowlisted reviewers,
+   * each REQUIRED or OPTIONAL. Allowlist-gated. Every reviewer must be on the
+   * allowlist (by login or email). Returns the created requests.
+   *
+   * @generated from rpc docs_factory.review.v1.ReviewService.RequestReview
+   */
+  requestReview: {
+    methodKind: "unary";
+    input: typeof RequestReviewRequestSchema;
+    output: typeof RequestReviewResponseSchema;
+  },
+  /**
+   * Cancel an open review request (requester or maintainer). Returns the
+   * updated request.
+   *
+   * @generated from rpc docs_factory.review.v1.ReviewService.CancelReviewRequest
+   */
+  cancelReviewRequest: {
+    methodKind: "unary";
+    input: typeof CancelReviewRequestRequestSchema;
+    output: typeof CancelReviewRequestResponseSchema;
+  },
+  /**
+   * List review requests, optionally scoped to one artifact or to the current
+   * viewer's inbox (`mine`). Allowlist-gated.
+   *
+   * @generated from rpc docs_factory.review.v1.ReviewService.ListReviewRequests
+   */
+  listReviewRequests: {
+    methodKind: "unary";
+    input: typeof ListReviewRequestsRequestSchema;
+    output: typeof ListReviewRequestsResponseSchema;
+  },
+  /**
+   * The review timeline for one artifact (most-recent first). Allowlist-gated.
+   *
+   * @generated from rpc docs_factory.review.v1.ReviewService.ListContentEvents
+   */
+  listContentEvents: {
+    methodKind: "unary";
+    input: typeof ListContentEventsRequestSchema;
+    output: typeof ListContentEventsResponseSchema;
+  },
+  /**
+   * Reopen a released artifact to request changes (the terminal RELEASED state
+   * is otherwise closed). Maintainer-only. Transitions released -> changes-
+   * requested and, when `unpublish` is set, also clears the published latch so
+   * the artifact drops out of anonymous view (DB-only; no git write).
+   *
+   * @generated from rpc docs_factory.review.v1.ReviewService.RequestChangesOnPublished
+   */
+  requestChangesOnPublished: {
+    methodKind: "unary";
+    input: typeof RequestChangesOnPublishedRequestSchema;
+    output: typeof RequestChangesOnPublishedResponseSchema;
   },
   /**
    * Maintainer-only allowlist management.

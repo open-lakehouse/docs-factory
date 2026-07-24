@@ -1,7 +1,7 @@
 // Reviewer allowlist lookups. The allowlist is ours (reviewer_allowlist table),
 // independent of how identity is established (Neon Auth in prod, mock locally).
 import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
-import type { Sql } from "./db.js";
+import type { Queryable } from "./db.js";
 
 /** Map the allowlist `role` text column to the proto Role. */
 export function roleFromDb(role: string | null): Role {
@@ -16,7 +16,7 @@ export function roleFromDb(role: string | null): Role {
  * login and email disagree.
  */
 export async function lookupRole(
-  sql: Sql,
+  sql: Queryable,
   opts: { login?: string; email?: string },
 ): Promise<Role> {
   const { login, email } = opts;

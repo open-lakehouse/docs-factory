@@ -3,9 +3,13 @@
 // (TCP available) and DATABASE_URL is a standard connection string, so no
 // edge/serverless-specific driver is needed. The client is created lazily and
 // cached across warm invocations.
-import postgres, { type Sql as PostgresSql } from "postgres";
+import postgres, { type Sql as PostgresSql, type TransactionSql } from "postgres";
 
 export type Sql = PostgresSql;
+// A handle that can run queries whether or not it's inside a transaction. Helper
+// functions that take either the pool (`db()`) or a `.begin()` transaction handle
+// accept this — postgres.js types the two separately.
+export type Queryable = PostgresSql | TransactionSql;
 
 let cached: Sql | undefined;
 

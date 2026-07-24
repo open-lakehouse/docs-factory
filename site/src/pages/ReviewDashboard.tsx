@@ -15,11 +15,16 @@ import { useQuery } from "@connectrpc/connect-query";
 import {
   listDrafts,
   listRecentComments,
+  listReviewRequests,
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { ReviewState, type DraftSummary } from "../gen/docs_factory/review/v1/messages_pb";
+import {
+  ReviewState,
+  type DraftSummary,
+  type ReviewRequest,
+} from "../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../lib/auth-context";
 import { refHref } from "../lib/content-ref";
-import { ReviewStateBadge } from "../lib/review-status";
+import { ReviewStateBadge, ReviewRequestBadge } from "../lib/review-status";
 import Shell from "../components/layout/Shell";
 
 const READY = "ready";
@@ -34,6 +39,10 @@ function draftLabel(d: DraftSummary): string {
   return d.title || d.ref?.slug || "(untitled)";
 }
 
+function requestTargetLabel(r: ReviewRequest): string {
+  return r.ref ? r.ref.slug : "(unknown)";
+}
+
 export default function ReviewDashboard() {
   const { isLoading: authLoading, isAllowlisted } = useAuth();
   const { data: draftsData, isLoading: draftsLoading } = useQuery(
@@ -44,6 +53,17 @@ export default function ReviewDashboard() {
   const { data: recentData, isLoading: recentLoading } = useQuery(
     listRecentComments,
     { limit: 20 },
+    { enabled: isAllowlisted },
+  );
+  // Requests addressed to me (inbox) and requests I opened (outbox), open-only.
+  const { data: toMeData, isLoading: toMeLoading } = useQuery(
+    listReviewRequests,
+    { mine: true, openOnly: true },
+    { enabled: isAllowlisted },
+  );
+  const { data: byMeData, isLoading: byMeLoading } = useQuery(
+    listReviewRequests,
+    { byMe: true, openOnly: true },
     { enabled: isAllowlisted },
   );
 
@@ -75,6 +95,8 @@ export default function ReviewDashboard() {
       d.frontmatterStatus !== READY,
   );
   const recent = recentData?.comments ?? [];
+  const toMe = toMeData?.requests ?? [];
+  const byMe = byMeData?.requests ?? [];
 
   return (
     <Shell wide>
@@ -188,10 +210,59 @@ export default function ReviewDashboard() {
         </section>
 
         <section className="review-dash-section">
-          <h2>Review requests</h2>
-          <p className="review-empty">
-            Requesting a review from a specific person lands in a later iteration.
-          </p>
+          <h2>Requested from me</h2>
+          {toMeLoading ? (
+            <p className="muted">Loading…</p>
+          ) : toMe.length === 0 ? (
+            <p className="review-empty">No open review requests addressed to you.</p>
+          ) : (
+            <ul className="review-dash-list">
+              {toMe.map((r) => (
+                <li key={r.id} className="review-dash-row">
+                  {r.ref ? (
+                    <Link to={refHref(r.ref)} className="review-dash-title">
+                      {requestTargetLabel(r)}
+                    </Link>
+                  ) : (
+                    <span className="review-dash-title">{requestTargetLabel(r)}</span>
+                  )}
+                  <span className="review-dash-meta">
+                    <ReviewRequestBadge requirement={r.requirement} status={r.status} />
+                    {r.note && <span className="review-dash-count">{r.note}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="review-dash-section">
+          <h2>Requests I made</h2>
+          {byMeLoading ? (
+            <p className="muted">Loading…</p>
+          ) : byMe.length === 0 ? (
+            <p className="review-empty">You have no open review requests out.</p>
+          ) : (
+            <ul className="review-dash-list">
+              {byMe.map((r) => (
+                <li key={r.id} className="review-dash-row">
+                  {r.ref ? (
+                    <Link to={refHref(r.ref)} className="review-dash-title">
+                      {requestTargetLabel(r)}
+                    </Link>
+                  ) : (
+                    <span className="review-dash-title">{requestTargetLabel(r)}</span>
+                  )}
+                  <span className="review-dash-meta">
+                    <span className="review-dash-count">
+                      → {r.reviewerLogin || r.reviewerEmail || "someone"}
+                    </span>
+                    <ReviewRequestBadge requirement={r.requirement} status={r.status} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </Shell>

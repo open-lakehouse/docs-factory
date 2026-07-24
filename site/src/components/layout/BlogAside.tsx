@@ -16,6 +16,8 @@ import BlogContributors from "./BlogContributors";
 import TagList from "../TagList";
 import CommentSidebar from "../review/CommentSidebar";
 import ReviewControls from "../review/ReviewControls";
+import RequestReviewControl from "../review/RequestReviewControl";
+import ContentEventTimeline from "../review/ContentEventTimeline";
 import { useSelectionState } from "../review/selection-context";
 import { useReview } from "../review/review-context";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
@@ -61,6 +63,8 @@ export default function BlogAside({ articleRef, contentRef, byline, tags = [] }:
   const reviewRail = reviewActive ? (
     <section className="blog-aside-review" aria-label="Review actions">
       <ReviewControls contentRef={contentRef} layout="aside" heading="Review" />
+      <RequestReviewControl contentRef={contentRef} />
+      <ContentEventTimeline contentRef={contentRef} />
     </section>
   ) : null;
 

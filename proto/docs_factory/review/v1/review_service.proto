@@ -60,6 +60,25 @@ service ReviewService {
   // (allowlist-gated). Absent date clears it. Returns the refreshed summary row.
   rpc SetTargetReleaseDate(SetTargetReleaseDateRequest) returns (SetTargetReleaseDateResponse);
 
+  // Request a review of one artifact from one or more allowlisted reviewers,
+  // each REQUIRED or OPTIONAL. Allowlist-gated. Every reviewer must be on the
+  // allowlist (by login or email). Returns the created requests.
+  rpc RequestReview(RequestReviewRequest) returns (RequestReviewResponse);
+  // Cancel an open review request (requester or maintainer). Returns the
+  // updated request.
+  rpc CancelReviewRequest(CancelReviewRequestRequest) returns (CancelReviewRequestResponse);
+  // List review requests, optionally scoped to one artifact or to the current
+  // viewer's inbox (`mine`). Allowlist-gated.
+  rpc ListReviewRequests(ListReviewRequestsRequest) returns (ListReviewRequestsResponse);
+  // The review timeline for one artifact (most-recent first). Allowlist-gated.
+  rpc ListContentEvents(ListContentEventsRequest) returns (ListContentEventsResponse);
+  // Reopen a released artifact to request changes (the terminal RELEASED state
+  // is otherwise closed). Maintainer-only. Transitions released -> changes-
+  // requested and, when `unpublish` is set, also clears the published latch so
+  // the artifact drops out of anonymous view (DB-only; no git write).
+  rpc RequestChangesOnPublished(RequestChangesOnPublishedRequest)
+      returns (RequestChangesOnPublishedResponse);
+
   // Maintainer-only allowlist management.
   rpc ManageAllowlist(ManageAllowlistRequest) returns (ManageAllowlistResponse);
 
@@ -205,6 +224,65 @@ message SetTargetReleaseDateRequest {
 }
 message SetTargetReleaseDateResponse {
   DraftSummary draft = 1;
+}
+
+// One reviewer to request a review from. At least one of login/email must be
+// set, and it must resolve to an allowlist entry.
+message ReviewerTarget {
+  optional string login = 1;
+  optional string email = 2;
+}
+
+message RequestReviewRequest {
+  ContentRef ref = 1;
+  repeated ReviewerTarget reviewers = 2;
+  Requirement requirement = 3;
+  optional string note = 4;
+}
+message RequestReviewResponse {
+  repeated ReviewRequest requests = 1;
+}
+
+message CancelReviewRequestRequest {
+  string request_id = 1;
+}
+message CancelReviewRequestResponse {
+  ReviewRequest request = 1;
+}
+
+message ListReviewRequestsRequest {
+  // Scope to one artifact when set.
+  optional ContentRef ref = 1;
+  // When true, only requests addressed to the current viewer.
+  optional bool mine = 2;
+  // When true, only requests opened by the current viewer.
+  optional bool by_me = 3;
+  // When true, only OPEN requests (default returns all statuses).
+  optional bool open_only = 4;
+}
+message ListReviewRequestsResponse {
+  repeated ReviewRequest requests = 1;
+}
+
+message ListContentEventsRequest {
+  ContentRef ref = 1;
+  // Max events (server clamps; defaults to a modest page).
+  optional int32 limit = 2;
+}
+message ListContentEventsResponse {
+  // Most-recent first.
+  repeated ContentEvent events = 1;
+}
+
+message RequestChangesOnPublishedRequest {
+  ContentRef ref = 1;
+  optional string note = 2;
+  // When true, also unpublish (hide) the artifact. Default keeps it visible.
+  bool unpublish = 3;
+}
+message RequestChangesOnPublishedResponse {
+  ReviewState state = 1;
+  bool published = 2;
 }
 
 message ManageAllowlistRequest {

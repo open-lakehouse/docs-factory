@@ -3,7 +3,7 @@ title: Make the lakehouse UI composable — copy the visuals, package the logic
 slug: headless-lakehouse-ui
 status: draft
 date: 2026-07-10
-tags: [lakehouse, unity-catalog, data-lineage, ui-components]
+tags: [lakehouse, unity-catalog, ui-components]
 series:
 series_order:
 author: Robert Pack
@@ -127,4 +127,3 @@ against three hosts (D2) is the key asset.
   Not a gate — publish at the pattern level now (public tools + a high-level
   existence proof), and add concrete shared-component demos in updates once a
   package is published.
-- COI/disclosure: Databricks author, open-lakehouse project — disclose per target.

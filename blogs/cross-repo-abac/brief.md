@@ -147,5 +147,3 @@ extension points), not pasted from the pre-release crates.
   hydrofoil Layer-2 are still pre-release? Not a gate — publish at the
   contract/pattern altitude now (it's the durable part), disclose the pre-release
   status, and deepen the implementation detail in updates as the crates ship.
-- COI/disclosure: Databricks author; argues an architecture stance — keep it
-  technical, disclose affiliation.

@@ -68,11 +68,18 @@ create index if not exists review_state_ref_idx
 -- decisions set from the review app, not derived from git or a build. priority
 -- is an ordered rank (lower = higher priority; null = unranked);
 -- target_release_date is the intended ship date (date-only).
+--
+-- published is a sticky publication latch, decoupled from review_state: anonymous
+-- visibility is (frontmatter_status = 'ready' AND published = true). It is set
+-- true on release and cleared only by an explicit unpublish, so a released
+-- artifact can be reopened for changes (review_state -> changes-requested)
+-- without dropping out of public view unless a maintainer chooses to unpublish.
 create table if not exists content_revops (
   area                text not null check (area in ('blogs', 'docs')),
   slug                text not null,
   priority            int,
   target_release_date date,
+  published           boolean not null default false,
   updated_by          text,
   updated_at          timestamptz not null default now(),
   primary key (area, slug)
@@ -201,3 +208,63 @@ create unique index if not exists reviewer_allowlist_login_idx
   on reviewer_allowlist (lower(github_login));
 create unique index if not exists reviewer_allowlist_email_idx
   on reviewer_allowlist (lower(email));
+
+-- A request for a named reviewer to review one (area, slug). Reviewers are
+-- addressed by github login (email fallback) matched against reviewer_allowlist
+-- — the allowlist has no stable user id and a requested reviewer may not have
+-- logged in yet, so "requests to me" compares lower(reviewer_login) to the
+-- viewer's login. Unlike the append-only review_state, a request is a small
+-- stateful entity with three terminal outcomes; the immutable audit trail lives
+-- in content_event, so this stays mutable (status is updated in place).
+--
+-- Satisfaction is artifact-level, not per-reviewer: when an artifact reaches
+-- 'approved', all its open requests are marked 'satisfied' (any allowlisted
+-- reviewer's approval counts, mirroring how release works). A finer per-reviewer
+-- model would need a separate approval record and is intentionally out of scope.
+create table if not exists review_request (
+  id             uuid primary key default uuidv7(),
+  area           text not null check (area in ('blogs', 'docs')),
+  slug           text not null,
+  reviewer_login text,
+  reviewer_email text,
+  requirement    text not null default 'required'
+                   check (requirement in ('required', 'optional')),
+  status         text not null default 'open'
+                   check (status in ('open', 'satisfied', 'cancelled')),
+  requested_by   text not null,
+  note           text,
+  created_at     timestamptz not null default now(),
+  satisfied_at   timestamptz,
+  satisfied_by   text,
+  cancelled_at   timestamptz,
+  check (reviewer_login is not null or reviewer_email is not null)
+);
+-- Release-block + per-artifact request lists filter by (area, slug, status).
+create index if not exists review_request_ref_idx
+  on review_request (area, slug, status);
+-- A reviewer's inbox ("requests to me") filters by lower(login) + status.
+create index if not exists review_request_reviewer_idx
+  on review_request (lower(reviewer_login), status);
+
+-- Append-only review timeline: one row per major lifecycle event on an artifact
+-- (review requested/satisfied/cancelled, state transitions, release, unpublish/
+-- republish). Frontmatter authoring changes are deliberately excluded — those
+-- run through git/CI, not this app. kind-specific detail (from/to state, the
+-- reviewer login, an unpublish flag) rides in the jsonb payload so the table
+-- stays one shape. id is UUIDv7, so (area, slug, id) serves the filter AND the
+-- chronological sort with no separate sort step (as with comment_ref_id_idx).
+create table if not exists content_event (
+  id         uuid primary key default uuidv7(),
+  area       text not null check (area in ('blogs', 'docs')),
+  slug       text not null,
+  kind       text not null check (kind in (
+               'review-requested', 'request-satisfied', 'request-cancelled',
+               'state-in-review', 'state-changes-requested', 'state-approved',
+               'released', 'unpublished', 'republished')),
+  actor      text not null,
+  version_id uuid references content_version (id),
+  payload    jsonb not null default '{}',
+  created_at timestamptz not null default now()
+);
+create index if not exists content_event_ref_idx
+  on content_event (area, slug, id);

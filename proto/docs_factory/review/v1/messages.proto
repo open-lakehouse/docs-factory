@@ -128,6 +128,41 @@ enum Role {
   ROLE_MAINTAINER = 3;
 }
 
+// Whether a review request must be satisfied before the artifact can be
+// released. A REQUIRED open request blocks ReleaseContent; OPTIONAL is advisory
+// (a dashboard signal only).
+enum Requirement {
+  REQUIREMENT_UNSPECIFIED = 0;
+  REQUIREMENT_REQUIRED = 1;
+  REQUIREMENT_OPTIONAL = 2;
+}
+
+// Lifecycle of a single review request. A request is SATISFIED when the artifact
+// reaches APPROVED (any allowlisted reviewer's approval satisfies all open
+// requests on that artifact — there is no per-reviewer approval record).
+enum RequestStatus {
+  REQUEST_STATUS_UNSPECIFIED = 0;
+  REQUEST_STATUS_OPEN = 1;
+  REQUEST_STATUS_SATISFIED = 2;
+  REQUEST_STATUS_CANCELLED = 3;
+}
+
+// A major lifecycle event recorded on an artifact, for the per-artifact review
+// timeline. Frontmatter authoring changes are intentionally absent — those run
+// through git/CI, not this app.
+enum EventKind {
+  EVENT_KIND_UNSPECIFIED = 0;
+  EVENT_KIND_REVIEW_REQUESTED = 1;
+  EVENT_KIND_REQUEST_SATISFIED = 2;
+  EVENT_KIND_REQUEST_CANCELLED = 3;
+  EVENT_KIND_STATE_IN_REVIEW = 4;
+  EVENT_KIND_STATE_CHANGES_REQUESTED = 5;
+  EVENT_KIND_STATE_APPROVED = 6;
+  EVENT_KIND_RELEASED = 7;
+  EVENT_KIND_UNPUBLISHED = 8;
+  EVENT_KIND_REPUBLISHED = 9;
+}
+
 // The current viewer, resolved from the auth provider (Neon Auth in prod, the
 // mock provider locally).
 message Viewer {
@@ -202,6 +237,14 @@ message DraftSummary {
   // intended ship date; date-only, carried at UTC midnight in the timestamp.
   optional int32 priority = 7;
   optional google.protobuf.Timestamp target_release_date = 8;
+  // Number of open REQUIRED review requests on this content. Non-zero blocks
+  // release (ReleaseContent throws) and is surfaced in the reviewer UI.
+  int32 open_required_request_count = 9;
+  // Whether the content is currently published (publicly visible). This is a
+  // sticky latch on content_revops, decoupled from review_state: set true on
+  // release, cleared only by an explicit unpublish. Anonymous visibility is
+  // `frontmatter_status == "ready" AND published`.
+  bool published = 10;
 }
 
 // One allowlist entry.
@@ -226,4 +269,38 @@ message RecentComment {
   // The content title (from the latest version), for a friendlier row label than
   // the slug. Falls back to the slug on the client when empty.
   string content_title = 6;
+}
+
+// A request for a named reviewer to review one artifact. Reviewers are addressed
+// by GitHub login (email fallback) matched against the reviewer allowlist — the
+// allowlist has no stable user id, and a requested reviewer may not have logged
+// in yet. "Requests to me" matches lower(reviewer_login) == lower(viewer.login).
+message ReviewRequest {
+  string id = 1;
+  ContentRef ref = 2;
+  // Whom the review is requested from. At least one of login/email is set.
+  optional string reviewer_login = 3;
+  optional string reviewer_email = 4;
+  Requirement requirement = 5;
+  RequestStatus status = 6;
+  // Who opened the request (actor identity: user id or login).
+  string requested_by = 7;
+  string note = 8;
+  google.protobuf.Timestamp created_at = 9;
+  optional google.protobuf.Timestamp satisfied_at = 10;
+}
+
+// One entry in an artifact's review timeline. `kind` is the event type; `actor`
+// is who caused it; state transitions carry from/to; request events carry the
+// reviewer login. `note` is an optional human reason (transition/unpublish).
+message ContentEvent {
+  string id = 1;
+  ContentRef ref = 2;
+  EventKind kind = 3;
+  string actor = 4;
+  string note = 5;
+  optional ReviewState from_state = 6;
+  optional ReviewState to_state = 7;
+  optional string reviewer_login = 8;
+  google.protobuf.Timestamp created_at = 9;
 }

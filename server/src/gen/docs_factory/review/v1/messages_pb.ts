@@ -19,7 +19,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file docs_factory/review/v1/messages.proto.
  */
 export const file_docs_factory_review_v1_messages: GenFile = /*@__PURE__*/
-  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQihQIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYiiQEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBSJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIr8BCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAgSFAoHdXNlcl9pZBgFIAEoCUgBiAEBEhEKBG5hbWUYBiABKAlIAogBAUIICgZfbG9naW5CCgoIX3VzZXJfaWRCBwoFX25hbWUi/gQKB0NvbW1lbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhMKC2FuY2hvcl9zbHVnGAMgASgJEhoKEmFuY2hvcl9maW5nZXJwcmludBgEIAEoCRIWCglwYXJlbnRfaWQYBSABKAlIAIgBARIUCgxhdXRob3JfbG9naW4YBiABKAkSDwoHYm9keV9tZBgHIAEoCRIYCgthdXRob3JfbmFtZRgPIAEoCUgBiAEBEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIQCghvcnBoYW5lZBgKIAEoCBI7CghzZWxlY3RvchgLIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGV4dFNlbGVjdG9ySAOIAQESQAoNY29kZV9zZWxlY3RvchgMIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29kZVNlbGVjdG9ySASIAQESIAoTYXV0aG9yZWRfdmVyc2lvbl9pZBgNIAEoCUgFiAEBEh0KEGF1dGhvcmVkX2dpdF9zaGEYDiABKAlIBogBAUIMCgpfcGFyZW50X2lkQg4KDF9hdXRob3JfbmFtZUIMCgpfZWRpdGVkX2F0QgsKCV9zZWxlY3RvckIQCg5fY29kZV9zZWxlY3RvckIWChRfYXV0aG9yZWRfdmVyc2lvbl9pZEITChFfYXV0aG9yZWRfZ2l0X3NoYSKVAgoGVGhyZWFkEi0KBHJvb3QYASABKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbW1lbnQSMAoHcmVwbGllcxgCIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIQCghyZXNvbHZlZBgDIAEoCBIYCgtyZXNvbHZlZF9ieRgEIAEoCUgAiAEBEjQKC3Jlc29sdmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBEhIKCmhhc191bnJlYWQYBiABKAgSFAoMdW5yZWFkX2NvdW50GAcgASgFQg4KDF9yZXNvbHZlZF9ieUIOCgxfcmVzb2x2ZWRfYXQikwMKDERyYWZ0U3VtbWFyeRIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSDQoFdGl0bGUYAiABKAkSGgoSZnJvbnRtYXR0ZXJfc3RhdHVzGAMgASgJEjkKDHJldmlld19zdGF0ZRgEIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSQwoObGF0ZXN0X3ZlcnNpb24YBSABKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRWZXJzaW9uSACIAQESGgoSb3Blbl9jb21tZW50X2NvdW50GAYgASgFEhUKCHByaW9yaXR5GAcgASgFSAGIAQESPAoTdGFyZ2V0X3JlbGVhc2VfZGF0ZRgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBAUIRCg9fbGF0ZXN0X3ZlcnNpb25CCwoJX3ByaW9yaXR5QhYKFF90YXJnZXRfcmVsZWFzZV9kYXRlIoYBCg5BbGxvd2xpc3RFbnRyeRIZCgxnaXRodWJfbG9naW4YASABKAlIAIgBARISCgVlbWFpbBgCIAEoCUgBiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGVCDwoNX2dpdGh1Yl9sb2dpbkIICgZfZW1haWwixgEKDVJlY2VudENvbW1lbnQSMAoHY29tbWVudBgBIAEoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSEwoLYW5jaG9yX3NsdWcYAyABKAkSFAoMaGVhZGluZ190ZXh0GAQgASgJEhAKCHJlc29sdmVkGAUgASgIEhUKDWNvbnRlbnRfdGl0bGUYBiABKAkqWgoLQ29udGVudEFyZWESHAoYQ09OVEVOVF9BUkVBX1VOU1BFQ0lGSUVEEAASFgoSQ09OVEVOVF9BUkVBX0JMT0dTEAESFQoRQ09OVEVOVF9BUkVBX0RPQ1MQAiq4AQoLUmV2aWV3U3RhdGUSHAoYUkVWSUVXX1NUQVRFX1VOU1BFQ0lGSUVEEAASFQoRUkVWSUVXX1NUQVRFX05PTkUQARIaChZSRVZJRVdfU1RBVEVfSU5fUkVWSUVXEAISIgoeUkVWSUVXX1NUQVRFX0NIQU5HRVNfUkVRVUVTVEVEEAMSGQoVUkVWSUVXX1NUQVRFX0FQUFJPVkVEEAQSGQoVUkVWSUVXX1NUQVRFX1JFTEVBU0VEEAUqWAoEUm9sZRIUChBST0xFX1VOU1BFQ0lGSUVEEAASEgoOUk9MRV9BTk9OWU1PVVMQARIRCg1ST0xFX1JFVklFV0VSEAISEwoPUk9MRV9NQUlOVEFJTkVSEANiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQihQIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYiiQEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBSJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIr8BCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAgSFAoHdXNlcl9pZBgFIAEoCUgBiAEBEhEKBG5hbWUYBiABKAlIAogBAUIICgZfbG9naW5CCgoIX3VzZXJfaWRCBwoFX25hbWUi/gQKB0NvbW1lbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhMKC2FuY2hvcl9zbHVnGAMgASgJEhoKEmFuY2hvcl9maW5nZXJwcmludBgEIAEoCRIWCglwYXJlbnRfaWQYBSABKAlIAIgBARIUCgxhdXRob3JfbG9naW4YBiABKAkSDwoHYm9keV9tZBgHIAEoCRIYCgthdXRob3JfbmFtZRgPIAEoCUgBiAEBEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIQCghvcnBoYW5lZBgKIAEoCBI7CghzZWxlY3RvchgLIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGV4dFNlbGVjdG9ySAOIAQESQAoNY29kZV9zZWxlY3RvchgMIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29kZVNlbGVjdG9ySASIAQESIAoTYXV0aG9yZWRfdmVyc2lvbl9pZBgNIAEoCUgFiAEBEh0KEGF1dGhvcmVkX2dpdF9zaGEYDiABKAlIBogBAUIMCgpfcGFyZW50X2lkQg4KDF9hdXRob3JfbmFtZUIMCgpfZWRpdGVkX2F0QgsKCV9zZWxlY3RvckIQCg5fY29kZV9zZWxlY3RvckIWChRfYXV0aG9yZWRfdmVyc2lvbl9pZEITChFfYXV0aG9yZWRfZ2l0X3NoYSKVAgoGVGhyZWFkEi0KBHJvb3QYASABKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbW1lbnQSMAoHcmVwbGllcxgCIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIQCghyZXNvbHZlZBgDIAEoCBIYCgtyZXNvbHZlZF9ieRgEIAEoCUgAiAEBEjQKC3Jlc29sdmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBEhIKCmhhc191bnJlYWQYBiABKAgSFAoMdW5yZWFkX2NvdW50GAcgASgFQg4KDF9yZXNvbHZlZF9ieUIOCgxfcmVzb2x2ZWRfYXQiywMKDERyYWZ0U3VtbWFyeRIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSDQoFdGl0bGUYAiABKAkSGgoSZnJvbnRtYXR0ZXJfc3RhdHVzGAMgASgJEjkKDHJldmlld19zdGF0ZRgEIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSQwoObGF0ZXN0X3ZlcnNpb24YBSABKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRWZXJzaW9uSACIAQESGgoSb3Blbl9jb21tZW50X2NvdW50GAYgASgFEhUKCHByaW9yaXR5GAcgASgFSAGIAQESPAoTdGFyZ2V0X3JlbGVhc2VfZGF0ZRgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIjChtvcGVuX3JlcXVpcmVkX3JlcXVlc3RfY291bnQYCSABKAUSEQoJcHVibGlzaGVkGAogASgIQhEKD19sYXRlc3RfdmVyc2lvbkILCglfcHJpb3JpdHlCFgoUX3RhcmdldF9yZWxlYXNlX2RhdGUihgEKDkFsbG93bGlzdEVudHJ5EhkKDGdpdGh1Yl9sb2dpbhgBIAEoCUgAiAEBEhIKBWVtYWlsGAIgASgJSAGIAQESKgoEcm9sZRgDIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZUIPCg1fZ2l0aHViX2xvZ2luQggKBl9lbWFpbCLGAQoNUmVjZW50Q29tbWVudBIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50Ei8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhITCgthbmNob3Jfc2x1ZxgDIAEoCRIUCgxoZWFkaW5nX3RleHQYBCABKAkSEAoIcmVzb2x2ZWQYBSABKAgSFQoNY29udGVudF90aXRsZRgGIAEoCSK5AwoNUmV2aWV3UmVxdWVzdBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGwoOcmV2aWV3ZXJfbG9naW4YAyABKAlIAIgBARIbCg5yZXZpZXdlcl9lbWFpbBgEIAEoCUgBiAEBEjgKC3JlcXVpcmVtZW50GAUgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1aXJlbWVudBI1CgZzdGF0dXMYBiABKA4yJS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RTdGF0dXMSFAoMcmVxdWVzdGVkX2J5GAcgASgJEgwKBG5vdGUYCCABKAkSLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNQoMc2F0aXNmaWVkX2F0GAogASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgCiAEBQhEKD19yZXZpZXdlcl9sb2dpbkIRCg9fcmV2aWV3ZXJfZW1haWxCDwoNX3NhdGlzZmllZF9hdCKPAwoMQ29udGVudEV2ZW50EgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIvCgRraW5kGAMgASgOMiEuZG9jc19mYWN0b3J5LnJldmlldy52MS5FdmVudEtpbmQSDQoFYWN0b3IYBCABKAkSDAoEbm90ZRgFIAEoCRI8Cgpmcm9tX3N0YXRlGAYgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZUgAiAEBEjoKCHRvX3N0YXRlGAcgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZUgBiAEBEhsKDnJldmlld2VyX2xvZ2luGAggASgJSAKIAQESLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCDQoLX2Zyb21fc3RhdGVCCwoJX3RvX3N0YXRlQhEKD19yZXZpZXdlcl9sb2dpbipaCgtDb250ZW50QXJlYRIcChhDT05URU5UX0FSRUFfVU5TUEVDSUZJRUQQABIWChJDT05URU5UX0FSRUFfQkxPR1MQARIVChFDT05URU5UX0FSRUFfRE9DUxACKrgBCgtSZXZpZXdTdGF0ZRIcChhSRVZJRVdfU1RBVEVfVU5TUEVDSUZJRUQQABIVChFSRVZJRVdfU1RBVEVfTk9ORRABEhoKFlJFVklFV19TVEFURV9JTl9SRVZJRVcQAhIiCh5SRVZJRVdfU1RBVEVfQ0hBTkdFU19SRVFVRVNURUQQAxIZChVSRVZJRVdfU1RBVEVfQVBQUk9WRUQQBBIZChVSRVZJRVdfU1RBVEVfUkVMRUFTRUQQBSpYCgRSb2xlEhQKEFJPTEVfVU5TUEVDSUZJRUQQABISCg5ST0xFX0FOT05ZTU9VUxABEhEKDVJPTEVfUkVWSUVXRVIQAhITCg9ST0xFX01BSU5UQUlORVIQAypeCgtSZXF1aXJlbWVudBIbChdSRVFVSVJFTUVOVF9VTlNQRUNJRklFRBAAEhgKFFJFUVVJUkVNRU5UX1JFUVVJUkVEEAESGAoUUkVRVUlSRU1FTlRfT1BUSU9OQUwQAiqEAQoNUmVxdWVzdFN0YXR1cxIeChpSRVFVRVNUX1NUQVRVU19VTlNQRUNJRklFRBAAEhcKE1JFUVVFU1RfU1RBVFVTX09QRU4QARIcChhSRVFVRVNUX1NUQVRVU19TQVRJU0ZJRUQQAhIcChhSRVFVRVNUX1NUQVRVU19DQU5DRUxMRUQQAyrEAgoJRXZlbnRLaW5kEhoKFkVWRU5UX0tJTkRfVU5TUEVDSUZJRUQQABIfChtFVkVOVF9LSU5EX1JFVklFV19SRVFVRVNURUQQARIgChxFVkVOVF9LSU5EX1JFUVVFU1RfU0FUSVNGSUVEEAISIAocRVZFTlRfS0lORF9SRVFVRVNUX0NBTkNFTExFRBADEh4KGkVWRU5UX0tJTkRfU1RBVEVfSU5fUkVWSUVXEAQSJgoiRVZFTlRfS0lORF9TVEFURV9DSEFOR0VTX1JFUVVFU1RFRBAFEh0KGUVWRU5UX0tJTkRfU1RBVEVfQVBQUk9WRUQQBhIXChNFVkVOVF9LSU5EX1JFTEVBU0VEEAcSGgoWRVZFTlRfS0lORF9VTlBVQkxJU0hFRBAIEhoKFkVWRU5UX0tJTkRfUkVQVUJMSVNIRUQQCWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * Stable reference to one piece of content. `project`/`bucket` are set only for
@@ -588,6 +588,24 @@ export type DraftSummary = Message<"docs_factory.review.v1.DraftSummary"> & {
    * @generated from field: optional google.protobuf.Timestamp target_release_date = 8;
    */
   targetReleaseDate?: Timestamp | undefined;
+
+  /**
+   * Number of open REQUIRED review requests on this content. Non-zero blocks
+   * release (ReleaseContent throws) and is surfaced in the reviewer UI.
+   *
+   * @generated from field: int32 open_required_request_count = 9;
+   */
+  openRequiredRequestCount: number;
+
+  /**
+   * Whether the content is currently published (publicly visible). This is a
+   * sticky latch on content_revops, decoupled from review_state: set true on
+   * release, cleared only by an explicit unpublish. Anonymous visibility is
+   * `frontmatter_status == "ready" AND published`.
+   *
+   * @generated from field: bool published = 10;
+   */
+  published: boolean;
 };
 
 /**
@@ -677,6 +695,138 @@ export type RecentComment = Message<"docs_factory.review.v1.RecentComment"> & {
  */
 export const RecentCommentSchema: GenMessage<RecentComment> = /*@__PURE__*/
   messageDesc(file_docs_factory_review_v1_messages, 12);
+
+/**
+ * A request for a named reviewer to review one artifact. Reviewers are addressed
+ * by GitHub login (email fallback) matched against the reviewer allowlist — the
+ * allowlist has no stable user id, and a requested reviewer may not have logged
+ * in yet. "Requests to me" matches lower(reviewer_login) == lower(viewer.login).
+ *
+ * @generated from message docs_factory.review.v1.ReviewRequest
+ */
+export type ReviewRequest = Message<"docs_factory.review.v1.ReviewRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: docs_factory.review.v1.ContentRef ref = 2;
+   */
+  ref?: ContentRef | undefined;
+
+  /**
+   * Whom the review is requested from. At least one of login/email is set.
+   *
+   * @generated from field: optional string reviewer_login = 3;
+   */
+  reviewerLogin?: string | undefined;
+
+  /**
+   * @generated from field: optional string reviewer_email = 4;
+   */
+  reviewerEmail?: string | undefined;
+
+  /**
+   * @generated from field: docs_factory.review.v1.Requirement requirement = 5;
+   */
+  requirement: Requirement;
+
+  /**
+   * @generated from field: docs_factory.review.v1.RequestStatus status = 6;
+   */
+  status: RequestStatus;
+
+  /**
+   * Who opened the request (actor identity: user id or login).
+   *
+   * @generated from field: string requested_by = 7;
+   */
+  requestedBy: string;
+
+  /**
+   * @generated from field: string note = 8;
+   */
+  note: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 9;
+   */
+  createdAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: optional google.protobuf.Timestamp satisfied_at = 10;
+   */
+  satisfiedAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ReviewRequest.
+ * Use `create(ReviewRequestSchema)` to create a new message.
+ */
+export const ReviewRequestSchema: GenMessage<ReviewRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 13);
+
+/**
+ * One entry in an artifact's review timeline. `kind` is the event type; `actor`
+ * is who caused it; state transitions carry from/to; request events carry the
+ * reviewer login. `note` is an optional human reason (transition/unpublish).
+ *
+ * @generated from message docs_factory.review.v1.ContentEvent
+ */
+export type ContentEvent = Message<"docs_factory.review.v1.ContentEvent"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: docs_factory.review.v1.ContentRef ref = 2;
+   */
+  ref?: ContentRef | undefined;
+
+  /**
+   * @generated from field: docs_factory.review.v1.EventKind kind = 3;
+   */
+  kind: EventKind;
+
+  /**
+   * @generated from field: string actor = 4;
+   */
+  actor: string;
+
+  /**
+   * @generated from field: string note = 5;
+   */
+  note: string;
+
+  /**
+   * @generated from field: optional docs_factory.review.v1.ReviewState from_state = 6;
+   */
+  fromState?: ReviewState | undefined;
+
+  /**
+   * @generated from field: optional docs_factory.review.v1.ReviewState to_state = 7;
+   */
+  toState?: ReviewState | undefined;
+
+  /**
+   * @generated from field: optional string reviewer_login = 8;
+   */
+  reviewerLogin?: string | undefined;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 9;
+   */
+  createdAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ContentEvent.
+ * Use `create(ContentEventSchema)` to create a new message.
+ */
+export const ContentEventSchema: GenMessage<ContentEvent> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 14);
 
 /**
  * Which content tree a piece of content lives in.
@@ -788,4 +938,134 @@ export enum Role {
  */
 export const RoleSchema: GenEnum<Role> = /*@__PURE__*/
   enumDesc(file_docs_factory_review_v1_messages, 2);
+
+/**
+ * Whether a review request must be satisfied before the artifact can be
+ * released. A REQUIRED open request blocks ReleaseContent; OPTIONAL is advisory
+ * (a dashboard signal only).
+ *
+ * @generated from enum docs_factory.review.v1.Requirement
+ */
+export enum Requirement {
+  /**
+   * @generated from enum value: REQUIREMENT_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: REQUIREMENT_REQUIRED = 1;
+   */
+  REQUIRED = 1,
+
+  /**
+   * @generated from enum value: REQUIREMENT_OPTIONAL = 2;
+   */
+  OPTIONAL = 2,
+}
+
+/**
+ * Describes the enum docs_factory.review.v1.Requirement.
+ */
+export const RequirementSchema: GenEnum<Requirement> = /*@__PURE__*/
+  enumDesc(file_docs_factory_review_v1_messages, 3);
+
+/**
+ * Lifecycle of a single review request. A request is SATISFIED when the artifact
+ * reaches APPROVED (any allowlisted reviewer's approval satisfies all open
+ * requests on that artifact — there is no per-reviewer approval record).
+ *
+ * @generated from enum docs_factory.review.v1.RequestStatus
+ */
+export enum RequestStatus {
+  /**
+   * @generated from enum value: REQUEST_STATUS_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: REQUEST_STATUS_OPEN = 1;
+   */
+  OPEN = 1,
+
+  /**
+   * @generated from enum value: REQUEST_STATUS_SATISFIED = 2;
+   */
+  SATISFIED = 2,
+
+  /**
+   * @generated from enum value: REQUEST_STATUS_CANCELLED = 3;
+   */
+  CANCELLED = 3,
+}
+
+/**
+ * Describes the enum docs_factory.review.v1.RequestStatus.
+ */
+export const RequestStatusSchema: GenEnum<RequestStatus> = /*@__PURE__*/
+  enumDesc(file_docs_factory_review_v1_messages, 4);
+
+/**
+ * A major lifecycle event recorded on an artifact, for the per-artifact review
+ * timeline. Frontmatter authoring changes are intentionally absent — those run
+ * through git/CI, not this app.
+ *
+ * @generated from enum docs_factory.review.v1.EventKind
+ */
+export enum EventKind {
+  /**
+   * @generated from enum value: EVENT_KIND_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: EVENT_KIND_REVIEW_REQUESTED = 1;
+   */
+  REVIEW_REQUESTED = 1,
+
+  /**
+   * @generated from enum value: EVENT_KIND_REQUEST_SATISFIED = 2;
+   */
+  REQUEST_SATISFIED = 2,
+
+  /**
+   * @generated from enum value: EVENT_KIND_REQUEST_CANCELLED = 3;
+   */
+  REQUEST_CANCELLED = 3,
+
+  /**
+   * @generated from enum value: EVENT_KIND_STATE_IN_REVIEW = 4;
+   */
+  STATE_IN_REVIEW = 4,
+
+  /**
+   * @generated from enum value: EVENT_KIND_STATE_CHANGES_REQUESTED = 5;
+   */
+  STATE_CHANGES_REQUESTED = 5,
+
+  /**
+   * @generated from enum value: EVENT_KIND_STATE_APPROVED = 6;
+   */
+  STATE_APPROVED = 6,
+
+  /**
+   * @generated from enum value: EVENT_KIND_RELEASED = 7;
+   */
+  RELEASED = 7,
+
+  /**
+   * @generated from enum value: EVENT_KIND_UNPUBLISHED = 8;
+   */
+  UNPUBLISHED = 8,
+
+  /**
+   * @generated from enum value: EVENT_KIND_REPUBLISHED = 9;
+   */
+  REPUBLISHED = 9,
+}
+
+/**
+ * Describes the enum docs_factory.review.v1.EventKind.
+ */
+export const EventKindSchema: GenEnum<EventKind> = /*@__PURE__*/
+  enumDesc(file_docs_factory_review_v1_messages, 5);
 

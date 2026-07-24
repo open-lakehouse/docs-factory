@@ -108,6 +108,48 @@ export const setPriority = ReviewService.method.setPriority;
 export const setTargetReleaseDate = ReviewService.method.setTargetReleaseDate;
 
 /**
+ * Request a review of one artifact from one or more allowlisted reviewers,
+ * each REQUIRED or OPTIONAL. Allowlist-gated. Every reviewer must be on the
+ * allowlist (by login or email). Returns the created requests.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.RequestReview
+ */
+export const requestReview = ReviewService.method.requestReview;
+
+/**
+ * Cancel an open review request (requester or maintainer). Returns the
+ * updated request.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.CancelReviewRequest
+ */
+export const cancelReviewRequest = ReviewService.method.cancelReviewRequest;
+
+/**
+ * List review requests, optionally scoped to one artifact or to the current
+ * viewer's inbox (`mine`). Allowlist-gated.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListReviewRequests
+ */
+export const listReviewRequests = ReviewService.method.listReviewRequests;
+
+/**
+ * The review timeline for one artifact (most-recent first). Allowlist-gated.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListContentEvents
+ */
+export const listContentEvents = ReviewService.method.listContentEvents;
+
+/**
+ * Reopen a released artifact to request changes (the terminal RELEASED state
+ * is otherwise closed). Maintainer-only. Transitions released -> changes-
+ * requested and, when `unpublish` is set, also clears the published latch so
+ * the artifact drops out of anonymous view (DB-only; no git write).
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.RequestChangesOnPublished
+ */
+export const requestChangesOnPublished = ReviewService.method.requestChangesOnPublished;
+
+/**
  * Maintainer-only allowlist management.
  *
  * @generated from rpc docs_factory.review.v1.ReviewService.ManageAllowlist

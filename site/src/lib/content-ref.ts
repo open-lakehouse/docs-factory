@@ -39,6 +39,30 @@ export function refHref(ref: ContentRef, anchorSlug?: string): string {
   return anchorSlug ? `${base}#${anchorSlug}` : base;
 }
 
+/**
+ * URL-safe serialization of a ContentRef for the review workspace's tab list
+ * (`?tabs=docs:slug:project:bucket,blogs:slug::`). Deliberately distinct from
+ * refKey() in review-queries.ts, which uses a `\0` separator for cache-key
+ * identity and is NOT URL-safe. The four fields never contain `:` or `,`
+ * (they're path segments / enum names), so a positional colon join round-trips.
+ */
+export function refToParam(ref: ContentRef): string {
+  const area = ref.area === ContentArea.BLOGS ? "blogs" : "docs";
+  return [area, ref.slug, ref.project ?? "", ref.bucket ?? ""].join(":");
+}
+
+/** Parse one `refToParam` token back into a ContentRef, or null if malformed. */
+export function refFromParam(token: string): ContentRef | null {
+  const [area, slug, project, bucket] = token.split(":");
+  if (!slug) return null;
+  if (area === "blogs") return blogRef(slug);
+  if (area === "docs") {
+    if (!project || !bucket) return null;
+    return docRef(project, bucket, slug);
+  }
+  return null;
+}
+
 export { normalizeText, fingerprint };
 
 /**

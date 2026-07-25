@@ -17,11 +17,15 @@ const HIGHLIGHT_FOCUS = "review-quote-focus";
 function resolveRange(thread: Thread, article: HTMLElement): Range | null {
   const sel = thread.root?.selector;
   if (!sel?.quote) return null;
-  const section =
+  // Scope the section lookup to the article root, not `document`: the editor
+  // workspace mounts several tabs at once that share heading ids, so a
+  // document-wide getElementById could match the wrong tab's heading.
+  const heading =
     (thread.root?.anchorSlug &&
-      (document.getElementById(thread.root.anchorSlug)?.parentElement ?? null)) ||
-    article;
-  return locateSelector(sel, section instanceof HTMLElement ? section : article);
+      article.querySelector<HTMLElement>(`#${CSS.escape(thread.root.anchorSlug)}`)) ||
+    null;
+  const section = heading?.parentElement ?? article;
+  return locateSelector(sel, section);
 }
 
 function pointInRange(range: Range, x: number, y: number): boolean {

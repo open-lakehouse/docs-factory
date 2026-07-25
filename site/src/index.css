@@ -163,6 +163,35 @@ body {
   flex: none;
 }
 
+/* Review workspace: fill the viewport below the sticky topbar; the 3-pane
+   editor manages its own internal scrolling (same recipe as index pages). */
+.shell:has(.review-workspace-layout) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.shell:has(.review-workspace-layout) .topbar {
+  flex: none;
+}
+/* Neutralize the default .content max-width/padding so the panes span edge to
+   edge, and let the workspace flex to fill the remaining height. */
+.shell:has(.review-workspace-layout) main.content {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+.review-workspace-layout {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+}
+
 /* Console navbar — pure black, mono-forward */
 .topbar {
   display: flex;

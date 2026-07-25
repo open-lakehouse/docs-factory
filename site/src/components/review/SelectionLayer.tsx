@@ -75,8 +75,12 @@ function selectionRect(): DOMRect | null {
 
 export default function SelectionLayer({
   articleRef,
+  isActive = true,
 }: {
   articleRef: RefObject<HTMLElement | null>;
+  /** Editor workspace: only the active tab captures selections (document-level
+   * mouse listeners + fixed float). Defaults to true for single-page routes. */
+  isActive?: boolean;
 }) {
   const { reviewActive } = useAuth();
   const { setPending } = useSelectionState();
@@ -86,7 +90,7 @@ export default function SelectionLayer({
   floatRef.current = float;
 
   useEffect(() => {
-    if (!reviewActive) return;
+    if (!isActive || !reviewActive) return;
     const article = articleRef.current;
     if (!article) return;
     const art = article;
@@ -214,9 +218,9 @@ export default function SelectionLayer({
       window.removeEventListener("scroll", reposition, true);
       window.removeEventListener("resize", reposition);
     };
-  }, [articleRef, reviewActive]);
+  }, [articleRef, isActive, reviewActive]);
 
-  if (!reviewActive) return null;
+  if (!isActive || !reviewActive) return null;
 
   async function commit(ui: FloatUI) {
     const anchor = await ui.build();

@@ -3,9 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import DocsSidebar from "../components/layout/DocsSidebar";
 import DocAside from "../components/layout/DocAside";
 import OnThisPage from "../components/layout/OnThisPage";
-import InlineReviewSurface from "../components/review/InlineReviewSurface";
-import SelectionLayer from "../components/review/SelectionLayer";
-import SourceFileLauncher from "../components/review/SourceFileLauncher";
+import ReviewSurfaces from "../components/review/ReviewSurfaces";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
 import { docRef } from "../lib/content-ref";
@@ -106,9 +104,7 @@ export default function DocPage() {
           />
         </div>
         <DocAside articleRef={articleRef} contentRef={docRef(project, bucket, slug)} />
-        <InlineReviewSurface articleRef={articleRef} />
-        <SelectionLayer articleRef={articleRef} />
-        <SourceFileLauncher contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
+        <ReviewSurfaces contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
       </div>
       </ReviewProvider>
       </SelectionProvider>

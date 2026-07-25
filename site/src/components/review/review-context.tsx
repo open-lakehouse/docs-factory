@@ -79,11 +79,19 @@ const ReviewContext = createContext<ReviewContextValue>({
 export function ReviewProvider({
   contentRef,
   children,
+  isActive = true,
 }: {
   contentRef: ContentRef;
   children: ReactNode;
+  /** Editor workspace: inactive tabs keep their ReviewProvider (warm cache,
+   * mounted DOM) but stop polling and drop their SSE subscription so N open
+   * tabs don't each hit the API. Defaults to true for the single-page routes. */
+  isActive?: boolean;
 }) {
   const { reviewActive } = useAuth();
+  // An inactive tab is only "live" enough to keep its cache warm; it neither
+  // polls nor streams.
+  const live = reviewActive && isActive;
   const { commentsKey, invalidateComments, queryClient } = useReviewInvalidation();
   // Poll so a reviewer sees other reviewers' comments arrive without a reload.
   // Gated on `reviewActive` (allowlisted AND Site review mode on) — a reviewer
@@ -97,10 +105,12 @@ export function ReviewProvider({
     listComments,
     { ref: contentRef },
     {
+      // An inactive tab still fetches once (warm cache for instant tab switch)
+      // but only the active tab keeps polling / refetching on focus.
       enabled: reviewActive,
-      refetchInterval: reviewActive ? pollInterval : false,
+      refetchInterval: live ? pollInterval : false,
       refetchIntervalInBackground: false,
-      refetchOnWindowFocus: true,
+      refetchOnWindowFocus: live,
     },
   );
 
@@ -160,7 +170,7 @@ export function ReviewProvider({
   // auto-reconnects, and the slow poll interval above is the backstop if the
   // stream is dropped/evicted. Off unless VITE_REVIEW_SSE is set.
   useEffect(() => {
-    if (!sseEnabled || !reviewActive) return;
+    if (!sseEnabled || !live) return;
     const url = new URL("/events/comments", baseUrl);
     // Full ref identity in the subscription so the server can scope the stream;
     // area:slug alone collides across areas/projects sharing a slug.
@@ -196,7 +206,8 @@ export function ReviewProvider({
     return () => es.close();
     // Re-subscribe on ANY ref-identity change (refKey covers all four fields),
     // not just area/slug — otherwise a project/bucket change leaves a stale sub.
-  }, [reviewActive, contentRef, refKey(contentRef), invalidateComments]);
+    // `live` folds in isActive so a tab drops its stream when deactivated.
+  }, [live, contentRef, refKey(contentRef), invalidateComments]);
 
   const selectThread = useCallback(
     (id: string | null) => {

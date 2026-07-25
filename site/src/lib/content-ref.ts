@@ -131,6 +131,21 @@ export function captureSelector(
 }
 
 /**
+ * The DOM subtree that owns a heading-anchored comment: the heading's parent
+ * (typically the section/article fragment), not the heading itself. Searching
+ * only the `<h*>` misses body prose under it — QuoteHighlights, scroll jumps,
+ * and document-order sorting all need this same root.
+ */
+export function sectionRootForAnchor(
+  article: HTMLElement,
+  anchorSlug?: string,
+): HTMLElement {
+  if (!anchorSlug) return article;
+  const heading = article.querySelector<HTMLElement>(`#${CSS.escape(anchorSlug)}`);
+  return heading?.parentElement ?? article;
+}
+
+/**
  * Locate a stored text-quote selector within `sectionEl` and return a DOM Range
  * covering it, or null if not found. Walks text nodes, builds the concatenated
  * raw text, finds the quote (normalized comparison via a folded index map), and

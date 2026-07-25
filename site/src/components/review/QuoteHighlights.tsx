@@ -9,21 +9,13 @@
 // resolves, it's simply skipped here — the thread still lives in the sidebar.
 import { useEffect, type RefObject } from "react";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
-import { locateSelector } from "../../lib/content-ref";
+import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
 import { ensureHighlightStyle, highlightNames } from "./highlight-style";
 
 function resolveRange(thread: Thread, article: HTMLElement): Range | null {
   const sel = thread.root?.selector;
   if (!sel?.quote) return null;
-  // Scope the section lookup to the article root, not `document`: the editor
-  // workspace mounts several tabs at once that share heading ids, so a
-  // document-wide getElementById could match the wrong tab's heading.
-  const heading =
-    (thread.root?.anchorSlug &&
-      article.querySelector<HTMLElement>(`#${CSS.escape(thread.root.anchorSlug)}`)) ||
-    null;
-  const section = heading?.parentElement ?? article;
-  return locateSelector(sel, section);
+  return locateSelector(sel, sectionRootForAnchor(article, thread.root?.anchorSlug));
 }
 
 function pointInRange(range: Range, x: number, y: number): boolean {

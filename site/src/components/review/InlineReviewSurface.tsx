@@ -3,7 +3,7 @@
 // Never mutates compiled MDX — uses fixed positioning from Range.getClientRects().
 import { useEffect, useState, type RefObject } from "react";
 import { createPortal } from "react-dom";
-import { locateSelector } from "../../lib/content-ref";
+import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
 import { useAuth } from "../../lib/auth-context";
 import { useSelectionState } from "./selection-context";
 import { useReview } from "./review-context";
@@ -111,11 +111,7 @@ export default function InlineReviewSurface({
         // Scope to the article root, not `document`: the editor workspace
         // mounts several tabs sharing heading ids, so a document-wide lookup
         // could resolve the wrong tab's heading.
-        const heading =
-          (selected.root?.anchorSlug &&
-            article!.querySelector<HTMLElement>(`#${CSS.escape(selected.root.anchorSlug)}`)) ||
-          null;
-        const section = heading?.parentElement ?? article!;
+        const section = sectionRootForAnchor(article!, selected.root?.anchorSlug);
         range = locateSelector(sel, section);
       } else {
         setPlacement(null);

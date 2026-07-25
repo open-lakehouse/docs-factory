@@ -98,7 +98,6 @@ export default function ThreadConversation({
     onChange();
   }
 
-  const sel = thread.root?.selector;
   const code = thread.root?.codeSelector;
   const codeLabel = code
     ? `${code.path}:${code.line}${code.endLine > code.line ? `-${code.endLine}` : ""}`
@@ -107,6 +106,9 @@ export default function ThreadConversation({
 
   // Inline surfaces (compact) sit directly under the highlighted prose/code, so
   // the section tag + quoted target would just repeat the surrounding context.
+  // The rail also skips the prose quote — CSS highlights already show it in the
+  // article — but keeps a compact code path:line so file-anchored threads stay
+  // identifiable when several sit under one heading.
   const showContext = !compact;
 
   return (
@@ -141,9 +143,6 @@ export default function ThreadConversation({
             )}
           </div>
         </div>
-      )}
-      {showContext && sel?.quote && (
-        <blockquote className="review-quote">{sel.quote}</blockquote>
       )}
       {showContext && code && (
         <blockquote className="review-quote code">

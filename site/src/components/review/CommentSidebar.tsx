@@ -1,6 +1,7 @@
 // Review comments rail for a rendered blog/doc page. Only mounts for allowlisted
 // viewers in rail display mode. Reads threads + selection from ReviewProvider.
-import { useEffect, useState, type RefObject } from "react";
+// Thread cards are ordered by document position (top→bottom), not creation time.
+import { useEffect, useMemo, useState, type RefObject } from "react";
 import { useMutation } from "@connectrpc/connect-query";
 import { Plus } from "lucide-react";
 import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
@@ -8,6 +9,7 @@ import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { fingerprint } from "../../lib/content-ref";
 import { useAuth } from "../../lib/auth-context";
 import { useReviewInvalidation } from "../../lib/review-queries";
+import { sortThreadsByDocumentOrder } from "../../lib/thread-document-order";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -59,12 +61,23 @@ export default function CommentSidebar({
     setHeadings(found);
   }, [articleRef, reviewActive]);
 
+  // `headings` doubles as a readiness signal that the article DOM is mounted
+  // and queryable — without it, articleRef.current alone wouldn't re-sort.
+  const orderedThreads = useMemo(
+    () => sortThreadsByDocumentOrder(threads, articleRef.current),
+    [threads, headings, articleRef],
+  );
+  const orderedOrphaned = useMemo(
+    () => sortThreadsByDocumentOrder(orphaned, articleRef.current),
+    [orphaned, headings, articleRef],
+  );
+
   if (!reviewActive || !contentRef || displayMode !== "rail") return null;
 
   const headingText = new Map(headings.map((h) => [h.id, h.text]));
   const sectionLabelFor = (slug?: string) => (slug && headingText.get(slug)) || "";
 
-  const renderCard = (t: (typeof threads)[number]) => (
+  const renderCard = (t: (typeof orderedThreads)[number]) => (
     <ThreadCard
       key={t.root?.id}
       thread={t}
@@ -80,7 +93,7 @@ export default function CommentSidebar({
     />
   );
 
-  const hasAny = threads.length > 0 || orphaned.length > 0;
+  const hasAny = orderedThreads.length > 0 || orderedOrphaned.length > 0;
 
   return (
     <aside className="review-comments" aria-label="Review comments">
@@ -112,11 +125,11 @@ export default function CommentSidebar({
           start a thread.
         </p>
       )}
-      <div className="review-thread-list">{threads.map(renderCard)}</div>
-      {orphaned.length > 0 && (
+      <div className="review-thread-list">{orderedThreads.map(renderCard)}</div>
+      {orderedOrphaned.length > 0 && (
         <div className="review-orphaned">
           <p className="review-comments-title">On removed/changed sections</p>
-          <div className="review-thread-list">{orphaned.map(renderCard)}</div>
+          <div className="review-thread-list">{orderedOrphaned.map(renderCard)}</div>
         </div>
       )}
     </aside>

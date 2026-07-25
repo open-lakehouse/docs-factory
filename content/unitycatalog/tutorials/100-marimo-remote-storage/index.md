@@ -4,5 +4,5 @@ summary: Using the obstore integration with Unity Catalog Volumes, we can
 diataxis: tutorial
 project: unitycatalog
 engines: []
-status: blocked
+status: idea
 ---

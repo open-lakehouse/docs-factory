@@ -186,11 +186,19 @@ body {
   flex-direction: column;
 }
 .review-workspace-layout {
+  /* Zed-like pane hairlines: quieter than component/table borders so the
+     workspace reads as one editor rather than three boxed panels. */
+  --workspace-border: color-mix(in srgb, var(--border) 55%, transparent);
   display: flex;
   flex: 1 1 auto;
   min-height: 0;
   flex-direction: column;
 }
+.workspace-pane-left { border-right: 1px solid var(--workspace-border); }
+.workspace-pane-right { border-left: 1px solid var(--workspace-border); }
+.workspace-tab-strip,
+.workspace-section-divider { border-bottom: 1px solid var(--workspace-border); }
+.workspace-tab { border-right: 1px solid var(--workspace-border); }
 
 /* Console navbar — pure black, mono-forward */
 .topbar {
@@ -3351,6 +3359,36 @@ a.review-author:hover span {
 .sel-float:hover {
   filter: brightness(1.08);
 }
+
+/* Heading hover affordance: section comment in review mode, permalink otherwise.
+   Portaled inline after the title, matching conventional markdown anchors. */
+.heading-affordance-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-left: 0.4em;
+  padding: 0;
+  vertical-align: middle;
+  border: none;
+  border-radius: 0.3rem;
+  background: transparent;
+  color: var(--muted-foreground);
+  opacity: 0.7;
+  cursor: pointer;
+  transform: translateY(-0.05em);
+  text-decoration: none;
+}
+.heading-affordance-btn:hover,
+.heading-affordance-btn:focus-visible {
+  color: var(--accent);
+  opacity: 1;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  outline: none;
+  text-decoration: none;
+}
+
 .sel-menu {
   z-index: 60;
   display: flex;

@@ -60,7 +60,7 @@ export default function RightPane({
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
       {/* Active tab's comment view renders here via portal — it follows the
           active tab (see ReviewTab + right-pane-slot). */}
-      <div ref={setSlot} className="border-b empty:hidden" />
+      <div ref={setSlot} className="workspace-section-divider empty:hidden" />
 
       <div className="review-dashboard p-3">
         <p className="px-1 pb-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">

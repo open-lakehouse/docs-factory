@@ -14,6 +14,7 @@ import { type RefObject } from "react";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import InlineReviewSurface from "./InlineReviewSurface";
 import SelectionLayer from "./SelectionLayer";
+import HeadingCommentAffordance from "./HeadingCommentAffordance";
 import SourceFileLauncher from "./SourceFileLauncher";
 
 export default function ReviewSurfaces({
@@ -34,6 +35,7 @@ export default function ReviewSurfaces({
     <>
       <InlineReviewSurface articleRef={articleRef} isActive={isActive} highlightKey={highlightKey} />
       <SelectionLayer articleRef={articleRef} isActive={isActive} />
+      <HeadingCommentAffordance articleRef={articleRef} isActive={isActive} />
       <SourceFileLauncher contentRef={contentRef} articleRef={articleRef} isActive={isActive} />
     </>
   );

@@ -1,11 +1,12 @@
-// Shared state between the SelectionLayer (which captures a text/code selection
-// over the article) and the CommentSidebar (which opens a composer for it). Kept
-// in a tiny context so the page wiring stays a two-component drop-in in the
-// review rail, without threading callbacks through the page.
+// Shared state between the SelectionLayer / HeadingCommentAffordance (which
+// capture a text, code, or section target over the article) and the
+// CommentSidebar / InlineReviewSurface (which open a composer for it). Kept
+// in a tiny context so the page wiring stays a drop-in without threading
+// callbacks through the page.
 import { createContext, useContext, useState, type ReactNode } from "react";
 import type { CapturedSelector } from "../../lib/content-ref";
 
-/** A pending comment target the user picked by selecting text or code. */
+/** A pending comment target the user picked by selecting text/code or a heading. */
 export type PendingAnchor =
   | {
       kind: "prose";
@@ -25,6 +26,11 @@ export type PendingAnchor =
       anchorSlug: string;
       headingText: string;
       quote: string; // the selected code text, for display
+    }
+  | {
+      kind: "section";
+      anchorSlug: string;
+      headingText: string;
     };
 
 interface SelectionState {

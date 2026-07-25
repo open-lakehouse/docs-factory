@@ -71,6 +71,8 @@ export default function InlineReviewSurface({
   }, [articleRef, reviewActive]);
 
   const showProsePending = displayMode === "inline" && pending?.kind === "prose";
+  const showSectionPending = displayMode === "inline" && pending?.kind === "section";
+  const showInlinePending = showProsePending || showSectionPending;
   const selected = selectedThreadId ? threadById(selectedThreadId) : undefined;
   const showProseThread =
     displayMode === "inline" && selected && Boolean(selected.root?.selector?.quote);
@@ -85,6 +87,19 @@ export default function InlineReviewSurface({
 
     function update() {
       let range: Range | null = null;
+      if (showSectionPending && pending?.kind === "section") {
+        const heading = article!.querySelector<HTMLElement>(
+          `#${CSS.escape(pending.anchorSlug)}`,
+        );
+        if (!heading) {
+          setPlacement(null);
+          return;
+        }
+        const rect = heading.getBoundingClientRect();
+        const host = article!.getBoundingClientRect();
+        setPlacement({ top: rect.bottom + 3, left: host.left, width: host.width });
+        return;
+      }
       if (showProsePending && pending?.kind === "prose") {
         range = locateSelector(pending.selector, article!);
       } else if (showProseThread && selected) {
@@ -129,6 +144,7 @@ export default function InlineReviewSurface({
     isActive,
     displayMode,
     showProsePending,
+    showSectionPending,
     showProseThread,
     pending,
     selected,
@@ -139,7 +155,7 @@ export default function InlineReviewSurface({
   if (!isActive || !reviewActive || !contentRef) return null;
 
   const panel =
-    placement && (showProsePending || showProseThread) ? (
+    placement && (showInlinePending || showProseThread) ? (
       <div
         className="review-inline-panel"
         style={{
@@ -151,7 +167,7 @@ export default function InlineReviewSurface({
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {showProsePending && (
+        {showInlinePending && pending && (
           <PendingComposer
             contentRef={contentRef}
             pending={pending}
@@ -163,7 +179,7 @@ export default function InlineReviewSurface({
             compact
           />
         )}
-        {showProseThread && selected && !showProsePending && (
+        {showProseThread && selected && !showInlinePending && (
           <ThreadConversation
             thread={selected}
             sectionLabel={headings.get(selected.root?.anchorSlug ?? "")}

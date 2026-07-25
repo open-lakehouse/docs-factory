@@ -48,8 +48,8 @@ function ResizeHandle({
       className={cn(
         "absolute inset-y-0 z-20 w-1.5 cursor-col-resize transition-colors",
         side === "left" ? "right-0 translate-x-1/2" : "left-0 -translate-x-1/2",
-        "hover:bg-primary/40 focus-visible:bg-primary/60 focus-visible:outline-none",
-        dragging && "bg-primary/60",
+        "hover:bg-primary/15 focus-visible:bg-primary/30 focus-visible:outline-none",
+        dragging && "bg-primary/35",
       )}
     />
   );
@@ -126,7 +126,7 @@ function WorkspaceLayout() {
       style={{ "--left-w": `${left.width}px`, "--right-w": `${right.width}px` } as CSSProperties}
     >
       {/* Left: content tree */}
-      <div className="relative flex min-h-0 flex-col border-r bg-sidebar">
+      <div className="workspace-pane-left relative flex min-h-0 flex-col bg-sidebar">
         <ReviewTree />
         <ResizeHandle
           side="left"
@@ -162,7 +162,7 @@ function WorkspaceLayout() {
         </div>
 
         {/* Right: review pane */}
-        <div className="relative flex min-h-0 flex-col border-l bg-sidebar">
+        <div className="workspace-pane-right relative flex min-h-0 flex-col bg-sidebar">
           <ResizeHandle
             side="right"
             width={right.width}

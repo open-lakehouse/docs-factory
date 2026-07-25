@@ -60,7 +60,7 @@ export default function TabBar() {
       ref={stripRef}
       role="tablist"
       aria-label="Open pages"
-      className="flex shrink-0 items-stretch overflow-x-auto border-b bg-muted/30"
+      className="workspace-tab-strip flex shrink-0 items-stretch overflow-x-auto bg-muted/30"
     >
       {tabs.map((tab, index) => {
         const active = tab.token === activeToken;
@@ -83,7 +83,7 @@ export default function TabBar() {
               onKeyDown(e, index, tab.token);
             }}
             className={cn(
-              "group flex max-w-[16rem] cursor-pointer items-center gap-2 border-r px-3 py-2 text-sm",
+              "workspace-tab group flex max-w-[16rem] cursor-pointer items-center gap-2 px-3 py-2 text-sm",
               active
                 ? "bg-background font-medium text-foreground"
                 : "text-muted-foreground hover:bg-background/60 hover:text-foreground",

@@ -81,7 +81,6 @@ export default function CommentSidebar({
   );
 
   const hasAny = threads.length > 0 || orphaned.length > 0;
-  const showRailPending = pending && (pending.kind === "prose" || pending.kind === "code");
 
   return (
     <aside className="review-comments" aria-label="Review comments">
@@ -96,7 +95,7 @@ export default function CommentSidebar({
           {openCount} open {openCount === 1 ? "thread" : "threads"}
         </p>
       )}
-      {showRailPending && (
+      {pending && (
         <PendingComposer
           contentRef={contentRef}
           pending={pending}
@@ -109,7 +108,8 @@ export default function CommentSidebar({
       )}
       {!hasAny && !pending && (
         <p className="review-empty">
-          No comments yet. Select text or code in the article to start a thread.
+          No comments yet. Hover a section heading or select text or code to
+          start a thread.
         </p>
       )}
       <div className="review-thread-list">{threads.map(renderCard)}</div>

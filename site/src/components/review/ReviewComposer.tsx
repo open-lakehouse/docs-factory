@@ -123,9 +123,15 @@ export default function ReviewComposer({
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         e.preventDefault();
         if (!disabled && !submitting && value.trim()) onSubmit();
+        return;
+      }
+      if (e.key === "Escape" && onCancel) {
+        e.preventDefault();
+        e.stopPropagation();
+        onCancel();
       }
     },
-    [disabled, onSubmit, submitting, value],
+    [disabled, onCancel, onSubmit, submitting, value],
   );
 
   if (inline) {
@@ -165,11 +171,20 @@ export default function ReviewComposer({
           {submitting ? "Posting…" : submitLabel}
         </Button>
         {onCancel && (
-          <Button type="button" variant="secondary" size="sm" onClick={onCancel}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={onCancel}
+            title="Cancel (Esc)"
+          >
             Cancel
           </Button>
         )}
-        <span className="text-xs text-muted-foreground">⌘/Ctrl+Enter to post</span>
+        <span className="text-xs text-muted-foreground">
+          ⌘/Ctrl+Enter to post
+          {onCancel ? " · Esc to cancel" : ""}
+        </span>
       </div>
     </div>
   );

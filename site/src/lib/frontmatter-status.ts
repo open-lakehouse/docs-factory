@@ -14,3 +14,15 @@ export function statusBadgeClass(status: string | undefined): string {
       return "";
   }
 }
+
+/** Extra class for a compact tree-row status dot (always returns a tone class). */
+export function statusDotClass(status: string | undefined): string {
+  switch ((status ?? "").toLowerCase()) {
+    case "ready":
+      return "tree-status-dot-ready";
+    case "idea":
+      return "tree-status-dot-idea";
+    default:
+      return "tree-status-dot-draft";
+  }
+}

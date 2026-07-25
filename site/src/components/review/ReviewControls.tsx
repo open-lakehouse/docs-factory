@@ -13,7 +13,11 @@ import {
 import { ReviewState, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
-import { REVIEW_BADGE_VARIANT, REVIEW_STATE_LABEL } from "../../lib/review-status";
+import {
+  REVIEW_BADGE_VARIANT,
+  REVIEW_STATE_LABEL,
+  reviewStateBadgeClass,
+} from "../../lib/review-status";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -113,8 +117,7 @@ export default function ReviewControls({
       className={cn(
         "review-controls-badge",
         state === ReviewState.NONE && "review-controls-badge--idle",
-        state === ReviewState.APPROVED && "blog-badge-ready",
-        state === ReviewState.CHANGES_REQUESTED && "blog-badge-idea",
+        reviewStateBadgeClass(state),
       )}
     >
       {heading ? stateLabel : inlineStateLabel}

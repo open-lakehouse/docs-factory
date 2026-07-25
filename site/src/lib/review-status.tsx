@@ -8,11 +8,11 @@ import { cn } from "@/lib/utils";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
-// Badge tone per review state: released = solid, approved = subtle ready-green,
-// changes-requested = subtle amber, in-review/none = muted outline/secondary.
+// Badge tone per review state: released = solid, approved = ready-green,
+// changes-requested = amber, in-review = blue, none = muted outline.
 export const REVIEW_BADGE_VARIANT: Record<number, BadgeVariant> = {
   [ReviewState.NONE]: "outline",
-  [ReviewState.IN_REVIEW]: "secondary",
+  [ReviewState.IN_REVIEW]: "outline",
   [ReviewState.CHANGES_REQUESTED]: "outline",
   [ReviewState.APPROVED]: "outline",
   [ReviewState.RELEASED]: "default",
@@ -26,16 +26,42 @@ export const REVIEW_STATE_LABEL: Record<number, string> = {
   [ReviewState.RELEASED]: "released",
 };
 
+/** Extra badge class for a review state tint (ready / idea / in-review). */
+export function reviewStateBadgeClass(state: ReviewState): string {
+  switch (state) {
+    case ReviewState.APPROVED:
+      return "blog-badge-ready";
+    case ReviewState.CHANGES_REQUESTED:
+      return "blog-badge-idea";
+    case ReviewState.IN_REVIEW:
+      return "blog-badge-in-review";
+    default:
+      return "";
+  }
+}
+
+/** Extra class for a compact tree-row review-status dot. */
+export function reviewStateDotClass(state: ReviewState | undefined): string {
+  switch (state ?? ReviewState.NONE) {
+    case ReviewState.IN_REVIEW:
+      return "tree-status-dot-in-review";
+    case ReviewState.CHANGES_REQUESTED:
+      return "tree-status-dot-idea";
+    case ReviewState.APPROVED:
+      return "tree-status-dot-ready";
+    case ReviewState.RELEASED:
+      return "tree-status-dot-released";
+    default:
+      return "tree-status-dot-none";
+  }
+}
+
 /** Colored badge for a review state, matching the doc-page ReviewControls tone. */
 export function ReviewStateBadge({ state }: { state: ReviewState }) {
   return (
     <Badge
       variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"}
-      className={cn(
-        "review-state-badge",
-        state === ReviewState.APPROVED && "blog-badge-ready",
-        state === ReviewState.CHANGES_REQUESTED && "blog-badge-idea",
-      )}
+      className={cn("review-state-badge", reviewStateBadgeClass(state))}
     >
       {REVIEW_STATE_LABEL[state] ?? "unknown"}
     </Badge>

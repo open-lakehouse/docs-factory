@@ -5,6 +5,7 @@ import DocPage from "./pages/DocPage";
 import BlogIndex from "./pages/BlogIndex";
 import BlogPost from "./pages/BlogPost";
 import ReviewDashboard from "./pages/ReviewDashboard";
+import ReviewWorkspace from "./pages/ReviewWorkspace";
 import RevOpsDashboard from "./pages/RevOpsDashboard";
 import DevPersonaSwitcher from "./components/DevPersonaSwitcher";
 
@@ -22,8 +23,12 @@ export default function App() {
         <Route path="/explanation" element={<AxisIndex axis="explanation" />} />
         <Route path="/blog" element={<BlogIndex />} />
 
-        {/* Reviewer-only consolidated dashboard (guarded inside the page). */}
-        <Route path="/review" element={<ReviewDashboard />} />
+        {/* Reviewer-only consolidated review page: the editor-style workspace
+            on desktop, the classic dashboard on narrow screens. The dashboard
+            also stays reachable directly. Both guard reviewer-only access
+            inside the page. */}
+        <Route path="/review" element={<ReviewWorkspace />} />
+        <Route path="/review/dashboard" element={<ReviewDashboard />} />
         {/* Reviewer-only blog pipeline: priority order + target release dates. */}
         <Route path="/review/revops" element={<RevOpsDashboard />} />
 

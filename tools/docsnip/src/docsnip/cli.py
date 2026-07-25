@@ -3,19 +3,20 @@
 Subcommands:
   validate      — check frontmatter on all content pages
   snippetcheck  — verify every snippet fence resolves to a unique source region
-  llmstxt       — (re)generate site-artifacts/<project>.llms.txt
-  generate      — regenerate the generated artifacts (currently just llms.txt)
-  check         — validate + snippetcheck + drift-check generated artifacts (CI entry)
+  check         — validate + snippetcheck (CI entry)
+
+llms.txt generation lives on the SITE side now (site/scripts/build-llmstxt.mjs,
+a build-time step), so it re-uses content-core for content discovery, identity,
+and URL derivation instead of re-implementing them in Python. docsnip is the
+content-contract validator; it no longer emits artifacts.
 """
 
 from __future__ import annotations
 
 import argparse
 import sys
-import tempfile
 from pathlib import Path
 
-from . import llmstxt
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -31,13 +32,6 @@ from .frontmatter import (
 from .scriptmeta import check as check_scripts
 from .snippetcheck import check_blogs, check_content
 
-# Per-project published-site URL base for llms.txt links. Placeholder until the
-# restructured sites' URL scheme is confirmed; the generator is scheme-agnostic.
-URL_BASES = {
-    "delta": "https://delta.io/docs",
-    "unitycatalog": "https://docs.unitycatalog.io",
-}
-
 
 def _repo_root() -> Path:
     # tools/docsnip/src/docsnip/cli.py -> repo root
@@ -49,7 +43,6 @@ def _paths(root: Path | None):
     return {
         "content": root / "content",
         "blogs": root / "blogs",
-        "artifacts": root / "site-artifacts",
         "arch_model": root / "architecture" / "dist" / "model.json",
     }
 
@@ -141,51 +134,9 @@ def cmd_snippetcheck(p) -> int:
     return 0
 
 
-def _write_artifacts(p) -> list[Path]:
-    # The only generated artifacts are the per-project llms.txt. (The former
-    # examples-manifest.json / engine-coverage matrix was dropped — its
-    # language↔engine↔implementation mapping was unsound and nothing consumed
-    # it; see docs/design/build-pipeline.md.)
-    written = []
-    for project, url_base in URL_BASES.items():
-        if (p["content"] / project).is_dir():
-            written.append(
-                llmstxt.write(
-                    project,
-                    p["content"],
-                    url_base,
-                    p["artifacts"] / f"{project}.llms.txt",
-                )
-            )
-    return written
-
-
-def cmd_generate(p) -> int:
-    for path in _write_artifacts(p):
-        print(path)
-    return 0
-
-
 def cmd_check(p) -> int:
-    """CI entry point: validate + snippetcheck + assert artifacts are not stale."""
+    """CI entry point: validate + snippetcheck."""
     rc = cmd_validate(p) or cmd_snippetcheck(p)
-
-    # Drift-check: regenerate into a temp dir and diff against committed artifacts.
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp_art = Path(tmp)
-        tmp_p = dict(p, artifacts=tmp_art)
-        _write_artifacts(tmp_p)
-        for regenerated in tmp_art.iterdir():
-            committed = p["artifacts"] / regenerated.name
-            if not committed.is_file():
-                print(f"missing generated artifact: {committed}", file=sys.stderr)
-                rc = 1
-            elif committed.read_text() != regenerated.read_text():
-                print(
-                    f"stale artifact: {committed} — run `docsnip generate`",
-                    file=sys.stderr,
-                )
-                rc = 1
     if rc == 0:
         print("check OK")
     return rc
@@ -197,13 +148,7 @@ def main(argv: list[str] | None = None) -> int:
         "--root", type=Path, default=None, help="repo root (autodetected)"
     )
     sub = parser.add_subparsers(dest="cmd", required=True)
-    for name in (
-        "validate",
-        "snippetcheck",
-        "llmstxt",
-        "generate",
-        "check",
-    ):
+    for name in ("validate", "snippetcheck", "check"):
         sp = sub.add_parser(name)
         sp.add_argument(
             "content",
@@ -218,8 +163,6 @@ def main(argv: list[str] | None = None) -> int:
     dispatch = {
         "validate": cmd_validate,
         "snippetcheck": cmd_snippetcheck,
-        "llmstxt": cmd_generate,  # alias: the only generated artifact is llms.txt
-        "generate": cmd_generate,
         "check": cmd_check,
     }
     return dispatch[args.cmd](p)

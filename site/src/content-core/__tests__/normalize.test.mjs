@@ -13,11 +13,11 @@ import { createHash } from "node:crypto";
 const serverNormalize = (s) => s.toLowerCase().replace(/\s+/g, " ").trim();
 const clientFingerprint = (s) => s.trim().toLowerCase().replace(/\s+/g, " ");
 const serverHashLine = (line) =>
-  createHash("sha256").update(line.replace(/\s+$/, "")).digest("hex").slice(0, 16);
+  createHash("sha256").update(line.trim()).digest("hex").slice(0, 16);
 
 /** The browser's async SubtleCrypto hashLine, replicated to assert parity. */
 async function browserHashLine(line) {
-  const data = new TextEncoder().encode(line.replace(/\s+$/, ""));
+  const data = new TextEncoder().encode(line.trim());
   const digest = await crypto.subtle.digest("SHA-256", data);
   return [...new Uint8Array(digest)]
     .map((b) => b.toString(16).padStart(2, "0"))
@@ -30,7 +30,16 @@ const SAMPLES = [
   "Read a Delta Table",
   "MixedCASE\twith\ttabs\nand newlines",
   "trailing spaces   ",
+  "    from deltalake import DeltaTable", // leading indentation (dedent case)
 ];
+
+test("hashLine is dedent-invariant (ignores leading indentation)", () => {
+  // The browser hashes the rendered dedented line; the server hashes the full
+  // indented source line. They must produce the same hash.
+  expect(hashLineSync("    from deltalake import DeltaTable")).toBe(
+    hashLineSync("from deltalake import DeltaTable"),
+  );
+});
 
 test("normalizeText matches the server anchor.ts normalize()", () => {
   for (const s of SAMPLES) expect(normalizeText(s)).toBe(serverNormalize(s));

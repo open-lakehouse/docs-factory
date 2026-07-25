@@ -22,8 +22,8 @@ the page inlines via `file=` fences). Four consumers read them:
 
 | Consumer | Reads | Produces |
 |---|---|---|
-| **`docsnip`** (Python, `tools/docsnip/`) | `content/`, `blogs/` | frontmatter/snippet validation; per-project `*.llms.txt` |
-| **Preview site** (`site/`, Vite + React + MDX) | `content/`, `blogs/` | the rendered site (live, via `import.meta.glob`) |
+| **`docsnip`** (Python, `tools/docsnip/`) | `content/`, `blogs/` | frontmatter/snippet validation |
+| **Preview site** (`site/`, Vite + React + MDX) | `content/`, `blogs/` | the rendered site (live, via `import.meta.glob`) + per-project `*.llms.txt` (prebuild → `public/`) |
 | **Version manifest** (`site/scripts/build-version-manifest.mjs`) | `content/`, `blogs/` | `content-versions.json` → the review DB |
 | **`emit/`** (bun) | `blogs/` | flattened drafts for downstream targets |
 
@@ -117,22 +117,25 @@ walk content/ + blogs/  ──►  split frontmatter  ──►  per page:
                                                        ├─ resolveFence*  (fences)
                                                        └─ validate       (Python: vocab + model ids)
                                                              │
-              JS pipeline ──► content-versions.json (the DB contract)
-              Python      ──► *.llms.txt  +  validation report
+              JS pipeline ──► content-versions.json (the DB contract) + *.llms.txt
+              Python      ──► validation report
 ```
 
 **JS is authoritative** for the render-truth parts (fence ranges, heading ids,
-path identity, body/source hashes, normalization). **Python keeps** what is its
-own: frontmatter vocabulary + model-id validation, `explains:` uniqueness, the
-tag registry, the PEP 723 `scriptmeta` reader + the pytest tutorial harness,
-snippet marker-uniqueness checks, and `*.llms.txt` generation. Rewriting docsnip
-or the pytest harness in JS would be high-blast-radius for no correctness gain;
-the two runtimes are instead tied together by `content/vocab.json` and the
+path identity, body/source hashes, normalization) — and now for `*.llms.txt`,
+whose published URLs are derived from the canonical `docIdentity`/`parseDocPath`
+rather than a Python re-implementation. **Python keeps** what is its own:
+frontmatter vocabulary + model-id validation, `explains:` uniqueness, the tag
+registry, the PEP 723 `scriptmeta` reader + the pytest tutorial harness, and
+snippet marker-uniqueness checks. Rewriting the rest of docsnip or the pytest
+harness in JS would be high-blast-radius for no correctness gain; the two
+runtimes are instead tied together by `content/vocab.json` and the
 cross-language drift tests (§8).
 
-Invocation points are unchanged externally: `site/package.json`'s `prebuild`
-runs the manifest; `just version-manifest` / `register-versions` / `generate` /
-`check` behave as before.
+Invocation points: `site/package.json`'s `prebuild` runs the manifest **and**
+the llms.txt generator (`site/scripts/build-llmstxt.mjs` → `site/public/`, which
+Vite copies into `dist/`); `just version-manifest` / `register-versions` /
+`llmstxt` / `check` behave as before.
 
 ## 7. The review-DB contract
 
@@ -203,5 +206,7 @@ the two frontmatter splitters, among others).
 - Extract `content-core` into a standalone package if a consumer outside `site/`
   ever needs it (today all consumers reach it by relative import, as `emit/`
   already does).
-- Whether to eventually move `*.llms.txt` generation into the JS pipeline too, or
-  keep it in docsnip alongside the model-id validation it already does.
+- ~~Whether to eventually move `*.llms.txt` generation into the JS pipeline~~ —
+  done: it is a site prebuild step (`site/scripts/build-llmstxt.mjs`) reusing
+  `content-core` identity, so the published-URL logic exists once. docsnip is now
+  purely the content-contract validator.

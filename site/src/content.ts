@@ -20,7 +20,6 @@ export interface Frontmatter {
   project?: string;
   summary?: string;
   references?: string[];
-  engines?: string[];
   /** The single C4 element id this page is the canonical explanation of.
    * Binds the page to that node (see graph.ts effectiveRefIds + the ModelContext
    * panel on the doc page); replaces the old model-side `explainDoc` metadata. */

@@ -1,7 +1,7 @@
 [project]
 name = "docsnip"
 version = "0.1.0"
-description = "docs-factory content tooling: frontmatter validation, snippet-marker checking, example manifest + llms.txt generation"
+description = "docs-factory content tooling: frontmatter validation and snippet-marker checking"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

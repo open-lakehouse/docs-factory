@@ -46,6 +46,9 @@ node_modules/
 
 # Generated site artifacts (built locally / in CI; not committed).
 site/src/generated/content-versions.json
+# Per-project llms.txt, generated into public/ by scripts/build-llmstxt.mjs at
+# prebuild and copied verbatim into dist/ by Vite.
+site/public/*.llms.txt
 
 # OS
 .DS_Store

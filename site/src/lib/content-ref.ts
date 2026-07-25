@@ -43,12 +43,15 @@ export { normalizeText, fingerprint };
 
 /**
  * Hash of a source line, matching content-core hashLineSync() / server anchor.ts
- * hashLine(): sha256 of the line with trailing whitespace trimmed, first 16 hex
- * chars. Kept as a browser-only async SubtleCrypto variant (Node crypto is not
+ * hashLine(): sha256 of the line with BOTH leading and trailing whitespace
+ * trimmed, first 16 hex chars. Trimming leading whitespace makes the hash
+ * dedent-invariant — this side hashes the rendered (dedented) line, the server
+ * hashes the full indented source line, so both must ignore indentation to
+ * agree. Kept as a browser-only async SubtleCrypto variant (Node crypto is not
  * available in the browser); a drift test asserts it agrees with hashLineSync.
  */
 export async function hashLine(line: string): Promise<string> {
-  const data = new TextEncoder().encode(line.replace(/\s+$/, ""));
+  const data = new TextEncoder().encode(line.trim());
   const digest = await crypto.subtle.digest("SHA-256", data);
   return [...new Uint8Array(digest)]
     .map((b) => b.toString(16).padStart(2, "0"))

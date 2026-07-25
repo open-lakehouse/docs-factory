@@ -1,3 +1,0 @@
-# Unity Catalog documentation
-
-> Documentation for Unity Catalog, the open catalog for the lakehouse.

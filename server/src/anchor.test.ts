@@ -30,6 +30,12 @@ describe("hashLine", () => {
     expect(hashLine("df.write   ")).toBe(hashLine("df.write"));
     expect(hashLine("a")).not.toBe(hashLine("b"));
   });
+  test("ignores leading indentation (dedent-invariant)", () => {
+    // The browser hashes the rendered dedented line; this side hashes the full
+    // indented source line. Both must agree so indented snippet regions
+    // re-anchor by line-hash.
+    expect(hashLine("    df = spark.read")).toBe(hashLine("df = spark.read"));
+  });
 });
 
 describe("findQuote", () => {
@@ -191,6 +197,21 @@ describe("reanchorCodeThreads (code)", () => {
     expect(orphaned.updates[0].sql).toContain("code_line");
     // moved down by one line: original index 2 (0-based) → now index 3 → line 4
     expect(orphaned.updates[0].values).toContain(4);
+  });
+
+  test("tier 2: browser-captured dedented hash matches indented source line", async () => {
+    // Regression: the browser hashes the rendered (dedented) line while the
+    // source keeps its indentation. A dedent-invariant hashLine must still
+    // re-anchor by line-hash instead of orphaning the comment.
+    const orphaned = await runCode(
+      [{ id: "4", orphaned: false, code_path: "snippets/x.py", code_region: "", code_line_hash: hashLine("df = spark.read") }],
+      [], // no regions
+      [{ path: "snippets/x.py", text: fileText, fileHash: "h1" }],
+    );
+    expect(orphaned.count).toBe(0);
+    expect(orphaned.updates[0].sql).toContain("code_line");
+    // "    df = spark.read" is index 2 (0-based) → line 3
+    expect(orphaned.updates[0].values).toContain(3);
   });
 
   test("tier 3: line deleted → orphaned (kept), counted", async () => {

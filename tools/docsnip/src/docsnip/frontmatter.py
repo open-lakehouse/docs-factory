@@ -1,9 +1,9 @@
 """Parse and validate YAML frontmatter on content pages.
 
 Frontmatter is the machine-readable contract every ``content/**/*.md`` page
-carries. It drives the generated llms.txt and example manifest, and its
-controlled vocabularies are validated in CI so pages stay consistent and
-agent-discoverable.
+carries. It drives the site build (the generated llms.txt is derived from it)
+and its controlled vocabularies are validated in CI so pages stay consistent
+and agent-discoverable.
 """
 
 from __future__ import annotations
@@ -131,6 +131,18 @@ class PageValidation:
     coverage_gaps: list[str] = dataclasses.field(default_factory=list)
 
 
+# Frontmatter block: a leading ``---`` line, the YAML body, then a CLOSING
+# ``---`` that must be on its OWN line (newline before it, newline or EOF
+# after). This is the SAME contract as the site's canonical JS splitter
+# (site/src/content-core/frontmatter.mjs ``splitFrontmatter``): line-anchored
+# ``---`` delimiters and CRLF tolerance. A plain ``partition("\n---")`` would
+# instead close on ``\n---`` anywhere (``\n----``, ``\n---foo``, mid-value),
+# diverging from JS and producing a different body/contentHash for such pages —
+# the cross-language drift test guards the corpus, but matching the regex here
+# closes the gap by construction rather than relying on the corpus exercising it.
+_FRONTMATTER_RE = re.compile(r"^---\r?\n([\s\S]*?)\r?\n---\r?\n?")
+
+
 def parse(path: Path) -> Page:
     """Parse a Markdown file into frontmatter + body.
 
@@ -140,11 +152,11 @@ def parse(path: Path) -> Page:
     text = path.read_text()
     if not text.startswith("---"):
         raise ValueError(f"{path}: missing frontmatter (must start with '---')")
-    _, _, rest = text.partition("---\n")
-    fm_text, sep, body = rest.partition("\n---")
-    if not sep:
+    match = _FRONTMATTER_RE.match(text)
+    if match is None:
         raise ValueError(f"{path}: unterminated frontmatter block")
-    meta = yaml.safe_load(fm_text) or {}
+    meta = yaml.safe_load(match.group(1)) or {}
+    body = text[match.end() :]
     return Page(path=path, meta=meta, body=body.lstrip("\n"))
 
 

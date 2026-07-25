@@ -90,7 +90,7 @@ jobs:
       # (a missing model silently skips id validation — a false pass).
       - name: Export architecture model
         run: cd architecture && bun install --frozen-lockfile && bun run model
-      - name: Validate frontmatter, snippets, and generated artifacts
+      - name: Validate frontmatter and snippets
         run: uv run docsnip check
       # content-core is the shared parsing authority (render plugin + version
       # manifest + site libs). Its drift tests assert the fence/slug/identity/

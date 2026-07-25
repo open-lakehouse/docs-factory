@@ -119,13 +119,13 @@ test:
 test-services:
     uv run --group test-services pytest -m "needs_docker or needs_uc_server"
 
-# Validate frontmatter, snippets, and site-artifact freshness (CI gate).
+# Validate frontmatter and snippets (CI gate).
 check:
     uv run docsnip check
 
-# Regenerate site-artifacts/ (per-project llms.txt). Run after changing content.
-generate:
-    uv run docsnip generate
+# Regenerate per-project llms.txt into site/public/ (also runs at site prebuild).
+llmstxt: _site-deps
+    cd site && node scripts/build-llmstxt.mjs
 
 # Lint + type-check the Python workspace.
 lint:

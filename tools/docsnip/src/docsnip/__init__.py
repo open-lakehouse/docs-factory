@@ -1,3 +1,3 @@
-"""docs-factory content tooling: frontmatter, snippet checks, manifest, llms.txt."""
+"""docs-factory content tooling: frontmatter validation and snippet checks."""
 
 __version__ = "0.1.0"

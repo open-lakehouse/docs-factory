@@ -51,8 +51,10 @@ flowchart LR
 ```
 
 The site reads `dist/model.json` live (via the `likec4:single-project` Vite plugin
-over `architecture/model`) to drive `ui`; the only generated artifact is the
-per-project `*.llms.txt`. (The former `examples-manifest.json` — an engine/coverage
+over `architecture/model`) to drive `ui`; the only generated content artifact is the
+per-project `*.llms.txt`, now emitted by the site build
+([`site/scripts/build-llmstxt.mjs`](../../site/scripts/build-llmstxt.mjs)) into
+`site/public/`. (The former `examples-manifest.json` — an engine/coverage
 matrix nothing consumed — was removed; see [`build-pipeline.md`](./build-pipeline.md) §10.)
 
 ### 1.1 Tags gain optional structure (backward-compatible)
@@ -135,7 +137,7 @@ derives, per element:
   (frontmatter `references:` ∪ its tags' `element:` ids) include this element. This
   drives the "Referenced by" list on each `/explain/<id>` page.
 
-`docsnip generate` emits only the per-project `*.llms.txt`; no `graph.json`,
+The site build emits only the per-project `*.llms.txt`; no `graph.json`,
 `examples-manifest.json`, or other join file is written.
 
 ## 3. Validation & coverage (tiered gate)
@@ -226,10 +228,10 @@ The same join makes the site and the domain legible to machines. Agents are
 first-class consumers — the estate is itself about agentic workloads.
 
 - **Model-aware `llms.txt` / `llms-full.txt`.** The generator
-  ([`llmstxt.py`](../../tools/docsnip/src/docsnip/llmstxt.py)) organizes the index by
+  ([`build-llmstxt.mjs`](../../site/scripts/build-llmstxt.mjs)) organizes the index by
   capability/specification and carries element descriptions, external expert links,
   maturity tags, and typed cross-references — the "understand the domain at large"
-  artifact and the committed machine surface.
+  artifact and the published machine surface.
 - **Structured grounding / retrieval.** The model's typed nodes and edges give agents
   *structured* retrieval, not just embedding similarity: a question resolves to a
   capability + its `canonicalDoc` + the specs and implementations that realize it +

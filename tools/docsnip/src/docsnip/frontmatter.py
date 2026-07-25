@@ -1,9 +1,9 @@
 """Parse and validate YAML frontmatter on content pages.
 
 Frontmatter is the machine-readable contract every ``content/**/*.md`` page
-carries. It drives the generated llms.txt and example manifest, and its
-controlled vocabularies are validated in CI so pages stay consistent and
-agent-discoverable.
+carries. It drives the site build (the generated llms.txt is derived from it)
+and its controlled vocabularies are validated in CI so pages stay consistent
+and agent-discoverable.
 """
 
 from __future__ import annotations

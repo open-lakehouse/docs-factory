@@ -199,6 +199,37 @@ body {
 .workspace-tab-strip,
 .workspace-section-divider { border-bottom: 1px solid var(--workspace-border); }
 .workspace-tab { border-right: 1px solid var(--workspace-border); }
+.workspace-pane-collapse-right,
+.workspace-pane-expand-right {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0.3rem;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.workspace-pane-collapse-right:hover,
+.workspace-pane-collapse-right:focus-visible,
+.workspace-pane-expand-right:hover,
+.workspace-pane-expand-right:focus-visible {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  outline: none;
+}
+.workspace-pane-expand-right {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.45rem;
+  z-index: 25;
+  border-color: var(--workspace-border);
+  background: var(--sidebar);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
 
 /* Per-tab metadata + review chrome: flex sibling above the article scroll pane. */
 .review-tab-chrome {
@@ -236,6 +267,11 @@ body {
   align-items: center;
   gap: 0.55rem 0.85rem;
   margin-left: auto;
+}
+.review-tab-chrome .review-controls-badge--idle {
+  border-color: var(--workspace-border);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  color: var(--muted-foreground);
 }
 .review-tab-chrome .request-review-control {
   display: inline-flex;

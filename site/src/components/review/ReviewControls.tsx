@@ -106,9 +106,18 @@ export default function ReviewControls({
   const busy = transition.isPending || release.isPending || reopen.isPending;
   const actions = NEXT[state] ?? [];
   const stateLabel = REVIEW_STATE_LABEL[state] ?? "unknown";
+  const inlineStateLabel = state === ReviewState.NONE ? "not started" : stateLabel;
   const badge = (
-    <Badge variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"} className="review-controls-badge">
-      {heading ? stateLabel : `review: ${stateLabel}`}
+    <Badge
+      variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"}
+      className={cn(
+        "review-controls-badge",
+        state === ReviewState.NONE && "review-controls-badge--idle",
+        state === ReviewState.APPROVED && "blog-badge-ready",
+        state === ReviewState.CHANGES_REQUESTED && "blog-badge-idea",
+      )}
+    >
+      {heading ? stateLabel : inlineStateLabel}
     </Badge>
   );
 

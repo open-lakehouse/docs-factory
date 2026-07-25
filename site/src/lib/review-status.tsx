@@ -4,16 +4,17 @@
 // identically — one source of truth for "released" vs "in review" styling.
 import { ReviewState, Requirement, RequestStatus } from "../gen/docs_factory/review/v1/messages_pb";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
-// Badge tone per review state: released = solid, approved = default accent,
-// changes-requested = destructive, in-review/none = muted outline/secondary.
+// Badge tone per review state: released = solid, approved = subtle ready-green,
+// changes-requested = subtle amber, in-review/none = muted outline/secondary.
 export const REVIEW_BADGE_VARIANT: Record<number, BadgeVariant> = {
   [ReviewState.NONE]: "outline",
   [ReviewState.IN_REVIEW]: "secondary",
-  [ReviewState.CHANGES_REQUESTED]: "destructive",
-  [ReviewState.APPROVED]: "default",
+  [ReviewState.CHANGES_REQUESTED]: "outline",
+  [ReviewState.APPROVED]: "outline",
   [ReviewState.RELEASED]: "default",
 };
 
@@ -28,7 +29,14 @@ export const REVIEW_STATE_LABEL: Record<number, string> = {
 /** Colored badge for a review state, matching the doc-page ReviewControls tone. */
 export function ReviewStateBadge({ state }: { state: ReviewState }) {
   return (
-    <Badge variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"} className="review-state-badge">
+    <Badge
+      variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"}
+      className={cn(
+        "review-state-badge",
+        state === ReviewState.APPROVED && "blog-badge-ready",
+        state === ReviewState.CHANGES_REQUESTED && "blog-badge-idea",
+      )}
+    >
       {REVIEW_STATE_LABEL[state] ?? "unknown"}
     </Badge>
   );

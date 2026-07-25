@@ -6,6 +6,7 @@
 //   2. A portal slot the ACTIVE tab fills with its own comment view (Phase 2).
 //      The slot lives here; the active ReviewTab renders into it from inside its
 //      ReviewProvider so the comments follow the active tab for free.
+import { PanelRightClose } from "lucide-react";
 import type { ContentRef, RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { ReviewRequestBadge, ReviewStateBadge } from "../../../lib/review-status";
 import { useReviewInbox } from "../../../lib/review-inbox";
@@ -42,8 +43,12 @@ function OpenRow({
 
 export default function RightPane({
   setSlot,
+  onCollapse,
+  collapseDisabled = false,
 }: {
   setSlot: (el: HTMLDivElement | null) => void;
+  onCollapse?: () => void;
+  collapseDisabled?: boolean;
 }) {
   const { openTab } = useWorkspaceTabs();
   const { pending, recent, toMe } = useReviewInbox();
@@ -63,9 +68,23 @@ export default function RightPane({
       <div ref={setSlot} className="workspace-section-divider empty:hidden" />
 
       <div className="review-dashboard p-3">
-        <p className="px-1 pb-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
-          Inbox
-        </p>
+        <div className="mb-1 flex items-center justify-between gap-2 px-1">
+          <p className="font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
+            Inbox
+          </p>
+          {onCollapse && (
+            <button
+              type="button"
+              className="workspace-pane-collapse-right"
+              aria-label="Hide inbox"
+              title="Hide inbox"
+              onClick={onCollapse}
+              tabIndex={collapseDisabled ? -1 : 0}
+            >
+              <PanelRightClose className="size-3.5" aria-hidden />
+            </button>
+          )}
+        </div>
         <section className="review-dash-section">
           <h2>Pending review</h2>
           {pending.length === 0 ? (

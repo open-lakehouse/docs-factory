@@ -20,14 +20,19 @@ export default function ReviewSurfaces({
   contentRef,
   articleRef,
   isActive = true,
+  highlightKey,
 }: {
   contentRef: ContentRef;
   articleRef: RefObject<HTMLElement | null>;
   isActive?: boolean;
+  /** Editor workspace: a per-tab key so each tab's quote highlights register
+   * under their own names (defense-in-depth against the document-global CSS
+   * Custom Highlight registry). Omitted by the single-page routes. */
+  highlightKey?: string;
 }) {
   return (
     <>
-      <InlineReviewSurface articleRef={articleRef} isActive={isActive} />
+      <InlineReviewSurface articleRef={articleRef} isActive={isActive} highlightKey={highlightKey} />
       <SelectionLayer articleRef={articleRef} isActive={isActive} />
       <SourceFileLauncher contentRef={contentRef} articleRef={articleRef} isActive={isActive} />
     </>

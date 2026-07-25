@@ -6,6 +6,7 @@ import {
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { scrollToThreadContext } from "../../lib/scroll-to-context";
+import { useScrollContainer } from "./scroll-container-context";
 import { cn } from "@/lib/utils";
 import ThreadConversation from "./ThreadConversation";
 
@@ -35,6 +36,7 @@ export default function ThreadCard({
   onChange,
 }: ThreadCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
+  const scrollContainer = useScrollContainer();
 
   useEffect(() => {
     if (selected) cardRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -44,7 +46,9 @@ export default function ThreadCard({
     onSelect();
     const article = articleRef.current;
     if (!article) return;
-    scrollToThreadContext(thread, article);
+    // In the workspace the article scrolls inside its middle pane, not the
+    // window; useScrollContainer resolves to that pane (window on /docs, /blog).
+    scrollToThreadContext(thread, article, scrollContainer);
   }
 
   const sel = thread.root?.selector;

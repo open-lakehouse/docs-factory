@@ -151,7 +151,12 @@ function WorkspaceLayout() {
             </div>
           ) : (
             tabs.map((tab) => (
-              <ReviewTab key={tab.token} contentRef={tab.ref} isActive={tab.token === activeToken} />
+              <ReviewTab
+                key={tab.token}
+                token={tab.token}
+                contentRef={tab.ref}
+                isActive={tab.token === activeToken}
+              />
             ))
           )}
         </div>

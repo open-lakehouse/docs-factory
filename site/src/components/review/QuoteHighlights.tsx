@@ -10,9 +10,7 @@
 import { useEffect, type RefObject } from "react";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { locateSelector } from "../../lib/content-ref";
-
-const HIGHLIGHT_ALL = "review-quote";
-const HIGHLIGHT_FOCUS = "review-quote-focus";
+import { ensureHighlightStyle, highlightNames } from "./highlight-style";
 
 function resolveRange(thread: Thread, article: HTMLElement): Range | null {
   const sel = thread.root?.selector;
@@ -40,15 +38,25 @@ export default function QuoteHighlights({
   threads,
   focusedThreadId,
   onSelectThread,
+  highlightKey,
 }: {
   articleRef: RefObject<HTMLElement | null>;
   threads: Thread[];
   focusedThreadId?: string | null;
   onSelectThread?: (id: string) => void;
+  /** Editor workspace: a per-tab key so each tab paints under its own highlight
+   * names (review-quote-<key>), avoiding a tab-switch delete/set race on the
+   * document-global registry. The single-page routes omit it and use the shared
+   * static names. */
+  highlightKey?: string;
 }) {
   useEffect(() => {
     const article = articleRef.current;
     if (!article || typeof Highlight === "undefined" || !("highlights" in CSS)) return;
+
+    // Keyed tabs need a matching ::highlight() rule injected for their names.
+    ensureHighlightStyle(highlightKey);
+    const { all: HIGHLIGHT_ALL, focus: HIGHLIGHT_FOCUS } = highlightNames(highlightKey);
 
     const allRanges: Range[] = [];
     const focusRanges: Range[] = [];
@@ -88,7 +96,7 @@ export default function QuoteHighlights({
       CSS.highlights.delete(HIGHLIGHT_ALL);
       CSS.highlights.delete(HIGHLIGHT_FOCUS);
     };
-  }, [articleRef, threads, focusedThreadId, onSelectThread]);
+  }, [articleRef, threads, focusedThreadId, onSelectThread, highlightKey]);
 
   return null;
 }

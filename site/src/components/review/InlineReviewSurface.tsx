@@ -30,12 +30,15 @@ function unionRect(range: Range): DOMRect | null {
 export default function InlineReviewSurface({
   articleRef,
   isActive = true,
+  highlightKey,
 }: {
   articleRef: RefObject<HTMLElement | null>;
   /** In the editor workspace only the active tab may run the DOM-global inline
    * surface (fixed portals, CSS highlights). Defaults to true for the
    * single-page routes, which always have exactly one surface mounted. */
   isActive?: boolean;
+  /** Per-tab quote-highlight namespace, passed through to QuoteHighlights. */
+  highlightKey?: string;
 }) {
   const { reviewActive } = useAuth();
   const {
@@ -179,6 +182,7 @@ export default function InlineReviewSurface({
         threads={threads}
         focusedThreadId={activeThreadId}
         onSelectThread={selectThread}
+        highlightKey={highlightKey}
       />
       {panel && createPortal(panel, document.body)}
     </>

@@ -7,7 +7,7 @@ tags: [governance, unity-catalog, datafusion, lakehouse, rust]
 series: Building the Open Lakehouse
 series_order: 2
 author: Robert Pack
-target: company blog
+target: openlakehouse
 ---
 
 # Brief: Fine-grained access control is a cross-service contract
@@ -114,7 +114,7 @@ map your stack onto the author/serve/resolve/enforce contract.
 
 ## 8. Publishing target / format
 
-Company blog. Post 2 of **Building the Open Lakehouse** (`SERIES.md`) — open with
+openlakehouse. Post 2 of **Building the Open Lakehouse** (`SERIES.md`) — open with
 a one-line "where this fits / previously" and link post 1; must stand alone.
 Design-doc register: a plan-rewrite architecture diagram (D2) is the key asset;
 code excerpts are illustrative and must be public-anchored (Cedar, DataFusion

@@ -7,7 +7,7 @@ tags: [unity-catalog, delta-lake, lakehouse]
 series:
 series_order:
 author: Robert Pack
-target: company blog
+target: unitycatalog
 ---
 
 **TL;DR**

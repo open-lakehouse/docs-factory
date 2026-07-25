@@ -7,7 +7,7 @@ tags: [governance, lakehouse, agents, unity-catalog, delta-lake, data-lineage]
 series: Building the Open Lakehouse
 series_order: 1
 author: Robert Pack
-target: company blog
+target: openlakehouse
 ---
 
 # Trust in your Lakehouse

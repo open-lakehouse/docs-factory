@@ -5,7 +5,7 @@ status: draft
 date: 2026-07-03
 tags: [unity-catalog, governance, lakehouse, devrel]
 author: Robert Pack
-target: company blog
+target: unitycatalog
 ---
 
 <!--
@@ -133,7 +133,7 @@ platform. Secondary: read the Trust post for the governance theory behind vendin
 
 ## 8. Publishing target / format
 
-Company blog. Constraints: a concept/how-to post (fact/command-dense), so the §6/§9
+unitycatalog. Constraints: a concept/how-to post (fact/command-dense), so the §6/§9
 verification matters most; front matter portable per §3; the Spark/CLI snippets want
 `snippets/` extraction once corrected so they're runnable and version-pinned. TD Das
 flagged SEO: the title/subtitle must contain the real search terms ("External

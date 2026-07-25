@@ -6,7 +6,7 @@ date: 2026-07-02
 tags: [governance, lakehouse, agents, unity-catalog, delta-lake, data-lineage]
 series: Building the Open Lakehouse
 series_order: 1
-target: company blog
+target: unitycatalog
 ---
 
 # Brief: Trust in your Open Lakehouse
@@ -116,7 +116,7 @@ it as the first concrete step, since this is the series foundation.
 
 ## 8. Publishing target / format
 
-Company blog. Foundation post for a series ("Building the Open Lakehouse" — this
+unitycatalog. Foundation post for a series ("Building the Open Lakehouse" — this
 post anchors the arc's governance/trust thread); subsequent posts go deeper into
 the stack's architecture and the DAIS demos continue the storyline. Needs:
 final CTA; author/date/status metadata (the doc's header table was empty).

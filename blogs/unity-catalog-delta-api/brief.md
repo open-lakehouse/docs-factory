@@ -7,7 +7,7 @@ tags: [unity-catalog, delta-lake, lakehouse]
 series:
 series_order:
 author: Robert Pack
-target: company blog
+target: unitycatalog
 ---
 
 <!--
@@ -218,7 +218,7 @@ the sibling `unity-catalog-storage` / trust posts for the governance context.
 
 ## 8. Publishing target / format
 
-Company blog. It's a design-argument + how-to hybrid, so it's dense with request
+unitycatalog. It's a design-argument + how-to hybrid, so it's dense with request
 bodies and commands → §9 verification is the gating work. Front matter portable
 per §3. Runnable examples follow the repo's **Runnable examples** convention
 (CONVENTIONS §5): Python via `uv` + PEP 723 inline deps (`uv run <file>.py`),

@@ -29,8 +29,13 @@ function unionRect(range: Range): DOMRect | null {
 
 export default function InlineReviewSurface({
   articleRef,
+  isActive = true,
 }: {
   articleRef: RefObject<HTMLElement | null>;
+  /** In the editor workspace only the active tab may run the DOM-global inline
+   * surface (fixed portals, CSS highlights). Defaults to true for the
+   * single-page routes, which always have exactly one surface mounted. */
+  isActive?: boolean;
 }) {
   const { reviewActive } = useAuth();
   const {
@@ -68,7 +73,7 @@ export default function InlineReviewSurface({
     displayMode === "inline" && selected && Boolean(selected.root?.selector?.quote);
 
   useEffect(() => {
-    if (displayMode !== "inline") {
+    if (!isActive || displayMode !== "inline") {
       setPlacement(null);
       return;
     }
@@ -85,11 +90,15 @@ export default function InlineReviewSurface({
           setPlacement(null);
           return;
         }
-        const section =
+        // Scope to the article root, not `document`: the editor workspace
+        // mounts several tabs sharing heading ids, so a document-wide lookup
+        // could resolve the wrong tab's heading.
+        const heading =
           (selected.root?.anchorSlug &&
-            (document.getElementById(selected.root.anchorSlug)?.parentElement ?? null)) ||
-          article;
-        range = locateSelector(sel, section instanceof HTMLElement ? section : article!);
+            article!.querySelector<HTMLElement>(`#${CSS.escape(selected.root.anchorSlug)}`)) ||
+          null;
+        const section = heading?.parentElement ?? article!;
+        range = locateSelector(sel, section);
       } else {
         setPlacement(null);
         return;
@@ -114,6 +123,7 @@ export default function InlineReviewSurface({
     };
   }, [
     articleRef,
+    isActive,
     displayMode,
     showProsePending,
     showProseThread,
@@ -123,7 +133,7 @@ export default function InlineReviewSurface({
     selectNonce,
   ]);
 
-  if (!reviewActive || !contentRef) return null;
+  if (!isActive || !reviewActive || !contentRef) return null;
 
   const panel =
     placement && (showProsePending || showProseThread) ? (

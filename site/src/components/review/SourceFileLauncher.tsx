@@ -36,15 +36,19 @@ function codeChrome(el: HTMLElement): HTMLElement | null {
 export default function SourceFileLauncher({
   contentRef,
   articleRef,
+  isActive = true,
 }: {
   contentRef: ContentRef;
   articleRef: RefObject<HTMLElement | null>;
+  /** Editor workspace: only the active tab injects the "Review source" buttons.
+   * Defaults to true for the single-page routes. */
+  isActive?: boolean;
 }) {
   const { reviewActive } = useAuth();
   const [open, setOpen] = useState<OpenTarget | null>(null);
 
   useEffect(() => {
-    if (!reviewActive) return;
+    if (!isActive || !reviewActive) return;
     const article = articleRef.current;
     if (!article) return;
 
@@ -70,9 +74,9 @@ export default function SourceFileLauncher({
     return () => {
       for (const b of added) b.remove();
     };
-  }, [articleRef, reviewActive]);
+  }, [articleRef, isActive, reviewActive]);
 
-  if (!reviewActive || !open) return null;
+  if (!isActive || !reviewActive || !open) return null;
   return (
     <SourceFilePane
       contentRef={contentRef}

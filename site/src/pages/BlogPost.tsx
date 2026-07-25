@@ -1,9 +1,7 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import BlogAside from "../components/layout/BlogAside";
-import InlineReviewSurface from "../components/review/InlineReviewSurface";
-import SelectionLayer from "../components/review/SelectionLayer";
-import SourceFileLauncher from "../components/review/SourceFileLauncher";
+import ReviewSurfaces from "../components/review/ReviewSurfaces";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
 import { blogRef } from "../lib/content-ref";
@@ -86,9 +84,7 @@ export default function BlogPost() {
             />
           </div>
         </div>
-        <InlineReviewSurface articleRef={articleRef} />
-        <SelectionLayer articleRef={articleRef} />
-        <SourceFileLauncher contentRef={blogRef(slug)} articleRef={articleRef} />
+        <ReviewSurfaces contentRef={blogRef(slug)} articleRef={articleRef} />
       </div>
       </ReviewProvider>
       </SelectionProvider>

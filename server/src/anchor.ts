@@ -23,21 +23,26 @@
 import { createHash } from "node:crypto";
 import type { Sql } from "./db.js";
 
+// normalize()/hashLine() are the SAME contract as content-core's normalizeText/
+// hashLineSync (site/src/content-core/normalize.mjs) and the browser client's
+// content-ref.ts. The server keeps its own tiny copies rather than reaching
+// across the package boundary into site/ (which would couple the Neon Function
+// bundle to the site tree); a drift test in content-core asserts all copies
+// agree, so the "must match" is enforced by CI, not by comment. See
+// docs/design/build-pipeline.md.
+export function normalize(s: string): string {
+  return s.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+export function hashLine(line: string): string {
+  return createHash("sha256").update(line.replace(/\s+$/, "")).digest("hex").slice(0, 16);
+}
+
 export interface NewSection {
   anchorSlug: string;
   fingerprint: string;
   /** Normalized plain-text body of the section (heading excluded). */
   text: string;
-}
-
-/** Collapse whitespace + lowercase — must match the client/manifest normalize(). */
-export function normalize(s: string): string {
-  return s.toLowerCase().replace(/\s+/g, " ").trim();
-}
-
-/** Hash of a source line, trailing whitespace trimmed (matches capture time). */
-export function hashLine(line: string): string {
-  return createHash("sha256").update(line.replace(/\s+$/, "")).digest("hex").slice(0, 16);
 }
 
 /**

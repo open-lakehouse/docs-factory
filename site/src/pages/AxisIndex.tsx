@@ -27,8 +27,6 @@ import {
 } from "../graph";
 import { explainEntries, kindLabel } from "../explain";
 import { hasExplanationPage } from "../explain-bindings";
-import { ENGINE_SLUGS } from "../engine-map";
-import { tagLabel } from "../tags";
 import {
   elementInScope,
   filterByScope,
@@ -177,12 +175,9 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
   const activeRefs = [
     ...new Set(searchParams.getAll("ref").map((r) => r.trim()).filter(Boolean)),
   ];
-  const activeEngines = [
-    ...new Set(searchParams.getAll("engine").map((e) => e.trim()).filter(Boolean)),
-  ];
-  const faceted = activeRefs.length > 0 || activeEngines.length > 0;
+  const faceted = activeRefs.length > 0;
 
-  const setFacet = (key: "ref" | "engine", values: string[]) => {
+  const setFacet = (key: "ref", values: string[]) => {
     const next = new URLSearchParams(searchParams);
     next.delete(key);
     for (const v of values) next.append(key, v);
@@ -190,15 +185,9 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
   };
   const toggleRef = (id: string) =>
     setFacet("ref", activeRefs.includes(id) ? activeRefs.filter((r) => r !== id) : [...activeRefs, id]);
-  const toggleEngine = (slug: string) =>
-    setFacet(
-      "engine",
-      activeEngines.includes(slug) ? activeEngines.filter((e) => e !== slug) : [...activeEngines, slug],
-    );
   const clearAll = () => {
     const next = new URLSearchParams(searchParams);
     next.delete("ref");
-    next.delete("engine");
     setSearchParams(next, { replace: true });
   };
 
@@ -208,7 +197,7 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
   const scoped = filterByScope(pages, scopeId);
   const bucketed = bucketByDiataxis(scoped)[axis];
   const filtered = vis
-    .filterVisible(pagesByRefs(bucketed, activeRefs, activeEngines))
+    .filterVisible(pagesByRefs(bucketed, activeRefs))
     .slice()
     .sort((a, b) =>
       (a.frontmatter.title ?? a.slug).localeCompare(b.frontmatter.title ?? b.slug),
@@ -256,20 +245,6 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
                       href: c.href ?? c.externalUrl,
                       externalUrl: c.href ? c.externalUrl : null,
                     }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="blog-tags-section">
-              <p className="blog-tags-label">Engines</p>
-              <div className="tag-list">
-                {ENGINE_SLUGS.map((slug) => (
-                  <SemanticChip
-                    key={slug}
-                    label={tagLabel(slug)}
-                    active={activeEngines.includes(slug)}
-                    onToggle={() => toggleEngine(slug)}
                   />
                 ))}
               </div>

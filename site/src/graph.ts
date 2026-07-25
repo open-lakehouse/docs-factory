@@ -10,25 +10,26 @@
 // A page's effective references are the union of:
 //   • explicit `references:` frontmatter (docs + blogs),
 //   • the `explains:` element an explanation page is canonical for (docs),
-//   • the engine elements its `engines:` slugs map to (docs + blogs), so a
-//     multi-engine how-to joins every engine node it exercises without the
-//     author hand-writing them,
 //   • (blogs only) the `element:` anchor of each of its `tags:` — the ADR-0004
 //     hybrid join.
+//
+// (An `engines:`-derived join once contributed here too; it was dropped because
+// the language↔engine↔implementation mapping it relied on was unsound — see
+// docs/design/build-pipeline.md. A proper language × engine × client coverage
+// model is deferred to a later, targeted effort.)
 //
 // IMPORT-CYCLE DISCIPLINE (see backlinks.ts): this module imports content.ts
 // (which eagerly imports every doc/blog MDX, and those MDX modules import
 // <ModelRef> → model-refs.ts). So this module MUST NOT be imported by any MDX
 // file — only route/index components (AxisIndex, DocPage) import it. explain.ts
-// / model-refs.ts / tags.ts / engine-map.ts / explain-bindings.ts do not import
-// content.ts (content.ts registers into explain-bindings, not vice-versa), so
-// pulling them in here is safe.
+// / model-refs.ts / tags.ts / explain-bindings.ts do not import content.ts
+// (content.ts registers into explain-bindings, not vice-versa), so pulling them
+// in here is safe.
 
 import { pages, docs, type ContentPage } from "./content";
 import { getTag } from "./tags";
 import { resolveRef, type ModelRefInfo } from "./model-refs";
 import { getExplainElement } from "./explain";
-import { ENGINE_ELEMENT } from "./engine-map";
 
 // --- Effective references ---------------------------------------------------
 
@@ -40,9 +41,8 @@ function toRefIds(value: unknown): string[] {
 
 /**
  * Model element ids a page effectively references: explicit `references:` ∪
- * engine-slug-derived ∪ (blogs) tag-element. The one place this union is
- * defined; backlinks.ts re-exports it so the reverse index and the facet
- * filters agree.
+ * `explains:` ∪ (blogs) tag-element. The one place this union is defined;
+ * backlinks.ts re-exports it so the reverse index and the facet filters agree.
  */
 export function effectiveRefIds(page: ContentPage): string[] {
   const ids = new Set<string>(toRefIds(page.frontmatter.references));
@@ -58,10 +58,6 @@ export function effectiveRefIds(page: ContentPage): string[] {
       if (element) ids.add(element);
     }
   }
-  for (const engine of page.frontmatter.engines ?? []) {
-    const element = ENGINE_ELEMENT[engine];
-    if (element) ids.add(element);
-  }
   return [...ids];
 }
 
@@ -76,7 +72,7 @@ for (const page of pages) {
   }
 }
 
-/** Content pages that reference this element id (explicit, engine, or tag). */
+/** Content pages that reference this element id (explicit `references:`, `explains:`, or blog tag). */
 export function backlinksFor(id: string): ContentPage[] {
   return backlinks.get(id) ?? [];
 }
@@ -84,37 +80,22 @@ export function backlinksFor(id: string): ContentPage[] {
 // --- Facet filtering (axis indexes) -----------------------------------------
 
 /**
- * Pages (from any set) matching the active facets.
- *   • refIds  → AND: a page must reference *all* selected concept nodes.
- *   • engineIds (slugs) → OR: a page shown if it exercises *any* selected engine
- *     ("show me pages that cover Polars or DuckDB" is the natural query).
- * Empty facets → the input set unchanged. The AND/OR asymmetry is deliberate.
+ * Pages (from any set) matching the active concept facets: a page must
+ * reference *all* selected concept nodes (AND). Empty facets → the input set
+ * unchanged.
  */
-export function pagesByRefs(
-  pageSet: ContentPage[],
-  refIds: string[],
-  engineSlugs: string[],
-): ContentPage[] {
+export function pagesByRefs(pageSet: ContentPage[], refIds: string[]): ContentPage[] {
   const refs = refIds.map((r) => r.trim()).filter(Boolean);
-  const engines = engineSlugs.map((e) => e.trim()).filter(Boolean);
-  if (refs.length === 0 && engines.length === 0) return pageSet;
-
+  if (refs.length === 0) return pageSet;
   return pageSet.filter((page) => {
     const effective = new Set(effectiveRefIds(page));
-    const refsOk = refs.every((r) => effective.has(r));
-    const enginesOk =
-      engines.length === 0 ||
-      engines.some((slug) => {
-        const element = ENGINE_ELEMENT[slug];
-        return element ? effective.has(element) : false;
-      });
-    return refsOk && enginesOk;
+    return refs.every((r) => effective.has(r));
   });
 }
 
-/** All docs matching the active facets (thin wrapper over `pagesByRefs`). */
-export function docsByRefs(refIds: string[], engineSlugs: string[]): ContentPage[] {
-  return pagesByRefs(docs, refIds, engineSlugs);
+/** All docs matching the active concept facets (thin wrapper over `pagesByRefs`). */
+export function docsByRefs(refIds: string[]): ContentPage[] {
+  return pagesByRefs(docs, refIds);
 }
 
 // --- Diátaxis bucketing -----------------------------------------------------

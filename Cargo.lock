@@ -3,12 +3,5 @@
 version = 4
 
 [[package]]
-name = "docs-factory-examples-rust"
-version = "0.1.0"
-dependencies = [
- "docs-factory-seed",
-]
-
-[[package]]
 name = "docs-factory-seed"
 version = "0.1.0"

@@ -13,12 +13,15 @@ of the final site's routing.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
-from .frontmatter import iter_pages
+from . import vocab
+from .frontmatter import Page, iter_pages
 
-# Order the Diátaxis quadrants the way a newcomer reads them.
-_SECTION_ORDER = ["tutorial", "how-to", "reference", "explanation"]
+# The Diátaxis quadrants, in reading order, from the single-source vocab. The
+# display titles are presentation (not vocabulary), so they stay local.
+_SECTION_ORDER = vocab.diataxis_ordered()
 _SECTION_TITLE = {
     "tutorial": "Tutorials",
     "how-to": "How-to guides",
@@ -39,10 +42,29 @@ _PROJECT_HEADER = {
 }
 
 
-def _page_url(url_base: str, project: str, page_path: Path, content_root: Path) -> str:
-    # content/<project>/<quadrant>/<slug>.md -> <url_base>/<quadrant>/<slug>
-    rel = page_path.relative_to(content_root / project).with_suffix("")
-    return f"{url_base.rstrip('/')}/{rel.as_posix()}"
+def _page_url(url_base: str, project: str, page: Page, content_root: Path) -> str:
+    """Build a page's published URL the way the site routes it.
+
+    content/<project>/<bucket>/<slug>.md            -> <url_base>/<bucket>/<slug>
+    content/<project>/<bucket>/<slug>/index.md      -> <url_base>/<bucket>/<slug>
+
+    Folder mode drops the ``index`` filename, a leading ``NNN-`` order prefix is
+    stripped from the slug segment, and a ``slug:`` frontmatter field overrides
+    it — matching site/src/content-core/identity.docIdentity so the llms.txt
+    links point at the same URLs the site serves.
+    """
+    rel = page.path.relative_to(content_root / project)
+    parts = list(rel.parts)
+    if re.fullmatch(r"index\.mdx?", parts[-1]):
+        parts = parts[:-1]  # folder mode: the folder is the slug
+    else:
+        parts[-1] = re.sub(r"\.mdx?$", "", parts[-1])
+    # Strip the NNN- order prefix from the slug-bearing (last) segment.
+    parts[-1] = re.sub(r"^\d+-", "", parts[-1])
+    fm_slug = page.meta.get("slug")
+    if isinstance(fm_slug, str) and fm_slug:
+        parts[-1] = fm_slug
+    return f"{url_base.rstrip('/')}/{'/'.join(parts)}"
 
 
 def render(project: str, content_root: Path, url_base: str) -> str:
@@ -57,7 +79,7 @@ def render(project: str, content_root: Path, url_base: str) -> str:
         quadrant = page.meta.get("diataxis")
         if quadrant not in by_section:
             continue
-        url = _page_url(url_base, project, page.path, content_root)
+        url = _page_url(url_base, project, page, content_root)
         desc = page.meta.get("summary") or page.meta.get("title", "")
         by_section[quadrant].append(f"- [{page.meta.get('title', url)}]({url}): {desc}")
 

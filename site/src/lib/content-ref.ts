@@ -8,6 +8,10 @@ import {
 } from "../gen/docs_factory/review/v1/messages_pb";
 import { create } from "@bufbuild/protobuf";
 import { ContentRefSchema } from "../gen/docs_factory/review/v1/messages_pb";
+// normalizeText/fingerprint are canonical in content-core (shared with the
+// version manifest and server/src/anchor.ts). Import locally for use below AND
+// re-export so the browser comment client uses the exact same normalization.
+import { normalizeText, fingerprint } from "../content-core/normalize.mjs";
 
 export function blogRef(slug: string): ContentRef {
   return create(ContentRefSchema, { area: ContentArea.BLOGS, slug });
@@ -35,23 +39,13 @@ export function refHref(ref: ContentRef, anchorSlug?: string): string {
   return anchorSlug ? `${base}#${anchorSlug}` : base;
 }
 
-/** Match build-version-manifest.mjs: lowercase + collapse whitespace. */
-export function fingerprint(headingText: string): string {
-  return headingText.trim().toLowerCase().replace(/\s+/g, " ");
-}
+export { normalizeText, fingerprint };
 
 /**
- * Normalize prose the same way the manifest builder and server do (lowercase +
- * collapse whitespace + trim), so a selection captured in the browser matches
- * the section text the server re-anchors against.
- */
-export function normalizeText(s: string): string {
-  return s.toLowerCase().replace(/\s+/g, " ").trim();
-}
-
-/**
- * Hash of a source line, matching server anchor.ts hashLine(): sha256 of the
- * line with trailing whitespace trimmed, first 16 hex chars. Async (SubtleCrypto).
+ * Hash of a source line, matching content-core hashLineSync() / server anchor.ts
+ * hashLine(): sha256 of the line with trailing whitespace trimmed, first 16 hex
+ * chars. Kept as a browser-only async SubtleCrypto variant (Node crypto is not
+ * available in the browser); a drift test asserts it agrees with hashLineSync.
  */
 export async function hashLine(line: string): Promise<string> {
   const data = new TextEncoder().encode(line.replace(/\s+$/, ""));

@@ -18,6 +18,7 @@
 
 import type { ElementModel } from "likec4/model";
 import { $likec4model } from "likec4:single-project";
+import { vocab } from "./vocab";
 
 // The plugin inlines the layouted model synchronously, so the atom is
 // populated at module-eval time — safe to read for the static nav below.
@@ -27,11 +28,10 @@ export { likec4model };
 
 /** Element kinds that get an explanation page. */
 export type ExplainKind = "capability" | "openSpecification" | "implementation";
-const EXPLAIN_KINDS = new Set<string>([
-  "capability",
-  "openSpecification",
-  "implementation",
-]);
+// The runtime set is single-sourced from content/vocab.json (shared with
+// docsnip's PAGE_WORTHY_KINDS); the literal type above stays for compile-time
+// narrowing. A drift test asserts the two stay in sync.
+const EXPLAIN_KINDS = new Set<string>(vocab.pageWorthyKinds);
 
 export interface ExplainEntry {
   id: string;

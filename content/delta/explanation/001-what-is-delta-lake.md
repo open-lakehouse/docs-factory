@@ -3,7 +3,6 @@ title: What is Delta Lake?
 summary: An engine-neutral introduction to the Delta Lake open table format.
 diataxis: explanation
 project: delta
-engines: []
 delta_features: []
 status: ready
 references:
@@ -41,4 +40,4 @@ fragmentation is the trend toward shared **kernels** — see
 ## Related
 
 - [Delta kernel architecture](./delta-kernel-architecture.md)
-- [Read a Delta table](../how-to/read-a-delta-table.md)
+- [Read a Delta table](../how-to/read-a-delta-table/index.md)

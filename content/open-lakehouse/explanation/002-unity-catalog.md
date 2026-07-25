@@ -3,7 +3,6 @@ title: Unity Catalog
 summary: An open catalog specification for data and AI — a REST contract that governs tables, files, functions, and models across engines.
 diataxis: explanation
 project: open-lakehouse
-engines: []
 status: draft
 explains: ucSpec
 ---

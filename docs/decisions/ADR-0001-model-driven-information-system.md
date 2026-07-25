@@ -93,8 +93,9 @@ Concretely, as shipped:
 
 - **The site reads the model live.** `site/src/explain.ts` joins model elements to
   content frontmatter at build/render time; there is no generated join artifact.
-  `docsnip generate` emits only `examples-manifest.json` and the per-project
-  `*.llms.txt`.
+  `docsnip generate` emits only the per-project `*.llms.txt`. (At the time of this
+  ADR it also emitted `examples-manifest.json`; that engine/coverage artifact was
+  later removed — see [`design/build-pipeline.md`](../design/build-pipeline.md) §10.)
 - **Content anchors two ways** (`content/README.md`): an inline `model:<id>` link
   mid-prose, and a page-level `references: [<id>]` frontmatter list that renders a
   concept header and drives the reverse "Referenced by" index on each `/explain/<id>`
@@ -125,8 +126,8 @@ agent surface) is specified in [`../design/information-system.md`](../design/inf
   backlinks, focused diagrams, and related-content all derive from one validated
   graph rather than hand-maintained "see also" lists.
 - Reading the model live means there is no join artifact to keep fresh: the site is
-  always consistent with `dist/model.json`, and the only generated artifacts stay the
-  ones that already existed (`llms.txt`, `examples-manifest.json`).
+  always consistent with `dist/model.json`, and the only generated artifact is the
+  per-project `llms.txt` (`examples-manifest.json` was later removed — see above).
 - The join is decoupled from the model's current shape: authors can reference stable
   specifications today while the logical layer is reworked, and the tiered gate shows
   exactly where linkage is still thin.

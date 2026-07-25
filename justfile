@@ -101,13 +101,13 @@ _server-deps:
         (cd server && bun install)
     fi
 
-# --- Content & examples ----------------------------------------------------
+# --- Content & tooling ------------------------------------------------------
 
 # Install every uv workspace package.
 sync:
     uv sync --all-packages
 
-# Run the default test lane: engine examples + service-free tutorial tests.
+# Run the default test lane: docsnip tests + service-free tutorial scripts.
 # Service-backed tutorial tests are excluded by the pytest addopts marker
 # filter, so this stays green with no Docker.
 test:
@@ -123,7 +123,7 @@ test-services:
 check:
     uv run docsnip check
 
-# Regenerate site-artifacts/ (run after changing content or examples).
+# Regenerate site-artifacts/ (per-project llms.txt). Run after changing content.
 generate:
     uv run docsnip generate
 
@@ -132,9 +132,9 @@ lint:
     uv run ruff check .
     uv run ty check
 
-# Compile the Rust example/seed stubs.
+# Compile the Rust seed helper.
 rust:
-    cargo build --examples
+    cargo build
 
 # --- Architecture model (LikeC4, canonical source of architectural fact) ----
 

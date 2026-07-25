@@ -3,9 +3,8 @@
 Subcommands:
   validate      — check frontmatter on all content pages
   snippetcheck  — verify every snippet fence resolves to a unique source region
-  manifest      — (re)generate site-artifacts/examples-manifest.json
   llmstxt       — (re)generate site-artifacts/<project>.llms.txt
-  generate      — manifest + llmstxt in one pass
+  generate      — regenerate the generated artifacts (currently just llms.txt)
   check         — validate + snippetcheck + drift-check generated artifacts (CI entry)
 """
 
@@ -16,7 +15,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from . import llmstxt, manifest
+from . import llmstxt
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -50,7 +49,6 @@ def _paths(root: Path | None):
     return {
         "content": root / "content",
         "blogs": root / "blogs",
-        "examples": root / "examples",
         "artifacts": root / "site-artifacts",
         "arch_model": root / "architecture" / "dist" / "model.json",
     }
@@ -144,7 +142,11 @@ def cmd_snippetcheck(p) -> int:
 
 
 def _write_artifacts(p) -> list[Path]:
-    written = [manifest.write(p["content"], p["artifacts"] / "examples-manifest.json")]
+    # The only generated artifacts are the per-project llms.txt. (The former
+    # examples-manifest.json / engine-coverage matrix was dropped — its
+    # language↔engine↔implementation mapping was unsound and nothing consumed
+    # it; see docs/design/build-pipeline.md.)
+    written = []
     for project, url_base in URL_BASES.items():
         if (p["content"] / project).is_dir():
             written.append(
@@ -198,7 +200,6 @@ def main(argv: list[str] | None = None) -> int:
     for name in (
         "validate",
         "snippetcheck",
-        "manifest",
         "llmstxt",
         "generate",
         "check",
@@ -217,8 +218,7 @@ def main(argv: list[str] | None = None) -> int:
     dispatch = {
         "validate": cmd_validate,
         "snippetcheck": cmd_snippetcheck,
-        "manifest": cmd_generate,  # generate covers both; manifest/llmstxt are aliases
-        "llmstxt": cmd_generate,
+        "llmstxt": cmd_generate,  # alias: the only generated artifact is llms.txt
         "generate": cmd_generate,
         "check": cmd_check,
     }

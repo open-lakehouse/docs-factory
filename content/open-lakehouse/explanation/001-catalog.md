@@ -3,7 +3,6 @@ title: Catalog
 summary: The metadata authority of the lakehouse
 diataxis: explanation
 project: open-lakehouse
-engines: []
 status: draft
 explains: lakehouse.catalog
 ---

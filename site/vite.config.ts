@@ -19,7 +19,6 @@ import remarkJourney from "./src/plugins/remark-journey.mjs";
 import remarkDirectiveProseGuard from "./src/plugins/remark-directive-prose-guard.mjs";
 import remarkCallouts from "./src/plugins/remark-callouts.mjs";
 import remarkFenceMeta from "./src/plugins/remark-fence-meta.mjs";
-import remarkTabs from "./src/plugins/remark-tabs.mjs";
 import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
 
 // Shiki rebuilds the <pre>/<code> subtree, so any data-* set upstream is lost.
@@ -75,7 +74,6 @@ export default defineConfig({
           remarkCodeSnippets,
           remarkCallouts,
           remarkJourney,
-          remarkTabs,
           remarkFenceMeta,
           remarkResolveImages,
           remarkLikeC4Views,

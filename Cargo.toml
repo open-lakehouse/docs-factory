@@ -1,12 +1,13 @@
 # Rust workspace for docs-factory.
 #
-# Ties together the delta-rs example crate and the Rust seed helper so a single
-# `cargo` invocation covers both. This workspace is intentionally separate from
-# the uv (Python) workspace — the two toolchains do not share dependencies.
+# Holds the Rust seed helper. (The former examples/rust crate — a stub for a
+# future Unity Catalog Rust client — was removed with the examples/ tree; the
+# Rust + TypeScript example/client machinery will be rebuilt deliberately later.
+# See docs/design/build-pipeline.md.) This workspace is intentionally separate
+# from the uv (Python) workspace — the two toolchains do not share dependencies.
 [workspace]
 resolver = "2"
 members = [
-    "examples/rust",
     "seed/rust",
 ]
 

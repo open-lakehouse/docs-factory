@@ -978,36 +978,6 @@ body {
   margin: 0.75rem 0 0.35rem;
 }
 
-/* Engine tabs (remark-tabs) */
-.prose .tabs { margin: 1.25rem 0; }
-.prose .tabs-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 0.75rem;
-}
-.prose .tabs-trigger {
-  background: transparent;
-  border: none;
-  border-bottom: 2px solid transparent;
-  padding: 0.45rem 0.85rem;
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  margin-bottom: -1px;
-}
-.prose .tabs-trigger:hover { color: var(--foreground); }
-.prose .tabs-trigger[data-state="active"],
-.prose .tabs-trigger.active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-  font-weight: 600;
-}
-.prose .tabs-list { background: transparent; border-radius: 0; padding: 0; }
-.prose .tabs-panel > :first-child { margin-top: 0; }
-
 /* --- App shell extensions --- */
 .content-wide {
   max-width: none;

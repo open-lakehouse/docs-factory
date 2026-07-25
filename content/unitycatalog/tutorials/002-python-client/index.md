@@ -3,7 +3,6 @@ title: Use the Python client
 summary: Install the official unitycatalog-client, connect to a running server, then create a catalog, schema, and table — and handle a not-found error — with the async SDK.
 diataxis: tutorial
 project: unitycatalog
-engines: [python]
 references:
   - unityCatalogOSS
   - lakehouse.catalog

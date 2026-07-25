@@ -1,0 +1,7 @@
+{
+  "$comment": "Single source of truth for the docs-factory content vocabulary. Loaded by site/src/content-core/vocab.mjs (JS) and tools/docsnip/src/docsnip/vocab.py (Python) so the controlled vocabularies cannot drift between the site and docsnip. Model element ids are NOT here — they come from the LikeC4 model (architecture/dist/model.json).",
+  "diataxis": ["tutorial", "how-to", "reference", "explanation"],
+  "projects": ["delta", "unitycatalog", "open-lakehouse"],
+  "statuses": ["idea", "draft", "ready"],
+  "pageWorthyKinds": ["capability", "openSpecification", "implementation"]
+}

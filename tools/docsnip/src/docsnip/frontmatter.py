@@ -15,29 +15,15 @@ from pathlib import Path
 
 import yaml
 
-DIATAXIS = {"tutorial", "how-to", "reference", "explanation"}
-# `open-lakehouse` holds estate-wide, engine-neutral explanations of the
-# reference model — the concepts that aren't specific to a single upstream
-# project. It mirrors the site's implicit "all" scope (site/src/scope.ts
-# ALL_SCOPE) and reuses the same content/<project>/<bucket>/<slug> shape.
-PROJECTS = {"delta", "unitycatalog", "open-lakehouse"}
+from . import vocab
 
-# Frontmatter engine slug -> LikeC4 `implementation` element id. Mirror of the
-# site's site/src/engine-map.ts ENGINE_ELEMENT. An engine a page exercises
-# contributes that element to the page's effective model references, so
-# multi-engine how-tos join every engine node they touch without the author
-# writing a `references:` entry. Keep the two maps in sync.
-ENGINE_ELEMENT = {
-    "python": "deltaRs",  # delta-rs Python binding (deltalake)
-    "rust": "deltaRs",  # delta-rs, the Rust library
-    "polars": "polars",
-    "duckdb": "duckdb",
-    "spark": "deltaSpark",  # the Delta connector authors exercise
-    "typescript": "deltaRs",  # TS Delta access is via delta-rs bindings today
-}
-# The accepted engine-slug vocabulary is exactly the keys of the map, so the
-# vocabulary and the join can never drift apart.
-ENGINES = set(ENGINE_ELEMENT)
+# Controlled vocabularies come from the single-source content/vocab.json (shared
+# with the site via site/src/content-core/vocab.mjs), so docsnip and the site
+# can no longer drift. `open-lakehouse` holds estate-wide, engine-neutral
+# explanations of the reference model — concepts not specific to one upstream
+# project; it mirrors the site's implicit "all" scope (site/src/scope.ts).
+DIATAXIS = vocab.diataxis()
+PROJECTS = vocab.projects()
 # Git authoring intent — orthogonal to the DB-canonical review lifecycle
 # (review_state). This is the single canonical status vocabulary, shared by both
 # content pages and blog drafts (blog.py re-exports it):
@@ -57,8 +43,8 @@ STATUSES = {"idea", "draft", "ready"}
 
 
 # Content pages are Markdown (``.md``) or MDX (``.mdx``). MDX pages may embed
-# site components (e.g. ``<Tabs>``) but still carry the same YAML frontmatter and
-# snippet fences, so all tooling scans both extensions uniformly.
+# site components but still carry the same YAML frontmatter and snippet fences,
+# so all tooling scans both extensions uniformly.
 CONTENT_SUFFIXES = (".md", ".mdx")
 
 # Inline model reference in prose: ``[label](model:<id>)`` (see the site's
@@ -80,8 +66,8 @@ def load_model_element_ids(model_json: Path) -> set[str]:
 
 
 # Element kinds that are "page-worthy" — the concepts that warrant a long-form
-# explanation page. Mirrors EXPLAIN_KINDS in the site's site/src/explain.ts.
-PAGE_WORTHY_KINDS = {"capability", "openSpecification", "implementation"}
+# explanation page. From the shared vocab (site/src/explain.ts EXPLAIN_KINDS).
+PAGE_WORTHY_KINDS = vocab.page_worthy_kinds()
 
 
 def load_page_worthy_elements(model_json: Path) -> dict[str, str]:
@@ -165,11 +151,12 @@ def parse(path: Path) -> Page:
 def effective_reference_ids(meta: dict) -> set[str]:
     """Model element ids a page effectively references.
 
-    The union of explicit ``references:`` frontmatter and the engine elements
-    its ``engines:`` slugs map to (via :data:`ENGINE_ELEMENT`). This mirrors the
-    site's ``effectiveRefIds`` (minus the blog tag-element join, which lives in
-    the site because tag metadata is loaded there) so the coverage count matches
-    what the navigation actually surfaces.
+    The union of explicit ``references:`` frontmatter and the ``explains:``
+    element. Mirrors the site's ``effectiveRefIds`` (minus the blog tag-element
+    join, which lives in the site because tag metadata is loaded there) so the
+    coverage count matches what the navigation surfaces. (An ``engines:``-derived
+    join was dropped along with the engine machinery — see
+    docs/design/build-pipeline.md.)
     """
     ids = set(_as_str_list(meta.get("references")))
     # The element a page is the canonical explanation of (``explains:``) is a
@@ -179,10 +166,6 @@ def effective_reference_ids(meta: dict) -> set[str]:
     explains = meta.get("explains")
     if isinstance(explains, str) and explains:
         ids.add(explains)
-    for eng in meta.get("engines", []) or []:
-        element = ENGINE_ELEMENT.get(eng)
-        if element:
-            ids.add(element)
     return ids
 
 
@@ -221,9 +204,14 @@ def validate(page: Page, model_ids: set[str] | None = None) -> PageValidation:
     if status not in STATUSES:
         errors.append(f"status '{status}' not in {sorted(STATUSES)}")
 
-    for eng in m.get("engines", []) or []:
-        if eng not in ENGINES:
-            errors.append(f"engine '{eng}' not in {sorted(ENGINES)}")
+    # The `engines:` field (and the engine→implementation coverage machinery it
+    # fed) was removed — its language↔engine↔implementation mapping was unsound
+    # (see docs/design/build-pipeline.md). A leftover `engines:` is stale.
+    if "engines" in m:
+        errors.append(
+            "frontmatter 'engines:' is no longer used — remove it "
+            "(the engine coverage machinery was dropped)"
+        )
 
     # Snippets are no longer declared in frontmatter — the inline ``file=`` fences
     # in the body are the single source of truth (validated by snippetcheck and

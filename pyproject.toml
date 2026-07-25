@@ -1,13 +1,13 @@
 [project]
 name = "docs-factory"
 version = "0.1.0"
-description = "Docs-factory Python workspace — examples and tooling for the open lakehouse content pipeline"
+description = "Docs-factory Python workspace — tooling and the deterministic seeder for the open lakehouse content pipeline"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = []
 
 [tool.uv.workspace]
-members = ["examples", "tools/docsnip", "seed/python"]
+members = ["tools/docsnip", "seed/python"]
 
 [tool.uv.sources]
 docs-factory-seed = { workspace = true }
@@ -28,12 +28,11 @@ test-services = [
 ]
 
 [tool.pytest.ini_options]
-# Collect the engine-example suite and the colocated tutorial scripts under
-# content/ (the content/ plugin turns each # /// script into a test).
-testpaths = ["examples/tests", "content"]
-# examples/tests is on the path so its test module can import the shared
-# `_helpers` loader.
-pythonpath = ["examples/tests"]
+# Collect the docsnip drift/vocab tests and the colocated tutorial scripts under
+# content/ (the content/ plugin turns each # /// script into a test). The former
+# engine-example suite (examples/tests) was removed with the examples/ tree; the
+# Delta snippets it covered now live colocated under content/ as PEP 723 scripts.
+testpaths = ["tools/docsnip/tests", "content"]
 # Service-backed tests are opt-in: excluded by default so a Docker-less `pytest`
 # stays green; CI's tutorials-services job selects them with `-m`.
 addopts = "-m 'not needs_docker and not needs_uc_server'"

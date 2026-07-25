@@ -3,7 +3,6 @@ title: What is Unity Catalog?
 summary: An to Unity Catalog, the open lakehouse catalog.
 diataxis: explanation
 project: unitycatalog
-engines: []
 status: draft
 ---
 

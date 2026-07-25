@@ -3,7 +3,6 @@ title: Table features
 summary: The reader/writer feature-flag mechanism that governs Delta compatibility.
 diataxis: reference
 project: delta
-engines: []
 delta_features: [table-features]
 status: draft
 ---
@@ -23,5 +22,5 @@ the client supports, and write only if `writerFeatures` are a subset.
 | `minReaderVersion` | 1, 2, 3 |
 | `minWriterVersion` | 2–7 |
 
-See [Query a Delta table as of a version](../how-to/query-a-table-as-of-version.md)
+See [Query a Delta table as of a version](../how-to/query-a-table-as-of-version/index.md)
 for a feature (time travel) in action.

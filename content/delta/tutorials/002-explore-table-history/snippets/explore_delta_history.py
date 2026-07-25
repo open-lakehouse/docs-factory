@@ -1,10 +1,20 @@
+# /// script
+# requires-python = ">=3.11"
+# dependencies = ["deltalake>=0.20", "pyarrow>=14", "docs-factory-seed"]
+#
+# [tool.uv.sources]
+# docs-factory-seed = { path = "../../../../../seed/python", editable = true }
+# ///
 """Explore a Delta table's version history end to end, with the deltalake package.
 
 A multi-step *journey* example: one runnable, tested file whose named regions
-render as ordered steps on the docs page (open → inspect history → time-travel →
-compare). Seeding and the ``main`` wrapper live outside the regions so the file
-runs in CI, while each region stays a self-contained, copy/paste-runnable snippet
-(each imports what it needs).
+render as ordered steps on the docs page (open -> inspect history -> time-travel
+-> compare). Seeding and the ``main`` wrapper live outside the regions so the
+file runs in CI, while each region stays a self-contained, copy/paste-runnable
+snippet (each imports what it needs).
+
+Running this file to completion is its test (content/conftest.py runs it via
+`uv run`): the asserts below fail the build if the numbers ever drift.
 """
 
 from docs_factory_seed import seed_dataset
@@ -56,4 +66,7 @@ def explore_delta_history() -> tuple[int, int, int]:
 
 
 if __name__ == "__main__":
-    explore_delta_history()
+    n_commits, v0_rows, latest_rows = explore_delta_history()
+    assert n_commits == 2, f"expected 2 commits (write, delete), got {n_commits}"
+    assert v0_rows == 1000, f"expected 1000 rows at v0, got {v0_rows}"
+    assert latest_rows == 950, f"expected 950 rows at latest, got {latest_rows}"

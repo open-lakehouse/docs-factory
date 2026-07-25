@@ -3,7 +3,6 @@ title: Explore a Delta table's history
 summary: Walk a Delta table's version history end to end — open it, read the commit log, and time-travel to an earlier version.
 diataxis: tutorial
 project: delta
-engines: [python]
 delta_features: [time-travel]
 prerequisites:
   packages:
@@ -32,7 +31,7 @@ copy is what we test.
 Point `DeltaTable` at the table's path. It reads the latest version of the
 transaction log and reports which version that is.
 
-```python file=../../../examples/python/explore_delta_history.py start=start:open end=end:open
+```python file=./snippets/explore_delta_history.py start=start:open end=end:open
 ```
 
 :::note
@@ -46,7 +45,7 @@ two-commit table so this tutorial is reproducible — the same one-liner CI uses
 that produced the version (`WRITE`, `DELETE`, `MERGE`, …) so you can see the
 shape of how the table evolved.
 
-```python file=../../../examples/python/explore_delta_history.py start=start:history end=end:history
+```python file=./snippets/explore_delta_history.py start=start:history end=end:history
 ```
 
 ### Time-travel to an earlier version
@@ -55,7 +54,7 @@ Pass `version=` to open the table as of a specific commit. Here we open both the
 first commit and the latest, then compare their row counts — the `orders` table
 starts at 1000 rows and a later commit deletes 50.
 
-```python file=../../../examples/python/explore_delta_history.py start=start:time-travel end=end:time-travel
+```python file=./snippets/explore_delta_history.py start=start:time-travel end=end:time-travel
 ```
 
 :::tip
@@ -67,5 +66,5 @@ You can also travel by wall-clock time instead of version number — useful for
 
 ## Related
 
-- [Read a Delta table](../how-to/read-a-delta-table.md) — the basics, across engines.
-- [Query a Delta table as of a version](../how-to/query-a-table-as-of-version.md) — the time-travel how-to on its own.
+- [Read a Delta table](../../how-to/read-a-delta-table/index.md) — the basics.
+- [Query a Delta table as of a version](../../how-to/query-a-table-as-of-version/index.md) — the time-travel how-to on its own.

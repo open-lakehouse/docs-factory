@@ -3,7 +3,6 @@ title: Delta kernel architecture
 summary: How a shared kernel library lets many engines speak Delta without diverging.
 diataxis: explanation
 project: delta
-engines: []
 delta_features: []
 status: ready
 ---

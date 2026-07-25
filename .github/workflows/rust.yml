@@ -4,13 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - "examples/rust/**"
       - "seed/rust/**"
       - "Cargo.toml"
       - ".github/workflows/rust.yml"
   pull_request:
     paths:
-      - "examples/rust/**"
       - "seed/rust/**"
       - "Cargo.toml"
       - ".github/workflows/rust.yml"
@@ -37,7 +35,7 @@ jobs:
         run: cargo fmt --all --check
       - name: Clippy
         run: cargo clippy --all-targets --all-features -- -D warnings
-      - name: Build examples
-        run: cargo build --examples
+      - name: Build
+        run: cargo build
       - name: Test
         run: cargo test

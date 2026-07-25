@@ -9,12 +9,9 @@ import { listDrafts } from "../../gen/docs_factory/review/v1/review_service-Revi
 import { ReviewState } from "../../gen/docs_factory/review/v1/messages_pb";
 import { scopeAccent, useScope, withScope } from "../../scope";
 
-/** The five content axes, in Diátaxis reading order + blog. */
+/** Two top-level content areas: Docs (all four Diátaxis axes on one page) + blog. */
 const NAV_AXES: { to: string; label: string }[] = [
-  { to: "/tutorials", label: "Tutorials" },
-  { to: "/how-to", label: "How-to" },
-  { to: "/reference", label: "Reference" },
-  { to: "/explanation", label: "Explanation" },
+  { to: "/docs", label: "Docs" },
   { to: "/blog", label: "Blog" },
 ];
 

@@ -29,7 +29,7 @@ export default function DocPage() {
     return (
       <Shell showSidebarToggle wide>
         <p>
-          Not found: docs/{project}/{bucket}/{slug}. <Link to="/reference">Back to reference.</Link>
+          Not found: docs/{project}/{bucket}/{slug}. <Link to="/docs">Back to docs.</Link>
         </p>
       </Shell>
     );
@@ -51,7 +51,7 @@ export default function DocPage() {
     return (
       <Shell showSidebarToggle wide>
         <p>
-          Not found: docs/{project}/{bucket}/{slug}. <Link to="/reference">Back to reference.</Link>
+          Not found: docs/{project}/{bucket}/{slug}. <Link to="/docs">Back to docs.</Link>
         </p>
       </Shell>
     );

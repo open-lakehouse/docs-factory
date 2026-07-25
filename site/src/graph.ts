@@ -21,7 +21,7 @@
 // IMPORT-CYCLE DISCIPLINE (see backlinks.ts): this module imports content.ts
 // (which eagerly imports every doc/blog MDX, and those MDX modules import
 // <ModelRef> → model-refs.ts). So this module MUST NOT be imported by any MDX
-// file — only route/index components (AxisIndex, DocPage) import it. explain.ts
+// file — only route/index components (DocsIndex, DocPage) import it. explain.ts
 // / model-refs.ts / tags.ts / explain-bindings.ts do not import content.ts
 // (content.ts registers into explain-bindings, not vice-versa), so pulling them
 // in here is safe.

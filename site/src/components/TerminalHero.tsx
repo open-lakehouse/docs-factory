@@ -71,17 +71,8 @@ function BootLineView({
 function ExploreLinks({ showCursor }: { showCursor?: boolean }) {
   return (
     <p className="terminal-hero-line terminal-hero-explore">
-      <Link to="/tutorials" className="terminal-hero-cmd">
-        tutorials
-      </Link>
-      <Link to="/how-to" className="terminal-hero-cmd">
-        how-to
-      </Link>
-      <Link to="/reference" className="terminal-hero-cmd">
-        reference
-      </Link>
-      <Link to="/explanation" className="terminal-hero-cmd">
-        explanation
+      <Link to="/docs" className="terminal-hero-cmd">
+        docs
       </Link>
       <Link to="/blog" className="terminal-hero-cmd">
         blog

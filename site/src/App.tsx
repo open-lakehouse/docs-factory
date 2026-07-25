@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 import Index from "./pages/Index";
-import AxisIndex from "./pages/AxisIndex";
+import DocsIndex from "./pages/DocsIndex";
 import DocPage from "./pages/DocPage";
 import BlogIndex from "./pages/BlogIndex";
 import BlogPost from "./pages/BlogPost";
@@ -16,11 +16,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Index />} />
 
-        {/* Five content axes: four Diátaxis + blog. */}
-        <Route path="/tutorials" element={<AxisIndex axis="tutorial" />} />
-        <Route path="/how-to" element={<AxisIndex axis="how-to" />} />
-        <Route path="/reference" element={<AxisIndex axis="reference" />} />
-        <Route path="/explanation" element={<AxisIndex axis="explanation" />} />
+        {/* Two content areas: a single Docs page stacking all four Diátaxis
+            axis tables under one concept filter, plus the blog. */}
+        <Route path="/docs" element={<DocsIndex />} />
         <Route path="/blog" element={<BlogIndex />} />
 
         {/* Reviewer-only consolidated review page: the editor-style workspace

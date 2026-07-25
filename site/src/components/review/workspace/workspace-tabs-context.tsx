@@ -7,10 +7,25 @@
 // `thread`/`anchor` are one-shot navigation intents (Phase 3 consumes them):
 // after the target tab selects + scrolls, it clears them. Transient per-tab UI
 // (hover, composer, pending selection) stays in each tab's own providers.
-import { createContext, useCallback, useContext, useMemo, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  type ReactNode,
+} from "react";
 import { useSearchParams } from "react-router-dom";
 import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { refFromParam, refToParam } from "../../../lib/content-ref";
+
+// Cap the number of simultaneously-mounted tabs. Every open tab keeps its full
+// MDX render + ReviewProvider warm, so an unbounded workspace would pin heavy
+// Shiki/diagram trees and N warm caches in memory. When opening a tab would
+// exceed this, the least-recently-ACTIVE tab is evicted (never the active one,
+// never the tab being opened).
+const MAX_TABS = 8;
 
 export interface OpenTab {
   token: string;
@@ -65,6 +80,34 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
     [params],
   );
 
+  // Activation recency, most-recent LAST, kept in memory (not the URL — a shared
+  // link shouldn't carry local eviction history). Used to pick the LRU victim
+  // when the cap is hit; tabs never explicitly activated fall back to open order.
+  const recencyRef = useRef<string[]>([]);
+  useEffect(() => {
+    if (!activeToken) return;
+    const r = recencyRef.current.filter((t) => t !== activeToken);
+    r.push(activeToken);
+    recencyRef.current = r;
+  }, [activeToken]);
+
+  // Trim the tab list to MAX_TABS by evicting least-recently-active tabs, always
+  // keeping `keep` (the tab just opened/activated). Returns tokens in their
+  // original order minus the evicted ones.
+  const applyCap = useCallback((tokens: string[], keep: string): string[] => {
+    if (tokens.length <= MAX_TABS) return tokens;
+    const recency = recencyRef.current;
+    // Least-recently-active first; a tab absent from recency (never activated)
+    // sorts before any activated tab, so it's evicted first.
+    const rank = (t: string) => {
+      const i = recency.lastIndexOf(t);
+      return i === -1 ? -1 : i;
+    };
+    const evictable = tokens.filter((t) => t !== keep).sort((a, b) => rank(a) - rank(b));
+    const toEvict = new Set(evictable.slice(0, tokens.length - MAX_TABS));
+    return tokens.filter((t) => !toEvict.has(t));
+  }, []);
+
   const openTab = useCallback(
     (ref: ContentRef, next?: OpenIntent) => {
       const token = refToParam(ref);
@@ -72,8 +115,9 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
         (prev) => {
           const p = new URLSearchParams(prev);
           const existing = parseTabs(p.get("tabs"));
-          if (!existing.some((t) => t.token === token)) {
-            const tokens = [...existing.map((t) => t.token), token];
+          let tokens = existing.map((t) => t.token);
+          if (!tokens.includes(token)) {
+            tokens = applyCap([...tokens, token], token);
             p.set("tabs", tokens.join(","));
           }
           p.set("active", token);
@@ -86,7 +130,7 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
         { replace: false },
       );
     },
-    [setParams],
+    [setParams, applyCap],
   );
 
   const closeTab = useCallback(

@@ -7,10 +7,12 @@
  * Previously each of those re-implemented it with a "must match X" comment; they
  * now import from here so they cannot drift.
  *
- * DOM-free and Vite-free: importable by Node/Bun (the manifest script, the
- * server) and by the browser (via the thin re-exports in content-ref.ts).
+ * DOM-free, Vite-free, AND Node-free: importable by Node/Bun (the manifest
+ * script, the server) and by the browser (via the thin re-exports in
+ * content-ref.ts). The line-hash helper that needs `node:crypto` lives in the
+ * sibling hash.mjs, kept off the browser import path so Vite doesn't externalize
+ * `node:crypto` into the client bundle.
  */
-import { createHash } from "node:crypto";
 
 /**
  * Normalize prose for anchoring: lowercase, collapse runs of whitespace to a
@@ -29,17 +31,4 @@ export function normalizeText(s) {
  */
 export function fingerprint(headingText) {
   return normalizeText(headingText);
-}
-
-/**
- * Hash of a single source line for code re-anchoring: sha256 of the line with
- * trailing whitespace trimmed, first 16 hex chars. Matches the browser's async
- * SubtleCrypto implementation (content-ref.ts hashLine); a drift test asserts
- * the two agree.
- */
-export function hashLineSync(line) {
-  return createHash("sha256")
-    .update(line.replace(/\s+$/, ""))
-    .digest("hex")
-    .slice(0, 16);
 }

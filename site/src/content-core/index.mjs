@@ -7,6 +7,7 @@
  * (anchor.ts). See docs/design/build-pipeline.md.
  */
 export * from "./normalize.mjs";
+export * from "./hash.mjs";
 export * from "./fences.mjs";
 export * from "./slug.mjs";
 export * from "./identity.mjs";

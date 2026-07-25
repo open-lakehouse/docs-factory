@@ -32,6 +32,15 @@ function documentPosition(thread: Thread, article: HTMLElement): DocPos | null {
     for (const block of blocks) {
       if (block.dataset.srcPath !== code.path) continue;
       if (code.region && (block.dataset.srcRegion ?? "") !== code.region) continue;
+      // Prefer the anchored Shiki line span so same-block threads sort by line.
+      if (code.line > 0) {
+        const srcStart = Number(block.dataset.srcStart ?? "1") || 1;
+        const index = code.line - srcStart;
+        if (index >= 0) {
+          const line = block.querySelectorAll<HTMLElement>(":scope .line")[index];
+          if (line) return { node: line, offset: 0 };
+        }
+      }
       return { node: block, offset: code.line || 0 };
     }
   }

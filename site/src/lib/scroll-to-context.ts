@@ -50,6 +50,24 @@ function rectForTarget(target: Range | HTMLElement): DOMRect | null {
 }
 
 /**
+ * The Shiki `.line` span for a 1-based source line inside a `file=` code box.
+ * `data-src-start` is the first source line rendered in the region (defaults to
+ * 1), matching how <Pre> maps commented lines onto span indices.
+ */
+function codeLineTarget(block: HTMLElement, sourceLine: number): HTMLElement {
+  if (sourceLine > 0) {
+    const srcStart = Number(block.dataset.srcStart ?? "1") || 1;
+    const index = sourceLine - srcStart;
+    if (index >= 0) {
+      const lines = block.querySelectorAll<HTMLElement>(":scope .line");
+      const line = lines[index];
+      if (line) return line;
+    }
+  }
+  return block;
+}
+
+/**
  * Scroll to the in-article context for a thread. Returns true when a target was
  * found and scrolled to. `container` defaults to `window` for the single-page
  * routes; the editor passes its middle scroll pane.
@@ -81,7 +99,8 @@ export function scrollToThreadContext(
     for (const block of blocks) {
       if (block.dataset.srcPath !== code.path) continue;
       if (code.region && (block.dataset.srcRegion ?? "") !== code.region) continue;
-      const rect = rectForTarget(block);
+      const target = codeLineTarget(block, code.line);
+      const rect = rectForTarget(target);
       if (rect) {
         scrollToRect(rect, container);
         return true;

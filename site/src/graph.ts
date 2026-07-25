@@ -26,7 +26,7 @@
 // (content.ts registers into explain-bindings, not vice-versa), so pulling them
 // in here is safe.
 
-import { pages, docs, type ContentPage } from "./content";
+import { pages, type ContentPage } from "./content";
 import { getTag } from "./tags";
 import { resolveRef, type ModelRefInfo } from "./model-refs";
 import { getExplainElement } from "./explain";
@@ -91,11 +91,6 @@ export function pagesByRefs(pageSet: ContentPage[], refIds: string[]): ContentPa
     const effective = new Set(effectiveRefIds(page));
     return refs.every((r) => effective.has(r));
   });
-}
-
-/** All docs matching the active concept facets (thin wrapper over `pagesByRefs`). */
-export function docsByRefs(refIds: string[]): ContentPage[] {
-  return pagesByRefs(docs, refIds);
 }
 
 // --- Diátaxis bucketing -----------------------------------------------------

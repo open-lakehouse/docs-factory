@@ -9,10 +9,11 @@
 // A page references an element these ways (all handled by graph.effectiveRefIds):
 //   • explicit `references:` frontmatter (docs + blogs),
 //   • the `explains:` element an explanation page is canonical for (docs),
-//   • an `engines:` slug mapped to its model element (docs + blogs), so a
-//     multi-engine how-to surfaces under every engine node it exercises,
 //   • (blogs) a `tags:` entry whose tags.yml registry carries an `element:`
 //     anchor — the ADR-0004 hybrid join.
+//
+// (An `engines:`-derived join was removed with the engine machinery — see
+// graph.ts and docs/design/build-pipeline.md.)
 //
 // IMPORT-CYCLE NOTE: graph.ts imports content.ts (which eagerly imports every
 // doc/blog MDX, and those MDX modules import <ModelRef> → model-refs). So

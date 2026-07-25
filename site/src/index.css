@@ -3517,6 +3517,50 @@ a.review-author:hover span {
   margin: 0 0 1rem;
 }
 
+/* Docs index — one page, four stacked axis tables under a single concept
+ * filter. Unlike the blog index (which pins its header and scrolls one table),
+ * this page scrolls naturally so every axis section flows below the last. */
+.docs-index {
+  display: flex;
+  flex-direction: column;
+}
+.docs-index-header {
+  flex: none;
+}
+.docs-index-header .docs-facets {
+  margin-bottom: 0.5rem;
+}
+.docs-index-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  margin-top: 1.5rem;
+}
+.docs-axis-section {
+  /* Offset in-page #anchor jumps so the sticky topbar doesn't cover the head. */
+  scroll-margin-top: 5rem;
+}
+.docs-axis-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.docs-axis-heading h2 {
+  margin: 0;
+}
+.docs-axis-heading .blog-row-icon {
+  color: var(--accent);
+}
+.docs-axis-section > .muted {
+  margin-top: 0.35rem;
+}
+.docs-axis-section .blog-table-wrap {
+  margin-top: 1rem;
+}
+.docs-axis-empty {
+  margin-top: 1rem;
+}
+
 /* Axis/blog indexes — pin title + facet filters; scroll the table only. */
 .content:has(.index-scroll-layout) {
   display: flex;

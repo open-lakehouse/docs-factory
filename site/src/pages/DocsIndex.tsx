@@ -1,16 +1,21 @@
-// AxisIndex — the shared index for the four Diátaxis axes (tutorials, how-to,
-// reference, explanation). Each axis lists ALL content of that Diátaxis type
-// across projects as the same expandable table the blog uses, filtered by the
-// active site scope (breadcrumb root) and the concept/engine facet chips
-// carried over from the old /docs index.
+// DocsIndex — the single Docs landing page. It replaces the four separate
+// Diátaxis axis pages (/tutorials, /how-to, /reference, /explanation) with one
+// route (/docs) that stacks ALL four content tables, each under its own
+// heading, and drives every table from ONE shared concept filter (the `?ref=`
+// chips) plus the active site scope.
 //
-// The `explanation` axis lists authored explanation pages like any other axis.
-// It additionally surfaces the LikeC4 estate concepts (capabilities /
-// specifications / implementations) that have NO explanation page yet as
-// explicit "No explanation yet" coverage-gap rows — so the axis is the ground
-// truth for what's explained AND what's still missing. Concepts that DO have a
-// page are already represented by their content-page row (no duplicate). There
-// is no /explain route: a concept's canonical URL is its doc page.
+// The concept facet is the only vocabulary that spans docs uniformly:
+// effectiveRefIds() (graph.ts) unions each page's `references:` and `explains:`
+// ids (and, for blogs, tag→element). Doc pages carry no free-text topic tags,
+// so the chips here are estate concepts, and toggling one filters every axis
+// table at once (AND semantics across selected concepts).
+//
+// The `explanation` section additionally surfaces the LikeC4 estate concepts
+// that have NO explanation page yet as reviewer-only "No explanation yet"
+// coverage-gap rows — so the axis is the ground truth for what's explained AND
+// what's still missing. Concepts that DO have a page are already represented by
+// their content-page row (no duplicate). There is no /explain route: a concept's
+// canonical URL is its doc page.
 import { Link, useSearchParams } from "react-router-dom";
 import { BookOpen, FileText, GraduationCap, Library, Wrench } from "lucide-react";
 import Shell from "../components/layout/Shell";
@@ -23,16 +28,12 @@ import {
   bucketByDiataxis,
   pagesByRefs,
   referencedConcepts,
+  DIATAXIS_ORDER,
   type DiataxisKey,
 } from "../graph";
 import { explainEntries, kindLabel } from "../explain";
 import { hasExplanationPage } from "../explain-bindings";
-import {
-  elementInScope,
-  filterByScope,
-  scopeAccent,
-  useScope,
-} from "../scope";
+import { elementInScope, filterByScope, scopeAccent, useScope } from "../scope";
 import {
   useContentVisibility,
   type ContentVisibility,
@@ -166,8 +167,45 @@ function coverageGapRows(scopeId: string): ContentRow[] {
     }));
 }
 
-export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
+/** One Diátaxis axis: a heading + blurb followed by its filtered content table.
+ * Anchored by axis id so `/docs#how-to` (and breadcrumb jumps) land here. */
+function AxisSection({
+  axis,
+  rows,
+  showStatus,
+  isLoading,
+  faceted,
+}: {
+  axis: DiataxisKey;
+  rows: ContentRow[];
+  showStatus: boolean;
+  isLoading: boolean;
+  faceted: boolean;
+}) {
   const meta = AXES[axis];
+  return (
+    <section id={axis} className="docs-axis-section">
+      <div className="docs-axis-heading">
+        {meta.icon}
+        <h2>{meta.title}</h2>
+      </div>
+      <p className="muted">{meta.blurb}</p>
+      {rows.length > 0 ? (
+        <ContentTable rows={rows} showStatus={showStatus} />
+      ) : (
+        <p className="muted docs-axis-empty">
+          {isLoading
+            ? `Loading ${meta.title.toLowerCase()}…`
+            : faceted
+              ? `No ${meta.title.toLowerCase()} match the current filters.`
+              : `No published ${meta.title.toLowerCase()} yet.`}
+        </p>
+      )}
+    </section>
+  );
+}
+
+export default function DocsIndex() {
   const { scopeId } = useScope();
   const vis = useContentVisibility();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -191,35 +229,49 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
     setSearchParams(next, { replace: true });
   };
 
-  // Content pages of this Diátaxis type, scope- then facet-filtered, then
-  // narrowed to what the current viewer may see (anonymous viewers get only
-  // published content; reviewers get everything — see useContentVisibility).
+  // Scope narrows first, then Diátaxis bucketing — both computed once and shared
+  // across all four axis tables so the single filter header applies equally.
   const scoped = filterByScope(pages, scopeId);
-  const bucketed = bucketByDiataxis(scoped)[axis];
-  const filtered = vis
-    .filterVisible(pagesByRefs(bucketed, activeRefs))
-    .slice()
-    .sort((a, b) =>
-      (a.frontmatter.title ?? a.slug).localeCompare(b.frontmatter.title ?? b.slug),
-    );
+  const bucketed = bucketByDiataxis(scoped);
+
+  const rowsByAxis: Record<DiataxisKey, ContentRow[]> = {
+    tutorial: [],
+    "how-to": [],
+    reference: [],
+    explanation: [],
+  };
+  for (const axis of DIATAXIS_ORDER) {
+    // Facet- then visibility-filter (anonymous viewers get only published
+    // content; reviewers get everything — see useContentVisibility), sorted by
+    // title. Then, on the explanation axis only, append the reviewer-only
+    // coverage-gap rows when no facet is active.
+    const filtered = vis
+      .filterVisible(pagesByRefs(bucketed[axis], activeRefs))
+      .slice()
+      .sort((a, b) =>
+        (a.frontmatter.title ?? a.slug).localeCompare(b.frontmatter.title ?? b.slug),
+      );
+    rowsByAxis[axis] = [
+      ...filtered.map((page) => docRow(page, vis)),
+      ...(vis.isAllowlisted && axis === "explanation" && !faceted
+        ? coverageGapRows(scopeId)
+        : []),
+    ];
+  }
 
   const conceptFacets = referencedConcepts("docs");
-  const rows: ContentRow[] = [
-    ...filtered.map((page) => docRow(page, vis)),
-    // Coverage-gap rows are an authoring/review aid (what's still unexplained),
-    // so they appear only for allowlisted viewers, only on the explanation axis,
-    // and only when facets (which key off content pages) are not active.
-    ...(vis.isAllowlisted && axis === "explanation" && !faceted
-      ? coverageGapRows(scopeId)
-      : []),
-  ];
+  const totalRows = DIATAXIS_ORDER.reduce((n, axis) => n + rowsByAxis[axis].length, 0);
 
   return (
     <Shell wide accent={scopeAccent(scopeId)}>
-      <div className="index-scroll-layout">
-        <div className="index-scroll-header">
-          <h1>{meta.title}</h1>
-          <p className="muted">{meta.blurb}</p>
+      <div className="docs-index">
+        <div className="docs-index-header">
+          <h1>Docs</h1>
+          <p className="muted">
+            Everything under <code>content/</code>, organized by Diátaxis —
+            tutorials, how-to guides, reference, and explanation. Filter by
+            concept to narrow every section at once.
+          </p>
 
           <div className="docs-facets">
             <div className="blog-tags-section">
@@ -251,23 +303,24 @@ export default function AxisIndex({ axis }: { axis: DiataxisKey }) {
             </div>
           </div>
 
-          {vis.isLoading && rows.length === 0 && (
-            <p className="muted">Loading {meta.title.toLowerCase()}…</p>
-          )}
-          {!vis.isLoading && rows.length === 0 && (
-            <p className="muted">
-              {faceted
-                ? `No ${meta.title.toLowerCase()} match the current filters.`
-                : `No published ${meta.title.toLowerCase()} yet.`}
-            </p>
+          {vis.isLoading && totalRows === 0 && <p className="muted">Loading docs…</p>}
+          {!vis.isLoading && faceted && totalRows === 0 && (
+            <p className="muted">No docs match the current filters.</p>
           )}
         </div>
 
-        {rows.length > 0 && (
-          <div className="index-scroll-body">
-            <ContentTable rows={rows} showStatus={vis.showStatusColumns} />
-          </div>
-        )}
+        <div className="docs-index-body">
+          {DIATAXIS_ORDER.map((axis) => (
+            <AxisSection
+              key={axis}
+              axis={axis}
+              rows={rowsByAxis[axis]}
+              showStatus={vis.showStatusColumns}
+              isLoading={vis.isLoading}
+              faceted={faceted}
+            />
+          ))}
+        </div>
       </div>
     </Shell>
   );

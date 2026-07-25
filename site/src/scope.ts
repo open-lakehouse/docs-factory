@@ -121,14 +121,19 @@ export function filterByScope<T extends ContentPage>(pages: T[], scopeId: string
 
 // --- URL plumbing -----------------------------------------------------------
 
-/** Append/replace `?scope=` on an href, dropping it for the "all" scope. */
+/** Append/replace `?scope=` on an href, dropping it for the "all" scope.
+ * Fragment-aware: `/docs#tutorial` → `/docs?scope=delta#tutorial`, so anchored
+ * hrefs (the per-axis section jumps on /docs) keep a valid `?query#fragment`
+ * order. */
 export function withScope(href: string, scopeId: string | null | undefined): string {
-  const [path, query = ""] = href.split("?");
+  const [beforeHash, hash = ""] = href.split("#");
+  const [path, query = ""] = beforeHash.split("?");
   const params = new URLSearchParams(query);
   params.delete("scope");
   if (isRealScope(scopeId)) params.set("scope", scopeId);
   const qs = params.toString();
-  return qs ? `${path}?${qs}` : path;
+  const fragment = hash ? `#${hash}` : "";
+  return (qs ? `${path}?${qs}` : path) + fragment;
 }
 
 export interface UseScope {

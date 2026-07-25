@@ -7,24 +7,23 @@ import { withScope } from "../scope";
 
 /**
  * Top-level site areas — the first path segment after the `~/<scope>` root.
- * The five content axes: four Diátaxis + blog.
+ * Two content areas: a single Docs page (all four Diátaxis axes) + blog.
  */
 export const SITE_SECTIONS: BreadcrumbSibling[] = [
-  { label: "tutorials", href: "/tutorials" },
-  { label: "how-to", href: "/how-to" },
-  { label: "reference", href: "/reference" },
-  { label: "explanation", href: "/explanation" },
+  { label: "docs", href: "/docs" },
   { label: "blog", href: "/blog" },
 ];
 
 const SECTION_HREF = new Map(SITE_SECTIONS.map((s) => [s.label, s.href]));
 
-/** Directory bucket (plural) → the Diátaxis axis route it lives under. */
-const BUCKET_TO_AXIS: Record<string, string> = {
-  explanation: "/explanation",
-  tutorials: "/tutorials",
-  "how-to": "/how-to",
-  reference: "/reference",
+/** Directory bucket (plural) → the anchor of its Diátaxis section on /docs.
+ * Doc-detail breadcrumbs deep-link to the right section of the single Docs
+ * page (matches the `id`s AxisSection renders in DocsIndex). */
+const BUCKET_TO_AXIS_ANCHOR: Record<string, string> = {
+  explanation: "/docs#explanation",
+  tutorials: "/docs#tutorial",
+  "how-to": "/docs#how-to",
+  reference: "/docs#reference",
 };
 
 function enrichSectionCrumb(
@@ -63,12 +62,10 @@ export function resolveRouteBreadcrumbs(
 ): BreadcrumbItemData[] {
   let items: BreadcrumbItemData[] = [];
 
-  const AXIS_PATHS = new Set(["/tutorials", "/how-to", "/reference", "/explanation"]);
-
   if (pathname === "/") {
     items = [];
-  } else if (AXIS_PATHS.has(pathname)) {
-    items = [{ label: pathname.slice(1) }];
+  } else if (pathname === "/docs") {
+    items = [{ label: "docs" }];
   } else if (pathname === "/blog") {
     items = [{ label: "blog" }];
   } else if (pathname.startsWith("/blog/")) {
@@ -95,15 +92,13 @@ export function resolveRouteBreadcrumbs(
       ];
     }
   } else if (pathname.startsWith("/docs/")) {
-    // Doc detail pages live under /docs/:project/:bucket/:slug. There is no
-    // /docs index anymore — the first crumb is the Diátaxis axis the doc's
-    // bucket maps to.
+    // Doc detail pages live under /docs/:project/:bucket/:slug. The first crumb
+    // is the single Docs page, deep-linked to the section for this doc's bucket.
     const project = params.project ?? "";
     const bucket = params.bucket ?? "";
     const slug = params.slug ?? "";
     const page = findDoc(project, bucket, slug);
-    const axisHref = BUCKET_TO_AXIS[bucket] ?? "/reference";
-    const axisLabel = axisHref.slice(1);
+    const docsHref = BUCKET_TO_AXIS_ANCHOR[bucket] ?? "/docs";
 
     const group = nav.find((g) => g.project === project);
     const activeBucket = group?.buckets.find((b) => b.bucket === bucket);
@@ -116,13 +111,13 @@ export function resolveRouteBreadcrumbs(
 
     if (!page) {
       items = [
-        { label: axisLabel, href: axisHref },
+        { label: "docs", href: docsHref },
         { label: project },
         { label: slug },
       ];
     } else {
       items = [
-        { label: axisLabel, href: axisHref },
+        { label: "docs", href: docsHref },
         {
           label: project,
           siblings: projectSiblings,

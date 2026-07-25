@@ -4,7 +4,8 @@
 // assert content-core agrees with each of the OTHER copies' formulas, so the
 // "must match" comments are enforced by CI rather than by hope.
 import { test, expect } from "bun:test";
-import { normalizeText, fingerprint, hashLineSync } from "../normalize.mjs";
+import { normalizeText, fingerprint } from "../normalize.mjs";
+import { hashLineSync } from "../hash.mjs";
 import { createHash } from "node:crypto";
 
 // The exact formulas the other copies use (kept inline here so this test fails

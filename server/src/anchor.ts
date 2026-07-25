@@ -23,8 +23,9 @@
 import { createHash } from "node:crypto";
 import type { Sql } from "./db.js";
 
-// normalize()/hashLine() are the SAME contract as content-core's normalizeText/
-// hashLineSync (site/src/content-core/normalize.mjs) and the browser client's
+// normalize()/hashLine() are the SAME contract as content-core's normalizeText
+// (site/src/content-core/normalize.mjs) / hashLineSync (site/src/content-core/
+// hash.mjs) and the browser client's
 // content-ref.ts. The server keeps its own tiny copies rather than reaching
 // across the package boundary into site/ (which would couple the Neon Function
 // bundle to the site tree); a drift test in content-core asserts all copies

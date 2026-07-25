@@ -13,13 +13,8 @@ import {
 import { ReviewState, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
-import {
-  REVIEW_BADGE_VARIANT,
-  REVIEW_STATE_LABEL,
-  reviewStateBadgeClass,
-} from "../../lib/review-status";
+import { ReviewStateBadge } from "../../lib/review-status";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -109,20 +104,7 @@ export default function ReviewControls({
 
   const busy = transition.isPending || release.isPending || reopen.isPending;
   const actions = NEXT[state] ?? [];
-  const stateLabel = REVIEW_STATE_LABEL[state] ?? "unknown";
-  const inlineStateLabel = state === ReviewState.NONE ? "not started" : stateLabel;
-  const badge = (
-    <Badge
-      variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"}
-      className={cn(
-        "review-controls-badge",
-        state === ReviewState.NONE && "review-controls-badge--idle",
-        reviewStateBadgeClass(state),
-      )}
-    >
-      {heading ? stateLabel : inlineStateLabel}
-    </Badge>
-  );
+  const badge = <ReviewStateBadge state={state} />;
 
   return (
     <div

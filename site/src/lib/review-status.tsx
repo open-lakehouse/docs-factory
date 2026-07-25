@@ -1,8 +1,9 @@
 // Shared presentation for the DB review lifecycle state (distinct from the git
 // frontmatter authoring status). The badge tones and labels live here so the
-// doc-page ReviewControls and the index tables' Review column render the state
-// identically — one source of truth for "released" vs "in review" styling.
+// doc-page ReviewControls, the index tables' Review column, and the workspace
+// inbox all render the state identically — one component, one look.
 import { ReviewState, Requirement, RequestStatus } from "../gen/docs_factory/review/v1/messages_pb";
+import { StatusBadge } from "../components/StatusBadge";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,7 @@ export const REVIEW_BADGE_VARIANT: Record<number, BadgeVariant> = {
 };
 
 export const REVIEW_STATE_LABEL: Record<number, string> = {
-  [ReviewState.NONE]: "not in review",
+  [ReviewState.NONE]: "not started",
   [ReviewState.IN_REVIEW]: "in review",
   [ReviewState.CHANGES_REQUESTED]: "changes requested",
   [ReviewState.APPROVED]: "approved",
@@ -30,11 +31,11 @@ export const REVIEW_STATE_LABEL: Record<number, string> = {
 export function reviewStateBadgeClass(state: ReviewState): string {
   switch (state) {
     case ReviewState.APPROVED:
-      return "blog-badge-ready";
+      return "status-badge-ready";
     case ReviewState.CHANGES_REQUESTED:
-      return "blog-badge-idea";
+      return "status-badge-idea";
     case ReviewState.IN_REVIEW:
-      return "blog-badge-in-review";
+      return "status-badge-in-review";
     default:
       return "";
   }
@@ -56,15 +57,22 @@ export function reviewStateDotClass(state: ReviewState | undefined): string {
   }
 }
 
-/** Colored badge for a review state, matching the doc-page ReviewControls tone. */
-export function ReviewStateBadge({ state }: { state: ReviewState }) {
+/** Colored badge for a review state — shared by tables, dashboards, and ReviewControls. */
+export function ReviewStateBadge({
+  state,
+  className,
+}: {
+  state: ReviewState;
+  className?: string;
+}) {
   return (
-    <Badge
+    <StatusBadge
       variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"}
-      className={cn("review-state-badge", reviewStateBadgeClass(state))}
+      toneClass={reviewStateBadgeClass(state)}
+      className={cn(state === ReviewState.NONE && "status-badge--idle", className)}
     >
       {REVIEW_STATE_LABEL[state] ?? "unknown"}
-    </Badge>
+    </StatusBadge>
   );
 }
 

@@ -5,9 +5,8 @@
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import type { ContentPage } from "../../../content";
 import { useAuth } from "../../../lib/auth-context";
-import { statusBadgeClass } from "../../../lib/frontmatter-status";
-import { cn } from "@/lib/utils";
 import AuthorBadge from "../../AuthorBadge";
+import { FrontmatterStatusBadge } from "../../StatusBadge";
 import ReviewControls from "../ReviewControls";
 import RequestReviewControl from "../RequestReviewControl";
 
@@ -25,9 +24,7 @@ export default function ReviewTabChrome({
   return (
     <div className="review-tab-chrome" aria-label="Page metadata and review">
       <div className="review-tab-chrome-meta">
-        {fm.status && (
-          <span className={cn("blog-badge", statusBadgeClass(fm.status))}>{fm.status}</span>
-        )}
+        {fm.status && <FrontmatterStatusBadge status={fm.status} />}
         {isBlog && fm.series && (
           <span className="review-tab-chrome-series">{fm.series}</span>
         )}

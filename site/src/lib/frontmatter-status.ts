@@ -7,9 +7,9 @@
 export function statusBadgeClass(status: string | undefined): string {
   switch ((status ?? "").toLowerCase()) {
     case "ready":
-      return "blog-badge-ready";
+      return "status-badge-ready";
     case "idea":
-      return "blog-badge-idea";
+      return "status-badge-idea";
     default:
       return "";
   }

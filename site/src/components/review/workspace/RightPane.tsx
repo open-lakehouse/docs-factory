@@ -6,7 +6,6 @@
 //   2. A portal slot the ACTIVE tab fills with its own comment view (Phase 2).
 //      The slot lives here; the active ReviewTab renders into it from inside its
 //      ReviewProvider so the comments follow the active tab for free.
-import { type RefObject } from "react";
 import type { ContentRef, RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { ReviewRequestBadge, ReviewStateBadge } from "../../../lib/review-status";
 import { useReviewInbox } from "../../../lib/review-inbox";
@@ -42,9 +41,9 @@ function OpenRow({
 }
 
 export default function RightPane({
-  slotRef,
+  setSlot,
 }: {
-  slotRef: RefObject<HTMLDivElement | null>;
+  setSlot: (el: HTMLDivElement | null) => void;
 }) {
   const { openTab } = useWorkspaceTabs();
   const { pending, recent, toMe } = useReviewInbox();
@@ -59,10 +58,14 @@ export default function RightPane({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
-      {/* Active tab's comments render here via portal (Phase 2). */}
-      <div ref={slotRef} className="border-b" />
+      {/* Active tab's comment view renders here via portal — it follows the
+          active tab (see ReviewTab + right-pane-slot). */}
+      <div ref={setSlot} className="border-b empty:hidden" />
 
       <div className="review-dashboard p-3">
+        <p className="px-1 pb-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
+          Inbox
+        </p>
         <section className="review-dash-section">
           <h2>Pending review</h2>
           {pending.length === 0 ? (

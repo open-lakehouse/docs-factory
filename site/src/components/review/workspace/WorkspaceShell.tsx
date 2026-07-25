@@ -3,11 +3,12 @@
 // keyboard-resizable (recipe adapted from the sibling mangrove explorer). All
 // open tabs stay mounted in the middle column; only the active one is visible
 // and "live" (see ReviewTab).
-import { type CSSProperties, useCallback, useRef } from "react";
+import { type CSSProperties, useCallback, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useSidebarWidth } from "../../../lib/useSidebarWidth";
 import { ExpansionProvider } from "./expansion-context";
 import { WorkspaceTabsProvider, useWorkspaceTabs } from "./workspace-tabs-context";
+import { RightPaneSlotContext } from "./right-pane-slot";
 import ReviewTree from "./ReviewTree";
 import TabBar from "./TabBar";
 import ReviewTab from "./ReviewTab";
@@ -57,7 +58,9 @@ function ResizeHandle({
 function WorkspaceLayout() {
   const { tabs, activeToken } = useWorkspaceTabs();
   const containerRef = useRef<HTMLDivElement>(null);
-  const rightSlotRef = useRef<HTMLDivElement>(null);
+  // Held in state (via a callback ref) so the active tab re-renders and portals
+  // its comment view in once the slot node mounts.
+  const [rightSlot, setRightSlot] = useState<HTMLDivElement | null>(null);
 
   const left = useSidebarWidth({ storageKey: "docs.review.left-w", min: 220, max: 480, default: 288 });
   const right = useSidebarWidth({ storageKey: "docs.review.right-w", min: 280, max: 640, default: 380 });
@@ -136,33 +139,37 @@ function WorkspaceLayout() {
         />
       </div>
 
-      {/* Middle: tab strip + all open tabs (only the active one is visible). */}
-      <div className="flex min-h-0 flex-col">
-        <TabBar />
-        {tabs.length === 0 ? (
-          <div className="flex flex-1 items-center justify-center p-8 text-center text-muted-foreground">
-            Select a page from the tree to open it here.
-          </div>
-        ) : (
-          tabs.map((tab) => (
-            <ReviewTab key={tab.token} contentRef={tab.ref} isActive={tab.token === activeToken} />
-          ))
-        )}
-      </div>
+      {/* Middle: tab strip + all open tabs (only the active one is visible).
+          The active tab portals its comment view into the right pane's slot,
+          so it must sit under the slot-context provider. */}
+      <RightPaneSlotContext.Provider value={rightSlot}>
+        <div className="flex min-h-0 flex-col">
+          <TabBar />
+          {tabs.length === 0 ? (
+            <div className="flex flex-1 items-center justify-center p-8 text-center text-muted-foreground">
+              Select a page from the tree to open it here.
+            </div>
+          ) : (
+            tabs.map((tab) => (
+              <ReviewTab key={tab.token} contentRef={tab.ref} isActive={tab.token === activeToken} />
+            ))
+          )}
+        </div>
 
-      {/* Right: review pane */}
-      <div className="relative flex min-h-0 flex-col border-l bg-sidebar">
-        <ResizeHandle
-          side="right"
-          width={right.width}
-          min={right.min}
-          max={right.max}
-          onStart={startRightDrag}
-          onKey={keyFor(right)}
-          dragging={right.isDragging}
-        />
-        <RightPane slotRef={rightSlotRef} />
-      </div>
+        {/* Right: review pane */}
+        <div className="relative flex min-h-0 flex-col border-l bg-sidebar">
+          <ResizeHandle
+            side="right"
+            width={right.width}
+            min={right.min}
+            max={right.max}
+            onStart={startRightDrag}
+            onKey={keyFor(right)}
+            dragging={right.isDragging}
+          />
+          <RightPane setSlot={setRightSlot} />
+        </div>
+      </RightPaneSlotContext.Provider>
     </div>
   );
 }

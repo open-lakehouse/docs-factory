@@ -9,10 +9,13 @@
 // portals, CSS Custom Highlights, and document-level listeners never paint over
 // the active tab (see the Phase 0 refactor).
 import { useRef } from "react";
+import { createPortal } from "react-dom";
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { SelectionProvider } from "../selection-context";
 import { ReviewProvider } from "../review-context";
 import ReviewSurfaces from "../ReviewSurfaces";
+import CommentSidebar from "../CommentSidebar";
+import { useRightPaneSlot } from "./right-pane-slot";
 import MdxProvider from "../../../MdxProvider";
 import RelatedContent from "../../RelatedContent";
 import { findBlog, findDoc, type ContentPage } from "../../../content";
@@ -31,11 +34,12 @@ export default function ReviewTab({
   isActive: boolean;
 }) {
   const articleRef = useRef<HTMLElement>(null);
+  const slot = useRightPaneSlot();
   const page = pageFor(contentRef);
 
   return (
     <SelectionProvider>
-      <ReviewProvider contentRef={contentRef}>
+      <ReviewProvider contentRef={contentRef} isActive={isActive}>
         {/* Kept mounted when inactive (preserve scroll/DOM) but visually hidden. */}
         <div className="min-h-0 flex-1 overflow-y-auto" hidden={!isActive}>
           {page ? (
@@ -54,6 +58,18 @@ export default function ReviewTab({
           )}
         </div>
         <ReviewSurfaces contentRef={contentRef} articleRef={articleRef} isActive={isActive} />
+        {/* The active tab's comment rail lives in the right pane. Portaled from
+            inside this tab's ReviewProvider, so it reads THIS tab's threads,
+            selection, and articleRef — the right pane follows the active tab
+            with no cross-provider state lifting. */}
+        {isActive &&
+          slot &&
+          createPortal(
+            <div className="review-rail-body p-3">
+              <CommentSidebar articleRef={articleRef} />
+            </div>,
+            slot,
+          )}
       </ReviewProvider>
     </SelectionProvider>
   );

@@ -200,6 +200,65 @@ body {
 .workspace-section-divider { border-bottom: 1px solid var(--workspace-border); }
 .workspace-tab { border-right: 1px solid var(--workspace-border); }
 
+/* Per-tab metadata + review chrome: flex sibling above the article scroll pane. */
+.review-tab-chrome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem 1rem;
+  flex: none;
+  padding: 0.45rem 0.85rem;
+  border-bottom: 1px solid var(--workspace-border);
+  background: color-mix(in srgb, var(--sidebar) 70%, var(--background));
+}
+.review-tab-chrome-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.75rem;
+  min-width: 0;
+}
+.review-tab-chrome-series {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+.review-tab-chrome-muted {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.review-tab-chrome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.85rem;
+  margin-left: auto;
+}
+.review-tab-chrome .request-review-control {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.65rem;
+}
+.review-tab-chrome .request-review-open-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  margin: 0;
+}
+.review-tab-chrome .request-review-open-row {
+  margin: 0;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--workspace-border);
+  border-radius: 0.3rem;
+  background: var(--surface);
+  font-size: 0.75rem;
+}
+
 /* Console navbar — pure black, mono-forward */
 .topbar {
   display: flex;

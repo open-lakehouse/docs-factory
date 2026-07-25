@@ -19,9 +19,11 @@ import { ScrollContainerProvider } from "../scroll-container-context";
 import { useRightPaneSlot } from "./right-pane-slot";
 import { useDeepLinkTarget } from "./use-deep-link-target";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
+import ReviewTabChrome from "./ReviewTabChrome";
 import MdxProvider from "../../../MdxProvider";
 import RelatedContent from "../../RelatedContent";
 import { findBlog, findDoc, type ContentPage } from "../../../content";
+import { cn } from "@/lib/utils";
 
 function pageFor(ref: ContentRef): ContentPage | undefined {
   return ref.area === ContentArea.BLOGS
@@ -98,28 +100,34 @@ function ReviewTabBody({
       {/* The tabpanel for this tab, tied to its tab in the strip (aria-labelledby)
           for the ARIA tablist relationship. Kept mounted when inactive (preserve
           scroll/DOM) but visually hidden; only the active panel is a tab stop so
-          focus can move from the tab into its content. */}
+          focus can move from the tab into its content. Chrome sits above the
+          scroll pane as a flex sibling so it stays put while the article scrolls. */}
       <div
-        ref={setScrollPane}
         id={tabPanelDomId(token)}
         role="tabpanel"
         aria-labelledby={tabDomId(token)}
         tabIndex={isActive ? 0 : -1}
-        className="min-h-0 flex-1 overflow-y-auto focus-visible:outline-none"
+        className={cn(
+          "flex min-h-0 flex-1 flex-col focus-visible:outline-none",
+          !isActive && "hidden",
+        )}
         hidden={!isActive}
       >
-        {page ? (
-          <article className="prose mx-auto max-w-3xl px-6 py-8" ref={articleRef}>
-            {page.frontmatter.title && <h1>{page.frontmatter.title}</h1>}
-            {page.frontmatter.summary && <p className="lead muted">{page.frontmatter.summary}</p>}
-            <MdxProvider>
-              <page.Component />
-            </MdxProvider>
-            <RelatedContent page={page} />
-          </article>
-        ) : (
-          <p className="p-6 text-muted-foreground">Content not found: {contentRef.slug}</p>
-        )}
+        {page && <ReviewTabChrome contentRef={contentRef} page={page} />}
+        <div ref={setScrollPane} className="min-h-0 flex-1 overflow-y-auto">
+          {page ? (
+            <article className="prose mx-auto max-w-3xl px-6 py-8" ref={articleRef}>
+              {page.frontmatter.title && <h1>{page.frontmatter.title}</h1>}
+              {page.frontmatter.summary && <p className="lead muted">{page.frontmatter.summary}</p>}
+              <MdxProvider>
+                <page.Component />
+              </MdxProvider>
+              <RelatedContent page={page} />
+            </article>
+          ) : (
+            <p className="p-6 text-muted-foreground">Content not found: {contentRef.slug}</p>
+          )}
+        </div>
       </div>
       <ReviewSurfaces
         contentRef={contentRef}

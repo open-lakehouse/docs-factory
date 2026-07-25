@@ -36,10 +36,9 @@ All `.md` / `.mdx` files share one pipeline (`vite.config.ts`):
 
 | Plugin | Effect |
 |---|---|
-| `remark-code-snippets` | Resolve `file=`/`start=`/`end=` fences |
+| `remark-code-snippets` | Resolve `file=`/`start=`/`end=` fences (via `src/content-core/fences.mjs`) |
 | `remark-callouts` | `:::tip` → `<Callout>` |
 | `remark-journey` | `::::journey` → timeline steps |
-| `remark-tabs` | `::::tabs` / `:::tab[Label]` → synced engine tabs |
 | `remark-fence-meta` | Attach filename/lang metadata for code chrome |
 | `remark-likec4-views` | `likec4=<viewId>` images → interactive views |
 | `remark-resolve-images` | Relative `./assets/` paths → Vite `/@fs/` URLs |

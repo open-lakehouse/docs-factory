@@ -6,7 +6,7 @@ consistent and agent-discoverable, without coupling to any static-site generator
 ```console
 $ docsnip validate       # check frontmatter (controlled vocabularies, required fields)
 $ docsnip snippetcheck   # verify every snippet fence resolves to a unique source region
-$ docsnip generate       # (re)generate site-artifacts/ (manifest + per-project llms.txt)
+$ docsnip generate       # (re)generate site-artifacts/ (per-project llms.txt)
 $ docsnip check          # CI: validate + snippetcheck + assert artifacts are up to date
 ```
 

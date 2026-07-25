@@ -51,8 +51,9 @@ flowchart LR
 ```
 
 The site reads `dist/model.json` live (via the `likec4:single-project` Vite plugin
-over `architecture/model`) to drive `ui`; the only generated artifacts are
-`*.llms.txt` and `examples-manifest.json`.
+over `architecture/model`) to drive `ui`; the only generated artifact is the
+per-project `*.llms.txt`. (The former `examples-manifest.json` — an engine/coverage
+matrix nothing consumed — was removed; see [`build-pipeline.md`](./build-pipeline.md) §10.)
 
 ### 1.1 Tags gain optional structure (backward-compatible)
 
@@ -134,8 +135,8 @@ derives, per element:
   (frontmatter `references:` ∪ its tags' `element:` ids) include this element. This
   drives the "Referenced by" list on each `/explain/<id>` page.
 
-`docsnip generate` continues to emit only `examples-manifest.json` and the
-per-project `*.llms.txt`; no `graph.json` or other join file is written.
+`docsnip generate` emits only the per-project `*.llms.txt`; no `graph.json`,
+`examples-manifest.json`, or other join file is written.
 
 ## 3. Validation & coverage (tiered gate)
 

@@ -3,7 +3,7 @@
 # dependencies = ["unitycatalog-client>=0.5"]
 #
 # [tool.docs-factory]
-# compose = "docker-compose.uc.yml"
+# compose = "compose.yml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # ///

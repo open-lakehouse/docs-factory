@@ -47,7 +47,7 @@ def _engine_of(src: str) -> str | None:
     return m.group("engine") if m else None
 
 
-def build(content_root: Path, examples_root: Path) -> dict:
+def build(content_root: Path) -> dict:
     """Build the manifest dict from the inline snippet fences on content pages."""
     # Records keyed by (engine, region) so the same example referenced from
     # several pages collapses to one record with a merged referenced_by list.
@@ -94,8 +94,8 @@ def build(content_root: Path, examples_root: Path) -> dict:
     return {"schema_version": 2, "examples": records}
 
 
-def write(content_root: Path, examples_root: Path, out_path: Path) -> Path:
-    manifest = build(content_root, examples_root)
+def write(content_root: Path, out_path: Path) -> Path:
+    manifest = build(content_root)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(manifest, indent=2) + "\n")
     return out_path

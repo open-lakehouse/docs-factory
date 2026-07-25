@@ -144,11 +144,7 @@ def cmd_snippetcheck(p) -> int:
 
 
 def _write_artifacts(p) -> list[Path]:
-    written = [
-        manifest.write(
-            p["content"], p["examples"], p["artifacts"] / "examples-manifest.json"
-        )
-    ]
+    written = [manifest.write(p["content"], p["artifacts"] / "examples-manifest.json")]
     for project, url_base in URL_BASES.items():
         if (p["content"] / project).is_dir():
             written.append(

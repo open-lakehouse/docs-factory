@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
 // Badge tone per review state: released = solid, approved = ready-green,
-// changes-requested = amber, in-review = blue, none = muted outline.
+// changes-requested = amber, in-review = purple, none = muted outline.
 export const REVIEW_BADGE_VARIANT: Record<number, BadgeVariant> = {
   [ReviewState.NONE]: "outline",
   [ReviewState.IN_REVIEW]: "outline",

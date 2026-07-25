@@ -2162,12 +2162,12 @@ a.blog-row-title:hover { color: var(--accent); }
   background: color-mix(in srgb, #b7791f 12%, transparent);
   border-color: color-mix(in srgb, #b7791f 30%, transparent);
 }
-/* In review: active lifecycle — blue so it reads apart from ready-green and
+/* In review: active lifecycle — purple so it reads apart from ready-green and
  * changes-requested amber (and from the muted "not started" idle tone). */
 .blog-badge-in-review {
-  color: #3d7ec9;
-  background: color-mix(in srgb, #3d7ec9 12%, transparent);
-  border-color: color-mix(in srgb, #3d7ec9 30%, transparent);
+  color: #8b5cf6;
+  background: color-mix(in srgb, #8b5cf6 12%, transparent);
+  border-color: color-mix(in srgb, #8b5cf6 30%, transparent);
 }
 
 /* Compact status dots in the review workspace content tree (frontmatter +
@@ -2191,7 +2191,7 @@ a.blog-row-title:hover { color: var(--accent); }
   opacity: 0.45;
 }
 .tree-status-dot-in-review {
-  background: #3d7ec9;
+  background: #8b5cf6;
 }
 .tree-status-dot-released {
   background: #4f9c5a;

@@ -36,7 +36,14 @@ export function normalize(s: string): string {
 }
 
 export function hashLine(line: string): string {
-  return createHash("sha256").update(line.replace(/\s+$/, "")).digest("hex").slice(0, 16);
+  // Trim BOTH ends, not just trailing. The browser captures this hash from the
+  // rendered snippet, which resolveFence has already dedented, so its lines have
+  // no leading indentation; but the server re-anchor (reanchorCodeThreads Tier
+  // 2) hashes full source lines that still carry their original indentation.
+  // Trimming leading whitespace too makes the hash dedent-invariant so the two
+  // sides agree for indented snippet regions. Same contract as content-core
+  // hashLineSync / content-ref.ts hashLine; the drift test asserts parity.
+  return createHash("sha256").update(line.trim()).digest("hex").slice(0, 16);
 }
 
 export interface NewSection {

@@ -17,7 +17,7 @@ cd site && bun run check  # likec4 validate over architecture/model
 ## What it does — and does NOT — touch
 
 - **Reads content in place.** Nothing is copied; `import.meta.glob` loads files
-  from `../content/` and `../blogs/*/draft.md`.
+  from `../content/` and `../blogs/*/index.md`.
 - **Never edits source files.** Richness (interactive diagrams, callouts, tabs,
   journeys) is added by remark plugins here — never by putting JSX into the content.
 - **Is not wired into CI** (optional smoke: `bun run build` in CI). Produces no

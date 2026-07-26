@@ -27,9 +27,9 @@ export function walk(dir, exts) {
   return out;
 }
 
-/** Every blog draft (a draft.md at any depth under blogsDir). */
+/** Every blog post (an index.md at any depth under blogsDir). */
 export function walkBlogs(blogsDir) {
-  return walk(blogsDir, [".md"]).filter((p) => p.endsWith("/draft.md"));
+  return walk(blogsDir, [".md"]).filter((p) => p.endsWith("/index.md"));
 }
 
 /** Every content page (.md or .mdx, README excluded). */

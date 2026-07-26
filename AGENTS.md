@@ -22,7 +22,7 @@ lakehouse we document. The dividing line is `architecture/adr/ADR-0002`.
 
 ```
 content/          Diátaxis-organized Markdown + colocated, tested snippets/ per page (tutorials / how-to / reference / explanation)
-blogs/            narrative blog drafts (draft.md + assets/ + snippets/ per post) + STORYLINE
+blogs/            narrative blog drafts (index.md + assets/ + snippets/ per post) + STORYLINE
 emit/             deterministic blog draft → flattened Markdown (Google Docs today)
 seed/             docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
 tools/docsnip/    content validation tooling (frontmatter validate, snippet check)

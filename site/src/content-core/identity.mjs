@@ -37,7 +37,7 @@ export function stripOrderPrefix(segment) {
   return segment.replace(/^\d+-/, "");
 }
 
-/** Blog slug = the folder name (the slug dir under blogs holding draft.md). */
+/** Blog slug = the folder name (the slug dir under blogs holding index.md). */
 export function slugFromBlogPath(path) {
   const parts = path.split("/");
   return parts[parts.length - 2] ?? path;
@@ -76,9 +76,9 @@ export function slugFromPath(filePath) {
  * manifest registers, so it must match the site's blogRef/docRef exactly.
  */
 export function docIdentity(path, meta = {}) {
-  // A blog draft is `blogs/<slug>/draft.md` (walkBlogs yields absolute paths, so
+  // A blog post is `blogs/<slug>/index.md` (walkBlogs yields absolute paths, so
   // match `/blogs/` or a leading `blogs/`). Everything else is a doc page.
-  if (path.endsWith("/draft.md") && /(^|\/)blogs\//.test(path)) {
+  if (path.endsWith("/index.md") && /(^|\/)blogs\//.test(path)) {
     return { area: "blogs", slug: slugFromBlogPath(path) };
   }
   const { project, bucket, slug: pathSlug } = parseDocPath(path);

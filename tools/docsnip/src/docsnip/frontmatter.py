@@ -37,7 +37,7 @@ PROJECTS = vocab.projects()
 # the intersection of author intent (git) and review outcome (DB), never git
 # alone. The old intermediate blog stages (brief/drafting/refining/
 # publish-ready/published) collapse into these three; "which stage of draft" is
-# now signalled by which files exist (brief.md vs draft.md) and by the DB review
+# now signalled by which files exist (brief.md vs index.md) and by the DB review
 # lifecycle, not a frontmatter enum. See server/src/services/review.ts.
 STATUSES = {"idea", "draft", "ready"}
 

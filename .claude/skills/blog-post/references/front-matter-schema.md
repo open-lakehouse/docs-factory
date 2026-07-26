@@ -1,6 +1,6 @@
 # Front-matter schema
 
-Both `brief.md` and `draft.md` open with a YAML `---` block. Field names align with
+Both `brief.md` and `index.md` open with a YAML `---` block. Field names align with
 MkDocs Material / Docusaurus so a post ports to a real publishing target with
 minimal reshaping. This mirrors `blogs/CONVENTIONS.md` §3 — that file wins if they
 ever diverge.

@@ -2,7 +2,7 @@
 /**
  * emit.mjs — the deterministic emitter core.
  *
- * Resolve a canonical blog draft (blogs/<slug>/draft.md) and FLATTEN its rich
+ * Resolve a canonical blog draft (blogs/<slug>/index.md) and FLATTEN its rich
  * constructs into portable, self-contained Markdown for a downstream target, plus
  * an image manifest. See emit/README.md and blogs/CONVENTIONS.md §5.
  *
@@ -235,9 +235,9 @@ function generateLikeC4WebComponent(modelDir, outFile, hasLikeC4Refs) {
 // --- delivery sidecar (idempotency) ---------------------------------------
 
 // Each post carries its delivery state in a committed sidecar dotfile next to
-// draft.md: `blogs/<slug>/.emitted.json`, keyed by target →
+// index.md: `blogs/<slug>/.emitted.json`, keyed by target →
 // { doc_id, url, updated }. Self-contained in the post folder (so it travels with
-// the post, no global registry) while keeping draft.md itself PURE — no tooling
+// the post, no global registry) while keeping index.md itself PURE — no tooling
 // state in the canonical source. The core READS it (create-vs-update hint); the
 // /blog-emit skill WRITES it after a create. A dotfile so it reads as tooling
 // metadata, not content; committed (only dist/ is gitignored).
@@ -264,7 +264,7 @@ async function main() {
 
   const target = await loadTarget(targetName);
   const draftDir = join(REPO_ROOT, "blogs", slug);
-  const draftPath = join(draftDir, "draft.md");
+  const draftPath = join(draftDir, "index.md");
   if (!existsSync(draftPath)) throw new Error(`draft not found: ${draftPath}`);
 
   // dist/ root holds the shared, target-agnostic LikeC4 PNG export; each target's
@@ -356,7 +356,7 @@ async function main() {
   // Existing delivery (if any) for this target — the create-vs-update hint. It
   // lives in the post's sidecar `.emitted.json` (keyed by target), self-contained
   // in blogs/<slug>/ so the mapping travels with the post (no global registry) and
-  // draft.md stays pure. The delivery skill writes this key back after a create.
+  // index.md stays pure. The delivery skill writes this key back after a create.
   const existing = readSidecar(draftDir)[targetName] ?? null;
 
   const outName = target.outputFile ?? `${slug}.md`;

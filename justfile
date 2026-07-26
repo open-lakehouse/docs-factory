@@ -27,7 +27,7 @@ _site-deps:
 
 # --- Emit a blog draft to a downstream target ------------------------------
 
-# Emit blogs/<slug>/draft.md to a target's flattened Markdown (default gdocs).
+# Emit blogs/<slug>/index.md to a target's flattened Markdown (default gdocs).
 # Produces blogs/<slug>/dist/<slug>.md + assets.json. See emit/README.md.
 emit slug target="gdocs": _emit-deps
     cd emit && bun emit.mjs --slug {{slug}} --target {{target}}

@@ -30,7 +30,7 @@ test("a frontmatter slug: overrides the on-disk name", () => {
 });
 
 test("blog draft resolves to its folder slug", () => {
-  const id = docIdentity("blogs/kernel-becomes-tree/draft.md", {});
+  const id = docIdentity("blogs/kernel-becomes-tree/index.md", {});
   expect(id).toEqual({ area: "blogs", slug: "kernel-becomes-tree" });
 });
 

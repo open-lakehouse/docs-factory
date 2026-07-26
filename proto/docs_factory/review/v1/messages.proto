@@ -13,7 +13,7 @@ import "google/protobuf/timestamp.proto";
 // Which content tree a piece of content lives in.
 enum ContentArea {
   CONTENT_AREA_UNSPECIFIED = 0;
-  // blogs/<slug>/draft.md
+  // blogs/<slug>/index.md
   CONTENT_AREA_BLOGS = 1;
   // content/<project>/<bucket>/<slug>.md
   CONTENT_AREA_DOCS = 2;

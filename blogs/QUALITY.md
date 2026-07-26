@@ -147,7 +147,7 @@ post. When a citability check and the voice fights, **voice wins**.
   rejected. They conflict with the stance the conventions call a feature.
 - **Schema.org Microdata** (`BlogPosting`, `FAQPage`, `HowTo`, `Person` with
   `sameAs`, `Organization` publisher) — **deferred to publishing**, not a draft
-  concern. `draft.md` is Markdown and is the source of truth; it can't carry this
+  concern. `index.md` is Markdown and is the source of truth; it can't carry this
   markup and must not be scored on it. See the publish-target section below.
 
 ## Publish-target concerns (not draft concerns)
@@ -155,7 +155,7 @@ post. When a citability check and the voice fights, **voice wins**.
 These apply **only when rendering a `publish-ready` post to an HTML target**, at
 the publish-ready → published step (§1). They are **not** part of draft scoring —
 a Markdown draft structurally can't contain them, so scoring a draft on them would
-fail every post. Run this as a checklist against the *rendered HTML*, not `draft.md`.
+fail every post. Run this as a checklist against the *rendered HTML*, not `index.md`.
 
 - **`BlogPosting` wrapper** with `headline`, `datePublished`/`dateModified` as
   machine-readable `<time>`, and `articleBody`.

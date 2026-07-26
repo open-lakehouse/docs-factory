@@ -109,11 +109,11 @@ def check_page(md_path: Path) -> list[str]:
 
 
 def check_blogs(blogs_root: Path) -> list[str]:
-    """Check snippet fences in every ``blogs/*/draft.md``."""
+    """Check snippet fences in every ``blogs/*/index.md``."""
     errors: list[str] = []
     if not blogs_root.is_dir():
         return errors
-    for md_path in sorted(blogs_root.glob("*/draft.md")):
+    for md_path in sorted(blogs_root.glob("*/index.md")):
         errors.extend(check_page(md_path))
     return errors
 

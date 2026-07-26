@@ -1,4 +1,4 @@
-"""Parse and validate YAML frontmatter on blog drafts (``blogs/*/draft.md``).
+"""Parse and validate YAML frontmatter on blog drafts (``blogs/*/index.md``).
 
 Blog frontmatter has its own required fields and tag registry (``blogs/tags.yml``),
 but shares the single canonical status vocabulary with content pages. An idea is
@@ -65,10 +65,10 @@ def validate_tag_registry(blogs_root: Path, model_ids: set[str]) -> list[str]:
 
 
 def iter_blog_drafts(blogs_root: Path):
-    """Yield parsed :class:`Page` objects for every ``blogs/*/draft.md``."""
+    """Yield parsed :class:`Page` objects for every ``blogs/*/index.md``."""
     if not blogs_root.is_dir():
         return
-    for path in sorted(blogs_root.glob("*/draft.md")):
+    for path in sorted(blogs_root.glob("*/index.md")):
         yield parse(path)
 
 

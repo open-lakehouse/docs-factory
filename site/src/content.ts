@@ -42,7 +42,7 @@ interface MdxModule {
   frontmatter?: Frontmatter;
 }
 
-const blogModules = import.meta.glob<MdxModule>("../../blogs/*/draft.md", { eager: true });
+const blogModules = import.meta.glob<MdxModule>("../../blogs/*/index.md", { eager: true });
 const docModules = import.meta.glob<MdxModule>(
   "../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}",
   { eager: true },

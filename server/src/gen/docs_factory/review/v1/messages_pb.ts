@@ -840,7 +840,7 @@ export enum ContentArea {
   UNSPECIFIED = 0,
 
   /**
-   * blogs/<slug>/draft.md
+   * blogs/<slug>/index.md
    *
    * @generated from enum value: CONTENT_AREA_BLOGS = 1;
    */

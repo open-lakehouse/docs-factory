@@ -203,7 +203,7 @@ export default function ReviewControls({
               <ChevronDown aria-hidden />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="review-actions-menu">
             {secondary.map((action) => (
               <DropdownMenuItem
                 key={action.key}

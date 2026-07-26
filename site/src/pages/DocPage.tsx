@@ -6,6 +6,7 @@ import OnThisPage from "../components/layout/OnThisPage";
 import ReviewSurfaces from "../components/review/ReviewSurfaces";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
+import ReviewPageChrome from "../components/review/ReviewPageChrome";
 import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
@@ -58,6 +59,7 @@ export default function DocPage() {
   }
 
   const { Component, frontmatter } = page;
+  const contentRef = docRef(project, bucket, slug);
 
   return (
     <Shell
@@ -72,39 +74,42 @@ export default function DocPage() {
       }
     >
       <SelectionProvider>
-      <ReviewProvider contentRef={docRef(project, bucket, slug)}>
+      <ReviewProvider contentRef={contentRef}>
       <div className="docs-grid">
         <DocsSidebar activeProject={project} activeBucket={bucket} activeSlug={slug} />
         <div className="docs-main">
-          {/* Narrow screens: heading nav above the article (desktop shows it in
-              the right aside instead). */}
-          <div className="docs-aside-mobile">
-            <OnThisPage articleRef={articleRef} />
+          <ReviewPageChrome contentRef={contentRef} page={page} />
+          <div className="docs-main-scroll">
+            {/* Narrow screens: heading nav above the article (desktop shows it in
+                the right aside instead). */}
+            <div className="docs-aside-mobile">
+              <OnThisPage articleRef={articleRef} />
+            </div>
+            <article className="prose" ref={articleRef}>
+              {frontmatter.title && <h1>{frontmatter.title}</h1>}
+              {frontmatter.summary && (
+                <p className="lead muted">{frontmatter.summary}</p>
+              )}
+              <ConceptHeader references={effectiveRefIds(page)} />
+              {frontmatter.explains && (
+                <ModelContext id={frontmatter.explains} slot="summary" />
+              )}
+              <MdxProvider>
+                <Component />
+              </MdxProvider>
+              {frontmatter.explains && (
+                <ModelContext id={frontmatter.explains} selfHref={page.href} slot="context" />
+              )}
+              <RelatedContent page={page} />
+            </article>
+            <Pager
+              prev={neighbors.prev ? { label: neighbors.prev.label, href: neighbors.prev.href } : undefined}
+              next={neighbors.next ? { label: neighbors.next.label, href: neighbors.next.href } : undefined}
+            />
           </div>
-          <article className="prose" ref={articleRef}>
-            {frontmatter.title && <h1>{frontmatter.title}</h1>}
-            {frontmatter.summary && (
-              <p className="lead muted">{frontmatter.summary}</p>
-            )}
-            <ConceptHeader references={effectiveRefIds(page)} />
-            {frontmatter.explains && (
-              <ModelContext id={frontmatter.explains} slot="summary" />
-            )}
-            <MdxProvider>
-              <Component />
-            </MdxProvider>
-            {frontmatter.explains && (
-              <ModelContext id={frontmatter.explains} selfHref={page.href} slot="context" />
-            )}
-            <RelatedContent page={page} />
-          </article>
-          <Pager
-            prev={neighbors.prev ? { label: neighbors.prev.label, href: neighbors.prev.href } : undefined}
-            next={neighbors.next ? { label: neighbors.next.label, href: neighbors.next.href } : undefined}
-          />
         </div>
-        <DocAside articleRef={articleRef} contentRef={docRef(project, bucket, slug)} />
-        <ReviewSurfaces contentRef={docRef(project, bucket, slug)} articleRef={articleRef} />
+        <DocAside articleRef={articleRef} contentRef={contentRef} />
+        <ReviewSurfaces contentRef={contentRef} articleRef={articleRef} />
       </div>
       </ReviewProvider>
       </SelectionProvider>

@@ -15,8 +15,6 @@ import OnThisPage from "./OnThisPage";
 import BlogContributors from "./BlogContributors";
 import TagList from "../TagList";
 import CommentSidebar from "../review/CommentSidebar";
-import ReviewControls from "../review/ReviewControls";
-import RequestReviewControl from "../review/RequestReviewControl";
 import ContentEventTimeline from "../review/ContentEventTimeline";
 import { useSelectionState } from "../review/selection-context";
 import { useReview } from "../review/review-context";
@@ -61,9 +59,7 @@ export default function BlogAside({ articleRef, contentRef, byline, tags = [] }:
   );
 
   const reviewRail = reviewActive ? (
-    <section className="blog-aside-review" aria-label="Review actions">
-      <ReviewControls contentRef={contentRef} layout="aside" heading="Review" />
-      <RequestReviewControl contentRef={contentRef} />
+    <section className="blog-aside-review" aria-label="Review history">
       <ContentEventTimeline contentRef={contentRef} />
     </section>
   ) : null;
@@ -80,12 +76,6 @@ export default function BlogAside({ articleRef, contentRef, byline, tags = [] }:
       <div className="blog-aside-mobile">
         <div className="blog-aside-body">{navContent}</div>
       </div>
-
-      {reviewActive && (
-        <div className="review-dock" aria-label="Review actions">
-          <ReviewControls contentRef={contentRef} layout="dock" />
-        </div>
-      )}
 
       {showComments && reviewActive && (
         <Button

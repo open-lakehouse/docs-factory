@@ -14,8 +14,6 @@ import {
 } from "@/components/ui/sheet";
 import { useAuth } from "../../lib/auth-context";
 import OnThisPage from "./OnThisPage";
-import ReviewControls from "../review/ReviewControls";
-import RequestReviewControl from "../review/RequestReviewControl";
 import ContentEventTimeline from "../review/ContentEventTimeline";
 import CommentSidebar from "../review/CommentSidebar";
 import { useSelectionState } from "../review/selection-context";
@@ -39,9 +37,7 @@ export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
   }, [pending, showComments]);
 
   const reviewRail = reviewActive ? (
-    <section className="blog-aside-review" aria-label="Review actions">
-      <ReviewControls contentRef={contentRef} layout="aside" heading="Review" />
-      <RequestReviewControl contentRef={contentRef} />
+    <section className="blog-aside-review" aria-label="Review history">
       <ContentEventTimeline contentRef={contentRef} />
     </section>
   ) : null;
@@ -57,14 +53,6 @@ export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
           {showComments && <CommentSidebar articleRef={articleRef} />}
         </div>
       </div>
-
-      {/* Narrow screens: review transition controls dock to the bottom (the
-          desktop rail above is hidden), mirroring the blog review dock. */}
-      {reviewActive && (
-        <div className="review-dock" aria-label="Review actions">
-          <ReviewControls contentRef={contentRef} layout="dock" />
-        </div>
-      )}
 
       {/* Narrow screens: a floating toggle opens the comment rail in a drawer. */}
       {showComments && (

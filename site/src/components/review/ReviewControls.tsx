@@ -2,7 +2,7 @@
 // Allowlisted viewers see the current review state (distinct from the git
 // frontmatter authoring status) and can advance it; maintainers can Release.
 // Reads state from listDrafts (small list) and mutates via connect-query.
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useQuery, useMutation } from "@connectrpc/connect-query";
 import {
   listDrafts,
@@ -15,8 +15,15 @@ import { useAuth } from "../../lib/auth-context";
 import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
 import { ReviewStateBadge } from "../../lib/review-status";
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -50,12 +57,16 @@ export default function ReviewControls({
   contentRef,
   layout = "inline",
   heading,
+  onRequestReview,
 }: {
   contentRef: ContentRef;
   layout?: ReviewControlsLayout;
   /** When set, renders a section heading with the state badge beside it (used
    * by the blog aside) instead of a standalone `review: <state>` badge. */
   heading?: string;
+  /** Opens the shared request-review dialog. When present, requesting a review
+   * participates in the same single/dropdown action control as transitions. */
+  onRequestReview?: () => void;
 }) {
   const { isAllowlisted, isMaintainer, reviewActive } = useAuth();
   const { invalidateDrafts, invalidateContentEvents, invalidateReviewRequests } =
@@ -105,6 +116,108 @@ export default function ReviewControls({
   const busy = transition.isPending || release.isPending || reopen.isPending;
   const actions = NEXT[state] ?? [];
   const badge = <ReviewStateBadge state={state} />;
+  const size = layout === "inline" ? "xs" : "sm";
+  type ActionOption = {
+    key: string;
+    label: string;
+    variant?: TransitionVariant;
+    disabled?: boolean;
+    run: () => void | Promise<void>;
+  };
+  // Happy-path transitions first (Start review / Approve / Release), then
+  // secondary transitions, then request-review. The first `default` option
+  // becomes the split-button primary; remaining options open from the chevron.
+  const actionOptions: ActionOption[] = actions.map((action) => ({
+    key: `state-${action.to}`,
+    label: action.label,
+    variant: action.variant,
+    run: () => go(action.to),
+  }));
+
+  if (state === ReviewState.APPROVED && isMaintainer) {
+    actionOptions.unshift({
+      key: "release",
+      label: "Release",
+      variant: "default",
+      disabled: openRequired > 0,
+      run: doRelease,
+    });
+  }
+  if (state === ReviewState.RELEASED && isMaintainer) {
+    actionOptions.push({
+      key: "request-changes-published",
+      label: "Request changes",
+      variant: "outline",
+      run: () => setReopenOpen(true),
+    });
+  }
+  if (onRequestReview) {
+    actionOptions.push({
+      key: "request-review",
+      label: "Request review",
+      variant: "outline",
+      run: onRequestReview,
+    });
+  }
+
+  const primaryIdx = Math.max(
+    0,
+    actionOptions.findIndex((action) => action.variant === "default"),
+  );
+  const primary = actionOptions[primaryIdx];
+  const secondary = actionOptions.filter((_, i) => i !== primaryIdx);
+
+  let actionControl: ReactNode = null;
+  if (actionOptions.length === 1 && primary) {
+    actionControl = (
+      <Button
+        variant={primary.variant}
+        size={size}
+        onClick={() => void primary.run()}
+        disabled={busy || primary.disabled}
+      >
+        {primary.label}
+      </Button>
+    );
+  } else if (primary && secondary.length > 0) {
+    actionControl = (
+      <div className="review-controls-split">
+        <Button
+          variant={primary.variant ?? "default"}
+          size={size}
+          onClick={() => void primary.run()}
+          disabled={busy || primary.disabled}
+          className="review-controls-split-primary"
+        >
+          {primary.label}
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={primary.variant ?? "default"}
+              size={size}
+              disabled={busy}
+              aria-label="More review actions"
+              className="review-controls-split-toggle"
+            >
+              <ChevronDown aria-hidden />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            {secondary.map((action) => (
+              <DropdownMenuItem
+                key={action.key}
+                disabled={action.disabled}
+                onSelect={() => void action.run()}
+              >
+                {action.label}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -122,52 +235,12 @@ export default function ReviewControls({
       ) : (
         badge
       )}
-      {actions.length > 0 && (
-        <div className="review-controls-actions">
-          {actions.map((t) => (
-            <Button
-              key={t.to}
-              variant={t.variant}
-              size={layout === "inline" ? "xs" : "sm"}
-              onClick={() => go(t.to)}
-              disabled={busy}
-            >
-              {t.label}
-            </Button>
-          ))}
-        </div>
-      )}
-      {state === ReviewState.APPROVED && isMaintainer && (
-        <>
-          <Button
-            size={layout === "inline" ? "xs" : "sm"}
-            onClick={doRelease}
-            disabled={busy || openRequired > 0}
-            className={layout !== "inline" ? "w-full" : undefined}
-          >
-            Release
-          </Button>
-          {openRequired > 0 && (
-            <p className="review-controls-hint muted">
-              Blocked: {openRequired} required review
-              {openRequired === 1 ? "" : "s"} still open.
-            </p>
-          )}
-        </>
-      )}
-
-      {/* Reopen a released artifact to request changes (maintainer-only, since it
-          may unpublish). RELEASED is otherwise a dead end in the button map. */}
-      {state === ReviewState.RELEASED && isMaintainer && (
-        <Button
-          variant="outline"
-          size={layout === "inline" ? "xs" : "sm"}
-          onClick={() => setReopenOpen(true)}
-          disabled={busy}
-          className={layout !== "inline" ? "w-full" : undefined}
-        >
-          Request changes
-        </Button>
+      {actionControl && <div className="review-controls-actions">{actionControl}</div>}
+      {state === ReviewState.APPROVED && isMaintainer && openRequired > 0 && (
+        <p className="review-controls-hint muted">
+          Blocked: {openRequired} required review
+          {openRequired === 1 ? "" : "s"} still open.
+        </p>
       )}
 
       <Dialog open={reopenOpen} onOpenChange={setReopenOpen}>

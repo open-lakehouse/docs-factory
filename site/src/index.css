@@ -30,7 +30,7 @@
   --color-accent-foreground: var(--foreground);
   --color-border: var(--border);
   --color-input: var(--border);
-  --color-ring: var(--accent);
+  --color-ring: var(--muted-foreground);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -231,8 +231,8 @@ body {
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
-/* Per-tab metadata + review chrome: flex sibling above the article scroll pane. */
-.review-tab-chrome {
+/* Shared page metadata + review chrome: a flex sibling above content. */
+.review-page-chrome {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -240,54 +240,54 @@ body {
   gap: 0.55rem 1rem;
   flex: none;
   padding: 0.45rem 0.85rem;
-  border-bottom: 1px solid var(--workspace-border);
+  border-bottom: 1px solid var(--workspace-border, var(--border));
   background: color-mix(in srgb, var(--sidebar) 70%, var(--background));
 }
-.review-tab-chrome-meta {
+.review-page-chrome-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.45rem 0.75rem;
   min-width: 0;
 }
-.review-tab-chrome-series {
+.review-page-chrome-series {
   font-family: var(--font-mono);
   font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--accent);
 }
-.review-tab-chrome-muted {
+.review-page-chrome-muted {
   font-size: 0.78rem;
   color: var(--muted-foreground);
 }
-.review-tab-chrome-actions {
+.review-page-chrome-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.55rem 0.85rem;
   margin-left: auto;
 }
-.review-tab-chrome .status-badge--idle {
-  border-color: var(--workspace-border);
+.review-page-chrome .status-badge--idle {
+  border-color: var(--workspace-border, var(--border));
 }
-.review-tab-chrome .request-review-control {
+.review-page-chrome .request-review-control {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem 0.65rem;
 }
-.review-tab-chrome .request-review-open-list {
+.review-page-chrome .request-review-open-list {
   display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem 0.55rem;
   margin: 0;
 }
-.review-tab-chrome .request-review-open-row {
+.review-page-chrome .request-review-open-row {
   margin: 0;
   padding: 0.1rem 0.35rem;
-  border: 1px solid var(--workspace-border);
+  border: 1px solid var(--workspace-border, var(--border));
   border-radius: 0.3rem;
   background: var(--surface);
   font-size: 0.75rem;
@@ -1414,6 +1414,74 @@ body {
   padding-bottom: 4rem;
 }
 .docs-main .prose { max-width: 42rem; }
+
+/* Desktop docs pages: lock the shell to the viewport and scroll only the
+   article column. Sticky chrome was jittery (rails travel until they latch);
+   fixed positioning pulled them out of the grid and broke column alignment.
+   Same recipe as .index-scroll-layout / .review-workspace-layout. */
+@media (min-width: 961px) {
+  body:has(.docs-grid),
+  #root:has(.docs-grid) {
+    overflow: hidden;
+  }
+  .shell:has(.docs-grid) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+  .shell:has(.docs-grid) .topbar {
+    flex: none;
+    position: static;
+  }
+  .shell:has(.docs-grid) > .content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  .shell:has(.docs-grid) .docs-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    align-items: stretch;
+  }
+  .shell:has(.docs-grid) .sidebar {
+    position: static;
+    top: auto;
+    max-height: none;
+    overflow-y: auto;
+  }
+  .shell:has(.docs-grid) .docs-main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .shell:has(.docs-grid) .docs-main-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .shell:has(.docs-grid) .review-rail-host {
+    position: static;
+    top: auto;
+    align-self: stretch;
+    max-height: none;
+    min-height: 0;
+  }
+  .shell:has(.docs-grid) .review-rail {
+    height: 100%;
+    max-height: none;
+  }
+  .shell:has(.docs-grid) .toc {
+    position: static;
+    max-height: none;
+  }
+}
 
 .sidebar-backdrop {
   display: none;
@@ -2554,6 +2622,29 @@ a.blog-row-title:hover { color: var(--accent); }
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
+}
+.review-controls-actions [data-variant="default"] {
+  background: color-mix(in srgb, var(--accent) 68%, #111827);
+}
+.review-controls-actions [data-variant="default"]:hover {
+  background: color-mix(in srgb, var(--accent) 76%, #111827);
+}
+.review-controls-split {
+  display: inline-flex;
+  align-items: stretch;
+}
+.review-controls-split-primary {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.review-controls-split-toggle {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 1px solid color-mix(in srgb, var(--primary-foreground, #fff) 28%, transparent);
+  padding-inline: 0.35rem;
+}
+.review-controls-split-toggle[data-variant="outline"] {
+  border-left-color: var(--border);
 }
 .review-controls--aside {
   display: flex;

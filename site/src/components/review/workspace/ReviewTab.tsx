@@ -19,7 +19,7 @@ import { ScrollContainerProvider } from "../scroll-container-context";
 import { useRightPaneSlot } from "./right-pane-slot";
 import { useDeepLinkTarget } from "./use-deep-link-target";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
-import ReviewTabChrome from "./ReviewTabChrome";
+import ReviewPageChrome from "../ReviewPageChrome";
 import MdxProvider from "../../../MdxProvider";
 import RelatedContent from "../../RelatedContent";
 import { findBlog, findDoc, type ContentPage } from "../../../content";
@@ -113,7 +113,7 @@ function ReviewTabBody({
         )}
         hidden={!isActive}
       >
-        {page && <ReviewTabChrome contentRef={contentRef} page={page} />}
+        {page && <ReviewPageChrome contentRef={contentRef} page={page} alwaysVisible />}
         <div ref={setScrollPane} className="min-h-0 flex-1 overflow-y-auto">
           {page ? (
             <article className="prose mx-auto max-w-3xl px-6 py-8" ref={articleRef}>

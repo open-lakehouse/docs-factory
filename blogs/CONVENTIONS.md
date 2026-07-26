@@ -20,7 +20,7 @@ everything here: they are **authored and opinionated** (a voice, a stance — no
 neutral point of view), they routinely **span several local code repositories**,
 and they carry **an idea-parking step** before a full brief. Where the Wikipedia
 workflow keeps three files per article (wikitext source + Markdown rendering),
-blogs keep one canonical Markdown file — `draft.md` *is* the source of truth.
+blogs keep one canonical Markdown file — `index.md` *is* the source of truth.
 
 ## 1. Lifecycle of a post
 
@@ -38,9 +38,9 @@ ready`** — unified with content pages. Review is tracked in the DB review life
    especially thesis, audience, and source material (walk the real repos/PRs). This
    fixes *what* the post argues before any prose. Check the idea off in `IDEAS.md`
    and note the slug. Writing the brief is an activity *within* `draft`; the stage
-   is signalled by which files exist (a `brief.md` with a thin/absent `draft.md`),
+   is signalled by which files exist (a `brief.md` with a thin/absent `index.md`),
    not by a distinct status value.
-3. **Draft.** Write `draft.md` from the outline. Baseline first (thesis + core
+3. **Draft.** Write `index.md` from the outline. Baseline first (thesis + core
    sections); defer depth. Pull code samples from the cited refs.
 4. **Refine / humanize.** Tighten structure and prose, then run the humanizer
    pass (§8). Verify every code sample and factual claim against its cited ref.
@@ -63,7 +63,7 @@ ready`** — unified with content pages. Review is tracked in the DB review life
 (`blogs/<slug>/`). Raw ideas live in `IDEAS.md`; a `<slug>/` folder is created when
 an idea graduates — either to an early `status: idea` folder (worth ranking/reviewing
 before it's briefed) or straight to a brief at `status: draft`. Each folder holds
-`brief.md` and `draft.md`; `assets/` (images) and `snippets/` (extracted, runnable,
+`brief.md` and `index.md`; `assets/` (images) and `snippets/` (extracted, runnable,
 verified code — §5) are created on demand, not scaffolded up front.
 
 ## 2. Ideas backlog (`IDEAS.md`)
@@ -79,7 +79,7 @@ material. The moment an idea needs more structure than that, it wants a folder.
 
 ## 3. Front matter & tags
 
-Both `brief.md` and `draft.md` open with a YAML `---` block. Field names align
+Both `brief.md` and `index.md` open with a YAML `---` block. Field names align
 with MkDocs Material / Docusaurus so a post is portable to a real publishing
 target with minimal reshaping — we are not inventing a metadata scheme.
 
@@ -163,7 +163,7 @@ bullets. Copy this to start a post.
    internal/pre-release that must **not** be published.
 10. **Open questions / risks** — unknowns and disclosure/COI concerns.
 
-## 5. Draft conventions (`draft.md`)
+## 5. Draft conventions (`index.md`)
 
 - **Voice.** First person, authored, opinionated — a stance is a feature. State
   the point of view; don't hedge into neutrality.
@@ -182,12 +182,12 @@ bullets. Copy this to start a post.
   in the post's `assets/`, so the draft renders without a build step. This keeps
   the local preview on one LikeC4 Vite-plugin runtime while still allowing a
   post to carry purpose-built, protocol-level views with slug-prefixed ids.
-  - **Richness is a property of the renderer, never the source.** `draft.md`
+  - **Richness is a property of the renderer, never the source.** `index.md`
     stays plain, portable Markdown that renders acceptably everywhere — on GitHub,
     in any Markdown viewer, and through the Google Docs export (below). A diagram
     is embedded as its committed **static image** and *upgraded* to an interactive
     LikeC4 view only by a richer renderer (the local `site/` harness and the
-    published MDX site). Never put JSX or builder-specific syntax in `draft.md`.
+    published MDX site). Never put JSX or builder-specific syntax in `index.md`.
   - **Name the view in the image title** so a renderer can find it, staying
     100% CommonMark: `![real alt text](./assets/<name>.png "likec4=<viewId>")`.
     On static targets the title is just a tooltip and the PNG renders as-is; the
@@ -226,7 +226,7 @@ bullets. Copy this to start a post.
   comment: what it does, how to run it (`Run:`), what it needs (`Needs:`), and the
   pinned ref it was **verified against** (`Verified:` — §6).
   - **Inline the real snippet with a `file=` fence — don't hand-copy or elide.**
-    `draft.md` references the snippet and the renderer inlines it at build time
+    `index.md` references the snippet and the renderer inlines it at build time
     (the `site/` harness resolves this; a publishing target runs the same
     contract), so the post always shows exactly the verified source with no drift:
     ````markdown
@@ -321,7 +321,7 @@ bullets. Copy this to start a post.
     the examples are few and several need live cloud storage or a JVM, so a generic
     runner would be ceremony that can't run the interesting cases. Other tools are
     fine; if a post needs one, note why in that post.
-- **Emit to a downstream target (Google Docs today).** `draft.md` is canonical,
+- **Emit to a downstream target (Google Docs today).** `index.md` is canonical,
   portable CommonMark; a *target emitter* resolves it into what a downstream target
   consumes. The deterministic core [`emit/`](../emit/) reuses the same
   snippet-inlining and LikeC4 PNG-regeneration the `site/` harness runs, and
@@ -340,8 +340,8 @@ bullets. Copy this to start a post.
   each PNG to Drive and inserts it inline, and shares it — and on re-emit it
   **updates the same Doc in place** (the Doc id/url live in a committed
   `blogs/<slug>/.emitted.json` sidecar, so the mapping travels with the post while
-  `draft.md` stays pure), so the draft stays canonical and the shared link never
-  duplicates. Do **not** feed raw `draft.md` to the Doc importer — its `file=`
+  `index.md` stays pure), so the draft stays canonical and the shared link never
+  duplicates. Do **not** feed raw `index.md` to the Doc importer — its `file=`
   fences are empty and its `::::journey`/`:::tip` markers leak as literal text. The
   same `/blog-emit` skill also cross-publishes to the **UnityCatalog.io** and
   **Delta.io** Astro sites (`--target unitycatalog` / `--target delta`) — RICH
@@ -379,7 +379,7 @@ Pin the ref to a **tag or commit SHA**, not a branch, so a snippet is
 reproducible and a reader can find the exact code. Pointers rot — re-verify each
 one at publish time. When a real, compilable excerpt is worth preserving
 separately from the prose, keep it in the post's `snippets/` as a runnable file
-(§5 "Runnable examples"); otherwise a fenced block inline in `draft.md` is enough.
+(§5 "Runnable examples"); otherwise a fenced block inline in `index.md` is enough.
 
 **Prose homes here; code stays home.** This repo is the canonical home for blog
 material. DevRel *prose* written to become a post — narratives, sketches, build
@@ -450,7 +450,7 @@ skill; the criteria each facet is graded against live in
 findings; the author decides when to set `status: ready`, and the DB review state
 (in-review → approved → released) gates the actual release.
 
-1. **Dispatch parallel facet reviewers** over `draft.md` + `brief.md`, one
+1. **Dispatch parallel facet reviewers** over `index.md` + `brief.md`, one
    concern each, so no single pass has to hold everything. Each is scored against
    its facet in [`QUALITY.md`](./QUALITY.md):
    - **(a) Sources & facts** — every claim traces to a cited (public) ref; each
@@ -475,7 +475,7 @@ findings; the author decides when to set `status: ready`, and the DB review stat
    load-bearing (as in `/code-review`); filter out false positives and nitpicks.
    Where facet (f) fights facet (b), **voice wins ties** — downgrade the (f) issue
    rather than flatten the stance.
-4. **Consolidate** the survivors into one prioritized report against `draft.md`,
+4. **Consolidate** the survivors into one prioritized report against `index.md`,
    with a per-facet 0–100 score. The author resolves the findings before setting
    `status: ready`; the DB review state gates the actual release.
 
@@ -488,7 +488,7 @@ findings; the author decides when to set `status: ready`, and the DB review stat
 - **Disclosure of a Databricks affiliation is the releasing site's job, not the
   draft body's.** The publishing target's **author profile** (bio, the
   `Person`/`sameAs` markup below) already establishes who you are and where you
-  work, so `draft.md` does **not** carry an inline "I work at Databricks…"
+  work, so `index.md` does **not** carry an inline "I work at Databricks…"
   paragraph — it would be redundant on every site that has an author profile, which
   is all of ours (Delta.io, UC.io, the company blog). Add an inline disclosure only
   for a target that has *no* author identity (a bare Gist, a forum post) and even

@@ -106,7 +106,7 @@ referenced by a pinned ref (never copied). See [`CONVENTIONS.md`](./CONVENTIONS.
   in the Building the Open Lakehouse arc. `audience:` platform / security engineers
   running enforcement services who want guarantees without distributing secrets ·
   `repos:` the release pipelines that emit checksums (trestle, mangrove, headwaters,
-  hydrofoil images) · `src:` blogs/trust-in-your-open-lakehouse/draft.md §Trusted
+  hydrofoil images) · `src:` blogs/trust-in-your-open-lakehouse/index.md §Trusted
   Compute (the anchor to extend) · anchors: SPIFFE/SPIRE (workload attestation),
   Sigstore/cosign + SLSA provenance (artifact signing), the repos' release-plz /
   Docker-release checksum outputs · note: raw — verify what attestation/signing we

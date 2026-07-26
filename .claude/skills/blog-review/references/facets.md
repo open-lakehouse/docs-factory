@@ -5,7 +5,7 @@ facet**, against the matching facet in `blogs/QUALITY.md` (the rubric is the sou
 of truth for the checks — this file says what each reviewer inspects and what counts
 as a finding). Every reviewer returns a **list** of findings, each with:
 
-- **where** — heading / line / anchor in `draft.md`.
+- **where** — heading / line / anchor in `index.md`.
 - **what** — the issue, in one line.
 - **rule** — the QUALITY.md facet check or CONVENTIONS.md section it violates.
 
@@ -16,7 +16,7 @@ the consolidation step turns the lists into the report.
 
 ## (a) Sources & facts
 
-Inspect `draft.md` against QUALITY.md facet (a). Flag: a claim with no cited ref; a
+Inspect `index.md` against QUALITY.md facet (a). Flag: a claim with no cited ref; a
 load-bearing claim resting on an internal/pre-release source instead of a public
 one; a code sample that wouldn't compile/run against its **pinned** ref, or that
 cites a moving branch instead of a tag/SHA; any internal or pre-release detail that

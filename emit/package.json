@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "description": "Deterministic emitter core for the writing repo's blog drafts. Resolves a canonical, portable draft.md (inlining file= snippets, regenerating LikeC4 PNGs) and FLATTENS its rich constructs (::::journey, :::callouts, likec4= images) into target-flavored Markdown, so a self-contained dist/<slug>.md can be delivered to a downstream target (Google Docs today). Reuses the two target-agnostic remark plugins from ../preview/src/plugins/ verbatim — one implementation of the snippet extraction and the prose guard. NEVER edits draft.md.",
+  "description": "Deterministic emitter core for the writing repo's blog drafts. Resolves a canonical, portable index.md (inlining file= snippets, regenerating LikeC4 PNGs) and FLATTENS its rich constructs (::::journey, :::callouts, likec4= images) into target-flavored Markdown, so a self-contained dist/<slug>.md can be delivered to a downstream target (Google Docs today). Reuses the two target-agnostic remark plugins from ../preview/src/plugins/ verbatim — one implementation of the snippet extraction and the prose guard. NEVER edits index.md.",
   "bin": {
     "emit": "./emit.mjs"
   },

@@ -201,7 +201,7 @@ The core reads this same sidecar and echoes the decision into `assets.json` as
 
 ## Notes
 
-- **Never** pass raw `draft.md` to `docs_document_create_from_markdown` — always the
+- **Never** pass raw `index.md` to `docs_document_create_from_markdown` — always the
   core's `dist/<slug>.md` (raw draft has empty `file=` fences and leaks `:::`
   markers).
 - `docs_document_create_from_markdown` and `docs_document_edit_section` both convert

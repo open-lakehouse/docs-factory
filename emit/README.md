@@ -1,6 +1,6 @@
 # `emit/` — the deterministic emitter core
 
-A blog `draft.md` is **canonical, portable CommonMark** — richness is a property
+A blog `index.md` is **canonical, portable CommonMark** — richness is a property
 of the *renderer*, never the source (see [`blogs/CONVENTIONS.md`](../blogs/CONVENTIONS.md)
 §5). The `site/` preview is one renderer (rich, interactive). This `emit/`
 package is the **other end**: it *resolves* a draft and *flattens* its rich
@@ -88,11 +88,11 @@ for Expressive Code to render.
 
 ## Idempotency — update the same Doc, don't duplicate
 
-`draft.md` (and its `dist/<slug>.md` render) is the canonical source; a delivered
+`index.md` (and its `dist/<slug>.md` render) is the canonical source; a delivered
 Google Doc is a *copy* that should be **refreshed in place** on re-emit, not
 duplicated. The delivery mapping lives in a committed **sidecar dotfile next to the
 draft**, `blogs/<slug>/.emitted.json`, keyed by target — so it is self-contained in
-the post folder and travels with the post (no global registry), while `draft.md`
+the post folder and travels with the post (no global registry), while `index.md`
 itself stays pure (no tooling state in the canonical source):
 
 ```json
@@ -114,7 +114,7 @@ gitignored).
 
 ## What it does NOT do
 
-- **Never edits `draft.md`.** It reads the draft in place and writes only to
+- **Never edits `index.md`.** It reads the draft in place and writes only to
   `blogs/<slug>/dist/` (gitignored — a throwaway render, like `preview/dist/`). The
   draft stays byte-for-byte canonical; the only per-post state the delivery step
   writes is the sidecar `.emitted.json`, never the draft itself.

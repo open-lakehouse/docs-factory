@@ -19,7 +19,7 @@ blogs/
   tags.yml           # known-tag registry — the authoritative tag vocabulary
   <slug>/
     brief.md         # research/planning before prose (front matter + brief)
-    draft.md         # the post itself, Markdown (source of truth)
+    index.md         # the post itself, Markdown (source of truth)
     assets/          # OPTIONAL, on demand — images/diagrams
     snippets/        # OPTIONAL, on demand — extracted, verified code samples
 ```

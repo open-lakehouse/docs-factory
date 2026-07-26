@@ -1,7 +1,7 @@
 ---
 name: blog-emit
 description: |
-  Emit a canonical blog draft (blogs/<slug>/draft.md) to a downstream target. Runs
+  Emit a canonical blog draft (blogs/<slug>/index.md) to a downstream target. Runs
   the deterministic emitter core (resolves file= snippets, regenerates LikeC4 PNGs,
   renders journeys/callouts/diagrams per the target), then delivers the result and
   records the delivery for idempotent re-emits. Targets:
@@ -18,7 +18,7 @@ argument-hint: 'A blogs/<slug> to emit. Add --target <gdocs|unitycatalog|delta> 
 
 # blog-emit: emit a draft to a downstream target
 
-A blog `draft.md` is **canonical, portable CommonMark** — richness is a property of
+A blog `index.md` is **canonical, portable CommonMark** — richness is a property of
 the *renderer*, never the source (see
 [`blogs/CONVENTIONS.md`](../../../blogs/CONVENTIONS.md) §5). This skill is the
 **delivery** half of the emitter: it runs the deterministic core to produce a
@@ -84,7 +84,7 @@ fails for want of a browser, run `bunx playwright install chromium` once and re-
 
 ### 2. Read the render + manifest
 
-- the render file — deliver **this**, never the raw `draft.md` (its `file=` fences are
+- the render file — deliver **this**, never the raw `index.md` (its `file=` fences are
   empty and its `:::`/`::::` markers would leak).
 - `dist/<target>/assets.json`:
   - `existing` is the **create-vs-update decision**, sourced from the post's
@@ -105,7 +105,7 @@ the only target-specific part of this skill.
 
 The delivery mapping lives in a **committed sidecar dotfile** next to the draft,
 **`blogs/<slug>/.emitted.json`**, keyed by target — self-contained in the post's
-folder (it travels with the post, no global registry) while `draft.md` stays pure.
+folder (it travels with the post, no global registry) while `index.md` stays pure.
 
 - **On CREATE**, read the sidecar (treat missing as `{}`), set the `<target>` key to
   the block the runbook specifies, **leaving any other target keys untouched**, write
@@ -116,11 +116,11 @@ folder (it travels with the post, no global registry) while `draft.md` stays pur
 
 ## What this skill must NOT do (all targets)
 
-- **Never edit `draft.md`** — the draft is canonical. The only per-post state this
+- **Never edit `index.md`** — the draft is canonical. The only per-post state this
   skill writes is `blogs/<slug>/.emitted.json` (the delivery mapping); it never
   touches any other file under `blogs/<slug>/` besides the generated `dist/` (which
   the core owns).
-- **Never feed raw `draft.md` to the target** — always deliver the core's
+- **Never feed raw `index.md` to the target** — always deliver the core's
   `dist/<target>/` render (see step 2).
 - **Never reimplement the core's transforms** — if the render looks wrong, fix the
   core (`emit/`, a plugin, or the target module), not the agent.

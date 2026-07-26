@@ -1,9 +1,9 @@
-# Draft conventions (`draft.md`), cross-repo sourcing, series
+# Draft conventions (`index.md`), cross-repo sourcing, series
 
 Condensed from `blogs/CONVENTIONS.md` §5–§7 — that file wins if they diverge. For
 what "good" looks like as a scored rubric, see `blogs/QUALITY.md`.
 
-## Draft (`draft.md`)
+## Draft (`index.md`)
 
 - **Voice.** First person, authored, opinionated — a stance is a feature. State the
   point of view; don't hedge into neutrality.
@@ -32,7 +32,7 @@ uses one LikeC4 Vite-plugin runtime.
   (static export needs a headless Chromium once: `bunx playwright install chromium`).
 - Keep blog-only elements slug/topic-prefixed in `blog-views.likec4`; protocol/wire
   detail may live there, but it should not masquerade as core architecture fact.
-- Reference the rendered image from `draft.md` as `![alt](./assets/<name>.png)` with
+- Reference the rendered image from `index.md` as `![alt](./assets/<name>.png)` with
   real alt text; regenerate a different export (SVG, inline) at publish if the target
   needs it.
 - **D2** ([d2lang.com](https://d2lang.com)) stays fine for an existing `.d2` or a
@@ -42,7 +42,7 @@ uses one LikeC4 Vite-plugin runtime.
 ## Runnable examples (one supported way)
 
 When a code sample is worth *running*, keep the runnable file in the post's
-`snippets/` — it is the verified source of truth; `draft.md` shows only the
+`snippets/` — it is the verified source of truth; `index.md` shows only the
 load-bearing lines and links to it. Name files `<verb>_<subject>.<ext>`. Every
 snippet opens with a header comment: what it does, `Run:`, `Needs:`, and the pinned
 ref it was `Verified:` against.
@@ -77,7 +77,7 @@ delta-kernel-rs · kernel/src/scan/mod.rs · v0.3.0 — scan-state builder
 Pin the ref to a **tag or commit SHA**, not a branch, so a snippet is reproducible.
 Pointers rot — re-verify each at publish time. When a real, compilable excerpt is
 worth preserving separately, keep it in the post's `snippets/`; otherwise a fenced
-block inline in `draft.md` is enough.
+block inline in `index.md` is enough.
 
 ## Series / story arcs
 

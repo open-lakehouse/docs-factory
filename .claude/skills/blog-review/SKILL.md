@@ -5,7 +5,7 @@ description: |
   dispatch six parallel facet reviewers, confidence-score their findings, and
   consolidate one prioritized report. Use when the user wants to review a blog draft,
   run the blog review, or asks whether a post in blogs/<slug>/ is ready to publish.
-argument-hint: 'Path to a blogs/<slug>/ folder or a draft.md to review'
+argument-hint: 'Path to a blogs/<slug>/ folder or a index.md to review'
 ---
 
 # blog-review: multi-agent quality review
@@ -32,7 +32,7 @@ state (in-review → approved → released), not by this pass or a frontmatter v
 
 1. Read `blogs/QUALITY.md` (the rubric) and this skill's
    [`references/facets.md`](references/facets.md).
-2. Read the target `draft.md` **and** its `brief.md` (the brief is the yardstick for
+2. Read the target `index.md` **and** its `brief.md` (the brief is the yardstick for
    facets c and d — the draft is judged against what it set out to do).
 3. Read `blogs/tags.yml` and `blogs/SERIES.md` — facet (e) checks against them.
 
@@ -67,7 +67,7 @@ can judge.
 
 ### 4. Consolidate
 
-Produce **one** report against `draft.md`:
+Produce **one** report against `index.md`:
 
 - A per-facet **0–100 score** (a–f) and an overall score, with a one-line rationale
   each.
@@ -81,6 +81,6 @@ Produce **one** report against `draft.md`:
 
 Only if the user names an **HTML publishing target**: run the Microdata /
 Rich-Results checklist from the "Publish-target concerns" section of
-`blogs/QUALITY.md` against the *rendered HTML*, not `draft.md`. Skip this entirely
+`blogs/QUALITY.md` against the *rendered HTML*, not `index.md`. Skip this entirely
 for a draft-stage review — a Markdown draft can't carry Microdata and must not be
 scored on it.

@@ -15,7 +15,7 @@ Drive a post through the lifecycle in
 (review happens in the DB review lifecycle, not via frontmatter status). This skill
 owns everything up to review; the review pass is a separate hand-off to
 `/blog-review`. Writing the brief and drafting are the *activities* within `draft`;
-which files exist (a `brief.md` present but thin `draft.md`, vs. a full `draft.md`)
+which files exist (a `brief.md` present but thin `index.md`, vs. a full `index.md`)
 signals how far along the post is.
 
 Two documents are the source of truth — read them, don't restate them:
@@ -44,9 +44,9 @@ argument; none of it flattens it into neutral prose.
      idea worth ranking/reviewing early can get an on-disk folder at `status: idea`
      before it's fully briefed.
    - **`brief.md` exists** → the `status` is `idea` or `draft`; which files exist
-     tells you the stage (a `brief.md` with a thin/absent `draft.md` → step 3; a
-     substantial `draft.md` → step 4).
-   - Read the existing `brief.md`/`draft.md` before touching anything.
+     tells you the stage (a `brief.md` with a thin/absent `index.md` → step 3; a
+     substantial `index.md` → step 4).
+   - Read the existing `brief.md`/`index.md` before touching anything.
 3. Confirm the stage and the intended slug with the user if it's ambiguous.
 
 ### 2. Idea → brief
@@ -69,7 +69,7 @@ its audience — CONVENTIONS §1–2).
 
 ### 3. Brief → draft
 
-1. Write `draft.md` from the brief's outline. **Baseline first**: thesis + core
+1. Write `index.md` from the brief's outline. **Baseline first**: thesis + core
    sections; defer depth (CONVENTIONS §5).
 2. Open with the front matter (`status: draft`), then the hook/thesis.
 3. Pull code samples from the **pinned** refs the brief cites; show only the
@@ -102,7 +102,7 @@ Author diagrams in **LikeC4** (preferred) as dedicated views in
 `architecture/model/views/blog-views.likec4`; commit the rendered fallback image in the
 post's `assets/`. A sequence diagram is a `dynamic view`, rendered with
 `likec4 export png --sequence` (the `--sequence` flag is required for a lifeline
-layout). Reference the rendered image from `draft.md` as
+layout). Reference the rendered image from `index.md` as
 `![real alt text](./assets/<name>.png "likec4=<viewId>")`. D2 is still fine for
 an existing `.d2` or a quick one-off (`blogs/render-diagrams.sh`, needs the `d2`
 CLI). Details in

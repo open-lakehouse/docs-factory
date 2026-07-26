@@ -15,10 +15,10 @@ target: unitycatalog
 > doc id `11kgyZLDQV86E5WZ95zPApzX6GZtGMsXweQJunFyWfMQ`, tab "Tab 2" /
 > `t.vbe84l5wtgj8`). The other tab ("AI / Drafts") is an alternative
 > AI-generated draft and was treated as noise per the author. The imported
-> prose is in `draft.md`. The doc's embedded diagram PNGs were regenerated from
+> prose is in `index.md`. The doc's embedded diagram PNGs were regenerated from
 > their D2 sources: `assets/*.d2` (source of truth, from
 > `workflows/trust/diagrams`) render to `assets/*.svg` via
-> `blogs/render-diagrams.sh`, and `draft.md` references the local SVGs.
+> `blogs/render-diagrams.sh`, and `index.md` references the local SVGs.
 
 ## 1. Hook / thesis
 
@@ -126,7 +126,7 @@ asset pipeline. Confirm PM sign-off before publish.
 
 ## 9. Verification / accuracy notes
 
-- **Cut-off sentence (reviewer-flagged, still present in `draft.md`):** the
+- **Cut-off sentence (reviewer-flagged, still present in `index.md`):** the
   Trusted-compute paragraph beginning "However, if one can exert the required
   controls over any user environment…" trails off; the Server-side-planning
   section ends abruptly at "Luckily we can do better." Finish both thoughts.

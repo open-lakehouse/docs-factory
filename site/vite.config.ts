@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import path from "node:path";
+import { readdirSync } from "node:fs";
 import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 import { LikeC4VitePlugin } from "likec4/vite-plugin";
@@ -20,6 +21,8 @@ import remarkDirectiveProseGuard from "./src/plugins/remark-directive-prose-guar
 import remarkCallouts from "./src/plugins/remark-callouts.mjs";
 import remarkFenceMeta from "./src/plugins/remark-fence-meta.mjs";
 import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
+import remarkSourceLinks from "./src/plugins/remark-source-links.mjs";
+import { docIdentity, hrefFromIdentity } from "./src/content-core/identity.mjs";
 
 // Shiki rebuilds the <pre>/<code> subtree, so any data-* set upstream is lost.
 // remark-fence-meta preserves the fence meta as <code metastring="…">, which
@@ -49,6 +52,55 @@ const codeChromeTransformer: ShikiTransformer = {
   },
 };
 
+// The set of in-app hrefs the site actually serves, for remark-source-links to
+// validate a resolved source-relative link against. Built from PATHS ONLY (no
+// MDX import, no frontmatter) so it stays a cheap, cycle-free copy of what
+// content.ts discovers: `blogs/<slug>/index.md` and
+// `content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}`, minus README.md.
+// content.ts remains the runtime authority; this is a build-time mirror keyed on
+// the same docIdentity → hrefFromIdentity mapping. (A page's `slug:` frontmatter
+// override is invisible here — see remark-source-links.mjs KNOWN LIMITATION.)
+function collectFiles(dir: string, match: (p: string) => boolean): string[] {
+  const out: string[] = [];
+  let entries;
+  try {
+    entries = readdirSync(dir, { withFileTypes: true });
+  } catch {
+    return out; // missing dir (e.g. an empty project) → contributes nothing
+  }
+  for (const entry of entries) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...collectFiles(full, match));
+    else if (entry.isFile() && match(full)) out.push(full);
+  }
+  return out;
+}
+
+function buildKnownHrefs(): Set<string> {
+  const repoRoot = path.resolve(__dirname, "..");
+  const hrefs = new Set<string>();
+
+  const blogRoot = path.join(repoRoot, "blogs");
+  for (const p of collectFiles(blogRoot, (f) => f.endsWith("/index.md"))) {
+    const href = hrefFromIdentity(docIdentity(p));
+    if (href) hrefs.add(href);
+  }
+
+  for (const project of ["delta", "unitycatalog", "open-lakehouse"]) {
+    const root = path.join(repoRoot, "content", project);
+    for (const p of collectFiles(
+      root,
+      (f) => (f.endsWith(".md") || f.endsWith(".mdx")) && !f.endsWith("/README.md"),
+    )) {
+      const href = hrefFromIdentity(docIdentity(p));
+      if (href) hrefs.add(href);
+    }
+  }
+  return hrefs;
+}
+
+const knownHrefs = buildKnownHrefs();
+
 export default defineConfig({
   server: {
     host: "::",
@@ -68,6 +120,10 @@ export default defineConfig({
           remarkGfm,
           remarkDirective,
           remarkDirectiveProseGuard,
+          // Resolve source-relative cross-document links (./other.md, ../a/b.md)
+          // to in-app routes. Runs BEFORE remarkModelLinks so `model:` links are
+          // left for that plugin.
+          [remarkSourceLinks, { knownHrefs }],
           remarkModelLinks,
           remarkFrontmatter,
           [remarkMdxFrontmatter, { name: "frontmatter" }],

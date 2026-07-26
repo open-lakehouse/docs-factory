@@ -42,7 +42,8 @@ export function TreeRow({
     <div
       className={cn(
         "group flex items-center rounded pr-1 hover:bg-accent",
-        selected && "bg-accent text-accent-foreground",
+        selected &&
+          "bg-accent text-accent-foreground ring-1 ring-inset ring-primary/30",
       )}
     >
       <div className="flex min-w-0 flex-1 items-center" style={{ paddingLeft: rowPadding(depth) }}>

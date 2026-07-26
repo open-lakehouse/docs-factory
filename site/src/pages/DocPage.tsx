@@ -6,6 +6,7 @@ import OnThisPage from "../components/layout/OnThisPage";
 import ReviewSurfaces from "../components/review/ReviewSurfaces";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
+import { ScrollContainerProvider } from "../components/review/scroll-container-context";
 import ReviewPageChrome from "../components/review/ReviewPageChrome";
 import { docRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
@@ -25,6 +26,9 @@ export default function DocPage() {
   const vis = useContentVisibility();
   const neighbors = useDocNeighbors(page?.href ?? "");
   const articleRef = useRef<HTMLElement>(null);
+  // Held in state (not just a ref) so ScrollContainerProvider re-renders when
+  // the article scroll pane mounts — ThreadCard / TOC jumps need that element.
+  const [scrollPane, setScrollPane] = useState<HTMLDivElement | null>(null);
   const scrollIdleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [isScrolling, setIsScrolling] = useState(false);
 
@@ -90,11 +94,13 @@ export default function DocPage() {
     >
       <SelectionProvider>
       <ReviewProvider contentRef={contentRef}>
+      <ScrollContainerProvider container={scrollPane}>
       <div className="docs-grid">
         <DocsSidebar activeProject={project} activeBucket={bucket} activeSlug={slug} />
         <div className="docs-main">
           <ReviewPageChrome contentRef={contentRef} page={page} />
           <div
+            ref={setScrollPane}
             className={isScrolling ? "docs-main-scroll is-scrolling" : "docs-main-scroll"}
             onScroll={handleContentScroll}
           >
@@ -129,6 +135,7 @@ export default function DocPage() {
         <DocAside articleRef={articleRef} contentRef={contentRef} />
         <ReviewSurfaces contentRef={contentRef} articleRef={articleRef} />
       </div>
+      </ScrollContainerProvider>
       </ReviewProvider>
       </SelectionProvider>
     </Shell>

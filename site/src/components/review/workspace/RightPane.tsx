@@ -1,14 +1,14 @@
 // The workspace's right column. Two zones:
-//   1. Cross-tab inbox sections (pending review, latest comments, review
-//      requests) — NOT tied to the active tab. Clicking a row opens/activates
-//      that page's tab (and, for a comment, carries a deep-link intent that
-//      Phase 3 will consume to select + scroll to the thread).
-//   2. A portal slot the ACTIVE tab fills with its own comment view (Phase 2).
-//      The slot lives here; the active ReviewTab renders into it from inside its
+//   1. Cross-tab inbox sections (requested-from-me, latest comments) — NOT tied
+//      to the active tab. Pending review lives on the left tree aggregates
+//      instead. Clicking a row opens/activates that page's tab (and, for a
+//      comment, carries a deep-link intent to select + scroll to the thread).
+//   2. A portal slot the ACTIVE tab fills with its own comment view. The slot
+//      lives here; the active ReviewTab renders into it from inside its
 //      ReviewProvider so the comments follow the active tab for free.
 import { PanelRightClose } from "lucide-react";
 import type { ContentRef, RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { ReviewRequestBadge, ReviewStateBadge } from "../../../lib/review-status";
+import { ReviewRequestBadge } from "../../../lib/review-status";
 import { useReviewInbox } from "../../../lib/review-inbox";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
 
@@ -51,7 +51,7 @@ export default function RightPane({
   collapseDisabled?: boolean;
 }) {
   const { openTab } = useWorkspaceTabs();
-  const { pending, recent, toMe } = useReviewInbox();
+  const { recent, toMe } = useReviewInbox();
 
   const openComment = (rc: RecentComment) => {
     if (!rc.ref) return;
@@ -85,26 +85,6 @@ export default function RightPane({
             </button>
           )}
         </div>
-        <section className="review-dash-section">
-          <h2>Pending review</h2>
-          {pending.length === 0 ? (
-            <p className="review-empty">Nothing in review.</p>
-          ) : (
-            <ul className="review-dash-list">
-              {pending.map((d) => (
-                <OpenRow
-                  key={d.ref && `${d.ref.area}:${d.ref.slug}`}
-                  ref={d.ref}
-                  label={d.title || d.ref?.slug || "(untitled)"}
-                  onOpen={openTab}
-                >
-                  <ReviewStateBadge state={d.reviewState} />
-                </OpenRow>
-              ))}
-            </ul>
-          )}
-        </section>
-
         <section className="review-dash-section">
           <h2>Requested from me</h2>
           {toMe.length === 0 ? (

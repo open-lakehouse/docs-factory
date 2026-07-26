@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import DocsSidebar from "../components/layout/DocsSidebar";
 import DocAside from "../components/layout/DocAside";
@@ -25,6 +25,21 @@ export default function DocPage() {
   const vis = useContentVisibility();
   const neighbors = useDocNeighbors(page?.href ?? "");
   const articleRef = useRef<HTMLElement>(null);
+  const scrollIdleTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  useEffect(
+    () => () => {
+      if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+    },
+    [],
+  );
+
+  function handleContentScroll() {
+    setIsScrolling(true);
+    if (scrollIdleTimer.current) clearTimeout(scrollIdleTimer.current);
+    scrollIdleTimer.current = setTimeout(() => setIsScrolling(false), 650);
+  }
 
   if (!page) {
     return (
@@ -79,7 +94,10 @@ export default function DocPage() {
         <DocsSidebar activeProject={project} activeBucket={bucket} activeSlug={slug} />
         <div className="docs-main">
           <ReviewPageChrome contentRef={contentRef} page={page} />
-          <div className="docs-main-scroll">
+          <div
+            className={isScrolling ? "docs-main-scroll is-scrolling" : "docs-main-scroll"}
+            onScroll={handleContentScroll}
+          >
             {/* Narrow screens: heading nav above the article (desktop shows it in
                 the right aside instead). */}
             <div className="docs-aside-mobile">

@@ -4,6 +4,7 @@
 // expansion persisted in sessionStorage (expansion-context.tsx). Leaf rows show
 // compact status dots: frontmatter authoring (idea / draft / ready) then DB
 // review lifecycle (none / in review / changes requested / approved / released).
+// Branch aggregates show a review status dot when any descendant is pending.
 import { useMemo } from "react";
 import { useQuery } from "@connectrpc/connect-query";
 import { FileText } from "lucide-react";
@@ -13,6 +14,7 @@ import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../../lib/auth-context";
 import { refToParam } from "../../../lib/content-ref";
 import { statusDotClass } from "../../../lib/frontmatter-status";
+import { PENDING_REVIEW_STATES } from "../../../lib/review-inbox";
 import { refKey } from "../../../lib/review-queries";
 import { REVIEW_STATE_LABEL, reviewStateDotClass } from "../../../lib/review-status";
 import { useExpansion } from "./expansion-context";
@@ -57,6 +59,26 @@ function LeafTrailing({
   );
 }
 
+/** Highest-priority pending review state in a subtree, if any. Changes-
+ *  requested wins over in-review so collapsed groups surface the sharper signal. */
+function pendingInSubtree(
+  node: TreeNode,
+  reviewByRef: Map<string, ReviewState>,
+): ReviewState | undefined {
+  if (node.kind === "leaf") {
+    const state = reviewByRef.get(refKey(node.ref)) ?? ReviewState.NONE;
+    return PENDING_REVIEW_STATES.has(state) ? state : undefined;
+  }
+  let found: ReviewState | undefined;
+  for (const child of node.children) {
+    const childPending = pendingInSubtree(child, reviewByRef);
+    if (childPending === undefined) continue;
+    if (childPending === ReviewState.CHANGES_REQUESTED) return childPending;
+    found = childPending;
+  }
+  return found;
+}
+
 function Node({
   node,
   depth,
@@ -87,6 +109,7 @@ function Node({
   }
 
   const open = isOpen(node.id);
+  const pendingState = pendingInSubtree(node, reviewByRef);
   return (
     <>
       <TreeRow
@@ -94,6 +117,7 @@ function Node({
         label={node.label}
         expandable
         open={open}
+        trailing={pendingState !== undefined ? <ReviewStatusDot state={pendingState} /> : undefined}
         onToggle={() => toggle(node.id)}
       />
       {open &&

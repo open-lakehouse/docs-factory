@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import BlogAside from "../components/layout/BlogAside";
+import BlogReviewAside from "../components/layout/BlogReviewAside";
 import ReviewSurfaces from "../components/review/ReviewSurfaces";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
@@ -41,7 +42,6 @@ export default function BlogPost() {
         <div className="blog-post-body">
           <BlogAside
             articleRef={articleRef}
-            contentRef={contentRef}
             byline={frontmatter.author}
             tags={frontmatter.tags ?? []}
           />
@@ -86,6 +86,7 @@ export default function BlogPost() {
               }
             />
           </div>
+          <BlogReviewAside articleRef={articleRef} contentRef={contentRef} />
         </div>
         <ReviewSurfaces contentRef={contentRef} articleRef={articleRef} />
       </div>

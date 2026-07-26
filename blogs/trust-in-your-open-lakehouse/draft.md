@@ -5,7 +5,7 @@ status: draft
 date: 2026-07-02
 tags: [governance, lakehouse, agents, unity-catalog, delta-lake, data-lineage]
 series: Building the Open Lakehouse
-series_order: 1
+series_order: 2
 author: Robert Pack
 target: openlakehouse
 ---

@@ -8,8 +8,6 @@ author: Robert Pack
 target: delta
 ---
 
-# How a Kernel becomes a (AS)Tree
-
 ![Disk Defragmentation](./assets/disk-defragment.png)
 
 Looking at the picture above I and many others get that warm fuzzy feeling from

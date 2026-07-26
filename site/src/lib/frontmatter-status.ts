@@ -7,10 +7,22 @@
 export function statusBadgeClass(status: string | undefined): string {
   switch ((status ?? "").toLowerCase()) {
     case "ready":
-      return "blog-badge-ready";
+      return "status-badge-ready";
     case "idea":
-      return "blog-badge-idea";
+      return "status-badge-idea";
     default:
       return "";
+  }
+}
+
+/** Extra class for a compact tree-row status dot (always returns a tone class). */
+export function statusDotClass(status: string | undefined): string {
+  switch ((status ?? "").toLowerCase()) {
+    case "ready":
+      return "tree-status-dot-ready";
+    case "idea":
+      return "tree-status-dot-idea";
+    default:
+      return "tree-status-dot-draft";
   }
 }

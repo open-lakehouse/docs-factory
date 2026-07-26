@@ -1,13 +1,14 @@
 // The workspace's right column. Two zones:
-//   1. Cross-tab inbox sections (pending review, latest comments, review
-//      requests) — NOT tied to the active tab. Clicking a row opens/activates
-//      that page's tab (and, for a comment, carries a deep-link intent that
-//      Phase 3 will consume to select + scroll to the thread).
-//   2. A portal slot the ACTIVE tab fills with its own comment view (Phase 2).
-//      The slot lives here; the active ReviewTab renders into it from inside its
+//   1. Cross-tab inbox sections (requested-from-me, latest comments) — NOT tied
+//      to the active tab. Pending review lives on the left tree aggregates
+//      instead. Clicking a row opens/activates that page's tab (and, for a
+//      comment, carries a deep-link intent to select + scroll to the thread).
+//   2. A portal slot the ACTIVE tab fills with its own comment view. The slot
+//      lives here; the active ReviewTab renders into it from inside its
 //      ReviewProvider so the comments follow the active tab for free.
+import { PanelRightClose } from "lucide-react";
 import type { ContentRef, RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { ReviewRequestBadge, ReviewStateBadge } from "../../../lib/review-status";
+import { ReviewRequestBadge } from "../../../lib/review-status";
 import { useReviewInbox } from "../../../lib/review-inbox";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
 
@@ -42,11 +43,15 @@ function OpenRow({
 
 export default function RightPane({
   setSlot,
+  onCollapse,
+  collapseDisabled = false,
 }: {
   setSlot: (el: HTMLDivElement | null) => void;
+  onCollapse?: () => void;
+  collapseDisabled?: boolean;
 }) {
   const { openTab } = useWorkspaceTabs();
-  const { pending, recent, toMe } = useReviewInbox();
+  const { recent, toMe } = useReviewInbox();
 
   const openComment = (rc: RecentComment) => {
     if (!rc.ref) return;
@@ -60,32 +65,26 @@ export default function RightPane({
     <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
       {/* Active tab's comment view renders here via portal — it follows the
           active tab (see ReviewTab + right-pane-slot). */}
-      <div ref={setSlot} className="border-b empty:hidden" />
+      <div ref={setSlot} className="workspace-section-divider empty:hidden" />
 
       <div className="review-dashboard p-3">
-        <p className="px-1 pb-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
-          Inbox
-        </p>
-        <section className="review-dash-section">
-          <h2>Pending review</h2>
-          {pending.length === 0 ? (
-            <p className="review-empty">Nothing in review.</p>
-          ) : (
-            <ul className="review-dash-list">
-              {pending.map((d) => (
-                <OpenRow
-                  key={d.ref && `${d.ref.area}:${d.ref.slug}`}
-                  ref={d.ref}
-                  label={d.title || d.ref?.slug || "(untitled)"}
-                  onOpen={openTab}
-                >
-                  <ReviewStateBadge state={d.reviewState} />
-                </OpenRow>
-              ))}
-            </ul>
+        <div className="mb-1 flex items-center justify-between gap-2 px-1">
+          <p className="font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
+            Inbox
+          </p>
+          {onCollapse && (
+            <button
+              type="button"
+              className="workspace-pane-collapse-right"
+              aria-label="Hide inbox"
+              title="Hide inbox"
+              onClick={onCollapse}
+              tabIndex={collapseDisabled ? -1 : 0}
+            >
+              <PanelRightClose className="size-3.5" aria-hidden />
+            </button>
           )}
-        </section>
-
+        </div>
         <section className="review-dash-section">
           <h2>Requested from me</h2>
           {toMe.length === 0 ? (

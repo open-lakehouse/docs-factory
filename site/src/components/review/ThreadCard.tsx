@@ -46,8 +46,8 @@ export default function ThreadCard({
     onSelect();
     const article = articleRef.current;
     if (!article) return;
-    // In the workspace the article scrolls inside its middle pane, not the
-    // window; useScrollContainer resolves to that pane (window on /docs, /blog).
+    // Docs scroll `.docs-main-scroll`; the workspace scrolls its middle pane.
+    // useScrollContainer resolves to that element (window on /blog).
     scrollToThreadContext(thread, article, scrollContainer);
   }
 

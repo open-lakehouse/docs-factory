@@ -7,7 +7,7 @@ tags: [lakehouse, rust, devrel, codegen, unity-catalog]
 series: Chef Casper's Ghost Kitchen
 series_order: 1
 author: Robert Pack
-target: company blog
+target: openlakehouse
 ---
 
 # Brief: One proto file, a whole app — the Trestle golden path
@@ -173,7 +173,7 @@ example directory.
 
 ## 8. Publishing target / format
 
-Company blog. First post of the **Chef Casper's Ghost Kitchen** arc (`SERIES.md`)
+openlakehouse. First post of the **Chef Casper's Ghost Kitchen** arc (`SERIES.md`)
 — must stand alone while opening the running-example storyline the later how-to
 posts continue. Code-heavy; every sample pulled from and verified against the
 public example app (§5 runnable-examples convention where a sample is worth

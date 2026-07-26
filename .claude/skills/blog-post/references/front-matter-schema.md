@@ -15,7 +15,7 @@ tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
 author: <Full Name>           # real person; the byline. never "Admin"
-target: <company blog | personal site | dev.to | …>
+target: <delta | unitycatalog | openlakehouse | …>
 ---
 ```
 

@@ -43,7 +43,7 @@ export default function PendingComposer({
           start: pending.selector.start,
         },
       });
-    } else {
+    } else if (pending.kind === "code") {
       await create.mutateAsync({
         ref: contentRef,
         anchorSlug: pending.anchorSlug,
@@ -58,13 +58,33 @@ export default function PendingComposer({
           fileHash: pending.fileHash,
         },
       });
+    } else {
+      // Section-level: slug + fingerprint only (no text/code selector).
+      await create.mutateAsync({
+        ref: contentRef,
+        anchorSlug: pending.anchorSlug,
+        anchorFingerprint: fingerprint(pending.headingText),
+        bodyMd: draft,
+      });
     }
     setDraft("");
     onDone();
   }
 
-  const quote = pending.kind === "prose" ? pending.selector.quote : pending.quote;
-  const label = pending.kind === "code" ? `${pending.path}:${pending.line}` : pending.headingText;
+  const quote =
+    pending.kind === "prose"
+      ? pending.selector.quote
+      : pending.kind === "code"
+        ? pending.quote
+        : pending.headingText;
+  const label =
+    pending.kind === "code"
+      ? `${pending.path}:${pending.line}`
+      : pending.kind === "section"
+        ? "Section"
+        : pending.headingText;
+  const placeholder =
+    pending.kind === "section" ? "Comment on this section…" : "Comment on this selection…";
 
   return (
     <div className={cn("review-composer pending", compact && "compact")}>
@@ -79,7 +99,7 @@ export default function PendingComposer({
         onChange={setDraft}
         onSubmit={() => void post()}
         onCancel={onCancel}
-        placeholder="Comment on this selection…"
+        placeholder={placeholder}
         rows={compact ? 3 : 4}
         submitting={create.isPending}
         autoFocus

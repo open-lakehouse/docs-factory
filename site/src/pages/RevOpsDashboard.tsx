@@ -48,12 +48,12 @@ import {
 import { useAuth } from "../lib/auth-context";
 import { refHref } from "../lib/content-ref";
 import { ReviewStateBadge } from "../lib/review-status";
-import { statusBadgeClass } from "../lib/frontmatter-status";
 import { useReviewInvalidation } from "../lib/review-queries";
 import { findBlog } from "../content";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import BlogPostDetail from "../components/BlogPostDetail";
+import { FrontmatterStatusBadge } from "../components/StatusBadge";
 import ContentEventTimeline from "../components/review/ContentEventTimeline";
 import Shell from "../components/layout/Shell";
 
@@ -167,11 +167,7 @@ function SortableRow({
           )}
         </td>
         <td>
-          {d.frontmatterStatus && (
-            <span className={cn("blog-badge", statusBadgeClass(d.frontmatterStatus))}>
-              {d.frontmatterStatus}
-            </span>
-          )}
+          {d.frontmatterStatus && <FrontmatterStatusBadge status={d.frontmatterStatus} />}
         </td>
         <td>
           <ReviewStateBadge state={d.reviewState} />

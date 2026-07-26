@@ -30,7 +30,7 @@
   --color-accent-foreground: var(--foreground);
   --color-border: var(--border);
   --color-input: var(--border);
-  --color-ring: var(--accent);
+  --color-ring: var(--muted-foreground);
 
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
@@ -186,10 +186,111 @@ body {
   flex-direction: column;
 }
 .review-workspace-layout {
+  /* Zed-like pane hairlines: quieter than component/table borders so the
+     workspace reads as one editor rather than three boxed panels. */
+  --workspace-border: color-mix(in srgb, var(--border) 55%, transparent);
   display: flex;
   flex: 1 1 auto;
   min-height: 0;
   flex-direction: column;
+}
+.workspace-pane-left { border-right: 1px solid var(--workspace-border); }
+.workspace-pane-right { border-left: 1px solid var(--workspace-border); }
+.workspace-tab-strip,
+.workspace-section-divider { border-bottom: 1px solid var(--workspace-border); }
+.workspace-tab { border-right: 1px solid var(--workspace-border); }
+.workspace-pane-collapse-right,
+.workspace-pane-expand-right {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0.3rem;
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+}
+.workspace-pane-collapse-right:hover,
+.workspace-pane-collapse-right:focus-visible,
+.workspace-pane-expand-right:hover,
+.workspace-pane-expand-right:focus-visible {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 8%, transparent);
+  outline: none;
+}
+.workspace-pane-expand-right {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.45rem;
+  z-index: 25;
+  border-color: var(--workspace-border);
+  background: var(--sidebar);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+/* Shared page metadata + review chrome: a flex sibling above content. */
+.review-page-chrome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem 1rem;
+  flex: none;
+  padding: 0.45rem 0.85rem;
+  border-bottom: 1px solid var(--workspace-border, var(--border));
+  background: color-mix(in srgb, var(--sidebar) 70%, var(--background));
+}
+.review-page-chrome-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.75rem;
+  min-width: 0;
+}
+.review-page-chrome-series {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+.review-page-chrome-muted {
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.review-page-chrome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem 0.85rem;
+  margin-left: auto;
+}
+.review-page-chrome .status-badge--idle {
+  border-color: var(--workspace-border, var(--border));
+}
+.review-page-chrome .request-review-control {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.65rem;
+}
+.review-page-chrome .request-review-open-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.55rem;
+  margin: 0;
+}
+.review-page-chrome .request-review-open-row {
+  margin: 0;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--workspace-border, var(--border));
+  border-radius: 0.3rem;
+  background: var(--surface);
+  font-size: 0.75rem;
 }
 
 /* Console navbar — pure black, mono-forward */
@@ -1314,6 +1415,84 @@ body {
 }
 .docs-main .prose { max-width: 42rem; }
 
+/* Desktop docs pages: lock the shell to the viewport and scroll only the
+   article column. Sticky chrome was jittery (rails travel until they latch);
+   fixed positioning pulled them out of the grid and broke column alignment.
+   Same recipe as .index-scroll-layout / .review-workspace-layout. */
+@media (min-width: 961px) {
+  body:has(.docs-grid),
+  #root:has(.docs-grid) {
+    overflow: hidden;
+  }
+  .shell:has(.docs-grid) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+  .shell:has(.docs-grid) .topbar {
+    flex: none;
+    position: static;
+  }
+  .shell:has(.docs-grid) > .content {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+  }
+  .shell:has(.docs-grid) .docs-grid {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    align-items: stretch;
+  }
+  .shell:has(.docs-grid) .sidebar {
+    position: static;
+    top: auto;
+    max-height: none;
+    overflow-y: auto;
+  }
+  .shell:has(.docs-grid) .docs-main {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .shell:has(.docs-grid) .docs-main-scroll {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-color: transparent transparent;
+  }
+  .shell:has(.docs-grid) .docs-main-scroll::-webkit-scrollbar-thumb {
+    background-color: transparent;
+  }
+  .shell:has(.docs-grid) .docs-main-scroll.is-scrolling {
+    scrollbar-color: var(--border) transparent;
+  }
+  .shell:has(.docs-grid) .docs-main-scroll.is-scrolling::-webkit-scrollbar-thumb {
+    background-color: var(--border);
+  }
+  .shell:has(.docs-grid) .review-rail-host {
+    position: static;
+    top: auto;
+    align-self: stretch;
+    max-height: none;
+    min-height: 0;
+  }
+  .shell:has(.docs-grid) .review-rail {
+    height: 100%;
+    max-height: none;
+  }
+  .shell:has(.docs-grid) .toc {
+    position: static;
+    max-height: none;
+  }
+}
+
 .sidebar-backdrop {
   display: none;
   position: fixed;
@@ -1329,10 +1508,9 @@ body {
   top: 2.25rem;
   max-height: calc(100vh - 3rem);
   overflow-y: auto;
-  /* Recessed IDE side panel: darker-than-canvas surface, hairline border. */
-  background: var(--sidebar);
-  border: 1px solid var(--border);
-  border-radius: 0.4rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
   padding: 0.85rem 0.65rem 0.85rem 0.85rem;
 }
 .sidebar-inner { padding-bottom: 0.5rem; }
@@ -1376,13 +1554,23 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  width: 100%;
+  margin: 0 0 0.4rem;
+  padding: 0;
+  border: none;
+  background: transparent;
   font-family: var(--font-mono);
   font-size: 0.68rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--muted-foreground);
-  margin: 0 0 0.4rem;
+  text-align: left;
+  cursor: pointer;
+}
+.sidebar-project > span {
+  min-width: 0;
+  flex: 1;
 }
 .sidebar-project::before {
   content: "";
@@ -1416,15 +1604,47 @@ body {
 }
 .sidebar-bucket { margin-bottom: 0.5rem; }
 .sidebar-bucket-label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  margin: 0.4rem 0 0.15rem;
+  padding: 0;
+  border: none;
+  background: transparent;
   font-family: var(--font-mono);
   font-size: 0.68rem;
   font-weight: 500;
   text-transform: lowercase;
   letter-spacing: 0.02em;
   color: var(--muted-foreground);
-  margin: 0.4rem 0 0.15rem;
+  text-align: left;
+  cursor: pointer;
+}
+.sidebar-bucket-label > span {
+  min-width: 0;
+  flex: 1;
 }
 .sidebar-bucket-label.active { color: var(--accent); }
+.sidebar-chevron {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: none;
+  color: var(--muted-foreground);
+  transform: rotate(-90deg);
+  transition: transform 0.15s ease;
+}
+.sidebar-chevron.open {
+  transform: rotate(0deg);
+}
+.sidebar-project:hover,
+.sidebar-bucket-label:hover {
+  color: var(--accent);
+}
+.sidebar-project:hover .sidebar-chevron,
+.sidebar-bucket-label:hover .sidebar-chevron {
+  color: var(--accent);
+}
 .sidebar-links {
   list-style: none;
   padding: 0;
@@ -1771,13 +1991,21 @@ button.tag {
 }
 .entity-hovercard {
   width: 18rem;
-  padding: 0.85rem;
+  padding: 0;
+  overflow: hidden;
+  border-color: var(--border);
+  background: var(--card);
 }
 .entity-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.5rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--surface);
+}
+.entity-card > :not(:last-child) {
+  border-bottom: 1px solid var(--border);
 }
 .entity-card-title {
   margin: 0;
@@ -1791,25 +2019,30 @@ button.tag {
   font-size: 0.62rem;
 }
 .entity-card-summary {
-  margin: 0.45rem 0 0;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
   font-size: 0.82rem;
   line-height: 1.45;
-  color: var(--muted);
+  color: var(--muted-foreground);
 }
 .entity-card-links {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  margin-top: 0.55rem;
+  margin: 0;
+  padding: 0.35rem 0;
 }
 .entity-card-link {
   display: flex;
   flex-direction: column;
   gap: 0.05rem;
+  padding: 0.4rem 0.85rem;
   font-size: 0.72rem;
   color: var(--accent);
   text-decoration: none;
   word-break: break-all;
+}
+.entity-card-link + .entity-card-link {
+  border-top: 1px solid var(--border);
 }
 .entity-card-link:hover {
   text-decoration: underline;
@@ -1825,8 +2058,10 @@ button.tag {
   color: var(--accent);
 }
 .entity-card-cta {
-  display: inline-block;
-  margin-top: 0.65rem;
+  display: block;
+  margin: 0;
+  padding: 0.6rem 0.85rem;
+  background: var(--surface);
   font-size: 0.78rem;
   font-weight: 500;
   color: var(--accent);
@@ -2034,42 +2269,71 @@ a.blog-row-title:hover { color: var(--accent); }
   font-size: 0.78rem;
 }
 .blog-row .mono { font-family: var(--font-mono); }
-.blog-badge {
-  display: inline-block;
-  padding: 0.05rem 0.4rem;
+/* One geometry for both authoring intent and review lifecycle. State-specific
+ * components contribute only their label, case, and tint. */
+.status-badge {
   font-family: var(--font-mono);
-  font-size: 0.64rem;
+  font-size: 0.62rem;
+  line-height: 1.15;
   font-weight: 500;
-  text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--muted-foreground);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
+  white-space: nowrap;
+  text-align: center;
 }
-.blog-badge-ready {
+.frontmatter-status-badge {
+  text-transform: uppercase;
+}
+.status-badge--idle {
+  border-color: var(--border);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  color: var(--muted-foreground);
+}
+.status-badge-ready {
   color: #4f9c5a;
   background: color-mix(in srgb, #4f9c5a 12%, transparent);
   border-color: color-mix(in srgb, #4f9c5a 30%, transparent);
 }
 /* Idea: earliest, not-yet-committed stage. A distinct amber so reviewers can
  * spot posts still open to structural feedback at a glance. */
-.blog-badge-idea {
+.status-badge-idea {
   color: #b7791f;
   background: color-mix(in srgb, #b7791f 12%, transparent);
   border-color: color-mix(in srgb, #b7791f 30%, transparent);
 }
+/* In review: active lifecycle — purple so it reads apart from ready-green and
+ * changes-requested amber (and from the muted "not started" idle tone). */
+.status-badge-in-review {
+  color: #8b5cf6;
+  background: color-mix(in srgb, #8b5cf6 12%, transparent);
+  border-color: color-mix(in srgb, #8b5cf6 30%, transparent);
+}
 
-/* Review-state badge in the index tables' reviewer-only "Review" column. Uses
- * the shadcn Badge tones (via ReviewStateBadge) but shrinks the type and lets
- * the longest label ("changes requested") wrap instead of clipping in the
- * fixed-width column. */
-.review-state-badge {
-  font-size: 0.62rem;
-  line-height: 1.15;
-  text-transform: lowercase;
-  white-space: normal;
-  text-align: center;
+/* Compact status dots in the review workspace content tree (frontmatter +
+ * review lifecycle). Tones mirror the badge classes above. */
+.tree-status-dot {
+  display: inline-block;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+.tree-status-dot-ready {
+  background: #4f9c5a;
+}
+.tree-status-dot-idea {
+  background: #b7791f;
+}
+.tree-status-dot-draft,
+.tree-status-dot-none {
+  background: var(--muted-foreground);
+  opacity: 0.45;
+}
+.tree-status-dot-in-review {
+  background: #8b5cf6;
+}
+.tree-status-dot-released {
+  background: #4f9c5a;
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, #4f9c5a 45%, transparent);
 }
 
 /* Expanded detail row */
@@ -2242,6 +2506,13 @@ a.blog-row-title:hover { color: var(--accent); }
   gap: 3rem;
   align-items: start;
 }
+.blog-post-layout:has(.blog-review-aside) {
+  max-width: 96rem;
+}
+.blog-post-body:has(.blog-review-aside) {
+  grid-template-columns: minmax(15rem, 18rem) minmax(0, 1fr) 20rem;
+  gap: 2rem;
+}
 .blog-post-aside {
   min-width: 0;
   align-self: start;
@@ -2255,6 +2526,20 @@ a.blog-row-title:hover { color: var(--accent); }
   display: flex;
   flex-direction: column;
   min-width: 0;
+}
+.blog-review-aside {
+  min-width: 0;
+  align-self: start;
+  position: sticky;
+  top: 3.75rem;
+  max-height: calc(100vh - 4rem);
+}
+.blog-review-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-height: calc(100vh - 4rem);
+  overflow: hidden;
 }
 .blog-aside-mobile,
 .docs-aside-mobile { display: none; }
@@ -2309,7 +2594,8 @@ a.blog-row-title:hover { color: var(--accent); }
   flex-direction: column;
   gap: 1rem;
 }
-.blog-post-aside .review-comments {
+.blog-post-aside .review-comments,
+.blog-review-aside .review-comments {
   border-top: 1px solid var(--border);
   padding-top: 1.5rem;
 }
@@ -2321,6 +2607,11 @@ a.blog-row-title:hover { color: var(--accent); }
   display: flex;
   flex-direction: column;
   gap: 1.1rem;
+}
+.blog-review-panel .blog-aside-review:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: 0;
 }
 
 /* Request-review control (aside) + its open-request list. */
@@ -2425,13 +2716,51 @@ a.blog-row-title:hover { color: var(--accent); }
   gap: 0.5rem;
   font-size: 0.875rem;
 }
+.review-controls-actions [data-variant="default"] {
+  background: color-mix(in srgb, var(--accent) 68%, #111827);
+}
+.review-controls-actions [data-variant="default"]:hover {
+  background: color-mix(in srgb, var(--accent) 76%, #111827);
+}
+.review-controls-split {
+  display: inline-flex;
+  align-items: stretch;
+}
+.review-controls-split-primary {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.review-controls-split-toggle {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 1px solid color-mix(in srgb, var(--primary-foreground, #fff) 28%, transparent);
+  padding-inline: 0.35rem;
+}
+.review-controls-split-toggle[data-variant="outline"] {
+  border-left-color: var(--border);
+}
+.review-actions-menu {
+  padding: 0;
+  overflow: hidden;
+  border-color: var(--border);
+  background: var(--card);
+}
+.review-actions-menu [data-slot="dropdown-menu-item"] {
+  min-height: 2.25rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+}
+.review-actions-menu [data-slot="dropdown-menu-item"]:last-child {
+  border-bottom: 0;
+}
 .review-controls--aside {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 0.55rem;
 }
-.review-controls--aside .review-controls-badge {
+.review-controls--aside .status-badge {
   align-self: flex-start;
 }
 .review-controls--aside .review-controls-actions {
@@ -2521,11 +2850,19 @@ a.blog-row-title:hover { color: var(--accent); }
     grid-template-columns: 1fr;
     gap: 1.5rem;
   }
+  .blog-post-body:has(.blog-review-aside) {
+    grid-template-columns: 1fr;
+  }
   .blog-post-aside {
     position: static;
     max-height: none;
   }
-  .blog-aside-panel { display: none; }
+  .blog-review-aside {
+    position: static;
+    max-height: none;
+  }
+  .blog-aside-panel,
+  .blog-review-panel { display: none; }
   .blog-aside-mobile,
   .docs-aside-mobile { display: block; }
   /* Docs mobile TOC sits above the article; give it the same separated,
@@ -3351,6 +3688,36 @@ a.review-author:hover span {
 .sel-float:hover {
   filter: brightness(1.08);
 }
+
+/* Heading hover affordance: section comment in review mode, permalink otherwise.
+   Portaled inline after the title, matching conventional markdown anchors. */
+.heading-affordance-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-left: 0.4em;
+  padding: 0;
+  vertical-align: middle;
+  border: none;
+  border-radius: 0.3rem;
+  background: transparent;
+  color: var(--muted-foreground);
+  opacity: 0.7;
+  cursor: pointer;
+  transform: translateY(-0.05em);
+  text-decoration: none;
+}
+.heading-affordance-btn:hover,
+.heading-affordance-btn:focus-visible {
+  color: var(--accent);
+  opacity: 1;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  outline: none;
+  text-decoration: none;
+}
+
 .sel-menu {
   z-index: 60;
   display: flex;
@@ -3645,10 +4012,38 @@ a.review-author:hover span {
 
 /* Related-content block at the foot of a content page. */
 .related-content {
-  margin-top: 2.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--border) 65%, transparent);
 }
 .related-content h3 {
-  margin-top: 0;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-foreground);
+}
+.related-content .draft-list {
+  margin: 0.55rem 0 0;
+}
+.related-content .draft-list li {
+  margin: 0;
+  padding: 0.35rem 0;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 45%, transparent);
+  border-radius: 0;
+  background: transparent;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+.related-content .draft-list li:last-child {
+  border-bottom: 0;
+}
+.related-content .draft-list a {
+  font-weight: 500;
+}
+.related-content .muted {
+  font-size: 0.76rem;
 }

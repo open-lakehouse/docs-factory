@@ -98,15 +98,13 @@ export default function ThreadConversation({
     onChange();
   }
 
-  const sel = thread.root?.selector;
-  const code = thread.root?.codeSelector;
-  const codeLabel = code
-    ? `${code.path}:${code.line}${code.endLine > code.line ? `-${code.endLine}` : ""}`
-    : undefined;
   const label = sectionLabel || (thread.root?.orphaned ? "Removed section" : "Section");
 
   // Inline surfaces (compact) sit directly under the highlighted prose/code, so
   // the section tag + quoted target would just repeat the surrounding context.
+  // The rail also skips quotes — CSS highlights already show the target in the
+  // article (prose and code), so path:line would only repeat what the highlight
+  // already identifies.
   const showContext = !compact;
 
   return (
@@ -141,14 +139,6 @@ export default function ThreadConversation({
             )}
           </div>
         </div>
-      )}
-      {showContext && sel?.quote && (
-        <blockquote className="review-quote">{sel.quote}</blockquote>
-      )}
-      {showContext && code && (
-        <blockquote className="review-quote code">
-          <span className="review-target-code">{codeLabel}</span>
-        </blockquote>
       )}
       {thread.root && (
         <CommentBubble

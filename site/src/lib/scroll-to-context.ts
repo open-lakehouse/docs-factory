@@ -6,8 +6,11 @@
 // etc.), so `document.getElementById` could resolve the wrong tab. Scrolling is
 // likewise parameterized on a container — the single-page routes scroll the
 // window (the default), while an editor tab scrolls its own middle pane.
+//
+// Always scrolls that container explicitly (never Element.scrollIntoView): the
+// latter walks every scrollable ancestor and fights the workspace panes.
 import type { Thread } from "../gen/docs_factory/review/v1/messages_pb";
-import { locateSelector } from "./content-ref";
+import { locateSelector, sectionRootForAnchor } from "./content-ref";
 
 /** Where scrolling happens: the window (single-page routes) or a scroll pane. */
 export type ScrollContainer = Window | HTMLElement;
@@ -32,14 +35,36 @@ function scrollToRect(rect: DOMRect, container: ScrollContainer) {
   container.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
 }
 
-/** Resolve the section element for a thread's anchor slug. */
-function sectionFor(thread: Thread, article: HTMLElement): HTMLElement {
-  const slug = thread.root?.anchorSlug;
-  if (slug) {
-    const heading = headingById(article, slug);
-    if (heading) return heading;
+/** Prefer the first visible client rect (multi-line quotes / wrapped code). */
+function rectForTarget(target: Range | HTMLElement): DOMRect | null {
+  if (target instanceof Range) {
+    const rects = target.getClientRects();
+    for (const r of rects) {
+      if (r.width > 0 || r.height > 0) return r;
+    }
+    const fallback = target.getBoundingClientRect();
+    return fallback.width || fallback.height ? fallback : null;
   }
-  return article;
+  const rect = target.getBoundingClientRect();
+  return rect.width || rect.height ? rect : null;
+}
+
+/**
+ * The Shiki `.line` span for a 1-based source line inside a `file=` code box.
+ * `data-src-start` is the first source line rendered in the region (defaults to
+ * 1), matching how <Pre> maps commented lines onto span indices.
+ */
+function codeLineTarget(block: HTMLElement, sourceLine: number): HTMLElement {
+  if (sourceLine > 0) {
+    const srcStart = Number(block.dataset.srcStart ?? "1") || 1;
+    const index = sourceLine - srcStart;
+    if (index >= 0) {
+      const lines = block.querySelectorAll<HTMLElement>(":scope .line");
+      const line = lines[index];
+      if (line) return line;
+    }
+  }
+  return block;
 }
 
 /**
@@ -57,11 +82,14 @@ export function scrollToThreadContext(
 
   const sel = root.selector;
   if (sel?.quote) {
-    const section = sectionFor(thread, article);
+    const section = sectionRootForAnchor(article, root.anchorSlug);
     const range = locateSelector(sel, section);
     if (range) {
-      scrollToRect(range.getBoundingClientRect(), container);
-      return true;
+      const rect = rectForTarget(range);
+      if (rect) {
+        scrollToRect(rect, container);
+        return true;
+      }
     }
   }
 
@@ -69,8 +97,12 @@ export function scrollToThreadContext(
   if (code?.path) {
     const blocks = article.querySelectorAll<HTMLElement>("[data-src-path]");
     for (const block of blocks) {
-      if (block.dataset.srcPath === code.path) {
-        block.scrollIntoView({ behavior: "smooth", block: "center" });
+      if (block.dataset.srcPath !== code.path) continue;
+      if (code.region && (block.dataset.srcRegion ?? "") !== code.region) continue;
+      const target = codeLineTarget(block, code.line);
+      const rect = rectForTarget(target);
+      if (rect) {
+        scrollToRect(rect, container);
         return true;
       }
     }
@@ -79,8 +111,11 @@ export function scrollToThreadContext(
   if (root.anchorSlug) {
     const heading = headingById(article, root.anchorSlug);
     if (heading) {
-      heading.scrollIntoView({ behavior: "smooth", block: "center" });
-      return true;
+      const rect = rectForTarget(heading);
+      if (rect) {
+        scrollToRect(rect, container);
+        return true;
+      }
     }
   }
 

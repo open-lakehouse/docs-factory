@@ -13,8 +13,7 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { ReviewState } from "../gen/docs_factory/review/v1/messages_pb";
 import { ReviewStateBadge } from "../lib/review-status";
-import { statusBadgeClass } from "../lib/frontmatter-status";
-import { cn } from "@/lib/utils";
+import { FrontmatterStatusBadge } from "./StatusBadge";
 
 export interface ContentRow {
   /** Stable key + open/close identity. */
@@ -160,11 +159,7 @@ function TableRow({
         {showStatus && (
           <>
             <td className="blog-row-status">
-              {row.frontmatterStatus && (
-                <span className={cn("blog-badge", statusBadgeClass(row.frontmatterStatus))}>
-                  {row.frontmatterStatus}
-                </span>
-              )}
+              {row.frontmatterStatus && <FrontmatterStatusBadge status={row.frontmatterStatus} />}
             </td>
             <td className="blog-row-status">
               {hasReview && <ReviewStateBadge state={row.reviewState as ReviewState} />}

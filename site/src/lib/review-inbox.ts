@@ -14,7 +14,7 @@ import { useAuth } from "./auth-context";
 const READY = "ready";
 
 /** Review states that count as active pending work for a reviewer. */
-const PENDING_STATES = new Set<ReviewState>([
+export const PENDING_REVIEW_STATES = new Set<ReviewState>([
   ReviewState.IN_REVIEW,
   ReviewState.CHANGES_REQUESTED,
 ]);
@@ -35,7 +35,7 @@ export function useReviewInbox() {
   );
 
   const allDrafts = drafts.data?.drafts ?? [];
-  const pending = allDrafts.filter((d) => PENDING_STATES.has(d.reviewState));
+  const pending = allDrafts.filter((d) => PENDING_REVIEW_STATES.has(d.reviewState));
   const approvedNotReady = allDrafts.filter(
     (d: DraftSummary) =>
       (d.reviewState === ReviewState.APPROVED || d.reviewState === ReviewState.RELEASED) &&

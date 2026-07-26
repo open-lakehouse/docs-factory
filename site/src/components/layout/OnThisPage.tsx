@@ -1,4 +1,5 @@
 import { useEffect, useState, type RefObject } from "react";
+import { useScrollContainer } from "../review/scroll-container-context";
 
 export interface TocHeading {
   id: string;
@@ -13,6 +14,7 @@ interface OnThisPageProps {
 export default function OnThisPage({ articleRef }: OnThisPageProps) {
   const [headings, setHeadings] = useState<TocHeading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
+  const scrollContainer = useScrollContainer();
 
   useEffect(() => {
     const article = articleRef.current;
@@ -32,7 +34,10 @@ export default function OnThisPage({ articleRef }: OnThisPageProps) {
 
   useEffect(() => {
     if (headings.length === 0) return;
+    const article = articleRef.current;
+    if (!article) return;
 
+    const root = scrollContainer instanceof HTMLElement ? scrollContainer : null;
     const observer = new IntersectionObserver(
       (entries) => {
         const visible = entries
@@ -42,18 +47,33 @@ export default function OnThisPage({ articleRef }: OnThisPageProps) {
           setActiveId(visible[0].target.id);
         }
       },
-      { rootMargin: "-80px 0px -70% 0px", threshold: 0 },
+      { root, rootMargin: "-80px 0px -70% 0px", threshold: 0 },
     );
 
     for (const { id } of headings) {
-      const el = document.getElementById(id);
+      const el = article.querySelector(`#${CSS.escape(id)}`);
       if (el) observer.observe(el);
     }
 
     return () => observer.disconnect();
-  }, [headings]);
+  }, [headings, articleRef, scrollContainer]);
 
   if (headings.length === 0) return null;
+
+  function jumpToHeading(id: string) {
+    const article = articleRef.current;
+    const el = article?.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
+    if (!el) return;
+    if (scrollContainer instanceof HTMLElement) {
+      const view = scrollContainer.getBoundingClientRect();
+      const rect = el.getBoundingClientRect();
+      const top = scrollContainer.scrollTop + (rect.top - view.top) - 16;
+      scrollContainer.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    } else {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+    setActiveId(id);
+  }
 
   return (
     <aside className="toc" aria-label="On this page">
@@ -66,8 +86,7 @@ export default function OnThisPage({ articleRef }: OnThisPageProps) {
               className={activeId === h.id ? "toc-link active" : "toc-link"}
               onClick={(e) => {
                 e.preventDefault();
-                document.getElementById(h.id)?.scrollIntoView({ behavior: "smooth" });
-                setActiveId(h.id);
+                jumpToHeading(h.id);
               }}
             >
               {h.text}

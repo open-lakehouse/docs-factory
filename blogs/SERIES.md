@@ -76,8 +76,9 @@ much richer and user aligned experiences. This series features simple services
 and examples that leverage the different UC surfaces to create enhanced experiences.
 
 **Posts (in order):**
-1. Bytes Proxy and the in-browser wasm query engine
-2. Volumes + Files API.
+1. Build your own query editor (BYO-QE)
+2. BYO-QE - volume based Files API
+3. BYO-QE - query execution + bytes proxy
 
 ## Kernel Inside
 

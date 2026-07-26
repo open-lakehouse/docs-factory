@@ -5,7 +5,7 @@ status: draft
 date: 2026-07-03
 tags: [unity-catalog, governance, lakehouse, devrel]
 author: Robert Pack
-target: company blog
+target: unitycatalog
 ---
 
 <!--
@@ -248,4 +248,3 @@ location, and make vended, downscoped access the default in your platform.
 
 <!-- CTA note: primary CTA is "run OSS UC locally + adopt vending as default";
 secondary is the Trust post. Finalize once the "try this at home" steps are verified. -->
-

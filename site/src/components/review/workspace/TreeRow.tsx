@@ -15,6 +15,7 @@ export function TreeRow({
   depth,
   icon,
   label,
+  trailing,
   expandable,
   open,
   selected,
@@ -24,6 +25,8 @@ export function TreeRow({
   depth: number;
   icon?: ReactNode;
   label: string;
+  /** Optional right-side adornment (e.g. a status dot). */
+  trailing?: ReactNode;
   expandable?: boolean;
   open?: boolean;
   selected?: boolean;
@@ -39,7 +42,8 @@ export function TreeRow({
     <div
       className={cn(
         "group flex items-center rounded pr-1 hover:bg-accent",
-        selected && "bg-accent text-accent-foreground",
+        selected &&
+          "bg-accent text-accent-foreground ring-1 ring-inset ring-primary/30",
       )}
     >
       <div className="flex min-w-0 flex-1 items-center" style={{ paddingLeft: rowPadding(depth) }}>
@@ -69,6 +73,7 @@ export function TreeRow({
         >
           {icon}
           <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
+          {trailing}
         </button>
       </div>
     </div>

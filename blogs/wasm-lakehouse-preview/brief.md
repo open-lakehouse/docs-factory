@@ -7,7 +7,7 @@ tags: [wasm, datafusion, delta-lake, unity-catalog, lakehouse, rust]
 series:
 series_order:
 author: Robert Pack
-target: company blog
+target: unitycatalog
 ---
 
 # Brief: A lakehouse in the browser tab — DataFusion + Delta on WASM
@@ -101,7 +101,7 @@ public building blocks, not the internal preview.)
 
 ## 8. Publishing target / format
 
-Company blog. Standalone. Code samples are the load-bearing content — every one
+unitycatalog. Standalone. Code samples are the load-bearing content — every one
 must run against a **public** ref (delta-rs `deltalake-wasm`, DataFusion), kept in
 `snippets/` per the runnable-examples convention; the mangrove-internal glue is
 described, not pasted. A short architecture diagram (browser ↔ storage, no query

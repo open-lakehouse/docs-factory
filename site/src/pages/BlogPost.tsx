@@ -1,9 +1,11 @@
 import { useRef } from "react";
 import { Link, useParams } from "react-router-dom";
 import BlogAside from "../components/layout/BlogAside";
+import BlogReviewAside from "../components/layout/BlogReviewAside";
 import ReviewSurfaces from "../components/review/ReviewSurfaces";
 import { SelectionProvider } from "../components/review/selection-context";
 import { ReviewProvider } from "../components/review/review-context";
+import ReviewPageChrome from "../components/review/ReviewPageChrome";
 import { blogRef } from "../lib/content-ref";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
@@ -30,20 +32,21 @@ export default function BlogPost() {
 
   const { Component, frontmatter } = page;
   const neighbors = blogNeighbors(slug);
+  const contentRef = blogRef(slug);
 
   return (
     <Shell wide>
       <SelectionProvider>
-      <ReviewProvider contentRef={blogRef(slug)}>
+      <ReviewProvider contentRef={contentRef}>
       <div className="blog-post-layout">
         <div className="blog-post-body">
           <BlogAside
             articleRef={articleRef}
-            contentRef={blogRef(slug)}
             byline={frontmatter.author}
             tags={frontmatter.tags ?? []}
           />
           <div className="blog-post-article">
+            <ReviewPageChrome contentRef={contentRef} page={page} />
             <header className="blog-post-header">
               {frontmatter.series && (
                 <p className="blog-post-series">{frontmatter.series}</p>
@@ -83,8 +86,9 @@ export default function BlogPost() {
               }
             />
           </div>
+          <BlogReviewAside articleRef={articleRef} contentRef={contentRef} />
         </div>
-        <ReviewSurfaces contentRef={blogRef(slug)} articleRef={articleRef} />
+        <ReviewSurfaces contentRef={contentRef} articleRef={articleRef} />
       </div>
       </ReviewProvider>
       </SelectionProvider>

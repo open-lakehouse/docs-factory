@@ -4,7 +4,7 @@
 // each login against the reviewer allowlist and rejects off-list names, so this
 // control keeps a light free-text input rather than shipping the allowlist to
 // the client. Gated on reviewActive, like ReviewControls.
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useMutation, useQuery } from "@connectrpc/connect-query";
 import {
   requestReview,
@@ -28,10 +28,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 
-export default function RequestReviewControl({ contentRef }: { contentRef: ContentRef }) {
+export default function RequestReviewControl({
+  contentRef,
+  renderTrigger,
+}: {
+  contentRef: ContentRef;
+  renderTrigger?: (openDialog: () => void) => ReactNode;
+}) {
   const { reviewActive, isMaintainer, viewer } = useAuth();
   const { invalidateReviewRequests, invalidateDrafts } = useReviewInvalidation();
   const [open, setOpen] = useState(false);
@@ -110,12 +115,15 @@ export default function RequestReviewControl({ contentRef }: { contentRef: Conte
         </ul>
       )}
 
+      {renderTrigger ? (
+        renderTrigger(() => setOpen(true))
+      ) : (
+        <Button variant="outline" size="xs" onClick={() => setOpen(true)}>
+          Request review
+        </Button>
+      )}
+
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button variant="outline" size="xs">
-            Request review
-          </Button>
-        </DialogTrigger>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Request a review</DialogTitle>

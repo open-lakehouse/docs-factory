@@ -7,7 +7,7 @@ tags: [lakehouse, unity-catalog, ui-components]
 series:
 series_order:
 author: Robert Pack
-target: company blog
+target: openlakehouse
 ---
 
 # Brief: Make the lakehouse UI composable — copy the visuals, package the logic
@@ -103,7 +103,7 @@ injected provider and see how much coupling disappears.
 
 ## 8. Publishing target / format
 
-Company blog. Standalone. Code samples (the provider/hook seam, a token snippet)
+openlakehouse. Standalone. Code samples (the provider/hook seam, a token snippet)
 must be public-anchored and runnable in isolation (a tiny React seam, not the real
 packages) per the runnable-examples convention. A simple diagram of one component
 against three hosts (D2) is the key asset.

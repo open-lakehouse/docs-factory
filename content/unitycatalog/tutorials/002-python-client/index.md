@@ -11,14 +11,7 @@ status: draft
 
 This tutorial uses the official [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/)
 Python SDK to talk to a running [Unity Catalog](model:unityCatalogOSS) server. You
-will connect, create a [catalog](model:lakehouse.catalog), a schema, and a table,
-see how the client reports a missing resource, and clean up.
-
-The SDK is **async** and generated from the Unity Catalog OpenAPI spec: you drive
-one `ApiClient` as an async context manager and call per-resource API classes
-(`CatalogsApi`, `SchemasApi`, `TablesApi`) on it. Every step below pulls its code
-from a single runnable file our CI executes against a real server, so what you
-copy is what we test.
+will connect, create a [catalog](model:lakehouse.catalog), a schema, and a table, and clean up.
 
 ## Prerequisites
 
@@ -29,7 +22,7 @@ copy is what we test.
   ships a compose file next to this page:
 
   ```bash
-  docker compose -f docker-compose.uc.yml up
+  docker compose -f compose.yaml up
   ```
 
   This starts the open-source server on `http://localhost:8080`. (Or follow

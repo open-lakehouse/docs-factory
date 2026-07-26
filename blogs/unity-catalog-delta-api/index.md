@@ -83,8 +83,6 @@ the local server. This is the only setup step; the rest is plain SQL.
 
 ```
 
-
-
 ### Create the managed table and write rows
 
 ```python file=./snippets/read_write_delta_spark.py start=start:create end=end:create

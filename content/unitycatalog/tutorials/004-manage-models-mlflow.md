@@ -1,5 +1,5 @@
 ---
-title: Manage and Govern ML-Models
+title: Manage ML-Models
 summary: Model tracking and governance with UnityCatalog and MlFlow
 diataxis: tutorial
 project: unitycatalog

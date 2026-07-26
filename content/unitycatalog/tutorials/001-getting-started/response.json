@@ -1,0 +1,18 @@
+{
+  "catalogs": [
+    {
+      "name": "unity",
+      "comment": "Main catalog",
+      "properties": {},
+      "owner": null,
+      "created_at": 1721241605334,
+      "created_by": null,
+      "updated_at": null,
+      "updated_by": null,
+      "id": "f029b870-9468-4f10-badc-630b41e5690d",
+      "storage_root": null,
+      "storage_location": null
+    }
+  ],
+  "next_page_token": null
+}

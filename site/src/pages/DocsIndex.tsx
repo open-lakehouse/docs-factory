@@ -17,8 +17,9 @@
 // their content-page row (no duplicate). There is no /explain route: a concept's
 // canonical URL is its doc page.
 import { Link, useSearchParams } from "react-router-dom";
-import { BookOpen, FileText, GraduationCap, Library, Wrench } from "lucide-react";
+import { BookOpen, FileText } from "lucide-react";
 import Shell from "../components/layout/Shell";
+import DiataxisIcon from "../components/DiataxisIcon";
 import SemanticChip from "../components/SemanticChip";
 import ContentTable, { type ContentRow } from "../components/ContentTable";
 import AuthorBadge from "../components/AuthorBadge";
@@ -52,26 +53,26 @@ export const AXES: Record<DiataxisKey, AxisMeta> = {
     key: "tutorial",
     title: "Tutorials",
     blurb: "Learning-oriented lessons that take you through building something end to end.",
-    icon: <GraduationCap className="blog-row-icon" aria-hidden="true" />,
+    icon: <DiataxisIcon axis="tutorial" />,
   },
   "how-to": {
     key: "how-to",
     title: "How-to guides",
     blurb: "Task-oriented recipes for getting a specific job done.",
-    icon: <Wrench className="blog-row-icon" aria-hidden="true" />,
+    icon: <DiataxisIcon axis="how-to" />,
   },
   reference: {
     key: "reference",
     title: "Reference",
     blurb: "Information-oriented, engine-neutral technical description.",
-    icon: <Library className="blog-row-icon" aria-hidden="true" />,
+    icon: <DiataxisIcon axis="reference" />,
   },
   explanation: {
     key: "explanation",
     title: "Explanation",
     blurb:
       "Understanding-oriented discussion — authored explanation plus the Open Lakehouse reference model drawn live from the estate.",
-    icon: <BookOpen className="blog-row-icon" aria-hidden="true" />,
+    icon: <DiataxisIcon axis="explanation" />,
   },
 };
 

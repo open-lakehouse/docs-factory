@@ -105,22 +105,36 @@ export interface DiataxisBuckets {
 }
 
 // Directory bucket (plural) → diataxis frontmatter value (singular), used as a
-// fallback when a page omits the `diataxis:` field.
-const BUCKET_TO_DIATAXIS: Record<string, DiataxisKey> = {
+// fallback when a page omits the `diataxis:` field — and for UI that keys off
+// the on-disk folder name (sidebar / review tree).
+export const BUCKET_TO_DIATAXIS: Record<string, DiataxisKey> = {
   tutorials: "tutorial",
+  tutorial: "tutorial",
   "how-to": "how-to",
   reference: "reference",
   explanation: "explanation",
 };
 
+/** Resolve a folder name or frontmatter value to a Diátaxis key, if known. */
+export function diataxisKeyOf(bucketOrAxis: string): DiataxisKey | null {
+  if (
+    bucketOrAxis === "tutorial" ||
+    bucketOrAxis === "how-to" ||
+    bucketOrAxis === "reference" ||
+    bucketOrAxis === "explanation"
+  ) {
+    return bucketOrAxis;
+  }
+  return BUCKET_TO_DIATAXIS[bucketOrAxis] ?? null;
+}
+
 function diataxisOf(page: ContentPage): DiataxisKey | null {
   const fm = page.frontmatter.diataxis;
-  if (fm === "tutorial" || fm === "how-to" || fm === "reference" || fm === "explanation") {
-    return fm;
+  if (typeof fm === "string") {
+    const fromFm = diataxisKeyOf(fm);
+    if (fromFm) return fromFm;
   }
-  if (page.bucket && page.bucket in BUCKET_TO_DIATAXIS) {
-    return BUCKET_TO_DIATAXIS[page.bucket];
-  }
+  if (page.bucket) return diataxisKeyOf(page.bucket);
   return null;
 }
 

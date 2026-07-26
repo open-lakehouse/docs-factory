@@ -86,3 +86,22 @@ export function docIdentity(path, meta = {}) {
   const slug = typeof fmSlug === "string" && fmSlug ? fmSlug : pathSlug;
   return { area: "docs", project, bucket, slug };
 }
+
+/**
+ * The in-app route for a logical identity, matching the site's App.tsx routing
+ * and content.ts href construction: `/blog/<slug>` for blogs, and
+ * `/docs/<project>/<bucket>/<slug>` for docs. This is the string form of
+ * site/src/lib/content-ref.ts#refHref for a `docIdentity` value, kept here so
+ * the framework-free content-core owns the mapping (used by remark-source-links
+ * to resolve source-relative links). Returns null if a docs identity is missing
+ * a component (project/bucket/slug).
+ */
+export function hrefFromIdentity(identity) {
+  if (!identity) return null;
+  if (identity.area === "blogs") {
+    return identity.slug ? `/blog/${identity.slug}` : null;
+  }
+  const { project, bucket, slug } = identity;
+  if (!project || !bucket || !slug) return null;
+  return `/docs/${project}/${bucket}/${slug}`;
+}

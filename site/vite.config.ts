@@ -33,6 +33,10 @@ const TITLE_RE = /\btitle="([^"]*)"/;
 const SRCPATH_RE = /\bsrcpath="([^"]*)"/;
 const SRCREGION_RE = /\bsrcregion="([^"]*)"/;
 const SRCSTART_RE = /\bsrcstart="([^"]*)"/;
+// A bare `collapse` flag in the fence meta (```py title="x" collapse) makes the
+// box render collapsed behind a click-to-expand header. Word-boundary matched so
+// it doesn't fire on substrings like `title="collapse.py"`.
+const COLLAPSE_RE = /(?:^|\s)collapse(?=\s|$)/;
 const codeChromeTransformer: ShikiTransformer = {
   name: "docs-factory:code-chrome",
   pre(node) {
@@ -40,6 +44,7 @@ const codeChromeTransformer: ShikiTransformer = {
     const title = TITLE_RE.exec(raw)?.[1];
     if (title) node.properties["data-filename"] = title;
     if (this.options.lang) node.properties["data-lang"] = this.options.lang;
+    if (COLLAPSE_RE.test(raw)) node.properties["data-collapse"] = "true";
     // Source anchoring for review: the repo-relative path, region, and the
     // 1-based source line the inlined snippet starts at (remark-code-snippets
     // emits these). The <Pre> override reads them to anchor code comments.

@@ -14,9 +14,11 @@ import {
   Children,
   cloneElement,
   isValidElement,
+  useState,
   type ReactElement,
   type ReactNode,
 } from "react";
+import { ChevronRight } from "lucide-react";
 import CodeCopyButton from "./CodeCopyButton";
 import LanguageIcon from "./LanguageIcon";
 import { useReview } from "./review/review-context";
@@ -30,6 +32,7 @@ interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
   "data-src-path"?: string;
   "data-src-region"?: string;
   "data-src-start"?: string;
+  "data-collapse"?: string;
   children?: ReactNode;
 }
 
@@ -112,11 +115,15 @@ export function Pre({
   "data-src-path": srcPath,
   "data-src-region": srcRegion = "",
   "data-src-start": srcStartAttr,
+  "data-collapse": collapseAttr,
   className,
   ...props
 }: PreProps) {
   const code = extractCode(children);
   const hasFilename = Boolean(filename);
+  const collapsible = collapseAttr === "true";
+  // Collapsible blocks start closed; clicking the header toggles them open.
+  const [open, setOpen] = useState(false);
 
   const review = useReview();
   const { pending, setPending } = useSelectionState();
@@ -187,24 +194,52 @@ export function Pre({
         )
       : children;
 
+  // Review activity inside the block (a commented line or an inline panel) must
+  // never be hidden behind a collapsed box — force it open in that case.
+  const forcedOpen = byIndex.size > 0 || Boolean(inlinePanel);
+  const expanded = !collapsible || open || forcedOpen;
+  // A collapsible block always gets a clickable header so there's something to
+  // toggle, even when the fence carries no title="…".
+  const showHeader = hasFilename || collapsible;
+
   return (
-    <div className="cb" data-lang={lang} data-has-filename={hasFilename ? "true" : undefined}>
-      {hasFilename && (
-        <div className="cb-head">
-          <LanguageIcon lang={lang} />
-          <span className="cb-file">{filename}</span>
-        </div>
+    <div
+      className="cb"
+      data-lang={lang}
+      data-has-filename={hasFilename ? "true" : undefined}
+      data-collapsible={collapsible ? "true" : undefined}
+      data-collapsed={collapsible && !expanded ? "true" : undefined}
+    >
+      {showHeader &&
+        (collapsible ? (
+          <button
+            type="button"
+            className="cb-head cb-head-toggle"
+            aria-expanded={expanded}
+            onClick={() => setOpen((o) => !o)}
+          >
+            <ChevronRight className="cb-chevron" aria-hidden="true" />
+            <LanguageIcon lang={lang} />
+            <span className="cb-file">{filename || (expanded ? "Hide code" : "Show code")}</span>
+          </button>
+        ) : (
+          <div className="cb-head">
+            <LanguageIcon lang={lang} />
+            <span className="cb-file">{filename}</span>
+          </div>
+        ))}
+      {expanded && (
+        <pre
+          {...props}
+          data-src-path={srcPath}
+          data-src-region={srcRegion || undefined}
+          data-src-start={srcStartAttr}
+          className={className ? `cb-pre ${className}` : "cb-pre"}
+        >
+          {renderedChildren}
+        </pre>
       )}
-      <pre
-        {...props}
-        data-src-path={srcPath}
-        data-src-region={srcRegion || undefined}
-        data-src-start={srcStartAttr}
-        className={className ? `cb-pre ${className}` : "cb-pre"}
-      >
-        {renderedChildren}
-      </pre>
-      <CodeCopyButton code={code} />
+      {expanded && <CodeCopyButton code={code} />}
     </div>
   );
 }

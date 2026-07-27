@@ -679,6 +679,47 @@ body {
   margin-right: 0.45rem;
   opacity: 0.8;
 }
+/* Collapsible blocks turn the header into a full-width toggle button. Reset the
+   native button chrome so it reads as the same slim bar, and make it clickable
+   across its whole width. The floating copy button sits above it (higher z). */
+.prose .cb-head-toggle {
+  width: 100%;
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid var(--code-border);
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  transition: background 0.15s, color 0.15s;
+}
+.prose .cb-head-toggle:hover {
+  background: color-mix(in srgb, var(--code-surface) 80%, #ffffff 8%);
+  color: var(--code-fg);
+}
+.prose .cb-head-toggle:focus-visible {
+  outline: 2px solid var(--code-border);
+  outline-offset: -2px;
+}
+/* Chevron points right when collapsed, rotates down when open. */
+.prose .cb-chevron {
+  flex: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-right: 0.35rem;
+  opacity: 0.8;
+  transition: transform 0.15s;
+}
+.prose .cb[data-collapsed="true"] .cb-chevron {
+  transform: rotate(0deg);
+}
+.prose .cb-head-toggle[aria-expanded="true"] .cb-chevron {
+  transform: rotate(90deg);
+}
+/* A collapsed box is just its header — drop the bottom margin/border doubling so
+   it reads as one compact bar. */
+.prose .cb[data-collapsed="true"] .cb-head-toggle {
+  border-bottom: 0;
+}
 /* A whisper of context: the language, top-left, fading in on hover. Skipped for
    plain `text` (noise) and for blocks that already have a filename header, and
    given its own backdrop so it stays legible over the code. */

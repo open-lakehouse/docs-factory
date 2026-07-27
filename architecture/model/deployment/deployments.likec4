@@ -11,7 +11,6 @@
 // deployed outside it (gets a vended credential, reads storage directly — FGAC
 // bypassed). That difference is what the two topologies below make explicit:
 //   1. trustedCompute  — inside the boundary; the query engine enforces full FGAC.
-//   2. externalCompute — a query engine deployed OUTSIDE the boundary; FGAC bypassed.
 //
 // Repo identity lives here (sourceRepo + GitHub link), NOT in the logical layer.
 
@@ -61,37 +60,6 @@ deployment {
 
     postgres = datastore "Postgres" {
       description "Relational store backing the catalog and lineage services."
-    }
-  }
-
-  environment externalCompute {
-
-    extCatalog = service "mangrove" {
-      description "The catalog vends a short-lived scoped credential to an engine outside the trusted boundary after a coarse authorize check."
-
-      link https://github.com/open-lakehouse/mangrove
-
-      metadata { sourceRepo "open-lakehouse/mangrove" }
-
-      instanceOf lakehouse.catalog
-    }
-
-    extEngine = service "Query engine (external)" {
-      description "A query engine deployed outside the trusted boundary. Receives a vended credential and reads raw files directly."
-
-      instanceOf lakehouse.queryEngine
-    }
-
-    extStore = datastore "Object storage" {
-      instanceOf lakehouse.objectStorage
-    }
-
-    // The bypass, shown explicitly: coarse vend, then raw read.
-    extCatalog -[vends]-> extEngine "vends scoped credential"
-    extEngine -[reads]-> extStore "reads raw files"
-
-    extCatalog -[flows]-> extEngine "non-vendable-governed-table guard" {
-      #designed
     }
   }
 }

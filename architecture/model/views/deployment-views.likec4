@@ -8,13 +8,4 @@ views {
     include trustedCompute.**
     autoLayout LeftRight
   }
-
-  // --- 2. external-compute (the FGAC bypass) -------------------------------
-  deployment view externalComputeDeploy {
-    title "Deployment — external compute (FGAC bypass)"
-    description "The same query-engine capability deployed OUTSIDE the trusted boundary: the catalog vends a scoped credential after a coarse check, and the engine reads raw files directly. Row filters and column masks are BYPASSED because the untrusted engine plays no PEP. The non-vendable-governed-table guard (amber) is the designed mitigation."
-
-    include externalCompute.**
-    autoLayout LeftRight
-  }
 }

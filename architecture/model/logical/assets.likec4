@@ -20,16 +20,19 @@
 model {
   extend lakehouse {
 
-    schema = asset "Schema / namespace" {
+    namespace = asset "Namespace" {
       summary "The namespace container other asset kinds are organized under."
+
       description "
         A schema (namespace) is the container securable: the addressable namespace
         that tables, volumes, functions, models, and skills are organized and
         governed within. Grants and lineage attach at this level as well as at the
         leaf asset.
       "
+
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
+    namespace -[dependsOn]-> catalog "tracked via"
 
     table = asset "Table" {
       summary "The tabular securable — rows and columns with ACID semantics."
@@ -38,6 +41,9 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
+    table -[dependsOn]-> tableFormat "data layout on disk"
+    table -[dependsOn]-> objectStorage "data stored at rest"
+    table -[dependsOn]-> catalog "commit coordination"
 
     volume = asset "Volume" {
       summary "Governed storage location with non-tabular files."
@@ -48,6 +54,7 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
+    volume -[dependsOn]-> objectStorage "materialized as files in"
 
     registeredFunction = asset "Function" {
       summary "A governed, reusable unit of computation."
@@ -66,6 +73,7 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
+    mlModel -[dependsOn]-> objectStorage "data stored at rest"
 
     agentSkill = asset "Agent skill" {
       summary "An emerging asset kind: a shareable, governed capability for AI agents."
@@ -76,24 +84,17 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-
-    // --- requires: what a platform must do to manage each kind --------------
-    table              -[requires]-> tableFormat   "materialized as an open table format"
-    table              -[requires]-> queryEngine   "read + written by"
-    volume             -[requires]-> objectStorage "materialized as files in"
-    registeredFunction -[requires]-> queryEngine   "executed by"
-    mlModel            -[requires]-> modelTracking "versioned + promoted by"
-    agentSkill         -[requires]-> sharing       "distributed as a shareable resource via"
+    agentSkill -[dependsOn]-> volume "files stored at rest"
   }
 
   // --- governs: which catalog spec covers which asset kinds (breadth) --------
-  ucSpec -[governs]-> lakehouse.schema             "governs"
-  ucSpec -[governs]-> lakehouse.table              "governs"
-  ucSpec -[governs]-> lakehouse.volume             "governs"
+  ucSpec -[governs]-> lakehouse.namespace "governs"
+  ucSpec -[governs]-> lakehouse.table "governs"
+  ucSpec -[governs]-> lakehouse.volume "governs"
   ucSpec -[governs]-> lakehouse.registeredFunction "governs"
-  ucSpec -[governs]-> lakehouse.mlModel            "governs"
-  ucSpec -[governs]-> lakehouse.agentSkill         "governs"
+  ucSpec -[governs]-> lakehouse.mlModel "governs"
+  ucSpec -[governs]-> lakehouse.agentSkill "governs"
 
-  icebergRestSpec -[governs]-> lakehouse.schema "governs namespaces"
-  icebergRestSpec -[governs]-> lakehouse.table  "governs"
+  icebergRestSpec -[governs]-> lakehouse.namespace "governs"
+  icebergRestSpec -[governs]-> lakehouse.table "governs"
 }

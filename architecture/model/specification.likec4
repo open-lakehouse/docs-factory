@@ -1,20 +1,10 @@
 // Specification for the Open Lakehouse architecture model — the vocabulary of
 // element / deployment-node / relationship kinds and tags.
 //
-// REF-FREE: names and edges only — never a commit SHA or release tag.
-// MATURITY-HONEST: designed-but-not-built carries #designed (or #prototype);
-// the tag colors render those amber so the model never overstates what exists.
-//
 // METADATA CONVENTIONS (free-form key/values on elements):
 //   canonicalDoc  — path (relative to architecture/) of the NAVIGATION design
 //                   doc for this element; used by canonicals.yaml / update skill.
 //   sourceRepo    — org/repo identity of a deployment service.
-//
-// EXPLANATION BINDING: an element's long-form explanation is no longer owned by
-// the model. It lives as an ordinary reviewable content page under
-// content/**/explanation/ whose frontmatter declares `explains: <element-id>`.
-// The site resolves the element ↔ page correlation from that relationship (see
-// site/src/graph.ts effectiveRefIds + the ModelContext panel on the doc page).
 
 specification {
 
@@ -27,16 +17,6 @@ specification {
     }
   }
 
-  // Blog-local sequence diagrams sometimes need protocol participants that are
-  // too concrete for the reference capability model. Keep the element kinds
-  // here so preview diagrams still use the single estate LikeC4 runtime.
-  element participant {
-    style {
-      shape rectangle
-      color primary
-    }
-  }
-
   element store {
     notation "Object storage"
     style {
@@ -45,19 +25,19 @@ specification {
     }
   }
 
-  // A technology-agnostic capability of the Agentic Lakehouse
+  // A capability describes and abstract functionality of a Lakehouse that may be realized by several
+  // concrete implementations. Often times there are specifications which define properties and
+  // behaviors a concrete implementation must adhere to.
   element capability {
     style {
       color primary
     }
   }
 
-  // A specification: an open protocol or format definition — the contract/API
-  // side of the stack (Backstage's first-class "API"). Pure definition, never
-  // compute: "just libraries and definitions". Delta / Iceberg (table-format
-  // specs), the Iceberg REST & Unity Catalog catalog specs, Parquet, the S3 API.
-  // NB: the element-kind id is `openSpecification` because `specification` is a
-  // reserved block keyword; its notation/label is simply "Specification".
+  // A specification defines properties and behaviors a concrete implementation
+  // must adhere to. Often times specifications are open standards or formats
+  // that are implemented by multiple concrete implementations. Specifications
+  // are often associated with a capability.
   element openSpecification {
     notation "Specification / open standard"
     style {
@@ -66,23 +46,19 @@ specification {
     }
   }
 
-  // A zero-trust governance role (PAP / PDP / PEP / PIP / PA). Lives inside the
-  // governance capability; realized by concrete services in each deployment.
-  element role {
-    notation "Governance role"
-    style {
-      shape rectangle
-      color indigo
-    }
-  }
-
   // A governed asset KIND — the noun the platform manages along the data & AI
   // value chain (table, volume, function, model, agent skill, schema).
   element asset {
-    notation "Data & AI asset kind"
     style {
       shape rectangle
       color green
+    }
+  }
+
+  element role {
+    style {
+      shape rectangle
+      color indigo
     }
   }
 
@@ -103,10 +79,7 @@ specification {
 
   // A browser / client-side runtime.
   deploymentNode browser {
-    #untrusted
-
     notation "Browser runtime"
-
     style {
       shape browser
       color sky
@@ -146,9 +119,7 @@ specification {
 
   relationship flows                       // generic data / control flow
   relationship realizes { line dotted }    // concrete realizes abstract capability
-  relationship resolves                    // query engine resolves via catalog (a dependsOn)
   relationship reads                       // reads bytes / files (a dependsOn)
-  relationship vends { color amber }       // catalog vends a scoped credential (a dependsOn)
 
   // Altitude edges (concept <- specification <- implementation):
   relationship specifies                   // a specification specifies a capability
@@ -156,35 +127,10 @@ specification {
   relationship consumes { line dashed }    // an implementation consumes a spec (Backstage consumesApi; a dependsOn)
 
   // Governed-asset edges (the subject axis — see ADR-0005):
-  relationship requires                    // an asset kind requires a capability to be managed
   relationship governs                     // a catalog specification governs an asset kind
 
-  // Zero-trust edges:
-  relationship administers                 // PAP administers policy for the PDP
-  relationship decides                     // PDP decides
-  relationship enforces                    // PEP enforces a PDP decision
-  relationship informs { line dashed }     // PIP informs the PDP with facts
-
   // --- Tags ----------------------------------------------------------------
-
-  // Maturity (drives amber coloring for designed / prototype work).
-  tag built
-  tag designed { color #f59e0b }     // amber — designed, not built
-  tag prototype { color #f59e0b }    // amber — prototype / preview only
-
-  // Governance points (for filtering / coloring the zero-trust decomposition).
-  tag pap
-  tag pdp
-  tag pep
-  tag pip
-
-  // Implementation compute posture (intrinsic; complements the deployment layer).
-  // #service = runs as a server, #library = embeddable, #infra = managed infra.
   tag service
   tag library
   tag infra
-
-  // Trust posture of a DEPLOYMENT topology / node (never of a logical element).
-  tag trusted
-  tag untrusted
 }

@@ -47,6 +47,22 @@ All `.md` / `.mdx` files share one pipeline (`vite.config.ts`):
 The same `remark-code-snippets` and `remark-directive-prose-guard` plugins are
 imported verbatim by `emit/` for blog flattening.
 
+### Code fence meta
+
+A fence's meta string carries chrome hints the `<Pre>` component reads:
+
+| Meta | Effect |
+|---|---|
+| `title="server.py"` | Slim filename header + language glyph |
+| `file=./x.py start=… end=…` | Inline a snippet / region from a colocated file |
+| `collapse` | Render collapsed behind a click-to-expand header — for boilerplate meant to be copied, not read. Expands automatically if a review comment anchors a line inside it. |
+
+```
+```python title="setup.py" collapse
+# long boilerplate — collapsed by default, one click to reveal
+```
+```
+
 ## LikeC4 — one runtime
 
 The site uses a single `LikeC4VitePlugin` workspace: `../architecture/model`.

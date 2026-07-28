@@ -67,16 +67,31 @@ Deployment shape for v1:
 2. *(Optional)* Install the **Neon↔Vercel native integration** for auto DB branches
    per preview (injects `DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED`). See the
    ownership note above.
-3. **Set Vercel Production env:**
+3. **Disable Vercel's git auto-preview builds — production only.** The
+   repo↔Vercel git integration would otherwise build a *second* preview on every
+   branch push, racing `preview-deploy.yml` and building with the wrong `/api`
+   rewrites (it can't know a branch's per-PR Function host). We deploy previews
+   ourselves via `vercel deploy --prebuilt`, so let Vercel's git integration build
+   **only** the production branch. There is no committed `vercel.json` (it's
+   generated per deploy and gitignored), so this is a **dashboard** setting, not a
+   repo change: Project → **Settings → Git → Ignored Build Step** →
+   ```bash
+   # Vercel convention: exit 1 = build, exit 0 = skip.
+   if [ "$VERCEL_GIT_COMMIT_REF" = "main" ]; then exit 1; else exit 0; fi
+   ```
+   The Ignored Build Step runs only for git-triggered builds, so it silences auto
+   previews without affecting the workflow's `--prebuilt` deploys (those skip the
+   build phase entirely).
+4. **Set Vercel Production env:**
    - `NEON_FUNCTION_HOST` — host of the prod Function (no scheme), feeds the
      generated `vercel.json`.
    - `NEON_AUTH_BASE` — host of the hosted Neon Auth endpoints.
    - `VITE_AUTH_SIGNIN_URL`, `VITE_AUTH_SIGNOUT_URL` — hosted Neon Auth flow URLs
      (baked into the bundle; gate the "Sign in" affordance).
    - Leave `VITE_API_URL` **unset** so the bundle uses same-origin `/api`.
-4. **Set Vercel Preview env defaults** for the same keys. `preview-deploy.yml`
+5. **Set Vercel Preview env defaults** for the same keys. `preview-deploy.yml`
    overrides `NEON_FUNCTION_HOST` per branch at deploy time.
-5. **Create a Vercel token** → GitHub secret `VERCEL_TOKEN` (used by the prebuilt
+6. **Create a Vercel token** → GitHub secret `VERCEL_TOKEN` (used by the prebuilt
    deploy in `preview-deploy.yml`).
 
 ---

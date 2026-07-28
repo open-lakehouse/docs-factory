@@ -108,7 +108,7 @@ jobs:
           # JSON key at provisioning (invocation_url is the expected field).
           INVOCATION_URL=$(neonctl functions deploy review \
             --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
-            --src server --output json \
+            --src server/src/handler.ts --output json \
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \

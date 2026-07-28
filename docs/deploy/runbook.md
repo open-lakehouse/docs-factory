@@ -244,11 +244,14 @@ Confirm at this first run (beta CLI — adjust if they differ):
   `<branch_id>-<slug>.compute.<region>.aws.neon.tech`, where `branch_id` is Neon's
   internal `br-…` id — unknowable before the deploy. Both workflows **deploy first
   and capture** the host; do not reintroduce a name-derived host.
-- **CLI package/binary + JSON key.** The workflows install `neonctl` and read
-  `invocation_url` (with `.invocationUrl // .url` fallbacks). Verify the beta
-  package name, that `neonctl functions deploy` exists with
-  `--src`/`--branch`/`--project-id`/`--output json`, and the exact URL field — inspect
-  the raw JSON and fix the `jq` path if needed. Pin a CLI version once confirmed.
+- **CLI invocation.** The workflows run the CLI via **`bunx neonctl`**, not a
+  `bun install -g neonctl` + bare `neonctl` — the global-install path hung
+  indefinitely in CI (no output for 10+ min), while `bunx neonctl` runs the
+  identical deploy in seconds (as it does locally). They read `invocation_url`
+  (with `.invocationUrl // .url` fallbacks). Verify `neonctl functions deploy`
+  exists with `--src`/`--branch`/`--project-id`/`--output json` and the exact URL
+  field — inspect the raw JSON and fix the `jq` path if needed. Pin a CLI version
+  once confirmed.
 - That `neon.ts` at the repo root matches your project (auth on; `review` Function
   slug/source/runtime). New branches apply it automatically; existing branches
   still need the per-push deploy step.

@@ -84,11 +84,6 @@ jobs:
           cd server && bun install --frozen-lockfile
           node scripts/migrate.mjs
 
-      # Install the Neon CLI. `functions` subcommands are beta — confirm the
-      # package/binary name and pin a version at provisioning (docs/deploy/runbook.md §4).
-      - name: Install Neon CLI
-        run: bun install -g neonctl
-
       # Deploy the review Function to THIS branch (branch-scoped). DATABASE_URL is
       # injected by Neon per branch, so it is NOT passed here. The exact Neon
       # Functions CLI is finalized at provisioning (beta) — see runbook.
@@ -98,15 +93,17 @@ jobs:
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
           set -o pipefail  # surface a neonctl failure, not jq's exit status
+          # Run the CLI via `bunx neonctl`, NOT a global `bun install -g neonctl` +
+          # bare `neonctl`: the global-install path hung indefinitely in CI (no
+          # output for 10+ min), while `bunx neonctl` runs the identical deploy in
+          # seconds — the same way it succeeds locally.
+          #
           # The Function host is NOT derivable from the git branch name: Neon
           # forms it as <branch_id>-<slug>.compute.<region>.aws.neon.tech, where
           # branch_id is Neon's internal br-… id. So we deploy first and CAPTURE
           # the invocation_url the CLI returns, then hand its host to the Vercel
           # build below (which bakes it into the /api rewrite). See runbook §4.
-          #
-          # NEON_API_KEY authenticates the CLI; verify the beta CLI's flags and
-          # JSON key at provisioning (invocation_url is the expected field).
-          INVOCATION_URL=$(neonctl functions deploy review \
+          INVOCATION_URL=$(bunx neonctl functions deploy review \
             --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
             --src server/src/handler.ts --output json \
             --env AUTH_MODE=neon --env NODE_ENV=production \

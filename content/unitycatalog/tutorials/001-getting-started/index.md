@@ -10,36 +10,6 @@ The quickest way to get started with unity catalog is to run it as a docker cont
 
 ::::journey
 
-### Start the Unity Catalog service
-
-```bash
-docker run -p 8080:8080 unitycatalog/unitycatalog:v0.5.0 
-```
-
-### Validate the server is running
-
-Submit the following command in a separate terminal.
-
-```bash
-curl -sS --fail-with-body \
-  http://localhost:8080/api/2.1/unity-catalog/catalogs
-```
-
-You should see a json response similar to
-
-```json file=./response.json
-
-::::
-
-:::note
-Stop the running server before continuing `control + C`
-:::
-
-In most scenarios you likely want a little more setup to use a richer
-featureset of Unity Catalog.
-
-::::journey
-
 ### Create a local configuration file
 
 Copy the following content into a local file `server.properties`
@@ -65,5 +35,19 @@ docker run -d --name uc \
 The file path must resolve to the same location in docker and on the host
 to make managed location with local storage work.
 :::
+
+### Validate the server is running
+
+Submit the following command in a separate terminal.
+
+```bash
+curl -sS --fail-with-body \
+  http://localhost:8080/api/2.1/unity-catalog/catalogs
+```
+
+You should see a json response similar to
+
+```json file=./response.json
+```
 
 ::::

@@ -10,31 +10,10 @@
 model {
   extend lakehouse {
 
-    // --- The core query path -----------------------------------------------
-    // The edges below are the SPECIFIC query-path kinds; each is a refinement of
-    // the generic `dependsOn` (ADR-0006). They stay the primary rendering — use
-    // `dependsOn` only where no specific kind fits.
-
-    queryEngine -[resolves]-> catalog "resolves tables through"
-    catalog -[flows]-> tableFormat "resolves a table to its format + location"
-    queryEngine -[reads]-> tableFormat "reads tables via the format"
-    tableFormat -[reads]-> fileFormat "stored as data files encoded in"
-    fileFormat -[reads]-> objectStorage "bytes persisted in"
-
-    // Governance + lineage + observability attach to the query engine at
-    // planning / execution time.
-    queryEngine -[enforces]-> governance "policy decided + enforced in-plan (planning-time)"
-    queryEngine -[flows]-> lineage "emits column-level lineage (planning-time)"
-    queryEngine -[flows]-> observability "emits traces + metrics"
-
     // Orchestration drives the compute: it schedules pipelines onto the query
     // engine and emits run status to observability.
     orchestration -[flows]-> queryEngine "schedules + triggers pipelines that run on"
     orchestration -[flows]-> observability "emits run status + metrics"
-
-    // The catalog is the authoritative resource PIP and hosts the PA (vending).
-    catalog -[flows]-> governance.pip "serves resource facts (identity, tags, locations)"
-    catalog -[vends]-> objectStorage "vends short-lived scoped credentials for"
   }
 
   // --- Specifications & implementations ------------------------------------
@@ -48,5 +27,4 @@ model {
   // person -> the estate BOUNDARY. `lakehouse` is the C4 SoftwareSystem /
   // Backstage System-Domain analog for the whole estate (ADR-0006).
   platformEngineer -[flows]-> lakehouse "builds + operates"
-  agent -[flows]-> lakehouse.lineage "investigates"
 }

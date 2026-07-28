@@ -17,7 +17,6 @@ views {
       lakehouse.*,
 
     // the zero-trust roles + governed asset kinds get their own views
-    exclude lakehouse.governance.*
     exclude element.kind == asset
     autoLayout LeftRight
   }
@@ -45,7 +44,6 @@ views {
       mlflow,
       omnigent,
 
-    exclude lakehouse.governance.*
     exclude element.kind == asset
     autoLayout LeftRight
   }
@@ -58,7 +56,6 @@ views {
     include *
 
     // collapse the governance roles + asset kinds here (own views)
-    exclude lakehouse.governance.*
     exclude element.kind == asset
     autoLayout LeftRight
   }
@@ -86,16 +83,6 @@ views {
       lakehouse.*,
       element.kind == asset
 
-    exclude lakehouse.governance.*
-    autoLayout LeftRight
-  }
-
-  // --- The zero-trust governance decomposition -----------------------------
-  view governanceModel of lakehouse.governance {
-    title "Governance — zero-trust decomposition (PAP / PDP / PEP / PIP / PA)"
-    description "The logical access-control points and how they relate. WHICH service plays each point is a deployment fact (see the deployment views). Amber = designed, not built."
-
-    include *
     autoLayout LeftRight
   }
 }

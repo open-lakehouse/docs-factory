@@ -1,6 +1,6 @@
 # Per-PR preview environment: a Neon DB branch + the review Function deployed to
-# it + a Vercel preview build whose same-origin /api and /auth rewrites point at
-# that branch's Function. Torn down when the PR closes.
+# it + a Vercel preview build whose same-origin /api rewrite points at that
+# branch's Function. Torn down when the PR closes.
 #
 # DISABLED BY DEFAULT. The Neon project, Function tooling, and Vercel project are
 # provisioned manually (see docs/deploy/runbook.md). Until the repo variable
@@ -13,12 +13,15 @@
 #   2. run migrations against the branch's DIRECT (unpooled) URL.
 #   3. deploy the review Function to that branch (branch-scoped), passing the
 #      non-injected env; DATABASE_URL is injected by Neon per branch.
-#   4. build the SPA with a vercel.json whose /api + /auth resolve to that
-#      branch's Function/Auth host, and deploy the Vercel preview (prebuilt).
+#   4. build the SPA with a vercel.json whose /api resolves to that branch's
+#      Function host, and deploy the Vercel preview (prebuilt). VITE_NEON_AUTH_URL
+#      comes from Vercel Preview env (injected by the Neon↔Vercel integration and
+#      pulled via `vercel pull`) — the site talks to the auth origin directly, so
+#      there is no /auth rewrite and no NEON_AUTH_BASE to plumb through CI.
 # Flow (closed): delete the Neon branch.
 #
 # Secrets:  NEON_API_KEY, REVIEW_BUILD_SECRET, VERCEL_TOKEN
-# Vars:     NEON_PROJECT_ID, NEON_AUTH_BASE,
+# Vars:     NEON_PROJECT_ID,
 #           VERCEL_ORG_ID, VERCEL_PROJECT_ID, PREVIEW_DEPLOY_ENABLED
 
 name: Preview deploy
@@ -42,7 +45,7 @@ jobs:
       github.event.action != 'closed' &&
       vars.PREVIEW_DEPLOY_ENABLED == 'true'
     # Preview-scoped secrets/vars live in the `preview` environment (a preview
-    # NEON_API_KEY, the preview REVIEW_ALLOWED_ORIGIN/NEON_AUTH_BASE). See runbook §3.
+    # NEON_API_KEY, the preview REVIEW_ALLOWED_ORIGIN). See runbook §3.
     environment: preview
     runs-on: ubuntu-latest
     env:
@@ -124,7 +127,6 @@ jobs:
       - name: Build + deploy Vercel preview
         env:
           NEON_FUNCTION_HOST: ${{ env.NEON_FUNCTION_HOST }}
-          NEON_AUTH_BASE: ${{ vars.NEON_AUTH_BASE }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}

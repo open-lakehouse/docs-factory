@@ -23,130 +23,170 @@ Deployment shape for v1:
 
 ---
 
-## 1. Neon
+## Phase 0 — Read this first (the mental model)
 
-1. **Create the Neon project.** Note the **project id** and the **default branch**
-   (the production branch). Record the project id for `NEON_PROJECT_ID`.
-2. **Apply the base schema to the production branch.** Grab the branch's *direct*
-   (unpooled) connection string from the Neon console, then:
+The steps below are ordered so you can run them **top to bottom**: nothing is
+consumed before the step that produces it. Two facts explain the whole ordering
+and the apparent config duplication — internalize them and the rest follows.
+
+**Two builders, by design.** Preview and production SPAs are built by *different*
+systems, so each system holds the config for the build it performs:
+
+| | Builds the SPA | Reads build config from |
+|---|---|---|
+| **Preview** | GitHub Actions (`vercel build` in `preview-deploy.yml`) | GitHub env + `vercel pull --environment=preview` |
+| **Production** | Vercel's own git integration (on push to `main`) | Vercel **Production** env |
+
+So a value used at build time legitimately lives in **both** GitHub and Vercel —
+it's not accidental duplication, it's "each builder needs its own copy." Concretely:
+
+- **`NEON_AUTH_BASE`** — set in **both**. CI's `gen-vercel-config.mjs` needs it to
+  write the preview `vercel.json` `/auth` rewrite; Vercel's prod build needs it for
+  the prod `vercel.json`.
+- **`VITE_AUTH_SIGNIN_URL` / `VITE_AUTH_SIGNOUT_URL`** — set in **Vercel only**.
+  These are Vite bundle vars. The prod build reads them from Vercel Production env;
+  the preview build gets them via `vercel pull --environment=preview` (which
+  downloads Vercel *Preview* env into CI), so they do **not** need a GitHub copy.
+- **`NEON_FUNCTION_HOST`** — *not* duplicated: it's a per-branch captured value in
+  CI (`$GITHUB_ENV`) and a single stable value in Vercel Production env.
+
+**Produce → consume crosses systems.** Some values only *exist* after an earlier
+step runs, so the phases below capture them at their source and set them where
+they're consumed. The forward references are called out inline (e.g. "⏳ deferred
+to Phase 5"). The `*_ENABLED` gates are flipped **last** (Phase 6) — arm the
+workflows only once every secret they read exists.
+
+---
+
+## Phase 1 — Create resources (no deploys yet)
+
+Just create accounts/projects and record identifiers. Nothing is deployed here.
+
+1. **Neon project.** Create it; note the **project id** (→ `NEON_PROJECT_ID`) and
+   the **default branch** (the production branch).
+2. **GitHub OAuth app + Neon Auth.** Create a GitHub OAuth app (org → Developer
+   settings → OAuth Apps); set the callback/redirect URL per the Neon Auth docs.
+   Enable Neon Auth on the project and connect the GitHub provider. **Record** the
+   hosted Neon Auth endpoints now — you consume them in Phase 3:
+   - `NEON_AUTH_BASE` — host of the hosted Neon Auth endpoints (no scheme).
+   - `VITE_AUTH_SIGNIN_URL`, `VITE_AUTH_SIGNOUT_URL` — the hosted sign-in/out URLs.
+   Also confirm the live **session-cookie name** and that the `neon_auth`
+   table/column shapes match `server/src/auth/neon-auth.ts` (resolver expects
+   `neon_auth.session` / `"user"` / `account` with the queried columns; cookie
+   defaults to `neon-auth.session-token`). If either differs, note the cookie name
+   for `NEON_AUTH_COOKIE_NAME` and/or adjust the resolver.
+3. **Neon API key** → you'll store it as the `NEON_API_KEY` secret in Phase 3.
+4. **Vercel project.** Create it, connect the repo, set **root directory** to
+   `site/`. Record `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (from
+   `.vercel/project.json` after `vercel link`, or project settings). Create a
+   **Vercel token** → the `VERCEL_TOKEN` secret in Phase 3.
+5. *(Optional)* Install the **Neon↔Vercel native integration** for auto DB branches
+   per preview (injects `DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED`).
+   > **Branch-vs-integration ownership.** Decide *one* creator of the per-PR DB
+   > branch: either the integration creates it and `preview-deploy.yml` reuses it,
+   > or the workflow's `create-branch-action` owns it and you disable the
+   > integration's branch creation. Don't let both create `preview/pr-<n>`.
+
+**After Phase 1 you have:** `NEON_PROJECT_ID`, the Neon API key, `NEON_AUTH_BASE`,
+`VITE_AUTH_SIGNIN_URL`, `VITE_AUTH_SIGNOUT_URL`, the cookie name, `VERCEL_ORG_ID`,
+`VERCEL_PROJECT_ID`, and the Vercel token. **Not yet:** any Function host or the
+prod Function URL — those don't exist until Phase 4.
+
+---
+
+## Phase 2 — Schema + allowlist (production branch)
+
+1. **Apply the base schema to the production branch.** Grab the branch's *direct*
+   (unpooled) connection string from the Neon console — this is the same value you
+   store as the `DATABASE_URL` **`production`** secret in Phase 3:
    ```bash
    DATABASE_URL='<prod-direct-url>' node server/scripts/migrate.mjs
    ```
-   This applies `server/db/migrations/*.sql` (idempotent; tracked in
-   `schema_migrations`).
-3. **Enable Neon Auth with a GitHub OAuth app.**
-   - Create a GitHub OAuth app (org settings → Developer settings → OAuth Apps).
-     Set the callback/redirect URL per the Neon Auth docs for your project.
-   - Enable Neon Auth on the project and connect the GitHub provider.
-   - Confirm the live **session-cookie name** and the `neon_auth` table/column
-     shapes match `server/src/auth/neon-auth.ts` (the resolver expects
-     `neon_auth.session` / `"user"` / `account` with the columns queried there,
-     and the cookie name defaults to `neon-auth.session-token`). If either
-     differs, set `NEON_AUTH_COOKIE_NAME` and/or adjust the resolver.
-4. **Seed the allowlist.** Insert the initial reviewers/maintainers into
-   `reviewer_allowlist` (at least one `maintainer`). Example:
+   Applies `server/db/migrations/*.sql` (idempotent; tracked in `schema_migrations`).
+2. **Seed the allowlist** — at least one `maintainer`; this is what admits users
+   past the AccessGate:
    ```sql
-   insert into reviewer_allowlist (login, role) values ('your-gh-login', 'maintainer');
+   insert into reviewer_allowlist (github_login, role) values ('your-gh-login', 'maintainer');
    ```
-   This is what admits users past the AccessGate.
-5. **Create a Neon API key** (for the CLI/actions) → GitHub secret `NEON_API_KEY`.
-
-> **Branch-vs-integration ownership.** If you install the native Neon↔Vercel
-> integration (step 2 below), decide *one* creator of the per-PR DB branch. Either
-> let the integration create it and have `preview-deploy.yml` reuse it, or let the
-> workflow's `create-branch-action` own it and disable the integration's branch
-> creation. Don't let both create `preview/pr-<n>` or they'll collide.
 
 ---
 
-## 2. Vercel
+## Phase 3 — Configure GitHub + Vercel (values you have now)
 
-1. **Create the Vercel project**, connect the repo, set the **root directory** to
-   `site/`. Record `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (from `.vercel/project.json`
-   after `vercel link`, or the project settings).
-2. *(Optional)* Install the **Neon↔Vercel native integration** for auto DB branches
-   per preview (injects `DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED`). See the
-   ownership note above.
-3. **Disable Vercel's git auto-preview builds — production only.** The
-   repo↔Vercel git integration would otherwise build a *second* preview on every
-   branch push, racing `preview-deploy.yml` and building with the wrong `/api`
-   rewrites (it can't know a branch's per-PR Function host). We deploy previews
-   ourselves via `vercel deploy --prebuilt`, so let Vercel's git integration build
-   **only** the production branch. There is no committed `vercel.json` (it's
-   generated per deploy and gitignored), so this is a **dashboard** setting, not a
-   repo change: Project → **Settings → Git → Ignored Build Step** →
-   ```bash
-   # Vercel convention: exit 1 = build, exit 0 = skip.
-   if [ "$VERCEL_GIT_COMMIT_REF" = "main" ]; then exit 1; else exit 0; fi
-   ```
-   The Ignored Build Step runs only for git-triggered builds, so it silences auto
-   previews without affecting the workflow's `--prebuilt` deploys (those skip the
-   build phase entirely).
-4. **Set Vercel Production env:**
-   - `NEON_FUNCTION_HOST` — host of the prod Function (no scheme), feeds the
-     generated `vercel.json`.
-   - `NEON_AUTH_BASE` — host of the hosted Neon Auth endpoints.
-   - `VITE_AUTH_SIGNIN_URL`, `VITE_AUTH_SIGNOUT_URL` — hosted Neon Auth flow URLs
-     (baked into the bundle; gate the "Sign in" affordance).
-   - Leave `VITE_API_URL` **unset** so the bundle uses same-origin `/api`.
-5. **Set Vercel Preview env defaults** for the same keys. `preview-deploy.yml`
-   overrides `NEON_FUNCTION_HOST` per branch at deploy time.
-6. **Create a Vercel token** → GitHub secret `VERCEL_TOKEN` (used by the prebuilt
-   deploy in `preview-deploy.yml`).
+Set everything you already hold from Phases 1–2. **Two values are deferred to
+Phase 5** because they don't exist yet: the prod `NEON_FUNCTION_HOST` and
+`REVIEW_API_URL` (both produced by the first prod deploy in Phase 4).
 
----
+### 3a. Disable Vercel's git auto-preview builds — production only
 
-## 3. GitHub — environments, secrets, and variables
+The repo↔Vercel git integration would otherwise build a *second* preview on every
+branch push, racing `preview-deploy.yml` and building with the wrong `/api`
+rewrites (it can't know a branch's per-PR Function host). We deploy previews
+ourselves via `vercel deploy --prebuilt`, so let Vercel's git integration build
+**only** the production branch. There is no committed `vercel.json` (generated per
+deploy and gitignored), so this is a **dashboard** setting: Project →
+**Settings → Git → Ignored Build Step** →
+```bash
+# Vercel convention: exit 1 = build, exit 0 = skip.
+if [ "$VERCEL_GIT_COMMIT_REF" = "main" ]; then exit 1; else exit 0; fi
+```
+The Ignored Build Step runs only for git-triggered builds, so it silences auto
+previews without affecting the workflow's `--prebuilt` deploys (those skip the
+build phase entirely).
 
-Settings → Environments, and Settings → Secrets and variables → Actions.
+### 3b. Vercel env
 
-The workflows are scoped to two **GitHub Environments** so preview and production
-never share credentials or CORS origins, and prod secrets are only exposed to
-`main`:
+Set on the Vercel project (per environment):
 
-- `preview-deploy.yml` (both `preview` and `cleanup` jobs) → **`preview`** env.
-- `deploy-function.yml` and `register-versions.yml` → **`production`** env.
+- **Production env:**
+  - `NEON_AUTH_BASE` — from Phase 1.2.
+  - `VITE_AUTH_SIGNIN_URL`, `VITE_AUTH_SIGNOUT_URL` — from Phase 1.2 (baked into the
+    prod bundle; gate the "Sign in" affordance).
+  - Leave `VITE_API_URL` **unset** so the bundle uses same-origin `/api`.
+  - ⏳ `NEON_FUNCTION_HOST` — **deferred to Phase 5** (doesn't exist until Phase 4).
+- **Preview env:** the same `VITE_AUTH_*` (so `vercel pull` supplies them to CI
+  builds). `NEON_AUTH_BASE` and `NEON_FUNCTION_HOST` are passed per-branch by
+  `preview-deploy.yml`, so a Preview-env value for those is optional.
 
-### 3a. Create the environments
+### 3c. GitHub environments
 
 Settings → **Environments** → New environment:
 
 - **`preview`** — **no** branch restriction (the `cleanup` job runs on PR *close*,
   off `main`; a `main`-only restriction would block it from reading `NEON_API_KEY`).
   No required reviewers (previews are automatic).
-- **`production`** — **Deployment branches: restricted → `main` only.** This is a
-  hard gate: GitHub refuses to expose this environment's secrets to any other ref,
+- **`production`** — **Deployment branches: restricted → `main` only.** A hard
+  gate: GitHub refuses to expose this environment's secrets to any other ref,
   stronger than the workflows' `if: github.ref == 'refs/heads/main'` check (which
-  gates the job, not secret scope). Optionally add **Required reviewers** for a
+  gates the job, not secret scope). Optionally add **Required reviewers** for
   manual approval before each prod deploy.
 
-### 3b. Where each secret & variable is set
+### 3d. GitHub secrets & variables
 
-The **Set at** column is authoritative: set each name at exactly that scope. Names
-marked `preview` + `production` are set **once in each** of the two environments
-(with per-env values); `repo` names are set once at Settings → Secrets and
+The **Set at** column is authoritative. Names marked `preview` + `production` are
+set **once in each** environment; `repo` names go at Settings → Secrets and
 variables → Actions.
 
 | Name | Kind | Set at | Value / notes |
 |---|---|---|---|
 | `NEON_API_KEY` | secret | `preview` + `production` | preview: least-privilege key; production: prod key |
 | `REVIEW_BUILD_SECRET` | secret | `preview` + `production` | same shared value in both envs |
-| `DATABASE_URL` | secret | `production` | prod branch **direct** (unpooled) URL, for prod migrations |
-| `REVIEW_API_URL` | secret | `production` | live prod Function URL |
+| `DATABASE_URL` | secret | `production` | prod branch **direct** URL (same value used in Phase 2.1) |
+| `REVIEW_API_URL` | secret | `production` | ⏳ **deferred to Phase 5** — live prod Function URL |
 | `VERCEL_TOKEN` | secret | `preview` | non-interactive Vercel CLI auth |
 | `NEON_PROJECT_ID` | var | `preview` + `production` | Neon project id (same value both) |
-| `NEON_AUTH_BASE` | var | `preview` + `production` | preview vs prod Neon Auth host |
+| `NEON_AUTH_BASE` | var | `preview` + `production` | Neon Auth host — also in Vercel (§3b), see Phase 0 |
 | `NEON_AUTH_COOKIE_NAME` | var | `preview` + `production` | live session cookie name (same value both) |
 | `REVIEW_ALLOWED_ORIGIN` | var | `preview` + `production` | preview origin (+ wildcard) vs prod domain only |
 | `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | `preview` | Vercel CLI targeting |
-| `PREVIEW_DEPLOY_ENABLED` | var | **`repo`** | set `true` to arm per-PR previews |
-| `REVIEW_DEPLOY_ENABLED` | var | **`repo`** | set `true` to arm prod deploy on main |
-| `REVIEW_REGISTER_ENABLED` | var | **`repo`** | set `true` to arm post-merge version registration |
+| `PREVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |
+| `REVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |
+| `REVIEW_REGISTER_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |
 
 > **Why the `*_ENABLED` gates are `repo`, not environment.** They're read in each
-> job's `if:` condition, which GitHub evaluates **before** the environment is
-> entered — a job `if:` cannot see environment vars, so an environment-scoped gate
-> would always read empty and the job would never arm.
+> job's `if:`, which GitHub evaluates **before** the environment is entered — a job
+> `if:` cannot see environment vars, so an environment-scoped gate would always
+> read empty and the job would never arm.
 >
 > If a name exists both at repo level and in an environment, the environment value
 > wins for jobs that declare that `environment:` — a repo-level fallback is
@@ -154,52 +194,65 @@ variables → Actions.
 
 ---
 
-## 4. Wire the Neon Functions CLI
+## Phase 4 — First production deploy (produces the deferred values)
 
-The Neon Functions CLI is in **beta** (currently **us-east-2 only**). Both
-workflows now run the real `neonctl functions deploy … --output json` and parse
-the returned `invocation_url` — but because the CLI is beta, confirm these at
-provisioning and adjust if they differ:
+The Neon Functions CLI is in **beta** (currently **us-east-2 only**). The workflows
+run `neonctl functions deploy … --output json` and parse `invocation_url`. Before
+arming anything, run the prod deploy **once, manually** to produce the two values
+Phase 3 deferred:
 
-- **The Function host is NOT derivable from the git branch name.** Neon forms it
-  as `<branch_id>-<slug>.compute.<region>.aws.neon.tech`, where `branch_id` is
-  Neon's internal `br-…` id — unknowable before the deploy. So both workflows
-  **deploy first and capture** the host from the CLI's `invocation_url`. Do not
-  reintroduce a name-derived host; it will never resolve.
-- **The CLI package/binary + JSON key.** The workflows install `neonctl` and read
+1. Trigger `deploy-function.yml` via **workflow_dispatch** (it runs even with
+   `REVIEW_DEPLOY_ENABLED` unset when dispatched manually). It migrates the prod
+   branch and deploys the prod Function, then logs a `::notice::` with the deployed
+   host.
+2. **Capture** from that run:
+   - the **host** → this is the prod `NEON_FUNCTION_HOST` (stable across deploys).
+   - the full **URL** → this is `REVIEW_API_URL`.
+
+Confirm at this first run (beta CLI — adjust if they differ):
+
+- **The Function host is NOT derivable from the git branch name.** Neon forms it as
+  `<branch_id>-<slug>.compute.<region>.aws.neon.tech`, where `branch_id` is Neon's
+  internal `br-…` id — unknowable before the deploy. Both workflows **deploy first
+  and capture** the host; do not reintroduce a name-derived host.
+- **CLI package/binary + JSON key.** The workflows install `neonctl` and read
   `invocation_url` (with `.invocationUrl // .url` fallbacks). Verify the beta
-  package name, that `neonctl functions deploy` exists with `--src`/`--branch`/
-  `--project`/`--output json`, and the exact URL field — inspect the raw JSON on
-  the first run and fix the `jq` path if needed. Pin a CLI version once confirmed.
-- **`NEON_API_KEY`** authenticates the CLI (already exported as job env in both
-  workflows).
-- That `neon.ts` at the repo root matches your project (auth on, the `review`
-  Function slug/source/runtime). New branches apply it automatically; existing
-  branches still need the per-push deploy step.
+  package name, that `neonctl functions deploy` exists with
+  `--src`/`--branch`/`--project`/`--output json`, and the exact URL field — inspect
+  the raw JSON and fix the `jq` path if needed. Pin a CLI version once confirmed.
+- That `neon.ts` at the repo root matches your project (auth on; `review` Function
+  slug/source/runtime). New branches apply it automatically; existing branches
+  still need the per-push deploy step.
 
-**First prod deploy is two-pass** (the prod host is stable, so this is one-time):
-run `deploy-function.yml` once — it logs a `::notice::` with the deployed host —
-then set that host as Vercel **Production** env `NEON_FUNCTION_HOST` (§2.4).
-Previews need no such step: `preview-deploy.yml` writes the captured host to
-`$GITHUB_ENV` and the Vercel build reads it inline.
-
-Then flip the three `*_ENABLED` variables to `true`.
+> Previews never need this capture step: `preview-deploy.yml` deploys the branch
+> Function and writes its host to `$GITHUB_ENV` inline before the Vercel build.
 
 ---
 
-## 5. Smoke test
+## Phase 5 — Set the deferred values
+
+Now that Phase 4 produced them:
+
+1. **Vercel Production env** → `NEON_FUNCTION_HOST` = the host from Phase 4.2.
+2. **GitHub `production` secret** → `REVIEW_API_URL` = the URL from Phase 4.2.
+
+---
+
+## Phase 6 — Arm the workflows, then smoke test
+
+Flip the three `*_ENABLED` **repo** variables to `true` (previews, prod deploy,
+version registration). Only now — every secret they read exists.
 
 **Preview (open a PR):**
 1. The workflow creates `preview/pr-<n>`, migrates it, deploys the branch Function,
    and deploys a Vercel preview whose `/api` points at that Function.
-2. On the preview URL: unauthenticated → sign-in wall; sign in with an
-   **allowlisted** GitHub user → admitted; a **non-allowlisted** user → "access
-   pending"; toggle **View as anonymous** in the account menu → only published
-   content shows.
+2. On the preview URL: unauthenticated → sign-in wall; allowlisted GitHub user →
+   admitted; non-allowlisted → "access pending"; toggle **View as anonymous** →
+   only published content shows.
 3. Close the PR → the Neon branch is deleted.
 
 **Production (merge to main):**
-1. `deploy-function.yml` migrates the prod branch and deploys the prod Function.
+1. `deploy-function.yml` migrates the prod branch and redeploys the prod Function.
 2. `register-versions.yml` stamps each content version with the merged main sha.
 3. Repeat the gate + view-mode checks on the production domain.
 

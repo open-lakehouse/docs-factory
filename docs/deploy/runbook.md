@@ -94,17 +94,14 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
      the Vercel preview origin/wildcard) to Neon Auth's `trusted_origins`
      (`project_config.trusted_origins`), or Better Auth rejects the post-login
      redirect back to the site.
-   Also confirm the **session-cookie name** and that the `neon_auth` table/column
-   shapes match `server/src/auth/neon-auth.ts` (resolver expects
-   `neon_auth.session` / `"user"` / `account` with the queried columns). The cookie
-   is not a Neon dashboard field — per the [Neon Auth authentication-flow
-   docs](https://neon.com/docs/auth/authentication-flow#session-cookie-is-set) it's
-   **`__Secure-neonauth.session_token`**: an opaque session token (not a JWT), set
-   Secure + HttpOnly + SameSite=None. The resolver defaults to the base name
-   `neonauth.session_token` and tolerates the `__Secure-`/`__Host-` prefix, so no
-   config is needed for the standard cookie. Only set `NEON_AUTH_COOKIE_NAME` (to
-   the base name *without* the secure prefix) if a devtools check shows a different
-   name.
+   The server doesn't parse the session cookie or query the `neon_auth` tables
+   itself — `server/src/auth/neon-auth.ts` forwards the request cookies to Neon
+   Auth's `GET {NEON_AUTH_BASE}/api/auth/get-session` and uses the returned user.
+   So there's no cookie name to configure (the cookie is Neon's HttpOnly
+   `__Secure-neonauth.session_token`, [managed entirely by Neon
+   Auth](https://neon.com/docs/auth/authentication-flow#session-cookie-is-set)).
+   The one input the server needs is `NEON_AUTH_BASE` (the same instance URL as
+   above), set as a Function env in Phase 3/4.
 3. **Neon API key** → you'll store it as the `NEON_API_KEY` secret in Phase 3.
 4. **Vercel project.** Create it, connect the repo, set **root directory** to
    `site/`. Record `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (from
@@ -207,8 +204,7 @@ variables → Actions.
 | `REVIEW_API_URL` | secret | `production` | ⏳ **deferred to Phase 5** — live prod Function URL |
 | `VERCEL_TOKEN` | secret | `preview` | non-interactive Vercel CLI auth |
 | `NEON_PROJECT_ID` | var | `preview` + `production` | Neon project id (same value both) |
-| `NEON_AUTH_BASE` | var | `preview` + `production` | Neon Auth host — also in Vercel (§3b), see Phase 0 |
-| `NEON_AUTH_COOKIE_NAME` | var | `preview` + `production` | **optional** — resolver defaults to `neonauth.session_token` (+ `__Secure-`); set only if devtools shows a different name (Phase 1.2) |
+| `NEON_AUTH_BASE` | var | `preview` + `production` | Neon Auth base URL — the CI generator's `/auth` rewrite target, *and* passed to the Function as env so the server can call `/api/auth/get-session`. Also in Vercel (§3b); see Phase 0 |
 | `REVIEW_ALLOWED_ORIGIN` | var | `preview` + `production` | preview origin (+ wildcard) vs prod domain only |
 | `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | `preview` | Vercel CLI targeting |
 | `PREVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |

@@ -18,7 +18,7 @@
 # Flow (closed): delete the Neon branch.
 #
 # Secrets:  NEON_API_KEY, REVIEW_BUILD_SECRET, VERCEL_TOKEN
-# Vars:     NEON_PROJECT_ID, NEON_AUTH_BASE, NEON_AUTH_COOKIE_NAME,
+# Vars:     NEON_PROJECT_ID, NEON_AUTH_BASE,
 #           VERCEL_ORG_ID, VERCEL_PROJECT_ID, PREVIEW_DEPLOY_ENABLED
 
 name: Preview deploy
@@ -95,7 +95,7 @@ jobs:
       - name: Deploy review Function to the branch
         env:
           ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
-          NEON_AUTH_COOKIE_NAME: ${{ vars.NEON_AUTH_COOKIE_NAME }}
+          NEON_AUTH_BASE: ${{ vars.NEON_AUTH_BASE }}
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
           set -o pipefail  # surface a neonctl failure, not jq's exit status
@@ -113,7 +113,7 @@ jobs:
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            --env NEON_AUTH_COOKIE_NAME="$NEON_AUTH_COOKIE_NAME" \
+            --env NEON_AUTH_BASE="$NEON_AUTH_BASE" \
             | jq -r '.invocation_url // .invocationUrl // .url')
           if [ -z "$INVOCATION_URL" ] || [ "$INVOCATION_URL" = "null" ]; then
             echo "::error::could not read the Function invocation_url from the Neon CLI output — inspect the raw JSON and adjust the jq path (docs/deploy/runbook.md §4)."

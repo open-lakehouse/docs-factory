@@ -1,22 +1,20 @@
 // Prod auth provider: Neon Auth (GitHub OAuth) + the reviewer allowlist.
 //
-// Neon Auth stores users, sessions, and linked OAuth accounts in the neon_auth
-// schema, queryable with SQL. The verification path is:
-//   1. read the Neon Auth session token from the request (cookie or bearer)
-//   2. resolve it to a user id + a valid (unexpired) session
-//   3. resolve that user's linked GitHub login via neon_auth.account
-//   4. look the login/email up in reviewer_allowlist → role
+// Neon Auth is Better Auth. Rather than hand-parse the session cookie and query
+// the neon_auth tables ourselves (fragile: cookie name, __Secure- prefix, column
+// shapes, token expiry — all owned by Neon), we ask Neon Auth to validate the
+// request for us and hand back the user:
+//   1. forward the request's Cookie/Authorization header to Neon Auth's
+//      GET /api/auth/get-session → { user: { id, email, name }, session } | null
+//   2. look the user's email up in reviewer_allowlist → role
+// The allowlist half is fully ours; identity + session validation are Neon's.
 //
-// Step 3 subtlety: neon_auth.account stores GitHub's numeric OAuth account id in
-// "accountId", NOT the @handle. To let the allowlist be seeded by github_login,
-// we exchange the account's stored "accessToken" for the real login via GitHub's
-// /user API, memoized per user id so it isn't a per-request network hit. If that
-// call fails we fall back to the numeric id (allowlist won't match on it, but
-// email still can), so verification never crashes.
-//
-// The resolver fails closed (returns anonymous) rather than guessing — auth is
-// additive, so an unresolved session simply sees published content. The
-// allowlist half (steps 3-4) is fully ours and complete.
+// github_login seeding (optional): get-session doesn't return the GitHub @handle
+// (Better Auth keeps provider data in the account table, exposed via
+// /api/auth/list-accounts). We best-effort resolve it so the allowlist can be
+// keyed by @handle as well as email; if that lookup fails we fall back to email
+// only. Everything fails CLOSED (anonymous) — auth is additive, so an unresolved
+// session simply sees published content.
 import { db } from "../db.js";
 import { lookupRole } from "../allowlist.js";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
@@ -25,29 +23,89 @@ import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 interface NeonIdentity {
   /** Stable Neon Auth user id — the key for authorship + read-state. */
   userId: string;
-  /**
-   * GitHub @handle. Resolved from the OAuth access token (see resolveLogin);
-   * falls back to the numeric account id if the GitHub API is unreachable, in
-   * which case the allowlist's github_login match won't hit but email still can.
-   */
-  login: string;
+  /** GitHub @handle if resolvable, else the numeric account id, else undefined. */
+  login?: string;
   name?: string;
   email?: string;
 }
 
+/** Neon Auth base URL (no trailing slash), or undefined until provisioned. */
+function authBase(): string | undefined {
+  const base = process.env.NEON_AUTH_BASE;
+  if (!base) return undefined;
+  const withScheme = /^https?:\/\//.test(base) ? base : `https://${base}`;
+  return withScheme.replace(/\/+$/, "");
+}
+
 /**
- * Per-user-id cache of the resolved GitHub @handle, so the /user call happens
- * once per process per user rather than on every request. Sessions are
- * long-lived and a user's login rarely changes, so a plain in-memory map (reset
- * on cold start) is sufficient — no TTL needed for correctness.
+ * The auth cookie is HttpOnly, so the browser sends it to our origin but we must
+ * relay it to Neon Auth verbatim. Forward Cookie + Authorization only.
  */
+function forwardAuthHeaders(header: Headers): HeadersInit {
+  const out: Record<string, string> = { accept: "application/json" };
+  const cookie = header.get("cookie");
+  if (cookie) out.cookie = cookie;
+  const auth = header.get("authorization");
+  if (auth) out.authorization = auth;
+  return out;
+}
+
+interface SessionUser {
+  id: string;
+  email?: string | null;
+  name?: string | null;
+}
+
+/** GET /api/auth/get-session → the current user, or null when unauthenticated. */
+async function getSession(base: string, header: Headers): Promise<SessionUser | null> {
+  try {
+    const res = await fetch(`${base}/api/auth/get-session`, {
+      headers: forwardAuthHeaders(header),
+    });
+    // 401/204/empty body all mean "no session".
+    if (!res.ok || res.status === 204) return null;
+    const body = (await res.json()) as { user?: SessionUser } | null;
+    return body?.user?.id ? body.user : null;
+  } catch {
+    return null;
+  }
+}
+
+// Per-user-id cache of the resolved GitHub @handle, so list-accounts + the
+// GitHub /user call happen once per process per user, not on every request.
 const loginCache = new Map<string, string>();
 
 /**
- * Exchange a GitHub OAuth access token for the account's @handle via /user.
- * Returns null on any failure (network, revoked token, rate limit) so the
- * caller can fall back to the numeric id without crashing verification.
+ * Best-effort GitHub @handle for the user via list-accounts → the account's
+ * accessToken → GitHub /user. Returns undefined on any failure; the allowlist
+ * still matches on email, so a missing handle never blocks a listed user.
  */
+async function resolveGithubLogin(
+  base: string,
+  header: Headers,
+  userId: string,
+): Promise<string | undefined> {
+  const cached = loginCache.get(userId);
+  if (cached) return cached;
+  try {
+    const res = await fetch(`${base}/api/auth/list-accounts`, {
+      headers: forwardAuthHeaders(header),
+    });
+    if (!res.ok) return undefined;
+    const accounts = (await res.json()) as
+      | { providerId?: string; accessToken?: string | null }[]
+      | null;
+    const gh = accounts?.find((a) => a.providerId === "github");
+    if (!gh?.accessToken) return undefined;
+    const login = await fetchGithubLogin(gh.accessToken);
+    if (login) loginCache.set(userId, login);
+    return login ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Exchange a GitHub OAuth access token for the account's @handle via /user. */
 async function fetchGithubLogin(accessToken: string): Promise<string | null> {
   try {
     const res = await fetch("https://api.github.com/user", {
@@ -65,105 +123,35 @@ async function fetchGithubLogin(accessToken: string): Promise<string | null> {
   }
 }
 
-/**
- * Resolve the GitHub @handle for a user, preferring the memoized value and
- * falling back to the numeric account id when the token can't be exchanged.
- */
-async function resolveLogin(
-  userId: string,
-  accountId: string,
-  accessToken: string | null,
-): Promise<string> {
-  const cached = loginCache.get(userId);
-  if (cached) return cached;
-  const login = accessToken ? await fetchGithubLogin(accessToken) : null;
-  const resolved = login ?? accountId;
-  if (login) loginCache.set(userId, login);
-  return resolved;
-}
-
-/** Extract the Neon Auth session token from a cookie or Authorization header. */
-export function sessionToken(header: Headers): string | undefined {
-  const auth = header.get("authorization");
-  if (auth?.toLowerCase().startsWith("bearer ")) return auth.slice(7).trim();
-  const cookie = header.get("cookie");
-  if (!cookie) return undefined;
-  // Neon Auth sets an opaque session token in `__Secure-neonauth.session_token`
-  // (Secure, HttpOnly, SameSite=None) — see the Neon Auth authentication-flow
-  // docs. We store the base name here and match with or without the
-  // `__Secure-`/`__Host-` prefix, so the same code works on http dev and https
-  // prod. NEON_AUTH_COOKIE_NAME overrides the base name if the project's cookie
-  // differs; the secure prefix is still tolerated on top of the override.
-  const name = process.env.NEON_AUTH_COOKIE_NAME ?? "neonauth.session_token";
-  for (const part of cookie.split(";")) {
-    const [k, ...v] = part.trim().split("=");
-    if (k === name || k === `__Secure-${name}` || k === `__Host-${name}`) {
-      return decodeURIComponent(v.join("="));
-    }
-  }
-  return undefined;
-}
-
-/**
- * Resolve a session token to a GitHub identity via the neon_auth schema.
- * Returns null when the token is absent/invalid/expired. Isolated so the exact
- * neon_auth session/account column names can be confirmed against a live
- * project without touching the rest of the provider.
- */
-async function resolveIdentity(token: string): Promise<NeonIdentity | null> {
-  const sql = db();
-  try {
-    const rows = await sql<
-      {
-        user_id: string;
-        account_id: string | null;
-        access_token: string | null;
-        name: string | null;
-        email: string | null;
-      }[]
-    >`
-      select
-        u.id as user_id,
-        acc."accountId" as account_id,
-        acc."accessToken" as access_token,
-        u.name as name,
-        u.email as email
-      from neon_auth.session s
-      join neon_auth."user" u on u.id = s."userId"
-      join neon_auth.account acc on acc."userId" = u.id and acc."providerId" = 'github'
-      where s.token = ${token}
-        and s."expiresAt" > now()
-      limit 1
-    `;
-    const row = rows[0];
-    if (!row?.account_id) return null;
-    const login = await resolveLogin(row.user_id, row.account_id, row.access_token);
-    return {
-      userId: row.user_id,
-      login,
-      name: row.name ?? undefined,
-      email: row.email ?? undefined,
-    };
-  } catch {
-    // neon_auth not present (e.g. not yet provisioned) → treat as logged out.
-    return null;
-  }
+/** Resolve the current request to a Neon identity, or null when not signed in. */
+async function resolveIdentity(header: Headers): Promise<NeonIdentity | null> {
+  const base = authBase();
+  if (!base) return null; // not provisioned → treat as logged out
+  const user = await getSession(base, header);
+  if (!user) return null;
+  const login = await resolveGithubLogin(base, header, user.id);
+  return {
+    userId: user.id,
+    login,
+    name: user.name ?? undefined,
+    email: user.email ?? undefined,
+  };
 }
 
 export function createNeonAuthProvider(): AuthProvider {
   return {
     async verify(header) {
-      const token = sessionToken(header);
-      if (!token) return anonymousViewer();
-      const identity = await resolveIdentity(token);
+      const identity = await resolveIdentity(header);
       if (!identity) return anonymousViewer();
       const role = await lookupRole(db(), identity);
       const ident = { userId: identity.userId, name: identity.name };
+      // login is the display handle; fall back to email, then user id.
+      const display = identity.login ?? identity.email ?? identity.userId;
       // Authenticated but not allowlisted: known identity, published-only access.
       if (role === Role.ANONYMOUS) {
-        return viewer(identity.login, Role.ANONYMOUS, ident);
+        return viewer(display, Role.ANONYMOUS, ident);
       }
-      return viewer(identity.login, role, ident);
+      return viewer(display, role, ident);
     },
   };
 }

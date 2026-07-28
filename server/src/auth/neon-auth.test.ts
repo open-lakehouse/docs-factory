@@ -1,68 +1,92 @@
-// Unit tests for session-token extraction. Run with `bun test`.
+// Unit tests for the Neon Auth provider. Run with `bun test`.
 //
-// Neon Auth sets its session token in `__Secure-neonauth.session_token` (Secure,
-// HttpOnly, SameSite=None). The resolver must find the token whether or not the
-// `__Secure-`/`__Host-` prefix is present (so http dev and https prod share code),
-// honor an Authorization: Bearer header, and respect a NEON_AUTH_COOKIE_NAME
-// override — while still tolerating the secure prefix on top of the override.
-import { expect, test, describe, afterEach } from "bun:test";
-import { sessionToken } from "./neon-auth.js";
+// The resolver validates the request by forwarding cookies to Neon Auth's
+// get-session endpoint (no cookie parsing / SQL of our own), then looks the
+// user's email up in reviewer_allowlist. We stub global fetch to script the
+// get-session / list-accounts / allowlist responses, and stub the db() allowlist
+// query, so no network or database is touched.
+import { expect, test, describe, beforeEach, afterEach, mock } from "bun:test";
+import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
 
-function headers(init: Record<string, string>): Headers {
-  return new Headers(init);
+// The provider calls db() for the allowlist lookup; stub both so no DB is needed.
+// These tests exercise identity resolution, not the allowlist (see allowlist.ts
+// tests) — lookupRole returns ANONYMOUS so we can assert the authenticated
+// identity fields the provider sets regardless of role.
+mock.module("../db.js", () => ({ db: () => ({}) }));
+mock.module("../allowlist.js", () => ({ lookupRole: async () => Role.ANONYMOUS }));
+const { createNeonAuthProvider } = await import("./neon-auth.js");
+
+const realFetch = globalThis.fetch;
+const ORIGINAL_BASE = process.env.NEON_AUTH_BASE;
+
+type Json = unknown;
+function jsonResponse(status: number, body: Json): Response {
+  return new Response(status === 204 ? null : JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
 }
 
-const ORIGINAL = process.env.NEON_AUTH_COOKIE_NAME;
+// Route stubbed fetch by URL suffix.
+function stubFetch(routes: { getSession?: Response; listAccounts?: Response; githubUser?: Response }) {
+  globalThis.fetch = (async (input: RequestInfo | URL) => {
+    const url = typeof input === "string" ? input : input.toString();
+    if (url.endsWith("/api/auth/get-session")) return routes.getSession ?? jsonResponse(401, {});
+    if (url.endsWith("/api/auth/list-accounts")) return routes.listAccounts ?? jsonResponse(200, []);
+    if (url.includes("api.github.com/user")) return routes.githubUser ?? jsonResponse(404, {});
+    throw new Error(`unexpected fetch: ${url}`);
+  }) as typeof fetch;
+}
+
+beforeEach(() => {
+  process.env.NEON_AUTH_BASE = "https://ep-x.neonauth.example.aws.neon.tech";
+});
 afterEach(() => {
-  if (ORIGINAL === undefined) delete process.env.NEON_AUTH_COOKIE_NAME;
-  else process.env.NEON_AUTH_COOKIE_NAME = ORIGINAL;
+  globalThis.fetch = realFetch;
+  if (ORIGINAL_BASE === undefined) delete process.env.NEON_AUTH_BASE;
+  else process.env.NEON_AUTH_BASE = ORIGINAL_BASE;
 });
 
-describe("sessionToken", () => {
-  test("reads the Neon Auth default cookie name", () => {
-    delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({ cookie: "neonauth.session_token=abc123; other=x" });
-    expect(sessionToken(h)).toBe("abc123");
+const headers = () => new Headers({ cookie: "__Secure-neonauth.session_token=tok" });
+
+describe("createNeonAuthProvider.verify", () => {
+  test("no session → anonymous viewer", async () => {
+    stubFetch({ getSession: jsonResponse(401, {}) });
+    const v = await createNeonAuthProvider().verify(headers());
+    expect(v.authenticated).toBe(false);
+    expect(v.role).toBe(Role.ANONYMOUS);
   });
 
-  test("tolerates the __Secure- prefix (HTTPS / production)", () => {
-    delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({ cookie: "__Secure-neonauth.session_token=tok" });
-    expect(sessionToken(h)).toBe("tok");
+  test("NEON_AUTH_BASE unset → anonymous (not yet provisioned)", async () => {
+    delete process.env.NEON_AUTH_BASE;
+    // fetch should never be called; make it throw to prove that.
+    globalThis.fetch = (async () => {
+      throw new Error("fetch should not be called when base is unset");
+    }) as unknown as typeof fetch;
+    const v = await createNeonAuthProvider().verify(headers());
+    expect(v.authenticated).toBe(false);
   });
 
-  test("tolerates the __Host- prefix", () => {
-    delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({ cookie: "__Host-neonauth.session_token=tok" });
-    expect(sessionToken(h)).toBe("tok");
-  });
-
-  test("URL-decodes the cookie value", () => {
-    delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({ cookie: "neonauth.session_token=a%20b%3Dc" });
-    expect(sessionToken(h)).toBe("a b=c");
-  });
-
-  test("honors a custom NEON_AUTH_COOKIE_NAME override, with secure prefix", () => {
-    process.env.NEON_AUTH_COOKIE_NAME = "neon-app.session_token";
-    const plain = headers({ cookie: "neon-app.session_token=one" });
-    expect(sessionToken(plain)).toBe("one");
-    const secure = headers({ cookie: "__Secure-neon-app.session_token=two" });
-    expect(sessionToken(secure)).toBe("two");
-  });
-
-  test("prefers a Bearer token over the cookie", () => {
-    delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({
-      authorization: "Bearer bearer-tok",
-      cookie: "neonauth.session_token=cookie-tok",
+  test("valid session, GitHub login resolved → authenticated, login is @handle", async () => {
+    stubFetch({
+      getSession: jsonResponse(200, { user: { id: "u1", email: "a@b.com", name: "Alice" } }),
+      listAccounts: jsonResponse(200, [{ providerId: "github", accessToken: "gho_x" }]),
+      githubUser: jsonResponse(200, { login: "alice-gh" }),
     });
-    expect(sessionToken(h)).toBe("bearer-tok");
+    const v = await createNeonAuthProvider().verify(headers());
+    expect(v.authenticated).toBe(true);
+    expect(v.login).toBe("alice-gh");
+    expect(v.userId).toBe("u1");
+    expect(v.name).toBe("Alice");
   });
 
-  test("returns undefined when neither header carries a token", () => {
-    delete process.env.NEON_AUTH_COOKIE_NAME;
-    expect(sessionToken(headers({}))).toBeUndefined();
-    expect(sessionToken(headers({ cookie: "unrelated=x" }))).toBeUndefined();
+  test("valid session, GitHub lookup fails → falls back to email as display", async () => {
+    stubFetch({
+      getSession: jsonResponse(200, { user: { id: "u2", email: "c@d.com", name: "Bob" } }),
+      listAccounts: jsonResponse(500, {}),
+    });
+    const v = await createNeonAuthProvider().verify(headers());
+    expect(v.authenticated).toBe(true);
+    expect(v.login).toBe("c@d.com");
   });
 });

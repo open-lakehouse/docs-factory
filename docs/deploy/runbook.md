@@ -247,7 +247,7 @@ Confirm at this first run (beta CLI — adjust if they differ):
 - **CLI package/binary + JSON key.** The workflows install `neonctl` and read
   `invocation_url` (with `.invocationUrl // .url` fallbacks). Verify the beta
   package name, that `neonctl functions deploy` exists with
-  `--src`/`--branch`/`--project`/`--output json`, and the exact URL field — inspect
+  `--src`/`--branch`/`--project-id`/`--output json`, and the exact URL field — inspect
   the raw JSON and fix the `jq` path if needed. Pin a CLI version once confirmed.
 - That `neon.ts` at the repo root matches your project (auth on; `review` Function
   slug/source/runtime). New branches apply it automatically; existing branches

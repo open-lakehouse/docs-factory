@@ -100,7 +100,7 @@ jobs:
           # Deploy the prod Function on the default branch. Verify the beta CLI's
           # flags + JSON key at provisioning (invocation_url is the expected field).
           INVOCATION_URL=$(neonctl functions deploy "$SLUG" \
-            --project "$NEON_PROJECT_ID" \
+            --project-id "$NEON_PROJECT_ID" \
             --src server --output json \
             --env AUTH_MODE=neon \
             --env NODE_ENV=production \

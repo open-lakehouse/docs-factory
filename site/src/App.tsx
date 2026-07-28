@@ -7,12 +7,12 @@ import BlogPost from "./pages/BlogPost";
 import ReviewDashboard from "./pages/ReviewDashboard";
 import ReviewWorkspace from "./pages/ReviewWorkspace";
 import RevOpsDashboard from "./pages/RevOpsDashboard";
-import DevPersonaSwitcher from "./components/DevPersonaSwitcher";
 
 export default function App() {
   return (
     <>
-      <DevPersonaSwitcher />
+      {/* DevPersonaSwitcher is mounted in AccessGate so it stays reachable from
+          the pre-admission (sign-in / pending) screens too — see AccessGate. */}
       <Routes>
         <Route path="/" element={<Index />} />
 

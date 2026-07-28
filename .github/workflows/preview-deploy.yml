@@ -18,7 +18,7 @@
 # Flow (closed): delete the Neon branch.
 #
 # Secrets:  NEON_API_KEY, REVIEW_BUILD_SECRET, VERCEL_TOKEN
-# Vars:     NEON_PROJECT_ID, NEON_AUTH_BASE, NEON_AUTH_COOKIE_NAME,
+# Vars:     NEON_PROJECT_ID, NEON_AUTH_BASE,
 #           VERCEL_ORG_ID, VERCEL_PROJECT_ID, PREVIEW_DEPLOY_ENABLED
 
 name: Preview deploy
@@ -41,6 +41,9 @@ jobs:
     if: >-
       github.event.action != 'closed' &&
       vars.PREVIEW_DEPLOY_ENABLED == 'true'
+    # Preview-scoped secrets/vars live in the `preview` environment (a preview
+    # NEON_API_KEY, the preview REVIEW_ALLOWED_ORIGIN/NEON_AUTH_BASE). See runbook §3.
+    environment: preview
     runs-on: ubuntu-latest
     env:
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
@@ -81,27 +84,41 @@ jobs:
           cd server && bun install --frozen-lockfile
           node scripts/migrate.mjs
 
+      # Install the Neon CLI. `functions` subcommands are beta — confirm the
+      # package/binary name and pin a version at provisioning (docs/deploy/runbook.md §4).
+      - name: Install Neon CLI
+        run: bun install -g neonctl
+
       # Deploy the review Function to THIS branch (branch-scoped). DATABASE_URL is
       # injected by Neon per branch, so it is NOT passed here. The exact Neon
       # Functions CLI is finalized at provisioning (beta) — see runbook.
       - name: Deploy review Function to the branch
         env:
           ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
-          NEON_AUTH_COOKIE_NAME: ${{ vars.NEON_AUTH_COOKIE_NAME }}
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          echo "TODO(runbook): install + run the Neon CLI to deploy the branch Function, e.g.:"
-          echo "  neon functions deploy review \\"
-          echo "    --project \"$NEON_PROJECT_ID\" --branch \"$BRANCH_NAME\" \\"
-          echo "    --src server \\"
-          echo "    --env AUTH_MODE=neon --env NODE_ENV=production \\"
-          echo "    --env ALLOWED_ORIGIN=\"$ALLOWED_ORIGIN\" \\"
-          echo "    --env BUILD_SECRET=\"\$REVIEW_BUILD_SECRET\" \\"
-          echo "    --env NEON_AUTH_COOKIE_NAME=\"$NEON_AUTH_COOKIE_NAME\""
-          echo "Then export the deployed Function host to GITHUB_ENV as NEON_FUNCTION_HOST."
-          echo "::notice::Function deploy is a scaffold — wire the Neon CLI at provisioning."
-          # Placeholder so downstream config generation has a value in dry runs.
-          echo "NEON_FUNCTION_HOST=${NEON_FUNCTION_HOST:-review-${BRANCH_NAME//\//-}.functions.neon.tech}" >> "$GITHUB_ENV"
+          set -o pipefail  # surface a neonctl failure, not jq's exit status
+          # The Function host is NOT derivable from the git branch name: Neon
+          # forms it as <branch_id>-<slug>.compute.<region>.aws.neon.tech, where
+          # branch_id is Neon's internal br-… id. So we deploy first and CAPTURE
+          # the invocation_url the CLI returns, then hand its host to the Vercel
+          # build below (which bakes it into the /api rewrite). See runbook §4.
+          #
+          # NEON_API_KEY authenticates the CLI; verify the beta CLI's flags and
+          # JSON key at provisioning (invocation_url is the expected field).
+          INVOCATION_URL=$(neonctl functions deploy review \
+            --project "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
+            --src server --output json \
+            --env AUTH_MODE=neon --env NODE_ENV=production \
+            --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
+            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            | jq -r '.invocation_url // .invocationUrl // .url')
+          if [ -z "$INVOCATION_URL" ] || [ "$INVOCATION_URL" = "null" ]; then
+            echo "::error::could not read the Function invocation_url from the Neon CLI output — inspect the raw JSON and adjust the jq path (docs/deploy/runbook.md §4)."
+            exit 1
+          fi
+          # gen-vercel-config.mjs strips the scheme too, but keep GITHUB_ENV clean.
+          echo "NEON_FUNCTION_HOST=${INVOCATION_URL#https://}" >> "$GITHUB_ENV"
 
       # Generate vercel.json from the template with this branch's proxy targets,
       # build the SPA, and deploy the prebuilt output as a Vercel preview. Vercel
@@ -129,6 +146,10 @@ jobs:
     if: >-
       github.event.action == 'closed' &&
       vars.PREVIEW_DEPLOY_ENABLED == 'true'
+    # Same `preview` environment for the scoped NEON_API_KEY. This job runs on PR
+    # close (not on main), so the `preview` environment must NOT be branch-restricted
+    # to main or the key won't resolve here — see runbook §3.
+    environment: preview
     runs-on: ubuntu-latest
     steps:
       - name: Delete the Neon branch

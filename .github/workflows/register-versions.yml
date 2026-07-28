@@ -39,6 +39,9 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.ref == 'refs/heads/main' && vars.REVIEW_REGISTER_ENABLED == 'true')
+    # Targets prod (REVIEW_API_URL, REVIEW_BUILD_SECRET) → the `production`
+    # environment, same branch restriction as the Function deploy. See runbook §3.
+    environment: production
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:

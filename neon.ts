@@ -31,8 +31,8 @@ export default defineConfig({
         env: {
           AUTH_MODE: "neon",
           NODE_ENV: "production",
-          // ALLOWED_ORIGIN, BUILD_SECRET, NEON_AUTH_COOKIE_NAME are supplied at
-          // deploy time (workflow / CLI) so secrets never live in this file.
+          // ALLOWED_ORIGIN and BUILD_SECRET are supplied at deploy time
+          // (workflow / CLI) so secrets never live in this file.
         },
       },
     },

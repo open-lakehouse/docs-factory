@@ -9,18 +9,11 @@
 
 model {
   extend lakehouse {
-    // Governance + lineage + observability attach to the query engine at
-    // planning / execution time.
-    queryEngine -[flows]-> lineage "emits column-level lineage (planning-time)"
-    queryEngine -[flows]-> observability "emits traces + metrics"
 
     // Orchestration drives the compute: it schedules pipelines onto the query
     // engine and emits run status to observability.
     orchestration -[flows]-> queryEngine "schedules + triggers pipelines that run on"
     orchestration -[flows]-> observability "emits run status + metrics"
-
-    // The catalog is the authoritative resource PIP and hosts the PA (vending).
-    catalog -[flows]-> governance.pip "serves resource facts (identity, tags, locations)"
   }
 
   // --- Specifications & implementations ------------------------------------

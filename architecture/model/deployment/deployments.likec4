@@ -1,19 +1,3 @@
-// DEPLOYMENT LAYER (concrete) — our services realizing the reference lakehouse.
-//
-// Each `service` node is one of our repos manifesting in a topology; its
-// `instanceOf` lines say which logical capabilities + governance roles it plays.
-// One node can play several roles (hydrofoil = queryEngine + PDP + PEP).
-// Deployment views inherit the logical relationships between instances; we add
-// deployment-specific edges (credential vending) explicitly.
-//
-// TRUST is a property of the TOPOLOGY, not of a component. The SAME query-engine
-// capability is trusted inside the boundary (enforces FGAC in-plan) and untrusted
-// deployed outside it (gets a vended credential, reads storage directly — FGAC
-// bypassed). That difference is what the two topologies below make explicit:
-//   1. trustedCompute  — inside the boundary; the query engine enforces full FGAC.
-//
-// Repo identity lives here (sourceRepo + GitHub link), NOT in the logical layer.
-
 deployment {
 
   environment trustedCompute {
@@ -29,7 +13,6 @@ deployment {
       instanceOf lakehouse.queryEngine
     }
 
-    // mangrove — the catalog service: catalog + resource PIP + PA (vending).
     mangrove = service "mangrove" {
       description "The catalog server. Governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
       link https://github.com/open-lakehouse/mangrove
@@ -39,9 +22,6 @@ deployment {
       instanceOf lakehouse.catalog
     }
 
-    // headwaters — the lineage service. Its lineage capability is built; its
-    // role as a dynamic lineage / taint PIP is designed, not built (see
-    // design/governance.md), so it's noted rather than presented as shipped.
     headwaters = service "headwaters" {
       description "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capability is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
       link https://github.com/open-lakehouse/headwaters

@@ -14,70 +14,60 @@ views {
   view explain_catalog of lakehouse.catalog {
     title "Catalog — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_queryEngine of lakehouse.queryEngine {
     title "Query engine — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_orchestration of lakehouse.orchestration {
     title "Orchestration — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_tableFormat of lakehouse.tableFormat {
     title "Open table format — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_fileFormat of lakehouse.fileFormat {
     title "File format — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_objectStorage of lakehouse.objectStorage {
     title "Object storage — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_lineage of lakehouse.lineage {
     title "Lineage — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_modelTracking of lakehouse.modelTracking {
     title "Model tracking — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_observability of lakehouse.observability {
     title "Observability — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 
   view explain_sharing of lakehouse.sharing {
     title "Sharing — in context"
     include *
-    exclude lakehouse.governance.*
     autoLayout LeftRight
   }
 

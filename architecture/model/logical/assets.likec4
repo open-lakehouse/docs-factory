@@ -1,22 +1,3 @@
-// LOGICAL LAYER — governed asset kinds (the "securable" subjects).
-//
-// The subject axis of the model (see ADR-0005). Capabilities are the VERBS the
-// lakehouse performs; asset kinds are the NOUNS it manages along the data & AI
-// value chain. Each kind is technology-agnostic and TYPE-LEVEL — a specific
-// table / model is an instance and lives in the runtime world, never here.
-//
-// Two edges give the axis its meaning:
-//   requires  — an asset kind requires a capability to be managed / materialized.
-//               Every kind requires the `catalog` (that is what makes it a
-//               governed securable); domain capabilities are what materialize it.
-//   governs   — a catalog SPECIFICATION governs a set of asset kinds. This is
-//               where breadth shows: Unity Catalog governs the full data & AI
-//               set; the Iceberg REST catalog governs namespaces + tables. The
-//               contrast is a structural fact of the model, not prose.
-//
-// "Securable" is Unity Catalog's name for an asset kind; the vendor-neutral term
-// `asset` is used in the logical layer (glossary records the mapping).
-
 model {
   extend lakehouse {
 
@@ -24,10 +5,8 @@ model {
       summary "The namespace container other asset kinds are organized under."
 
       description "
-        A schema (namespace) is the container securable: the addressable namespace
-        that tables, volumes, functions, models, and skills are organized and
-        governed within. Grants and lineage attach at this level as well as at the
-        leaf asset.
+        An addressable namespace that tables, volumes, functions, models, and
+        other securables are organized and governed within.
       "
 
       metadata { canonicalDoc "design/asset-kinds.md" }
@@ -46,11 +25,11 @@ model {
     table -[dependsOn]-> catalog "commit coordination"
 
     volume = asset "Volume" {
-      summary "Governed storage location with non-tabular files."
+      summary "A governed storage location with usually non-tabular files."
+
       description "
-        A volume is the non-tabular asset kind: a governed location of arbitrary
-        files (images, PDFs, checkpoints) in object storage, catalogued and
-        access-controlled like a table.
+        A governed location of arbitrary files (images, PDFs, checkpoints) in object storage,
+        catalogued and access-controlled.
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
@@ -76,18 +55,14 @@ model {
     mlModel -[dependsOn]-> objectStorage "data stored at rest"
 
     agentSkill = asset "Agent skill" {
-      summary "An emerging asset kind: a shareable, governed capability for AI agents."
-      description "
-        An agent skill is an emerging asset kind on the data & AI value chain: a
-        packaged, shareable capability an AI agent can discover and invoke,
-        governed and distributed through the catalog / Open Sharing surface.
-      "
+
+      link https://agentskills.io
+
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
     agentSkill -[dependsOn]-> volume "files stored at rest"
   }
 
-  // --- governs: which catalog spec covers which asset kinds (breadth) --------
   ucSpec -[governs]-> lakehouse.namespace "governs"
   ucSpec -[governs]-> lakehouse.table "governs"
   ucSpec -[governs]-> lakehouse.volume "governs"
@@ -98,3 +73,4 @@ model {
   icebergRestSpec -[governs]-> lakehouse.namespace "governs"
   icebergRestSpec -[governs]-> lakehouse.table "governs"
 }
+

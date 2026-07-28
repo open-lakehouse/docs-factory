@@ -108,12 +108,16 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
    `site/`. Record `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (from
    `.vercel/project.json` after `vercel link`, or project settings). Create a
    **Vercel token** → the `VERCEL_TOKEN` secret in Phase 3.
-5. *(Optional)* Install the **Neon↔Vercel native integration** for auto DB branches
-   per preview (injects `DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED`).
-   > **Branch-vs-integration ownership.** Decide *one* creator of the per-PR DB
-   > branch: either the integration creates it and `preview-deploy.yml` reuses it,
-   > or the workflow's `create-branch-action` owns it and you disable the
-   > integration's branch creation. Don't let both create `preview/pr-<n>`.
+5. *(Optional)* Install the **Neon↔Vercel native integration** (injects
+   `DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED` into Vercel's env).
+   > **Branch ownership — decided: the workflow owns it.** `preview-deploy.yml`'s
+   > `create-branch-action` creates the per-PR Neon branch `preview/pr-<n>`,
+   > migrates it, deploys the Function to it, and deletes it on PR close. So if you
+   > install the integration, you **MUST turn OFF** its branch creation — Vercel
+   > integration → **Advanced Options → uncheck "Create a database branch for
+   > deployment."** Otherwise both create a branch per preview (the integration
+   > names it after the git branch, the workflow uses `preview/pr-<n>`) and you get
+   > two competing DB branches + the Function deployed to the wrong one.
 
 **After Phase 1 you have:** `NEON_PROJECT_ID`, the Neon API key, `NEON_AUTH_BASE`,
 the full `VITE_NEON_AUTH_URL`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and the Vercel

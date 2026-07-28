@@ -43,12 +43,23 @@ it's not accidental duplication, it's "each builder needs its own copy." Concret
 - **`NEON_AUTH_BASE`** — set in **both**. CI's `gen-vercel-config.mjs` needs it to
   write the preview `vercel.json` `/auth` rewrite; Vercel's prod build needs it for
   the prod `vercel.json`.
-- **`VITE_AUTH_SIGNIN_URL` / `VITE_AUTH_SIGNOUT_URL`** — set in **Vercel only**.
-  These are Vite bundle vars. The prod build reads them from Vercel Production env;
-  the preview build gets them via `vercel pull --environment=preview` (which
-  downloads Vercel *Preview* env into CI), so they do **not** need a GitHub copy.
+- **`VITE_NEON_AUTH_BASE_URL`** — set in **Vercel only** (Preview + Production).
+  It's a Vite bundle var: the Better Auth client's `baseURL` (see below). The prod
+  build reads it from Vercel Production env; the preview build gets it via `vercel
+  pull --environment=preview` (which downloads Vercel *Preview* env into CI), so it
+  does **not** need a GitHub copy.
 - **`NEON_FUNCTION_HOST`** — *not* duplicated: it's a per-branch captured value in
   CI (`$GITHUB_ENV`) and a single stable value in Vercel Production env.
+
+> **Sign-in is the Better Auth client, not a URL.** Neon Auth is Better Auth,
+> which has **no plain GET sign-in/out URL** — the earlier `VITE_AUTH_SIGNIN_URL` /
+> `VITE_AUTH_SIGNOUT_URL` were never real values to source. `site/src/lib/auth-actions.ts`
+> now creates a Better Auth client (`createAuthClient({ baseURL })`) and calls
+> `signIn.social({ provider: "github" })` / `signOut()`. The single input is
+> `VITE_NEON_AUTH_BASE_URL` = the Neon Auth **instance** URL
+> (`https://ep-….neonauth.<region>.aws.neon.tech`) — the real host, not the site's
+> `/auth` proxy, because Better Auth builds the OAuth callback from its own baseURL
+> and sets the state cookie on that origin.
 
 **Produce → consume crosses systems.** Some values only *exist* after an earlier
 step runs, so the phases below capture them at their source and set them where
@@ -64,12 +75,19 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
 
 1. **Neon project.** Create it; note the **project id** (→ `NEON_PROJECT_ID`) and
    the **default branch** (the production branch).
-2. **GitHub OAuth app + Neon Auth.** Create a GitHub OAuth app (org → Developer
-   settings → OAuth Apps); set the callback/redirect URL per the Neon Auth docs.
-   Enable Neon Auth on the project and connect the GitHub provider. **Record** the
-   hosted Neon Auth endpoints now — you consume them in Phase 3:
-   - `NEON_AUTH_BASE` — host of the hosted Neon Auth endpoints (no scheme).
-   - `VITE_AUTH_SIGNIN_URL`, `VITE_AUTH_SIGNOUT_URL` — the hosted sign-in/out URLs.
+2. **GitHub OAuth app + Neon Auth.** Enable Neon Auth on the project and connect
+   the GitHub provider (create a GitHub OAuth app: org → Developer settings → OAuth
+   Apps). **Record** the Neon Auth **instance URL** now — you consume it in Phase 3:
+   - `NEON_AUTH_BASE` — the instance host (`ep-….neonauth.<region>.aws.neon.tech`),
+     no scheme. Used as both the `/auth` rewrite target *and* (with scheme) the
+     Better Auth client `baseURL` → `VITE_NEON_AUTH_BASE_URL`.
+   - **GitHub OAuth callback URL** to register in the GitHub app:
+     `https://<NEON_AUTH_BASE>/api/auth/callback/github` — Better Auth builds the
+     callback from its own base, so this is the Neon host, not the site domain.
+   - **Trusted origins.** Add every site origin that starts a login (prod domain +
+     the Vercel preview origin/wildcard) to Neon Auth's `trusted_origins`
+     (`project_config.trusted_origins`), or Better Auth rejects the post-login
+     redirect back to the site.
    Also confirm the live **session-cookie name** and that the `neon_auth`
    table/column shapes match `server/src/auth/neon-auth.ts` (resolver expects
    `neon_auth.session` / `"user"` / `account` with the queried columns; cookie
@@ -87,10 +105,11 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
    > or the workflow's `create-branch-action` owns it and you disable the
    > integration's branch creation. Don't let both create `preview/pr-<n>`.
 
-**After Phase 1 you have:** `NEON_PROJECT_ID`, the Neon API key, `NEON_AUTH_BASE`,
-`VITE_AUTH_SIGNIN_URL`, `VITE_AUTH_SIGNOUT_URL`, the cookie name, `VERCEL_ORG_ID`,
-`VERCEL_PROJECT_ID`, and the Vercel token. **Not yet:** any Function host or the
-prod Function URL — those don't exist until Phase 4.
+**After Phase 1 you have:** `NEON_PROJECT_ID`, the Neon API key, `NEON_AUTH_BASE`
+(also used as `VITE_NEON_AUTH_BASE_URL`), the cookie name, `VERCEL_ORG_ID`,
+`VERCEL_PROJECT_ID`, and the Vercel token; the GitHub callback + trusted origins
+are registered on the Neon Auth side. **Not yet:** any Function host or the prod
+Function URL — those don't exist until Phase 4.
 
 ---
 
@@ -139,13 +158,14 @@ build phase entirely).
 Set on the Vercel project (per environment):
 
 - **Production env:**
-  - `NEON_AUTH_BASE` — from Phase 1.2.
-  - `VITE_AUTH_SIGNIN_URL`, `VITE_AUTH_SIGNOUT_URL` — from Phase 1.2 (baked into the
-    prod bundle; gate the "Sign in" affordance).
+  - `NEON_AUTH_BASE` — from Phase 1.2 (feeds the prod `vercel.json` `/auth` rewrite).
+  - `VITE_NEON_AUTH_BASE_URL` — from Phase 1.2, **with** scheme
+    (`https://ep-….neonauth.<region>.aws.neon.tech`). Baked into the bundle as the
+    Better Auth client `baseURL`; gates the "Sign in" affordance (hidden when unset).
   - Leave `VITE_API_URL` **unset** so the bundle uses same-origin `/api`.
   - ⏳ `NEON_FUNCTION_HOST` — **deferred to Phase 5** (doesn't exist until Phase 4).
-- **Preview env:** the same `VITE_AUTH_*` (so `vercel pull` supplies them to CI
-  builds). `NEON_AUTH_BASE` and `NEON_FUNCTION_HOST` are passed per-branch by
+- **Preview env:** the same `VITE_NEON_AUTH_BASE_URL` (so `vercel pull` supplies it
+  to CI builds). `NEON_AUTH_BASE` and `NEON_FUNCTION_HOST` are passed per-branch by
   `preview-deploy.yml`, so a Preview-env value for those is optional.
 
 ### 3c. GitHub environments

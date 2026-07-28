@@ -1,57 +1,63 @@
-// Client-side auth actions (the deferred-login seam). The server already resolves
-// the viewer from a Neon Auth session cookie (see server/src/auth/neon-auth.ts);
-// the only unwired client piece is *initiating* sign-in and sign-out. We do that
-// with a plain browser redirect to Neon Auth's hosted flow rather than embedding
-// a client SDK — no heavy dependency, and the whole end-to-end path is designed:
-// going live is just setting the two env vars below once the OAuth app is
-// provisioned. Both are optional (undefined until then), mirroring how
-// review-client treats VITE_API_URL / VITE_REVIEW_SSE as env-driven and optional.
+// Client-side auth actions (the deferred-login seam). The server resolves the
+// viewer from a Neon Auth session cookie (see server/src/auth/neon-auth.ts); the
+// only unwired client piece is *initiating* sign-in and sign-out.
+//
+// Neon Auth is Better Auth, so we drive it with the Better Auth client rather
+// than redirecting to a hosted URL — Better Auth has no plain GET sign-in URL;
+// sign-in is `authClient.signIn.social({ provider })` (a POST that returns the
+// GitHub redirect) and sign-out is `authClient.signOut()`. Going live is setting
+// one env var (VITE_NEON_AUTH_BASE_URL) once the Neon Auth project + GitHub OAuth
+// app are provisioned; until then the client is undefined and the "Sign in"
+// affordance is hidden (mirroring how review-client treats VITE_API_URL).
+//
+// baseURL is the Neon Auth INSTANCE url (…neonauth.<region>.aws.neon.tech), not
+// the site's same-origin /auth proxy: Better Auth builds the OAuth callback from
+// its own baseURL and sets the state cookie on that origin, so the handshake must
+// address the real host. Our site origin(s) must be listed in Neon Auth's
+// trusted_origins (project_config.trusted_origins) or the post-login redirect is
+// rejected. See docs/deploy/runbook.md.
 //
 // Locally, sign-in is unnecessary — the dev persona switcher (x-dev-persona)
 // stands in for a real login, so these are effectively no-ops in dev.
+import { createAuthClient } from "better-auth/client";
 
-/** Hosted Neon Auth sign-in URL, or undefined until provisioned. */
-export function authSignInUrl(): string | undefined {
-  return import.meta.env.VITE_AUTH_SIGNIN_URL || undefined;
+/** The Neon Auth instance base URL, or undefined until provisioned. */
+function authBaseUrl(): string | undefined {
+  return import.meta.env.VITE_NEON_AUTH_BASE_URL || undefined;
 }
 
-/** Hosted Neon Auth sign-out URL, or undefined until provisioned. */
-export function authSignOutUrl(): string | undefined {
-  return import.meta.env.VITE_AUTH_SIGNOUT_URL || undefined;
+// One shared client, created lazily so an unconfigured bundle constructs nothing.
+let client: ReturnType<typeof createAuthClient> | undefined;
+function authClient() {
+  const baseURL = authBaseUrl();
+  if (!baseURL) return undefined;
+  client ??= createAuthClient({ baseURL });
+  return client;
 }
 
 /** True when a sign-in destination is configured (gates the "Sign in" affordance). */
 export function canSignIn(): boolean {
-  return authSignInUrl() !== undefined;
+  return authBaseUrl() !== undefined;
 }
 
 /**
- * Redirect to the hosted sign-in flow, carrying a return-to URL so Neon Auth
- * lands the user back where they were after setting the session cookie. No-op
+ * Start the hosted GitHub sign-in flow, carrying a return-to URL so Neon Auth
+ * lands the user back where they were after the session cookie is set. No-op
  * when unconfigured (the "Sign in" control is hidden in that case anyway).
  */
-export function signIn(): void {
-  const base = authSignInUrl();
-  if (!base) return;
-  const url = new URL(base);
-  url.searchParams.set("return_to", window.location.href);
-  window.location.assign(url.toString());
+export async function signIn(): Promise<void> {
+  const c = authClient();
+  if (!c) return;
+  await c.signIn.social({ provider: "github", callbackURL: window.location.href });
 }
 
 /**
- * Sign out: hand off to the hosted sign-out URL when configured (it clears the
- * HttpOnly session cookie server-side and redirects back). When unconfigured
- * (e.g. local dev / not yet provisioned) there is no cookie we can clear from
- * JS, so we just reload — the viewer query re-resolves to whatever the server
- * returns.
+ * Sign out via the Better Auth client (clears the session server-side), then
+ * reload so the viewer query re-resolves. When unconfigured (local dev / not yet
+ * provisioned) there is no session to clear, so we just reload.
  */
-export function signOut(): void {
-  const url = authSignOutUrl();
-  if (url) {
-    const u = new URL(url);
-    u.searchParams.set("return_to", window.location.origin);
-    window.location.assign(u.toString());
-    return;
-  }
+export async function signOut(): Promise<void> {
+  const c = authClient();
+  if (c) await c.signOut();
   window.location.reload();
 }

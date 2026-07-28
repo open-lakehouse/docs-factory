@@ -107,7 +107,7 @@ jobs:
           # NEON_API_KEY authenticates the CLI; verify the beta CLI's flags and
           # JSON key at provisioning (invocation_url is the expected field).
           INVOCATION_URL=$(neonctl functions deploy review \
-            --project "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
+            --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
             --src server --output json \
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \

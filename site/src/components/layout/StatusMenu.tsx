@@ -1,12 +1,14 @@
 // Top-bar login/status control. Shown for all viewers:
 //   - anonymous → a "Sign in" button (only when a hosted sign-in URL is
 //     configured; hidden until Neon Auth is provisioned — see lib/auth-actions).
-//   - authenticated → an avatar + login opening a menu with, for reviewers, the
-//     Site review mode toggle and a link to the /review dashboard, plus Log out.
+//   - authenticated → an avatar + login opening a menu with, for reviewers, a
+//     three-state view-mode selector and a link to the /review dashboard, plus
+//     Log out.
 //
-// The review-mode toggle is the opt-in that turns the comment chrome on (see
-// auth-context.reviewActive). Local impersonation stays in DevPersonaSwitcher;
-// this is the real, production-facing control.
+// The view-mode selector is the real, production-facing control that merges the
+// review-chrome opt-in with a "view as anonymous" preview (see auth-context:
+// viewMode / reviewActive / previewAsAnon). Local dev impersonation stays in
+// DevPersonaSwitcher — orthogonal to this.
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,16 +18,16 @@ import {
   DropdownMenuTrigger,
   DropdownMenuLabel,
   DropdownMenuItem,
-  DropdownMenuCheckboxItem,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "../../lib/auth-context";
+import { useAuth, type ViewMode } from "../../lib/auth-context";
 import { canSignIn, signIn, signOut } from "../../lib/auth-actions";
 import { initials } from "../../lib/initials";
 
 export default function StatusMenu() {
-  const { isLoading, isAuthenticated, isAllowlisted, viewer, reviewModeOn, setReviewMode } =
-    useAuth();
+  const { isLoading, isAuthenticated, isAllowlisted, viewer, viewMode, setViewMode } = useAuth();
 
   // Neutral placeholder while the viewer resolves — avoids a flash of "Sign in"
   // for an already-authenticated reviewer (matches DevPersonaSwitcher's "…").
@@ -60,14 +62,25 @@ export default function StatusMenu() {
         {isAllowlisted && (
           <>
             <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={reviewModeOn}
-              onCheckedChange={(v) => setReviewMode(Boolean(v))}
-              // Keep the menu open on toggle so the state change is visible.
-              onSelect={(e) => e.preventDefault()}
+            <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+              View mode
+            </DropdownMenuLabel>
+            <DropdownMenuRadioGroup
+              value={viewMode}
+              onValueChange={(v) => setViewMode(v as ViewMode)}
             >
-              Site review mode
-            </DropdownMenuCheckboxItem>
+              {/* Keep the menu open on select so the state change is visible. */}
+              <DropdownMenuRadioItem value="normal" onSelect={(e) => e.preventDefault()}>
+                Normal
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="review" onSelect={(e) => e.preventDefault()}>
+                Review
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="anon-preview" onSelect={(e) => e.preventDefault()}>
+                View as anonymous
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link to="/review">Review dashboard</Link>
             </DropdownMenuItem>

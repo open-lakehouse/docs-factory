@@ -1,17 +1,16 @@
-# Deploy the review backend (server/) to a Neon Function.
+# Deploy the review backend (server/) to the PRODUCTION Neon branch's Function.
+# (Per-PR preview Function deploys live in preview-deploy.yml.)
 #
-# DISABLED ON PURPOSE. The Neon project + Function are not provisioned yet
-# (issue #18), so this workflow only runs on a manual `workflow_dispatch` — it
-# never fires automatically. When deploy infra is live, enable automatic runs by
-# uncommenting the `push` trigger below and setting the repo secrets/vars noted
-# under `env`. Mirrors the disabled-by-default posture of register-versions.yml.
+# INERT UNTIL PROVISIONED. The push trigger is live, but the job's `if:` guard
+# runs it only on main AND only when the repo variable REVIEW_DEPLOY_ENABLED is
+# 'true' — so until provisioning sets that variable and the secrets/vars under
+# `env`, every push is a no-op. Mirrors register-versions.yml. See the manual
+# steps in docs/deploy/runbook.md.
 #
-# What it does: bundles server/ and deploys it as a Neon Function via the Neon
-# CLI. The Function entrypoint is server/src/handler.ts (`export default { fetch }`).
-# DATABASE_URL is injected by Neon at runtime; the other env below is set on the
-# Function at deploy time. Migrations (server/scripts/migrate.mjs) must be applied
-# to the target branch BEFORE the Function serves new schema — do that in a step
-# here or manually, against the branch's DATABASE_URL.
+# What it does: applies migrations to the prod branch (direct URL), then bundles
+# server/ and deploys it as the prod Neon Function via the Neon CLI. The Function
+# entrypoint is server/src/handler.ts (`export default { fetch }`). DATABASE_URL
+# is injected by Neon at runtime; the other env is set on the Function at deploy.
 
 name: Deploy review Function
 
@@ -22,10 +21,8 @@ on:
         description: "Neon Function slug to deploy to"
         required: true
         default: "review"
-  # ENABLE WHEN DEPLOYING: deploy on push to main once the Function exists and
-  # NEON_API_KEY is set. Kept commented so the job stays disabled.
-  # push:
-  #   branches: [main]
+  push:
+    branches: [main]
 
 concurrency:
   group: deploy-function
@@ -44,10 +41,13 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.ref == 'refs/heads/main' && vars.REVIEW_DEPLOY_ENABLED == 'true')
     env:
-      # Set as repo secrets/vars when provisioning (issue #18):
+      # Set as repo secrets/vars when provisioning (see docs/deploy/runbook.md):
       #   NEON_API_KEY            secret — authenticates the Neon CLI
+      #   DATABASE_URL            secret — prod branch DIRECT (unpooled) URL, for
+      #                                    migrations run here before the deploy
       #   REVIEW_BUILD_SECRET     secret — shared secret RegisterVersion checks
-      #   NEON_AUTH_COOKIE_NAME   var    — the live Better Auth session cookie name
+      #   NEON_PROJECT_ID         var    — Neon project id
+      #   NEON_AUTH_COOKIE_NAME   var    — the live Neon Auth session cookie name
       #   REVIEW_ALLOWED_ORIGIN   var    — comma-separated CORS allowlist (Vercel origin)
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
     steps:
@@ -62,9 +62,21 @@ jobs:
       - name: Guard required secrets
         run: |
           if [ -z "${NEON_API_KEY:-}" ]; then
-            echo "::error::NEON_API_KEY secret is not set — provision the Neon project first (issue #18)."
+            echo "::error::NEON_API_KEY secret is not set — provision the Neon project first (docs/deploy/runbook.md)."
             exit 1
           fi
+      # Migrations must be applied to the prod branch BEFORE the Function serves
+      # new schema. Run against the DIRECT (unpooled) URL — the pooler doesn't
+      # support every DDL path and migrate.mjs holds a single connection.
+      - name: Migrate the prod branch
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "${DATABASE_URL:-}" ]; then
+            echo "::error::DATABASE_URL secret (prod branch direct URL) is not set — see docs/deploy/runbook.md."
+            exit 1
+          fi
+          cd server && node scripts/migrate.mjs
       # NOTE: exact Neon CLI invocation is finalized at provisioning (the CLI is
       # in beta). Sketch — deploy the single Function from server/, passing the
       # non-injected env. DATABASE_URL is injected by Neon, not passed here.
@@ -73,15 +85,18 @@ jobs:
       - name: Deploy Neon Function
         env:
           SLUG: ${{ inputs.slug || 'review' }}
+          NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
           NEON_AUTH_COOKIE_NAME: ${{ vars.NEON_AUTH_COOKIE_NAME }}
+          REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          echo "TODO(provisioning #18): install + run the Neon CLI, e.g.:"
+          echo "TODO(runbook): install + run the Neon CLI, e.g.:"
           echo "  neon functions deploy \"$SLUG\" \\"
+          echo "    --project \"$NEON_PROJECT_ID\" \\"
           echo "    --src server \\"
           echo "    --env AUTH_MODE=neon \\"
           echo "    --env NODE_ENV=production \\"
           echo "    --env ALLOWED_ORIGIN=\"$ALLOWED_ORIGIN\" \\"
           echo "    --env BUILD_SECRET=\"\$REVIEW_BUILD_SECRET\" \\"
           echo "    --env NEON_AUTH_COOKIE_NAME=\"$NEON_AUTH_COOKIE_NAME\""
-          echo "::notice::deploy-function.yml is a scaffold — wire the CLI at provisioning."
+          echo "::notice::the Neon Function deploy step is a scaffold — wire the CLI at provisioning (docs/deploy/runbook.md)."

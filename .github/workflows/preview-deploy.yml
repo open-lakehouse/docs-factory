@@ -1,0 +1,139 @@
+# Per-PR preview environment: a Neon DB branch + the review Function deployed to
+# it + a Vercel preview build whose same-origin /api and /auth rewrites point at
+# that branch's Function. Torn down when the PR closes.
+#
+# DISABLED BY DEFAULT. The Neon project, Function tooling, and Vercel project are
+# provisioned manually (see docs/deploy/runbook.md). Until the repo variable
+# PREVIEW_DEPLOY_ENABLED is set to 'true' AND the secrets below exist, every job
+# no-ops — mirroring deploy-function.yml / register-versions.yml.
+#
+# Flow (opened/synchronize/reopened):
+#   1. create-or-reuse a Neon branch  preview/pr-<number>  (copy-on-write off the
+#      default branch) — outputs the branch's pooled + direct connection strings.
+#   2. run migrations against the branch's DIRECT (unpooled) URL.
+#   3. deploy the review Function to that branch (branch-scoped), passing the
+#      non-injected env; DATABASE_URL is injected by Neon per branch.
+#   4. build the SPA with a vercel.json whose /api + /auth resolve to that
+#      branch's Function/Auth host, and deploy the Vercel preview (prebuilt).
+# Flow (closed): delete the Neon branch.
+#
+# Secrets:  NEON_API_KEY, REVIEW_BUILD_SECRET, VERCEL_TOKEN
+# Vars:     NEON_PROJECT_ID, NEON_AUTH_BASE, NEON_AUTH_COOKIE_NAME,
+#           VERCEL_ORG_ID, VERCEL_PROJECT_ID, PREVIEW_DEPLOY_ENABLED
+
+name: Preview deploy
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+concurrency:
+  # One in-flight preview deploy per PR; a new push supersedes the previous.
+  group: preview-deploy-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    # Skip on close; only run when explicitly enabled at provisioning.
+    if: >-
+      github.event.action != 'closed' &&
+      vars.PREVIEW_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    env:
+      NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
+      NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
+      BRANCH_NAME: preview/pr-${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Guard required secrets
+        run: |
+          if [ -z "${NEON_API_KEY:-}" ] || [ -z "${NEON_PROJECT_ID:-}" ]; then
+            echo "::error::NEON_API_KEY / NEON_PROJECT_ID not set — provision Neon first (docs/deploy/runbook.md)."
+            exit 1
+          fi
+
+      # Copy-on-write branch off the project's default branch. Reuses the branch
+      # if it already exists (idempotent across synchronize events).
+      - name: Create or reuse Neon branch
+        id: neon
+        uses: neondatabase/create-branch-action@fb620d43d4c565abaf088b848a4e28e5c4ea4d9c # v6
+        with:
+          project_id: ${{ env.NEON_PROJECT_ID }}
+          branch_name: ${{ env.BRANCH_NAME }}
+          api_key: ${{ env.NEON_API_KEY }}
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      # Direct (unpooled) URL for migrations — the pooler doesn't support every
+      # DDL path and migrate.mjs holds a single connection.
+      - name: Migrate the branch
+        env:
+          DATABASE_URL: ${{ steps.neon.outputs.db_url }}
+        run: |
+          cd server && bun install --frozen-lockfile
+          node scripts/migrate.mjs
+
+      # Deploy the review Function to THIS branch (branch-scoped). DATABASE_URL is
+      # injected by Neon per branch, so it is NOT passed here. The exact Neon
+      # Functions CLI is finalized at provisioning (beta) — see runbook.
+      - name: Deploy review Function to the branch
+        env:
+          ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
+          NEON_AUTH_COOKIE_NAME: ${{ vars.NEON_AUTH_COOKIE_NAME }}
+          REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
+        run: |
+          echo "TODO(runbook): install + run the Neon CLI to deploy the branch Function, e.g.:"
+          echo "  neon functions deploy review \\"
+          echo "    --project \"$NEON_PROJECT_ID\" --branch \"$BRANCH_NAME\" \\"
+          echo "    --src server \\"
+          echo "    --env AUTH_MODE=neon --env NODE_ENV=production \\"
+          echo "    --env ALLOWED_ORIGIN=\"$ALLOWED_ORIGIN\" \\"
+          echo "    --env BUILD_SECRET=\"\$REVIEW_BUILD_SECRET\" \\"
+          echo "    --env NEON_AUTH_COOKIE_NAME=\"$NEON_AUTH_COOKIE_NAME\""
+          echo "Then export the deployed Function host to GITHUB_ENV as NEON_FUNCTION_HOST."
+          echo "::notice::Function deploy is a scaffold — wire the Neon CLI at provisioning."
+          # Placeholder so downstream config generation has a value in dry runs.
+          echo "NEON_FUNCTION_HOST=${NEON_FUNCTION_HOST:-review-${BRANCH_NAME//\//-}.functions.neon.tech}" >> "$GITHUB_ENV"
+
+      # Generate vercel.json from the template with this branch's proxy targets,
+      # build the SPA, and deploy the prebuilt output as a Vercel preview. Vercel
+      # reads vercel.json BEFORE the build, so it must be generated pre-build and
+      # deployed via the prebuilt path (see gen-vercel-config.mjs).
+      - name: Build + deploy Vercel preview
+        env:
+          NEON_FUNCTION_HOST: ${{ env.NEON_FUNCTION_HOST }}
+          NEON_AUTH_BASE: ${{ vars.NEON_AUTH_BASE }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          if [ -z "${VERCEL_TOKEN:-}" ]; then
+            echo "::error::VERCEL_TOKEN not set — provision the Vercel project first (docs/deploy/runbook.md)."
+            exit 1
+          fi
+          cd site && bun install --frozen-lockfile
+          node scripts/gen-vercel-config.mjs
+          bunx vercel pull --yes --environment=preview --token="$VERCEL_TOKEN"
+          bunx vercel build --token="$VERCEL_TOKEN"
+          bunx vercel deploy --prebuilt --token="$VERCEL_TOKEN"
+
+  cleanup:
+    if: >-
+      github.event.action == 'closed' &&
+      vars.PREVIEW_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete the Neon branch
+        uses: neondatabase/delete-branch-action@4468d825d5a88ef4012f1705a82f02ec3072f776 # v3
+        with:
+          project_id: ${{ vars.NEON_PROJECT_ID }}
+          branch: preview/pr-${{ github.event.pull_request.number }}
+          api_key: ${{ secrets.NEON_API_KEY }}

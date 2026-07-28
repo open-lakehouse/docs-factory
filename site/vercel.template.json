@@ -4,8 +4,8 @@
   "outputDirectory": "dist",
   "framework": null,
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://REPLACE_WITH_NEON_FUNCTION_HOST/:path*" },
-    { "source": "/auth/:path*", "destination": "https://REPLACE_WITH_NEON_AUTH_BASE/:path*" },
+    { "source": "/api/:path*", "destination": "https://__NEON_FUNCTION_HOST__/:path*" },
+    { "source": "/auth/:path*", "destination": "https://__NEON_AUTH_BASE__/:path*" },
     { "source": "/((?!assets/|api/|auth/).*)", "destination": "/index.html" }
   ]
 }

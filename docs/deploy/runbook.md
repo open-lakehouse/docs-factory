@@ -127,20 +127,32 @@ Settings → Secrets and variables → Actions.
 
 ## 4. Wire the Neon Functions CLI
 
-The Neon Functions CLI is in beta, so the deploy steps in `preview-deploy.yml`
-and `deploy-function.yml` are **scaffolds** (they echo the intended command). At
-provisioning, replace the echo blocks with the real invocation and confirm:
+The Neon Functions CLI is in **beta** (currently **us-east-2 only**). Both
+workflows now run the real `neonctl functions deploy … --output json` and parse
+the returned `invocation_url` — but because the CLI is beta, confirm these at
+provisioning and adjust if they differ:
 
-- The exact `neon functions deploy` (or `neon deploy` / `neon config apply`)
-  command and flags for a single Function sourced from `server/` at
-  `server/src/handler.ts`, targeting a specific `--branch`/`--project`.
-- Whether preview Function **hosts are deterministically derivable from the branch
-  name**. If yes, `preview-deploy.yml` can compute `NEON_FUNCTION_HOST` up front;
-  if no, capture the deployed host from the CLI output and write it to
-  `$GITHUB_ENV` before the Vercel build step (the placeholder there shows where).
+- **The Function host is NOT derivable from the git branch name.** Neon forms it
+  as `<branch_id>-<slug>.compute.<region>.aws.neon.tech`, where `branch_id` is
+  Neon's internal `br-…` id — unknowable before the deploy. So both workflows
+  **deploy first and capture** the host from the CLI's `invocation_url`. Do not
+  reintroduce a name-derived host; it will never resolve.
+- **The CLI package/binary + JSON key.** The workflows install `neonctl` and read
+  `invocation_url` (with `.invocationUrl // .url` fallbacks). Verify the beta
+  package name, that `neonctl functions deploy` exists with `--src`/`--branch`/
+  `--project`/`--output json`, and the exact URL field — inspect the raw JSON on
+  the first run and fix the `jq` path if needed. Pin a CLI version once confirmed.
+- **`NEON_API_KEY`** authenticates the CLI (already exported as job env in both
+  workflows).
 - That `neon.ts` at the repo root matches your project (auth on, the `review`
   Function slug/source/runtime). New branches apply it automatically; existing
   branches still need the per-push deploy step.
+
+**First prod deploy is two-pass** (the prod host is stable, so this is one-time):
+run `deploy-function.yml` once — it logs a `::notice::` with the deployed host —
+then set that host as Vercel **Production** env `NEON_FUNCTION_HOST` (§2.4).
+Previews need no such step: `preview-deploy.yml` writes the captured host to
+`$GITHUB_ENV` and the Vercel build reads it inline.
 
 Then flip the three `*_ENABLED` variables to `true`.
 

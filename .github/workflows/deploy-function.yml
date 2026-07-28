@@ -77,11 +77,15 @@ jobs:
             exit 1
           fi
           cd server && node scripts/migrate.mjs
+      # Install the Neon CLI. `functions` subcommands are beta — confirm the
+      # package/binary name and pin a version at provisioning (docs/deploy/runbook.md §4).
+      - name: Install Neon CLI
+        run: bun install -g neonctl
       # NOTE: exact Neon CLI invocation is finalized at provisioning (the CLI is
-      # in beta). Sketch — deploy the single Function from server/, passing the
-      # non-injected env. DATABASE_URL is injected by Neon, not passed here.
-      # All ${{ }} expansions are passed via env, never interpolated into the
-      # shell body, so untrusted input can't inject commands (zizmor).
+      # in beta). Deploy the single Function from server/, passing the non-injected
+      # env; DATABASE_URL is injected by Neon, not passed here. All ${{ }}
+      # expansions are passed via env, never interpolated into the shell body, so
+      # untrusted input can't inject commands (zizmor).
       - name: Deploy Neon Function
         env:
           SLUG: ${{ inputs.slug || 'review' }}
@@ -90,13 +94,23 @@ jobs:
           NEON_AUTH_COOKIE_NAME: ${{ vars.NEON_AUTH_COOKIE_NAME }}
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          echo "TODO(runbook): install + run the Neon CLI, e.g.:"
-          echo "  neon functions deploy \"$SLUG\" \\"
-          echo "    --project \"$NEON_PROJECT_ID\" \\"
-          echo "    --src server \\"
-          echo "    --env AUTH_MODE=neon \\"
-          echo "    --env NODE_ENV=production \\"
-          echo "    --env ALLOWED_ORIGIN=\"$ALLOWED_ORIGIN\" \\"
-          echo "    --env BUILD_SECRET=\"\$REVIEW_BUILD_SECRET\" \\"
-          echo "    --env NEON_AUTH_COOKIE_NAME=\"$NEON_AUTH_COOKIE_NAME\""
-          echo "::notice::the Neon Function deploy step is a scaffold — wire the CLI at provisioning (docs/deploy/runbook.md)."
+          set -o pipefail  # surface a neonctl failure, not jq's exit status
+          # Deploy the prod Function on the default branch. Verify the beta CLI's
+          # flags + JSON key at provisioning (invocation_url is the expected field).
+          INVOCATION_URL=$(neonctl functions deploy "$SLUG" \
+            --project "$NEON_PROJECT_ID" \
+            --src server --output json \
+            --env AUTH_MODE=neon \
+            --env NODE_ENV=production \
+            --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
+            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            --env NEON_AUTH_COOKIE_NAME="$NEON_AUTH_COOKIE_NAME" \
+            | jq -r '.invocation_url // .invocationUrl // .url')
+          if [ -z "$INVOCATION_URL" ] || [ "$INVOCATION_URL" = "null" ]; then
+            echo "::error::could not read the Function invocation_url from the Neon CLI output — inspect the raw JSON and adjust the jq path (docs/deploy/runbook.md §4)."
+            exit 1
+          fi
+          # The prod host is stable across deploys (default branch id + slug). Set
+          # it ONCE as Vercel Production env NEON_FUNCTION_HOST — it is not wired
+          # automatically here. Surface it so the first deploy can copy it over.
+          echo "::notice::prod Function host — set Vercel Production env NEON_FUNCTION_HOST=${INVOCATION_URL#https://}"

@@ -9,16 +9,19 @@ design: each is guarded by a repo variable (`PREVIEW_DEPLOY_ENABLED`,
 
 Deployment shape for v1:
 
-- **Frontend** — the Vite SPA in `site/`, deployed to **Vercel**. Same-origin
-  `/api` and `/auth` rewrites proxy to the backend so browser calls stay
-  same-origin (no CORS). The rewrite destinations are environment-specific and
-  generated from `site/vercel.template.json` by `site/scripts/gen-vercel-config.mjs`.
-  > **Cookie reachability.** Neon Auth sets `__Secure-neonauth.session_token` as
-  > `SameSite=None; Secure`, so it can travel cross-site to the Auth API. For the
-  > **server** to read it on `/api`, the browser must also send it to our origin —
-  > verify at first sign-in (devtools → Network → an `/api` request → does it carry
-  > the cookie?). If not, that's a cookie-domain/proxy issue to resolve before the
-  > gate works, independent of the resolver.
+- **Frontend** — the Vite SPA in `site/`, deployed to **Vercel**. A same-origin
+  `/api` rewrite proxies to the backend so API calls stay same-origin (no CORS).
+  The destination is environment-specific and generated from
+  `site/vercel.template.json` by `site/scripts/gen-vercel-config.mjs`.
+  > **Auth is a bearer token, not a cookie.** Neon Auth scopes its session cookie
+  > (`__Secure-neonauth.session_token`) to the **auth origin** (`VITE_NEON_AUTH_URL`'s
+  > host), which is a *different* origin from the Function the `/api` rewrite points
+  > at — so that cookie never reaches the API, and a cookie-based gate can't work
+  > here. Instead the SPA reads the session token client-side
+  > (`getSession().session.token`, the same opaque value the server matches against
+  > `neon_auth.session.token`) and sends it as `Authorization: Bearer` on every RPC
+  > (`site/src/lib/review-client.ts`). There is therefore **no `/auth` rewrite** and
+  > no need for the API to see the cookie.
 - **Backend** — the Hono + Connect app in `server/`, deployed as a **Neon
   Function** (entrypoint `server/src/handler.ts`). It branches with the database:
   **one Neon branch per PR** for previews, plus the default branch for production.
@@ -46,25 +49,30 @@ systems, so each system holds the config for the build it performs:
 So a value used at build time legitimately lives in **both** GitHub and Vercel —
 it's not accidental duplication, it's "each builder needs its own copy." Concretely:
 
-- **`NEON_AUTH_BASE`** — set in **both**. CI's `gen-vercel-config.mjs` needs it to
-  write the preview `vercel.json` `/auth` rewrite; Vercel's prod build needs it for
-  the prod `vercel.json`.
-- **`VITE_NEON_AUTH_URL`** — set in **Vercel only** (Preview + Production). It's a
-  Vite bundle var: the Neon Auth URL the SDK client points at (see below). The prod
-  build reads it from Vercel Production env; the preview build gets it via `vercel
-  pull --environment=preview` (which downloads Vercel *Preview* env into CI), so it
-  does **not** need a GitHub copy.
+- **`VITE_NEON_AUTH_URL`** — set in **Vercel only** (Preview + Production), and
+  **injected automatically by the Neon↔Vercel integration** (see Phase 1.5) rather
+  than by hand. It's a Vite bundle var: the Neon Auth URL the SDK client points at
+  (see below). The prod build reads it from Vercel Production env; the preview build
+  gets it via `vercel pull --environment=preview` (which downloads Vercel *Preview*
+  env into CI), so it does **not** need a GitHub copy.
 - **`NEON_FUNCTION_HOST`** — *not* duplicated: it's a per-branch captured value in
   CI (`$GITHUB_ENV`) and a single stable value in Vercel Production env.
 
+> **No more `NEON_AUTH_BASE`.** There used to be an `/auth` same-origin rewrite that
+> needed the Neon Auth host wired into both GitHub and Vercel. The SPA now talks to
+> the auth origin directly (via `VITE_NEON_AUTH_URL`) and authenticates the API with
+> a bearer token, so that rewrite — and every copy of `NEON_AUTH_BASE` — is gone.
+
 > **Sign-in uses the Neon SDK, not a hosted URL.** `site/src/lib/auth-actions.ts`
 > uses Neon's official SDK (`@neondatabase/neon-js`): `createAuthClient(url)` →
-> `signIn.social({ provider: "github" })` / `signOut()`. The single input is
+> `signIn.social({ provider: "github" })` / `signOut()`, and `getSession()` to read
+> the session token the API bearer is built from. The single input is
 > `VITE_NEON_AUTH_URL` = the project's **Neon Auth URL exactly as shown in the Neon
 > console**, including its path — e.g.
-> `https://ep-….neonauth.<region>.aws.neon.tech/<db>/auth`. Copy it verbatim; the
-> SDK derives the sign-in/callback endpoints from it. (This is a beta SDK —
-> `@neondatabase/neon-js@0.6.2-beta`; pin/verify at provisioning.)
+> `https://ep-….neonauth.<region>.aws.neon.tech/<db>/auth`. With the Neon↔Vercel
+> integration installed (Phase 1.5) this is injected into Vercel automatically; you
+> no longer copy it by hand. (This is a beta SDK — `@neondatabase/neon-js@0.6.2-beta`;
+> pin/verify at provisioning.)
 
 **Produce → consume crosses systems.** Some values only *exist* after an earlier
 step runs, so the phases below capture them at their source and set them where
@@ -82,12 +90,11 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
    the **default branch** (the production branch).
 2. **GitHub OAuth app + Neon Auth.** Enable Neon Auth on the project and connect
    the GitHub provider (create a GitHub OAuth app: org → Developer settings → OAuth
-   Apps). **Record** the Neon Auth values now — you consume them in Phase 3:
-   - `NEON_AUTH_BASE` — the instance host (`ep-….neonauth.<region>.aws.neon.tech`),
-     no scheme. The CI generator's `/auth` rewrite target.
+   Apps). **Record** the Neon Auth value now — you consume it in Phase 3 (though the
+   Neon↔Vercel integration also injects it, keep it handy for reference/local dev):
    - `VITE_NEON_AUTH_URL` — the **full** Neon Auth URL from the console, incl. path
      and scheme: `https://ep-….neonauth.<region>.aws.neon.tech/<db>/auth`. The SDK
-     client points at this.
+     client points at this (for sign-in and to read the session token).
    - **GitHub OAuth callback URL** to register in the GitHub app: per the Neon Auth
      docs for your project (the callback is on the Neon Auth origin, not the site
      domain). Confirm the exact path in the console when connecting GitHub.
@@ -108,20 +115,26 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
    `site/`. Record `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (from
    `.vercel/project.json` after `vercel link`, or project settings). Create a
    **Vercel token** → the `VERCEL_TOKEN` secret in Phase 3.
-5. *(Optional)* Install the **Neon↔Vercel native integration** (injects
-   `DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED` into Vercel's env).
-   > **Branch ownership — decided: the workflow owns it.** `preview-deploy.yml`'s
-   > `create-branch-action` creates the per-PR Neon branch `preview/pr-<n>`,
-   > migrates it, deploys the Function to it, and deletes it on PR close. So if you
-   > install the integration, you **MUST turn OFF** its branch creation — Vercel
+5. **Install the Neon↔Vercel native integration** (Vercel Marketplace → Neon, or
+   Neon console → Integrations → Vercel). Enable **Neon Auth for previews** so it
+   injects the auth + DB env into Vercel automatically, per environment *and per
+   preview branch*: `VITE_NEON_AUTH_URL`, `NEON_AUTH_BASE_URL`, and the DB
+   connection vars (`DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED`). This is why
+   Phase 3b no longer sets `VITE_NEON_AUTH_URL` by hand.
+   > **Branch ownership — the workflow still owns per-PR branches.**
+   > `preview-deploy.yml`'s `create-branch-action` creates the per-PR Neon branch
+   > `preview/pr-<n>`, migrates it, deploys the Function to it, and deletes it on PR
+   > close. So you **MUST turn OFF** the integration's branch creation — Vercel
    > integration → **Advanced Options → uncheck "Create a database branch for
    > deployment."** Otherwise both create a branch per preview (the integration
    > names it after the git branch, the workflow uses `preview/pr-<n>`) and you get
-   > two competing DB branches + the Function deployed to the wrong one.
+   > two competing DB branches + the Function deployed to the wrong one. Keep the
+   > integration for **env injection only**, not branching.
 
-**After Phase 1 you have:** `NEON_PROJECT_ID`, the Neon API key, `NEON_AUTH_BASE`,
-the full `VITE_NEON_AUTH_URL`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and the Vercel
-token; the GitHub callback + trusted origins are registered on the Neon Auth side.
+**After Phase 1 you have:** `NEON_PROJECT_ID`, the Neon API key, the full
+`VITE_NEON_AUTH_URL`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and the Vercel token;
+the Neon↔Vercel integration is installed (env injection on, branch creation off);
+the GitHub callback + trusted origins are registered on the Neon Auth side.
 **Not yet:** any Function host or the prod
 Function URL — those don't exist until Phase 4.
 
@@ -171,16 +184,17 @@ build phase entirely).
 
 Set on the Vercel project (per environment):
 
-- **Production env:**
-  - `NEON_AUTH_BASE` — from Phase 1.2 (feeds the prod `vercel.json` `/auth` rewrite).
-  - `VITE_NEON_AUTH_URL` — the full Neon Auth URL from Phase 1.2 (incl. path +
-    scheme). Baked into the bundle as the SDK client's URL; gates the "Sign in"
-    affordance (hidden when unset).
+- **`VITE_NEON_AUTH_URL` (Production + Preview)** — **injected by the Neon↔Vercel
+  integration** (Phase 1.5), not set by hand. Baked into the bundle as the SDK
+  client's URL; gates the "Sign in" affordance (hidden when unset) and is the
+  origin the session token is read from. Confirm it's present in both environments
+  (Vercel → Settings → Environment Variables); the preview build picks it up via
+  `vercel pull`.
+- **Production env (set by hand):**
   - Leave `VITE_API_URL` **unset** so the bundle uses same-origin `/api`.
   - ⏳ `NEON_FUNCTION_HOST` — **deferred to Phase 5** (doesn't exist until Phase 4).
-- **Preview env:** the same `VITE_NEON_AUTH_URL` (so `vercel pull` supplies it to
-  CI builds). `NEON_AUTH_BASE` and `NEON_FUNCTION_HOST` are passed per-branch by
-  `preview-deploy.yml`, so a Preview-env value for those is optional.
+- **Preview env:** `NEON_FUNCTION_HOST` is passed per-branch by `preview-deploy.yml`,
+  so a Preview-env value for it is not needed.
 
 ### 3c. GitHub environments
 
@@ -209,7 +223,6 @@ variables → Actions.
 | `REVIEW_API_URL` | secret | `production` | ⏳ **deferred to Phase 5** — live prod Function URL |
 | `VERCEL_TOKEN` | secret | `preview` | non-interactive Vercel CLI auth |
 | `NEON_PROJECT_ID` | var | `preview` + `production` | Neon project id (same value both) |
-| `NEON_AUTH_BASE` | var | `preview` + `production` | Neon Auth host — the CI generator's `/auth` rewrite target. Also in Vercel (§3b); see Phase 0 |
 | `REVIEW_ALLOWED_ORIGIN` | var | `preview` + `production` | preview origin (+ wildcard) vs prod domain only |
 | `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | `preview` | Vercel CLI targeting |
 | `PREVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |

@@ -1,9 +1,9 @@
 # Post-merge content-version registration for the review backend.
 #
-# DISABLED ON PURPOSE. We are not deploying the review API yet, so this workflow
-# only runs on a manual `workflow_dispatch` — it never fires automatically. When
-# deploy infra is live, enable automatic runs by uncommenting the `push` trigger
-# below (and set the API_URL / BUILD_SECRET repo secrets).
+# INERT UNTIL PROVISIONED. The push trigger is live, but the job's `if:` guard
+# runs it only on main AND only when the repo variable REVIEW_REGISTER_ENABLED is
+# 'true' — so until provisioning sets that variable and the API_URL / BUILD_SECRET
+# secrets, every push is a no-op. See docs/deploy/runbook.md.
 #
 # Why post-merge: the version manifest embeds `git rev-parse HEAD`. On a PR
 # branch that is the branch tip, but `main` squash-merges, so the merged commit
@@ -18,10 +18,10 @@ name: Register content versions
 
 on:
   workflow_dispatch: {}
-  # ENABLE WHEN DEPLOYING: run once per push to main so registered versions
-  # carry the real merged sha. Kept commented so the job stays disabled.
-  # push:
-  #   branches: [main]
+  # Runs once per push to main so registered versions carry the real merged sha.
+  # The job's `if:` guard keeps it inert until REVIEW_REGISTER_ENABLED == 'true'.
+  push:
+    branches: [main]
 
 concurrency:
   group: register-versions

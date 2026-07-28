@@ -1,6 +1,11 @@
 node_modules/
 dist/
 .vite/
+.vercel/
+
+# Generated at deploy time from vercel.template.json by scripts/gen-vercel-config.mjs
+# (the /api + /auth proxy destinations differ per environment). Never commit it.
+vercel.json
 
 # Prefer a single lockfile if you want reproducibility; keep the harness light.
 package-lock.json

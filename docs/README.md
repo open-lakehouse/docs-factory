@@ -30,6 +30,8 @@ docs/
     information-system.md            how the site consumes the estate model
     interactive-docs-site.md         islands / roadmap / auth platform study
     multi-domain-single-deployment.md one deployment, three doc domains
+  deploy/       operational runbooks
+    runbook.md                       go-live provisioning (Neon / Vercel / GitHub)
 ```
 
 Repo-wide conventions and commands live in [`../AGENTS.md`](../AGENTS.md); this tree

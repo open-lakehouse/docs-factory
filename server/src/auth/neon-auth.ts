@@ -88,14 +88,13 @@ export function sessionToken(header: Headers): string | undefined {
   if (auth?.toLowerCase().startsWith("bearer ")) return auth.slice(7).trim();
   const cookie = header.get("cookie");
   if (!cookie) return undefined;
-  // Neon Auth is Better Auth; its default session cookie is
-  // `better-auth.session_token` (dot prefix, underscore in session_token). Over
-  // HTTPS (i.e. production) Better Auth prepends a `__Secure-` (or `__Host-`)
-  // prefix, so match the name with or without that prefix — the same code then
-  // works on http dev and https prod. NEON_AUTH_COOKIE_NAME overrides the base
-  // name if the project sets a custom cookiePrefix; the __Secure-/__Host- prefix
-  // is still tolerated on top of the override.
-  const name = process.env.NEON_AUTH_COOKIE_NAME ?? "better-auth.session_token";
+  // Neon Auth sets an opaque session token in `__Secure-neonauth.session_token`
+  // (Secure, HttpOnly, SameSite=None) — see the Neon Auth authentication-flow
+  // docs. We store the base name here and match with or without the
+  // `__Secure-`/`__Host-` prefix, so the same code works on http dev and https
+  // prod. NEON_AUTH_COOKIE_NAME overrides the base name if the project's cookie
+  // differs; the secure prefix is still tolerated on top of the override.
+  const name = process.env.NEON_AUTH_COOKIE_NAME ?? "neonauth.session_token";
   for (const part of cookie.split(";")) {
     const [k, ...v] = part.trim().split("=");
     if (k === name || k === `__Secure-${name}` || k === `__Host-${name}`) {

@@ -1,8 +1,8 @@
 // Unit tests for session-token extraction. Run with `bun test`.
 //
-// Neon Auth is Better Auth: the default session cookie is
-// `better-auth.session_token`, and over HTTPS Better Auth prepends `__Secure-`
-// (or `__Host-`). The resolver must find the token in every one of those forms,
+// Neon Auth sets its session token in `__Secure-neonauth.session_token` (Secure,
+// HttpOnly, SameSite=None). The resolver must find the token whether or not the
+// `__Secure-`/`__Host-` prefix is present (so http dev and https prod share code),
 // honor an Authorization: Bearer header, and respect a NEON_AUTH_COOKIE_NAME
 // override — while still tolerating the secure prefix on top of the override.
 import { expect, test, describe, afterEach } from "bun:test";
@@ -19,27 +19,27 @@ afterEach(() => {
 });
 
 describe("sessionToken", () => {
-  test("reads the Better Auth default cookie name", () => {
+  test("reads the Neon Auth default cookie name", () => {
     delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({ cookie: "better-auth.session_token=abc123; other=x" });
+    const h = headers({ cookie: "neonauth.session_token=abc123; other=x" });
     expect(sessionToken(h)).toBe("abc123");
   });
 
   test("tolerates the __Secure- prefix (HTTPS / production)", () => {
     delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({ cookie: "__Secure-better-auth.session_token=tok" });
+    const h = headers({ cookie: "__Secure-neonauth.session_token=tok" });
     expect(sessionToken(h)).toBe("tok");
   });
 
   test("tolerates the __Host- prefix", () => {
     delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({ cookie: "__Host-better-auth.session_token=tok" });
+    const h = headers({ cookie: "__Host-neonauth.session_token=tok" });
     expect(sessionToken(h)).toBe("tok");
   });
 
   test("URL-decodes the cookie value", () => {
     delete process.env.NEON_AUTH_COOKIE_NAME;
-    const h = headers({ cookie: "better-auth.session_token=a%20b%3Dc" });
+    const h = headers({ cookie: "neonauth.session_token=a%20b%3Dc" });
     expect(sessionToken(h)).toBe("a b=c");
   });
 
@@ -55,7 +55,7 @@ describe("sessionToken", () => {
     delete process.env.NEON_AUTH_COOKIE_NAME;
     const h = headers({
       authorization: "Bearer bearer-tok",
-      cookie: "better-auth.session_token=cookie-tok",
+      cookie: "neonauth.session_token=cookie-tok",
     });
     expect(sessionToken(h)).toBe("bearer-tok");
   });

@@ -88,17 +88,17 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
      the Vercel preview origin/wildcard) to Neon Auth's `trusted_origins`
      (`project_config.trusted_origins`), or Better Auth rejects the post-login
      redirect back to the site.
-   Also confirm the live **session-cookie name** and that the `neon_auth`
-   table/column shapes match `server/src/auth/neon-auth.ts` (resolver expects
+   Also confirm the **session-cookie name** and that the `neon_auth` table/column
+   shapes match `server/src/auth/neon-auth.ts` (resolver expects
    `neon_auth.session` / `"user"` / `account` with the queried columns). The cookie
-   name is not a Neon dashboard field — it's Better Auth's convention: the base
-   name defaults to **`better-auth.session_token`** (dot prefix, underscore), and
-   over HTTPS Better Auth prepends **`__Secure-`** (→ `__Secure-better-auth.session_token`).
-   The resolver already tolerates the `__Secure-`/`__Host-` prefix, so you only
-   set `NEON_AUTH_COOKIE_NAME` if the Neon Auth project uses a **custom
-   `cookiePrefix`** (i.e. the base name differs from `better-auth.session_token`) —
-   set it to the base name *without* the secure prefix. To find the real name:
-   sign in on a deployed preview and read the cookie name in browser devtools.
+   is not a Neon dashboard field — per the [Neon Auth authentication-flow
+   docs](https://neon.com/docs/auth/authentication-flow#session-cookie-is-set) it's
+   **`__Secure-neonauth.session_token`**: an opaque session token (not a JWT), set
+   Secure + HttpOnly + SameSite=None. The resolver defaults to the base name
+   `neonauth.session_token` and tolerates the `__Secure-`/`__Host-` prefix, so no
+   config is needed for the standard cookie. Only set `NEON_AUTH_COOKIE_NAME` (to
+   the base name *without* the secure prefix) if a devtools check shows a different
+   name.
 3. **Neon API key** → you'll store it as the `NEON_API_KEY` secret in Phase 3.
 4. **Vercel project.** Create it, connect the repo, set **root directory** to
    `site/`. Record `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (from

@@ -41,6 +41,9 @@ jobs:
     if: >-
       github.event.action != 'closed' &&
       vars.PREVIEW_DEPLOY_ENABLED == 'true'
+    # Preview-scoped secrets/vars live in the `preview` environment (a preview
+    # NEON_API_KEY, the preview REVIEW_ALLOWED_ORIGIN/NEON_AUTH_BASE). See runbook §3.
+    environment: preview
     runs-on: ubuntu-latest
     env:
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
@@ -145,6 +148,10 @@ jobs:
     if: >-
       github.event.action == 'closed' &&
       vars.PREVIEW_DEPLOY_ENABLED == 'true'
+    # Same `preview` environment for the scoped NEON_API_KEY. This job runs on PR
+    # close (not on main), so the `preview` environment must NOT be branch-restricted
+    # to main or the key won't resolve here — see runbook §3.
+    environment: preview
     runs-on: ubuntu-latest
     steps:
       - name: Delete the Neon branch

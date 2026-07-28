@@ -96,32 +96,64 @@ Deployment shape for v1:
 
 ---
 
-## 3. GitHub — secrets and variables
+## 3. GitHub — environments, secrets, and variables
 
-Settings → Secrets and variables → Actions.
+Settings → Environments, and Settings → Secrets and variables → Actions.
 
-**Secrets**
+The workflows are scoped to two **GitHub Environments** so preview and production
+never share credentials or CORS origins, and prod secrets are only exposed to
+`main`:
+
+- `preview-deploy.yml` (both `preview` and `cleanup` jobs) → **`preview`** env.
+- `deploy-function.yml` and `register-versions.yml` → **`production`** env.
+
+### 3a. Create the environments
+
+Settings → **Environments** → New environment:
+
+- **`preview`** — **no** branch restriction (the `cleanup` job runs on PR *close*,
+  off `main`; a `main`-only restriction would block it from reading `NEON_API_KEY`).
+  No required reviewers (previews are automatic).
+- **`production`** — **Deployment branches: restricted → `main` only.** This is a
+  hard gate: GitHub refuses to expose this environment's secrets to any other ref,
+  stronger than the workflows' `if: github.ref == 'refs/heads/main'` check (which
+  gates the job, not secret scope). Optionally add **Required reviewers** for a
+  manual approval before each prod deploy.
+
+### 3b. Environment-scoped secrets & variables
+
+Set these **inside** the named environment, not at repo level, so preview and prod
+values differ:
+
+| Name | Kind | `preview` | `production` |
+|---|---|---|---|
+| `NEON_API_KEY` | secret | preview-scoped key (least privilege) | prod key |
+| `REVIEW_BUILD_SECRET` | secret | shared value (both envs) | shared value |
+| `DATABASE_URL` | secret | — | prod branch **direct** URL (prod migrations) |
+| `REVIEW_API_URL` | secret | — | live prod Function URL |
+| `VERCEL_TOKEN` | secret | non-interactive Vercel CLI auth | — |
+| `NEON_PROJECT_ID` | var | Neon project id | Neon project id |
+| `NEON_AUTH_BASE` | var | preview Neon Auth host | prod Neon Auth host |
+| `NEON_AUTH_COOKIE_NAME` | var | live session cookie name | live session cookie name |
+| `REVIEW_ALLOWED_ORIGIN` | var | preview origin (+ wildcard) | prod domain only |
+| `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | Vercel CLI targeting | — |
+
+### 3c. Repo-level variables (must stay repo-level)
+
+The `*_ENABLED` gates are read in each job's `if:` condition, which is evaluated
+**before** the environment is entered — a job `if:` cannot read environment vars.
+Keep these three at repo level (Settings → Secrets and variables → Actions →
+Variables):
 
 | Name | Used by | What |
 |---|---|---|
-| `NEON_API_KEY` | preview-deploy, deploy-function | Neon CLI / branch actions auth |
-| `DATABASE_URL` | deploy-function | prod branch **direct** URL, for prod migrations |
-| `REVIEW_BUILD_SECRET` | preview-deploy, deploy-function, register-versions | shared secret `RegisterVersion` checks; passed to the Function as `BUILD_SECRET` |
-| `REVIEW_API_URL` | register-versions | the live prod Function URL |
-| `VERCEL_TOKEN` | preview-deploy | non-interactive Vercel CLI auth |
-
-**Variables**
-
-| Name | Used by | What |
-|---|---|---|
-| `NEON_PROJECT_ID` | preview-deploy, deploy-function | Neon project id |
-| `NEON_AUTH_BASE` | preview-deploy | Neon Auth host (also set in Vercel) |
-| `NEON_AUTH_COOKIE_NAME` | preview-deploy, deploy-function | live session cookie name (Function `--env`) |
-| `REVIEW_ALLOWED_ORIGIN` | preview-deploy, deploy-function | comma-separated CORS allowlist (Vercel origin; include the preview wildcard if needed) |
-| `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | preview-deploy | Vercel CLI targeting |
 | `PREVIEW_DEPLOY_ENABLED` | preview-deploy | set `true` to arm per-PR previews |
 | `REVIEW_DEPLOY_ENABLED` | deploy-function | set `true` to arm prod deploy on main |
 | `REVIEW_REGISTER_ENABLED` | register-versions | set `true` to arm post-merge version registration |
+
+> If a name exists both at repo level and in an environment, the environment value
+> wins for jobs that declare that `environment:` — so a repo-level fallback is
+> harmless, but prefer putting the differing values only in the environments.
 
 ---
 

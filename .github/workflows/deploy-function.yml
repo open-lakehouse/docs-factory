@@ -40,6 +40,10 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (github.ref == 'refs/heads/main' && vars.REVIEW_DEPLOY_ENABLED == 'true')
+    # Prod secrets/vars (DATABASE_URL, prod NEON_API_KEY, prod REVIEW_ALLOWED_ORIGIN)
+    # live in the `production` environment, branch-restricted to main with optional
+    # required reviewers — a stronger gate than the `if:` ref check. See runbook §3.
+    environment: production
     env:
       # Set as repo secrets/vars when provisioning (see docs/deploy/runbook.md):
       #   NEON_API_KEY            secret — authenticates the Neon CLI

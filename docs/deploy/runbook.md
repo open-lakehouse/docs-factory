@@ -10,9 +10,15 @@ design: each is guarded by a repo variable (`PREVIEW_DEPLOY_ENABLED`,
 Deployment shape for v1:
 
 - **Frontend** — the Vite SPA in `site/`, deployed to **Vercel**. Same-origin
-  `/api` and `/auth` rewrites proxy to the backend so the session cookie stays
-  first-party (no CORS). The rewrite destinations are environment-specific and
+  `/api` and `/auth` rewrites proxy to the backend so browser calls stay
+  same-origin (no CORS). The rewrite destinations are environment-specific and
   generated from `site/vercel.template.json` by `site/scripts/gen-vercel-config.mjs`.
+  > **Cookie reachability.** Neon Auth sets `__Secure-neonauth.session_token` as
+  > `SameSite=None; Secure`, so it can travel cross-site to the Auth API. For the
+  > **server** to read it on `/api`, the browser must also send it to our origin —
+  > verify at first sign-in (devtools → Network → an `/api` request → does it carry
+  > the cookie?). If not, that's a cookie-domain/proxy issue to resolve before the
+  > gate works, independent of the resolver.
 - **Backend** — the Hono + Connect app in `server/`, deployed as a **Neon
   Function** (entrypoint `server/src/handler.ts`). It branches with the database:
   **one Neon branch per PR** for previews, plus the default branch for production.
@@ -202,7 +208,7 @@ variables → Actions.
 | `VERCEL_TOKEN` | secret | `preview` | non-interactive Vercel CLI auth |
 | `NEON_PROJECT_ID` | var | `preview` + `production` | Neon project id (same value both) |
 | `NEON_AUTH_BASE` | var | `preview` + `production` | Neon Auth host — also in Vercel (§3b), see Phase 0 |
-| `NEON_AUTH_COOKIE_NAME` | var | `preview` + `production` | live session cookie name (same value both) |
+| `NEON_AUTH_COOKIE_NAME` | var | `preview` + `production` | **optional** — resolver defaults to `neonauth.session_token` (+ `__Secure-`); set only if devtools shows a different name (Phase 1.2) |
 | `REVIEW_ALLOWED_ORIGIN` | var | `preview` + `production` | preview origin (+ wildcard) vs prod domain only |
 | `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | `preview` | Vercel CLI targeting |
 | `PREVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |

@@ -120,39 +120,36 @@ Settings → **Environments** → New environment:
   gates the job, not secret scope). Optionally add **Required reviewers** for a
   manual approval before each prod deploy.
 
-### 3b. Environment-scoped secrets & variables
+### 3b. Where each secret & variable is set
 
-Set these **inside** the named environment, not at repo level, so preview and prod
-values differ:
+The **Set at** column is authoritative: set each name at exactly that scope. Names
+marked `preview` + `production` are set **once in each** of the two environments
+(with per-env values); `repo` names are set once at Settings → Secrets and
+variables → Actions.
 
-| Name | Kind | `preview` | `production` |
+| Name | Kind | Set at | Value / notes |
 |---|---|---|---|
-| `NEON_API_KEY` | secret | preview-scoped key (least privilege) | prod key |
-| `REVIEW_BUILD_SECRET` | secret | shared value (both envs) | shared value |
-| `DATABASE_URL` | secret | — | prod branch **direct** URL (prod migrations) |
-| `REVIEW_API_URL` | secret | — | live prod Function URL |
-| `VERCEL_TOKEN` | secret | non-interactive Vercel CLI auth | — |
-| `NEON_PROJECT_ID` | var | Neon project id | Neon project id |
-| `NEON_AUTH_BASE` | var | preview Neon Auth host | prod Neon Auth host |
-| `NEON_AUTH_COOKIE_NAME` | var | live session cookie name | live session cookie name |
-| `REVIEW_ALLOWED_ORIGIN` | var | preview origin (+ wildcard) | prod domain only |
-| `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | Vercel CLI targeting | — |
+| `NEON_API_KEY` | secret | `preview` + `production` | preview: least-privilege key; production: prod key |
+| `REVIEW_BUILD_SECRET` | secret | `preview` + `production` | same shared value in both envs |
+| `DATABASE_URL` | secret | `production` | prod branch **direct** (unpooled) URL, for prod migrations |
+| `REVIEW_API_URL` | secret | `production` | live prod Function URL |
+| `VERCEL_TOKEN` | secret | `preview` | non-interactive Vercel CLI auth |
+| `NEON_PROJECT_ID` | var | `preview` + `production` | Neon project id (same value both) |
+| `NEON_AUTH_BASE` | var | `preview` + `production` | preview vs prod Neon Auth host |
+| `NEON_AUTH_COOKIE_NAME` | var | `preview` + `production` | live session cookie name (same value both) |
+| `REVIEW_ALLOWED_ORIGIN` | var | `preview` + `production` | preview origin (+ wildcard) vs prod domain only |
+| `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | `preview` | Vercel CLI targeting |
+| `PREVIEW_DEPLOY_ENABLED` | var | **`repo`** | set `true` to arm per-PR previews |
+| `REVIEW_DEPLOY_ENABLED` | var | **`repo`** | set `true` to arm prod deploy on main |
+| `REVIEW_REGISTER_ENABLED` | var | **`repo`** | set `true` to arm post-merge version registration |
 
-### 3c. Repo-level variables (must stay repo-level)
-
-The `*_ENABLED` gates are read in each job's `if:` condition, which is evaluated
-**before** the environment is entered — a job `if:` cannot read environment vars.
-Keep these three at repo level (Settings → Secrets and variables → Actions →
-Variables):
-
-| Name | Used by | What |
-|---|---|---|
-| `PREVIEW_DEPLOY_ENABLED` | preview-deploy | set `true` to arm per-PR previews |
-| `REVIEW_DEPLOY_ENABLED` | deploy-function | set `true` to arm prod deploy on main |
-| `REVIEW_REGISTER_ENABLED` | register-versions | set `true` to arm post-merge version registration |
-
+> **Why the `*_ENABLED` gates are `repo`, not environment.** They're read in each
+> job's `if:` condition, which GitHub evaluates **before** the environment is
+> entered — a job `if:` cannot see environment vars, so an environment-scoped gate
+> would always read empty and the job would never arm.
+>
 > If a name exists both at repo level and in an environment, the environment value
-> wins for jobs that declare that `environment:` — so a repo-level fallback is
+> wins for jobs that declare that `environment:` — a repo-level fallback is
 > harmless, but prefer putting the differing values only in the environments.
 
 ---

@@ -90,9 +90,15 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
      redirect back to the site.
    Also confirm the live **session-cookie name** and that the `neon_auth`
    table/column shapes match `server/src/auth/neon-auth.ts` (resolver expects
-   `neon_auth.session` / `"user"` / `account` with the queried columns; cookie
-   defaults to `neon-auth.session-token`). If either differs, note the cookie name
-   for `NEON_AUTH_COOKIE_NAME` and/or adjust the resolver.
+   `neon_auth.session` / `"user"` / `account` with the queried columns). The cookie
+   name is not a Neon dashboard field — it's Better Auth's convention: the base
+   name defaults to **`better-auth.session_token`** (dot prefix, underscore), and
+   over HTTPS Better Auth prepends **`__Secure-`** (→ `__Secure-better-auth.session_token`).
+   The resolver already tolerates the `__Secure-`/`__Host-` prefix, so you only
+   set `NEON_AUTH_COOKIE_NAME` if the Neon Auth project uses a **custom
+   `cookiePrefix`** (i.e. the base name differs from `better-auth.session_token`) —
+   set it to the base name *without* the secure prefix. To find the real name:
+   sign in on a deployed preview and read the cookie name in browser devtools.
 3. **Neon API key** → you'll store it as the `NEON_API_KEY` secret in Phase 3.
 4. **Vercel project.** Create it, connect the repo, set **root directory** to
    `site/`. Record `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (from

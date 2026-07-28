@@ -83,15 +83,24 @@ async function resolveLogin(
 }
 
 /** Extract the Neon Auth session token from a cookie or Authorization header. */
-function sessionToken(header: Headers): string | undefined {
+export function sessionToken(header: Headers): string | undefined {
   const auth = header.get("authorization");
   if (auth?.toLowerCase().startsWith("bearer ")) return auth.slice(7).trim();
   const cookie = header.get("cookie");
   if (!cookie) return undefined;
-  const name = process.env.NEON_AUTH_COOKIE_NAME ?? "neon-auth.session-token";
+  // Neon Auth is Better Auth; its default session cookie is
+  // `better-auth.session_token` (dot prefix, underscore in session_token). Over
+  // HTTPS (i.e. production) Better Auth prepends a `__Secure-` (or `__Host-`)
+  // prefix, so match the name with or without that prefix — the same code then
+  // works on http dev and https prod. NEON_AUTH_COOKIE_NAME overrides the base
+  // name if the project sets a custom cookiePrefix; the __Secure-/__Host- prefix
+  // is still tolerated on top of the override.
+  const name = process.env.NEON_AUTH_COOKIE_NAME ?? "better-auth.session_token";
   for (const part of cookie.split(";")) {
     const [k, ...v] = part.trim().split("=");
-    if (k === name) return decodeURIComponent(v.join("="));
+    if (k === name || k === `__Secure-${name}` || k === `__Host-${name}`) {
+      return decodeURIComponent(v.join("="));
+    }
   }
   return undefined;
 }

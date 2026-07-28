@@ -108,12 +108,16 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
    `site/`. Record `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` (from
    `.vercel/project.json` after `vercel link`, or project settings). Create a
    **Vercel token** → the `VERCEL_TOKEN` secret in Phase 3.
-5. *(Optional)* Install the **Neon↔Vercel native integration** for auto DB branches
-   per preview (injects `DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED`).
-   > **Branch-vs-integration ownership.** Decide *one* creator of the per-PR DB
-   > branch: either the integration creates it and `preview-deploy.yml` reuses it,
-   > or the workflow's `create-branch-action` owns it and you disable the
-   > integration's branch creation. Don't let both create `preview/pr-<n>`.
+5. *(Optional)* Install the **Neon↔Vercel native integration** (injects
+   `DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED` into Vercel's env).
+   > **Branch ownership — decided: the workflow owns it.** `preview-deploy.yml`'s
+   > `create-branch-action` creates the per-PR Neon branch `preview/pr-<n>`,
+   > migrates it, deploys the Function to it, and deletes it on PR close. So if you
+   > install the integration, you **MUST turn OFF** its branch creation — Vercel
+   > integration → **Advanced Options → uncheck "Create a database branch for
+   > deployment."** Otherwise both create a branch per preview (the integration
+   > names it after the git branch, the workflow uses `preview/pr-<n>`) and you get
+   > two competing DB branches + the Function deployed to the wrong one.
 
 **After Phase 1 you have:** `NEON_PROJECT_ID`, the Neon API key, `NEON_AUTH_BASE`,
 the full `VITE_NEON_AUTH_URL`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and the Vercel
@@ -244,11 +248,14 @@ Confirm at this first run (beta CLI — adjust if they differ):
   `<branch_id>-<slug>.compute.<region>.aws.neon.tech`, where `branch_id` is Neon's
   internal `br-…` id — unknowable before the deploy. Both workflows **deploy first
   and capture** the host; do not reintroduce a name-derived host.
-- **CLI package/binary + JSON key.** The workflows install `neonctl` and read
-  `invocation_url` (with `.invocationUrl // .url` fallbacks). Verify the beta
-  package name, that `neonctl functions deploy` exists with
-  `--src`/`--branch`/`--project-id`/`--output json`, and the exact URL field — inspect
-  the raw JSON and fix the `jq` path if needed. Pin a CLI version once confirmed.
+- **CLI invocation.** The workflows run the CLI via **`bunx neonctl`**, not a
+  `bun install -g neonctl` + bare `neonctl` — the global-install path hung
+  indefinitely in CI (no output for 10+ min), while `bunx neonctl` runs the
+  identical deploy in seconds (as it does locally). They read `invocation_url`
+  (with `.invocationUrl // .url` fallbacks). Verify `neonctl functions deploy`
+  exists with `--src`/`--branch`/`--project-id`/`--output json` and the exact URL
+  field — inspect the raw JSON and fix the `jq` path if needed. Pin a CLI version
+  once confirmed.
 - That `neon.ts` at the repo root matches your project (auth on; `review` Function
   slug/source/runtime). New branches apply it automatically; existing branches
   still need the per-push deploy step.

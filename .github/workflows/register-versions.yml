@@ -1,10 +1,5 @@
 # Post-merge content-version registration for the review backend.
 #
-# INERT UNTIL PROVISIONED. The push trigger is live, but the job's `if:` guard
-# runs it only on main AND only when the repo variable REVIEW_REGISTER_ENABLED is
-# 'true' — so until provisioning sets that variable and the API_URL / BUILD_SECRET
-# secrets, every push is a no-op. See docs/deploy/runbook.md.
-#
 # Why post-merge: the version manifest embeds `git rev-parse HEAD`. On a PR
 # branch that is the branch tip, but `main` squash-merges, so the merged commit
 # has a different sha the PR-time manifest never sees. Building + registering
@@ -19,7 +14,6 @@ name: Register content versions
 on:
   workflow_dispatch: {}
   # Runs once per push to main so registered versions carry the real merged sha.
-  # The job's `if:` guard keeps it inert until REVIEW_REGISTER_ENABLED == 'true'.
   push:
     branches: [main]
 
@@ -33,14 +27,9 @@ permissions:
 jobs:
   register:
     runs-on: ubuntu-latest
-    # Extra guard: even if the push trigger is later uncommented, only run on
-    # main and only when explicitly enabled via a repo variable. Until
-    # REVIEW_REGISTER_ENABLED is set to 'true', this job is a no-op.
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.ref == 'refs/heads/main' && vars.REVIEW_REGISTER_ENABLED == 'true')
-    # Targets prod (REVIEW_API_URL, REVIEW_BUILD_SECRET) → the `production`
-    # environment, same branch restriction as the Function deploy. See runbook §3.
+    # Runs on every push to main (and on manual dispatch). Targets prod
+    # (REVIEW_API_URL, REVIEW_BUILD_SECRET) → the `production` environment, whose
+    # main-only branch restriction is the real gate. See runbook §3.
     environment: production
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0

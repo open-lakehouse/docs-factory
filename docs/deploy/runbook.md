@@ -3,9 +3,10 @@
 The code for the initial release is in place — the login gate, the view-mode
 selector, and the CI/CD workflows. Everything below is the **manual provisioning**
 a human performs once (creating accounts/projects, registering an OAuth app,
-setting secrets). Until these steps are done, the deploy workflows are inert by
-design: each is guarded by a repo variable (`PREVIEW_DEPLOY_ENABLED`,
-`REVIEW_DEPLOY_ENABLED`, `REVIEW_REGISTER_ENABLED`) that starts unset.
+setting secrets). The deploy workflows run on their triggers (previews on every
+PR, prod on push to `main`); the gate on prod is the `production` GitHub
+environment's main-only branch restriction, not a feature flag. Until the
+secrets/vars below exist a run fails loudly rather than deploying against nothing.
 
 Deployment shape for v1:
 
@@ -85,8 +86,8 @@ it's not accidental duplication, it's "each builder needs its own copy." Concret
 **Produce → consume crosses systems.** Some values only *exist* after an earlier
 step runs, so the phases below capture them at their source and set them where
 they're consumed. The forward references are called out inline (e.g. "⏳ deferred
-to Phase 5"). The `*_ENABLED` gates are flipped **last** (Phase 6) — arm the
-workflows only once every secret they read exists.
+to Phase 5"). Set the secrets/vars before the first push to `main` so the prod
+deploy has what it reads.
 
 ---
 
@@ -252,18 +253,12 @@ variables → Actions.
 | `NEON_PROJECT_ID` | var | `preview` + `production` | Neon project id (same value both) |
 | `REVIEW_ALLOWED_ORIGIN` | var | `production` only | prod CORS allowlist (the docs domains). **Not** set for preview: the preview workflow captures the Vercel deploy URL from `vercel deploy` stdout and redeploys the Function with `ALLOWED_ORIGIN` locked to it (two-pass deploy — see §4), so each preview's CORS matches its own origin with no static var |
 | `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | `preview` | Vercel CLI targeting |
-| `PREVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |
-| `REVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |
-| `REVIEW_REGISTER_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |
 
-> **Why the `*_ENABLED` gates are `repo`, not environment.** They're read in each
-> job's `if:`, which GitHub evaluates **before** the environment is entered — a job
-> `if:` cannot see environment vars, so an environment-scoped gate would always
-> read empty and the job would never arm.
->
-> If a name exists both at repo level and in an environment, the environment value
-> wins for jobs that declare that `environment:` — a repo-level fallback is
-> harmless, but prefer putting the differing values only in the environments.
+> **No feature-flag gates.** The workflows run on their triggers; there are no
+> `*_ENABLED` repo variables. What keeps prod safe is the `production` GitHub
+> environment's **main-only branch restriction** (Phase 3c) — GitHub refuses to
+> expose its secrets to any other ref, so a branch build can't deploy prod even
+> if it tries. Previews run on every PR against the `preview` environment.
 
 ---
 
@@ -274,11 +269,10 @@ only**) and its `functions deploy` **blocks and then falsely times out even when
 the deploy already succeeded** (see the detailed note below). The workflows work
 around it: they run the deploy **detached** and drive off
 `neonctl functions get … --output json`, waiting for `current_deployment.status
-== "completed"` and reading `invocation_url`. Before arming anything, run the prod
-deploy **once, manually** to produce the two values Phase 3 deferred:
+== "completed"` and reading `invocation_url`. Run the prod deploy **once,
+manually** to produce the two values Phase 3 deferred:
 
-1. Trigger `deploy-function.yml` via **workflow_dispatch** (it runs even with
-   `REVIEW_DEPLOY_ENABLED` unset when dispatched manually). It migrates the prod
+1. Trigger `deploy-function.yml` via **workflow_dispatch**. It migrates the prod
    branch and deploys the prod Function, then logs a `::notice::` with the deployed
    host.
 2. **Capture** from that run:
@@ -323,10 +317,10 @@ Now that Phase 4 produced them:
 
 ---
 
-## Phase 6 — Arm the workflows, then smoke test
+## Phase 6 — Smoke test
 
-Flip the three `*_ENABLED` **repo** variables to `true` (previews, prod deploy,
-version registration). Only now — every secret they read exists.
+With the secrets/vars in place, the workflows are already live (previews on every
+PR, prod on push to `main`). Verify end to end:
 
 **Preview (open a PR):**
 1. The integration provisions the `preview/<head_ref>` Neon branch; the workflow

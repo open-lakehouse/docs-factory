@@ -70,14 +70,17 @@ jobs:
             exit 1
           fi
           cd server && node scripts/migrate.mjs
-      # NOTE: exact Neon CLI invocation is finalized at provisioning (the CLI is
-      # in beta). Deploy the single Function from server/, passing the non-injected
-      # env; DATABASE_URL is injected by Neon, not passed here. All ${{ }}
-      # expansions are passed via env, never interpolated into the shell body, so
-      # untrusted input can't inject commands (zizmor).
+      # Deploy the single Function from server/, passing the non-injected env;
+      # DATABASE_URL is injected by Neon, not passed here. The detached-deploy +
+      # poll dance (a beta-neonctl workaround) lives in scripts/deploy-neon-function.sh,
+      # shared with preview-deploy.yml. All ${{ }} expansions are passed via env,
+      # never interpolated into the shell body, so untrusted input can't inject
+      # commands (zizmor).
       - name: Deploy Neon Function
         env:
-          SLUG: ${{ inputs.slug || 'review' }}
+          # Function slug: one source of truth (vars.REVIEW_FUNCTION_SLUG), with a
+          # manual-dispatch override and a 'review' default so an unset var still works.
+          SLUG: ${{ inputs.slug || vars.REVIEW_FUNCTION_SLUG || 'review' }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
@@ -89,45 +92,13 @@ jobs:
             echo "::error::REVIEW_NEON_AUTH_URL var is not set — the Function can't verify Neon Auth JWTs without it (docs/deploy/runbook.md)."
             exit 1
           fi
-          # The beta neonctl (2.38.x) BLOCKS after triggering a deploy and hangs
-          # the full 10-min timeout even when the deployment has already COMPLETED
-          # — then exits 1 with a false "Timed out" (--wait only governs the build
-          # wait, not this start-poll). So we don't depend on the deploy command's
-          # exit: run it detached, then drive off `functions get`, which returns the
-          # completed deployment immediately. See preview-deploy.yml + runbook §4.
-          setsid bunx neonctl functions deploy "$SLUG" \
-            --project-id "$NEON_PROJECT_ID" \
-            --src server/src/handler.ts --wait=false \
+          HOST=$(scripts/deploy-neon-function.sh "$SLUG" "$NEON_PROJECT_ID" \
             --env AUTH_MODE=neon \
             --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            --env NEON_AUTH_URL="$NEON_AUTH_URL" \
-            >deploy.log 2>&1 &
-
-          INVOCATION_URL=""
-          STATUS=""
-          for _ in $(seq 1 60); do
-            GET_JSON=$(bunx neonctl functions get "$SLUG" \
-              --project-id "$NEON_PROJECT_ID" --output json 2>/dev/null || echo '{}')
-            STATUS=$(jq -r '.current_deployment.status // empty' <<<"$GET_JSON")
-            if [ "$STATUS" = "completed" ]; then
-              INVOCATION_URL=$(jq -r '.invocation_url // empty' <<<"$GET_JSON")
-              break
-            fi
-            if [ "$STATUS" = "failed" ]; then
-              echo "::error::the $SLUG Function deployment reported status=failed — see the Neon console (docs/deploy/runbook.md §4)."
-              cat deploy.log || true
-              exit 1
-            fi
-            sleep 5
-          done
-          if [ -z "$INVOCATION_URL" ]; then
-            echo "::error::$SLUG Function did not reach status=completed after polling (last status: '${STATUS:-none}'); check the Neon console (docs/deploy/runbook.md §4)."
-            cat deploy.log || true
-            exit 1
-          fi
+            --env NEON_AUTH_URL="$NEON_AUTH_URL")
           # The prod host is stable across deploys (default branch id + slug). Set
           # it ONCE as Vercel Production env NEON_FUNCTION_HOST — it is not wired
           # automatically here. Surface it so the first deploy can copy it over.
-          echo "::notice::prod Function host — set Vercel Production env NEON_FUNCTION_HOST=${INVOCATION_URL#https://}"
+          echo "::notice::prod Function host — set Vercel Production env NEON_FUNCTION_HOST=${HOST}"

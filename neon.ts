@@ -24,6 +24,8 @@ export default defineConfig({
   preview: {
     functions: {
       // Slug is the Function's permanent identity (appears in its URL + the CLI).
+      // The deploy workflows pass this same slug via `vars.REVIEW_FUNCTION_SLUG`
+      // (default 'review') — keep the key below in sync with that variable.
       review: {
         name: "Docs review API",
         source: "server/src/handler.ts",

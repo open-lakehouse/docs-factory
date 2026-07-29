@@ -8,6 +8,7 @@ import {
   ReviewRequestSchema,
   ContentEventSchema,
   ContentRefSchema,
+  ApprovalSchema,
   Requirement,
   RequestStatus,
   EventKind,
@@ -15,6 +16,7 @@ import {
   type ContentRef,
   type ReviewRequest,
   type ContentEvent,
+  type Approval,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
 import { areaFromDb } from "./db-map.js";
 
@@ -43,26 +45,26 @@ const EVENT_KIND_BY_DB: Record<string, EventKind> = {
   "review-requested": EventKind.REVIEW_REQUESTED,
   "request-satisfied": EventKind.REQUEST_SATISFIED,
   "request-cancelled": EventKind.REQUEST_CANCELLED,
-  "state-in-review": EventKind.STATE_IN_REVIEW,
   "state-changes-requested": EventKind.STATE_CHANGES_REQUESTED,
   "state-approved": EventKind.STATE_APPROVED,
+  "approved-by": EventKind.APPROVED,
+  "approval-dismissed": EventKind.APPROVAL_DISMISSED,
   released: EventKind.RELEASED,
   unpublished: EventKind.UNPUBLISHED,
   republished: EventKind.REPUBLISHED,
 };
 
 /**
- * The content_event `kind` for a review-state transition, keyed on the DB state
- * string it lands in. Only the states that are timeline-worthy are mapped;
- * `none` and any unmapped state return null (not logged). `released` is logged
- * from releaseContent (with the published latch) rather than here.
+ * The content_event `kind` for an explicit review-state outcome, keyed on the DB
+ * state string it lands in. Only the storable explicit outcomes are mapped; any
+ * unmapped state returns null (not logged). `released` is logged from
+ * releaseContent (with the published latch) rather than here. Ordinary approvals
+ * are logged as `approved-by` from recordApproval, not through this map.
  */
 export const EVENT_KIND_BY_STATE: Record<string, string | null> = {
-  "in-review": "state-in-review",
   "changes-requested": "state-changes-requested",
   approved: "state-approved",
   released: "released",
-  none: null,
 };
 
 // --- Row shapes -------------------------------------------------------------
@@ -117,9 +119,13 @@ export function reviewRequestFromRow(r: ReviewRequestRow): ReviewRequest {
   });
 }
 
+// Maps a DB state string found in an event payload (from_state/to_state) to the
+// proto enum. Covers the explicit outcomes plus the derived states that may
+// appear as a `from_state` (a transition can originate from a derived
+// needs-review/none), so the timeline renders historical transitions correctly.
 const STATE_BY_DB: Record<string, ReviewState> = {
   none: ReviewState.NONE,
-  "in-review": ReviewState.IN_REVIEW,
+  "needs-review": ReviewState.NEEDS_REVIEW,
   "changes-requested": ReviewState.CHANGES_REQUESTED,
   approved: ReviewState.APPROVED,
   released: ReviewState.RELEASED,
@@ -136,6 +142,27 @@ export function contentEventFromRow(r: ContentEventRow): ContentEvent {
     fromState: p.from_state ? STATE_BY_DB[p.from_state] : undefined,
     toState: p.to_state ? STATE_BY_DB[p.to_state] : undefined,
     reviewerLogin: p.reviewer_login ?? undefined,
+    createdAt: timestampFromDate(r.created_at),
+  });
+}
+
+export interface ContentApprovalRow {
+  id: string;
+  area: string;
+  slug: string;
+  version_id: string | null;
+  approver_login: string;
+  approver_user_id: string | null;
+  created_at: Date;
+}
+
+export function approvalFromRow(r: ContentApprovalRow): Approval {
+  return create(ApprovalSchema, {
+    id: r.id,
+    ref: refFor(r.area, r.slug),
+    approverLogin: r.approver_login,
+    approverUserId: r.approver_user_id ?? undefined,
+    versionId: r.version_id ?? undefined,
     createdAt: timestampFromDate(r.created_at),
   });
 }

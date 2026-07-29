@@ -18,7 +18,13 @@ import { normalizeText } from "./normalize.mjs";
  *
  * Each heading carries: `id` (rehype-slug id), `text`, `level`, `order`,
  * `fingerprint` (normalized text), `bodyText` (normalized plain text of the
- * section body up to the next same-or-shallower heading), and `charLen`.
+ * section body up to the next same-or-shallower heading — INCLUDES descendant
+ * subsections' prose), `directBodyText` (the prose directly under this heading,
+ * BEFORE its first child heading — the heading's own content), and `charLen`.
+ *
+ * `bodyText` is the comment re-anchoring corpus (a quote can live anywhere under
+ * a heading); `directBodyText` is the Merkle "SectionProse" leaf (a heading's own
+ * content, so a parent's own hash doesn't change when only a descendant does).
  */
 export function extractHeadings(body) {
   const tree = fromMarkdown(body);
@@ -45,8 +51,19 @@ export function extractHeadings(body) {
         break;
       }
     }
+    // Direct body ends at the FIRST following heading of any depth (the first
+    // child subsection), so it captures only this heading's own prose.
+    let directEnd = end;
+    for (let j = h + 1; j < headingIdx.length; j++) {
+      if (headingIdx[j] < end) {
+        directEnd = headingIdx[j];
+        break;
+      }
+    }
     const bodyNodes = children.slice(start, end).filter((n) => n.type !== "heading");
+    const directNodes = children.slice(start, directEnd).filter((n) => n.type !== "heading");
     const bodyText = normalizeText(bodyNodes.map((n) => mdastToString(n)).join(" "));
+    const directBodyText = normalizeText(directNodes.map((n) => mdastToString(n)).join(" "));
     headings.push({
       id: slugger.slug(text),
       text,
@@ -54,6 +71,7 @@ export function extractHeadings(body) {
       order: ordinal++,
       fingerprint: normalizeText(text),
       bodyText,
+      directBodyText,
       charLen: bodyText.length,
     });
   }

@@ -19,7 +19,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file docs_factory/review/v1/messages.proto.
  */
 export const file_docs_factory_review_v1_messages: GenFile = /*@__PURE__*/
-  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQihQIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYiiQEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBSJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIr8BCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAgSFAoHdXNlcl9pZBgFIAEoCUgBiAEBEhEKBG5hbWUYBiABKAlIAogBAUIICgZfbG9naW5CCgoIX3VzZXJfaWRCBwoFX25hbWUi/gQKB0NvbW1lbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhMKC2FuY2hvcl9zbHVnGAMgASgJEhoKEmFuY2hvcl9maW5nZXJwcmludBgEIAEoCRIWCglwYXJlbnRfaWQYBSABKAlIAIgBARIUCgxhdXRob3JfbG9naW4YBiABKAkSDwoHYm9keV9tZBgHIAEoCRIYCgthdXRob3JfbmFtZRgPIAEoCUgBiAEBEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIQCghvcnBoYW5lZBgKIAEoCBI7CghzZWxlY3RvchgLIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGV4dFNlbGVjdG9ySAOIAQESQAoNY29kZV9zZWxlY3RvchgMIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29kZVNlbGVjdG9ySASIAQESIAoTYXV0aG9yZWRfdmVyc2lvbl9pZBgNIAEoCUgFiAEBEh0KEGF1dGhvcmVkX2dpdF9zaGEYDiABKAlIBogBAUIMCgpfcGFyZW50X2lkQg4KDF9hdXRob3JfbmFtZUIMCgpfZWRpdGVkX2F0QgsKCV9zZWxlY3RvckIQCg5fY29kZV9zZWxlY3RvckIWChRfYXV0aG9yZWRfdmVyc2lvbl9pZEITChFfYXV0aG9yZWRfZ2l0X3NoYSKVAgoGVGhyZWFkEi0KBHJvb3QYASABKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbW1lbnQSMAoHcmVwbGllcxgCIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIQCghyZXNvbHZlZBgDIAEoCBIYCgtyZXNvbHZlZF9ieRgEIAEoCUgAiAEBEjQKC3Jlc29sdmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBEhIKCmhhc191bnJlYWQYBiABKAgSFAoMdW5yZWFkX2NvdW50GAcgASgFQg4KDF9yZXNvbHZlZF9ieUIOCgxfcmVzb2x2ZWRfYXQitwQKDERyYWZ0U3VtbWFyeRIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSDQoFdGl0bGUYAiABKAkSGgoSZnJvbnRtYXR0ZXJfc3RhdHVzGAMgASgJEjkKDHJldmlld19zdGF0ZRgEIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSQwoObGF0ZXN0X3ZlcnNpb24YBSABKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRWZXJzaW9uSACIAQESGgoSb3Blbl9jb21tZW50X2NvdW50GAYgASgFEhUKCHByaW9yaXR5GAcgASgFSAGIAQESPAoTdGFyZ2V0X3JlbGVhc2VfZGF0ZRgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIjChtvcGVuX3JlcXVpcmVkX3JlcXVlc3RfY291bnQYCSABKAUSEQoJcHVibGlzaGVkGAogASgIEjMKCWFwcHJvdmFscxgLIAMoCzIgLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQXBwcm92YWwSHwoXcGVuZGluZ19yZXF1aXJlZF9sb2dpbnMYDCADKAkSFAoMbmVlZHNfcmV2aWV3GA0gASgIQhEKD19sYXRlc3RfdmVyc2lvbkILCglfcHJpb3JpdHlCFgoUX3RhcmdldF9yZWxlYXNlX2RhdGUihgEKDkFsbG93bGlzdEVudHJ5EhkKDGdpdGh1Yl9sb2dpbhgBIAEoCUgAiAEBEhIKBWVtYWlsGAIgASgJSAGIAQESKgoEcm9sZRgDIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZUIPCg1fZ2l0aHViX2xvZ2luQggKBl9lbWFpbCLGAQoNUmVjZW50Q29tbWVudBIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50Ei8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhITCgthbmNob3Jfc2x1ZxgDIAEoCRIUCgxoZWFkaW5nX3RleHQYBCABKAkSEAoIcmVzb2x2ZWQYBSABKAgSFQoNY29udGVudF90aXRsZRgGIAEoCSK5AwoNUmV2aWV3UmVxdWVzdBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGwoOcmV2aWV3ZXJfbG9naW4YAyABKAlIAIgBARIbCg5yZXZpZXdlcl9lbWFpbBgEIAEoCUgBiAEBEjgKC3JlcXVpcmVtZW50GAUgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1aXJlbWVudBI1CgZzdGF0dXMYBiABKA4yJS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RTdGF0dXMSFAoMcmVxdWVzdGVkX2J5GAcgASgJEgwKBG5vdGUYCCABKAkSLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNQoMc2F0aXNmaWVkX2F0GAogASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgCiAEBQhEKD19yZXZpZXdlcl9sb2dpbkIRCg9fcmV2aWV3ZXJfZW1haWxCDwoNX3NhdGlzZmllZF9hdCLrAQoIQXBwcm92YWwSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhYKDmFwcHJvdmVyX2xvZ2luGAMgASgJEh0KEGFwcHJvdmVyX3VzZXJfaWQYBCABKAlIAIgBARIXCgp2ZXJzaW9uX2lkGAUgASgJSAGIAQESLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCEwoRX2FwcHJvdmVyX3VzZXJfaWRCDQoLX3ZlcnNpb25faWQijwMKDENvbnRlbnRFdmVudBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSLwoEa2luZBgDIAEoDjIhLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuRXZlbnRLaW5kEg0KBWFjdG9yGAQgASgJEgwKBG5vdGUYBSABKAkSPAoKZnJvbV9zdGF0ZRgGIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGVIAIgBARI6Cgh0b19zdGF0ZRgHIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGVIAYgBARIbCg5yZXZpZXdlcl9sb2dpbhgIIAEoCUgCiAEBEi4KCmNyZWF0ZWRfYXQYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQg0KC19mcm9tX3N0YXRlQgsKCV90b19zdGF0ZUIRCg9fcmV2aWV3ZXJfbG9naW4qWgoLQ29udGVudEFyZWESHAoYQ09OVEVOVF9BUkVBX1VOU1BFQ0lGSUVEEAASFgoSQ09OVEVOVF9BUkVBX0JMT0dTEAESFQoRQ09OVEVOVF9BUkVBX0RPQ1MQAiq7AQoLUmV2aWV3U3RhdGUSHAoYUkVWSUVXX1NUQVRFX1VOU1BFQ0lGSUVEEAASFQoRUkVWSUVXX1NUQVRFX05PTkUQARIdChlSRVZJRVdfU1RBVEVfTkVFRFNfUkVWSUVXEAISIgoeUkVWSUVXX1NUQVRFX0NIQU5HRVNfUkVRVUVTVEVEEAMSGQoVUkVWSUVXX1NUQVRFX0FQUFJPVkVEEAQSGQoVUkVWSUVXX1NUQVRFX1JFTEVBU0VEEAUqWAoEUm9sZRIUChBST0xFX1VOU1BFQ0lGSUVEEAASEgoOUk9MRV9BTk9OWU1PVVMQARIRCg1ST0xFX1JFVklFV0VSEAISEwoPUk9MRV9NQUlOVEFJTkVSEAMqXgoLUmVxdWlyZW1lbnQSGwoXUkVRVUlSRU1FTlRfVU5TUEVDSUZJRUQQABIYChRSRVFVSVJFTUVOVF9SRVFVSVJFRBABEhgKFFJFUVVJUkVNRU5UX09QVElPTkFMEAIqhAEKDVJlcXVlc3RTdGF0dXMSHgoaUkVRVUVTVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIXChNSRVFVRVNUX1NUQVRVU19PUEVOEAESHAoYUkVRVUVTVF9TVEFUVVNfU0FUSVNGSUVEEAISHAoYUkVRVUVTVF9TVEFUVVNfQ0FOQ0VMTEVEEAMqgAMKCUV2ZW50S2luZBIaChZFVkVOVF9LSU5EX1VOU1BFQ0lGSUVEEAASHwobRVZFTlRfS0lORF9SRVZJRVdfUkVRVUVTVEVEEAESIAocRVZFTlRfS0lORF9SRVFVRVNUX1NBVElTRklFRBACEiAKHEVWRU5UX0tJTkRfUkVRVUVTVF9DQU5DRUxMRUQQAxIeChpFVkVOVF9LSU5EX1NUQVRFX0lOX1JFVklFVxAEEiYKIkVWRU5UX0tJTkRfU1RBVEVfQ0hBTkdFU19SRVFVRVNURUQQBRIdChlFVkVOVF9LSU5EX1NUQVRFX0FQUFJPVkVEEAYSFwoTRVZFTlRfS0lORF9SRUxFQVNFRBAHEhoKFkVWRU5UX0tJTkRfVU5QVUJMSVNIRUQQCBIaChZFVkVOVF9LSU5EX1JFUFVCTElTSEVEEAkSFwoTRVZFTlRfS0lORF9BUFBST1ZFRBAKEiEKHUVWRU5UX0tJTkRfQVBQUk9WQUxfRElTTUlTU0VEEAtiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQi6AIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYSEQoJcm9vdF9oYXNoGAkgASgJEg4KBnRvcGljcxgKIAMoCRI1CgR0cmVlGAsgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5NZXJrbGVOb2RlSACIAQFCBwoFX3RyZWUi4gEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBRIRCglub2RlX2hhc2gYCCABKAkSFAoMc3VidHJlZV9oYXNoGAkgASgJEhoKEnBhcmVudF9hbmNob3Jfc2x1ZxgKIAEoCRISCgpkZXB0aF9wYXRoGAsgASgJIqoCCgpNZXJrbGVOb2RlEgsKA2tleRgBIAEoCRIMCgRraW5kGAIgASgJEhEKCW5vZGVfaGFzaBgDIAEoCRIUCgxzdWJ0cmVlX2hhc2gYBCABKAkSDQoFbGV2ZWwYBSABKAUSDQoFbGFiZWwYBiABKAkSNAoIY2hpbGRyZW4YByADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLk1lcmtsZU5vZGUSGAoLYW5jaG9yX3NsdWcYCCABKAlIAIgBARIZCgxzbmlwcGV0X3BhdGgYCSABKAlIAYgBARIbCg5zbmlwcGV0X3JlZ2lvbhgKIAEoCUgCiAEBQg4KDF9hbmNob3Jfc2x1Z0IPCg1fc25pcHBldF9wYXRoQhEKD19zbmlwcGV0X3JlZ2lvbiJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIr8BCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAgSFAoHdXNlcl9pZBgFIAEoCUgBiAEBEhEKBG5hbWUYBiABKAlIAogBAUIICgZfbG9naW5CCgoIX3VzZXJfaWRCBwoFX25hbWUi/gQKB0NvbW1lbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhMKC2FuY2hvcl9zbHVnGAMgASgJEhoKEmFuY2hvcl9maW5nZXJwcmludBgEIAEoCRIWCglwYXJlbnRfaWQYBSABKAlIAIgBARIUCgxhdXRob3JfbG9naW4YBiABKAkSDwoHYm9keV9tZBgHIAEoCRIYCgthdXRob3JfbmFtZRgPIAEoCUgBiAEBEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIQCghvcnBoYW5lZBgKIAEoCBI7CghzZWxlY3RvchgLIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGV4dFNlbGVjdG9ySAOIAQESQAoNY29kZV9zZWxlY3RvchgMIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29kZVNlbGVjdG9ySASIAQESIAoTYXV0aG9yZWRfdmVyc2lvbl9pZBgNIAEoCUgFiAEBEh0KEGF1dGhvcmVkX2dpdF9zaGEYDiABKAlIBogBAUIMCgpfcGFyZW50X2lkQg4KDF9hdXRob3JfbmFtZUIMCgpfZWRpdGVkX2F0QgsKCV9zZWxlY3RvckIQCg5fY29kZV9zZWxlY3RvckIWChRfYXV0aG9yZWRfdmVyc2lvbl9pZEITChFfYXV0aG9yZWRfZ2l0X3NoYSKVAgoGVGhyZWFkEi0KBHJvb3QYASABKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbW1lbnQSMAoHcmVwbGllcxgCIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIQCghyZXNvbHZlZBgDIAEoCBIYCgtyZXNvbHZlZF9ieRgEIAEoCUgAiAEBEjQKC3Jlc29sdmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBEhIKCmhhc191bnJlYWQYBiABKAgSFAoMdW5yZWFkX2NvdW50GAcgASgFQg4KDF9yZXNvbHZlZF9ieUIOCgxfcmVzb2x2ZWRfYXQitwQKDERyYWZ0U3VtbWFyeRIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSDQoFdGl0bGUYAiABKAkSGgoSZnJvbnRtYXR0ZXJfc3RhdHVzGAMgASgJEjkKDHJldmlld19zdGF0ZRgEIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSQwoObGF0ZXN0X3ZlcnNpb24YBSABKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRWZXJzaW9uSACIAQESGgoSb3Blbl9jb21tZW50X2NvdW50GAYgASgFEhUKCHByaW9yaXR5GAcgASgFSAGIAQESPAoTdGFyZ2V0X3JlbGVhc2VfZGF0ZRgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIjChtvcGVuX3JlcXVpcmVkX3JlcXVlc3RfY291bnQYCSABKAUSEQoJcHVibGlzaGVkGAogASgIEjMKCWFwcHJvdmFscxgLIAMoCzIgLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQXBwcm92YWwSHwoXcGVuZGluZ19yZXF1aXJlZF9sb2dpbnMYDCADKAkSFAoMbmVlZHNfcmV2aWV3GA0gASgIQhEKD19sYXRlc3RfdmVyc2lvbkILCglfcHJpb3JpdHlCFgoUX3RhcmdldF9yZWxlYXNlX2RhdGUihgEKDkFsbG93bGlzdEVudHJ5EhkKDGdpdGh1Yl9sb2dpbhgBIAEoCUgAiAEBEhIKBWVtYWlsGAIgASgJSAGIAQESKgoEcm9sZRgDIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZUIPCg1fZ2l0aHViX2xvZ2luQggKBl9lbWFpbCLGAQoNUmVjZW50Q29tbWVudBIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50Ei8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhITCgthbmNob3Jfc2x1ZxgDIAEoCRIUCgxoZWFkaW5nX3RleHQYBCABKAkSEAoIcmVzb2x2ZWQYBSABKAgSFQoNY29udGVudF90aXRsZRgGIAEoCSK5AwoNUmV2aWV3UmVxdWVzdBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGwoOcmV2aWV3ZXJfbG9naW4YAyABKAlIAIgBARIbCg5yZXZpZXdlcl9lbWFpbBgEIAEoCUgBiAEBEjgKC3JlcXVpcmVtZW50GAUgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1aXJlbWVudBI1CgZzdGF0dXMYBiABKA4yJS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RTdGF0dXMSFAoMcmVxdWVzdGVkX2J5GAcgASgJEgwKBG5vdGUYCCABKAkSLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNQoMc2F0aXNmaWVkX2F0GAogASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgCiAEBQhEKD19yZXZpZXdlcl9sb2dpbkIRCg9fcmV2aWV3ZXJfZW1haWxCDwoNX3NhdGlzZmllZF9hdCLrAQoIQXBwcm92YWwSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhYKDmFwcHJvdmVyX2xvZ2luGAMgASgJEh0KEGFwcHJvdmVyX3VzZXJfaWQYBCABKAlIAIgBARIXCgp2ZXJzaW9uX2lkGAUgASgJSAGIAQESLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCEwoRX2FwcHJvdmVyX3VzZXJfaWRCDQoLX3ZlcnNpb25faWQijwMKDENvbnRlbnRFdmVudBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSLwoEa2luZBgDIAEoDjIhLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuRXZlbnRLaW5kEg0KBWFjdG9yGAQgASgJEgwKBG5vdGUYBSABKAkSPAoKZnJvbV9zdGF0ZRgGIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGVIAIgBARI6Cgh0b19zdGF0ZRgHIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGVIAYgBARIbCg5yZXZpZXdlcl9sb2dpbhgIIAEoCUgCiAEBEi4KCmNyZWF0ZWRfYXQYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQg0KC19mcm9tX3N0YXRlQgsKCV90b19zdGF0ZUIRCg9fcmV2aWV3ZXJfbG9naW4qWgoLQ29udGVudEFyZWESHAoYQ09OVEVOVF9BUkVBX1VOU1BFQ0lGSUVEEAASFgoSQ09OVEVOVF9BUkVBX0JMT0dTEAESFQoRQ09OVEVOVF9BUkVBX0RPQ1MQAiq7AQoLUmV2aWV3U3RhdGUSHAoYUkVWSUVXX1NUQVRFX1VOU1BFQ0lGSUVEEAASFQoRUkVWSUVXX1NUQVRFX05PTkUQARIdChlSRVZJRVdfU1RBVEVfTkVFRFNfUkVWSUVXEAISIgoeUkVWSUVXX1NUQVRFX0NIQU5HRVNfUkVRVUVTVEVEEAMSGQoVUkVWSUVXX1NUQVRFX0FQUFJPVkVEEAQSGQoVUkVWSUVXX1NUQVRFX1JFTEVBU0VEEAUqWAoEUm9sZRIUChBST0xFX1VOU1BFQ0lGSUVEEAASEgoOUk9MRV9BTk9OWU1PVVMQARIRCg1ST0xFX1JFVklFV0VSEAISEwoPUk9MRV9NQUlOVEFJTkVSEAMqXgoLUmVxdWlyZW1lbnQSGwoXUkVRVUlSRU1FTlRfVU5TUEVDSUZJRUQQABIYChRSRVFVSVJFTUVOVF9SRVFVSVJFRBABEhgKFFJFUVVJUkVNRU5UX09QVElPTkFMEAIqhAEKDVJlcXVlc3RTdGF0dXMSHgoaUkVRVUVTVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIXChNSRVFVRVNUX1NUQVRVU19PUEVOEAESHAoYUkVRVUVTVF9TVEFUVVNfU0FUSVNGSUVEEAISHAoYUkVRVUVTVF9TVEFUVVNfQ0FOQ0VMTEVEEAMqoAMKCUV2ZW50S2luZBIaChZFVkVOVF9LSU5EX1VOU1BFQ0lGSUVEEAASHwobRVZFTlRfS0lORF9SRVZJRVdfUkVRVUVTVEVEEAESIAocRVZFTlRfS0lORF9SRVFVRVNUX1NBVElTRklFRBACEiAKHEVWRU5UX0tJTkRfUkVRVUVTVF9DQU5DRUxMRUQQAxIeChpFVkVOVF9LSU5EX1NUQVRFX0lOX1JFVklFVxAEEiYKIkVWRU5UX0tJTkRfU1RBVEVfQ0hBTkdFU19SRVFVRVNURUQQBRIdChlFVkVOVF9LSU5EX1NUQVRFX0FQUFJPVkVEEAYSFwoTRVZFTlRfS0lORF9SRUxFQVNFRBAHEhoKFkVWRU5UX0tJTkRfVU5QVUJMSVNIRUQQCBIaChZFVkVOVF9LSU5EX1JFUFVCTElTSEVEEAkSFwoTRVZFTlRfS0lORF9BUFBST1ZFRBAKEiEKHUVWRU5UX0tJTkRfQVBQUk9WQUxfRElTTUlTU0VEEAsSHgoaRVZFTlRfS0lORF9DT05URU5UX1JFVklTRUQQDGIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * Stable reference to one piece of content. `project`/`bucket` are set only for
@@ -108,6 +108,34 @@ export type ContentVersion = Message<"docs_factory.review.v1.ContentVersion"> & 
    * @generated from field: repeated docs_factory.review.v1.SnippetRef snippets = 8;
    */
   snippets: SnippetRef[];
+
+  /**
+   * Root hash of the structural Merkle tree (sha256 over the heading/prose/code/
+   * snippet node tree). DIFFERENT question than content_hash: "this structure"
+   * vs "these bytes". Two bodies that normalize identically share a root_hash but
+   * differ in content_hash (whitespace-only edits still register a version).
+   *
+   * @generated from field: string root_hash = 9;
+   */
+  rootHash: string;
+
+  /**
+   * Canonical product/topic ids (content/vocab.json `topics`), normalized from
+   * blog tags + doc project. Powers the "what changed for Delta / UC / DuckDB"
+   * rollup via ProductChanges. Empty for untagged content.
+   *
+   * @generated from field: repeated string topics = 10;
+   */
+  topics: string[];
+
+  /**
+   * The full Merkle tree, INCLUDING non-section leaves (code blocks, snippet
+   * sources). Omitted from list responses for bandwidth; returned by
+   * GetVersionTree. See MerkleNode.
+   *
+   * @generated from field: optional docs_factory.review.v1.MerkleNode tree = 11;
+   */
+  tree?: MerkleNode | undefined;
 };
 
 /**
@@ -161,6 +189,38 @@ export type Section = Message<"docs_factory.review.v1.Section"> & {
    * @generated from field: int32 char_len = 7;
    */
   charLen: number;
+
+  /**
+   * Merkle: this section's own-content hash (its prose leaf, direct body only).
+   *
+   * @generated from field: string node_hash = 8;
+   */
+  nodeHash: string;
+
+  /**
+   * Merkle: hash of this section incl. all descendants (subsections + code +
+   * snippets). Equal across versions ⇒ nothing under this heading changed
+   * (drives the diff view + the re-anchoring fast path).
+   *
+   * @generated from field: string subtree_hash = 9;
+   */
+  subtreeHash: string;
+
+  /**
+   * The enclosing heading's anchor_slug (empty for top-level / preamble) — the
+   * tree edge.
+   *
+   * @generated from field: string parent_anchor_slug = 10;
+   */
+  parentAnchorSlug: string;
+
+  /**
+   * Materialized fingerprint path (e.g. "intro/setup/install") — the STABLE diff
+   * key that survives reordering so a moved section reads as a move, not add+remove.
+   *
+   * @generated from field: string depth_path = 11;
+   */
+  depthPath: string;
 };
 
 /**
@@ -169,6 +229,73 @@ export type Section = Message<"docs_factory.review.v1.Section"> & {
  */
 export const SectionSchema: GenMessage<Section> = /*@__PURE__*/
   messageDesc(file_docs_factory_review_v1_messages, 2);
+
+/**
+ * A node in a content version's structural Merkle tree. Recursive. `kind` is one
+ * of "doc" | "heading" | "prose" | "code" | "snippet". `node_hash` is the node's
+ * own content; `subtree_hash` folds in all descendants (equal for leaves).
+ * `key` is the stable diff key (depth path for headings, synthetic for leaves).
+ *
+ * @generated from message docs_factory.review.v1.MerkleNode
+ */
+export type MerkleNode = Message<"docs_factory.review.v1.MerkleNode"> & {
+  /**
+   * @generated from field: string key = 1;
+   */
+  key: string;
+
+  /**
+   * @generated from field: string kind = 2;
+   */
+  kind: string;
+
+  /**
+   * @generated from field: string node_hash = 3;
+   */
+  nodeHash: string;
+
+  /**
+   * @generated from field: string subtree_hash = 4;
+   */
+  subtreeHash: string;
+
+  /**
+   * @generated from field: int32 level = 5;
+   */
+  level: number;
+
+  /**
+   * @generated from field: string label = 6;
+   */
+  label: string;
+
+  /**
+   * @generated from field: repeated docs_factory.review.v1.MerkleNode children = 7;
+   */
+  children: MerkleNode[];
+
+  /**
+   * @generated from field: optional string anchor_slug = 8;
+   */
+  anchorSlug?: string | undefined;
+
+  /**
+   * @generated from field: optional string snippet_path = 9;
+   */
+  snippetPath?: string | undefined;
+
+  /**
+   * @generated from field: optional string snippet_region = 10;
+   */
+  snippetRegion?: string | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.MerkleNode.
+ * Use `create(MerkleNodeSchema)` to create a new message.
+ */
+export const MerkleNodeSchema: GenMessage<MerkleNode> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 3);
 
 /**
  * A W3C-style text-quote selector: a comment can pin to a quoted range within
@@ -206,7 +333,7 @@ export type TextSelector = Message<"docs_factory.review.v1.TextSelector"> & {
  * Use `create(TextSelectorSchema)` to create a new message.
  */
 export const TextSelectorSchema: GenMessage<TextSelector> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 3);
+  messageDesc(file_docs_factory_review_v1_messages, 4);
 
 /**
  * A source-file anchor for a comment on a `file=` code snippet. Because a
@@ -256,7 +383,7 @@ export type CodeSelector = Message<"docs_factory.review.v1.CodeSelector"> & {
  * Use `create(CodeSelectorSchema)` to create a new message.
  */
 export const CodeSelectorSchema: GenMessage<CodeSelector> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 4);
+  messageDesc(file_docs_factory_review_v1_messages, 5);
 
 /**
  * A resolved `file=` code snippet reference within a content version. Registered
@@ -298,7 +425,7 @@ export type SnippetRef = Message<"docs_factory.review.v1.SnippetRef"> & {
  * Use `create(SnippetRefSchema)` to create a new message.
  */
 export const SnippetRefSchema: GenMessage<SnippetRef> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 5);
+  messageDesc(file_docs_factory_review_v1_messages, 6);
 
 /**
  * The full text of a snippet source file, registered once per unique `file=`
@@ -329,7 +456,7 @@ export type SourceFile = Message<"docs_factory.review.v1.SourceFile"> & {
  * Use `create(SourceFileSchema)` to create a new message.
  */
 export const SourceFileSchema: GenMessage<SourceFile> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 6);
+  messageDesc(file_docs_factory_review_v1_messages, 7);
 
 /**
  * The current viewer, resolved from the auth provider (Neon Auth in prod, the
@@ -378,7 +505,7 @@ export type Viewer = Message<"docs_factory.review.v1.Viewer"> & {
  * Use `create(ViewerSchema)` to create a new message.
  */
 export const ViewerSchema: GenMessage<Viewer> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 7);
+  messageDesc(file_docs_factory_review_v1_messages, 8);
 
 /**
  * One comment. Thread roots have no `parent_id`. When the section a comment was
@@ -482,7 +609,7 @@ export type Comment = Message<"docs_factory.review.v1.Comment"> & {
  * Use `create(CommentSchema)` to create a new message.
  */
 export const CommentSchema: GenMessage<Comment> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 8);
+  messageDesc(file_docs_factory_review_v1_messages, 9);
 
 /**
  * A thread root plus its replies and resolution state.
@@ -536,7 +663,7 @@ export type Thread = Message<"docs_factory.review.v1.Thread"> & {
  * Use `create(ThreadSchema)` to create a new message.
  */
 export const ThreadSchema: GenMessage<Thread> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 9);
+  messageDesc(file_docs_factory_review_v1_messages, 10);
 
 /**
  * A summary row for the drafts list.
@@ -638,7 +765,7 @@ export type DraftSummary = Message<"docs_factory.review.v1.DraftSummary"> & {
  * Use `create(DraftSummarySchema)` to create a new message.
  */
 export const DraftSummarySchema: GenMessage<DraftSummary> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 10);
+  messageDesc(file_docs_factory_review_v1_messages, 11);
 
 /**
  * One allowlist entry.
@@ -667,7 +794,7 @@ export type AllowlistEntry = Message<"docs_factory.review.v1.AllowlistEntry"> & 
  * Use `create(AllowlistEntrySchema)` to create a new message.
  */
 export const AllowlistEntrySchema: GenMessage<AllowlistEntry> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 11);
+  messageDesc(file_docs_factory_review_v1_messages, 12);
 
 /**
  * A recent comment for the reviewer dashboard's "latest comments" feed. Carries
@@ -719,7 +846,7 @@ export type RecentComment = Message<"docs_factory.review.v1.RecentComment"> & {
  * Use `create(RecentCommentSchema)` to create a new message.
  */
 export const RecentCommentSchema: GenMessage<RecentComment> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 12);
+  messageDesc(file_docs_factory_review_v1_messages, 13);
 
 /**
  * A request for a named reviewer to review one artifact. Reviewers are addressed
@@ -790,7 +917,7 @@ export type ReviewRequest = Message<"docs_factory.review.v1.ReviewRequest"> & {
  * Use `create(ReviewRequestSchema)` to create a new message.
  */
 export const ReviewRequestSchema: GenMessage<ReviewRequest> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 13);
+  messageDesc(file_docs_factory_review_v1_messages, 14);
 
 /**
  * One reviewer's approval of an artifact. Approvals are per-reviewer and
@@ -843,7 +970,7 @@ export type Approval = Message<"docs_factory.review.v1.Approval"> & {
  * Use `create(ApprovalSchema)` to create a new message.
  */
 export const ApprovalSchema: GenMessage<Approval> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 14);
+  messageDesc(file_docs_factory_review_v1_messages, 15);
 
 /**
  * One entry in an artifact's review timeline. `kind` is the event type; `actor`
@@ -904,7 +1031,7 @@ export type ContentEvent = Message<"docs_factory.review.v1.ContentEvent"> & {
  * Use `create(ContentEventSchema)` to create a new message.
  */
 export const ContentEventSchema: GenMessage<ContentEvent> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 15);
+  messageDesc(file_docs_factory_review_v1_messages, 16);
 
 /**
  * Which content tree a piece of content lives in.
@@ -1172,6 +1299,15 @@ export enum EventKind {
    * @generated from enum value: EVENT_KIND_APPROVAL_DISMISSED = 11;
    */
   APPROVAL_DISMISSED = 11,
+
+  /**
+   * A new content version was registered whose Merkle root differs from the
+   * prior one — i.e. the content structurally changed. Payload carries the
+   * added/removed/modified/moved node counts.
+   *
+   * @generated from enum value: EVENT_KIND_CONTENT_REVISED = 12;
+   */
+  CONTENT_REVISED = 12,
 }
 
 /**

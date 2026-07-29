@@ -3,5 +3,25 @@
   "diataxis": ["tutorial", "how-to", "reference", "explanation"],
   "projects": ["delta", "unitycatalog", "open-lakehouse"],
   "statuses": ["idea", "draft", "ready"],
-  "pageWorthyKinds": ["capability", "openSpecification", "implementation"]
+  "pageWorthyKinds": ["capability", "openSpecification", "implementation"],
+  "$topicsComment": "The controlled product/topic axis for the review layer's version rows and the 'what changed for X' rollup. `topics` are the canonical ids; `topicSynonyms` folds blog `tags` spellings and doc `project` values onto a canonical id (unmatched tags are dropped with a warning at manifest time). A canonical id with no tagged content yet (e.g. duckdb) is valid — it renders an empty rollup.",
+  "topics": [
+    "delta",
+    "unity-catalog",
+    "duckdb",
+    "lakehouse",
+    "governance",
+    "table-formats",
+    "agents"
+  ],
+  "topicSynonyms": {
+    "delta-lake": "delta",
+    "delta-kernel": "delta",
+    "unitycatalog": "unity-catalog",
+    "uc": "unity-catalog",
+    "open-lakehouse": "lakehouse",
+    "openlakehouse": "lakehouse",
+    "data-lineage": "governance",
+    "devrel": null
+  }
 }

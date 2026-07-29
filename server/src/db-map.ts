@@ -5,8 +5,10 @@ import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import {
   ContentArea,
   ContentVersionSchema,
+  MerkleNodeSchema,
   type ContentRef,
   type ContentVersion,
+  type MerkleNode,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
 
 /** proto ContentArea → the `area` text column ('blogs' | 'docs'). */
@@ -37,7 +39,63 @@ export interface ContentVersionRow {
   git_sha: string;
   title: string | null;
   frontmatter_status: string | null;
+  // Merkle root hash + jsonb tree + topics. Optional on the row type because
+  // some read paths (draft summaries) build a partial row without them; the
+  // mapper treats absence as empty.
+  root_hash?: string | null;
+  merkle_tree?: MerkleNodeJson | null;
+  topics?: string[] | null;
   created_at: Date;
+}
+
+/**
+ * The plain-object shape of a MerkleNode as stored in the merkle_tree jsonb.
+ * The index signature keeps it assignable to postgres.js's JSONValue for writes.
+ */
+export interface MerkleNodeJson {
+  key: string;
+  kind: string;
+  nodeHash: string;
+  subtreeHash: string;
+  level: number;
+  label: string;
+  children: MerkleNodeJson[];
+  anchorSlug?: string;
+  snippetPath?: string;
+  snippetRegion?: string;
+  [prop: string]: string | number | MerkleNodeJson[] | undefined;
+}
+
+/** Recursively build a proto MerkleNode from the stored jsonb plain object. */
+export function merkleNodeToProto(n: MerkleNodeJson): MerkleNode {
+  return create(MerkleNodeSchema, {
+    key: n.key,
+    kind: n.kind,
+    nodeHash: n.nodeHash,
+    subtreeHash: n.subtreeHash,
+    level: n.level,
+    label: n.label,
+    children: (n.children ?? []).map(merkleNodeToProto),
+    anchorSlug: n.anchorSlug,
+    snippetPath: n.snippetPath,
+    snippetRegion: n.snippetRegion,
+  });
+}
+
+/** Recursively flatten a proto MerkleNode to the plain object stored as jsonb. */
+export function merkleNodeToJson(n: MerkleNode): MerkleNodeJson {
+  return {
+    key: n.key,
+    kind: n.kind,
+    nodeHash: n.nodeHash,
+    subtreeHash: n.subtreeHash,
+    level: n.level,
+    label: n.label,
+    children: (n.children ?? []).map(merkleNodeToJson),
+    ...(n.anchorSlug !== undefined ? { anchorSlug: n.anchorSlug } : {}),
+    ...(n.snippetPath !== undefined ? { snippetPath: n.snippetPath } : {}),
+    ...(n.snippetRegion !== undefined ? { snippetRegion: n.snippetRegion } : {}),
+  };
 }
 
 /**
@@ -53,7 +111,11 @@ export function dateOnlyToUtcTimestamp(value: Date | string): Timestamp {
   return timestampFromDate(new Date(`${ymd}T00:00:00.000Z`));
 }
 
-/** Build the proto ContentVersion message from a DB row + its ref. */
+/**
+ * Build the proto ContentVersion message from a DB row + its ref. Includes the
+ * Merkle tree only when the row was selected with `merkle_tree` (list responses
+ * omit it for bandwidth; GetVersionTree / ProductChanges select it).
+ */
 export function contentVersionFromRow(row: ContentVersionRow, ref: ContentRef): ContentVersion {
   return create(ContentVersionSchema, {
     id: row.id,
@@ -62,6 +124,9 @@ export function contentVersionFromRow(row: ContentVersionRow, ref: ContentRef): 
     gitSha: row.git_sha,
     title: row.title ?? "",
     frontmatterStatus: row.frontmatter_status ?? "",
+    rootHash: row.root_hash ?? "",
+    topics: row.topics ?? [],
+    tree: row.merkle_tree ? merkleNodeToProto(row.merkle_tree) : undefined,
     createdAt: timestampFromDate(row.created_at),
   });
 }

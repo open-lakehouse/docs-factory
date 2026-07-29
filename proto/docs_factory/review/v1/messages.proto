@@ -42,6 +42,19 @@ message ContentVersion {
   google.protobuf.Timestamp created_at = 7;
   // Resolved `file=` snippet references in this version, for code re-anchoring.
   repeated SnippetRef snippets = 8;
+  // Root hash of the structural Merkle tree (sha256 over the heading/prose/code/
+  // snippet node tree). DIFFERENT question than content_hash: "this structure"
+  // vs "these bytes". Two bodies that normalize identically share a root_hash but
+  // differ in content_hash (whitespace-only edits still register a version).
+  string root_hash = 9;
+  // Canonical product/topic ids (content/vocab.json `topics`), normalized from
+  // blog tags + doc project. Powers the "what changed for Delta / UC / DuckDB"
+  // rollup via ProductChanges. Empty for untagged content.
+  repeated string topics = 10;
+  // The full Merkle tree, INCLUDING non-section leaves (code blocks, snippet
+  // sources). Omitted from list responses for bandwidth; returned by
+  // GetVersionTree. See MerkleNode.
+  optional MerkleNode tree = 11;
 }
 
 // A heading-anchored section within a content version. `anchor_slug` is the
@@ -57,6 +70,35 @@ message Section {
   int32 ordinal = 5;
   string text = 6;
   int32 char_len = 7;
+  // Merkle: this section's own-content hash (its prose leaf, direct body only).
+  string node_hash = 8;
+  // Merkle: hash of this section incl. all descendants (subsections + code +
+  // snippets). Equal across versions ⇒ nothing under this heading changed
+  // (drives the diff view + the re-anchoring fast path).
+  string subtree_hash = 9;
+  // The enclosing heading's anchor_slug (empty for top-level / preamble) — the
+  // tree edge.
+  string parent_anchor_slug = 10;
+  // Materialized fingerprint path (e.g. "intro/setup/install") — the STABLE diff
+  // key that survives reordering so a moved section reads as a move, not add+remove.
+  string depth_path = 11;
+}
+
+// A node in a content version's structural Merkle tree. Recursive. `kind` is one
+// of "doc" | "heading" | "prose" | "code" | "snippet". `node_hash` is the node's
+// own content; `subtree_hash` folds in all descendants (equal for leaves).
+// `key` is the stable diff key (depth path for headings, synthetic for leaves).
+message MerkleNode {
+  string key = 1;
+  string kind = 2;
+  string node_hash = 3;
+  string subtree_hash = 4;
+  int32 level = 5;
+  string label = 6;
+  repeated MerkleNode children = 7;
+  optional string anchor_slug = 8;
+  optional string snippet_path = 9;
+  optional string snippet_region = 10;
 }
 
 // A W3C-style text-quote selector: a comment can pin to a quoted range within
@@ -181,6 +223,10 @@ enum EventKind {
   EVENT_KIND_APPROVED = 10;
   // An approval was dismissed (by its author or a maintainer).
   EVENT_KIND_APPROVAL_DISMISSED = 11;
+  // A new content version was registered whose Merkle root differs from the
+  // prior one — i.e. the content structurally changed. Payload carries the
+  // added/removed/modified/moved node counts.
+  EVENT_KIND_CONTENT_REVISED = 12;
 }
 
 // The current viewer, resolved from the auth provider (Neon Auth in prod, the

@@ -166,6 +166,40 @@ describe("reanchorThreads (prose)", () => {
     expect(orphaned).toBe(1);
     expect(updates[0].sql).toContain("orphaned = true");
   });
+
+  test("fast path: unchanged section is kept without a quote scan", async () => {
+    // A thread whose quote WOULD NOT be found by the scan (it's not in any
+    // section), but whose section is in unchangedSlugs → kept, not orphaned.
+    const { sql, updates } = fakeSql([
+      {
+        id: "6",
+        anchor_slug: "governance",
+        anchor_fingerprint: "governance",
+        orphaned: false,
+        selector_quote: "text the scan would never find",
+      },
+    ]);
+    const orphaned = await reanchorThreads(sql, "blogs", "x", sections, new Set(["governance"]));
+    expect(orphaned).toBe(0);
+    // Not orphaned (it was already un-orphaned, so no update at all).
+    expect(updates).toHaveLength(0);
+  });
+
+  test("fast path: unchanged + previously orphaned → un-orphaned", async () => {
+    const { sql, updates } = fakeSql([
+      {
+        id: "7",
+        anchor_slug: "governance",
+        anchor_fingerprint: "governance",
+        orphaned: true,
+        selector_quote: null,
+      },
+    ]);
+    const orphaned = await reanchorThreads(sql, "blogs", "x", sections, new Set(["governance"]));
+    expect(orphaned).toBe(0);
+    expect(updates).toHaveLength(1);
+    expect(updates[0].sql).toContain("orphaned = false");
+  });
 });
 
 // --- code re-anchoring -----------------------------------------------------

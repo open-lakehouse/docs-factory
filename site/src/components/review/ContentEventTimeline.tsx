@@ -20,6 +20,7 @@ const KIND_LABEL: Record<number, string> = {
   [EventKind.RELEASED]: "Released",
   [EventKind.UNPUBLISHED]: "Unpublished",
   [EventKind.REPUBLISHED]: "Republished",
+  [EventKind.CONTENT_REVISED]: "Content revised",
 };
 
 /** Short relative time ("3h ago"), falling back to a date for older events. */

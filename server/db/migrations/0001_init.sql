@@ -24,26 +24,49 @@ create table if not exists content_version (
   git_sha            text not null,
   title              text,
   frontmatter_status text,
+  -- Merkle root hash of the version's structure. DIFFERENT from content_hash
+  -- ("this structure" vs "these bytes"): drives the evolution diff + fast-path
+  -- re-anchoring. Nullable so pre-Merkle rows (none in practice — DB is nuke &
+  -- re-register) don't break.
+  root_hash          text,
+  -- The full Merkle tree incl. non-section leaves (code blocks, snippet sources),
+  -- as a MerkleNode-shaped jsonb blob. Read whole for the tree view + diff.
+  merkle_tree        jsonb,
+  -- Canonical product/topic ids (content/vocab.json topics), normalized from
+  -- blog tags + doc project — the axis for the "what changed for X" rollup.
+  topics             text[] not null default '{}',
   created_at         timestamptz not null default now(),
   unique (area, slug, content_hash)
 );
 create index if not exists content_version_ref_idx
   on content_version (area, slug, created_at desc);
+-- Product rollup: find every version tagged with a topic (topics @> array[$1]).
+create index if not exists content_version_topics_idx
+  on content_version using gin (topics);
 
 -- Heading-anchored sections of a version. anchor_slug is the rehype-slug id in
 -- the rendered DOM; fingerprint is normalized heading text for re-anchoring.
 -- plain_text is the normalized section body so the server can re-anchor quote
 -- comments (find the quote in a new version) without re-fetching source.
 create table if not exists content_section (
-  id            uuid primary key default uuidv7(),
-  version_id    uuid not null references content_version (id) on delete cascade,
-  anchor_slug   text not null,
-  fingerprint   text not null,
-  heading_text  text not null,
-  heading_level int  not null,
-  ordinal       int  not null,
-  plain_text    text not null default '',
-  char_len      int,
+  id                 uuid primary key default uuidv7(),
+  version_id         uuid not null references content_version (id) on delete cascade,
+  anchor_slug        text not null,
+  fingerprint        text not null,
+  heading_text       text not null,
+  heading_level      int  not null,
+  ordinal            int  not null,
+  plain_text         text not null default '',
+  char_len           int,
+  -- Merkle hashes for this section. node_hash = own content (direct prose leaf);
+  -- subtree_hash = incl. subsections + code + snippet leaves. Comparing these
+  -- across versions localizes changes in SQL and short-circuits re-anchoring.
+  node_hash          text,
+  subtree_hash       text,
+  -- Tree edges: the enclosing heading's anchor_slug (null at top level /
+  -- preamble) and the materialized fingerprint path (the stable diff key).
+  parent_anchor_slug text,
+  depth_path         text,
   unique (version_id, anchor_slug)
 );
 
@@ -294,7 +317,8 @@ create table if not exists content_event (
   kind       text not null check (kind in (
                'review-requested', 'request-satisfied', 'request-cancelled',
                'state-changes-requested', 'state-approved', 'approved-by',
-               'approval-dismissed', 'released', 'unpublished', 'republished')),
+               'approval-dismissed', 'released', 'unpublished', 'republished',
+               'content-revised')),
   actor      text not null,
   version_id uuid references content_version (id),
   payload    jsonb not null default '{}',

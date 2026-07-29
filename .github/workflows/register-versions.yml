@@ -35,11 +35,18 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: latest
-      - name: Check bun.lock has no proxy URLs
-        run: bun scripts/strip-bun-lock-proxy.ts --check
+      - uses: ./.github/actions/bun-setup
+      # Guard the prod secrets BEFORE the build, so a missing secret fails fast
+      # rather than after building the manifest (mirrors deploy-function.yml).
+      - name: Guard required secrets
+        env:
+          API_URL: ${{ secrets.REVIEW_API_URL }}
+          BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
+        run: |
+          if [ -z "${API_URL:-}" ] || [ -z "${BUILD_SECRET:-}" ]; then
+            echo "::error::REVIEW_API_URL / REVIEW_BUILD_SECRET secrets are not set — provision prod first (docs/deploy/runbook.md)."
+            exit 1
+          fi
       - name: Build version manifest (stamps the real main sha)
         run: |
           cd site && bun install --frozen-lockfile
@@ -49,9 +56,5 @@ jobs:
           API_URL: ${{ secrets.REVIEW_API_URL }}
           BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          if [ -z "${API_URL:-}" ] || [ -z "${BUILD_SECRET:-}" ]; then
-            echo "::error::REVIEW_API_URL / REVIEW_BUILD_SECRET secrets are not set."
-            exit 1
-          fi
           cd server && bun install --frozen-lockfile
           bun run scripts/register-versions.mjs

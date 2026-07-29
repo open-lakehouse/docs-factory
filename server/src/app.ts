@@ -13,33 +13,35 @@ import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 export async function createApp(): Promise<Hono> {
   const app = new Hono();
 
+  // CORS is a BROWSER concern only: it governs which cross-origin browser
+  // requests get their Origin reflected. It never gates whether the app runs —
+  // server-to-server callers (e.g. RegisterVersion via connect-node) send no
+  // Origin header and are unaffected by any of this. So the CORS policy lives
+  // entirely inside the `origin` resolver below; there is no startup guard.
+  //
   // In prod the browser reaches the API same-origin (Vercel rewrites `/api/*` →
-  // this Function), so CORS is inert on that path — it stays as defense-in-depth
-  // for the raw Function URL and as the mechanism for any additional first-party
-  // origins. ALLOWED_ORIGIN is a comma-separated allowlist set per deploy: a
-  // single Vercel origin in the soft launch; the custom docs domains
-  // (openlakehouse.io / delta.io / unitycatalog.io) added later — no code change,
-  // just the env value. Credentials forbid "*", so hono/cors echoes the matching
-  // allowlisted origin.
+  // this Function), so CORS is inert on that path — it's defense-in-depth for the
+  // raw Function URL and the mechanism for additional first-party origins.
+  // ALLOWED_ORIGIN is a comma-separated allowlist set per deploy: a single Vercel
+  // origin in the soft launch; the custom docs domains (openlakehouse.io /
+  // delta.io / unitycatalog.io) added later — no code change, just the env value.
+  // Credentials forbid "*", so hono/cors echoes only a matching allowlisted origin.
   const allowed = process.env.ALLOWED_ORIGIN?.split(",")
     .map((o) => o.trim())
     .filter(Boolean);
-  // Fail CLOSED in prod: an unset/empty allowlist would otherwise fall through to
-  // the permissive echo below (`(o) => o`), which reflects ANY origin with
-  // credentials:true. That's a misconfiguration, not a valid prod state, so refuse
-  // to build the app rather than serve wide-open CORS. Outside prod (local dev),
-  // an unset allowlist keeps the convenient permissive echo.
-  if (process.env.NODE_ENV === "production" && !(allowed && allowed.length)) {
-    throw new Error(
-      "ALLOWED_ORIGIN must be set (non-empty) when NODE_ENV=production — refusing to serve permissive CORS.",
-    );
-  }
+  const isProd = process.env.NODE_ENV === "production";
+  // Fail CLOSED for browsers, not for the app. When the allowlist is set, reflect
+  // only listed origins. When it's UNSET: in prod deny every cross-origin browser
+  // request (reflect nothing) — a missing allowlist must never mean "reflect any
+  // origin with credentials"; in local dev keep the permissive echo for
+  // convenience. Either way the app still serves same-origin and server-to-server
+  // traffic, so a missing browser allowlist can't take down non-browser callers.
+  const corsOrigin: string[] | ((origin: string) => string | undefined | null) =
+    allowed && allowed.length ? allowed : isProd ? () => undefined : (o) => o;
   app.use(
     "*",
     cors({
-      // allowed is guaranteed non-empty in prod by the guard above; the echo is
-      // reached only in local dev / unset (non-prod).
-      origin: allowed && allowed.length ? allowed : (o) => o,
+      origin: corsOrigin,
       credentials: true,
       allowHeaders: ["Content-Type", "Connect-Protocol-Version", "Authorization", "x-dev-persona"],
     }),

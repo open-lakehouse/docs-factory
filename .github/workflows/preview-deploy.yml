@@ -20,12 +20,16 @@
 #      strings (DATABASE_URL_UNPOOLED for migrations). This is also our
 #      synchronization point: it succeeds only once the branch is provisioned.
 #   2. run migrations against the branch's DIRECT (unpooled) URL.
-#   3. deploy the review Function to `preview/<head_ref>` (fire-and-forget,
-#      --wait=false), then poll `functions get` for its invocation_url.
+#   3. deploy the review Function to `preview/<head_ref>` (pass 1, no CORS origin
+#      yet) to materialize its host; poll `functions get` for its invocation_url.
 #   4. build the SPA with a vercel.json whose /api resolves to that Function host,
-#      and deploy the Vercel preview (prebuilt). VITE_NEON_AUTH_URL is injected by
-#      the integration into the preview env and picked up by the same pull — the
-#      site talks to the auth origin directly, so there's no /auth rewrite.
+#      deploy the Vercel preview (prebuilt), and CAPTURE the deploy URL.
+#      VITE_NEON_AUTH_URL is injected by the integration into the preview env and
+#      picked up by the earlier pull — the site talks to the auth origin directly,
+#      so there's no /auth rewrite.
+#   5. redeploy the Function (pass 2) with ALLOWED_ORIGIN locked to the captured
+#      Vercel origin. Two passes because the origin only exists after the deploy,
+#      but the /api rewrite needs the Function host before the build.
 #
 # Secrets:  NEON_API_KEY, REVIEW_BUILD_SECRET, VERCEL_TOKEN
 # Vars:     NEON_PROJECT_ID,
@@ -115,56 +119,38 @@ jobs:
           cd server && bun install --frozen-lockfile
           node scripts/migrate.mjs
 
-      # Deploy the review Function to THIS branch (branch-scoped). DATABASE_URL is
-      # injected by Neon per branch, so it is NOT passed here. The exact Neon
-      # Functions CLI is finalized at provisioning (beta) — see runbook.
-      - name: Deploy review Function to the branch
+      # Two-pass Function deploy so the preview's CORS allowlist is its exact
+      # Vercel origin. The origin (Vercel branch URL) only exists AFTER `vercel
+      # deploy`, but the /api rewrite needs the Function host BEFORE the Vercel
+      # build — a mutual dependency. We break it by deploying the Function twice:
+      #   Pass 1 (here): deploy WITHOUT ALLOWED_ORIGIN to materialize the host →
+      #                  bake it into vercel.json → build + deploy Vercel.
+      #   Pass 2 (later): redeploy WITH ALLOWED_ORIGIN=<captured Vercel branch URL>.
+      # Both deploys are seconds long; we drive each off `functions get` (see
+      # below) rather than the CLI's exit.
+      #
+      # Why not the CLI's exit: neonctl (2.38.x) BLOCKS after triggering a deploy —
+      # it polls "waiting for the deployment to start" and hangs the full 10-min
+      # timeout even when the deployment has already COMPLETED within seconds, then
+      # exits 1 with a false "Timed out" (--wait only governs the build wait). So we
+      # run the deploy detached and poll `functions get` for a terminal status.
+      #
+      # We MUST deploy explicitly on every push: neon.ts's preview.functions is
+      # applied only by an explicit `neon deploy` — not on branch creation, not on
+      # code changes — so new server/ code only ships if we deploy here.
+      - name: Deploy review Function (pass 1 — materialize host)
         env:
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          # CORS allowlist for THIS preview: the browser reaches /api same-origin
-          # (so CORS is inert on the happy path), but we still lock the raw Function
-          # URL to this preview's origin as defense-in-depth. VERCEL_BRANCH_URL is
-          # the stable per-branch preview host Vercel injects into the preview env;
-          # it's in the file we pulled. If it's somehow absent we warn and leave
-          # ALLOWED_ORIGIN empty (server falls back to permissive echo) rather than
-          # guess a slugified/truncated host and lock out the real origin.
-          set -a; . .vercel/.env.preview.local; set +a
-          ORIGIN_HOST="${VERCEL_BRANCH_URL:-}"
-          if [ -n "$ORIGIN_HOST" ]; then
-            ALLOWED_ORIGIN="https://${ORIGIN_HOST#https://}"
-          else
-            echo "::warning::VERCEL_BRANCH_URL not in pulled env; ALLOWED_ORIGIN left unset (permissive CORS on the raw Function URL)."
-            ALLOWED_ORIGIN=""
-          fi
-          echo "ALLOWED_ORIGIN=$ALLOWED_ORIGIN"
-
-          # We MUST deploy explicitly on every push: neon.ts's preview.functions
-          # is applied only by an explicit `neon deploy` — not on branch creation,
-          # not on code changes — so new server/ code only ships if we deploy here.
-          #
-          # The beta neonctl (2.38.x) BLOCKS after triggering the deploy: it polls
-          # "waiting for the deployment to start" and, even when the deployment has
-          # already COMPLETED within seconds, hangs the full 10-min timeout and then
-          # exits 1 with a false "Timed out" — verified against a deployment whose
-          # get shows status=completed at the trigger second. --wait only governs
-          # the *build* wait, not this start-poll, so it can't fix it. So we do NOT
-          # depend on the deploy command's exit: run it detached, then drive off
-          # `functions get`, which returns the completed deployment immediately.
-          #
           # The Function host is NOT derivable from the git branch name — Neon forms
           # it as <branch_id>-<slug>.compute.<cell>.<region>.aws.neon.tech — so we
-          # read invocation_url from `get`.
+          # read invocation_url from `get` after the deploy completes.
           setsid bunx neonctl functions deploy review \
             --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
             --src server/src/handler.ts --wait=false \
             --env AUTH_MODE=neon --env NODE_ENV=production \
-            --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            >deploy.log 2>&1 &
-
-          # Poll `get` until the deployment reaches a terminal state. 60 × 5s =
-          # 300s budget (the build itself is ~seconds; this is generous headroom).
+            >deploy1.log 2>&1 &
           INVOCATION_URL=""
           STATUS=""
           for _ in $(seq 1 60); do
@@ -176,28 +162,26 @@ jobs:
               break
             fi
             if [ "$STATUS" = "failed" ]; then
-              echo "::error::the review Function deployment reported status=failed — see the Neon console (docs/deploy/runbook.md §4)."
-              cat deploy.log || true
+              echo "::error::the review Function deployment (pass 1) reported status=failed — see the Neon console (docs/deploy/runbook.md §4)."
+              cat deploy1.log || true
               exit 1
             fi
             sleep 5
           done
           if [ -z "$INVOCATION_URL" ]; then
-            echo "::error::review Function did not reach status=completed after polling (last status: '${STATUS:-none}'); check the Neon console (docs/deploy/runbook.md §4)."
-            cat deploy.log || true
+            echo "::error::review Function (pass 1) did not reach status=completed after polling (last status: '${STATUS:-none}'); check the Neon console (docs/deploy/runbook.md §4)."
+            cat deploy1.log || true
             exit 1
           fi
           # gen-vercel-config.mjs strips the scheme too, but keep GITHUB_ENV clean.
           echo "NEON_FUNCTION_HOST=${INVOCATION_URL#https://}" >> "$GITHUB_ENV"
 
-      # Generate vercel.json from the template with this branch's proxy targets,
-      # build the SPA, and deploy the prebuilt output as a Vercel preview. Vercel
-      # reads vercel.json BEFORE the build, so it must be generated pre-build and
-      # deployed via the prebuilt path (see gen-vercel-config.mjs).
-      # Generate vercel.json from the template with this branch's proxy target,
-      # then build + deploy the prebuilt SPA. The preview env was already pulled
-      # (git-branch-scoped) in an earlier step, so we don't re-pull here.
+      # Generate vercel.json (with the /api → Function host rewrite), build, and
+      # deploy the prebuilt SPA. Vercel reads vercel.json BEFORE the build, so it
+      # must be generated pre-build and deployed via --prebuilt. Capture the
+      # deploy's URL (last stdout line) → this preview's origin for pass 2.
       - name: Build + deploy Vercel preview
+        id: vercel
         env:
           NEON_FUNCTION_HOST: ${{ env.NEON_FUNCTION_HOST }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -213,4 +197,47 @@ jobs:
           (cd site && bun install --frozen-lockfile)
           node site/scripts/gen-vercel-config.mjs
           bunx vercel build --token="$VERCEL_TOKEN"
-          bunx vercel deploy --prebuilt --token="$VERCEL_TOKEN"
+          # `vercel deploy` prints the deployment URL as its last stdout line.
+          DEPLOY_URL=$(bunx vercel deploy --prebuilt --token="$VERCEL_TOKEN" | tail -n1)
+          echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+          echo "Deployed preview: $DEPLOY_URL"
+
+      # Pass 2: redeploy the Function with ALLOWED_ORIGIN locked to the preview's
+      # actual origin (now that Vercel has produced it). Same detached + poll
+      # pattern. This is the deploy that ends up live; it carries the real env.
+      - name: Deploy review Function (pass 2 — lock CORS origin)
+        env:
+          REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
+          DEPLOY_URL: ${{ steps.vercel.outputs.deploy_url }}
+        run: |
+          if [ -z "${DEPLOY_URL:-}" ]; then
+            echo "::error::did not capture the Vercel deploy URL — cannot lock the Function CORS origin."
+            exit 1
+          fi
+          ALLOWED_ORIGIN="https://${DEPLOY_URL#https://}"
+          echo "ALLOWED_ORIGIN=$ALLOWED_ORIGIN"
+          setsid bunx neonctl functions deploy review \
+            --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
+            --src server/src/handler.ts --wait=false \
+            --env AUTH_MODE=neon --env NODE_ENV=production \
+            --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
+            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            >deploy2.log 2>&1 &
+          STATUS=""
+          for _ in $(seq 1 60); do
+            STATUS=$(bunx neonctl functions get review \
+              --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" --output json 2>/dev/null \
+              | jq -r '.current_deployment.status // empty')
+            [ "$STATUS" = "completed" ] && break
+            if [ "$STATUS" = "failed" ]; then
+              echo "::error::the review Function deployment (pass 2) reported status=failed — see the Neon console (docs/deploy/runbook.md §4)."
+              cat deploy2.log || true
+              exit 1
+            fi
+            sleep 5
+          done
+          if [ "$STATUS" != "completed" ]; then
+            echo "::error::review Function (pass 2) did not reach status=completed (last status: '${STATUS:-none}'); check the Neon console (docs/deploy/runbook.md §4)."
+            cat deploy2.log || true
+            exit 1
+          fi

@@ -11,20 +11,29 @@ export function roleFromDb(role: string | null): Role {
 }
 
 /**
- * Resolve an identity's role from the allowlist by github login and/or email
- * (case-insensitive). Returns ANONYMOUS when not listed. Maintainer wins if a
- * login and email disagree.
+ * Resolve an identity's role from the allowlist by github login and/or any of
+ * the identity's emails (all case-insensitive). Returns ANONYMOUS when not
+ * listed. Maintainer wins if entries disagree.
+ *
+ * Why a list of emails, not one: a reviewer's allowlist row is often seeded with
+ * a different address than their GitHub *primary* email — and Neon Auth stores
+ * only the primary in neon_auth."user".email. Matching every GitHub-verified
+ * email (see neon-auth.ts) makes an email-seeded row hit regardless of which
+ * address the user later makes primary. `github_login` is the robust key and is
+ * matched independently, so a login-seeded row hits even with no email at all.
  */
 export async function lookupRole(
   sql: Queryable,
-  opts: { login?: string; email?: string },
+  opts: { login?: string; emails?: string[] },
 ): Promise<Role> {
-  const { login, email } = opts;
-  if (!login && !email) return Role.ANONYMOUS;
+  const { login } = opts;
+  // Normalize + dedupe emails; drop empties so a `[""]` can't match a blank row.
+  const emails = [...new Set((opts.emails ?? []).map((e) => e.trim().toLowerCase()).filter(Boolean))];
+  if (!login && emails.length === 0) return Role.ANONYMOUS;
   const rows = await sql<{ role: string }[]>`
     select role from reviewer_allowlist
     where (${login ?? null}::text is not null and lower(github_login) = lower(${login ?? null}))
-       or (${email ?? null}::text is not null and lower(email) = lower(${email ?? null}))
+       or (lower(email) = any(${emails}::text[]))
   `;
   let best = Role.ANONYMOUS;
   for (const r of rows) {

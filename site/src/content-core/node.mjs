@@ -14,4 +14,6 @@ export * from "./hash.mjs";
 export * from "./frontmatter.mjs";
 export * from "./walk.mjs";
 export * from "./pipeline.mjs";
+export * from "./tree.mjs";
+export * from "./topics.mjs";
 export { vocab, DIATAXIS, PROJECTS, STATUSES, PAGE_WORTHY_KINDS } from "./vocab.mjs";

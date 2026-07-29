@@ -90,19 +90,17 @@ export function sessionResolved(): boolean {
  * This is the opaque value stored in neon_auth.session.token, which the server
  * matches directly — so sending it as a bearer authenticates the API request
  * even though the session cookie itself never reaches the Function's origin.
- * Reads the hydrated session store synchronously when available (no stale cache),
- * falling back to an async getSession() before the store is ready.
+ *
+ * Always resolved via getSession() (a fresh SDK read), NOT the useSession store
+ * snapshot. The store's snapshot exposes the SDK's signed JWT (the `set-auth-jwt`
+ * value the SDK caches), which is a DIFFERENT value from the opaque
+ * `session.token`; sending the JWT as the bearer resolves to anonymous
+ * server-side because the server matches the opaque token. getSession()'s return
+ * value carries the opaque `session.token`. We only cache a resolved (non-null)
+ * result so the transport isn't a network call per RPC.
  */
 export async function sessionToken(): Promise<string | null> {
   if (cachedToken !== undefined) return cachedToken;
-  const store = sessionStore();
-  // Once the store has hydrated, its snapshot is the source of truth.
-  const snap = store?.get();
-  if (snap && snap.isPending === false) {
-    const token = snap.data?.session?.token ?? null;
-    if (token) cachedToken = token;
-    return token;
-  }
   return refreshSessionToken();
 }
 

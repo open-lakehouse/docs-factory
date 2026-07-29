@@ -11,8 +11,9 @@ Deployment shape for v1:
 
 - **Frontend** — the Vite SPA in `site/`, deployed to **Vercel**. A same-origin
   `/api` rewrite proxies to the backend so API calls stay same-origin (no CORS).
-  The destination is environment-specific and generated from
-  `site/vercel.template.json` by `site/scripts/gen-vercel-config.mjs`.
+  The destination is environment-specific and emitted into the Build Output API
+  routing config (`.vercel/output/config.json`) by
+  `site/scripts/gen-vercel-config.mjs` during `bun run build:vercel`.
   > **Auth is a bearer token, not a cookie.** Neon Auth scopes its session cookie
   > (`__Secure-neonauth.session_token`) to the **auth origin** (`VITE_NEON_AUTH_URL`'s
   > host), which is a *different* origin from the Function the `/api` rewrite points
@@ -38,13 +39,20 @@ The steps below are ordered so you can run them **top to bottom**: nothing is
 consumed before the step that produces it. Two facts explain the whole ordering
 and the apparent config duplication — internalize them and the rest follows.
 
-**Two builders, by design.** Preview and production SPAs are built by *different*
-systems, so each system holds the config for the build it performs:
+**Two builders, one build script, by design.** Preview and production SPAs are
+built by *different* systems, but both run the same `bun run build:vercel`
+(`site/package.json`), which emits the **Build Output API** tree
+(`site/.vercel/output/`): the static SPA under `static/` and the `/api` → Function
+rewrite in `config.json` (written by `site/scripts/gen-vercel-config.mjs` from
+`NEON_FUNCTION_HOST`). Vercel reads `config.json` **after** the build, so the
+per-deploy Function host is applied to that same deployment — a plain top-level
+`vercel.json` can't do this because Vercel reads it *before* the build. Each
+system supplies `NEON_FUNCTION_HOST` for the build it performs:
 
-| | Builds the SPA | Reads build config from |
+| | Builds the SPA | Supplies `NEON_FUNCTION_HOST` from |
 |---|---|---|
-| **Preview** | GitHub Actions (`vercel build` in `preview-deploy.yml`) | GitHub env + `vercel pull --environment=preview` |
-| **Production** | Vercel's own git integration (on push to `main`) | Vercel **Production** env |
+| **Preview** | GitHub Actions (`bun run build:vercel` → `vercel deploy --prebuilt` in `preview-deploy.yml`) | `$GITHUB_ENV` (captured per-branch after the Function deploy) |
+| **Production** | Vercel's own git integration (on push to `main`, Build Command `bun run build:vercel`) | Vercel **Production** env |
 
 So a value used at build time legitimately lives in **both** GitHub and Vercel —
 it's not accidental duplication, it's "each builder needs its own copy." Concretely:
@@ -165,22 +173,39 @@ Set everything you already hold from Phases 1–2. **Two values are deferred to
 Phase 5** because they don't exist yet: the prod `NEON_FUNCTION_HOST` and
 `REVIEW_API_URL` (both produced by the first prod deploy in Phase 4).
 
-### 3a. Disable Vercel's git auto-preview builds — production only
+### 3a. Set the production Build Command + disable git auto-preview builds
 
-The repo↔Vercel git integration would otherwise build a *second* preview on every
-branch push, racing `preview-deploy.yml` and building with the wrong `/api`
-rewrites (it can't know a branch's per-PR Function host). We deploy previews
-ourselves via `vercel deploy --prebuilt`, so let Vercel's git integration build
-**only** the production branch. There is no committed `vercel.json` (generated per
-deploy and gitignored), so this is a **dashboard** setting: Project →
-**Settings → Git → Ignored Build Step** →
-```bash
-# Vercel convention: exit 1 = build, exit 0 = skip.
-if [ "$VERCEL_GIT_COMMIT_REF" = "main" ]; then exit 1; else exit 0; fi
-```
-The Ignored Build Step runs only for git-triggered builds, so it silences auto
-previews without affecting the workflow's `--prebuilt` deploys (those skip the
-build phase entirely).
+Two **dashboard** settings on the Vercel project (Root Directory is `site`):
+
+1. **Build Command → `bun run build:vercel`** (Project → Settings → Build &
+   Deployment). This is what makes production routing work: `build:vercel` emits
+   the Build Output API tree (`.vercel/output/config.json` with the `/api` →
+   Function rewrite, plus `static/`), which Vercel reads **after** the build. The
+   default `bun run build` produces only the static SPA with **no** `/api` route,
+   so RPC POSTs 404 — that was the original sign-in bug. Leave Output Directory on
+   the Build Output API default (Vercel auto-detects `.vercel/output`).
+
+   > **This setting is project-wide — there is no per-environment Build Command
+   > override, and that's fine.** It only ever runs for the production build,
+   > because (a) the Ignored Build Step below skips every git build except `main`,
+   > and (b) previews are built by `preview-deploy.yml` via `vercel deploy
+   > --prebuilt`, not the git integration. If a git preview build ever *did* run
+   > `build:vercel`, it would fail loudly (no `NEON_FUNCTION_HOST` in the Preview
+   > env → `gen-vercel-config.mjs` exits 1), never ship a routeless SPA. So this
+   > and the Ignored Build Step are a pair: keep both.
+
+2. **Ignored Build Step → build only `main`** (Project → Settings → Git). The
+   git integration would otherwise build a *second* preview on every branch push,
+   racing `preview-deploy.yml` and building with the wrong `/api` host (it can't
+   know a branch's per-PR Function host). We deploy previews ourselves via
+   `vercel deploy --prebuilt`, so:
+   ```bash
+   # Vercel convention: exit 1 = build, exit 0 = skip.
+   if [ "$VERCEL_GIT_COMMIT_REF" = "main" ]; then exit 1; else exit 0; fi
+   ```
+   The Ignored Build Step runs only for git-triggered builds, so it silences auto
+   previews without affecting the workflow's `--prebuilt` deploys (those skip the
+   build phase entirely).
 
 ### 3b. Vercel env
 
@@ -315,8 +340,15 @@ version registration). Only now — every secret they read exists.
 
 **Production (merge to main):**
 1. `deploy-function.yml` migrates the prod branch and redeploys the prod Function.
-2. `register-versions.yml` stamps each content version with the merged main sha.
-3. Repeat the gate + view-mode checks on the production domain.
+2. Vercel's git integration builds the SPA with Build Command `bun run
+   build:vercel` (§3a), emitting the Build Output API tree whose `config.json`
+   routes `/api/*` to the prod Function (host from Vercel Production env
+   `NEON_FUNCTION_HOST`, Phase 5.1). This is the step that gives production its
+   `/api` rewrite — without it, sign-in RPCs 404.
+3. `register-versions.yml` stamps each content version with the merged main sha.
+4. Repeat the gate + view-mode checks on the production domain. Confirm in
+   DevTools → Network that `POST /api/docs_factory.review.v1.ReviewService/GetViewer`
+   returns 200 (not 404).
 
 ---
 
@@ -331,6 +363,6 @@ version registration). Only now — every secret they read exists.
 | View-mode selector UI | `site/src/components/layout/StatusMenu.tsx` |
 | Prod auth provider | `server/src/auth/neon-auth.ts`, `server/src/allowlist.ts` |
 | Migrations | `server/scripts/migrate.mjs`, `server/db/migrations/` |
-| Vercel rewrite generator | `site/scripts/gen-vercel-config.mjs`, `site/vercel.template.json` |
+| Vercel rewrite generator | `site/scripts/gen-vercel-config.mjs`, `site/scripts/assemble-vercel-output.mjs` |
 | Branch policy | `neon.ts` |
 | Workflows | `.github/workflows/preview-deploy.yml`, `deploy-function.yml`, `register-versions.yml` |

@@ -8,6 +8,7 @@
     "dev": "vite",
     "prebuild": "node scripts/build-version-manifest.mjs && node scripts/build-llmstxt.mjs",
     "build": "vite build",
+    "build:vercel": "bun run build && node scripts/assemble-vercel-output.mjs && node scripts/gen-vercel-config.mjs",
     "preview": "vite preview",
     "check": "likec4 validate ../architecture/model"
   },

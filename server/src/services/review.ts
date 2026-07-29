@@ -17,7 +17,7 @@
 // Auth: an interceptor resolves the viewer once per request; RPCs read it via
 // getViewer(ctx) and enforce with requireAllowlisted / requireMaintainer.
 import { create } from "@bufbuild/protobuf";
-import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type ConnectRouter } from "@connectrpc/connect";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
@@ -37,6 +37,8 @@ import {
   SetTargetReleaseDateResponseSchema,
   ManageAllowlistRequest_Action,
   ManageAllowlistResponseSchema,
+  ListAllowlistResponseSchema,
+  ListRegisteredUsersResponseSchema,
   EraseUserResponseSchema,
   RegisterVersionResponseSchema,
   ListVersionsResponseSchema,
@@ -81,6 +83,8 @@ import {
 } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
   AllowlistEntrySchema,
+  AllowlistEntryDetailSchema,
+  RegisteredUserSchema,
   DraftSummarySchema,
   ContentRefSchema,
   ThreadSchema,
@@ -107,6 +111,7 @@ import {
 } from "../db-map.js";
 import { diffTrees, unchangedSlugs, type DiffEntry } from "../tree-diff.js";
 import { roleFromDb, lookupRole } from "../allowlist.js";
+import { resolveLogin } from "../auth/github-identity.js";
 import {
   reviewRequestFromRow,
   contentEventFromRow,
@@ -138,6 +143,33 @@ const READY_STATUS = "ready";
 // Maximum reply nesting under a thread root (root = depth 0). Keeps the tree
 // legible and client indentation bounded; enforced in createComment.
 const MAX_REPLY_DEPTH = 4;
+
+/**
+ * True when an allowlist op would leave the site with zero maintainers — the one
+ * invariant manageAllowlist hard-blocks, since a maintainerless allowlist locks
+ * everyone out of the admin surface (only a maintainer can add one back, and the
+ * only remaining recovery is direct SQL). Pure so it can be unit-tested.
+ *
+ * @param maintainerCount current number of `maintainer` rows in the allowlist
+ * @param targetIsMaintainer whether the row the op targets is currently a maintainer
+ * @param demotesTarget whether the op removes the target's maintainer status
+ *        (a REMOVE, or an ADD that sets the existing maintainer row to reviewer)
+ */
+export function removesLastMaintainer(
+  maintainerCount: number,
+  targetIsMaintainer: boolean,
+  demotesTarget: boolean,
+): boolean {
+  return targetIsMaintainer && demotesTarget && maintainerCount <= 1;
+}
+
+/** Current count of `maintainer` rows in the allowlist. */
+async function maintainerCount(sql: Queryable): Promise<number> {
+  const [{ n }] = await sql<{ n: number }[]>`
+    select count(*)::int as n from reviewer_allowlist where role = 'maintainer'`;
+  return n;
+}
+
 // Tombstone login/id for an erased author (see eraseUser). Recent-comment feeds
 // skip these — there's no identity to show and the body is "[removed]".
 const TOMBSTONE_LOGIN = "deleted-user";
@@ -1236,8 +1268,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           // own partial-unique index — so no single `on conflict` target covers
           // both. Match an existing row by EITHER identifier and update it;
           // otherwise insert. Idempotent for a re-add by login or by email.
-          const [existing] = await sql<{ id: string }[]>`
-            select id from reviewer_allowlist
+          const [existing] = await sql<{ id: string; role: string }[]>`
+            select id, role from reviewer_allowlist
             where (${githubLogin ?? null}::text is not null
                      and lower(github_login) = lower(${githubLogin ?? null}))
                or (${email ?? null}::text is not null
@@ -1245,6 +1277,20 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             limit 1
           `;
           if (existing) {
+            // Demoting the last maintainer to reviewer would empty the allowlist
+            // of maintainers — block it (see removesLastMaintainer).
+            if (
+              removesLastMaintainer(
+                await maintainerCount(sql),
+                existing.role === "maintainer",
+                role !== "maintainer",
+              )
+            ) {
+              throw new ConnectError(
+                "cannot demote the last maintainer",
+                Code.FailedPrecondition,
+              );
+            }
             await sql`
               update reviewer_allowlist
               set github_login = coalesce(${githubLogin ?? null}, github_login),
@@ -1263,6 +1309,24 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           // github_login (the primary identifier); OR-ing across both could
           // delete two unrelated entries if the caller passed a login and an
           // email belonging to different people.
+          // Look up the target's current role first so we can block removing the
+          // last maintainer before we delete anything.
+          const [target] = githubLogin
+            ? await sql<{ role: string }[]>`
+                select role from reviewer_allowlist
+                where lower(github_login) = lower(${githubLogin}) limit 1`
+            : await sql<{ role: string }[]>`
+                select role from reviewer_allowlist
+                where lower(email) = lower(${email ?? null}) limit 1`;
+          if (
+            target &&
+            removesLastMaintainer(await maintainerCount(sql), target.role === "maintainer", true)
+          ) {
+            throw new ConnectError(
+              "cannot remove the last maintainer",
+              Code.FailedPrecondition,
+            );
+          }
           if (githubLogin) {
             await sql`
               delete from reviewer_allowlist
@@ -1290,6 +1354,121 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             }),
           ),
         });
+      },
+
+      // Read the allowlist with its audit metadata (id/added_by/created_at),
+      // without the mutation ManageAllowlist required to see it. Maintainer-only.
+      async listAllowlist(_req, ctx) {
+        requireMaintainer(ctx);
+        const sql = db();
+        const rows = await sql<
+          {
+            id: string;
+            github_login: string | null;
+            email: string | null;
+            role: string;
+            added_by: string | null;
+            created_at: Date;
+          }[]
+        >`
+          select id, github_login, email, role, added_by, created_at
+          from reviewer_allowlist
+          order by role, created_at
+        `;
+        return create(ListAllowlistResponseSchema, {
+          entries: rows.map((r) =>
+            create(AllowlistEntryDetailSchema, {
+              id: r.id,
+              githubLogin: r.github_login ?? undefined,
+              email: r.email ?? undefined,
+              role: roleFromDb(r.role),
+              addedBy: r.added_by ?? undefined,
+              createdAt: timestampFromDate(r.created_at),
+            }),
+          ),
+        });
+      },
+
+      // Everyone who has authenticated via GitHub OAuth (from neon_auth), joined
+      // to their resolved allowlist role — so a maintainer can find people who
+      // logged in but never got a status and grant them access. Maintainer-only.
+      //
+      // neon_auth is the auth provider's own schema (prod only); it does not
+      // exist under the local mock provider. If it's absent we return an empty
+      // list rather than erroring — the admin page's other sections still work.
+      async listRegisteredUsers(_req, ctx) {
+        requireMaintainer(ctx);
+        const sql = db();
+
+        // Better Auth's neon_auth schema is external and its exact columns aren't
+        // guaranteed. Probe for a usable "last activity" timestamp instead of
+        // hard-coding one that might not exist; prefer the account's updatedAt
+        // (per-login), else the user's. Also confirms neon_auth is present at all.
+        let lastSeenExpr = "null::timestamptz";
+        let neonAuthPresent = false;
+        try {
+          const cols = await sql<{ table_name: string; column_name: string }[]>`
+            select table_name, column_name
+            from information_schema.columns
+            where table_schema = 'neon_auth'
+              and table_name in ('user', 'account')
+          `;
+          neonAuthPresent = cols.some((c) => c.table_name === "user");
+          const has = (t: string, c: string) =>
+            cols.some((col) => col.table_name === t && col.column_name === c);
+          if (has("account", "updatedAt")) lastSeenExpr = `acc."updatedAt"`;
+          else if (has("user", "updatedAt")) lastSeenExpr = `u."updatedAt"`;
+          else if (has("user", "createdAt")) lastSeenExpr = `u."createdAt"`;
+        } catch {
+          neonAuthPresent = false;
+        }
+        if (!neonAuthPresent) {
+          return create(ListRegisteredUsersResponseSchema, { users: [] });
+        }
+
+        // The same user⋈github-account join the auth path uses (neon-auth.ts).
+        // Built via sql.unsafe because the only interpolated part is lastSeenExpr,
+        // which is chosen from a fixed literal allowlist above (never user input);
+        // there are no dynamic *values* in this query.
+        const rows = await sql.unsafe<
+          {
+            user_id: string;
+            email: string | null;
+            account_id: string | null;
+            access_token: string | null;
+            last_seen_at: Date | null;
+          }[]
+        >(`
+          select u.id as user_id, u.email as email,
+                 acc."accountId" as account_id, acc."accessToken" as access_token,
+                 ${lastSeenExpr} as last_seen_at
+          from neon_auth."user" u
+          left join neon_auth.account acc
+            on acc."userId" = u.id and acc."providerId" = 'github'
+          order by u.email nulls last
+        `);
+
+        const users = await Promise.all(
+          rows.map(async (r) => {
+            // Prefer the resolved @handle; fall back to the numeric account id.
+            // Role matches on both candidates + the user email (lookupRole).
+            const login = r.account_id
+              ? await resolveLogin(r.user_id, r.account_id, r.access_token)
+              : undefined;
+            const role = await lookupRole(sql, {
+              logins: [login, r.account_id].filter((x): x is string => !!x),
+              emails: [r.email].filter((x): x is string => !!x),
+            });
+            return create(RegisteredUserSchema, {
+              userId: r.user_id,
+              githubLogin: login ?? r.account_id ?? undefined,
+              email: r.email ?? undefined,
+              role,
+              lastSeenAt: r.last_seen_at ? timestampFromDate(r.last_seen_at) : undefined,
+            });
+          }),
+        );
+        return create(ListRegisteredUsersResponseSchema, { users });
       },
 
       async eraseUser(req: EraseUserRequest, ctx) {

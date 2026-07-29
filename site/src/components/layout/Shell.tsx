@@ -66,6 +66,20 @@ function PlanNavItem() {
   );
 }
 
+// Maintainer-only top-nav entry linking to the admin roster (/admin): allowlist
+// management + registered-user discovery. Gated on isMaintainer (not
+// reviewActive) so it's reachable whenever a maintainer is signed in, regardless
+// of view mode.
+function AdminNavItem() {
+  const { isMaintainer } = useAuth();
+  if (!isMaintainer) return null;
+  return (
+    <NavLink to="/admin" className={({ isActive }) => (isActive ? "active" : undefined)}>
+      Admin
+    </NavLink>
+  );
+}
+
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   return (
@@ -138,6 +152,7 @@ export default function Shell({
             ))}
             <ReviewNavItem />
             <PlanNavItem />
+            <AdminNavItem />
           </nav>
           <ThemeToggle />
           <StatusMenu />

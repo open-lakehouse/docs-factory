@@ -7,6 +7,7 @@ import BlogPost from "./pages/BlogPost";
 import ReviewDashboard from "./pages/ReviewDashboard";
 import ReviewWorkspace from "./pages/ReviewWorkspace";
 import RevOpsDashboard from "./pages/RevOpsDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
   return (
@@ -29,6 +30,10 @@ export default function App() {
         <Route path="/review/dashboard" element={<ReviewDashboard />} />
         {/* Reviewer-only blog pipeline: priority order + target release dates. */}
         <Route path="/review/revops" element={<RevOpsDashboard />} />
+
+        {/* Maintainer-only admin roster: allowlist management + registered-user
+            discovery + erasure. Guards maintainer-only access inside the page. */}
+        <Route path="/admin" element={<AdminDashboard />} />
 
         {/* Detail routes. Explanation concepts are ordinary doc pages that
             declare `explains: <id>`; there is no separate /explain route — the

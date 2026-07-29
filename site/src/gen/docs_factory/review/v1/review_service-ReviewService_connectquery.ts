@@ -178,6 +178,26 @@ export const requestChangesOnPublished = ReviewService.method.requestChangesOnPu
 export const manageAllowlist = ReviewService.method.manageAllowlist;
 
 /**
+ * Maintainer-only: read the reviewer allowlist (with audit metadata) without
+ * mutating it. Today the only way to see the list is as a side effect of
+ * ManageAllowlist; this powers the admin roster view.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListAllowlist
+ */
+export const listAllowlist = ReviewService.method.listAllowlist;
+
+/**
+ * Maintainer-only: everyone who has authenticated via GitHub OAuth (from
+ * neon_auth), joined to their resolved allowlist role (ANONYMOUS = "no
+ * status"). Lets a maintainer discover people who logged in but never got a
+ * status and grant them access. Reads the auth provider's tables directly, so
+ * it is only meaningful against a real Neon Auth database.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListRegisteredUsers
+ */
+export const listRegisteredUsers = ReviewService.method.listRegisteredUsers;
+
+/**
  * Maintainer-only right-to-erasure. Removes a user's personal footprint —
  * tombstones their authored comments (keeping thread structure), scrubs their
  * identity from review-state and resolution actors, and deletes their

@@ -94,6 +94,18 @@ service ReviewService {
   // Maintainer-only allowlist management.
   rpc ManageAllowlist(ManageAllowlistRequest) returns (ManageAllowlistResponse);
 
+  // Maintainer-only: read the reviewer allowlist (with audit metadata) without
+  // mutating it. Today the only way to see the list is as a side effect of
+  // ManageAllowlist; this powers the admin roster view.
+  rpc ListAllowlist(ListAllowlistRequest) returns (ListAllowlistResponse);
+
+  // Maintainer-only: everyone who has authenticated via GitHub OAuth (from
+  // neon_auth), joined to their resolved allowlist role (ANONYMOUS = "no
+  // status"). Lets a maintainer discover people who logged in but never got a
+  // status and grant them access. Reads the auth provider's tables directly, so
+  // it is only meaningful against a real Neon Auth database.
+  rpc ListRegisteredUsers(ListRegisteredUsersRequest) returns (ListRegisteredUsersResponse);
+
   // Maintainer-only right-to-erasure. Removes a user's personal footprint —
   // tombstones their authored comments (keeping thread structure), scrubs their
   // identity from review-state and resolution actors, and deletes their
@@ -337,6 +349,16 @@ message ManageAllowlistRequest {
 }
 message ManageAllowlistResponse {
   repeated AllowlistEntry entries = 1;
+}
+
+message ListAllowlistRequest {}
+message ListAllowlistResponse {
+  repeated AllowlistEntryDetail entries = 1;
+}
+
+message ListRegisteredUsersRequest {}
+message ListRegisteredUsersResponse {
+  repeated RegisteredUser users = 1;
 }
 
 message EraseUserRequest {

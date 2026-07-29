@@ -1,0 +1,16 @@
+name: Set up Bun + verify lockfiles
+description: >
+  Installs Bun and verifies the committed bun.lock files carry no internal
+  registry-proxy URLs (the check every bun job repeated inline). Run AFTER
+  actions/checkout — like actions/pypi-public, this action does not check out the
+  repo; it needs the working tree (the lockfiles + the strip script) already present.
+
+runs:
+  using: composite
+  steps:
+    - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      with:
+        bun-version: latest
+    - name: Check bun.lock has no proxy URLs
+      shell: bash
+      run: bun scripts/strip-bun-lock-proxy.ts --check

@@ -78,12 +78,8 @@ jobs:
       - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           enable-cache: true
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: latest
+      - uses: ./.github/actions/bun-setup
       - uses: ./.github/actions/pypi-public
-      - name: Check bun.lock has no proxy URLs
-        run: bun scripts/strip-bun-lock-proxy.ts --check
       - run: uv sync --all-packages
       # Export the LikeC4 model fresh so references:/model: id validation runs
       # against the real estate, not a possibly-stale committed dist/model.json
@@ -104,11 +100,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: latest
-      - name: Check bun.lock has no proxy URLs
-        run: bun scripts/strip-bun-lock-proxy.ts --check
+      - uses: ./.github/actions/bun-setup
       - name: Build site (content + review surface)
         run: |
           cd site && bun install --frozen-lockfile && bun run build
@@ -122,14 +114,10 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: latest
+      - uses: ./.github/actions/bun-setup
       - uses: bufbuild/buf-setup-action@a47c93e0b1648d5651a065437926377d060baa99 # v1.50.0
         with:
           github_token: ${{ github.token }}
-      - name: Check bun.lock has no proxy URLs
-        run: bun scripts/strip-bun-lock-proxy.ts --check
       - name: Lint protos
         run: cd proto && buf lint
       - name: Verify generated code is up to date
@@ -153,11 +141,7 @@ jobs:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
-      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: latest
-      - name: Check bun.lock has no proxy URLs
-        run: bun scripts/strip-bun-lock-proxy.ts --check
+      - uses: ./.github/actions/bun-setup
       - name: Validate LikeC4 architecture model
         run: |
           cd architecture && bun install --frozen-lockfile && bun run check

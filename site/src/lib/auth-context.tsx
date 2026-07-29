@@ -18,6 +18,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { useQuery } from "@connectrpc/connect-query";
 import { getViewer } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb";
+import { subscribeSession, sessionResolved } from "./auth-actions";
 import {
   readReviewMode,
   setReviewMode as persistReviewMode,
@@ -66,7 +67,18 @@ const AuthContext = createContext<AuthState>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { data, isLoading } = useQuery(getViewer, {});
+  // Gate the viewer query on the Neon Auth session being RESOLVED. The API
+  // authenticates via a bearer read from the session store (see auth-actions);
+  // that store hydrates asynchronously, so firing getViewer on mount would send
+  // a token-less request and resolve to anonymous even for a signed-in user.
+  // Subscribe to the store and only enable the query once it has settled (a
+  // token is available, or the user is confirmed signed out).
+  const [ready, setReady] = useState<boolean>(sessionResolved);
+  useEffect(() => subscribeSession(() => setReady(sessionResolved())), []);
+
+  const { data, isLoading } = useQuery(getViewer, {}, { enabled: ready });
+  // Until the session resolves the query is disabled (isLoading may be false),
+  // so treat "not yet ready" as loading for consumers/AccessGate.
   const viewer = data?.viewer;
 
   // Two persisted flags behind the single derived `viewMode`. Kept in sync within
@@ -109,7 +121,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const state: AuthState = {
     viewer,
-    isLoading,
+    // Loading until the session store has resolved AND the (then-enabled) viewer
+    // query has returned, so gates don't flash "signed out" during hydration.
+    isLoading: !ready || isLoading,
     isAuthenticated: viewer?.authenticated ?? false,
     isAllowlisted,
     isMaintainer: viewer?.role === Role.MAINTAINER,

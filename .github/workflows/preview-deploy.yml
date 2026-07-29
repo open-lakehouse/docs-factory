@@ -176,10 +176,14 @@ jobs:
           # gen-vercel-config.mjs strips the scheme too, but keep GITHUB_ENV clean.
           echo "NEON_FUNCTION_HOST=${INVOCATION_URL#https://}" >> "$GITHUB_ENV"
 
-      # Generate vercel.json (with the /api → Function host rewrite), build, and
-      # deploy the prebuilt SPA. Vercel reads vercel.json BEFORE the build, so it
-      # must be generated pre-build and deployed via --prebuilt. Capture the
-      # deploy's URL (last stdout line) → this preview's origin for pass 2.
+      # Build the SPA into the Build Output API tree (site/.vercel/output/, with
+      # the /api → Function host rewrite in config.json) and deploy it prebuilt.
+      # We run our OWN build (`build:vercel`) rather than `vercel build`: the
+      # routing must be emitted as .vercel/output/config.json so Vercel applies
+      # it post-build (a top-level vercel.json is read pre-build and can't carry a
+      # per-deploy Function host). `vercel deploy --prebuilt` uploads that tree
+      # as-is. Capture the deploy's URL (last stdout line) → this preview's origin
+      # for pass 2.
       - name: Build + deploy Vercel preview
         id: vercel
         env:
@@ -188,16 +192,15 @@ jobs:
           VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
-          # Install deps + generate vercel.json in site/ (the generator resolves
-          # its own paths, so CWD doesn't matter for it). But run the Vercel CLI
-          # from the REPO ROOT: the Vercel project's Root Directory is set to
-          # `site`, so the CLI scopes to site/ itself — running it from inside
-          # site/ would double it to `site/site` and fail ("path … /site/site
-          # does not exist").
-          (cd site && bun install --frozen-lockfile)
-          node site/scripts/gen-vercel-config.mjs
-          bunx vercel build --token="$VERCEL_TOKEN"
-          # `vercel deploy` prints the deployment URL as its last stdout line.
+          # Build inside site/ so the Build Output tree lands at site/.vercel/
+          # output/ (the generator + assembler resolve paths relative to site/).
+          # `build:vercel` reads NEON_FUNCTION_HOST to bake the /api rewrite.
+          (cd site && bun install --frozen-lockfile && NEON_FUNCTION_HOST="$NEON_FUNCTION_HOST" bun run build:vercel)
+          # Run the Vercel CLI from the REPO ROOT: the Vercel project's Root
+          # Directory is set to `site`, so the CLI scopes to site/ — running it
+          # from inside site/ would double it to `site/site` and fail. --prebuilt
+          # uploads site/.vercel/output as-is (no second build). `vercel deploy`
+          # prints the deployment URL as its last stdout line.
           DEPLOY_URL=$(bunx vercel deploy --prebuilt --token="$VERCEL_TOKEN" | tail -n1)
           echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
           echo "Deployed preview: $DEPLOY_URL"

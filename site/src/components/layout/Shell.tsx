@@ -51,6 +51,21 @@ function ReviewNavItem() {
   );
 }
 
+// Reviewer-only top-nav entry linking to the blog planning view
+// (/review/revops): priority order + target release dates.
+function PlanNavItem() {
+  const { reviewActive } = useAuth();
+  if (!reviewActive) return null;
+  return (
+    <NavLink
+      to="/review/revops"
+      className={({ isActive }) => (isActive ? "active" : undefined)}
+    >
+      Plan
+    </NavLink>
+  );
+}
+
 function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   return (
@@ -122,6 +137,7 @@ export default function Shell({
               </NavLink>
             ))}
             <ReviewNavItem />
+            <PlanNavItem />
           </nav>
           <ThemeToggle />
           <StatusMenu />

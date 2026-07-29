@@ -244,11 +244,13 @@ variables → Actions.
 
 ## Phase 4 — First production deploy (produces the deferred values)
 
-The Neon Functions CLI is in **beta** (currently **us-east-2 only**). The workflows
-deploy the Function fire-and-forget (`neonctl functions deploy … --wait=false`),
-then poll `neonctl functions get … --output json` for `invocation_url`. Before
-arming anything, run the prod deploy **once, manually** to produce the two values
-Phase 3 deferred:
+The Neon Functions CLI is in **beta** (`neonctl` 2.38.x, currently **us-east-2
+only**) and its `functions deploy` **blocks and then falsely times out even when
+the deploy already succeeded** (see the detailed note below). The workflows work
+around it: they run the deploy **detached** and drive off
+`neonctl functions get … --output json`, waiting for `current_deployment.status
+== "completed"` and reading `invocation_url`. Before arming anything, run the prod
+deploy **once, manually** to produce the two values Phase 3 deferred:
 
 1. Trigger `deploy-function.yml` via **workflow_dispatch** (it runs even with
    `REVIEW_DEPLOY_ENABLED` unset when dispatched manually). It migrates the prod
@@ -264,15 +266,19 @@ Confirm at this first run (beta CLI — adjust if they differ):
   `<branch_id>-<slug>.compute.<region>.aws.neon.tech`, where `branch_id` is Neon's
   internal `br-…` id — unknowable before the deploy. Both workflows **deploy first
   and capture** the host; do not reintroduce a name-derived host.
-- **CLI invocation.** The workflows run the CLI via **`bunx neonctl`** (a global
-  `bun install -g neonctl` hung in CI). Crucially they pass **`--wait=false`**:
-  the default `--wait=true` BLOCKS polling for the deployment to reach a terminal
-  state (10-min default timeout) and *that* is what timed CI out — the deploy was
-  triggered fine, the CLI just hung waiting. With `--wait=false` the deploy runs
-  server-side and the workflow polls `neonctl functions get review --output json`
-  for `invocation_url` (with `.invocationUrl // .url` fallbacks) on its own ~150s
-  budget. Verify both subcommands and the exact URL field against the beta CLI;
-  fix the `jq` path if it differs. Pin a CLI version once confirmed.
+- **CLI invocation — the deploy blocks even on success.** The workflows run the
+  CLI via **`bunx neonctl`** (a global `bun install -g neonctl` hung in CI). The
+  bigger trap: `neonctl functions deploy` (2.38.x) triggers the deploy, then polls
+  "waiting for the deployment to **start**" and hangs the full 10-min timeout even
+  when the deployment has **already completed within seconds** — then exits 1 with
+  a false `ERROR: Timed out`. This was verified: a `functions get` on the branch
+  showed `current_deployment.status == "completed"` at the exact trigger second,
+  while the deploy command was still hung. `--wait` only governs the *build* wait,
+  not this start-poll, so no flag fixes it. The workaround: run the deploy
+  **detached** (`setsid … &`) and don't depend on its exit; poll `neonctl
+  functions get <slug> --branch <name> --output json` until `current_deployment.
+  status` is `completed` (or `failed`), then read `invocation_url`. Verify the
+  field names against the beta CLI; pin a version once confirmed.
 - That `neon.ts` at the repo root matches your project (auth on; `review` Function
   slug/source/runtime). **`neon.ts` does not auto-deploy** — it is applied only by
   an explicit `neon deploy` (which the workflows run every push); branch creation,

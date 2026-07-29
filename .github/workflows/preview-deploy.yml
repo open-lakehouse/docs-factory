@@ -122,42 +122,52 @@ jobs:
           ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          set -o pipefail  # surface a neonctl failure, not jq's exit status
           # We MUST deploy explicitly on every push: neon.ts's preview.functions
-          # is applied by `neon deploy`, NOT auto-applied on branch creation or on
-          # code changes — so a push with new server/ code only ships if we deploy
-          # it here.
+          # is applied only by an explicit `neon deploy` — not on branch creation,
+          # not on code changes — so new server/ code only ships if we deploy here.
           #
-          # But `neonctl functions deploy` defaults to --wait=true, which BLOCKS
-          # polling for the deployment to reach a terminal state (default timeout
-          # 10 min). That is what timed out CI: the deploy was *triggered* fine,
-          # then the CLI hung waiting. So deploy fire-and-forget with --wait=false
-          # (returns right after upload), then poll `functions get` for the
-          # invocation_url on our OWN short budget.
+          # The beta neonctl (2.38.x) BLOCKS after triggering the deploy: it polls
+          # "waiting for the deployment to start" and, even when the deployment has
+          # already COMPLETED within seconds, hangs the full 10-min timeout and then
+          # exits 1 with a false "Timed out" — verified against a deployment whose
+          # get shows status=completed at the trigger second. --wait only governs
+          # the *build* wait, not this start-poll, so it can't fix it. So we do NOT
+          # depend on the deploy command's exit: run it detached, then drive off
+          # `functions get`, which returns the completed deployment immediately.
           #
-          # The Function host is NOT derivable from the git branch name: Neon
-          # forms it as <branch_id>-<slug>.compute.<region>.aws.neon.tech, where
-          # branch_id is Neon's internal br-… id — hence we read it from `get`.
-          bunx neonctl functions deploy review \
+          # The Function host is NOT derivable from the git branch name — Neon forms
+          # it as <branch_id>-<slug>.compute.<cell>.<region>.aws.neon.tech — so we
+          # read invocation_url from `get`.
+          setsid bunx neonctl functions deploy review \
             --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
             --src server/src/handler.ts --wait=false \
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
-            --env BUILD_SECRET="$REVIEW_BUILD_SECRET"
+            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            >deploy.log 2>&1 &
 
-          # Poll for the invocation_url (deploy continues server-side). 30 × 5s =
-          # 150s budget — well under the server's ~2-min build, and nowhere near
-          # the CLI's old 10-min hang.
+          # Poll `get` until the deployment reaches a terminal state. 60 × 5s =
+          # 300s budget (the build itself is ~seconds; this is generous headroom).
           INVOCATION_URL=""
-          for _ in $(seq 1 30); do
-            INVOCATION_URL=$(bunx neonctl functions get review \
-              --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" --output json \
-              | jq -r '.invocation_url // .invocationUrl // .url // empty')
-            [ -n "$INVOCATION_URL" ] && break
+          STATUS=""
+          for _ in $(seq 1 60); do
+            GET_JSON=$(bunx neonctl functions get review \
+              --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" --output json 2>/dev/null || echo '{}')
+            STATUS=$(jq -r '.current_deployment.status // empty' <<<"$GET_JSON")
+            if [ "$STATUS" = "completed" ]; then
+              INVOCATION_URL=$(jq -r '.invocation_url // empty' <<<"$GET_JSON")
+              break
+            fi
+            if [ "$STATUS" = "failed" ]; then
+              echo "::error::the review Function deployment reported status=failed — see the Neon console (docs/deploy/runbook.md §4)."
+              cat deploy.log || true
+              exit 1
+            fi
             sleep 5
           done
           if [ -z "$INVOCATION_URL" ]; then
-            echo "::error::no invocation_url from 'neonctl functions get review' after polling — the deploy may have failed; check the Neon console (docs/deploy/runbook.md §4)."
+            echo "::error::review Function did not reach status=completed after polling (last status: '${STATUS:-none}'); check the Neon console (docs/deploy/runbook.md §4)."
+            cat deploy.log || true
             exit 1
           fi
           # gen-vercel-config.mjs strips the scheme too, but keep GITHUB_ENV clean.

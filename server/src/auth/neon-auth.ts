@@ -1,29 +1,32 @@
 // Prod auth provider: Neon Auth (GitHub OAuth) + the reviewer allowlist.
 //
-// Neon Auth stores users, sessions, and linked OAuth accounts in the neon_auth
-// schema, queryable with SQL. The verification path is:
-//   1. read the Neon Auth session token from the request (cookie or bearer)
-//   2. resolve it to a user id + a valid (unexpired) session
-//   3. resolve that user's GitHub login + verified emails (see below)
-//   4. look the login and ANY email up in reviewer_allowlist → role
+// The bearer the client sends is Neon Auth's SIGNED JWT (Better Auth's
+// `set-auth-jwt`), not the opaque session token — so we authenticate it the
+// stateless, rotation-proof way: verify its signature against Neon Auth's JWKS
+// (EdDSA) and check iss/aud/exp. The verified claims give us a TRUSTED user id
+// (`sub`) and email. The verification path is:
+//   1. read the bearer (or cookie) from the request
+//   2. verify it as a JWT via the JWKS at NEON_AUTH_URL/.well-known/jwks.json
+//      (issuer + audience = NEON_AUTH_URL's host); trust `sub` + `email`
+//   3. enrich: look up neon_auth.account by that user id for the GitHub
+//      login/accountId (see below), and gather the user's emails
+//   4. look the login(s) and ANY email up in reviewer_allowlist → role
 //
 // Step 3 subtlety: neon_auth.account stores GitHub's numeric OAuth account id in
 // "accountId", NOT the @handle. To let the allowlist be seeded by github_login,
 // we exchange the account's stored "accessToken" for the real login via GitHub's
 // /user API, memoized per user id so it isn't a per-request network hit. We also
-// fetch the account's /user/emails (verified only), because Neon Auth stores just
-// the PRIMARY email on the user row — so an allowlist row seeded with a reviewer's
-// non-primary address would otherwise silently miss. If either call fails we fall
-// back (numeric id for the login, the user-row email for emails), so verification
-// never crashes.
+// fetch the account's /user/emails (verified only). If either call fails we fall
+// back (numeric id for the login, the JWT/user-row email), so verification never
+// crashes.
 //
-// The account join is LEFT, not INNER: a valid session + user is an authenticated
-// identity even if the github account link is absent or stored under an
-// unexpected providerId — we then match the allowlist on email rather than
-// collapsing to anonymous (which would lock out an allowlisted user). The
-// resolver still fails closed (anonymous) when the token resolves to no session
-// at all — auth is additive, so an unresolved session simply sees published
-// content. The allowlist half (steps 3-4) is fully ours and complete.
+// The account enrichment is best-effort: a validly-signed JWT is already an
+// authenticated identity even if the github account row is absent — we then match
+// the allowlist on the JWT email alone rather than collapsing to anonymous (which
+// would lock out an allowlisted user). The resolver fails closed (anonymous) only
+// when there is no valid JWT — auth is additive, so an unauthenticated request
+// simply sees published content.
+import { createRemoteJWKSet, jwtVerify } from "jose";
 import { db } from "../db.js";
 import { lookupRole } from "../allowlist.js";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
@@ -174,65 +177,133 @@ export function sessionToken(header: Headers): string | undefined {
 }
 
 /**
- * Resolve a session token to a GitHub identity via the neon_auth schema.
- * Returns null when the token is absent/invalid/expired. Isolated so the exact
- * neon_auth session/account column names can be confirmed against a live
- * project without touching the rest of the provider.
+ * Neon Auth base URL (the full URL incl. its `/<db>/auth` path, matching the
+ * client's VITE_NEON_AUTH_URL). It's the JWT issuer/audience and the base for
+ * the JWKS endpoint. Set on the Function as NEON_AUTH_URL at deploy.
+ */
+function authBaseUrl(): string | undefined {
+  const v = process.env.NEON_AUTH_URL?.trim();
+  return v && v.length ? v.replace(/\/+$/, "") : undefined;
+}
+
+// Remote JWKS, created once and cached (jose refetches keys on unknown `kid`,
+// with its own cooldown). Keyed by base URL so a config change rebuilds it.
+let jwks: ReturnType<typeof createRemoteJWKSet> | undefined;
+let jwksBase: string | undefined;
+function getJwks(base: string) {
+  if (!jwks || jwksBase !== base) {
+    jwks = createRemoteJWKSet(new URL(`${base}/.well-known/jwks.json`));
+    jwksBase = base;
+  }
+  return jwks;
+}
+
+/** The subset of Neon Auth JWT claims we rely on. */
+interface AuthClaims {
+  sub: string;
+  email?: string;
+  name?: string;
+}
+
+/**
+ * Verify the bearer as a Neon Auth JWT (EdDSA, via JWKS), checking signature,
+ * issuer, audience, and expiry. Returns the trusted claims, or null on any
+ * failure (bad signature, expired, wrong iss/aud, unconfigured) so the caller
+ * treats the request as anonymous.
+ *
+ * Note the iss/aud vs. JWKS-URL split: Neon Auth's JWKS lives under the full
+ * auth base path (`{base}/.well-known/jwks.json`), but the token's `iss`/`aud`
+ * are the base's ORIGIN (scheme+host, no path). So we fetch keys from the full
+ * base but validate iss/aud against the origin.
+ */
+async function verifyJwt(token: string): Promise<AuthClaims | null> {
+  const base = authBaseUrl();
+  if (!base) return null;
+  return verifyJwtWith(token, base, getJwks(base));
+}
+
+/**
+ * The testable core of verifyJwt: verify `token` against `keys` with iss/aud =
+ * the ORIGIN of `base` (see verifyJwt's note on the path-vs-origin split).
+ * Exported for unit tests, which pass a locally-generated key set.
+ */
+export async function verifyJwtWith(
+  token: string,
+  base: string,
+  keys: Parameters<typeof jwtVerify>[1],
+): Promise<AuthClaims | null> {
+  let origin: string;
+  try {
+    origin = new URL(base).origin;
+  } catch {
+    return null; // base isn't a valid URL.
+  }
+  try {
+    const { payload } = await jwtVerify(token, keys, { issuer: origin, audience: origin });
+    if (typeof payload.sub !== "string" || !payload.sub) return null;
+    return {
+      sub: payload.sub,
+      email: typeof payload.email === "string" ? payload.email : undefined,
+      name: typeof payload.name === "string" ? payload.name : undefined,
+    };
+  } catch {
+    // Signature/exp/iss/aud failure, or a raw opaque token that isn't a JWT.
+    return null;
+  }
+}
+
+/**
+ * Resolve a bearer to a GitHub identity: verify the JWT for a trusted user id +
+ * email, then best-effort enrich with the GitHub login/accountId from
+ * neon_auth.account. Returns null only when the JWT does not verify.
  */
 async function resolveIdentity(token: string): Promise<NeonIdentity | null> {
-  const sql = db();
+  const claims = await verifyJwt(token);
+  if (!claims) return null;
+
+  // Best-effort GitHub enrichment, keyed on the TRUSTED user id from the JWT.
+  // A DB hiccup or a missing account row must not drop a validly-authenticated
+  // identity: fall back to the user id as the display login and match the
+  // allowlist on the JWT email.
+  let accountId: string | null = null;
+  let accessToken: string | null = null;
+  let userRowEmail: string | null = null;
   try {
-    // LEFT join the github account: a valid session + user is enough to be an
-    // authenticated identity. If the github account row is absent (or stored
-    // under a different providerId than we expect), we still resolve the user
-    // and match the allowlist on their email — rather than collapsing the whole
-    // identity to anonymous, which would silently lock out an allowlisted user.
+    const sql = db();
     const rows = await sql<
-      {
-        user_id: string;
-        account_id: string | null;
-        access_token: string | null;
-        name: string | null;
-        email: string | null;
-      }[]
+      { account_id: string | null; access_token: string | null; email: string | null }[]
     >`
-      select
-        u.id as user_id,
-        acc."accountId" as account_id,
-        acc."accessToken" as access_token,
-        u.name as name,
-        u.email as email
-      from neon_auth.session s
-      join neon_auth."user" u on u.id = s."userId"
+      select acc."accountId" as account_id, acc."accessToken" as access_token, u.email as email
+      from neon_auth."user" u
       left join neon_auth.account acc on acc."userId" = u.id and acc."providerId" = 'github'
-      where s.token = ${token}
-        and s."expiresAt" > now()
+      where u.id = ${claims.sub}
       limit 1
     `;
     const row = rows[0];
-    // No session/user for this token (or expired) → genuinely logged out.
-    if (!row) return null;
-    // Prefer the GitHub @handle for the display login; when there's no github
-    // account to resolve it from, use the user id as a stable placeholder.
-    const login = row.account_id
-      ? await resolveLogin(row.user_id, row.account_id, row.access_token)
-      : row.user_id;
-    // Allowlist github_login candidates: the resolved @handle plus the numeric
-    // account id, so a row seeded with either matches even when the /user token
-    // exchange fails (leaving `login` as the numeric id).
-    const logins = [login, row.account_id].filter((x): x is string => !!x);
-    const emails = await resolveEmails(row.user_id, row.email, row.access_token);
-    return {
-      userId: row.user_id,
-      login,
-      logins,
-      name: row.name ?? undefined,
-      emails,
-    };
+    accountId = row?.account_id ?? null;
+    accessToken = row?.access_token ?? null;
+    userRowEmail = row?.email ?? null;
   } catch {
-    // neon_auth not present (e.g. not yet provisioned) → treat as logged out.
-    return null;
+    // neon_auth unavailable → proceed with JWT claims only.
   }
+
+  // Display login: resolved GitHub @handle when we can, else the user id.
+  const login = accountId
+    ? await resolveLogin(claims.sub, accountId, accessToken)
+    : claims.sub;
+  // Allowlist github_login candidates: resolved @handle + numeric account id.
+  const logins = [login, accountId].filter((x): x is string => !!x);
+  // Emails: the JWT email (always trusted), the user-row primary, and any
+  // GitHub-verified addresses.
+  const githubEmails = await resolveEmails(claims.sub, userRowEmail, accessToken);
+  const emails = [...new Set([claims.email, ...githubEmails].filter((x): x is string => !!x))];
+  return {
+    userId: claims.sub,
+    login,
+    logins,
+    name: claims.name,
+    emails,
+  };
 }
 
 export function createNeonAuthProvider(): AuthProvider {

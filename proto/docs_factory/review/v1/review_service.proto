@@ -48,10 +48,22 @@ service ReviewService {
   // file plus its resolved snippet regions so reviewers can comment on any line.
   rpc GetSourceFile(GetSourceFileRequest) returns (GetSourceFileResponse);
 
-  // Append a review-state transition (validated against the state machine).
+  // Record an explicit review-state OUTCOME (validated against the state
+  // machine). Only the explicit outcomes are accepted: CHANGES_REQUESTED,
+  // RELEASED, and the maintainer APPROVED override. NEEDS_REVIEW and NONE are
+  // derived and cannot be set here; ordinary approvals go through RecordApproval.
   rpc TransitionReview(TransitionReviewRequest) returns (TransitionReviewResponse);
   // Maintainer-only convenience for the terminal RELEASED transition.
   rpc ReleaseContent(ReleaseContentRequest) returns (ReleaseContentResponse);
+
+  // Record the current viewer's approval of an artifact (allowlist-gated,
+  // idempotent). Satisfies any open REQUIRED request addressed to that reviewer.
+  // Once the artifact's approval preconditions are met it derives to APPROVED —
+  // there is no manual transition. Returns the refreshed summary.
+  rpc RecordApproval(RecordApprovalRequest) returns (RecordApprovalResponse);
+  // Dismiss an approval. A reviewer may dismiss their own; a maintainer may
+  // dismiss anyone's (via `approver_login`). Returns the refreshed summary.
+  rpc DismissApproval(DismissApprovalRequest) returns (DismissApprovalResponse);
 
   // RevOps pipeline: set a content item's ordered priority (allowlist-gated).
   // Absent priority clears the rank. Returns the refreshed summary row.
@@ -206,6 +218,23 @@ message ReleaseContentRequest {
 }
 message ReleaseContentResponse {
   ReviewState state = 1;
+}
+
+message RecordApprovalRequest {
+  ContentRef ref = 1;
+}
+message RecordApprovalResponse {
+  DraftSummary draft = 1;
+}
+
+message DismissApprovalRequest {
+  ContentRef ref = 1;
+  // Whose approval to dismiss. Omitted = the current viewer's own approval;
+  // set = a maintainer dismissing that reviewer's approval.
+  optional string approver_login = 2;
+}
+message DismissApprovalResponse {
+  DraftSummary draft = 1;
 }
 
 message SetPriorityRequest {

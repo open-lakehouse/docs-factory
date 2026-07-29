@@ -110,10 +110,21 @@ message SourceFile {
 
 // The reviewer-facing review/release state. Distinct from the git authoring
 // `status`; RELEASED is a database action, never a frontmatter write.
+//
+// This is the *effective* state the UI shows, and it is mostly DERIVED, not
+// stored (see deriveReviewState on the server):
+//   - NEEDS_REVIEW is derived from frontmatter `ready` with no terminal outcome —
+//     there is no manual "start review" step, and it is never stored.
+//   - APPROVED is normally derived from recorded per-reviewer Approvals meeting
+//     the artifact's preconditions (a maintainer may also force it explicitly).
+//   - Only CHANGES_REQUESTED, RELEASED, and the maintainer APPROVED override are
+//     persisted as explicit outcomes; NONE and NEEDS_REVIEW are never stored.
+// Enum numbers are stable across this rename (2 was formerly IN_REVIEW).
 enum ReviewState {
   REVIEW_STATE_UNSPECIFIED = 0;
   REVIEW_STATE_NONE = 1;
-  REVIEW_STATE_IN_REVIEW = 2;
+  // Derived: frontmatter is `ready` and no terminal outcome/approval applies yet.
+  REVIEW_STATE_NEEDS_REVIEW = 2;
   REVIEW_STATE_CHANGES_REQUESTED = 3;
   REVIEW_STATE_APPROVED = 4;
   REVIEW_STATE_RELEASED = 5;
@@ -137,9 +148,10 @@ enum Requirement {
   REQUIREMENT_OPTIONAL = 2;
 }
 
-// Lifecycle of a single review request. A request is SATISFIED when the artifact
-// reaches APPROVED (any allowlisted reviewer's approval satisfies all open
-// requests on that artifact — there is no per-reviewer approval record).
+// Lifecycle of a single review request. Satisfaction is per-reviewer: a request
+// is SATISFIED when the reviewer it names records an Approval on the artifact.
+// (A required, still-OPEN request blocks release and keeps the derived state at
+// NEEDS_REVIEW until that specific reviewer approves.)
 enum RequestStatus {
   REQUEST_STATUS_UNSPECIFIED = 0;
   REQUEST_STATUS_OPEN = 1;
@@ -155,12 +167,20 @@ enum EventKind {
   EVENT_KIND_REVIEW_REQUESTED = 1;
   EVENT_KIND_REQUEST_SATISFIED = 2;
   EVENT_KIND_REQUEST_CANCELLED = 3;
+  // Vestigial: the manual "in review" transition no longer exists (NEEDS_REVIEW
+  // is derived), so this is never emitted. The number is retained, not reused.
   EVENT_KIND_STATE_IN_REVIEW = 4;
   EVENT_KIND_STATE_CHANGES_REQUESTED = 5;
+  // A maintainer forced the explicit APPROVED override (distinct from APPROVED,
+  // which records one reviewer's approval).
   EVENT_KIND_STATE_APPROVED = 6;
   EVENT_KIND_RELEASED = 7;
   EVENT_KIND_UNPUBLISHED = 8;
   EVENT_KIND_REPUBLISHED = 9;
+  // A specific reviewer recorded an approval (payload carries reviewer_login).
+  EVENT_KIND_APPROVED = 10;
+  // An approval was dismissed (by its author or a maintainer).
+  EVENT_KIND_APPROVAL_DISMISSED = 11;
 }
 
 // The current viewer, resolved from the auth provider (Neon Auth in prod, the
@@ -237,14 +257,24 @@ message DraftSummary {
   // intended ship date; date-only, carried at UTC midnight in the timestamp.
   optional int32 priority = 7;
   optional google.protobuf.Timestamp target_release_date = 8;
-  // Number of open REQUIRED review requests on this content. Non-zero blocks
-  // release (ReleaseContent throws) and is surfaced in the reviewer UI.
+  // Number of open REQUIRED review requests on this content — i.e. required
+  // reviewers who have not yet approved (satisfaction is per-reviewer). Non-zero
+  // blocks release (ReleaseContent throws) and keeps the derived state at
+  // NEEDS_REVIEW; surfaced in the reviewer UI.
   int32 open_required_request_count = 9;
   // Whether the content is currently published (publicly visible). This is a
   // sticky latch on content_revops, decoupled from review_state: set true on
   // release, cleared only by an explicit unpublish. Anonymous visibility is
   // `frontmatter_status == "ready" AND published`.
   bool published = 10;
+  // Active (non-dismissed) approvals on this content — the "approved by whom".
+  repeated Approval approvals = 11;
+  // Logins of required reviewers whose approval is still pending (the open
+  // required requests). Drives the "required: A, B still pending" UI.
+  repeated string pending_required_logins = 12;
+  // Convenience mirror of `review_state == NEEDS_REVIEW`, so the client need not
+  // re-derive it.
+  bool needs_review = 13;
 }
 
 // One allowlist entry.
@@ -288,6 +318,23 @@ message ReviewRequest {
   string note = 8;
   google.protobuf.Timestamp created_at = 9;
   optional google.protobuf.Timestamp satisfied_at = 10;
+}
+
+// One reviewer's approval of an artifact. Approvals are per-reviewer and
+// artifact-level: they persist across content versions (an edit is normally a
+// response to review, not a regression, so a new version does not invalidate a
+// prior approval). `version_id` records the version the approval was made
+// against for provenance/display only — it is never used to invalidate the
+// approval. "Approved by whom" is the set of active (non-dismissed) approvals.
+message Approval {
+  string id = 1;
+  ContentRef ref = 2;
+  string approver_login = 3;
+  // Stable Neon Auth user id when available (else the login was all we had).
+  optional string approver_user_id = 4;
+  // The content_version this approval was recorded against — provenance only.
+  optional string version_id = 5;
+  google.protobuf.Timestamp created_at = 6;
 }
 
 // One entry in an artifact's review timeline. `kind` is the event type; `actor`

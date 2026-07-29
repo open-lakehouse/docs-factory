@@ -93,18 +93,29 @@ jobs:
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
           set -o pipefail  # surface a neonctl failure, not jq's exit status
-          # Run via `bunx neonctl` (not `bun install -g` + bare `neonctl`, which
-          # hung in CI). Deploy the prod Function on the default branch.
-          INVOCATION_URL=$(bunx neonctl functions deploy "$SLUG" \
+          # Deploy fire-and-forget with --wait=false: the default (--wait=true)
+          # BLOCKS polling for a terminal state (10-min timeout) and hung CI. The
+          # deploy still runs server-side; we poll `functions get` for the
+          # invocation_url on our own short budget instead. See preview-deploy.yml
+          # and docs/deploy/runbook.md §4 for the rationale.
+          bunx neonctl functions deploy "$SLUG" \
             --project-id "$NEON_PROJECT_ID" \
-            --src server/src/handler.ts --output json \
+            --src server/src/handler.ts --wait=false \
             --env AUTH_MODE=neon \
             --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
-            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            | jq -r '.invocation_url // .invocationUrl // .url')
-          if [ -z "$INVOCATION_URL" ] || [ "$INVOCATION_URL" = "null" ]; then
-            echo "::error::could not read the Function invocation_url from the Neon CLI output — inspect the raw JSON and adjust the jq path (docs/deploy/runbook.md §4)."
+            --env BUILD_SECRET="$REVIEW_BUILD_SECRET"
+
+          INVOCATION_URL=""
+          for _ in $(seq 1 30); do
+            INVOCATION_URL=$(bunx neonctl functions get "$SLUG" \
+              --project-id "$NEON_PROJECT_ID" --output json \
+              | jq -r '.invocation_url // .invocationUrl // .url // empty')
+            [ -n "$INVOCATION_URL" ] && break
+            sleep 5
+          done
+          if [ -z "$INVOCATION_URL" ]; then
+            echo "::error::no invocation_url from 'neonctl functions get $SLUG' after polling — the deploy may have failed; check the Neon console (docs/deploy/runbook.md §4)."
             exit 1
           fi
           # The prod host is stable across deploys (default branch id + slug). Set

@@ -243,7 +243,8 @@ variables → Actions.
 ## Phase 4 — First production deploy (produces the deferred values)
 
 The Neon Functions CLI is in **beta** (currently **us-east-2 only**). The workflows
-run `neonctl functions deploy … --output json` and parse `invocation_url`. Before
+deploy the Function fire-and-forget (`neonctl functions deploy … --wait=false`),
+then poll `neonctl functions get … --output json` for `invocation_url`. Before
 arming anything, run the prod deploy **once, manually** to produce the two values
 Phase 3 deferred:
 
@@ -261,17 +262,19 @@ Confirm at this first run (beta CLI — adjust if they differ):
   `<branch_id>-<slug>.compute.<region>.aws.neon.tech`, where `branch_id` is Neon's
   internal `br-…` id — unknowable before the deploy. Both workflows **deploy first
   and capture** the host; do not reintroduce a name-derived host.
-- **CLI invocation.** The workflows run the CLI via **`bunx neonctl`**, not a
-  `bun install -g neonctl` + bare `neonctl` — the global-install path hung
-  indefinitely in CI (no output for 10+ min), while `bunx neonctl` runs the
-  identical deploy in seconds (as it does locally). They read `invocation_url`
-  (with `.invocationUrl // .url` fallbacks). Verify `neonctl functions deploy`
-  exists with `--src`/`--branch`/`--project-id`/`--output json` and the exact URL
-  field — inspect the raw JSON and fix the `jq` path if needed. Pin a CLI version
-  once confirmed.
+- **CLI invocation.** The workflows run the CLI via **`bunx neonctl`** (a global
+  `bun install -g neonctl` hung in CI). Crucially they pass **`--wait=false`**:
+  the default `--wait=true` BLOCKS polling for the deployment to reach a terminal
+  state (10-min default timeout) and *that* is what timed CI out — the deploy was
+  triggered fine, the CLI just hung waiting. With `--wait=false` the deploy runs
+  server-side and the workflow polls `neonctl functions get review --output json`
+  for `invocation_url` (with `.invocationUrl // .url` fallbacks) on its own ~150s
+  budget. Verify both subcommands and the exact URL field against the beta CLI;
+  fix the `jq` path if it differs. Pin a CLI version once confirmed.
 - That `neon.ts` at the repo root matches your project (auth on; `review` Function
-  slug/source/runtime). New branches apply it automatically; existing branches
-  still need the per-push deploy step.
+  slug/source/runtime). **`neon.ts` does not auto-deploy** — it is applied only by
+  an explicit `neon deploy` (which the workflows run every push); branch creation,
+  `neon checkout`, and the Vercel integration do NOT deploy the Function.
 
 > Previews never need this capture step: `preview-deploy.yml` deploys the branch
 > Function and writes its host to `$GITHUB_ENV` inline before the Vercel build.

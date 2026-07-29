@@ -1,14 +1,14 @@
 // Neon project policy (neon.ts). Declares the review backend as a branch-scoped
-// Function and enables Neon Auth. When a NEW branch is created via `neon checkout`
-// (or the Neon<>Vercel integration creating a preview DB branch), Neon applies
-// this policy and deploys the declared Function onto that fresh branch — so a
-// preview branch has a working /api even if the CI job didn't deploy it.
+// Function and enables Neon Auth.
 //
-// IMPORTANT: this COMPLEMENTS, it does not replace, the explicit deploy step in
-// .github/workflows/preview-deploy.yml. Checking out an EXISTING branch does not
-// re-deploy the Function, so pushing new server/ code to an open PR still needs
-// the workflow's `neon functions deploy` (or `neon deploy`) to update it. Treat
-// neon.ts as the declarative baseline and the workflow as the per-push refresh.
+// IMPORTANT: this config is applied only by an EXPLICIT `neon deploy` / `neon
+// config apply` — it is NOT auto-applied on branch creation, on `neon checkout`,
+// or when the Neon<>Vercel integration creates a preview DB branch, and code
+// changes never redeploy on their own. So the Function is deployed by the
+// explicit step in .github/workflows/preview-deploy.yml (per PR) and
+// deploy-function.yml (prod) on every push; neon.ts is the declaration those
+// deploys realize, not a standalone auto-deploy path. (The integration only
+// creates the DB branch + injects env — it does not deploy Functions.)
 //
 // The Function entrypoint is server/src/handler.ts (`export default { fetch }`),
 // the same Hono+Connect app the local dev server runs. DATABASE_URL is injected

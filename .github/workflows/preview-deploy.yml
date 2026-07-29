@@ -96,25 +96,41 @@ jobs:
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
           set -o pipefail  # surface a neonctl failure, not jq's exit status
-          # Run the CLI via `bunx neonctl`, NOT a global `bun install -g neonctl` +
-          # bare `neonctl`: the global-install path hung indefinitely in CI (no
-          # output for 10+ min), while `bunx neonctl` runs the identical deploy in
-          # seconds — the same way it succeeds locally.
+          # We MUST deploy explicitly on every push: neon.ts's preview.functions
+          # is applied by `neon deploy`, NOT auto-applied on branch creation or on
+          # code changes — so a push with new server/ code only ships if we deploy
+          # it here.
+          #
+          # But `neonctl functions deploy` defaults to --wait=true, which BLOCKS
+          # polling for the deployment to reach a terminal state (default timeout
+          # 10 min). That is what timed out CI: the deploy was *triggered* fine,
+          # then the CLI hung waiting. So deploy fire-and-forget with --wait=false
+          # (returns right after upload), then poll `functions get` for the
+          # invocation_url on our OWN short budget.
           #
           # The Function host is NOT derivable from the git branch name: Neon
           # forms it as <branch_id>-<slug>.compute.<region>.aws.neon.tech, where
-          # branch_id is Neon's internal br-… id. So we deploy first and CAPTURE
-          # the invocation_url the CLI returns, then hand its host to the Vercel
-          # build below (which bakes it into the /api rewrite). See runbook §4.
-          INVOCATION_URL=$(bunx neonctl functions deploy review \
+          # branch_id is Neon's internal br-… id — hence we read it from `get`.
+          bunx neonctl functions deploy review \
             --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
-            --src server/src/handler.ts --output json \
+            --src server/src/handler.ts --wait=false \
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
-            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            | jq -r '.invocation_url // .invocationUrl // .url')
-          if [ -z "$INVOCATION_URL" ] || [ "$INVOCATION_URL" = "null" ]; then
-            echo "::error::could not read the Function invocation_url from the Neon CLI output — inspect the raw JSON and adjust the jq path (docs/deploy/runbook.md §4)."
+            --env BUILD_SECRET="$REVIEW_BUILD_SECRET"
+
+          # Poll for the invocation_url (deploy continues server-side). 30 × 5s =
+          # 150s budget — well under the server's ~2-min build, and nowhere near
+          # the CLI's old 10-min hang.
+          INVOCATION_URL=""
+          for _ in $(seq 1 30); do
+            INVOCATION_URL=$(bunx neonctl functions get review \
+              --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" --output json \
+              | jq -r '.invocation_url // .invocationUrl // .url // empty')
+            [ -n "$INVOCATION_URL" ] && break
+            sleep 5
+          done
+          if [ -z "$INVOCATION_URL" ]; then
+            echo "::error::no invocation_url from 'neonctl functions get review' after polling — the deploy may have failed; check the Neon console (docs/deploy/runbook.md §4)."
             exit 1
           fi
           # gen-vercel-config.mjs strips the scheme too, but keep GITHUB_ENV clean.

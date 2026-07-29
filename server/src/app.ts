@@ -6,7 +6,7 @@ import { streamSSE } from "hono/streaming";
 import { mountConnect } from "./connect-hono.js";
 import { registerReviewService } from "./services/review.js";
 import { selectProvider } from "./auth/provider.js";
-import { listenerClient } from "./db.js";
+import { db, listenerClient, resolveDatabaseUrl } from "./db.js";
 import { COMMENTS_CHANNEL, sseEnabled } from "./notify.js";
 import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 
@@ -37,6 +37,54 @@ export async function createApp(): Promise<Hono> {
   app.get("/healthz", (c) => c.json({ ok: true }));
 
   const auth = await selectProvider();
+
+  // TEMPORARY diagnostic (gated behind REVIEW_DEBUG_VIEWER=true; a 404 otherwise).
+  // GetViewer returns ANONYMOUS for a session the SQL proves is allowlisted, so
+  // this reports what the RUNNING Function actually sees — the DB host/branch it
+  // resolves at runtime (which may differ from the branch migrations/console
+  // used), whether the bearer resolves to an allowlisted role, and what the raw
+  // allowlist query returns against the Function's own connection. No secrets:
+  // the connection string's password is redacted; only the host/db are shown.
+  // Remove once the anonymous-viewer bug is diagnosed.
+  if (process.env.REVIEW_DEBUG_VIEWER === "true") {
+    app.get("/debug/viewer", async (c) => {
+      const url = resolveDatabaseUrl();
+      let host: string | null = null;
+      let database: string | null = null;
+      try {
+        if (url) {
+          const u = new URL(url);
+          host = u.host;
+          database = u.pathname.replace(/^\//, "") || null;
+        }
+      } catch {
+        /* unparseable URL → leave null */
+      }
+      // What the auth provider resolves for THIS request's bearer/cookie.
+      const viewer = await auth.verify(new Headers(c.req.raw.headers));
+      // The raw allowlist rows the Function's own connection returns, so we can
+      // see whether the seeded row is even visible to the running Function.
+      let allowlist: unknown = null;
+      try {
+        allowlist = await db()<{ github_login: string | null; email: string | null; role: string }[]>`
+          select github_login, email, role from reviewer_allowlist
+        `;
+      } catch (e) {
+        allowlist = { error: String(e) };
+      }
+      return c.json({
+        db: { host, database },
+        viewer: {
+          authenticated: viewer.authenticated,
+          login: viewer.login,
+          role: Role[viewer.role],
+          isAllowlisted: viewer.isAllowlisted,
+        },
+        allowlist,
+      });
+    });
+  }
+
   mountConnect(app, (router) => registerReviewService(router, auth));
 
   // Live comment updates (Phase 4B). A plain SSE endpoint — deliberately NOT a

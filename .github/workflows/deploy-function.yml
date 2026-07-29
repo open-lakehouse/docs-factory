@@ -1,12 +1,6 @@
 # Deploy the review backend (server/) to the PRODUCTION Neon branch's Function.
 # (Per-PR preview Function deploys live in preview-deploy.yml.)
 #
-# INERT UNTIL PROVISIONED. The push trigger is live, but the job's `if:` guard
-# runs it only on main AND only when the repo variable REVIEW_DEPLOY_ENABLED is
-# 'true' — so until provisioning sets that variable and the secrets/vars under
-# `env`, every push is a no-op. Mirrors register-versions.yml. See the manual
-# steps in docs/deploy/runbook.md.
-#
 # What it does: applies migrations to the prod branch (direct URL), then bundles
 # server/ and deploys it as the prod Neon Function via the Neon CLI. The Function
 # entrypoint is server/src/handler.ts (`export default { fetch }`). DATABASE_URL
@@ -34,15 +28,11 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Extra guard: even if the push trigger is later uncommented, only run on
-    # main and only when explicitly enabled via a repo variable. Until
-    # REVIEW_DEPLOY_ENABLED is set to 'true', this job is a no-op.
-    if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.ref == 'refs/heads/main' && vars.REVIEW_DEPLOY_ENABLED == 'true')
-    # Prod secrets/vars (DATABASE_URL, prod NEON_API_KEY, prod REVIEW_ALLOWED_ORIGIN)
-    # live in the `production` environment, branch-restricted to main with optional
-    # required reviewers — a stronger gate than the `if:` ref check. See runbook §3.
+    # Runs on every push to main (and on manual dispatch). Prod secrets/vars
+    # (DATABASE_URL, prod NEON_API_KEY, prod REVIEW_ALLOWED_ORIGIN) live in the
+    # `production` environment, branch-restricted to main with optional required
+    # reviewers — that restriction is the real gate on who/what can deploy prod.
+    # See runbook §3.
     environment: production
     env:
       # Set as repo secrets/vars when provisioning (see docs/deploy/runbook.md):
@@ -105,6 +95,7 @@ jobs:
             --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            --env REVIEW_DEBUG_VIEWER=true \
             >deploy.log 2>&1 &
 
           INVOCATION_URL=""

@@ -2,10 +2,10 @@
 # the Neon↔Vercel integration provisions for the preview, + a Vercel preview
 # build whose same-origin /api rewrite points at that branch's Function.
 #
-# DISABLED BY DEFAULT. The Neon project, Function tooling, and Vercel project are
-# provisioned manually (see docs/deploy/runbook.md). Until the repo variable
-# PREVIEW_DEPLOY_ENABLED is set to 'true' AND the secrets below exist, every job
-# no-ops — mirroring deploy-function.yml / register-versions.yml.
+# Runs on every PR. Depends on the manually-provisioned Neon project, Function
+# tooling, and Vercel project (see docs/deploy/runbook.md) plus the secrets/vars
+# below; if the integration hasn't provisioned the preview branch the env pull
+# fails loudly rather than deploying against the wrong DB.
 #
 # Branch ownership: the Neon↔Vercel integration owns the per-preview DB branch.
 # On a push to a PR, Vercel provisions a Neon branch `preview/<head_ref>` and
@@ -32,8 +32,7 @@
 #      but the /api rewrite needs the Function host before the build.
 #
 # Secrets:  NEON_API_KEY, REVIEW_BUILD_SECRET, VERCEL_TOKEN
-# Vars:     NEON_PROJECT_ID,
-#           VERCEL_ORG_ID, VERCEL_PROJECT_ID, PREVIEW_DEPLOY_ENABLED
+# Vars:     NEON_PROJECT_ID, VERCEL_ORG_ID, VERCEL_PROJECT_ID
 
 name: Preview deploy
 
@@ -51,8 +50,6 @@ permissions:
 
 jobs:
   preview:
-    # Only run when explicitly enabled at provisioning.
-    if: vars.PREVIEW_DEPLOY_ENABLED == 'true'
     # Preview-scoped secrets/vars live in the `preview` environment (a preview
     # NEON_API_KEY). The Function's CORS origin is derived per-deploy from Vercel's
     # VERCEL_BRANCH_URL, not a static var. See runbook §3.

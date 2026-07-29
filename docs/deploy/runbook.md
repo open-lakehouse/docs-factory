@@ -116,24 +116,26 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
    `.vercel/project.json` after `vercel link`, or project settings). Create a
    **Vercel token** → the `VERCEL_TOKEN` secret in Phase 3.
 5. **Install the Neon↔Vercel native integration** (Vercel Marketplace → Neon, or
-   Neon console → Integrations → Vercel). Enable **Neon Auth for previews** so it
-   injects the auth + DB env into Vercel automatically, per environment *and per
-   preview branch*: `VITE_NEON_AUTH_URL`, `NEON_AUTH_BASE_URL`, and the DB
-   connection vars (`DATABASE_URL` pooled + `DATABASE_URL_UNPOOLED`). This is why
-   Phase 3b no longer sets `VITE_NEON_AUTH_URL` by hand.
-   > **Branch ownership — the workflow still owns per-PR branches.**
-   > `preview-deploy.yml`'s `create-branch-action` creates the per-PR Neon branch
-   > `preview/pr-<n>`, migrates it, deploys the Function to it, and deletes it on PR
-   > close. So you **MUST turn OFF** the integration's branch creation — Vercel
-   > integration → **Advanced Options → uncheck "Create a database branch for
-   > deployment."** Otherwise both create a branch per preview (the integration
-   > names it after the git branch, the workflow uses `preview/pr-<n>`) and you get
-   > two competing DB branches + the Function deployed to the wrong one. Keep the
-   > integration for **env injection only**, not branching.
+   Neon console → Integrations → Vercel), and **leave branch creation ON**
+   (Advanced Options → "Create a database branch for deployment" — the default).
+   Enable **Neon Auth for previews**. The integration then, per preview:
+   - creates the Neon branch `preview/<git-branch>`,
+   - injects the auth env `VITE_NEON_AUTH_URL` (+ `NEON_AUTH_BASE_URL`),
+   - injects the DB connection vars `DATABASE_URL` (pooled) + `DATABASE_URL_UNPOOLED`
+     into the Vercel **preview** env, scoped to that git branch.
+   > **Branch ownership — the integration owns the per-PR branch.**
+   > `preview-deploy.yml` no longer creates its own branch. It pulls the
+   > integration-injected env for the PR's git branch
+   > (`vercel env pull --git-branch=<head_ref>`), migrates the branch via the
+   > `DATABASE_URL_UNPOOLED` it finds there, and deploys the review Function to
+   > `preview/<head_ref>`. Teardown is the integration's too (it removes the branch
+   > when the preview is removed), so there is **no** close/cleanup job. The
+   > Function itself is always deployed by the workflow — the integration creates
+   > the DB branch and injects env, but it does **not** deploy Neon Functions.
 
 **After Phase 1 you have:** `NEON_PROJECT_ID`, the Neon API key, the full
 `VITE_NEON_AUTH_URL`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`, and the Vercel token;
-the Neon↔Vercel integration is installed (env injection on, branch creation off);
+the Neon↔Vercel integration is installed (branch creation + env injection on);
 the GitHub callback + trusted origins are registered on the Neon Auth side.
 **Not yet:** any Function host or the prod
 Function URL — those don't exist until Phase 4.
@@ -296,12 +298,14 @@ Flip the three `*_ENABLED` **repo** variables to `true` (previews, prod deploy,
 version registration). Only now — every secret they read exists.
 
 **Preview (open a PR):**
-1. The workflow creates `preview/pr-<n>`, migrates it, deploys the branch Function,
-   and deploys a Vercel preview whose `/api` points at that Function.
+1. The integration provisions the `preview/<head_ref>` Neon branch; the workflow
+   pulls its env, migrates it, deploys the branch Function, and deploys a Vercel
+   preview whose `/api` points at that Function.
 2. On the preview URL: unauthenticated → sign-in wall; allowlisted GitHub user →
    admitted; non-allowlisted → "access pending"; toggle **View as anonymous** →
    only published content shows.
-3. Close the PR → the Neon branch is deleted.
+3. Close the PR → the integration removes the preview's Neon branch (the workflow
+   no longer runs a cleanup job).
 
 **Production (merge to main):**
 1. `deploy-function.yml` migrates the prod branch and redeploys the prod Function.

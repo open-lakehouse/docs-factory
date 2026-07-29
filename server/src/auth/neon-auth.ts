@@ -34,10 +34,17 @@ interface NeonIdentity {
   userId: string;
   /**
    * GitHub @handle. Resolved from the OAuth access token (see resolveLogin);
-   * falls back to the numeric account id if the GitHub API is unreachable, in
-   * which case the allowlist's github_login match won't hit but email still can.
+   * falls back to the numeric account id if the GitHub API is unreachable. Used
+   * as the viewer's display login.
    */
   login: string;
+  /**
+   * Every candidate the allowlist's github_login may be seeded with: the resolved
+   * @handle AND the numeric account id. When the /user token exchange fails,
+   * `login` is already the numeric id, but when it succeeds we still want a
+   * numeric-id-seeded row to match — so both travel here.
+   */
+  logins: string[];
   name?: string;
   /**
    * Every email we can attribute to this identity: the primary Neon Auth stores
@@ -205,16 +212,20 @@ async function resolveIdentity(token: string): Promise<NeonIdentity | null> {
     const row = rows[0];
     // No session/user for this token (or expired) → genuinely logged out.
     if (!row) return null;
-    // Prefer the GitHub @handle for the login; when there's no github account to
-    // resolve it from, use the user id as a stable placeholder (it won't match
-    // github_login, but the emails below carry allowlist matching).
+    // Prefer the GitHub @handle for the display login; when there's no github
+    // account to resolve it from, use the user id as a stable placeholder.
     const login = row.account_id
       ? await resolveLogin(row.user_id, row.account_id, row.access_token)
       : row.user_id;
+    // Allowlist github_login candidates: the resolved @handle plus the numeric
+    // account id, so a row seeded with either matches even when the /user token
+    // exchange fails (leaving `login` as the numeric id).
+    const logins = [login, row.account_id].filter((x): x is string => !!x);
     const emails = await resolveEmails(row.user_id, row.email, row.access_token);
     return {
       userId: row.user_id,
       login,
+      logins,
       name: row.name ?? undefined,
       emails,
     };
@@ -231,7 +242,7 @@ export function createNeonAuthProvider(): AuthProvider {
       if (!token) return anonymousViewer();
       const identity = await resolveIdentity(token);
       if (!identity) return anonymousViewer();
-      const role = await lookupRole(db(), { login: identity.login, emails: identity.emails });
+      const role = await lookupRole(db(), { logins: identity.logins, emails: identity.emails });
       const ident = { userId: identity.userId, name: identity.name };
       // Authenticated but not allowlisted: known identity, published-only access.
       if (role === Role.ANONYMOUS) {

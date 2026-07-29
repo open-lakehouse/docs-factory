@@ -95,7 +95,6 @@ jobs:
             --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            --env REVIEW_DEBUG_VIEWER=true \
             >deploy.log 2>&1 &
 
           INVOCATION_URL=""

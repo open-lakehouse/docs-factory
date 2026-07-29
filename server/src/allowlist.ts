@@ -11,28 +11,35 @@ export function roleFromDb(role: string | null): Role {
 }
 
 /**
- * Resolve an identity's role from the allowlist by github login and/or any of
+ * Resolve an identity's role from the allowlist by github login(s) and/or any of
  * the identity's emails (all case-insensitive). Returns ANONYMOUS when not
  * listed. Maintainer wins if entries disagree.
  *
- * Why a list of emails, not one: a reviewer's allowlist row is often seeded with
- * a different address than their GitHub *primary* email — and Neon Auth stores
- * only the primary in neon_auth."user".email. Matching every GitHub-verified
- * email (see neon-auth.ts) makes an email-seeded row hit regardless of which
- * address the user later makes primary. `github_login` is the robust key and is
- * matched independently, so a login-seeded row hits even with no email at all.
+ * Why a list of logins: `github_login` may be seeded as the @handle OR the
+ * numeric GitHub account id. We can only resolve the @handle by exchanging the
+ * stored OAuth token via GitHub's /user API, which can fail (expired/revoked
+ * token) and fall back to the numeric id — so we match on BOTH candidates,
+ * letting a login-seeded row hit either way.
+ *
+ * Why a list of emails: a reviewer's row is often seeded with a different address
+ * than their GitHub *primary* email — and Neon Auth stores only the primary in
+ * neon_auth."user".email. Matching every GitHub-verified email (see neon-auth.ts)
+ * makes an email-seeded row hit regardless of which address the user later makes
+ * primary.
  */
 export async function lookupRole(
   sql: Queryable,
-  opts: { login?: string; emails?: string[] },
+  opts: { logins?: string[]; emails?: string[] },
 ): Promise<Role> {
-  const { login } = opts;
-  // Normalize + dedupe emails; drop empties so a `[""]` can't match a blank row.
-  const emails = [...new Set((opts.emails ?? []).map((e) => e.trim().toLowerCase()).filter(Boolean))];
-  if (!login && emails.length === 0) return Role.ANONYMOUS;
+  // Normalize + dedupe both sides; drop empties so a blank can't match a blank row.
+  const norm = (xs: string[] | undefined) =>
+    [...new Set((xs ?? []).map((x) => x.trim().toLowerCase()).filter(Boolean))];
+  const logins = norm(opts.logins);
+  const emails = norm(opts.emails);
+  if (logins.length === 0 && emails.length === 0) return Role.ANONYMOUS;
   const rows = await sql<{ role: string }[]>`
     select role from reviewer_allowlist
-    where (${login ?? null}::text is not null and lower(github_login) = lower(${login ?? null}))
+    where (lower(github_login) = any(${logins}::text[]))
        or (lower(email) = any(${emails}::text[]))
   `;
   let best = Role.ANONYMOUS;

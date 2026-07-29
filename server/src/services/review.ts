@@ -780,7 +780,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               throw new ConnectError("each reviewer needs a login or email", Code.InvalidArgument);
             }
             const role = await lookupRole(tx, {
-              login: login ?? undefined,
+              logins: login ? [login] : [],
               emails: email ? [email] : [],
             });
             if (role === Role.ANONYMOUS) {

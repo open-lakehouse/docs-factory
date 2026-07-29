@@ -11,6 +11,11 @@ export interface Vocab {
   projects: string[];
   statuses: string[];
   pageWorthyKinds: string[];
+  topics: string[];
+  topicSynonyms: Record<string, string | null>;
 }
 
 export const vocab = vocabJson as Vocab;
+
+/** The controlled product/topic axis (content/vocab.json `topics`). */
+export const TOPICS = vocab.topics ?? [];

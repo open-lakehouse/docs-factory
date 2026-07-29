@@ -15,6 +15,7 @@ import {
 import { useAuth } from "../../lib/auth-context";
 import OnThisPage from "./OnThisPage";
 import ContentEventTimeline from "../review/ContentEventTimeline";
+import VersionHistory from "../review/VersionHistory";
 import CommentSidebar from "../review/CommentSidebar";
 import { useSelectionState } from "../review/selection-context";
 import { useReview } from "../review/review-context";
@@ -39,6 +40,7 @@ export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
   const reviewRail = reviewActive ? (
     <section className="blog-aside-review" aria-label="Review history">
       <ContentEventTimeline contentRef={contentRef} />
+      <VersionHistory contentRef={contentRef} />
     </section>
   ) : null;
 

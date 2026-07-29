@@ -55,6 +55,7 @@ import { buttonVariants } from "@/components/ui/button";
 import BlogPostDetail from "../components/BlogPostDetail";
 import { FrontmatterStatusBadge } from "../components/StatusBadge";
 import ContentEventTimeline from "../components/review/ContentEventTimeline";
+import ProductRollup from "../components/review/ProductRollup";
 import Shell from "../components/layout/Shell";
 
 /** Columns in the main row (for detail colspan). */
@@ -363,6 +364,10 @@ export default function RevOpsDashboard() {
             </DndContext>
           </table>
         )}
+
+        <section className="revops-product-rollup" aria-label="What changed by product">
+          <ProductRollup />
+        </section>
       </div>
     </Shell>
   );

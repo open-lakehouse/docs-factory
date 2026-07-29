@@ -12,6 +12,7 @@ import {
 import { useAuth } from "../../lib/auth-context";
 import CommentSidebar from "../review/CommentSidebar";
 import ContentEventTimeline from "../review/ContentEventTimeline";
+import VersionHistory from "../review/VersionHistory";
 import { useSelectionState } from "../review/selection-context";
 import { useReview } from "../review/review-context";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
@@ -41,6 +42,7 @@ export default function BlogReviewAside({
     <>
       <section className="blog-aside-review" aria-label="Review history">
         <ContentEventTimeline contentRef={contentRef} />
+        <VersionHistory contentRef={contentRef} />
       </section>
       {showComments && <CommentSidebar articleRef={articleRef} />}
     </>

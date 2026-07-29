@@ -196,11 +196,15 @@ jobs:
           # output/ (the generator + assembler resolve paths relative to site/).
           # `build:vercel` reads NEON_FUNCTION_HOST to bake the /api rewrite.
           (cd site && bun install --frozen-lockfile && NEON_FUNCTION_HOST="$NEON_FUNCTION_HOST" bun run build:vercel)
-          # Run the Vercel CLI from the REPO ROOT: the Vercel project's Root
-          # Directory is set to `site`, so the CLI scopes to site/ — running it
-          # from inside site/ would double it to `site/site` and fail. --prebuilt
-          # uploads site/.vercel/output as-is (no second build). `vercel deploy`
-          # prints the deployment URL as its last stdout line.
+          # `vercel deploy --prebuilt` reads .vercel/output relative to the CLI's
+          # cwd. We must run the CLI from the REPO ROOT (that's where `vercel pull`
+          # linked the project — <root>/.vercel/project.json; running from site/
+          # would double the Root Directory to site/site and fail). So move the
+          # built tree up to the repo-root .vercel/ the link already lives in.
+          rm -rf .vercel/output
+          mv site/.vercel/output .vercel/output
+          # --prebuilt uploads .vercel/output as-is (no second build). `vercel
+          # deploy` prints the deployment URL as its last stdout line.
           DEPLOY_URL=$(bunx vercel deploy --prebuilt --token="$VERCEL_TOKEN" | tail -n1)
           echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
           echo "Deployed preview: $DEPLOY_URL"

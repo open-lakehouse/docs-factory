@@ -81,7 +81,14 @@ jobs:
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
+          # Neon Auth base URL (same value as the client's VITE_NEON_AUTH_URL) —
+          # the JWT issuer/audience + JWKS base the Function verifies bearers against.
+          NEON_AUTH_URL: ${{ vars.REVIEW_NEON_AUTH_URL }}
         run: |
+          if [ -z "${NEON_AUTH_URL:-}" ]; then
+            echo "::error::REVIEW_NEON_AUTH_URL var is not set — the Function can't verify Neon Auth JWTs without it (docs/deploy/runbook.md)."
+            exit 1
+          fi
           # The beta neonctl (2.38.x) BLOCKS after triggering a deploy and hangs
           # the full 10-min timeout even when the deployment has already COMPLETED
           # — then exits 1 with a false "Timed out" (--wait only governs the build
@@ -95,6 +102,7 @@ jobs:
             --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            --env NEON_AUTH_URL="$NEON_AUTH_URL" \
             >deploy.log 2>&1 &
 
           INVOCATION_URL=""

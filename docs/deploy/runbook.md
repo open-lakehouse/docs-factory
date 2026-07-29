@@ -15,20 +15,21 @@ Deployment shape for v1:
   The destination is environment-specific and emitted into the Build Output API
   routing config (`.vercel/output/config.json`) by
   `site/scripts/gen-vercel-config.mjs` during `bun run build:vercel`.
-  > **Auth is a bearer token, not a cookie.** Neon Auth scopes its session cookie
-  > (`__Secure-neonauth.session_token`) to the **auth origin** (`VITE_NEON_AUTH_URL`'s
-  > host), which is a *different* origin from the Function the `/api` rewrite points
-  > at — so that cookie never reaches the API, and a cookie-based gate can't work
-  > here. Instead the SPA reads the session token client-side
-  > (`getSession().session.token`, the same opaque value the server matches against
-  > `neon_auth.session.token`) and sends it as `Authorization: Bearer` on every RPC
-  > (`site/src/lib/review-client.ts`). There is therefore **no `/auth` rewrite** and
-  > no need for the API to see the cookie.
+  > **Auth is a bearer JWT, not a cookie.** Neon Auth scopes its session cookie to
+  > the **auth origin** (`VITE_NEON_AUTH_URL`'s host), a *different* origin from the
+  > Function the `/api` rewrite points at — so the cookie never reaches the API. The
+  > SPA sends Neon Auth's session JWT (`getSession`'s `set-auth-jwt`) as
+  > `Authorization: Bearer` on every RPC (`site/src/lib/review-client.ts`), and the
+  > Function **verifies that JWT against Neon Auth's JWKS** (`NEON_AUTH_URL`,
+  > issuer/audience/EdDSA), trusting its `sub` + `email` claims — no session-token DB
+  > match, rotation-proof. There is therefore **no `/auth` rewrite** and no need for
+  > the API to see the cookie.
 - **Backend** — the Hono + Connect app in `server/`, deployed as a **Neon
   Function** (entrypoint `server/src/handler.ts`). It branches with the database:
   **one Neon branch per PR** for previews, plus the default branch for production.
-- **Auth** — **Neon Auth** (GitHub OAuth). The server resolves the session cookie
-  to a GitHub identity, then looks the login up in the `reviewer_allowlist` table.
+- **Auth** — **Neon Auth** (GitHub OAuth). The server verifies the request's JWT
+  to a trusted user id + email, enriches it with the GitHub login from
+  `neon_auth.account`, then looks the login/email up in the `reviewer_allowlist` table.
   The allowlist is the effective access list — the site is private and only
   allowlisted users are admitted (see `site/src/components/AccessGate.tsx`).
 
@@ -252,6 +253,7 @@ variables → Actions.
 | `VERCEL_TOKEN` | secret | `preview` | non-interactive Vercel CLI auth |
 | `NEON_PROJECT_ID` | var | `preview` + `production` | Neon project id (same value both) |
 | `REVIEW_ALLOWED_ORIGIN` | var | `production` only | prod CORS allowlist (the docs domains). **Not** set for preview: the preview workflow captures the Vercel deploy URL from `vercel deploy` stdout and redeploys the Function with `ALLOWED_ORIGIN` locked to it (two-pass deploy — see §4), so each preview's CORS matches its own origin with no static var |
+| `REVIEW_NEON_AUTH_URL` | var | `production` only | the **full** Neon Auth URL (same value as `VITE_NEON_AUTH_URL`, incl. `/<db>/auth`). Passed to the Function as `NEON_AUTH_URL` — the JWT issuer/audience + JWKS base it verifies bearers against. **Not** set for preview: that workflow reads the injected `VITE_NEON_AUTH_URL` from the pulled preview env |
 | `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | `preview` | Vercel CLI targeting |
 
 > **No feature-flag gates.** The workflows run on their triggers; there are no

@@ -139,6 +139,15 @@ jobs:
         env:
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
+          # NEON_AUTH_URL (the JWT issuer/JWKS base the Function verifies bearers
+          # against) = this preview's VITE_NEON_AUTH_URL, injected by the
+          # integration and pulled into .vercel/.env.preview.local above.
+          set -a; . .vercel/.env.preview.local; set +a
+          NEON_AUTH_URL="$VITE_NEON_AUTH_URL"
+          if [ -z "${NEON_AUTH_URL:-}" ]; then
+            echo "::error::VITE_NEON_AUTH_URL not present in the pulled preview env — the Function can't verify Neon Auth JWTs (docs/deploy/runbook.md §1.5)."
+            exit 1
+          fi
           # The Function host is NOT derivable from the git branch name — Neon forms
           # it as <branch_id>-<slug>.compute.<cell>.<region>.aws.neon.tech — so we
           # read invocation_url from `get` after the deploy completes.
@@ -147,6 +156,7 @@ jobs:
             --src server/src/handler.ts --wait=false \
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            --env NEON_AUTH_URL="$NEON_AUTH_URL" \
             >deploy1.log 2>&1 &
           INVOCATION_URL=""
           STATUS=""
@@ -218,6 +228,9 @@ jobs:
             echo "::error::did not capture the Vercel deploy URL — cannot lock the Function CORS origin."
             exit 1
           fi
+          # NEON_AUTH_URL again from the pulled preview env (JWT issuer/JWKS base).
+          set -a; . .vercel/.env.preview.local; set +a
+          NEON_AUTH_URL="$VITE_NEON_AUTH_URL"
           ALLOWED_ORIGIN="https://${DEPLOY_URL#https://}"
           echo "ALLOWED_ORIGIN=$ALLOWED_ORIGIN"
           setsid bunx neonctl functions deploy review \
@@ -226,6 +239,7 @@ jobs:
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            --env NEON_AUTH_URL="$NEON_AUTH_URL" \
             >deploy2.log 2>&1 &
           STATUS=""
           for _ in $(seq 1 60); do

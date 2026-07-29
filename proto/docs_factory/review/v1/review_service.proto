@@ -104,6 +104,18 @@ service ReviewService {
   // Build-time upsert of a content version + its sections; re-anchors open
   // threads. Guarded by a shared secret, not by viewer auth.
   rpc RegisterVersion(RegisterVersionRequest) returns (RegisterVersionResponse);
+
+  // The version history of one artifact, most-recent first (no trees — cheap
+  // list). Allowlist-gated. Powers the version picker in the evolution view.
+  rpc ListVersions(ListVersionsRequest) returns (ListVersionsResponse);
+  // One version's full Merkle tree, for rendering + client-side diffing.
+  // Allowlist-gated.
+  rpc GetVersionTree(GetVersionTreeRequest) returns (GetVersionTreeResponse);
+  // "What changed for <topic>?" — across every artifact tagged with a product/
+  // topic id, diff each artifact's latest version against its baseline at/just
+  // before `since`, returning the changed nodes + open-comment counts.
+  // Allowlist-gated.
+  rpc ProductChanges(ProductChangesRequest) returns (ProductChangesResponse);
 }
 
 message GetViewerRequest {}
@@ -355,9 +367,90 @@ message RegisterVersionRequest {
   // Full source text per unique snippet path (for line-hash re-anchoring and the
   // full-source review pane).
   repeated SourceFile source_files = 9;
+  // Merkle root hash of this version's structure (sections already carry their
+  // per-node hashes; this is the doc root).
+  string root_hash = 10;
+  // The full Merkle tree (persisted as the merkle_tree jsonb blob).
+  optional MerkleNode tree = 11;
+  // Canonical product/topic ids for the "what changed for X" rollup.
+  repeated string topics = 12;
 }
 message RegisterVersionResponse {
   ContentVersion version = 1;
   // Threads that could not be re-anchored to a section in this version.
   int32 orphaned_thread_count = 2;
+}
+
+message ListVersionsRequest {
+  ContentRef ref = 1;
+  // Max versions (server clamps; defaults to a modest page).
+  optional int32 limit = 2;
+}
+message ListVersionsResponse {
+  // Most-recent first. Trees omitted (call GetVersionTree for one).
+  repeated ContentVersion versions = 1;
+}
+
+message GetVersionTreeRequest {
+  // The content version id (from ContentVersion.id / ListVersions).
+  string version_id = 1;
+}
+message GetVersionTreeResponse {
+  ContentVersion version = 1;
+  // The full Merkle tree of that version (also on version.tree).
+  optional MerkleNode tree = 2;
+}
+
+// The classification of one node when diffing two version trees.
+enum ChangeKind {
+  CHANGE_KIND_UNSPECIFIED = 0;
+  CHANGE_KIND_ADDED = 1;
+  CHANGE_KIND_REMOVED = 2;
+  // This node's OWN content changed.
+  CHANGE_KIND_MODIFIED = 3;
+  // Only a descendant changed (own content identical).
+  CHANGE_KIND_MODIFIED_DESCENDANTS = 4;
+  // Same node, different position/parent.
+  CHANGE_KIND_MOVED = 5;
+}
+
+// One changed node in a document's diff between two versions.
+message ChangedNode {
+  string key = 1;
+  string kind = 2; // MerkleNode.kind: doc|heading|prose|code|snippet
+  ChangeKind change = 3;
+  string label = 4;
+  optional string anchor_slug = 5;
+}
+
+// Per-document entry in a product rollup: its latest version, what changed since
+// the baseline, and how many open comments sit on changed sections.
+message ProductChangeEntry {
+  ContentRef ref = 1;
+  string title = 2;
+  string latest_git_sha = 3;
+  string latest_version_id = 4;
+  // The baseline version compared against (empty if the artifact is brand new
+  // relative to `since`, in which case every node reads as added).
+  string baseline_version_id = 5;
+  repeated ChangedNode changed_nodes = 6;
+  int32 open_comment_count = 7;
+}
+
+message ProductChangesRequest {
+  // Canonical topic id (content/vocab.json `topics`).
+  string topic = 1;
+  // Baseline: compare each artifact's latest version against the version at/just
+  // before this point. Provide at most one; absent ⇒ compare against each
+  // artifact's immediately-previous version.
+  optional string since_git_sha = 2;
+  optional string since_version_id = 3;
+  optional google.protobuf.Timestamp since = 4;
+}
+message ProductChangesResponse {
+  string topic = 1;
+  int32 doc_count = 2;
+  int32 blog_count = 3;
+  // Only artifacts with at least one changed node (unchanged ones omitted).
+  repeated ProductChangeEntry entries = 4;
 }

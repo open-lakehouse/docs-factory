@@ -195,3 +195,29 @@ export const eraseUser = ReviewService.method.eraseUser;
  * @generated from rpc docs_factory.review.v1.ReviewService.RegisterVersion
  */
 export const registerVersion = ReviewService.method.registerVersion;
+
+/**
+ * The version history of one artifact, most-recent first (no trees — cheap
+ * list). Allowlist-gated. Powers the version picker in the evolution view.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListVersions
+ */
+export const listVersions = ReviewService.method.listVersions;
+
+/**
+ * One version's full Merkle tree, for rendering + client-side diffing.
+ * Allowlist-gated.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.GetVersionTree
+ */
+export const getVersionTree = ReviewService.method.getVersionTree;
+
+/**
+ * "What changed for <topic>?" — across every artifact tagged with a product/
+ * topic id, diff each artifact's latest version against its baseline at/just
+ * before `since`, returning the changed nodes + open-comment counts.
+ * Allowlist-gated.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ProductChanges
+ */
+export const productChanges = ReviewService.method.productChanges;

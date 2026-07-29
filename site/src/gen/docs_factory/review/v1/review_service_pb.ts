@@ -4,7 +4,7 @@
 
 import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
-import type { AllowlistEntry, CodeSelector, Comment, ContentArea, ContentEvent, ContentRef, ContentVersion, DraftSummary, RecentComment, Requirement, ReviewRequest, ReviewState, Section, SnippetRef, SourceFile, TextSelector, Thread, Viewer } from "./messages_pb.js";
+import type { AllowlistEntry, CodeSelector, Comment, ContentArea, ContentEvent, ContentRef, ContentVersion, DraftSummary, MerkleNode, RecentComment, Requirement, ReviewRequest, ReviewState, Section, SnippetRef, SourceFile, TextSelector, Thread, Viewer } from "./messages_pb.js";
 import { file_docs_factory_review_v1_messages } from "./messages_pb.js";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file docs_factory/review/v1/review_service.proto.
  */
 export const file_docs_factory_review_v1_review_service: GenFile = /*@__PURE__*/
-  fileDesc("Citkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL3Jldmlld19zZXJ2aWNlLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIhIKEEdldFZpZXdlclJlcXVlc3QiQwoRR2V0Vmlld2VyUmVzcG9uc2USLgoGdmlld2VyGAEgASgLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5WaWV3ZXIiigEKEUxpc3REcmFmdHNSZXF1ZXN0EjYKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhSACIAQESHgoRb3JkZXJfYnlfcHJpb3JpdHkYAiABKAhIAYgBAUIHCgVfYXJlYUIUChJfb3JkZXJfYnlfcHJpb3JpdHkiSgoSTGlzdERyYWZ0c1Jlc3BvbnNlEjQKBmRyYWZ0cxgBIAMoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuRHJhZnRTdW1tYXJ5IkkKFkdldERyYWZ0Q29udGVudFJlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmImAKF0dldERyYWZ0Q29udGVudFJlc3BvbnNlEgwKBGh0bWwYASABKAkSNwoHdmVyc2lvbhgCIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb24iRgoTTGlzdENvbW1lbnRzUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYigQEKFExpc3RDb21tZW50c1Jlc3BvbnNlEi8KB3RocmVhZHMYASADKAsyHi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRocmVhZBI4ChBvcnBoYW5lZF90aHJlYWRzGAIgAygLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5UaHJlYWQiegoZTGlzdFJlY2VudENvbW1lbnRzUmVxdWVzdBISCgVsaW1pdBgBIAEoBUgAiAEBEjYKBGFyZWEYAiABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhSAGIAQFCCAoGX2xpbWl0QgcKBV9hcmVhIlUKGkxpc3RSZWNlbnRDb21tZW50c1Jlc3BvbnNlEjcKCGNvbW1lbnRzGAEgAygLMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWNlbnRDb21tZW50Is0CChRDcmVhdGVDb21tZW50UmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSEwoLYW5jaG9yX3NsdWcYAiABKAkSGgoSYW5jaG9yX2ZpbmdlcnByaW50GAMgASgJEhYKCXBhcmVudF9pZBgEIAEoCUgAiAEBEg8KB2JvZHlfbWQYBSABKAkSOwoIc2VsZWN0b3IYBiABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRleHRTZWxlY3RvckgBiAEBEkAKDWNvZGVfc2VsZWN0b3IYByABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvZGVTZWxlY3RvckgCiAEBQgwKCl9wYXJlbnRfaWRCCwoJX3NlbGVjdG9yQhAKDl9jb2RlX3NlbGVjdG9yIkkKFUNyZWF0ZUNvbW1lbnRSZXNwb25zZRIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50IlUKFEdldFNvdXJjZUZpbGVSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIMCgRwYXRoGAIgASgJInwKFUdldFNvdXJjZUZpbGVSZXNwb25zZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJEjQKCHNuaXBwZXRzGAQgAygLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5TbmlwcGV0UmVmIi4KFFJlc29sdmVUaHJlYWRSZXF1ZXN0EhYKDnRocmVhZF9yb290X2lkGAEgASgJIkcKFVJlc29sdmVUaHJlYWRSZXNwb25zZRIuCgZ0aHJlYWQYASABKAsyHi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRocmVhZCIwChZVbnJlc29sdmVUaHJlYWRSZXF1ZXN0EhYKDnRocmVhZF9yb290X2lkGAEgASgJIkkKF1VucmVzb2x2ZVRocmVhZFJlc3BvbnNlEi4KBnRocmVhZBgBIAEoCzIeLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGhyZWFkIm0KFU1hcmtUaHJlYWRTZWVuUmVxdWVzdBIWCg50aHJlYWRfcm9vdF9pZBgBIAEoCRIwCgdzZWVuX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBQgoKCF9zZWVuX2F0IhgKFk1hcmtUaHJlYWRTZWVuUmVzcG9uc2UinQEKF1RyYW5zaXRpb25SZXZpZXdSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhI1Cgh0b19zdGF0ZRgCIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSEQoEbm90ZRgDIAEoCUgAiAEBQgcKBV9ub3RlIk4KGFRyYW5zaXRpb25SZXZpZXdSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUiZAoVUmVsZWFzZUNvbnRlbnRSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIRCgRub3RlGAIgASgJSACIAQFCBwoFX25vdGUiTAoWUmVsZWFzZUNvbnRlbnRSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUiSAoVUmVjb3JkQXBwcm92YWxSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZiJNChZSZWNvcmRBcHByb3ZhbFJlc3BvbnNlEjMKBWRyYWZ0GAEgASgLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5EcmFmdFN1bW1hcnkieQoWRGlzbWlzc0FwcHJvdmFsUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGwoOYXBwcm92ZXJfbG9naW4YAiABKAlIAIgBAUIRCg9fYXBwcm92ZXJfbG9naW4iTgoXRGlzbWlzc0FwcHJvdmFsUmVzcG9uc2USMwoFZHJhZnQYASABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkRyYWZ0U3VtbWFyeSJpChJTZXRQcmlvcml0eVJlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhUKCHByaW9yaXR5GAIgASgFSACIAQFCCwoJX3ByaW9yaXR5IkoKE1NldFByaW9yaXR5UmVzcG9uc2USMwoFZHJhZnQYASABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkRyYWZ0U3VtbWFyeSKkAQobU2V0VGFyZ2V0UmVsZWFzZURhdGVSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhI8ChN0YXJnZXRfcmVsZWFzZV9kYXRlGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBQhYKFF90YXJnZXRfcmVsZWFzZV9kYXRlIlMKHFNldFRhcmdldFJlbGVhc2VEYXRlUmVzcG9uc2USMwoFZHJhZnQYASABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkRyYWZ0U3VtbWFyeSJMCg5SZXZpZXdlclRhcmdldBISCgVsb2dpbhgBIAEoCUgAiAEBEhIKBWVtYWlsGAIgASgJSAGIAQFCCAoGX2xvZ2luQggKBl9lbWFpbCLYAQoUUmVxdWVzdFJldmlld1JlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEjkKCXJldmlld2VycxgCIAMoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3ZXJUYXJnZXQSOAoLcmVxdWlyZW1lbnQYAyABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVpcmVtZW50EhEKBG5vdGUYBCABKAlIAIgBAUIHCgVfbm90ZSJQChVSZXF1ZXN0UmV2aWV3UmVzcG9uc2USNwoIcmVxdWVzdHMYASADKAsyJS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJldmlld1JlcXVlc3QiMAoaQ2FuY2VsUmV2aWV3UmVxdWVzdFJlcXVlc3QSEgoKcmVxdWVzdF9pZBgBIAEoCSJVChtDYW5jZWxSZXZpZXdSZXF1ZXN0UmVzcG9uc2USNgoHcmVxdWVzdBgBIAEoCzIlLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3UmVxdWVzdCK5AQoZTGlzdFJldmlld1JlcXVlc3RzUmVxdWVzdBI0CgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWZIAIgBARIRCgRtaW5lGAIgASgISAGIAQESEgoFYnlfbWUYAyABKAhIAogBARIWCglvcGVuX29ubHkYBCABKAhIA4gBAUIGCgRfcmVmQgcKBV9taW5lQggKBl9ieV9tZUIMCgpfb3Blbl9vbmx5IlUKGkxpc3RSZXZpZXdSZXF1ZXN0c1Jlc3BvbnNlEjcKCHJlcXVlc3RzGAEgAygLMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdSZXF1ZXN0ImkKGExpc3RDb250ZW50RXZlbnRzUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSEgoFbGltaXQYAiABKAVIAIgBAUIICgZfbGltaXQiUQoZTGlzdENvbnRlbnRFdmVudHNSZXNwb25zZRI0CgZldmVudHMYASADKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRFdmVudCKCAQogUmVxdWVzdENoYW5nZXNPblB1Ymxpc2hlZFJlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhEKBG5vdGUYAiABKAlIAIgBARIRCgl1bnB1Ymxpc2gYAyABKAhCBwoFX25vdGUiagohUmVxdWVzdENoYW5nZXNPblB1Ymxpc2hlZFJlc3BvbnNlEjIKBXN0YXRlGAEgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZRIRCglwdWJsaXNoZWQYAiABKAgi2wEKFk1hbmFnZUFsbG93bGlzdFJlcXVlc3QSRQoGYWN0aW9uGAEgASgOMjUuZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXF1ZXN0LkFjdGlvbhI1CgVlbnRyeRgCIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQWxsb3dsaXN0RW50cnkiQwoGQWN0aW9uEhYKEkFDVElPTl9VTlNQRUNJRklFRBAAEg4KCkFDVElPTl9BREQQARIRCg1BQ1RJT05fUkVNT1ZFEAIiUgoXTWFuYWdlQWxsb3dsaXN0UmVzcG9uc2USNwoHZW50cmllcxgBIAMoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQWxsb3dsaXN0RW50cnkiUgoQRXJhc2VVc2VyUmVxdWVzdBIUCgd1c2VyX2lkGAEgASgJSACIAQESEgoFbG9naW4YAiABKAlIAYgBAUIKCghfdXNlcl9pZEIICgZfbG9naW4iiQEKEUVyYXNlVXNlclJlc3BvbnNlEhsKE2NvbW1lbnRzX3RvbWJzdG9uZWQYASABKAUSHgoWcmV2aWV3X3N0YXRlc19zY3J1YmJlZBgCIAEoBRIcChRyZXNvbHV0aW9uc19zY3J1YmJlZBgDIAEoBRIZChFzZWVuX3Jvd3NfZGVsZXRlZBgEIAEoBSLUAgoWUmVnaXN0ZXJWZXJzaW9uUmVxdWVzdBIUCgxidWlsZF9zZWNyZXQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhQKDGNvbnRlbnRfaGFzaBgDIAEoCRIPCgdnaXRfc2hhGAQgASgJEg0KBXRpdGxlGAUgASgJEhoKEmZyb250bWF0dGVyX3N0YXR1cxgGIAEoCRIxCghzZWN0aW9ucxgHIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2VjdGlvbhI0CghzbmlwcGV0cxgIIAMoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU25pcHBldFJlZhI4Cgxzb3VyY2VfZmlsZXMYCSADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNvdXJjZUZpbGUicQoXUmVnaXN0ZXJWZXJzaW9uUmVzcG9uc2USNwoHdmVyc2lvbhgBIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb24SHQoVb3JwaGFuZWRfdGhyZWFkX2NvdW50GAIgASgFMtwVCg1SZXZpZXdTZXJ2aWNlEmAKCUdldFZpZXdlchIoLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuR2V0Vmlld2VyUmVxdWVzdBopLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuR2V0Vmlld2VyUmVzcG9uc2USYwoKTGlzdERyYWZ0cxIpLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdERyYWZ0c1JlcXVlc3QaKi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3REcmFmdHNSZXNwb25zZRJyCg9HZXREcmFmdENvbnRlbnQSLi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldERyYWZ0Q29udGVudFJlcXVlc3QaLy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldERyYWZ0Q29udGVudFJlc3BvbnNlEmkKDExpc3RDb21tZW50cxIrLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdENvbW1lbnRzUmVxdWVzdBosLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdENvbW1lbnRzUmVzcG9uc2USewoSTGlzdFJlY2VudENvbW1lbnRzEjEuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0UmVjZW50Q29tbWVudHNSZXF1ZXN0GjIuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0UmVjZW50Q29tbWVudHNSZXNwb25zZRJsCg1DcmVhdGVDb21tZW50EiwuZG9jc19mYWN0b3J5LnJldmlldy52MS5DcmVhdGVDb21tZW50UmVxdWVzdBotLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ3JlYXRlQ29tbWVudFJlc3BvbnNlEmwKDVJlc29sdmVUaHJlYWQSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlc29sdmVUaHJlYWRSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXNvbHZlVGhyZWFkUmVzcG9uc2UScgoPVW5yZXNvbHZlVGhyZWFkEi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5VbnJlc29sdmVUaHJlYWRSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5VbnJlc29sdmVUaHJlYWRSZXNwb25zZRJvCg5NYXJrVGhyZWFkU2VlbhItLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTWFya1RocmVhZFNlZW5SZXF1ZXN0Gi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYXJrVGhyZWFkU2VlblJlc3BvbnNlEmwKDUdldFNvdXJjZUZpbGUSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldFNvdXJjZUZpbGVSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5HZXRTb3VyY2VGaWxlUmVzcG9uc2USdQoQVHJhbnNpdGlvblJldmlldxIvLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVHJhbnNpdGlvblJldmlld1JlcXVlc3QaMC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRyYW5zaXRpb25SZXZpZXdSZXNwb25zZRJvCg5SZWxlYXNlQ29udGVudBItLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVsZWFzZUNvbnRlbnRSZXF1ZXN0Gi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWxlYXNlQ29udGVudFJlc3BvbnNlEm8KDlJlY29yZEFwcHJvdmFsEi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWNvcmRBcHByb3ZhbFJlcXVlc3QaLi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlY29yZEFwcHJvdmFsUmVzcG9uc2UScgoPRGlzbWlzc0FwcHJvdmFsEi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5EaXNtaXNzQXBwcm92YWxSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5EaXNtaXNzQXBwcm92YWxSZXNwb25zZRJmCgtTZXRQcmlvcml0eRIqLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2V0UHJpb3JpdHlSZXF1ZXN0GisuZG9jc19mYWN0b3J5LnJldmlldy52MS5TZXRQcmlvcml0eVJlc3BvbnNlEoEBChRTZXRUYXJnZXRSZWxlYXNlRGF0ZRIzLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2V0VGFyZ2V0UmVsZWFzZURhdGVSZXF1ZXN0GjQuZG9jc19mYWN0b3J5LnJldmlldy52MS5TZXRUYXJnZXRSZWxlYXNlRGF0ZVJlc3BvbnNlEmwKDVJlcXVlc3RSZXZpZXcSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RSZXZpZXdSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0UmV2aWV3UmVzcG9uc2USfgoTQ2FuY2VsUmV2aWV3UmVxdWVzdBIyLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ2FuY2VsUmV2aWV3UmVxdWVzdFJlcXVlc3QaMy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNhbmNlbFJldmlld1JlcXVlc3RSZXNwb25zZRJ7ChJMaXN0UmV2aWV3UmVxdWVzdHMSMS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RSZXZpZXdSZXF1ZXN0c1JlcXVlc3QaMi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RSZXZpZXdSZXF1ZXN0c1Jlc3BvbnNlEngKEUxpc3RDb250ZW50RXZlbnRzEjAuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0Q29udGVudEV2ZW50c1JlcXVlc3QaMS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RDb250ZW50RXZlbnRzUmVzcG9uc2USkAEKGVJlcXVlc3RDaGFuZ2VzT25QdWJsaXNoZWQSOC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RDaGFuZ2VzT25QdWJsaXNoZWRSZXF1ZXN0GjkuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0Q2hhbmdlc09uUHVibGlzaGVkUmVzcG9uc2UScgoPTWFuYWdlQWxsb3dsaXN0Ei4uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXNwb25zZRJgCglFcmFzZVVzZXISKC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkVyYXNlVXNlclJlcXVlc3QaKS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkVyYXNlVXNlclJlc3BvbnNlEnIKD1JlZ2lzdGVyVmVyc2lvbhIuLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVnaXN0ZXJWZXJzaW9uUmVxdWVzdBovLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVnaXN0ZXJWZXJzaW9uUmVzcG9uc2ViBnByb3RvMw", [file_docs_factory_review_v1_messages, file_google_protobuf_timestamp]);
+  fileDesc("Citkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL3Jldmlld19zZXJ2aWNlLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIhIKEEdldFZpZXdlclJlcXVlc3QiQwoRR2V0Vmlld2VyUmVzcG9uc2USLgoGdmlld2VyGAEgASgLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5WaWV3ZXIiigEKEUxpc3REcmFmdHNSZXF1ZXN0EjYKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhSACIAQESHgoRb3JkZXJfYnlfcHJpb3JpdHkYAiABKAhIAYgBAUIHCgVfYXJlYUIUChJfb3JkZXJfYnlfcHJpb3JpdHkiSgoSTGlzdERyYWZ0c1Jlc3BvbnNlEjQKBmRyYWZ0cxgBIAMoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuRHJhZnRTdW1tYXJ5IkkKFkdldERyYWZ0Q29udGVudFJlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmImAKF0dldERyYWZ0Q29udGVudFJlc3BvbnNlEgwKBGh0bWwYASABKAkSNwoHdmVyc2lvbhgCIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb24iRgoTTGlzdENvbW1lbnRzUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYigQEKFExpc3RDb21tZW50c1Jlc3BvbnNlEi8KB3RocmVhZHMYASADKAsyHi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRocmVhZBI4ChBvcnBoYW5lZF90aHJlYWRzGAIgAygLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5UaHJlYWQiegoZTGlzdFJlY2VudENvbW1lbnRzUmVxdWVzdBISCgVsaW1pdBgBIAEoBUgAiAEBEjYKBGFyZWEYAiABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhSAGIAQFCCAoGX2xpbWl0QgcKBV9hcmVhIlUKGkxpc3RSZWNlbnRDb21tZW50c1Jlc3BvbnNlEjcKCGNvbW1lbnRzGAEgAygLMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWNlbnRDb21tZW50Is0CChRDcmVhdGVDb21tZW50UmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSEwoLYW5jaG9yX3NsdWcYAiABKAkSGgoSYW5jaG9yX2ZpbmdlcnByaW50GAMgASgJEhYKCXBhcmVudF9pZBgEIAEoCUgAiAEBEg8KB2JvZHlfbWQYBSABKAkSOwoIc2VsZWN0b3IYBiABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRleHRTZWxlY3RvckgBiAEBEkAKDWNvZGVfc2VsZWN0b3IYByABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvZGVTZWxlY3RvckgCiAEBQgwKCl9wYXJlbnRfaWRCCwoJX3NlbGVjdG9yQhAKDl9jb2RlX3NlbGVjdG9yIkkKFUNyZWF0ZUNvbW1lbnRSZXNwb25zZRIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50IlUKFEdldFNvdXJjZUZpbGVSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIMCgRwYXRoGAIgASgJInwKFUdldFNvdXJjZUZpbGVSZXNwb25zZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJEjQKCHNuaXBwZXRzGAQgAygLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5TbmlwcGV0UmVmIi4KFFJlc29sdmVUaHJlYWRSZXF1ZXN0EhYKDnRocmVhZF9yb290X2lkGAEgASgJIkcKFVJlc29sdmVUaHJlYWRSZXNwb25zZRIuCgZ0aHJlYWQYASABKAsyHi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRocmVhZCIwChZVbnJlc29sdmVUaHJlYWRSZXF1ZXN0EhYKDnRocmVhZF9yb290X2lkGAEgASgJIkkKF1VucmVzb2x2ZVRocmVhZFJlc3BvbnNlEi4KBnRocmVhZBgBIAEoCzIeLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGhyZWFkIm0KFU1hcmtUaHJlYWRTZWVuUmVxdWVzdBIWCg50aHJlYWRfcm9vdF9pZBgBIAEoCRIwCgdzZWVuX2F0GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBQgoKCF9zZWVuX2F0IhgKFk1hcmtUaHJlYWRTZWVuUmVzcG9uc2UinQEKF1RyYW5zaXRpb25SZXZpZXdSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhI1Cgh0b19zdGF0ZRgCIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSEQoEbm90ZRgDIAEoCUgAiAEBQgcKBV9ub3RlIk4KGFRyYW5zaXRpb25SZXZpZXdSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUiZAoVUmVsZWFzZUNvbnRlbnRSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIRCgRub3RlGAIgASgJSACIAQFCBwoFX25vdGUiTAoWUmVsZWFzZUNvbnRlbnRSZXNwb25zZRIyCgVzdGF0ZRgBIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUiSAoVUmVjb3JkQXBwcm92YWxSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZiJNChZSZWNvcmRBcHByb3ZhbFJlc3BvbnNlEjMKBWRyYWZ0GAEgASgLMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5EcmFmdFN1bW1hcnkieQoWRGlzbWlzc0FwcHJvdmFsUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGwoOYXBwcm92ZXJfbG9naW4YAiABKAlIAIgBAUIRCg9fYXBwcm92ZXJfbG9naW4iTgoXRGlzbWlzc0FwcHJvdmFsUmVzcG9uc2USMwoFZHJhZnQYASABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkRyYWZ0U3VtbWFyeSJpChJTZXRQcmlvcml0eVJlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhUKCHByaW9yaXR5GAIgASgFSACIAQFCCwoJX3ByaW9yaXR5IkoKE1NldFByaW9yaXR5UmVzcG9uc2USMwoFZHJhZnQYASABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkRyYWZ0U3VtbWFyeSKkAQobU2V0VGFyZ2V0UmVsZWFzZURhdGVSZXF1ZXN0Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhI8ChN0YXJnZXRfcmVsZWFzZV9kYXRlGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgAiAEBQhYKFF90YXJnZXRfcmVsZWFzZV9kYXRlIlMKHFNldFRhcmdldFJlbGVhc2VEYXRlUmVzcG9uc2USMwoFZHJhZnQYASABKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkRyYWZ0U3VtbWFyeSJMCg5SZXZpZXdlclRhcmdldBISCgVsb2dpbhgBIAEoCUgAiAEBEhIKBWVtYWlsGAIgASgJSAGIAQFCCAoGX2xvZ2luQggKBl9lbWFpbCLYAQoUUmVxdWVzdFJldmlld1JlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEjkKCXJldmlld2VycxgCIAMoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3ZXJUYXJnZXQSOAoLcmVxdWlyZW1lbnQYAyABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVpcmVtZW50EhEKBG5vdGUYBCABKAlIAIgBAUIHCgVfbm90ZSJQChVSZXF1ZXN0UmV2aWV3UmVzcG9uc2USNwoIcmVxdWVzdHMYASADKAsyJS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJldmlld1JlcXVlc3QiMAoaQ2FuY2VsUmV2aWV3UmVxdWVzdFJlcXVlc3QSEgoKcmVxdWVzdF9pZBgBIAEoCSJVChtDYW5jZWxSZXZpZXdSZXF1ZXN0UmVzcG9uc2USNgoHcmVxdWVzdBgBIAEoCzIlLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3UmVxdWVzdCK5AQoZTGlzdFJldmlld1JlcXVlc3RzUmVxdWVzdBI0CgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWZIAIgBARIRCgRtaW5lGAIgASgISAGIAQESEgoFYnlfbWUYAyABKAhIAogBARIWCglvcGVuX29ubHkYBCABKAhIA4gBAUIGCgRfcmVmQgcKBV9taW5lQggKBl9ieV9tZUIMCgpfb3Blbl9vbmx5IlUKGkxpc3RSZXZpZXdSZXF1ZXN0c1Jlc3BvbnNlEjcKCHJlcXVlc3RzGAEgAygLMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdSZXF1ZXN0ImkKGExpc3RDb250ZW50RXZlbnRzUmVxdWVzdBIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSEgoFbGltaXQYAiABKAVIAIgBAUIICgZfbGltaXQiUQoZTGlzdENvbnRlbnRFdmVudHNSZXNwb25zZRI0CgZldmVudHMYASADKAsyJC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRFdmVudCKCAQogUmVxdWVzdENoYW5nZXNPblB1Ymxpc2hlZFJlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhEKBG5vdGUYAiABKAlIAIgBARIRCgl1bnB1Ymxpc2gYAyABKAhCBwoFX25vdGUiagohUmVxdWVzdENoYW5nZXNPblB1Ymxpc2hlZFJlc3BvbnNlEjIKBXN0YXRlGAEgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZRIRCglwdWJsaXNoZWQYAiABKAgi2wEKFk1hbmFnZUFsbG93bGlzdFJlcXVlc3QSRQoGYWN0aW9uGAEgASgOMjUuZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXF1ZXN0LkFjdGlvbhI1CgVlbnRyeRgCIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQWxsb3dsaXN0RW50cnkiQwoGQWN0aW9uEhYKEkFDVElPTl9VTlNQRUNJRklFRBAAEg4KCkFDVElPTl9BREQQARIRCg1BQ1RJT05fUkVNT1ZFEAIiUgoXTWFuYWdlQWxsb3dsaXN0UmVzcG9uc2USNwoHZW50cmllcxgBIAMoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQWxsb3dsaXN0RW50cnkiUgoQRXJhc2VVc2VyUmVxdWVzdBIUCgd1c2VyX2lkGAEgASgJSACIAQESEgoFbG9naW4YAiABKAlIAYgBAUIKCghfdXNlcl9pZEIICgZfbG9naW4iiQEKEUVyYXNlVXNlclJlc3BvbnNlEhsKE2NvbW1lbnRzX3RvbWJzdG9uZWQYASABKAUSHgoWcmV2aWV3X3N0YXRlc19zY3J1YmJlZBgCIAEoBRIcChRyZXNvbHV0aW9uc19zY3J1YmJlZBgDIAEoBRIZChFzZWVuX3Jvd3NfZGVsZXRlZBgEIAEoBSK3AwoWUmVnaXN0ZXJWZXJzaW9uUmVxdWVzdBIUCgxidWlsZF9zZWNyZXQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhQKDGNvbnRlbnRfaGFzaBgDIAEoCRIPCgdnaXRfc2hhGAQgASgJEg0KBXRpdGxlGAUgASgJEhoKEmZyb250bWF0dGVyX3N0YXR1cxgGIAEoCRIxCghzZWN0aW9ucxgHIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2VjdGlvbhI0CghzbmlwcGV0cxgIIAMoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU25pcHBldFJlZhI4Cgxzb3VyY2VfZmlsZXMYCSADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNvdXJjZUZpbGUSEQoJcm9vdF9oYXNoGAogASgJEjUKBHRyZWUYCyABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLk1lcmtsZU5vZGVIAIgBARIOCgZ0b3BpY3MYDCADKAlCBwoFX3RyZWUicQoXUmVnaXN0ZXJWZXJzaW9uUmVzcG9uc2USNwoHdmVyc2lvbhgBIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb24SHQoVb3JwaGFuZWRfdGhyZWFkX2NvdW50GAIgASgFImQKE0xpc3RWZXJzaW9uc1JlcXVlc3QSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhIKBWxpbWl0GAIgASgFSACIAQFCCAoGX2xpbWl0IlAKFExpc3RWZXJzaW9uc1Jlc3BvbnNlEjgKCHZlcnNpb25zGAEgAygLMiYuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50VmVyc2lvbiIrChVHZXRWZXJzaW9uVHJlZVJlcXVlc3QSEgoKdmVyc2lvbl9pZBgBIAEoCSKRAQoWR2V0VmVyc2lvblRyZWVSZXNwb25zZRI3Cgd2ZXJzaW9uGAEgASgLMiYuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50VmVyc2lvbhI1CgR0cmVlGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5NZXJrbGVOb2RlSACIAQFCBwoFX3RyZWUilQEKC0NoYW5nZWROb2RlEgsKA2tleRgBIAEoCRIMCgRraW5kGAIgASgJEjIKBmNoYW5nZRgDIAEoDjIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ2hhbmdlS2luZBINCgVsYWJlbBgEIAEoCRIYCgthbmNob3Jfc2x1ZxgFIAEoCUgAiAEBQg4KDF9hbmNob3Jfc2x1ZyL8AQoSUHJvZHVjdENoYW5nZUVudHJ5Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhINCgV0aXRsZRgCIAEoCRIWCg5sYXRlc3RfZ2l0X3NoYRgDIAEoCRIZChFsYXRlc3RfdmVyc2lvbl9pZBgEIAEoCRIbChNiYXNlbGluZV92ZXJzaW9uX2lkGAUgASgJEjoKDWNoYW5nZWRfbm9kZXMYBiADKAsyIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNoYW5nZWROb2RlEhoKEm9wZW5fY29tbWVudF9jb3VudBgHIAEoBSLCAQoVUHJvZHVjdENoYW5nZXNSZXF1ZXN0Eg0KBXRvcGljGAEgASgJEhoKDXNpbmNlX2dpdF9zaGEYAiABKAlIAIgBARIdChBzaW5jZV92ZXJzaW9uX2lkGAMgASgJSAGIAQESLgoFc2luY2UYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAKIAQFCEAoOX3NpbmNlX2dpdF9zaGFCEwoRX3NpbmNlX3ZlcnNpb25faWRCCAoGX3NpbmNlIosBChZQcm9kdWN0Q2hhbmdlc1Jlc3BvbnNlEg0KBXRvcGljGAEgASgJEhEKCWRvY19jb3VudBgCIAEoBRISCgpibG9nX2NvdW50GAMgASgFEjsKB2VudHJpZXMYBCADKAsyKi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlByb2R1Y3RDaGFuZ2VFbnRyeSqwAQoKQ2hhbmdlS2luZBIbChdDSEFOR0VfS0lORF9VTlNQRUNJRklFRBAAEhUKEUNIQU5HRV9LSU5EX0FEREVEEAESFwoTQ0hBTkdFX0tJTkRfUkVNT1ZFRBACEhgKFENIQU5HRV9LSU5EX01PRElGSUVEEAMSJAogQ0hBTkdFX0tJTkRfTU9ESUZJRURfREVTQ0VOREFOVFMQBBIVChFDSEFOR0VfS0lORF9NT1ZFRBAFMqkYCg1SZXZpZXdTZXJ2aWNlEmAKCUdldFZpZXdlchIoLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuR2V0Vmlld2VyUmVxdWVzdBopLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuR2V0Vmlld2VyUmVzcG9uc2USYwoKTGlzdERyYWZ0cxIpLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdERyYWZ0c1JlcXVlc3QaKi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3REcmFmdHNSZXNwb25zZRJyCg9HZXREcmFmdENvbnRlbnQSLi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldERyYWZ0Q29udGVudFJlcXVlc3QaLy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldERyYWZ0Q29udGVudFJlc3BvbnNlEmkKDExpc3RDb21tZW50cxIrLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdENvbW1lbnRzUmVxdWVzdBosLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTGlzdENvbW1lbnRzUmVzcG9uc2USewoSTGlzdFJlY2VudENvbW1lbnRzEjEuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0UmVjZW50Q29tbWVudHNSZXF1ZXN0GjIuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0UmVjZW50Q29tbWVudHNSZXNwb25zZRJsCg1DcmVhdGVDb21tZW50EiwuZG9jc19mYWN0b3J5LnJldmlldy52MS5DcmVhdGVDb21tZW50UmVxdWVzdBotLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ3JlYXRlQ29tbWVudFJlc3BvbnNlEmwKDVJlc29sdmVUaHJlYWQSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlc29sdmVUaHJlYWRSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXNvbHZlVGhyZWFkUmVzcG9uc2UScgoPVW5yZXNvbHZlVGhyZWFkEi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5VbnJlc29sdmVUaHJlYWRSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5VbnJlc29sdmVUaHJlYWRSZXNwb25zZRJvCg5NYXJrVGhyZWFkU2VlbhItLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuTWFya1RocmVhZFNlZW5SZXF1ZXN0Gi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYXJrVGhyZWFkU2VlblJlc3BvbnNlEmwKDUdldFNvdXJjZUZpbGUSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkdldFNvdXJjZUZpbGVSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5HZXRTb3VyY2VGaWxlUmVzcG9uc2USdQoQVHJhbnNpdGlvblJldmlldxIvLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVHJhbnNpdGlvblJldmlld1JlcXVlc3QaMC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlRyYW5zaXRpb25SZXZpZXdSZXNwb25zZRJvCg5SZWxlYXNlQ29udGVudBItLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVsZWFzZUNvbnRlbnRSZXF1ZXN0Gi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWxlYXNlQ29udGVudFJlc3BvbnNlEm8KDlJlY29yZEFwcHJvdmFsEi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZWNvcmRBcHByb3ZhbFJlcXVlc3QaLi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlY29yZEFwcHJvdmFsUmVzcG9uc2UScgoPRGlzbWlzc0FwcHJvdmFsEi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5EaXNtaXNzQXBwcm92YWxSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5EaXNtaXNzQXBwcm92YWxSZXNwb25zZRJmCgtTZXRQcmlvcml0eRIqLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2V0UHJpb3JpdHlSZXF1ZXN0GisuZG9jc19mYWN0b3J5LnJldmlldy52MS5TZXRQcmlvcml0eVJlc3BvbnNlEoEBChRTZXRUYXJnZXRSZWxlYXNlRGF0ZRIzLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU2V0VGFyZ2V0UmVsZWFzZURhdGVSZXF1ZXN0GjQuZG9jc19mYWN0b3J5LnJldmlldy52MS5TZXRUYXJnZXRSZWxlYXNlRGF0ZVJlc3BvbnNlEmwKDVJlcXVlc3RSZXZpZXcSLC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RSZXZpZXdSZXF1ZXN0Gi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0UmV2aWV3UmVzcG9uc2USfgoTQ2FuY2VsUmV2aWV3UmVxdWVzdBIyLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ2FuY2VsUmV2aWV3UmVxdWVzdFJlcXVlc3QaMy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNhbmNlbFJldmlld1JlcXVlc3RSZXNwb25zZRJ7ChJMaXN0UmV2aWV3UmVxdWVzdHMSMS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RSZXZpZXdSZXF1ZXN0c1JlcXVlc3QaMi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RSZXZpZXdSZXF1ZXN0c1Jlc3BvbnNlEngKEUxpc3RDb250ZW50RXZlbnRzEjAuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0Q29udGVudEV2ZW50c1JlcXVlc3QaMS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkxpc3RDb250ZW50RXZlbnRzUmVzcG9uc2USkAEKGVJlcXVlc3RDaGFuZ2VzT25QdWJsaXNoZWQSOC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RDaGFuZ2VzT25QdWJsaXNoZWRSZXF1ZXN0GjkuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0Q2hhbmdlc09uUHVibGlzaGVkUmVzcG9uc2UScgoPTWFuYWdlQWxsb3dsaXN0Ei4uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXF1ZXN0Gi8uZG9jc19mYWN0b3J5LnJldmlldy52MS5NYW5hZ2VBbGxvd2xpc3RSZXNwb25zZRJgCglFcmFzZVVzZXISKC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkVyYXNlVXNlclJlcXVlc3QaKS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkVyYXNlVXNlclJlc3BvbnNlEnIKD1JlZ2lzdGVyVmVyc2lvbhIuLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVnaXN0ZXJWZXJzaW9uUmVxdWVzdBovLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVnaXN0ZXJWZXJzaW9uUmVzcG9uc2USaQoMTGlzdFZlcnNpb25zEisuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0VmVyc2lvbnNSZXF1ZXN0GiwuZG9jc19mYWN0b3J5LnJldmlldy52MS5MaXN0VmVyc2lvbnNSZXNwb25zZRJvCg5HZXRWZXJzaW9uVHJlZRItLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuR2V0VmVyc2lvblRyZWVSZXF1ZXN0Gi4uZG9jc19mYWN0b3J5LnJldmlldy52MS5HZXRWZXJzaW9uVHJlZVJlc3BvbnNlEm8KDlByb2R1Y3RDaGFuZ2VzEi0uZG9jc19mYWN0b3J5LnJldmlldy52MS5Qcm9kdWN0Q2hhbmdlc1JlcXVlc3QaLi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlByb2R1Y3RDaGFuZ2VzUmVzcG9uc2ViBnByb3RvMw", [file_docs_factory_review_v1_messages, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message docs_factory.review.v1.GetViewerRequest
@@ -1132,6 +1132,28 @@ export type RegisterVersionRequest = Message<"docs_factory.review.v1.RegisterVer
    * @generated from field: repeated docs_factory.review.v1.SourceFile source_files = 9;
    */
   sourceFiles: SourceFile[];
+
+  /**
+   * Merkle root hash of this version's structure (sections already carry their
+   * per-node hashes; this is the doc root).
+   *
+   * @generated from field: string root_hash = 10;
+   */
+  rootHash: string;
+
+  /**
+   * The full Merkle tree (persisted as the merkle_tree jsonb blob).
+   *
+   * @generated from field: optional docs_factory.review.v1.MerkleNode tree = 11;
+   */
+  tree?: MerkleNode | undefined;
+
+  /**
+   * Canonical product/topic ids for the "what changed for X" rollup.
+   *
+   * @generated from field: repeated string topics = 12;
+   */
+  topics: string[];
 };
 
 /**
@@ -1164,6 +1186,307 @@ export type RegisterVersionResponse = Message<"docs_factory.review.v1.RegisterVe
  */
 export const RegisterVersionResponseSchema: GenMessage<RegisterVersionResponse> = /*@__PURE__*/
   messageDesc(file_docs_factory_review_v1_review_service, 48);
+
+/**
+ * @generated from message docs_factory.review.v1.ListVersionsRequest
+ */
+export type ListVersionsRequest = Message<"docs_factory.review.v1.ListVersionsRequest"> & {
+  /**
+   * @generated from field: docs_factory.review.v1.ContentRef ref = 1;
+   */
+  ref?: ContentRef | undefined;
+
+  /**
+   * Max versions (server clamps; defaults to a modest page).
+   *
+   * @generated from field: optional int32 limit = 2;
+   */
+  limit?: number | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ListVersionsRequest.
+ * Use `create(ListVersionsRequestSchema)` to create a new message.
+ */
+export const ListVersionsRequestSchema: GenMessage<ListVersionsRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 49);
+
+/**
+ * @generated from message docs_factory.review.v1.ListVersionsResponse
+ */
+export type ListVersionsResponse = Message<"docs_factory.review.v1.ListVersionsResponse"> & {
+  /**
+   * Most-recent first. Trees omitted (call GetVersionTree for one).
+   *
+   * @generated from field: repeated docs_factory.review.v1.ContentVersion versions = 1;
+   */
+  versions: ContentVersion[];
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ListVersionsResponse.
+ * Use `create(ListVersionsResponseSchema)` to create a new message.
+ */
+export const ListVersionsResponseSchema: GenMessage<ListVersionsResponse> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 50);
+
+/**
+ * @generated from message docs_factory.review.v1.GetVersionTreeRequest
+ */
+export type GetVersionTreeRequest = Message<"docs_factory.review.v1.GetVersionTreeRequest"> & {
+  /**
+   * The content version id (from ContentVersion.id / ListVersions).
+   *
+   * @generated from field: string version_id = 1;
+   */
+  versionId: string;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.GetVersionTreeRequest.
+ * Use `create(GetVersionTreeRequestSchema)` to create a new message.
+ */
+export const GetVersionTreeRequestSchema: GenMessage<GetVersionTreeRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 51);
+
+/**
+ * @generated from message docs_factory.review.v1.GetVersionTreeResponse
+ */
+export type GetVersionTreeResponse = Message<"docs_factory.review.v1.GetVersionTreeResponse"> & {
+  /**
+   * @generated from field: docs_factory.review.v1.ContentVersion version = 1;
+   */
+  version?: ContentVersion | undefined;
+
+  /**
+   * The full Merkle tree of that version (also on version.tree).
+   *
+   * @generated from field: optional docs_factory.review.v1.MerkleNode tree = 2;
+   */
+  tree?: MerkleNode | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.GetVersionTreeResponse.
+ * Use `create(GetVersionTreeResponseSchema)` to create a new message.
+ */
+export const GetVersionTreeResponseSchema: GenMessage<GetVersionTreeResponse> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 52);
+
+/**
+ * One changed node in a document's diff between two versions.
+ *
+ * @generated from message docs_factory.review.v1.ChangedNode
+ */
+export type ChangedNode = Message<"docs_factory.review.v1.ChangedNode"> & {
+  /**
+   * @generated from field: string key = 1;
+   */
+  key: string;
+
+  /**
+   * MerkleNode.kind: doc|heading|prose|code|snippet
+   *
+   * @generated from field: string kind = 2;
+   */
+  kind: string;
+
+  /**
+   * @generated from field: docs_factory.review.v1.ChangeKind change = 3;
+   */
+  change: ChangeKind;
+
+  /**
+   * @generated from field: string label = 4;
+   */
+  label: string;
+
+  /**
+   * @generated from field: optional string anchor_slug = 5;
+   */
+  anchorSlug?: string | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ChangedNode.
+ * Use `create(ChangedNodeSchema)` to create a new message.
+ */
+export const ChangedNodeSchema: GenMessage<ChangedNode> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 53);
+
+/**
+ * Per-document entry in a product rollup: its latest version, what changed since
+ * the baseline, and how many open comments sit on changed sections.
+ *
+ * @generated from message docs_factory.review.v1.ProductChangeEntry
+ */
+export type ProductChangeEntry = Message<"docs_factory.review.v1.ProductChangeEntry"> & {
+  /**
+   * @generated from field: docs_factory.review.v1.ContentRef ref = 1;
+   */
+  ref?: ContentRef | undefined;
+
+  /**
+   * @generated from field: string title = 2;
+   */
+  title: string;
+
+  /**
+   * @generated from field: string latest_git_sha = 3;
+   */
+  latestGitSha: string;
+
+  /**
+   * @generated from field: string latest_version_id = 4;
+   */
+  latestVersionId: string;
+
+  /**
+   * The baseline version compared against (empty if the artifact is brand new
+   * relative to `since`, in which case every node reads as added).
+   *
+   * @generated from field: string baseline_version_id = 5;
+   */
+  baselineVersionId: string;
+
+  /**
+   * @generated from field: repeated docs_factory.review.v1.ChangedNode changed_nodes = 6;
+   */
+  changedNodes: ChangedNode[];
+
+  /**
+   * @generated from field: int32 open_comment_count = 7;
+   */
+  openCommentCount: number;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ProductChangeEntry.
+ * Use `create(ProductChangeEntrySchema)` to create a new message.
+ */
+export const ProductChangeEntrySchema: GenMessage<ProductChangeEntry> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 54);
+
+/**
+ * @generated from message docs_factory.review.v1.ProductChangesRequest
+ */
+export type ProductChangesRequest = Message<"docs_factory.review.v1.ProductChangesRequest"> & {
+  /**
+   * Canonical topic id (content/vocab.json `topics`).
+   *
+   * @generated from field: string topic = 1;
+   */
+  topic: string;
+
+  /**
+   * Baseline: compare each artifact's latest version against the version at/just
+   * before this point. Provide at most one; absent ⇒ compare against each
+   * artifact's immediately-previous version.
+   *
+   * @generated from field: optional string since_git_sha = 2;
+   */
+  sinceGitSha?: string | undefined;
+
+  /**
+   * @generated from field: optional string since_version_id = 3;
+   */
+  sinceVersionId?: string | undefined;
+
+  /**
+   * @generated from field: optional google.protobuf.Timestamp since = 4;
+   */
+  since?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ProductChangesRequest.
+ * Use `create(ProductChangesRequestSchema)` to create a new message.
+ */
+export const ProductChangesRequestSchema: GenMessage<ProductChangesRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 55);
+
+/**
+ * @generated from message docs_factory.review.v1.ProductChangesResponse
+ */
+export type ProductChangesResponse = Message<"docs_factory.review.v1.ProductChangesResponse"> & {
+  /**
+   * @generated from field: string topic = 1;
+   */
+  topic: string;
+
+  /**
+   * @generated from field: int32 doc_count = 2;
+   */
+  docCount: number;
+
+  /**
+   * @generated from field: int32 blog_count = 3;
+   */
+  blogCount: number;
+
+  /**
+   * Only artifacts with at least one changed node (unchanged ones omitted).
+   *
+   * @generated from field: repeated docs_factory.review.v1.ProductChangeEntry entries = 4;
+   */
+  entries: ProductChangeEntry[];
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ProductChangesResponse.
+ * Use `create(ProductChangesResponseSchema)` to create a new message.
+ */
+export const ProductChangesResponseSchema: GenMessage<ProductChangesResponse> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_review_service, 56);
+
+/**
+ * The classification of one node when diffing two version trees.
+ *
+ * @generated from enum docs_factory.review.v1.ChangeKind
+ */
+export enum ChangeKind {
+  /**
+   * @generated from enum value: CHANGE_KIND_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: CHANGE_KIND_ADDED = 1;
+   */
+  ADDED = 1,
+
+  /**
+   * @generated from enum value: CHANGE_KIND_REMOVED = 2;
+   */
+  REMOVED = 2,
+
+  /**
+   * This node's OWN content changed.
+   *
+   * @generated from enum value: CHANGE_KIND_MODIFIED = 3;
+   */
+  MODIFIED = 3,
+
+  /**
+   * Only a descendant changed (own content identical).
+   *
+   * @generated from enum value: CHANGE_KIND_MODIFIED_DESCENDANTS = 4;
+   */
+  MODIFIED_DESCENDANTS = 4,
+
+  /**
+   * Same node, different position/parent.
+   *
+   * @generated from enum value: CHANGE_KIND_MOVED = 5;
+   */
+  MOVED = 5,
+}
+
+/**
+ * Describes the enum docs_factory.review.v1.ChangeKind.
+ */
+export const ChangeKindSchema: GenEnum<ChangeKind> = /*@__PURE__*/
+  enumDesc(file_docs_factory_review_v1_review_service, 0);
 
 /**
  * The review & release API, served over Connect from the Neon Function and
@@ -1441,6 +1764,41 @@ export const ReviewService: GenService<{
     methodKind: "unary";
     input: typeof RegisterVersionRequestSchema;
     output: typeof RegisterVersionResponseSchema;
+  },
+  /**
+   * The version history of one artifact, most-recent first (no trees — cheap
+   * list). Allowlist-gated. Powers the version picker in the evolution view.
+   *
+   * @generated from rpc docs_factory.review.v1.ReviewService.ListVersions
+   */
+  listVersions: {
+    methodKind: "unary";
+    input: typeof ListVersionsRequestSchema;
+    output: typeof ListVersionsResponseSchema;
+  },
+  /**
+   * One version's full Merkle tree, for rendering + client-side diffing.
+   * Allowlist-gated.
+   *
+   * @generated from rpc docs_factory.review.v1.ReviewService.GetVersionTree
+   */
+  getVersionTree: {
+    methodKind: "unary";
+    input: typeof GetVersionTreeRequestSchema;
+    output: typeof GetVersionTreeResponseSchema;
+  },
+  /**
+   * "What changed for <topic>?" — across every artifact tagged with a product/
+   * topic id, diff each artifact's latest version against its baseline at/just
+   * before `since`, returning the changed nodes + open-comment counts.
+   * Allowlist-gated.
+   *
+   * @generated from rpc docs_factory.review.v1.ReviewService.ProductChanges
+   */
+  productChanges: {
+    methodKind: "unary";
+    input: typeof ProductChangesRequestSchema;
+    output: typeof ProductChangesResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_docs_factory_review_v1_review_service, 0);

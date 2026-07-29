@@ -20,13 +20,25 @@ export async function createApp(): Promise<Hono> {
   // single Vercel origin in the soft launch; the custom docs domains
   // (openlakehouse.io / delta.io / unitycatalog.io) added later — no code change,
   // just the env value. Credentials forbid "*", so hono/cors echoes the matching
-  // allowlisted origin. Unset ⇒ permissive echo, local dev only.
+  // allowlisted origin.
   const allowed = process.env.ALLOWED_ORIGIN?.split(",")
     .map((o) => o.trim())
     .filter(Boolean);
+  // Fail CLOSED in prod: an unset/empty allowlist would otherwise fall through to
+  // the permissive echo below (`(o) => o`), which reflects ANY origin with
+  // credentials:true. That's a misconfiguration, not a valid prod state, so refuse
+  // to build the app rather than serve wide-open CORS. Outside prod (local dev),
+  // an unset allowlist keeps the convenient permissive echo.
+  if (process.env.NODE_ENV === "production" && !(allowed && allowed.length)) {
+    throw new Error(
+      "ALLOWED_ORIGIN must be set (non-empty) when NODE_ENV=production — refusing to serve permissive CORS.",
+    );
+  }
   app.use(
     "*",
     cors({
+      // allowed is guaranteed non-empty in prod by the guard above; the echo is
+      // reached only in local dev / unset (non-prod).
       origin: allowed && allowed.length ? allowed : (o) => o,
       credentials: true,
       allowHeaders: ["Content-Type", "Connect-Protocol-Version", "Authorization", "x-dev-persona"],

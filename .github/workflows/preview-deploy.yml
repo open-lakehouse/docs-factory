@@ -60,6 +60,9 @@ jobs:
       NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
       # The integration names the preview branch after the PR's source branch.
       BRANCH_NAME: preview/${{ github.head_ref }}
+      # Function slug: one source of truth (vars.REVIEW_FUNCTION_SLUG), 'review'
+      # default so an unset var still works. Shared with deploy-function.yml.
+      SLUG: ${{ vars.REVIEW_FUNCTION_SLUG || 'review' }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -123,14 +126,9 @@ jobs:
       #   Pass 1 (here): deploy WITHOUT ALLOWED_ORIGIN to materialize the host →
       #                  bake it into vercel.json → build + deploy Vercel.
       #   Pass 2 (later): redeploy WITH ALLOWED_ORIGIN=<captured Vercel branch URL>.
-      # Both deploys are seconds long; we drive each off `functions get` (see
-      # below) rather than the CLI's exit.
-      #
-      # Why not the CLI's exit: neonctl (2.38.x) BLOCKS after triggering a deploy —
-      # it polls "waiting for the deployment to start" and hangs the full 10-min
-      # timeout even when the deployment has already COMPLETED within seconds, then
-      # exits 1 with a false "Timed out" (--wait only governs the build wait). So we
-      # run the deploy detached and poll `functions get` for a terminal status.
+      # The deploy+poll dance (a beta-neonctl workaround) lives in
+      # scripts/deploy-neon-function.sh, shared with deploy-function.yml; it prints
+      # the Function host (no scheme) as its last stdout line.
       #
       # We MUST deploy explicitly on every push: neon.ts's preview.functions is
       # applied only by an explicit `neon deploy` — not on branch creation, not on
@@ -149,39 +147,14 @@ jobs:
             exit 1
           fi
           # The Function host is NOT derivable from the git branch name — Neon forms
-          # it as <branch_id>-<slug>.compute.<cell>.<region>.aws.neon.tech — so we
-          # read invocation_url from `get` after the deploy completes.
-          setsid bunx neonctl functions deploy review \
-            --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
-            --src server/src/handler.ts --wait=false \
+          # it as <branch_id>-<slug>.compute.<cell>.<region>.aws.neon.tech — so the
+          # script reads invocation_url from `get` and echoes the host.
+          HOST=$(scripts/deploy-neon-function.sh "$SLUG" "$NEON_PROJECT_ID" \
+            --branch "$BRANCH_NAME" \
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            --env NEON_AUTH_URL="$NEON_AUTH_URL" \
-            >deploy1.log 2>&1 &
-          INVOCATION_URL=""
-          STATUS=""
-          for _ in $(seq 1 60); do
-            GET_JSON=$(bunx neonctl functions get review \
-              --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" --output json 2>/dev/null || echo '{}')
-            STATUS=$(jq -r '.current_deployment.status // empty' <<<"$GET_JSON")
-            if [ "$STATUS" = "completed" ]; then
-              INVOCATION_URL=$(jq -r '.invocation_url // empty' <<<"$GET_JSON")
-              break
-            fi
-            if [ "$STATUS" = "failed" ]; then
-              echo "::error::the review Function deployment (pass 1) reported status=failed — see the Neon console (docs/deploy/runbook.md §4)."
-              cat deploy1.log || true
-              exit 1
-            fi
-            sleep 5
-          done
-          if [ -z "$INVOCATION_URL" ]; then
-            echo "::error::review Function (pass 1) did not reach status=completed after polling (last status: '${STATUS:-none}'); check the Neon console (docs/deploy/runbook.md §4)."
-            cat deploy1.log || true
-            exit 1
-          fi
-          # gen-vercel-config.mjs strips the scheme too, but keep GITHUB_ENV clean.
-          echo "NEON_FUNCTION_HOST=${INVOCATION_URL#https://}" >> "$GITHUB_ENV"
+            --env NEON_AUTH_URL="$NEON_AUTH_URL")
+          echo "NEON_FUNCTION_HOST=${HOST}" >> "$GITHUB_ENV"
 
       # Build the SPA into the Build Output API tree (site/.vercel/output/, with
       # the /api → Function host rewrite in config.json) and deploy it prebuilt.
@@ -233,29 +206,12 @@ jobs:
           NEON_AUTH_URL="$VITE_NEON_AUTH_URL"
           ALLOWED_ORIGIN="https://${DEPLOY_URL#https://}"
           echo "ALLOWED_ORIGIN=$ALLOWED_ORIGIN"
-          setsid bunx neonctl functions deploy review \
-            --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" \
-            --src server/src/handler.ts --wait=false \
+          # Same shared script; pass 2 adds ALLOWED_ORIGIN. We don't need its host
+          # output here, but capturing it keeps the script's stdout out of the log.
+          HOST=$(scripts/deploy-neon-function.sh "$SLUG" "$NEON_PROJECT_ID" \
+            --branch "$BRANCH_NAME" \
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            --env NEON_AUTH_URL="$NEON_AUTH_URL" \
-            >deploy2.log 2>&1 &
-          STATUS=""
-          for _ in $(seq 1 60); do
-            STATUS=$(bunx neonctl functions get review \
-              --project-id "$NEON_PROJECT_ID" --branch "$BRANCH_NAME" --output json 2>/dev/null \
-              | jq -r '.current_deployment.status // empty')
-            [ "$STATUS" = "completed" ] && break
-            if [ "$STATUS" = "failed" ]; then
-              echo "::error::the review Function deployment (pass 2) reported status=failed — see the Neon console (docs/deploy/runbook.md §4)."
-              cat deploy2.log || true
-              exit 1
-            fi
-            sleep 5
-          done
-          if [ "$STATUS" != "completed" ]; then
-            echo "::error::review Function (pass 2) did not reach status=completed (last status: '${STATUS:-none}'); check the Neon console (docs/deploy/runbook.md §4)."
-            cat deploy2.log || true
-            exit 1
-          fi
+            --env NEON_AUTH_URL="$NEON_AUTH_URL")
+          echo "review Function locked to origin $ALLOWED_ORIGIN (host $HOST)"

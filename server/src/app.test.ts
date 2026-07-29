@@ -1,8 +1,14 @@
-// Tests for createApp's CORS fail-closed guard. Run with `bun test`.
+// Tests for createApp's CORS policy. Run with `bun test`.
 //
-// The guard must refuse to build the app when NODE_ENV=production and
-// ALLOWED_ORIGIN is unset/empty (which would otherwise serve permissive,
-// credentialed CORS to any origin), while staying permissive in local dev.
+// CORS is a browser concern: it governs which cross-origin browser requests get
+// their Origin reflected, and must NEVER gate whether the app runs. So createApp
+// always builds; the policy lives in the `origin` resolver:
+//   - allowlist set        → reflect only listed origins
+//   - unset + production    → reflect NOTHING (deny cross-origin browsers), but the
+//                             app still serves same-origin + server-to-server
+//   - unset + non-prod      → permissive echo (dev convenience)
+// A server-to-server caller (no Origin header, e.g. RegisterVersion) is never
+// blocked, which is what regressed when this was a startup throw.
 // We drive it with AUTH_MODE=anon so selectProvider() needs no DB.
 import { expect, test, describe, afterEach } from "bun:test";
 import { createApp } from "./app.js";
@@ -12,34 +18,54 @@ afterEach(() => {
   process.env = { ...saved };
 });
 
-describe("createApp CORS fail-closed", () => {
-  test("throws in production when ALLOWED_ORIGIN is unset", async () => {
+/** A preflight for a cross-origin browser request; returns the reflected origin (or null). */
+async function reflectedOrigin(app: Awaited<ReturnType<typeof createApp>>, origin: string) {
+  const res = await app.request("/healthz", {
+    method: "OPTIONS",
+    headers: {
+      origin,
+      "access-control-request-method": "POST",
+      "access-control-request-headers": "content-type",
+    },
+  });
+  return res.headers.get("access-control-allow-origin");
+}
+
+describe("createApp CORS policy", () => {
+  test("production + unset allowlist: app builds and serves, but reflects no browser origin", async () => {
     process.env.AUTH_MODE = "anon";
     process.env.NODE_ENV = "production";
     delete process.env.ALLOWED_ORIGIN;
-    await expect(createApp()).rejects.toThrow(/ALLOWED_ORIGIN/);
+    const app = await createApp();
+    // App runs (server-to-server / same-origin unaffected)…
+    const health = await app.request("/healthz");
+    expect(health.status).toBe(200);
+    // …but a cross-origin browser request gets nothing reflected (fail closed).
+    expect(await reflectedOrigin(app, "https://evil.example.com")).toBeNull();
   });
 
-  test("throws in production when ALLOWED_ORIGIN is blank/empty", async () => {
+  test("production + blank/empty allowlist behaves like unset", async () => {
     process.env.AUTH_MODE = "anon";
     process.env.NODE_ENV = "production";
     process.env.ALLOWED_ORIGIN = " , ";
-    await expect(createApp()).rejects.toThrow(/ALLOWED_ORIGIN/);
+    const app = await createApp();
+    expect(await reflectedOrigin(app, "https://evil.example.com")).toBeNull();
   });
 
-  test("builds in production when ALLOWED_ORIGIN is set", async () => {
+  test("production + allowlist set: reflects a listed origin, denies others", async () => {
     process.env.AUTH_MODE = "anon";
     process.env.NODE_ENV = "production";
-    process.env.ALLOWED_ORIGIN = "https://example.com";
+    process.env.ALLOWED_ORIGIN = "https://docs.example.com";
     const app = await createApp();
-    expect(typeof app.fetch).toBe("function");
+    expect(await reflectedOrigin(app, "https://docs.example.com")).toBe("https://docs.example.com");
+    expect(await reflectedOrigin(app, "https://evil.example.com")).toBeNull();
   });
 
-  test("builds outside production even with no ALLOWED_ORIGIN (permissive dev echo)", async () => {
+  test("non-production + unset allowlist: permissive echo (dev convenience)", async () => {
     process.env.AUTH_MODE = "anon";
     process.env.NODE_ENV = "development";
     delete process.env.ALLOWED_ORIGIN;
     const app = await createApp();
-    expect(typeof app.fetch).toBe("function");
+    expect(await reflectedOrigin(app, "http://localhost:5173")).toBe("http://localhost:5173");
   });
 });

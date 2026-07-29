@@ -779,7 +779,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             if (!login && !email) {
               throw new ConnectError("each reviewer needs a login or email", Code.InvalidArgument);
             }
-            const role = await lookupRole(tx, { login: login ?? undefined, email: email ?? undefined });
+            const role = await lookupRole(tx, {
+              login: login ?? undefined,
+              emails: email ? [email] : [],
+            });
             if (role === Role.ANONYMOUS) {
               throw new ConnectError(
                 `reviewer ${login ?? email} is not on the allowlist`,

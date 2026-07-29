@@ -330,6 +330,34 @@ message AllowlistEntry {
   Role role = 3;
 }
 
+// A reviewer_allowlist row with its audit metadata, for the maintainer admin
+// list view. Distinct from AllowlistEntry (the write shape used by
+// ManageAllowlist / RequestReview) so those stay unchanged. `id` is the row
+// uuid, so a remove/edit can target a precise row.
+message AllowlistEntryDetail {
+  string id = 1;
+  optional string github_login = 2;
+  optional string email = 3;
+  Role role = 4;
+  optional string added_by = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+// A person known to the auth provider (neon_auth), joined to their current
+// allowlist role — the input to the admin "who has logged in" discovery view.
+// `github_login` is the resolved @handle, falling back to the numeric GitHub
+// account id when the OAuth token can't be exchanged (same fallback as viewer
+// resolution). `role` is ANONYMOUS for a logged-in user who is not on the
+// allowlist ("no status"). `last_seen_at` is a best-effort activity signal and
+// may be absent.
+message RegisteredUser {
+  string user_id = 1;
+  optional string github_login = 2;
+  optional string email = 3;
+  Role role = 4;
+  optional google.protobuf.Timestamp last_seen_at = 5;
+}
+
 // A recent comment for the reviewer dashboard's "latest comments" feed. Carries
 // the comment plus enough context to link back to where it lives: its content
 // `ref` and `anchor_slug` (the rehype-slug heading id) resolve to a deep link

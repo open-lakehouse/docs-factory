@@ -31,8 +31,10 @@ export default defineConfig({
         env: {
           AUTH_MODE: "neon",
           NODE_ENV: "production",
-          // ALLOWED_ORIGIN and BUILD_SECRET are supplied at deploy time
-          // (workflow / CLI) so secrets never live in this file.
+          // ALLOWED_ORIGIN, BUILD_SECRET, and NEON_AUTH_URL are supplied at
+          // deploy time (workflow / CLI). NEON_AUTH_URL is the Neon Auth base
+          // (same value as the client's VITE_NEON_AUTH_URL) — the JWT
+          // issuer/audience + JWKS base the Function verifies bearers against.
         },
       },
     },

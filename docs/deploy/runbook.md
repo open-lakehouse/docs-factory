@@ -185,6 +185,15 @@ Two **dashboard** settings on the Vercel project (Root Directory is `site`):
    so RPC POSTs 404 — that was the original sign-in bug. Leave Output Directory on
    the Build Output API default (Vercel auto-detects `.vercel/output`).
 
+   > **This setting is project-wide — there is no per-environment Build Command
+   > override, and that's fine.** It only ever runs for the production build,
+   > because (a) the Ignored Build Step below skips every git build except `main`,
+   > and (b) previews are built by `preview-deploy.yml` via `vercel deploy
+   > --prebuilt`, not the git integration. If a git preview build ever *did* run
+   > `build:vercel`, it would fail loudly (no `NEON_FUNCTION_HOST` in the Preview
+   > env → `gen-vercel-config.mjs` exits 1), never ship a routeless SPA. So this
+   > and the Ignored Build Step are a pair: keep both.
+
 2. **Ignored Build Step → build only `main`** (Project → Settings → Git). The
    git integration would otherwise build a *second* preview on every branch push,
    racing `preview-deploy.yml` and building with the wrong `/api` host (it can't

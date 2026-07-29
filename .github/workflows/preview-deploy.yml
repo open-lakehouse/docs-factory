@@ -50,7 +50,8 @@ jobs:
     # Only run when explicitly enabled at provisioning.
     if: vars.PREVIEW_DEPLOY_ENABLED == 'true'
     # Preview-scoped secrets/vars live in the `preview` environment (a preview
-    # NEON_API_KEY, the preview REVIEW_ALLOWED_ORIGIN). See runbook §3.
+    # NEON_API_KEY). The Function's CORS origin is derived per-deploy from Vercel's
+    # VERCEL_BRANCH_URL, not a static var. See runbook §3.
     environment: preview
     runs-on: ubuntu-latest
     env:
@@ -119,9 +120,25 @@ jobs:
       # Functions CLI is finalized at provisioning (beta) — see runbook.
       - name: Deploy review Function to the branch
         env:
-          ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
+          # CORS allowlist for THIS preview: the browser reaches /api same-origin
+          # (so CORS is inert on the happy path), but we still lock the raw Function
+          # URL to this preview's origin as defense-in-depth. VERCEL_BRANCH_URL is
+          # the stable per-branch preview host Vercel injects into the preview env;
+          # it's in the file we pulled. If it's somehow absent we warn and leave
+          # ALLOWED_ORIGIN empty (server falls back to permissive echo) rather than
+          # guess a slugified/truncated host and lock out the real origin.
+          set -a; . .vercel/.env.preview.local; set +a
+          ORIGIN_HOST="${VERCEL_BRANCH_URL:-}"
+          if [ -n "$ORIGIN_HOST" ]; then
+            ALLOWED_ORIGIN="https://${ORIGIN_HOST#https://}"
+          else
+            echo "::warning::VERCEL_BRANCH_URL not in pulled env; ALLOWED_ORIGIN left unset (permissive CORS on the raw Function URL)."
+            ALLOWED_ORIGIN=""
+          fi
+          echo "ALLOWED_ORIGIN=$ALLOWED_ORIGIN"
+
           # We MUST deploy explicitly on every push: neon.ts's preview.functions
           # is applied only by an explicit `neon deploy` — not on branch creation,
           # not on code changes — so new server/ code only ships if we deploy here.

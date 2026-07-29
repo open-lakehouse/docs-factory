@@ -225,7 +225,7 @@ variables → Actions.
 | `REVIEW_API_URL` | secret | `production` | ⏳ **deferred to Phase 5** — live prod Function URL |
 | `VERCEL_TOKEN` | secret | `preview` | non-interactive Vercel CLI auth |
 | `NEON_PROJECT_ID` | var | `preview` + `production` | Neon project id (same value both) |
-| `REVIEW_ALLOWED_ORIGIN` | var | `preview` + `production` | preview origin (+ wildcard) vs prod domain only |
+| `REVIEW_ALLOWED_ORIGIN` | var | `production` only | prod CORS allowlist (the docs domains). **Not** set for preview: the preview workflow derives the Function's `ALLOWED_ORIGIN` per-deploy from Vercel's `VERCEL_BRANCH_URL` (the stable per-branch preview host), so each preview locks CORS to exactly its own origin |
 | `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | var | `preview` | Vercel CLI targeting |
 | `PREVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |
 | `REVIEW_DEPLOY_ENABLED` | var | **`repo`** | ⏳ **Phase 6** — leave unset for now |

@@ -96,6 +96,11 @@ export async function reanchorThreads(
   area: string,
   slug: string,
   sections: NewSection[],
+  // Anchor slugs whose Merkle subtree is provably unchanged vs. the prior
+  // version (from tree-diff). A thread on such a section cannot have drifted, so
+  // it's kept without running the fuzzy quote scan — a fast path, not a
+  // correctness change (the tiers below still handle everything else).
+  unchangedSlugs: ReadonlySet<string> = new Set(),
 ): Promise<number> {
   const bySlug = new Map(sections.map((s) => [s.anchorSlug, s]));
   const byFingerprint = new Map(sections.map((s) => [s.fingerprint, s]));
@@ -121,6 +126,16 @@ export async function reanchorThreads(
 
   let orphaned = 0;
   for (const root of roots) {
+    // Fast path: the section this thread anchors to is byte-identical to the
+    // prior version (its subtree hash matched). Keep it as-is, skipping the
+    // quote scan. Only applies when the slug still exists in the new section set.
+    if (unchangedSlugs.has(root.anchor_slug) && bySlug.has(root.anchor_slug)) {
+      if (root.orphaned) {
+        await sql`update comment set orphaned = false where id = ${root.id}`;
+      }
+      continue;
+    }
+
     const quote = root.selector_quote ? normalize(root.selector_quote) : null;
 
     // Tier 1: quote still lives in its own section.

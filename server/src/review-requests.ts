@@ -52,6 +52,7 @@ const EVENT_KIND_BY_DB: Record<string, EventKind> = {
   released: EventKind.RELEASED,
   unpublished: EventKind.UNPUBLISHED,
   republished: EventKind.REPUBLISHED,
+  "content-revised": EventKind.CONTENT_REVISED,
 };
 
 /**
@@ -94,8 +95,24 @@ export interface ContentEventRow {
     from_state?: string;
     to_state?: string;
     reviewer_login?: string;
+    // content-revised: structural change counts (stored as strings).
+    added?: string;
+    removed?: string;
+    modified?: string;
+    moved?: string;
   } | null;
   created_at: Date;
+}
+
+/** Human summary of a content-revised event's change counts, for the timeline. */
+function revisionNote(p: NonNullable<ContentEventRow["payload"]>): string {
+  const parts: string[] = [];
+  const n = (v: string | undefined) => Number(v ?? "0");
+  if (n(p.added)) parts.push(`${n(p.added)} added`);
+  if (n(p.removed)) parts.push(`${n(p.removed)} removed`);
+  if (n(p.modified)) parts.push(`${n(p.modified)} modified`);
+  if (n(p.moved)) parts.push(`${n(p.moved)} moved`);
+  return parts.join(", ");
 }
 
 // --- Row -> proto -----------------------------------------------------------
@@ -138,7 +155,8 @@ export function contentEventFromRow(r: ContentEventRow): ContentEvent {
     ref: refFor(r.area, r.slug),
     kind: EVENT_KIND_BY_DB[r.kind] ?? EventKind.UNSPECIFIED,
     actor: r.actor,
-    note: p.note ?? "",
+    // content-revised carries no free-text note; synthesize the change summary.
+    note: r.kind === "content-revised" ? revisionNote(p) : (p.note ?? ""),
     fromState: p.from_state ? STATE_BY_DB[p.from_state] : undefined,
     toState: p.to_state ? STATE_BY_DB[p.to_state] : undefined,
     reviewerLogin: p.reviewer_login ?? undefined,

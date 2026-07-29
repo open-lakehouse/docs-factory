@@ -39,6 +39,12 @@ import {
   ManageAllowlistResponseSchema,
   EraseUserResponseSchema,
   RegisterVersionResponseSchema,
+  ListVersionsResponseSchema,
+  GetVersionTreeResponseSchema,
+  ProductChangesResponseSchema,
+  ProductChangeEntrySchema,
+  ChangedNodeSchema,
+  ChangeKind,
   RequestReviewResponseSchema,
   CancelReviewRequestResponseSchema,
   ListReviewRequestsResponseSchema,
@@ -62,6 +68,9 @@ import {
   type ManageAllowlistRequest,
   type EraseUserRequest,
   type RegisterVersionRequest,
+  type ListVersionsRequest,
+  type GetVersionTreeRequest,
+  type ProductChangesRequest,
   type RequestReviewRequest,
   type CancelReviewRequestRequest,
   type ListReviewRequestsRequest,
@@ -91,9 +100,12 @@ import {
   areaToDb,
   areaFromDb,
   contentVersionFromRow,
+  merkleNodeToJson,
   dateOnlyToUtcTimestamp,
   type ContentVersionRow,
+  type MerkleNodeJson,
 } from "../db-map.js";
+import { diffTrees, unchangedSlugs, type DiffEntry } from "../tree-diff.js";
 import { roleFromDb, lookupRole } from "../allowlist.js";
 import {
   reviewRequestFromRow,
@@ -1353,16 +1365,31 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const { slug, project, bucket } = req.ref;
         const sql = db();
 
+        // The prior latest version (before this upsert) — its Merkle tree drives
+        // the structural diff, the content-revised timeline event, and the
+        // re-anchoring fast path. Selected once here so we don't re-query it.
+        const [prior] = await sql<{ id: string; root_hash: string | null; merkle_tree: MerkleNodeJson | null }[]>`
+          select id, root_hash, merkle_tree from content_version
+          where area = ${area} and slug = ${slug}
+          order by created_at desc limit 1
+        `;
+
+        const treeJson = req.tree ? merkleNodeToJson(req.tree) : null;
         const [row] = await sql<ContentVersionRow[]>`
           insert into content_version
-            (area, slug, project, bucket, content_hash, git_sha, title, frontmatter_status)
+            (area, slug, project, bucket, content_hash, git_sha, title, frontmatter_status,
+             root_hash, merkle_tree, topics)
           values
             (${area}, ${slug}, ${project ?? null}, ${bucket ?? null},
-             ${req.contentHash}, ${req.gitSha}, ${req.title}, ${req.frontmatterStatus})
+             ${req.contentHash}, ${req.gitSha}, ${req.title}, ${req.frontmatterStatus},
+             ${req.rootHash || null}, ${treeJson ? sql.json(treeJson) : null}, ${req.topics})
           on conflict (area, slug, content_hash) do update
             set git_sha = excluded.git_sha,
                 title = excluded.title,
-                frontmatter_status = excluded.frontmatter_status
+                frontmatter_status = excluded.frontmatter_status,
+                root_hash = excluded.root_hash,
+                merkle_tree = excluded.merkle_tree,
+                topics = excluded.topics
           returning *
         `;
 
@@ -1380,6 +1407,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                   ordinal: s.ordinal,
                   plain_text: s.text,
                   char_len: s.charLen,
+                  node_hash: s.nodeHash || null,
+                  subtree_hash: s.subtreeHash || null,
+                  parent_anchor_slug: s.parentAnchorSlug || null,
+                  depth_path: s.depthPath || null,
                 })),
               )}
           `;
@@ -1418,6 +1449,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           `;
         }
 
+        // Sections whose subtree is provably unchanged vs. the prior version:
+        // their threads are kept as-is, skipping the fuzzy re-anchor scan. The
+        // hash check is a fast path only — the tiers in reanchorThreads remain
+        // the correctness fallback, so a hash bug degrades to today's behavior.
+        const unchanged = unchangedSlugs(prior?.merkle_tree ?? null, treeJson);
+
         // Re-anchor open threads against the new version. Prose threads match by
         // quote/fingerprint against the section set; code threads match by
         // region/line-hash against the snippet set. Both retain unmatched
@@ -1431,6 +1468,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             fingerprint: s.fingerprint,
             text: s.text,
           })),
+          unchanged,
         );
         const orphanedCode = await reanchorCodeThreads(
           sql,
@@ -1446,9 +1484,158 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           req.sourceFiles.map((f) => ({ path: f.path, text: f.text, fileHash: f.fileHash })),
         );
 
+        // When the structure actually changed, drop a `content-revised` event on
+        // the timeline with the add/remove/modify/move counts, so the review UI
+        // surfaces structural evolution next to review events.
+        if (prior && req.rootHash && prior.root_hash && prior.root_hash !== req.rootHash) {
+          const diff = diffTrees(prior.merkle_tree ?? null, treeJson);
+          const counts = tallyChanges(diff);
+          await logEvent(sql, area, slug, "content-revised", "build", row.id, {
+            from_version_id: prior.id,
+            added: String(counts.added),
+            removed: String(counts.removed),
+            modified: String(counts.modified),
+            moved: String(counts.moved),
+          });
+        }
+
         return create(RegisterVersionResponseSchema, {
           version: contentVersionFromRow(row, req.ref),
           orphanedThreadCount: orphanedProse + orphanedCode,
+        });
+      },
+
+      // The version history of one artifact, most-recent first (no trees). The
+      // ref-index (area, slug, created_at desc) serves this directly.
+      async listVersions(req: ListVersionsRequest, ctx) {
+        requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        const limit = Math.min(Math.max(req.limit ?? CONTENT_EVENTS_DEFAULT, 1), CONTENT_EVENTS_MAX);
+        const rows = await sql<ContentVersionRow[]>`
+          select id, area, slug, project, bucket, content_hash, git_sha, title,
+                 frontmatter_status, root_hash, topics, created_at
+          from content_version
+          where area = ${area} and slug = ${req.ref.slug}
+          order by created_at desc limit ${limit}
+        `;
+        return create(ListVersionsResponseSchema, {
+          versions: rows.map((r) => contentVersionFromRow(r, req.ref!)),
+        });
+      },
+
+      // One version's full Merkle tree (from the merkle_tree blob), for the
+      // interactive tree view + client-side diff.
+      async getVersionTree(req: GetVersionTreeRequest, ctx) {
+        requireAllowlisted(ctx);
+        if (!req.versionId) throw new ConnectError("version_id is required", Code.InvalidArgument);
+        const sql = db();
+        const [row] = await sql<ContentVersionRow[]>`
+          select * from content_version where id = ${req.versionId}
+        `;
+        if (!row) throw new ConnectError("version not found", Code.NotFound);
+        const ref = create(ContentRefSchema, {
+          area: areaFromDb(row.area),
+          slug: row.slug,
+          project: row.project ?? undefined,
+          bucket: row.bucket ?? undefined,
+        });
+        const version = contentVersionFromRow(row, ref);
+        return create(GetVersionTreeResponseSchema, { version, tree: version.tree });
+      },
+
+      // "What changed for <topic>?" — for every artifact tagged with the topic,
+      // diff its latest version against its baseline (at/just before `since`, or
+      // the immediately-previous version) and return the changed nodes plus how
+      // many open comments sit on changed sections.
+      async productChanges(req: ProductChangesRequest, ctx) {
+        requireAllowlisted(ctx);
+        if (!req.topic) throw new ConnectError("topic is required", Code.InvalidArgument);
+        const sql = db();
+        const sinceDate = req.since ? new Date(Number(req.since.seconds) * 1000) : null;
+
+        // Latest version per (area, slug) tagged with the topic.
+        const latest = await sql<ContentVersionRow[]>`
+          select distinct on (area, slug) *
+          from content_version
+          where topics @> array[${req.topic}]::text[]
+          order by area, slug, created_at desc
+        `;
+
+        const entries = [];
+        let docCount = 0;
+        let blogCount = 0;
+        for (const cur of latest) {
+          if (cur.area === "docs") docCount++;
+          else blogCount++;
+
+          // The baseline: the newest version strictly older than `cur` that also
+          // satisfies the `since` filter (git sha, version id, or timestamp). With
+          // no `since`, it's simply the immediately-previous version.
+          const [base] = await sql<ContentVersionRow[]>`
+            select * from content_version
+            where area = ${cur.area} and slug = ${cur.slug}
+              and created_at < ${cur.created_at}
+              and (${req.sinceGitSha ?? null}::text is null or git_sha = ${req.sinceGitSha ?? null})
+              and (${req.sinceVersionId ?? null}::text is null or id = ${req.sinceVersionId ?? null})
+              and (${sinceDate}::timestamptz is null or created_at <= ${sinceDate})
+            order by created_at desc limit 1
+          `;
+          const diff = diffTrees(base?.merkle_tree ?? null, cur.merkle_tree ?? null);
+          if (diff.length === 0) continue;
+
+          // Open comments sitting on a section whose subtree changed.
+          const changedSlugs = diff
+            .filter((d) => (d.kind === "heading" || d.kind === "prose") && d.anchorSlug)
+            .map((d) => d.anchorSlug as string);
+          let openComments = 0;
+          if (changedSlugs.length > 0) {
+            // Unresolved thread roots (parent_id null, not orphaned, no resolved
+            // comment_resolution row) anchored to a changed section.
+            const [{ count } = { count: 0 }] = await sql<{ count: number }[]>`
+              select count(*)::int as count from comment c
+              left join comment_resolution r on r.thread_root_id = c.id
+              where c.area = ${cur.area} and c.slug = ${cur.slug}
+                and c.parent_id is null and c.orphaned = false
+                and coalesce(r.resolved, false) = false
+                and c.anchor_slug = any(${changedSlugs})
+            `;
+            openComments = count;
+          }
+
+          const ref = create(ContentRefSchema, {
+            area: areaFromDb(cur.area),
+            slug: cur.slug,
+            project: cur.project ?? undefined,
+            bucket: cur.bucket ?? undefined,
+          });
+          entries.push(
+            create(ProductChangeEntrySchema, {
+              ref,
+              title: cur.title ?? cur.slug,
+              latestGitSha: cur.git_sha,
+              latestVersionId: cur.id,
+              baselineVersionId: base?.id ?? "",
+              openCommentCount: openComments,
+              changedNodes: diff.map((d) =>
+                create(ChangedNodeSchema, {
+                  key: d.key,
+                  kind: d.kind,
+                  change: CHANGE_KIND_BY_DIFF[d.change],
+                  label: d.label,
+                  anchorSlug: d.anchorSlug,
+                }),
+              ),
+            }),
+          );
+        }
+
+        return create(ProductChangesResponseSchema, {
+          topic: req.topic,
+          docCount,
+          blogCount,
+          entries,
         });
       },
     },
@@ -1533,6 +1720,27 @@ async function commentDepth(sql: Sql, id: string): Promise<number> {
  * event string; kind-specific detail rides in the jsonb payload. Callers pass
  * the transaction handle so the event is atomic with the change it records.
  */
+/** Map a tree-diff change kind to the proto ChangeKind enum. */
+const CHANGE_KIND_BY_DIFF: Record<DiffEntry["change"], ChangeKind> = {
+  added: ChangeKind.ADDED,
+  removed: ChangeKind.REMOVED,
+  modified: ChangeKind.MODIFIED,
+  "modified-descendants": ChangeKind.MODIFIED_DESCENDANTS,
+  moved: ChangeKind.MOVED,
+};
+
+/** Summary counts for a content-revised timeline payload. */
+function tallyChanges(diff: DiffEntry[]): { added: number; removed: number; modified: number; moved: number } {
+  const counts = { added: 0, removed: 0, modified: 0, moved: 0 };
+  for (const d of diff) {
+    if (d.change === "added") counts.added++;
+    else if (d.change === "removed") counts.removed++;
+    else if (d.change === "moved") counts.moved++;
+    else counts.modified++; // modified + modified-descendants
+  }
+  return counts;
+}
+
 async function logEvent(
   tx: Queryable,
   area: string,

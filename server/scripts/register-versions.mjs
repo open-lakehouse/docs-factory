@@ -50,14 +50,23 @@ for (const e of manifest) {
     gitSha: e.gitSha,
     title: e.title,
     frontmatterStatus: e.frontmatterStatus,
-    sections: e.headings.map((h) => ({
-      anchorSlug: h.id,
-      fingerprint: h.fingerprint,
-      headingText: h.text,
-      level: h.level,
-      ordinal: h.order,
-      text: h.bodyText ?? "",
-      charLen: h.charLen ?? 0,
+    rootHash: e.rootHash ?? "",
+    topics: e.topics ?? [],
+    tree: e.tree,
+    // Sections now carry their Merkle hashes (node/subtree/parent/depth) computed
+    // by content-core alongside the heading anchor fields.
+    sections: (e.sections ?? []).map((s) => ({
+      anchorSlug: s.anchorSlug,
+      fingerprint: s.fingerprint,
+      headingText: s.headingText,
+      level: s.headingLevel,
+      ordinal: s.ordinal,
+      text: s.plainText ?? "",
+      charLen: s.charLen ?? 0,
+      nodeHash: s.nodeHash ?? "",
+      subtreeHash: s.subtreeHash ?? "",
+      parentAnchorSlug: s.parentAnchorSlug ?? "",
+      depthPath: s.depthPath ?? "",
     })),
     snippets: (e.snippets ?? []).map((s) => ({
       path: s.path,
@@ -74,6 +83,6 @@ for (const e of manifest) {
   });
   ok++;
   orphanTotal += res.orphanedThreadCount;
-  console.log(`registered ${e.area}/${e.slug} (v${res.version?.id}, ${e.headings.length} sections, ${res.orphanedThreadCount} orphaned)`);
+  console.log(`registered ${e.area}/${e.slug} (v${res.version?.id}, ${(e.sections ?? []).length} sections, ${res.orphanedThreadCount} orphaned)`);
 }
 console.log(`Done: ${ok}/${manifest.length} registered; ${orphanTotal} thread(s) orphaned.`);

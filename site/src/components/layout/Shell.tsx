@@ -40,7 +40,7 @@ function ReviewNavItem() {
   if (!reviewActive) return null;
   const pending = (data?.drafts ?? []).filter(
     (d) =>
-      d.reviewState === ReviewState.IN_REVIEW ||
+      d.reviewState === ReviewState.NEEDS_REVIEW ||
       d.reviewState === ReviewState.CHANGES_REQUESTED,
   ).length;
   return (

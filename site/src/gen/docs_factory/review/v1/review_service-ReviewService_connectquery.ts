@@ -78,7 +78,10 @@ export const markThreadSeen = ReviewService.method.markThreadSeen;
 export const getSourceFile = ReviewService.method.getSourceFile;
 
 /**
- * Append a review-state transition (validated against the state machine).
+ * Record an explicit review-state OUTCOME (validated against the state
+ * machine). Only the explicit outcomes are accepted: CHANGES_REQUESTED,
+ * RELEASED, and the maintainer APPROVED override. NEEDS_REVIEW and NONE are
+ * derived and cannot be set here; ordinary approvals go through RecordApproval.
  *
  * @generated from rpc docs_factory.review.v1.ReviewService.TransitionReview
  */
@@ -90,6 +93,24 @@ export const transitionReview = ReviewService.method.transitionReview;
  * @generated from rpc docs_factory.review.v1.ReviewService.ReleaseContent
  */
 export const releaseContent = ReviewService.method.releaseContent;
+
+/**
+ * Record the current viewer's approval of an artifact (allowlist-gated,
+ * idempotent). Satisfies any open REQUIRED request addressed to that reviewer.
+ * Once the artifact's approval preconditions are met it derives to APPROVED —
+ * there is no manual transition. Returns the refreshed summary.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.RecordApproval
+ */
+export const recordApproval = ReviewService.method.recordApproval;
+
+/**
+ * Dismiss an approval. A reviewer may dismiss their own; a maintainer may
+ * dismiss anyone's (via `approver_login`). Returns the refreshed summary.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.DismissApproval
+ */
+export const dismissApproval = ReviewService.method.dismissApproval;
 
 /**
  * RevOps pipeline: set a content item's ordered priority (allowlist-gated).

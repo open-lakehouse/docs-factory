@@ -9,6 +9,8 @@ import {
   transitionReview,
   releaseContent,
   requestChangesOnPublished,
+  recordApproval,
+  dismissApproval,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { ReviewState, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
@@ -37,19 +39,21 @@ type ReviewControlsLayout = "inline" | "aside" | "dock";
 
 type TransitionVariant = "default" | "outline";
 
-// Reviewer-available transitions from each state (Release handled separately).
-// `variant` gives each state one accented primary action; secondary/caution
-// actions stay outline so the control block reads with a clear hierarchy.
+// Reviewer-available EXPLICIT transitions from each derived state (Approve is a
+// separate recordApproval action, Release/reopen handled separately). Approval is
+// no longer a transition — it's recorded per reviewer and the state derives to
+// APPROVED once preconditions are met, so there is no "Start review"/"Back to
+// review"/"Reopen review" step. The only transition surfaced here is "Request
+// changes", available while the artifact needs review or is approved.
 const NEXT: Record<number, { to: ReviewState; label: string; variant: TransitionVariant }[]> = {
-  [ReviewState.NONE]: [{ to: ReviewState.IN_REVIEW, label: "Start review", variant: "default" }],
-  [ReviewState.IN_REVIEW]: [
-    { to: ReviewState.APPROVED, label: "Approve", variant: "default" },
+  [ReviewState.NONE]: [],
+  [ReviewState.NEEDS_REVIEW]: [
     { to: ReviewState.CHANGES_REQUESTED, label: "Request changes", variant: "outline" },
   ],
-  [ReviewState.CHANGES_REQUESTED]: [
-    { to: ReviewState.IN_REVIEW, label: "Back to review", variant: "default" },
+  [ReviewState.CHANGES_REQUESTED]: [],
+  [ReviewState.APPROVED]: [
+    { to: ReviewState.CHANGES_REQUESTED, label: "Request changes", variant: "outline" },
   ],
-  [ReviewState.APPROVED]: [{ to: ReviewState.IN_REVIEW, label: "Reopen review", variant: "outline" }],
   [ReviewState.RELEASED]: [],
 };
 
@@ -68,7 +72,8 @@ export default function ReviewControls({
    * participates in the same single/dropdown action control as transitions. */
   onRequestReview?: () => void;
 }) {
-  const { isAllowlisted, isMaintainer, reviewActive } = useAuth();
+  const { isAllowlisted, isMaintainer, reviewActive, viewer } = useAuth();
+  const login = viewer?.login;
   const { invalidateDrafts, invalidateContentEvents, invalidateReviewRequests } =
     useReviewInvalidation();
   const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
@@ -83,6 +88,8 @@ export default function ReviewControls({
   const transition = useMutation(transitionReview, { onSuccess: invalidateAll });
   const release = useMutation(releaseContent, { onSuccess: invalidateAll });
   const reopen = useMutation(requestChangesOnPublished, { onSuccess: invalidateAll });
+  const approve = useMutation(recordApproval, { onSuccess: invalidateAll });
+  const dismiss = useMutation(dismissApproval, { onSuccess: invalidateAll });
 
   // Reopen-a-published-artifact dialog: the maintainer chooses keep-visible
   // (default) or unpublish when requesting changes on a released page.
@@ -95,9 +102,19 @@ export default function ReviewControls({
   const summary = data?.drafts.find((d) => d.ref && sameRef(d.ref, contentRef));
   const state = summary?.reviewState ?? ReviewState.NONE;
   const openRequired = summary?.openRequiredRequestCount ?? 0;
+  const approvals = summary?.approvals ?? [];
+  const pendingRequired = summary?.pendingRequiredLogins ?? [];
+  const iApproved =
+    !!login && approvals.some((a) => a.approverLogin.toLowerCase() === login.toLowerCase());
 
   async function go(to: ReviewState) {
     await transition.mutateAsync({ ref: contentRef, toState: to });
+  }
+  async function doApprove() {
+    await approve.mutateAsync({ ref: contentRef });
+  }
+  async function doDismiss() {
+    await dismiss.mutateAsync({ ref: contentRef });
   }
   async function doRelease() {
     await release.mutateAsync({ ref: contentRef });
@@ -113,7 +130,12 @@ export default function ReviewControls({
     setReopenOpen(false);
   }
 
-  const busy = transition.isPending || release.isPending || reopen.isPending;
+  const busy =
+    transition.isPending ||
+    release.isPending ||
+    reopen.isPending ||
+    approve.isPending ||
+    dismiss.isPending;
   const actions = NEXT[state] ?? [];
   const badge = <ReviewStateBadge state={state} />;
   const size = layout === "inline" ? "xs" : "sm";
@@ -124,15 +146,30 @@ export default function ReviewControls({
     disabled?: boolean;
     run: () => void | Promise<void>;
   };
-  // Happy-path transitions first (Start review / Approve / Release), then
-  // secondary transitions, then request-review. The first `default` option
-  // becomes the split-button primary; remaining options open from the chevron.
-  const actionOptions: ActionOption[] = actions.map((action) => ({
-    key: `state-${action.to}`,
-    label: action.label,
-    variant: action.variant,
-    run: () => go(action.to),
-  }));
+  // Approve (or Dismiss my approval) is the happy-path primary while the artifact
+  // is still open for review; then any explicit transitions (Request changes);
+  // then Release/reopen; then request-review. The first `default` option becomes
+  // the split-button primary; the rest open from the chevron.
+  const actionOptions: ActionOption[] = [];
+  const canApprove =
+    state === ReviewState.NEEDS_REVIEW ||
+    state === ReviewState.CHANGES_REQUESTED ||
+    state === ReviewState.APPROVED;
+  if (canApprove) {
+    actionOptions.push(
+      iApproved
+        ? { key: "dismiss", label: "Dismiss my approval", variant: "outline", run: doDismiss }
+        : { key: "approve", label: "Approve", variant: "default", run: doApprove },
+    );
+  }
+  for (const action of actions) {
+    actionOptions.push({
+      key: `state-${action.to}`,
+      label: action.label,
+      variant: action.variant,
+      run: () => go(action.to),
+    });
+  }
 
   if (state === ReviewState.APPROVED && isMaintainer) {
     actionOptions.unshift({
@@ -236,6 +273,16 @@ export default function ReviewControls({
         badge
       )}
       {actionControl && <div className="review-controls-actions">{actionControl}</div>}
+      {approvals.length > 0 && (
+        <p className="review-controls-hint muted">
+          Approved by {approvals.map((a) => a.approverLogin).join(", ")}.
+        </p>
+      )}
+      {pendingRequired.length > 0 && (
+        <p className="review-controls-hint muted">
+          Required: {pendingRequired.join(", ")} still pending.
+        </p>
+      )}
       {state === ReviewState.APPROVED && isMaintainer && openRequired > 0 && (
         <p className="review-controls-hint muted">
           Blocked: {openRequired} required review

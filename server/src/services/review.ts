@@ -44,6 +44,8 @@ import {
   ListReviewRequestsResponseSchema,
   ListContentEventsResponseSchema,
   RequestChangesOnPublishedResponseSchema,
+  RecordApprovalResponseSchema,
+  DismissApprovalResponseSchema,
   type ListDraftsRequest,
   type GetDraftContentRequest,
   type ListCommentsRequest,
@@ -65,6 +67,8 @@ import {
   type ListReviewRequestsRequest,
   type ListContentEventsRequest,
   type RequestChangesOnPublishedRequest,
+  type RecordApprovalRequest,
+  type DismissApprovalRequest,
 } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
   AllowlistEntrySchema,
@@ -94,10 +98,12 @@ import { roleFromDb, lookupRole } from "../allowlist.js";
 import {
   reviewRequestFromRow,
   contentEventFromRow,
+  approvalFromRow,
   requirementToDb,
   EVENT_KIND_BY_STATE,
   type ReviewRequestRow,
   type ContentEventRow,
+  type ContentApprovalRow,
 } from "../review-requests.js";
 import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
 import {
@@ -129,32 +135,127 @@ const RECENT_COMMENTS_MAX = 100;
 // The per-artifact timeline (content_event) page size (default + hard cap).
 const CONTENT_EVENTS_DEFAULT = 50;
 const CONTENT_EVENTS_MAX = 200;
-const REVIEW_STATE_BY_DB: Record<string, ReviewState> = {
-  none: ReviewState.NONE,
-  "in-review": ReviewState.IN_REVIEW,
-  "changes-requested": ReviewState.CHANGES_REQUESTED,
-  approved: ReviewState.APPROVED,
-  released: ReviewState.RELEASED,
-};
+// The storable explicit outcomes (the only states that live in review_state).
+// The derived states (none, needs-review, derived approved) are never stored, so
+// they are absent here. Used to translate a stored outcome and to guard writes.
 const DB_BY_REVIEW_STATE: Record<number, string> = {
-  [ReviewState.NONE]: "none",
-  [ReviewState.IN_REVIEW]: "in-review",
   [ReviewState.CHANGES_REQUESTED]: "changes-requested",
   [ReviewState.APPROVED]: "approved",
   [ReviewState.RELEASED]: "released",
 };
-// Allowed transitions. RELEASED (a DB action) is maintainer-only (enforced
-// below). It is no longer terminal: a released page can be reopened to `in-review`
-// or straight to `changes-requested` (the reopen-published flow) — reopening
-// changes the live review_state but not the sticky `published` latch, so
-// visibility only changes when a maintainer explicitly unpublishes.
+// Allowed transitions of the EXPLICIT (storable) review-state machine, keyed on
+// the DERIVED `from` state (deriveReviewState), so a transition is validated
+// against what the artifact effectively is right now. TransitionReview only ever
+// requests one of the storable outcomes:
+//   - changes-requested: reachable while the artifact is under review or approved
+//     (a reviewer/maintainer rejects it); the reopen-published flow does
+//     released -> changes-requested.
+//   - approved: the maintainer override, reachable from needs-review /
+//     changes-requested (ordinary approval goes through recordApproval, not here).
+//   - released: maintainer-only (enforced below), reachable once APPROVED.
+// The sticky `published` latch is independent — visibility only changes on an
+// explicit unpublish.
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
-  none: ["in-review"],
-  "in-review": ["changes-requested", "approved"],
-  "changes-requested": ["in-review"],
-  approved: ["released", "in-review"],
-  released: ["in-review", "changes-requested"],
+  none: [],
+  "needs-review": ["changes-requested", "approved"],
+  "changes-requested": ["approved"],
+  approved: ["released", "changes-requested"],
+  released: ["changes-requested"],
 };
+
+// The DB state string a derived ReviewState maps to (for event payload
+// from_state/to_state). Covers derived + storable states.
+const DB_BY_DERIVED_STATE: Record<number, string> = {
+  [ReviewState.NONE]: "none",
+  [ReviewState.NEEDS_REVIEW]: "needs-review",
+  [ReviewState.CHANGES_REQUESTED]: "changes-requested",
+  [ReviewState.APPROVED]: "approved",
+  [ReviewState.RELEASED]: "released",
+};
+
+// Inputs to the single review-state derivation. All are already loaded per
+// (area, slug) by listDrafts/loadDraftSummary/getDraftContent.
+export interface DeriveReviewStateInput {
+  frontmatterStatus: string | null;
+  // The latest EXPLICIT outcome stored in review_state (changes-requested |
+  // approved | released), or null if none, plus when it was recorded.
+  explicitOutcome: "changes-requested" | "approved" | "released" | null;
+  explicitOutcomeAt: Date | null;
+  // Active (non-dismissed) approvals, and when the most recent one was recorded.
+  activeApprovals: { approverLogin: string }[];
+  latestApprovalAt: Date | null;
+  // Logins of reviewers with an open REQUIRED request (still-pending preconditions).
+  openRequiredLogins: string[];
+  // Whether ANY required request exists on the artifact (open or already
+  // satisfied) — distinguishes "no required reviewers" from "all satisfied".
+  hasRequiredRequests: boolean;
+}
+
+export interface DerivedReviewState {
+  state: ReviewState;
+  pendingRequiredLogins: string[];
+  needsReview: boolean;
+}
+
+/**
+ * The single source of truth for the effective review state (see the ReviewState
+ * proto comment). Pure and DB-free so it can be unit-tested directly. Precedence:
+ *   1. released                                   -> RELEASED
+ *   2. isApproved                                 -> APPROVED
+ *   2. maintainer `approved` override               -> APPROVED
+ *   3. changes-requested newer than the last approval -> CHANGES_REQUESTED
+ *   4. derived approval (preconditions met)          -> APPROVED
+ *   5. frontmatter ready                             -> NEEDS_REVIEW
+ *   6. otherwise                                     -> NONE
+ * The maintainer override (2) beats a pending change request, but an ordinary
+ * reviewer approval (4) does NOT silently override a *newer* change request —
+ * hence (3) is checked before (4). Derived approval needs: required requests
+ * exist AND none remain open (with >=1 approval), OR no required requests AND
+ * >=1 active approval.
+ */
+export function deriveReviewState(input: DeriveReviewStateInput): DerivedReviewState {
+  const {
+    frontmatterStatus,
+    explicitOutcome,
+    explicitOutcomeAt,
+    activeApprovals,
+    latestApprovalAt,
+    openRequiredLogins,
+    hasRequiredRequests,
+  } = input;
+  const pendingRequiredLogins = openRequiredLogins;
+
+  if (explicitOutcome === "released") {
+    return { state: ReviewState.RELEASED, pendingRequiredLogins, needsReview: false };
+  }
+
+  // The maintainer override wins over a pending change request.
+  if (explicitOutcome === "approved") {
+    return { state: ReviewState.APPROVED, pendingRequiredLogins: [], needsReview: false };
+  }
+
+  // A changes-requested outcome holds while it is at least as recent as the
+  // latest active approval — a newer approval supersedes it without a write.
+  const changesRequestedHolds =
+    explicitOutcome === "changes-requested" &&
+    (latestApprovalAt == null ||
+      (explicitOutcomeAt != null && explicitOutcomeAt.getTime() >= latestApprovalAt.getTime()));
+  if (changesRequestedHolds) {
+    return { state: ReviewState.CHANGES_REQUESTED, pendingRequiredLogins, needsReview: false };
+  }
+
+  const isApproved = hasRequiredRequests
+    ? openRequiredLogins.length === 0 && activeApprovals.length > 0
+    : activeApprovals.length > 0;
+  if (isApproved) {
+    return { state: ReviewState.APPROVED, pendingRequiredLogins: [], needsReview: false };
+  }
+
+  if (frontmatterStatus === READY_STATUS) {
+    return { state: ReviewState.NEEDS_REVIEW, pendingRequiredLogins, needsReview: true };
+  }
+  return { state: ReviewState.NONE, pendingRequiredLogins, needsReview: false };
+}
 
 // The joined shape behind a DraftSummary: latest version metadata + current
 // review state + open-comment count + RevOps pipeline fields (content_revops).
@@ -171,7 +272,17 @@ type DraftSummaryRow = {
   target_release_date: Date | string | null;
   published: boolean | null;
   open_required_requests: number;
-  review_state: string | null;
+  // Raw inputs to deriveReviewState (the effective review_state is computed, not
+  // read from a single column):
+  //   explicit_outcome/_at — latest stored review_state row (or null)
+  //   pending_required_logins — logins of open required requests
+  //   has_required_requests — any required request exists (open or satisfied)
+  //   approvals — active (non-dismissed) approval rows, most-recent last
+  explicit_outcome: string | null;
+  explicit_outcome_at: Date | null;
+  pending_required_logins: string[] | null;
+  has_required_requests: boolean;
+  approvals: ContentApprovalRow[] | null;
   open_comments: number;
   version_id: string | null;
   version_content_hash: string | null;
@@ -188,16 +299,43 @@ function draftSummaryFromRow(r: DraftSummaryRow) {
     project: r.project ?? undefined,
     bucket: r.bucket ?? undefined,
   });
+  const approvalRows = (r.approvals ?? []).map((a) => ({
+    ...a,
+    area: r.area,
+    slug: r.slug,
+    // jsonb timestamps come back as strings; normalize to Date for the mapper.
+    created_at: a.created_at instanceof Date ? a.created_at : new Date(a.created_at),
+  }));
+  const outcome = r.explicit_outcome;
+  const explicitOutcome =
+    outcome === "changes-requested" || outcome === "approved" || outcome === "released"
+      ? outcome
+      : null;
+  const latestApprovalAt = approvalRows.length
+    ? approvalRows[approvalRows.length - 1].created_at
+    : null;
+  const derived = deriveReviewState({
+    frontmatterStatus: r.frontmatter_status,
+    explicitOutcome,
+    explicitOutcomeAt: r.explicit_outcome_at,
+    activeApprovals: approvalRows.map((a) => ({ approverLogin: a.approver_login })),
+    latestApprovalAt,
+    openRequiredLogins: r.pending_required_logins ?? [],
+    hasRequiredRequests: r.has_required_requests,
+  });
   return create(DraftSummarySchema, {
     ref,
     title: r.title ?? r.slug,
     frontmatterStatus: r.frontmatter_status ?? "",
-    reviewState: REVIEW_STATE_BY_DB[r.review_state ?? "none"] ?? ReviewState.NONE,
+    reviewState: derived.state,
     openCommentCount: r.open_comments,
     priority: r.priority ?? undefined,
     targetReleaseDate: target,
     published: r.published ?? false,
     openRequiredRequestCount: r.open_required_requests,
+    approvals: approvalRows.map(approvalFromRow),
+    pendingRequiredLogins: derived.pendingRequiredLogins,
+    needsReview: derived.needsReview,
     latestVersion:
       r.version_id == null
         ? undefined
@@ -219,6 +357,12 @@ function draftSummaryFromRow(r: DraftSummaryRow) {
   });
 }
 
+// The two subquery fragments shared by loadDraftSummary and listDrafts that feed
+// deriveReviewState. Both key on the (area, slug) columns named `a` and `s`.
+//   - latest explicit outcome (+ its timestamp)
+//   - pending required-request logins (array) + whether any required exists
+//   - active approvals as a jsonb array (most-recent last), for approvalFromRow
+
 // Re-read one (area, slug)'s DraftSummary row after a RevOps mutation, so the
 // setters return the same shape ListDrafts produces (with the fresh priority /
 // target date joined in). Returns null if the ref has no known content at all.
@@ -237,7 +381,10 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string) {
       rv.priority, rv.target_release_date, coalesce(rv.published, false) as published,
       (select rs.state from review_state rs
         where rs.area = ${area} and rs.slug = ${slug}
-        order by rs.created_at desc limit 1) as review_state,
+        order by rs.created_at desc limit 1) as explicit_outcome,
+      (select rs.created_at from review_state rs
+        where rs.area = ${area} and rs.slug = ${slug}
+        order by rs.created_at desc limit 1) as explicit_outcome_at,
       (select count(*)::int from comment c
         left join comment_resolution cr on cr.thread_root_id = c.id
         where c.area = ${area} and c.slug = ${slug}
@@ -245,7 +392,20 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string) {
           and coalesce(cr.resolved, false) = false) as open_comments,
       (select count(*)::int from review_request rq
         where rq.area = ${area} and rq.slug = ${slug}
-          and rq.requirement = 'required' and rq.status = 'open') as open_required_requests
+          and rq.requirement = 'required' and rq.status = 'open') as open_required_requests,
+      (select coalesce(array_agg(rq.reviewer_login) filter (where rq.reviewer_login is not null), '{}')
+        from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}
+          and rq.requirement = 'required' and rq.status = 'open') as pending_required_logins,
+      (select exists (select 1 from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}
+          and rq.requirement = 'required')) as has_required_requests,
+      (select coalesce(jsonb_agg(
+          jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
+            'approver_login', ca.approver_login, 'approver_user_id', ca.approver_user_id,
+            'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
+        from content_approval ca
+        where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as approvals
     from (select 1) one
     left join latest l on true
     left join content_revops rv on rv.area = ${area} and rv.slug = ${slug}
@@ -288,6 +448,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             select area, slug from review_state
             union
             select area, slug from comment
+            union
+            select area, slug from content_approval
           )
           select k.area, k.slug, l.project, l.bucket, l.title, l.frontmatter_status,
             l.id as version_id, l.content_hash as version_content_hash,
@@ -295,7 +457,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             rv.priority, rv.target_release_date, coalesce(rv.published, false) as published,
             (select rs.state from review_state rs
               where rs.area = k.area and rs.slug = k.slug
-              order by rs.created_at desc limit 1) as review_state,
+              order by rs.created_at desc limit 1) as explicit_outcome,
+            (select rs.created_at from review_state rs
+              where rs.area = k.area and rs.slug = k.slug
+              order by rs.created_at desc limit 1) as explicit_outcome_at,
             (select count(*)::int from comment c
               left join comment_resolution cr on cr.thread_root_id = c.id
               where c.area = k.area and c.slug = k.slug
@@ -303,7 +468,20 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 and coalesce(cr.resolved, false) = false) as open_comments,
             (select count(*)::int from review_request rq
               where rq.area = k.area and rq.slug = k.slug
-                and rq.requirement = 'required' and rq.status = 'open') as open_required_requests
+                and rq.requirement = 'required' and rq.status = 'open') as open_required_requests,
+            (select coalesce(array_agg(rq.reviewer_login) filter (where rq.reviewer_login is not null), '{}')
+              from review_request rq
+              where rq.area = k.area and rq.slug = k.slug
+                and rq.requirement = 'required' and rq.status = 'open') as pending_required_logins,
+            (select exists (select 1 from review_request rq
+              where rq.area = k.area and rq.slug = k.slug
+                and rq.requirement = 'required')) as has_required_requests,
+            (select coalesce(jsonb_agg(
+                jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
+                  'approver_login', ca.approver_login, 'approver_user_id', ca.approver_user_id,
+                  'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
+              from content_approval ca
+              where ca.area = k.area and ca.slug = k.slug and ca.dismissed_at is null) as approvals
           from keys k
           left join latest l on l.area = k.area and l.slug = k.slug
           left join content_revops rv on rv.area = k.area and rv.slug = k.slug
@@ -656,6 +834,103 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         return create(TransitionReviewResponseSchema, { state });
       },
 
+      // Record the current viewer's approval (idempotent via the active
+      // partial-unique index). Satisfies any open REQUIRED request addressed to
+      // that reviewer (per-reviewer, not artifact-level), and logs `approved-by`.
+      // The effective state then DERIVES to APPROVED once preconditions are met —
+      // there is no state write here.
+      async recordApproval(req: RecordApprovalRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        const slug = req.ref.slug;
+        const actor = actorId(viewer);
+        const login = viewer.login ?? actor;
+        const versionId = await latestVersionId(sql, area, slug);
+
+        await sql.begin(async (tx) => {
+          // Upsert the approval: re-approving is a no-op (keeps the original
+          // timestamp); a previously-dismissed approval is revived.
+          await tx`
+            insert into content_approval (area, slug, version_id, approver_login, approver_user_id)
+            values (${area}, ${slug}, ${versionId}, ${login}, ${viewer.userId ?? null})
+            on conflict (area, slug, lower(approver_login)) where dismissed_at is null
+              do nothing
+          `;
+          // Revive a prior dismissed approval by the same reviewer, if any.
+          await tx`
+            update content_approval
+            set dismissed_at = null, version_id = ${versionId}, created_at = now()
+            where area = ${area} and slug = ${slug}
+              and lower(approver_login) = lower(${login}) and dismissed_at is not null
+              and not exists (
+                select 1 from content_approval a2
+                where a2.area = ${area} and a2.slug = ${slug}
+                  and lower(a2.approver_login) = lower(${login}) and a2.dismissed_at is null
+              )
+          `;
+          // Per-reviewer satisfaction: close this reviewer's own open requests
+          // (required or optional), matched by login. A request addressed only by
+          // email is satisfied once that reviewer logs in and approves under the
+          // matching login (the allowlist ties login↔email).
+          const satisfied = await tx<{ id: string }[]>`
+            update review_request
+            set status = 'satisfied', satisfied_at = now(), satisfied_by = ${actor}
+            where area = ${area} and slug = ${slug} and status = 'open'
+              and lower(reviewer_login) = lower(${login})
+            returning id
+          `;
+          for (const r of satisfied) {
+            await logEvent(tx, area, slug, "request-satisfied", actor, versionId, {
+              request_id: r.id,
+            });
+          }
+          await logEvent(tx, area, slug, "approved-by", actor, versionId, {
+            reviewer_login: login,
+          });
+        });
+        const draft = await loadDraftSummary(sql, area, slug);
+        return create(RecordApprovalResponseSchema, { draft: draft ?? undefined });
+      },
+
+      // Dismiss an approval. A reviewer may dismiss their own; a maintainer may
+      // dismiss anyone's (via approver_login). Soft-delete (dismissed_at) so it
+      // stays on the timeline. The matching required request is left satisfied —
+      // dismissing only affects the derived state, not the request lifecycle.
+      async dismissApproval(req: DismissApprovalRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        const slug = req.ref.slug;
+        const actor = actorId(viewer);
+        // Dismissing someone else's approval is a maintainer action.
+        const target = req.approverLogin ?? viewer.login ?? actor;
+        if (
+          req.approverLogin &&
+          req.approverLogin.toLowerCase() !== (viewer.login ?? "").toLowerCase()
+        ) {
+          requireMaintainer(ctx);
+        }
+        const versionId = await latestVersionId(sql, area, slug);
+        await sql.begin(async (tx) => {
+          const [dismissed] = await tx<{ id: string }[]>`
+            update content_approval set dismissed_at = now()
+            where area = ${area} and slug = ${slug}
+              and lower(approver_login) = lower(${target}) and dismissed_at is null
+            returning id
+          `;
+          if (dismissed) {
+            await logEvent(tx, area, slug, "approval-dismissed", actor, versionId, {
+              reviewer_login: target,
+            });
+          }
+        });
+        const draft = await loadDraftSummary(sql, area, slug);
+        return create(DismissApprovalResponseSchema, { draft: draft ?? undefined });
+      },
+
       async releaseContent(req: ReleaseContentRequest, ctx) {
         // Release is maintainer-only. It is blocked while any REQUIRED review
         // request is still open (optional requests are advisory).
@@ -677,10 +952,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           );
         }
 
-        // Transition to RELEASED (satisfies open optional requests + logs the
-        // approved->released state event via transition()), then set the sticky
-        // published latch and log `released`. Was this a first release or a
-        // re-release after a reopen? `republished` when the latch was already set.
+        // Transition to RELEASED (logs the approved->released state event via
+        // transition()), then set the sticky published latch and log `released`.
+        // Was this a first release or a re-release after a reopen? `republished`
+        // when the latch was already set.
         const state = await transition(req.ref, ReviewState.RELEASED, req.note, ctx, actor);
         await sql.begin(async (tx) => {
           const [ver] = await tx<{ id: string }[]>`
@@ -1042,6 +1317,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             where (${userId}::text is not null and resolved_by = ${userId})
                or (${login}::text is not null and resolved_by = ${login})
           `;
+          // Approvals carry the reviewer's identity — scrub it. The approval row
+          // stays (it still counts toward the derived state) but is anonymized.
+          await sql`
+            update content_approval set approver_login = ${TOMBSTONE}, approver_user_id = ${TOMBSTONE}
+            where (${userId}::text is not null and approver_user_id = ${userId})
+               or (${login}::text is not null and approver_login = ${login})
+          `;
           // Read-state is worthless once the user is gone — hard-delete it.
           const seen = await sql`
             delete from comment_seen
@@ -1267,15 +1549,70 @@ async function logEvent(
 }
 
 /**
- * Validate + append a review-state transition. Returns the new state. Enforces
- * the state machine and that RELEASED is only reachable by a maintainer. The
- * caller has already done the allowlist/maintainer auth check for the entry
- * point; this re-checks RELEASED so no path can release without maintainer.
- *
- * The state insert, satisfy-on-approve (any allowlisted approval satisfies all
- * open requests on the artifact), and the timeline event are one transaction so
- * they never diverge. The idempotent no-op short-circuits BEFORE any write, so a
- * repeat transition logs nothing.
+ * Load the DERIVED review state for one artifact (the single source of truth,
+ * deriveReviewState). Used wherever a handler needs the effective state — e.g.
+ * transition() validates against the derived `from`, not the raw last row.
+ */
+async function loadDerivedState(sql: Sql, area: string, slug: string): Promise<DerivedReviewState> {
+  const [row] = await sql<
+    {
+      frontmatter_status: string | null;
+      explicit_outcome: string | null;
+      explicit_outcome_at: Date | null;
+      pending_required_logins: string[] | null;
+      has_required_requests: boolean;
+      approver_logins: string[] | null;
+      latest_approval_at: Date | null;
+    }[]
+  >`
+    select
+      (select cv.frontmatter_status from content_version cv
+        where cv.area = ${area} and cv.slug = ${slug}
+        order by cv.created_at desc limit 1) as frontmatter_status,
+      (select rs.state from review_state rs
+        where rs.area = ${area} and rs.slug = ${slug}
+        order by rs.created_at desc limit 1) as explicit_outcome,
+      (select rs.created_at from review_state rs
+        where rs.area = ${area} and rs.slug = ${slug}
+        order by rs.created_at desc limit 1) as explicit_outcome_at,
+      (select coalesce(array_agg(rq.reviewer_login) filter (where rq.reviewer_login is not null), '{}')
+        from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}
+          and rq.requirement = 'required' and rq.status = 'open') as pending_required_logins,
+      (select exists (select 1 from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}
+          and rq.requirement = 'required')) as has_required_requests,
+      (select coalesce(array_agg(ca.approver_login order by ca.created_at), '{}')
+        from content_approval ca
+        where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as approver_logins,
+      (select max(ca.created_at) from content_approval ca
+        where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as latest_approval_at
+  `;
+  const outcome = row?.explicit_outcome;
+  const explicitOutcome =
+    outcome === "changes-requested" || outcome === "approved" || outcome === "released"
+      ? outcome
+      : null;
+  return deriveReviewState({
+    frontmatterStatus: row?.frontmatter_status ?? null,
+    explicitOutcome,
+    explicitOutcomeAt: row?.explicit_outcome_at ?? null,
+    activeApprovals: (row?.approver_logins ?? []).map((approverLogin) => ({ approverLogin })),
+    latestApprovalAt: row?.latest_approval_at ?? null,
+    openRequiredLogins: row?.pending_required_logins ?? [],
+    hasRequiredRequests: row?.has_required_requests ?? false,
+  });
+}
+
+/**
+ * Validate + append an EXPLICIT review-state outcome (changes-requested |
+ * approved override | released). Returns the effective state. `from` is the
+ * DERIVED current state, so the machine is validated against what the artifact
+ * effectively is now (deriveReviewState), not just the last stored row. Enforces
+ * that RELEASED is only reachable by a maintainer (the caller already did the
+ * entry-point auth; this re-checks so no path can release without maintainer).
+ * Ordinary approvals go through recordApproval — this no longer satisfies
+ * requests. The state insert + timeline event are one transaction.
  */
 async function transition(
   ref: { area: number; slug: string } | undefined,
@@ -1286,19 +1623,17 @@ async function transition(
 ): Promise<ReviewState> {
   if (!ref) throw new ConnectError("ref is required", Code.InvalidArgument);
   const toDb = DB_BY_REVIEW_STATE[toState];
-  if (!toDb || toDb === "none") {
+  if (!toDb) {
+    // Only the storable explicit outcomes are transitionable; NEEDS_REVIEW/NONE
+    // are derived and cannot be set.
     throw new ConnectError("invalid target review state", Code.InvalidArgument);
   }
   if (toDb === "released") requireMaintainer(ctx);
 
   const sql = db();
   const area = areaToDb(ref.area);
-  const [current] = await sql<{ state: string }[]>`
-    select state from review_state
-    where area = ${area} and slug = ${ref.slug}
-    order by created_at desc limit 1
-  `;
-  const from = current?.state ?? "none";
+  const current = await loadDerivedState(sql, area, ref.slug);
+  const from = DB_BY_DERIVED_STATE[current.state] ?? "none";
   if (from === toDb) return toState; // idempotent no-op — no write, no event
   if (!(ALLOWED_TRANSITIONS[from] ?? []).includes(toDb)) {
     throw new ConnectError(
@@ -1308,32 +1643,13 @@ async function transition(
   }
 
   // Stamp against the latest version for provenance (nullable if unregistered).
-  const [ver] = await sql<{ id: string }[]>`
-    select id from content_version
-    where area = ${area} and slug = ${ref.slug}
-    order by created_at desc limit 1
-  `;
-  const versionId = ver?.id ?? null;
+  const versionId = await latestVersionId(sql, area, ref.slug);
 
   await sql.begin(async (tx) => {
     await tx`
       insert into review_state (area, slug, state, version_id, actor_user_id, note)
       values (${area}, ${ref.slug}, ${toDb}, ${versionId}, ${actor}, ${note ?? null})
     `;
-    // Reaching `approved` satisfies every open request on this artifact.
-    if (toDb === "approved") {
-      const satisfied = await tx<{ id: string }[]>`
-        update review_request
-        set status = 'satisfied', satisfied_at = now(), satisfied_by = ${actor}
-        where area = ${area} and slug = ${ref.slug} and status = 'open'
-        returning id
-      `;
-      for (const r of satisfied) {
-        await logEvent(tx, area, ref.slug, "request-satisfied", actor, versionId, {
-          request_id: r.id,
-        });
-      }
-    }
     // Log the transition itself (releaseContent logs `released` with the latch,
     // so skip it here to avoid a duplicate).
     const kind = EVENT_KIND_BY_STATE[toDb];

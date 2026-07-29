@@ -47,14 +47,18 @@ create table if not exists content_section (
   unique (version_id, anchor_slug)
 );
 
--- Append-only review/release state history. Current state = latest row per
--- (area, slug). RELEASED is a DB action, never a frontmatter write.
+-- Append-only history of EXPLICIT review outcomes. The effective review state
+-- the UI shows is derived (see deriveReviewState): NEEDS_REVIEW and derived
+-- APPROVED are computed from frontmatter + content_approval and are never stored
+-- here. Only the outcomes that cannot be derived are recorded: `changes-requested`,
+-- `released`, and the maintainer `approved` override. RELEASED is a DB action,
+-- never a frontmatter write. Current explicit outcome = latest row per (area, slug).
 create table if not exists review_state (
   id            uuid primary key default uuidv7(),
   area          text not null,
   slug          text not null,
   state         text not null check (state in
-                  ('none', 'in-review', 'changes-requested', 'approved', 'released')),
+                  ('changes-requested', 'approved', 'released')),
   version_id    uuid references content_version (id),
   actor_user_id text not null,
   note          text,
@@ -217,10 +221,10 @@ create unique index if not exists reviewer_allowlist_email_idx
 -- stateful entity with three terminal outcomes; the immutable audit trail lives
 -- in content_event, so this stays mutable (status is updated in place).
 --
--- Satisfaction is artifact-level, not per-reviewer: when an artifact reaches
--- 'approved', all its open requests are marked 'satisfied' (any allowlisted
--- reviewer's approval counts, mirroring how release works). A finer per-reviewer
--- model would need a separate approval record and is intentionally out of scope.
+-- Satisfaction is per-reviewer: a required request is satisfied when the reviewer
+-- it names records an approval (content_approval). A required, still-open request
+-- keeps the derived state at NEEDS_REVIEW and blocks release until that specific
+-- reviewer approves. Optional requests are advisory only.
 create table if not exists review_request (
   id             uuid primary key default uuidv7(),
   area           text not null check (area in ('blogs', 'docs')),
@@ -246,6 +250,36 @@ create index if not exists review_request_ref_idx
 create index if not exists review_request_reviewer_idx
   on review_request (lower(reviewer_login), status);
 
+-- One reviewer's approval of one artifact. Approvals are per-reviewer and
+-- artifact-level, and they PERSIST across content versions: an edit is normally
+-- a response to review (not a regression against a prior approval), so a new
+-- version does not invalidate approvals and does not re-prompt reviewers.
+-- version_id records the version the approval was made against for provenance/
+-- display only — it is never used to invalidate the approval. A dismissed
+-- approval is soft-deleted (dismissed_at set) and retained for the timeline.
+--
+-- The effective review state is derived from these rows (deriveReviewState):
+-- with required requests, APPROVED needs every required reviewer to have an
+-- active approval; with none, any one allowlisted active approval approves.
+create table if not exists content_approval (
+  id               uuid primary key default uuidv7(),
+  area             text not null check (area in ('blogs', 'docs')),
+  slug             text not null,
+  version_id       uuid references content_version (id),
+  approver_login   text not null,
+  approver_user_id text,
+  dismissed_at     timestamptz,
+  created_at       timestamptz not null default now()
+);
+-- At most one ACTIVE approval per (area, slug, reviewer); dismissed rows are kept
+-- for the timeline, so uniqueness is partial on the active set. Approver is
+-- matched case-insensitively (as review_request reviewer_login is).
+create unique index if not exists content_approval_active_idx
+  on content_approval (area, slug, lower(approver_login))
+  where dismissed_at is null;
+create index if not exists content_approval_ref_idx
+  on content_approval (area, slug);
+
 -- Append-only review timeline: one row per major lifecycle event on an artifact
 -- (review requested/satisfied/cancelled, state transitions, release, unpublish/
 -- republish). Frontmatter authoring changes are deliberately excluded — those
@@ -259,8 +293,8 @@ create table if not exists content_event (
   slug       text not null,
   kind       text not null check (kind in (
                'review-requested', 'request-satisfied', 'request-cancelled',
-               'state-in-review', 'state-changes-requested', 'state-approved',
-               'released', 'unpublished', 'republished')),
+               'state-changes-requested', 'state-approved', 'approved-by',
+               'approval-dismissed', 'released', 'unpublished', 'republished')),
   actor      text not null,
   version_id uuid references content_version (id),
   payload    jsonb not null default '{}',

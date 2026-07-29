@@ -92,19 +92,41 @@ jobs:
           ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
           REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          set -o pipefail  # surface a neonctl failure, not jq's exit status
-          # Run via `bunx neonctl` (not `bun install -g` + bare `neonctl`, which
-          # hung in CI). Deploy the prod Function on the default branch.
-          INVOCATION_URL=$(bunx neonctl functions deploy "$SLUG" \
+          # The beta neonctl (2.38.x) BLOCKS after triggering a deploy and hangs
+          # the full 10-min timeout even when the deployment has already COMPLETED
+          # — then exits 1 with a false "Timed out" (--wait only governs the build
+          # wait, not this start-poll). So we don't depend on the deploy command's
+          # exit: run it detached, then drive off `functions get`, which returns the
+          # completed deployment immediately. See preview-deploy.yml + runbook §4.
+          setsid bunx neonctl functions deploy "$SLUG" \
             --project-id "$NEON_PROJECT_ID" \
-            --src server/src/handler.ts --output json \
+            --src server/src/handler.ts --wait=false \
             --env AUTH_MODE=neon \
             --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
-            | jq -r '.invocation_url // .invocationUrl // .url')
-          if [ -z "$INVOCATION_URL" ] || [ "$INVOCATION_URL" = "null" ]; then
-            echo "::error::could not read the Function invocation_url from the Neon CLI output — inspect the raw JSON and adjust the jq path (docs/deploy/runbook.md §4)."
+            >deploy.log 2>&1 &
+
+          INVOCATION_URL=""
+          STATUS=""
+          for _ in $(seq 1 60); do
+            GET_JSON=$(bunx neonctl functions get "$SLUG" \
+              --project-id "$NEON_PROJECT_ID" --output json 2>/dev/null || echo '{}')
+            STATUS=$(jq -r '.current_deployment.status // empty' <<<"$GET_JSON")
+            if [ "$STATUS" = "completed" ]; then
+              INVOCATION_URL=$(jq -r '.invocation_url // empty' <<<"$GET_JSON")
+              break
+            fi
+            if [ "$STATUS" = "failed" ]; then
+              echo "::error::the $SLUG Function deployment reported status=failed — see the Neon console (docs/deploy/runbook.md §4)."
+              cat deploy.log || true
+              exit 1
+            fi
+            sleep 5
+          done
+          if [ -z "$INVOCATION_URL" ]; then
+            echo "::error::$SLUG Function did not reach status=completed after polling (last status: '${STATUS:-none}'); check the Neon console (docs/deploy/runbook.md §4)."
+            cat deploy.log || true
             exit 1
           fi
           # The prod host is stable across deploys (default branch id + slug). Set

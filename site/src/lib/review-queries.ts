@@ -11,6 +11,8 @@ import {
   listDrafts,
   listReviewRequests,
   listContentEvents,
+  listAllowlist,
+  listRegisteredUsers,
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../gen/docs_factory/review/v1/messages_pb";
 
@@ -96,12 +98,41 @@ export function useReviewInvalidation() {
     [queryClient, transport],
   );
 
+  // Admin roster: the maintainer allowlist and the registered-users discovery
+  // list. A ManageAllowlist add/remove/edit invalidates both — the allowlist
+  // roster changes, and a granted registered user's resolved role flips.
+  const invalidateAllowlist = useCallback(
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: createConnectQueryKey({
+          schema: listAllowlist,
+          transport,
+          cardinality: "finite",
+        }),
+      }),
+    [queryClient, transport],
+  );
+
+  const invalidateRegisteredUsers = useCallback(
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: createConnectQueryKey({
+          schema: listRegisteredUsers,
+          transport,
+          cardinality: "finite",
+        }),
+      }),
+    [queryClient, transport],
+  );
+
   return {
     commentsKey,
     invalidateComments,
     invalidateDrafts,
     invalidateReviewRequests,
     invalidateContentEvents,
+    invalidateAllowlist,
+    invalidateRegisteredUsers,
     queryClient,
   };
 }

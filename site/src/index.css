@@ -561,6 +561,67 @@ body {
   color: var(--muted-foreground);
 }
 
+/* Admin roster (/admin). */
+.admin-page { max-width: 60rem; }
+.admin-error {
+  color: var(--destructive, #e5484d);
+  font-size: 0.85rem;
+  margin: 0.5rem 0;
+}
+.admin-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+.admin-input {
+  flex: 1 1 16rem;
+  min-width: 12rem;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: inherit;
+  font-size: 0.9rem;
+}
+.admin-role-toggle { display: inline-flex; gap: 0.35rem; }
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.admin-table th,
+.admin-table td {
+  text-align: left;
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.admin-table th {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+.admin-row-actions {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.admin-role {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+.admin-role-maintainer { color: var(--accent); border-color: var(--accent); }
+.admin-role-reviewer { color: var(--foreground); }
+.admin-role-none { color: var(--muted-foreground); }
+
 .content { max-width: 60rem; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
 .muted { color: var(--muted-foreground); }
 

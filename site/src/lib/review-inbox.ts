@@ -15,7 +15,7 @@ const READY = "ready";
 
 /** Review states that count as active pending work for a reviewer. */
 export const PENDING_REVIEW_STATES = new Set<ReviewState>([
-  ReviewState.IN_REVIEW,
+  ReviewState.NEEDS_REVIEW,
   ReviewState.CHANGES_REQUESTED,
 ]);
 

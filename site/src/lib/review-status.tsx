@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
 // Badge tone per review state: released = solid, approved = ready-green,
-// changes-requested = amber, in-review = purple, none = muted outline.
+// changes-requested = amber, needs-review = purple, none = muted outline.
 export const REVIEW_BADGE_VARIANT: Record<number, BadgeVariant> = {
   [ReviewState.NONE]: "outline",
-  [ReviewState.IN_REVIEW]: "outline",
+  [ReviewState.NEEDS_REVIEW]: "outline",
   [ReviewState.CHANGES_REQUESTED]: "outline",
   [ReviewState.APPROVED]: "outline",
   [ReviewState.RELEASED]: "default",
@@ -21,20 +21,20 @@ export const REVIEW_BADGE_VARIANT: Record<number, BadgeVariant> = {
 
 export const REVIEW_STATE_LABEL: Record<number, string> = {
   [ReviewState.NONE]: "not started",
-  [ReviewState.IN_REVIEW]: "in review",
+  [ReviewState.NEEDS_REVIEW]: "needs review",
   [ReviewState.CHANGES_REQUESTED]: "changes requested",
   [ReviewState.APPROVED]: "approved",
   [ReviewState.RELEASED]: "released",
 };
 
-/** Extra badge class for a review state tint (ready / idea / in-review). */
+/** Extra badge class for a review state tint (ready / idea / needs-review). */
 export function reviewStateBadgeClass(state: ReviewState): string {
   switch (state) {
     case ReviewState.APPROVED:
       return "status-badge-ready";
     case ReviewState.CHANGES_REQUESTED:
       return "status-badge-idea";
-    case ReviewState.IN_REVIEW:
+    case ReviewState.NEEDS_REVIEW:
       return "status-badge-in-review";
     default:
       return "";
@@ -44,7 +44,7 @@ export function reviewStateBadgeClass(state: ReviewState): string {
 /** Extra class for a compact tree-row review-status dot. */
 export function reviewStateDotClass(state: ReviewState | undefined): string {
   switch (state ?? ReviewState.NONE) {
-    case ReviewState.IN_REVIEW:
+    case ReviewState.NEEDS_REVIEW:
       return "tree-status-dot-in-review";
     case ReviewState.CHANGES_REQUESTED:
       return "tree-status-dot-idea";

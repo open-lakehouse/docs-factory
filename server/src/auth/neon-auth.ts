@@ -156,13 +156,19 @@ async function resolveEmails(
   return [...new Set([...base, ...github])];
 }
 
-/** Extract the Neon Auth session token from a cookie or Authorization header. */
+/**
+ * Extract the bearer from an Authorization header, falling back to the Neon Auth
+ * session cookie. In prod the client sends the signed JWT as `Authorization:
+ * Bearer` (see site/src/lib/auth-actions.ts) and this returns it; the cookie
+ * fallback is for the raw same-host case. Whatever is returned is handed to
+ * verifyJwt, which only accepts a JWKS-verifiable JWT.
+ */
 export function sessionToken(header: Headers): string | undefined {
   const auth = header.get("authorization");
   if (auth?.toLowerCase().startsWith("bearer ")) return auth.slice(7).trim();
   const cookie = header.get("cookie");
   if (!cookie) return undefined;
-  // Neon Auth sets an opaque session token in `__Secure-neonauth.session_token`
+  // Neon Auth sets its session cookie in `__Secure-neonauth.session_token`
   // (Secure, HttpOnly, SameSite=None) — per the Neon Auth authentication-flow
   // docs. We store the base name and match with or without the `__Secure-`/
   // `__Host-` prefix, so the same code works on http dev and https prod.

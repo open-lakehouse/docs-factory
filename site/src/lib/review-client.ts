@@ -10,7 +10,7 @@ import { sessionToken } from "./auth-actions";
 
 // Same-origin in prod: Vercel rewrites `/api/*` → the Neon Function (see
 // site/vercel.json), so the browser never makes a cross-origin request. Auth
-// rides as an `Authorization: Bearer` header (the Neon Auth session token; see
+// rides as an `Authorization: Bearer` header (the Neon Auth JWT; see
 // auth-actions.ts) rather than a cookie — Neon Auth scopes its session cookie to
 // the auth origin, which is NOT the Function's origin, so the cookie would never
 // reach the API. VITE_API_URL still overrides when set; in local dev we fall
@@ -33,9 +33,9 @@ export const transport = createConnectTransport({
       const persona = readDevPersona();
       if (persona) headers.set(DEV_PERSONA_HEADER, persona);
     } else {
-      // In prod, carry the Neon Auth session token as a bearer so the server can
-      // resolve the viewer (server/src/auth/neon-auth.ts matches it against
-      // neon_auth.session.token). The cookie can't do this cross-origin.
+      // In prod, carry the Neon Auth JWT as a bearer so the server can resolve
+      // the viewer (server/src/auth/neon-auth.ts verifies it via JWKS). The
+      // auth cookie can't do this cross-origin.
       const token = await sessionToken();
       if (token) headers.set("authorization", `Bearer ${token}`);
     }

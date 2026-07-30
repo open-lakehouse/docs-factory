@@ -25,14 +25,27 @@ const distDir = resolve(siteRoot, "dist");
 // The docsnip JSON contract version this script understands (asserted below).
 const EXPECTED_VERSION = 1;
 
-/** Run `docsnip scripts --json` and return the parsed, version-checked payload. */
+/** Run `docsnip scripts --json` and return the parsed, version-checked payload,
+ *  or null if `uv` isn't available in this environment. The script index is an
+ *  additive enrichment produced in the CI prebuild (which has `uv`); a build env
+ *  without `uv` (e.g. the bare Vercel/preview build) simply skips it rather than
+ *  failing the whole deploy. A non-zero exit from an AVAILABLE uv still throws. */
 export function runDocsnipScripts(root = repoRoot) {
-  const out = execFileSync("uv", ["run", "docsnip", "scripts", "--json"], {
-    cwd: root,
-    encoding: "utf8",
-    // docsnip prints uv setup chatter to stderr; JSON goes to stdout.
-    stdio: ["ignore", "pipe", "inherit"],
-  });
+  let out;
+  try {
+    out = execFileSync("uv", ["run", "docsnip", "scripts", "--json"], {
+      cwd: root,
+      encoding: "utf8",
+      // docsnip prints uv setup chatter to stderr; JSON goes to stdout.
+      stdio: ["ignore", "pipe", "inherit"],
+    });
+  } catch (err) {
+    if (err?.code === "ENOENT") {
+      console.warn("build-script-index: `uv` not found — skipping the script index (run in the CI prebuild).");
+      return null;
+    }
+    throw err;
+  }
   const payload = JSON.parse(out);
   if (payload.version !== EXPECTED_VERSION) {
     throw new Error(
@@ -71,6 +84,7 @@ export function scriptEntry(entry) {
 
 function main() {
   const payload = runDocsnipScripts();
+  if (payload === null) return; // uv unavailable — skip (CI prebuild produces it)
   const scripts = payload.scripts.map(scriptEntry);
 
   mkdirSync(distDir, { recursive: true });

@@ -55,13 +55,17 @@ def test_json_matches_discover(capsys) -> None:
     root = _repo_root()
     discovered = discover(root / "content")
     json_paths = sorted(e["path"] for e in payload["scripts"])
-    disc_paths = sorted(m.path.resolve().relative_to(root).as_posix() for m in discovered)
+    disc_paths = sorted(
+        m.path.resolve().relative_to(root).as_posix() for m in discovered
+    )
     assert json_paths == disc_paths
 
 
 def test_tutorial_slug_strips_order_prefix(tmp_path) -> None:
     content = tmp_path / "content"
-    script = content / "delta" / "tutorials" / "002-explore-history" / "snippets" / "x.py"
+    script = (
+        content / "delta" / "tutorials" / "002-explore-history" / "snippets" / "x.py"
+    )
     script.parent.mkdir(parents=True)
     script.write_text("# /// script\n# ///\n")
     assert _tutorial_slug(script, content) == "explore-history"

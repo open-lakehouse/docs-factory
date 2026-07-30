@@ -145,13 +145,25 @@ async function buildTwin(absPath, scriptsByRoute) {
   const href = hrefFromIdentity(identity);
   if (!href) return null;
 
-  const { output, manifest } = await emitOne({
-    inputPath: absPath,
-    target: mdTwin,
-    modelDir: defaultModelDir(),
-    likec4OutDir: likec4ExportDir,
-    assetsDir: dirname(absPath),
-  });
+  let output;
+  let manifest;
+  try {
+    ({ output, manifest } = await emitOne({
+      inputPath: absPath,
+      target: mdTwin,
+      modelDir: defaultModelDir(),
+      likec4OutDir: likec4ExportDir,
+      assetsDir: dirname(absPath),
+    }));
+  } catch (err) {
+    // The only heavy dependency in emitOne is the LikeC4 PNG export (headless
+    // Chromium). In a bare build env (no Chromium) it throws; twins are produced
+    // in the CI prebuild that HAS Chromium, so here we skip the page with a
+    // warning rather than crashing the deploy. Pages without a `likec4=` diagram
+    // never invoke the export and are unaffected.
+    console.warn(`build-md-twins: skipping ${href} — ${err.message.split("\n")[0]}`);
+    return null;
+  }
 
   copyLikeC4Pngs(manifest);
 

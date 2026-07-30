@@ -10,7 +10,7 @@ author: Robert Pack
 target: unitycatalog
 ---
 
-**TL;DR**
+:::tldr
 
 - The UC Delta API is a **versioned, intent-based, atomic** REST surface for the Delta
 ecosystem, shipped in open source [Unity Catalog](https://github.com/unitycatalog/unitycatalog) 0.5.
@@ -20,6 +20,8 @@ version and platform supported and required table features.
 protocol, and column metadata travel over the wire. 
 - You can **run all of it locally today** against OSS UC 0.5 — with Spark and DuckDB support
 out of the box. More to follow.
+
+:::
 
 
 

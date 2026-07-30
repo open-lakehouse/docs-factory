@@ -86,7 +86,9 @@ reflects how well the draft meets these, weighted by how load-bearing each miss 
   one hard fact. No throat-clearing opener.
 - *(citability)* A **TL;DR / key-takeaways box** near the top: 3–5 fact-rich
   bullets (these are the brief's key takeaways, surfaced in the draft). This is
-  the single most-quoted block.
+  the single most-quoted block. Author it with the `:::tldr` directive (see
+  [CONVENTIONS.md](./CONVENTIONS.md)) — not a bare `**TL;DR**` label — so it renders
+  as a box in-app and flattens into the `.md` twins agents fetch.
 
 ### (e) Links, metadata & series continuity
 

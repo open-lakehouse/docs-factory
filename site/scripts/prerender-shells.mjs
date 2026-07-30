@@ -28,6 +28,7 @@ import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs"
 import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
 import { pageHead, siteOrigin, jsonLd } from "../src/content-core/head.mjs";
 import { renderMarkdownToHtml } from "../src/content-core/render-markdown.mjs";
+import { twinPathForHref } from "./build-md-twins.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
@@ -119,7 +120,25 @@ function writeRoute(template, href, headTags, noscriptHtml) {
   return relative(distDir, outPath);
 }
 
-/** One page (doc or blog): parse, gate on ready, build head + noscript, write. */
+/**
+ * Read the rich `.md` twin body for a page href, if build-md-twins already wrote
+ * it. The twin is the reader-optimized rendering (snippets inlined, constructs
+ * flattened, LikeC4 → PNGs) — we must NEVER render the raw source into the
+ * <noscript> fallback. Strips the twin's leading frontmatter block (canonical /
+ * title / summary) so only the body reaches renderMarkdownToHtml. Returns null if
+ * the twin doesn't exist yet (build-md-twins must run first).
+ */
+export function twinBody(href) {
+  try {
+    const raw = readFileSync(twinPathForHref(href), "utf8");
+    return splitFrontmatter(raw).body;
+  } catch {
+    return null;
+  }
+}
+
+/** One page (doc or blog): parse, gate on ready, build head + noscript, write.
+ *  The <noscript> body renders from the RICH `.md` twin (never the raw source). */
 function renderPage(template, absPath) {
   const raw = readFileSync(absPath, "utf8");
   const { meta, body } = splitFrontmatter(raw);
@@ -128,7 +147,10 @@ function renderPage(template, absPath) {
   const href = hrefFromIdentity(identity);
   if (!href) return null;
   const head = pageHead({ identity, meta, body, origin });
-  const noscript = wrapNoscript(head, renderMarkdownToHtml(body));
+  // Render the RICH twin body; if the twin isn't built yet, skip the body rather
+  // than fall back to raw annotation-heavy source (head still ships).
+  const twin = twinBody(href);
+  const noscript = wrapNoscript(head, twin ? renderMarkdownToHtml(twin) : "");
   return writeRoute(template, href, renderHeadTags(head), noscript);
 }
 
@@ -208,4 +230,8 @@ function main() {
   console.log(`prerender-shells: wrote ${written.length} route shell(s) into dist/.`);
 }
 
-main();
+// Run only when invoked directly (node scripts/prerender-shells.mjs), so tests can
+// import twinBody without triggering a full prerender pass.
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
+}

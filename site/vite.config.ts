@@ -19,6 +19,7 @@ import remarkCodeSnippets from "./src/plugins/remark-code-snippets.mjs";
 import remarkJourney from "./src/plugins/remark-journey.mjs";
 import remarkDirectiveProseGuard from "./src/plugins/remark-directive-prose-guard.mjs";
 import remarkCallouts from "./src/plugins/remark-callouts.mjs";
+import remarkTldr from "./src/plugins/remark-tldr.mjs";
 import remarkFenceMeta from "./src/plugins/remark-fence-meta.mjs";
 import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
 import remarkSourceLinks from "./src/plugins/remark-source-links.mjs";
@@ -133,6 +134,7 @@ export default defineConfig({
           remarkFrontmatter,
           [remarkMdxFrontmatter, { name: "frontmatter" }],
           remarkCodeSnippets,
+          remarkTldr,
           remarkCallouts,
           remarkJourney,
           remarkFenceMeta,

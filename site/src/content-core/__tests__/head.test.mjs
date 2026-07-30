@@ -22,6 +22,13 @@ test("metaDescription skips headings and list blocks entirely", () => {
   expect(metaDescription({}, body)).toBe("Actual prose paragraph follows the list.");
 });
 
+test("metaDescription skips a :::tldr directive block (never leaks into the description)", () => {
+  // The :::tldr construct is body-only; the exposed description stays frontmatter
+  // `summary`, and when absent, firstParagraph must skip the directive block.
+  const body = [":::tldr", "- a key takeaway bullet that is plenty long", ":::", "", "The first real prose paragraph of the page body."].join("\n");
+  expect(metaDescription({}, body)).toBe("The first real prose paragraph of the page body.");
+});
+
 test("metaDescription truncates on a word boundary with an ellipsis", () => {
   const long = `${"word ".repeat(80)}`.trim();
   const d = metaDescription({ summary: long }, "", 50);

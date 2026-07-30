@@ -9,12 +9,14 @@
 | [Scott Haines](mailto:scott.haines@databricks.com) |  |  |  |
 
 
-# TL;DR
+:::tldr
 
 This blog highlights both the power and the complexity of working with storage services in a Lakehouse platform. The resulting message should be:
 
 - Unity Catalog can make your everyday life much easier
 - Unity Catalog allows you to scale 
+
+:::
 
 
 ---

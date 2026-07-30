@@ -1,9 +1,10 @@
-// viewsFor fans a page out to its tab-group views. The rules under test: every
-// page has a rendered view; only PUBLISHED (status: ready) pages get a Markdown
-// twin; scripts attach only when a scripts.json entry's tutorialRoute matches
-// the page's canonical route (so a page's own scripts, and no others, appear).
+// viewsFor fans a page out to its tab views. The rules under test: every page
+// has a rendered view; only PUBLISHED (status: ready) pages get a Markdown twin;
+// scripts attach whenever a scripts.json entry's tutorialRoute matches the page's
+// route — INDEPENDENT of status (docsnip indexes scripts regardless of
+// frontmatter), so a draft tutorial still shows its scripts. Blog routes match too.
 import { test, expect } from "bun:test";
-import { docRef } from "../../../lib/content-ref";
+import { blogRef, docRef } from "../../../lib/content-ref";
 import type { ContentPage } from "../../../content";
 import type { ScriptsIndex } from "../../../lib/scripts-index";
 import { viewsFor } from "./item-views";
@@ -31,9 +32,16 @@ function indexWith(...routes: string[]): ScriptsIndex {
   };
 }
 
-test("a draft page gets only the rendered view (no twin, no scripts)", () => {
+test("a draft page has no Markdown twin but STILL shows its scripts", () => {
   const views = viewsFor(ref, draftPage, indexWith(route));
-  expect(views).toEqual([{ kind: "rendered" }]);
+  expect(views).toEqual([
+    { kind: "rendered" },
+    { kind: "script", fetchUrl: `${route}/snippets/s0.py` },
+  ]);
+});
+
+test("a draft page with no matching scripts is rendered-only", () => {
+  expect(viewsFor(ref, draftPage, indexWith())).toEqual([{ kind: "rendered" }]);
 });
 
 test("a published page gets rendered + markdown", () => {
@@ -51,6 +59,17 @@ test("a published tutorial attaches its own scripts, not others'", () => {
   ]);
 });
 
-test("a missing page (undefined) still opens as the rendered view", () => {
-  expect(viewsFor(ref, undefined, indexWith(route))).toEqual([{ kind: "rendered" }]);
+test("a published blog attaches scripts matched on its /blog/<slug> route", () => {
+  const blog = blogRef("unity-catalog-delta-api");
+  const blogRoute = "/blog/unity-catalog-delta-api";
+  const views = viewsFor(blog, readyPage, indexWith(blogRoute));
+  expect(views).toEqual([
+    { kind: "rendered" },
+    { kind: "md" },
+    { kind: "script", fetchUrl: `${blogRoute}/snippets/s0.py` },
+  ]);
+});
+
+test("a missing page (undefined) has no twin; rendered-only when no scripts match", () => {
+  expect(viewsFor(ref, undefined, indexWith())).toEqual([{ kind: "rendered" }]);
 });

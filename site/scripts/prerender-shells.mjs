@@ -13,7 +13,8 @@
 // today — no hydration mismatch to manage.
 //
 // DB-free by design: the public corpus is gated on the git-authoritative
-// frontmatter `status: ready`, matching build-llmstxt.mjs and the server's
+// frontmatter status via content-core's shared `isPublic()` (PUBLISH_STATUS),
+// the same gate build-llmstxt.mjs uses and mirrored by the server's
 // READY_STATUS. A `ready` page may briefly precede its DB `released` state; that
 // skew is accepted to keep the build decoupled from the review DB.
 //
@@ -22,7 +23,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { splitFrontmatter } from "../src/content-core/frontmatter.mjs";
+import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
 import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
 import { pageHead, siteOrigin, jsonLd } from "../src/content-core/head.mjs";
@@ -34,7 +35,6 @@ const repoRoot = resolve(siteRoot, "..");
 const distDir = resolve(siteRoot, "dist");
 const templatePath = resolve(distDir, "index.html");
 
-const READY_STATUS = "ready";
 const origin = siteOrigin();
 
 /** Escape a string for safe insertion into HTML text/attribute context. */
@@ -44,6 +44,16 @@ function esc(s) {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+}
+
+/**
+ * Serialize a JSON-LD object for embedding in a `<script>` element. JSON.stringify
+ * alone is unsafe: a `</script>` (or `<!--`) sequence in any string value closes
+ * the element early and leaks the rest as markup. Escaping `<` as `<` keeps
+ * the payload valid JSON while making it impossible to break out of the script.
+ */
+function jsonLdScript(data) {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
 /** Render the assembled head object into the tag string injected into <head>. */
@@ -58,7 +68,7 @@ function renderHeadTags(head) {
     ...head.og.map(([p, c]) => `<meta property="${esc(p)}" content="${esc(c)}" />`),
     ...head.twitter.map(([n, c]) => `<meta name="${esc(n)}" content="${esc(c)}" />`),
     head.jsonLd
-      ? `<script type="application/ld+json">${JSON.stringify(head.jsonLd)}</script>`
+      ? `<script type="application/ld+json">${jsonLdScript(head.jsonLd)}</script>`
       : "",
   ];
   return lines.filter(Boolean).join("\n    ");
@@ -113,7 +123,7 @@ function writeRoute(template, href, headTags, noscriptHtml) {
 function renderPage(template, absPath) {
   const raw = readFileSync(absPath, "utf8");
   const { meta, body } = splitFrontmatter(raw);
-  if ((meta.status ?? "draft") !== READY_STATUS) return null;
+  if (!isPublic(meta)) return null;
   const identity = docIdentity(absPath, meta);
   const href = hrefFromIdentity(identity);
   if (!href) return null;

@@ -373,6 +373,9 @@ message EraseUserResponse {
   int32 review_states_scrubbed = 2;
   int32 resolutions_scrubbed = 3;
   int32 seen_rows_deleted = 4;
+  // Open review requests addressed to the erased login, cancelled so they can
+  // no longer block release (only the erased reviewer could ever satisfy them).
+  int32 requests_cancelled = 5;
 }
 
 message RegisterVersionRequest {

@@ -9,7 +9,7 @@ import random
 from pathlib import Path
 
 import pyarrow as pa
-from deltalake import DeltaTable, write_deltalake
+from deltalake import write_deltalake
 
 from .datasets import DATASETS, DatasetSpec
 
@@ -80,7 +80,6 @@ def _build(spec: DatasetSpec, dest: Path) -> None:
 
     # Version 1: a deterministic delete + update, so time travel sees a diff.
     if spec.versions >= 2:
-        dt = DeltaTable(str(dest))
         # Mark every 10th order as returned (an "update"); drop the last 50 rows
         # (a "delete"). Both are deterministic given the fixed seed above.
         updated = dict(cols)
@@ -92,7 +91,6 @@ def _build(spec: DatasetSpec, dest: Path) -> None:
         for key in updated:
             updated[key] = updated[key][:keep]
         write_deltalake(str(dest), _arrow_table(spec, updated), mode="overwrite")
-        del dt
 
 
 def seed_dataset(

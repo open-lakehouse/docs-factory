@@ -3959,6 +3959,57 @@ a.review-author:hover span {
   overflow-wrap: normal;
 }
 
+/* Script view (workspace tab): a served .py rendered line-by-line so reviewers
+   can comment on any line. Same structure as .source-lines; the code text is
+   Shiki-highlighted per line, so it sits on the highlighter's dark surface. */
+.script-lines {
+  margin: 0;
+  padding: 0.5rem 0;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: #22272e; /* github-dark-dimmed surface, matches build-time blocks */
+  color: #adbac7;
+  min-height: 100%;
+}
+.script-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.1rem 0.75rem;
+}
+.script-line:hover {
+  background: color-mix(in oklab, white 6%, transparent);
+}
+.script-line-comment {
+  visibility: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+}
+.script-line:hover .script-line-comment {
+  visibility: visible;
+}
+.script-line-comment:hover {
+  opacity: 1;
+}
+.script-line-no {
+  width: 2.5rem;
+  text-align: right;
+  opacity: 0.5;
+  user-select: none;
+}
+.script-line-text {
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
 /* Review status + transition controls are shadcn Badge + Button (allowlisted
    viewers only); their layout lives inline on the component via Tailwind. */
 

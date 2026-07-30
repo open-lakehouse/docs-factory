@@ -1,10 +1,16 @@
-# Deploy the review backend (server/) to the PRODUCTION Neon branch's Function.
-# (Per-PR preview Function deploys live in preview-deploy.yml.)
+# Deploy PRODUCTION on push to main: the review backend (server/) to the prod
+# Neon branch's Function, then the SPA (site/) prebuilt to Vercel production.
+# (Per-PR preview deploys — Function + SPA — live in preview-deploy.yml.)
 #
-# What it does: applies migrations to the prod branch (direct URL), then bundles
-# server/ and deploys it as the prod Neon Function via the Neon CLI. The Function
-# entrypoint is server/src/handler.ts (`export default { fetch }`). DATABASE_URL
-# is injected by Neon at runtime; the other env is set on the Function at deploy.
+# `deploy`:      applies migrations to the prod branch (direct URL), then bundles
+#                server/ and deploys it as the prod Neon Function via the Neon CLI.
+#                The Function entrypoint is server/src/handler.ts
+#                (`export default { fetch }`). DATABASE_URL is injected by Neon at
+#                runtime; the other env is set on the Function at deploy. It exports
+#                the (stable) Function host so the SPA build can bake the /api rewrite.
+# `deploy-site`: builds the full agentic-docs corpus (needs uv + Chromium, which the
+#                Vercel build image lacks) and deploys it `vercel deploy --prebuilt
+#                --prod`. Vercel does NOT build production itself — see runbook §0/§3a.
 
 name: Deploy review Function
 
@@ -34,6 +40,10 @@ jobs:
     # reviewers — that restriction is the real gate on who/what can deploy prod.
     # See runbook §3.
     environment: production
+    # The prod Function host is stable across deploys; deploy-site consumes it to
+    # bake the /api rewrite into the SPA it ships.
+    outputs:
+      function_host: ${{ steps.deploy.outputs.host }}
     env:
       # Set as repo secrets/vars when provisioning (see docs/deploy/runbook.md):
       #   NEON_API_KEY            secret — authenticates the Neon CLI
@@ -77,6 +87,7 @@ jobs:
       # never interpolated into the shell body, so untrusted input can't inject
       # commands (zizmor).
       - name: Deploy Neon Function
+        id: deploy
         env:
           # Function slug: one source of truth (vars.REVIEW_FUNCTION_SLUG), with a
           # manual-dispatch override and a 'review' default so an unset var still works.
@@ -98,7 +109,108 @@ jobs:
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
             --env NEON_AUTH_URL="$NEON_AUTH_URL")
-          # The prod host is stable across deploys (default branch id + slug). Set
-          # it ONCE as Vercel Production env NEON_FUNCTION_HOST — it is not wired
-          # automatically here. Surface it so the first deploy can copy it over.
-          echo "::notice::prod Function host — set Vercel Production env NEON_FUNCTION_HOST=${HOST}"
+          # The prod host is stable across deploys (default branch id + slug).
+          # Hand it to deploy-site as a job output so it bakes the /api rewrite —
+          # no manual copy into Vercel's Production env is needed anymore.
+          echo "host=${HOST}" >> "$GITHUB_OUTPUT"
+          echo "::notice::prod Function host ${HOST} — consumed by the deploy-site job below."
+
+  # Build the production SPA in CI and deploy it prebuilt. We build here (not on
+  # Vercel) because the agentic-docs artifact pass in `build:vercel` needs uv +
+  # headless Chromium, which Vercel's build image lacks — so Vercel's own build
+  # would silently ship an INCOMPLETE corpus (no scripts.json, missing PNG twins).
+  # This mirrors preview-deploy.yml; the differences are `--prod` targeting and a
+  # stable Function host (from the deploy job, not per-branch). Vercel's git build
+  # for main is turned off via the Ignored Build Step (runbook §3a).
+  deploy-site:
+    needs: deploy
+    runs-on: ubuntu-latest
+    # Same production environment: the main-only branch restriction gates prod, and
+    # the Vercel token/ids live here (also present in the preview environment).
+    environment: production
+    env:
+      NEON_FUNCTION_HOST: ${{ needs.deploy.outputs.function_host }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Guard required inputs
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          if [ -z "${VERCEL_TOKEN:-}" ]; then
+            echo "::error::VERCEL_TOKEN secret is not set in the production environment (docs/deploy/runbook.md §3d)."
+            exit 1
+          fi
+          if [ -z "${NEON_FUNCTION_HOST:-}" ]; then
+            echo "::error::the deploy job did not export a Function host — the SPA can't bake its /api rewrite."
+            exit 1
+          fi
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      # uv + a headless Chromium for the agentic-docs artifact pass that
+      # `build:vercel` runs (build:artifacts): `docsnip scripts --json` needs uv,
+      # and the LikeC4 PNG export needs Chromium. Identical to preview-deploy.yml.
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      # The committed uv.lock pins package URLs at the internal Databricks
+      # pypi-proxy (unreachable from GitHub runners); rewrite them to public PyPI
+      # before any `uv sync`, exactly as the content/python-tests/lint jobs do.
+      - uses: ./.github/actions/pypi-public
+      # `docsnip scripts --json` (invoked by build:artifacts) runs via `uv run
+      # docsnip`, so docsnip must be installed — setup-uv only installs the uv
+      # binary. Scope to the docsnip package only: it avoids pulling the heavy
+      # deltalake/arro3 tree (via docs-factory-seed) that the build doesn't need.
+      - name: Sync Python env (docsnip)
+        run: uv sync --package docsnip
+      - name: Install Chromium for LikeC4 export
+        run: cd site && bun install --frozen-lockfile && bunx playwright install --with-deps chromium
+
+      # Link the Vercel project at the repo root for the PRODUCTION environment
+      # (no --git-branch — unlike previews) and pull its env. `vercel pull` writes
+      # <root>/.vercel/project.json (so the later `vercel deploy --prebuilt` targets
+      # the right project); `vercel env pull` writes the Production env — critically
+      # VITE_NEON_AUTH_URL, a Vite bundle var the SPA reads via import.meta.env — to
+      # .vercel/.env.production.local for the build to source.
+      - name: Link Vercel project + pull production env
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          bunx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          bunx vercel env pull .vercel/.env.production.local --yes \
+            --environment=production --token="$VERCEL_TOKEN"
+          if ! grep -q '^VITE_NEON_AUTH_URL=' .vercel/.env.production.local; then
+            echo "::error::VITE_NEON_AUTH_URL not in the pulled Production env — confirm the Neon↔Vercel integration injected it (docs/deploy/runbook.md §1.5/§3b)."
+            exit 1
+          fi
+
+      # Build the SPA into the Build Output API tree (site/.vercel/output/, with the
+      # /api → prod Function host rewrite in config.json) and deploy it prebuilt to
+      # production. Same move as preview-deploy.yml: our OWN `build:vercel`, then
+      # relocate the tree to the repo-root .vercel/ the link lives in, then
+      # `vercel deploy --prebuilt --prod` (uploads as-is, no second build).
+      - name: Build + deploy Vercel production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          # Source the pulled Production env so Vite sees VITE_NEON_AUTH_URL
+          # (import.meta.env substitution happens during `vite build`, in site/).
+          set -a; . .vercel/.env.production.local; set +a
+          # The emit/ package supplies the .md-twin emitter core, so install its deps.
+          (cd emit && bun install --frozen-lockfile)
+          # build:vercel reads NEON_FUNCTION_HOST to bake the /api rewrite.
+          (cd site && bun install --frozen-lockfile && NEON_FUNCTION_HOST="$NEON_FUNCTION_HOST" bun run build:vercel)
+          # `vercel deploy --prebuilt` reads .vercel/output relative to the CLI's
+          # cwd — the repo root, where `vercel pull` linked the project. Move the
+          # built tree there (build:vercel emits it under site/).
+          rm -rf .vercel/output
+          mv site/.vercel/output .vercel/output
+          DEPLOY_URL=$(bunx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN" | tail -n1)
+          echo "::notice::deployed production SPA: $DEPLOY_URL"

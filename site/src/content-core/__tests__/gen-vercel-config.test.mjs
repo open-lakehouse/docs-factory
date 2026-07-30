@@ -47,3 +47,19 @@ test("Accept: text/markdown negotiation rewrites doc/blog routes to their .md tw
   expect(neg.src).toBe("/(docs/.*|blog/.*)");
   expect(neg.has[0]).toEqual({ type: "header", key: "accept", value: "(.*text/markdown.*)" });
 });
+
+test("companion-file misses 404 AFTER filesystem and BEFORE the SPA catch-all", () => {
+  // A .md/.py/scripts.json request the filesystem didn't resolve must return a real
+  // 404, never fall through to /index.html — otherwise the app-shell HTML gets
+  // cached (and mislabeled text/markdown by the continue:true header rule) under the
+  // companion URL's key, permanently poisoning the review workspace's twin fetch.
+  const fsIdx = routes.findIndex((r) => r.handle === "filesystem");
+  const catchAll = routes.findIndex((r) => r.src === "/.*");
+  const mdPy404 = routes.findIndex((r) => r.src === "/(.*)\\.(md|py)" && r.status === 404);
+  const jsonMiss404 = routes.findIndex((r) => r.src === "/scripts\\.json" && r.status === 404);
+
+  for (const idx of [mdPy404, jsonMiss404]) {
+    expect(idx).toBeGreaterThan(fsIdx);
+    expect(idx).toBeLessThan(catchAll);
+  }
+});

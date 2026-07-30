@@ -55,7 +55,18 @@ const stripHost = (v) => v.replace(/^https?:\/\//, "").replace(/\/+$/, "");
  *      serve markdown to an HTML client.
  *   5. `handle: filesystem` serves the built static assets (incl. the .md twins,
  *      .py scripts, sitemap, llms.txt, …).
- *   6. Catch-all → index.html (client-side routing).
+ *   6. A companion-file miss guard: any `.md`/`.py`/`scripts.json` request the
+ *      filesystem DIDN'T resolve returns a real 404 — it must NOT reach the SPA
+ *      catch-all below. Without this, a miss falls through to `/index.html`, and
+ *      because the step-3 header rule already stamped `Content-Type: text/markdown`
+ *      with `continue: true`, the edge caches that HTML app-shell body UNDER the
+ *      `.md` cache key, labeled as markdown. The review workspace's twin fetch then
+ *      gets a 200/304 whose body is `<!doctype html>…<div id="root">` and shows the
+ *      "no twin" empty state even after the real twin ships (the poisoned entry is
+ *      sticky and revalidates to 304). 404ing the miss keeps a companion URL either
+ *      a real file or a real 404 — never a mislabeled SPA shell. Must precede the
+ *      catch-all.
+ *   7. Catch-all → index.html (client-side routing).
  */
 export function buildRoutes({ fnHost, redirectRoutes = [] }) {
   return [
@@ -94,6 +105,14 @@ export function buildRoutes({ fnHost, redirectRoutes = [] }) {
     { src: "/(docs/.*|blog/.*)", headers: { Vary: "Accept" }, continue: true },
 
     { handle: "filesystem" },
+    // Companion-file miss guard (see header §6). A `.md`/`.py`/`scripts.json` that
+    // the filesystem didn't serve is a genuine 404 — never the SPA shell. This
+    // stops the app-shell HTML from being cached under a companion URL's key (and
+    // mislabeled text/markdown by the step-3 header rule with continue:true), which
+    // otherwise makes the review workspace's twin fetch see a 200/304 HTML body and
+    // render the "no twin" empty state permanently.
+    { src: "/(.*)\\.(md|py)", status: 404 },
+    { src: "/scripts\\.json", status: 404 },
     { src: "/.*", dest: "/index.html" },
   ];
 }

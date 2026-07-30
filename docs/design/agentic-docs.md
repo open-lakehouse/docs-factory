@@ -62,6 +62,22 @@ execute — while search engines index rich, prerendered HTML.
   from the review Function — keeping the review app's dependencies and this
   server's complex logic cleanly apart. See Phase 4.
 - **Prerender approach:** **SEO-shell prerender** (not full react-dom/server SSG).
+- **Frontmatter `summary` is the one exposed description; TL;DR stays a body
+  construct.** The meta description, OpenGraph/Twitter, the `/llms.txt` entry, and
+  the MCP `get_doc` summary all come from frontmatter `summary` (stable,
+  single-purpose, always prose). A TL;DR / key-takeaways box —
+  [`blogs/QUALITY.md`](../../blogs/QUALITY.md) calls it "the single most-quoted
+  block" for AI — is authored **in the body** and rendered nicely, but is **not**
+  extracted as the description. It is marked with a first-class **`:::tldr`
+  directive** (alongside `:::callout` / `::::journey`), so it parses and renders
+  unambiguously and never leaks into the auto-derived description. When `summary`
+  is absent, the description falls back to the first substantial prose paragraph;
+  `head.mjs`'s `firstParagraph` already skips `:::`-directive blocks, so a
+  `:::tldr` is skipped by construction — no Phase 0 change needed. The `:::tldr`
+  renderer is Phase 1 emitter work (see Phase 1a). Rejected alternatives: making
+  TL;DR a description fallback (couples the exposed summary to an optional,
+  historically inconsistent block) and a `key_takeaways:` frontmatter list
+  (duplicates the in-body box and doubles author maintenance).
 
 ### Cross-cutting principles
 
@@ -176,6 +192,22 @@ site-served PNG path (see PNG handling below); `outputFile` shaped to the twin
 route. `likec4=` handled by the `-md` variant (`remark-likec4-md.mjs`) →
 `![alt](<png-url>)` referencing the regenerated PNG (not the interactive component
 — a twin is static markdown).
+
+**Add a `:::tldr` construct.** A key-takeaways box — per
+[`blogs/QUALITY.md`](../../blogs/QUALITY.md), "the single most-quoted block" for
+AI — is authored as a `:::tldr` container directive (3–5 fact-rich bullets),
+first-class alongside `:::callout` / `::::journey`. It needs a small renderer per
+target family: an `-md` variant (`emit/plugins/remark-tldr-md.mjs`) that flattens
+it to a labelled block for the flattening targets (gdocs, the new md-twin), and an
+`-mdx` variant for the rich sibling-site targets (a styled callout component). The
+twin therefore carries the TL;DR bullets inline where an agent will see them — but
+the exposed **description stays frontmatter `summary`** (see Decisions); the
+`:::tldr` is body content, never the extracted summary. Two existing TL;DRs
+(`blogs/unity-catalog-delta-api/index.md` as a `**TL;DR**` label,
+`blogs/unity-catalog-storage/source-import.md` as a `# TL;DR` heading) migrate to
+the directive, and `blogs/QUALITY.md` / `blogs/CONVENTIONS.md` document it as the
+canonical marker. The site preview renderer (`site/src/plugins/`) gains a matching
+`:::tldr` handler so the box renders in-app too.
 
 **Extend the emitter to run on `content/` docs, not just `blogs/`.** Today
 `emit.mjs` operates on `blogs/<slug>/index.md`. Twins need it invoked over every

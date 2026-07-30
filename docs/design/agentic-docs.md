@@ -1,7 +1,9 @@
 # Agentic-optimized documentation site — design & phased plan
 
-**Status:** design. Phase 0 (SEO-shell prerender) has **shipped** in this branch;
-Phases 1–4 are not yet built.
+**Status:** design. Phase 0 (SEO-shell prerender), **Phase 1** (.md twins +
+`:::tldr`, site llms.txt, sitemap/robots, RSS, `.md` content negotiation, 308s),
+and **Phase 3** (runnable-script linking) have **shipped**. Phases 2 (C4 model
+integration) and 4 (hosted MCP) are not yet built.
 **Scope:** cross-cutting — `site/`, `emit/`, `content/`, `blogs/`, `architecture/`,
 `tools/docsnip/`, plus a new `mcp/` package.
 **Last updated:** 2026-07-30.
@@ -156,7 +158,24 @@ competition with the `.md` twins.
 
 ---
 
-## Phase 1 — .md twins, site-level llms.txt, sitemap, robots, RSS, 308s
+## Phase 1 — .md twins, site-level llms.txt, sitemap, robots, RSS, 308s — SHIPPED
+
+**Shipped notes (deviations from the plan below, worth knowing):**
+- The twin/PNG/script generation runs in a **CI prebuild** (Chromium + `uv`), via a
+  `site/scripts/build-artifacts.mjs` orchestrator wired into `build:vercel` as
+  `build:artifacts` (script-index → twins → prerender shells → sitemap → rss →
+  site-llmstxt); the Vercel build consumes the produced `dist/`.
+- The emitter core was extracted as an exported `emitOne({inputPath, target,
+  modelDir, likec4OutDir, assetsDir})` in `emit/emit.mjs`; the blog CLI `main()`
+  calls it. `emit/targets/md-twin.mjs` uses `unwrapProse: true` and a
+  paragraph-wrapped `renderImage` (a bare inline image node dropped block
+  separators). The driver `site/scripts/build-md-twins.mjs` post-injects `canonical:`.
+- **1a §F (added):** `prerender-shells.mjs`'s `<noscript>` body now renders from the
+  twin (never raw source) — closing the raw-markdown leak that shipped in Phase 0.
+- 308s come from a committed `site/redirects.json` (empty today), validated against
+  known routes in `build-redirects.mjs`; `gen-vercel-config.mjs` exposes a pure
+  `buildRoutes()`.
+
 
 **Goal:** emit the static machine-readable corpus + SEO discovery files, all
 through content-core + the emitter. Needs only `head.mjs` from Phase 0 (for
@@ -324,7 +343,16 @@ the same file. This is the agent-facing complement to
 
 ---
 
-## Phase 3 — Runnable-script linking
+## Phase 3 — Runnable-script linking — SHIPPED
+
+**Shipped as:** `docsnip scripts --json` (a versioned `{version, scripts:[…]}`
+wrapper over `scriptmeta.discover()`, `tutorial_slug` strips the `NNN-` prefix);
+`site/scripts/build-script-index.mjs` (shells out, asserts the version, writes
+`dist/scripts.json`, copies raw `.py` byte-identically to its served path);
+`build-md-twins.mjs` fills a tutorial twin's "Runnable examples" from
+`scripts.json`; `build-site-llmstxt.mjs` lists `scripts.json`; the `.py` noindex +
+`text/x-python` header rule is in `gen-vercel-config.mjs`.
+
 
 **Goal:** from a page's `.md` twin / llms.txt / MCP, an agent gets a
 machine-readable pointer to the raw git-committed, CI-verified PEP 723 script plus

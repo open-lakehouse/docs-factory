@@ -7,7 +7,10 @@
 // content changed" from "only a descendant changed".
 //
 // Used by the ProductChanges RPC server-side (fan-out over a whole product's
-// version pairs) and mirrored by the client util for the interactive tree view.
+// version pairs) and mirrored VERBATIM by the client util (site/src/lib/
+// tree-diff.ts) for the interactive tree view. The two run the same algorithm so
+// the rollup and the tree view agree; tree-diff-parity.test.ts pins them
+// byte-for-byte so the mirror can't silently drift.
 import type { MerkleNodeJson } from "./db-map.js";
 
 export type ChangeKind = "added" | "removed" | "modified" | "modified-descendants" | "moved";

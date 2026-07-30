@@ -10,6 +10,11 @@
 // (the groupKey) belong to one item. The rendered view has no suffix, so old
 // shared links (bare ref tokens) still parse.
 //
+// The workspace shows ONE item at a time: opening an item REPLACES the open set
+// with just that item's group, so clicking around the tree navigates rather than
+// accumulating tabs. (A shared link may still carry several tokens from before
+// this rule; parseTabs honors whatever tokens are present.)
+//
 // `thread`/`anchor` are one-shot navigation intents (Phase 3 consumes them):
 // after the target tab selects + scrolls, it clears them. Transient per-tab UI
 // (hover, composer, pending selection) stays in each tab's own providers.
@@ -17,7 +22,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useRef,
   type ReactNode,
@@ -33,13 +37,6 @@ import {
   tabTokenFor,
   type TabView,
 } from "./view-token";
-
-// Cap the number of simultaneously-open ITEMS (groups), not individual tabs:
-// one click opens a whole group, and only the rendered view keeps a heavy MDX
-// render + ReviewProvider warm (twin/script views are light fetch + <pre>). When
-// opening an item would exceed this, the least-recently-ACTIVE group is evicted
-// whole (never the active group, never the group just opened).
-const MAX_GROUPS = 6;
 
 export interface OpenTab {
   token: string;
@@ -114,37 +111,6 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
     [params],
   );
 
-  // Group activation recency, most-recent LAST, kept in memory (not the URL — a
-  // shared link shouldn't carry local eviction history). Keyed on groupKey, so
-  // activating any view of an item marks the whole item recently-used. Used to
-  // pick the LRU victim group when the cap is hit.
-  const recencyRef = useRef<string[]>([]);
-  useEffect(() => {
-    if (!activeToken) return;
-    const group = refTokenOf(activeToken);
-    const r = recencyRef.current.filter((g) => g !== group);
-    r.push(group);
-    recencyRef.current = r;
-  }, [activeToken]);
-
-  // Trim to MAX_GROUPS by evicting least-recently-active GROUPS, always keeping
-  // `keepGroup` (the item just opened/activated). Returns the surviving tokens
-  // in their original order (whole groups dropped together).
-  const applyCap = useCallback((tokens: string[], keepGroup: string): string[] => {
-    const groups: string[] = [];
-    for (const t of tokens) {
-      const g = refTokenOf(t);
-      if (!groups.includes(g)) groups.push(g);
-    }
-    if (groups.length <= MAX_GROUPS) return tokens;
-    const recency = recencyRef.current;
-    // Least-recently-active group first; a group never activated sorts first.
-    const rank = (g: string) => recency.lastIndexOf(g);
-    const evictable = groups.filter((g) => g !== keepGroup).sort((a, b) => rank(a) - rank(b));
-    const toEvict = new Set(evictable.slice(0, groups.length - MAX_GROUPS));
-    return tokens.filter((t) => !toEvict.has(refTokenOf(t)));
-  }, []);
-
   const applyIntent = useCallback((p: URLSearchParams, next?: OpenIntent) => {
     if (next?.thread) p.set("thread", next.thread);
     else p.delete("thread");
@@ -160,12 +126,10 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
       setParams(
         (prev) => {
           const p = new URLSearchParams(prev);
-          const existing = parseTabs(p.get("tabs")).map((t) => t.token);
-          // Add any of this item's views that aren't open yet, preserving order.
-          let tokens = existing.slice();
-          for (const t of groupTokens) if (!tokens.includes(t)) tokens.push(t);
-          tokens = applyCap(tokens, group);
-          if (tokens.length) p.set("tabs", tokens.join(","));
+          // Selecting an item REPLACES the open set with just that item's group —
+          // clicking around the tree navigates rather than piling up tabs. (One
+          // item's rendered view is the only heavy tab; the companions are light.)
+          p.set("tabs", groupTokens.join(","));
           // Land on the rendered view — the page the reviewer expects to see.
           p.set("active", group);
           applyIntent(p, next);
@@ -174,29 +138,30 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
         { replace: false },
       );
     },
-    [setParams, applyCap, applyIntent],
+    [setParams, applyIntent],
   );
 
   const openView = useCallback(
     (ref: ContentRef, view: TabView, next?: OpenIntent) => {
       const token = tabTokenFor(ref, view);
       const group = tabTokenFor(ref, { kind: "rendered" });
+      const views = viewsFor(ref, pageFor(ref), scriptsRef.current);
+      const groupTokens = views.map((v) => tabTokenFor(ref, v));
       setParams(
         (prev) => {
           const p = new URLSearchParams(prev);
-          let tokens = parseTabs(p.get("tabs")).map((t) => t.token);
-          if (!tokens.includes(token)) {
-            tokens = applyCap([...tokens, token], group);
-            p.set("tabs", tokens.join(","));
-          }
-          p.set("active", token);
+          // Cross-navigating to a specific view also REPLACES the open set with the
+          // target item's group (same one-item-at-a-time model as openTab), then
+          // activates the requested view within it.
+          p.set("tabs", groupTokens.join(","));
+          p.set("active", groupTokens.includes(token) ? token : group);
           applyIntent(p, next);
           return p;
         },
         { replace: false },
       );
     },
-    [setParams, applyCap, applyIntent],
+    [setParams, applyIntent],
   );
 
   const closeTokens = useCallback(

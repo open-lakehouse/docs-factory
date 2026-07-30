@@ -14,6 +14,7 @@ import { listDrafts } from "../../../gen/docs_factory/review/v1/review_service-R
 import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../../lib/auth-context";
 import { refToParam } from "../../../lib/content-ref";
+import { refTokenOf } from "./view-token";
 import { statusDotClass } from "../../../lib/frontmatter-status";
 import { PENDING_REVIEW_STATES } from "../../../lib/review-inbox";
 import { refKey } from "../../../lib/review-queries";
@@ -117,7 +118,9 @@ function Node({
         trailing={
           <LeafTrailing frontmatterStatus={node.frontmatterStatus} reviewState={reviewState} />
         }
-        selected={activeToken === token}
+        // The active tab may be any of this item's views (rendered/md/script);
+        // compare on the group key so the row stays highlighted across them.
+        selected={activeToken !== null && refTokenOf(activeToken) === token}
         onSelect={() => openTab(node.ref)}
       />
     );

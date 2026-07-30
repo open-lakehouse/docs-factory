@@ -1,6 +1,6 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import path from "node:path";
-import { readdirSync } from "node:fs";
+import { readdirSync, createReadStream, statSync } from "node:fs";
 import react from "@vitejs/plugin-react-swc";
 import tailwindcss from "@tailwindcss/vite";
 import { LikeC4VitePlugin } from "likec4/vite-plugin";
@@ -107,6 +107,47 @@ function buildKnownHrefs(): Set<string> {
 
 const knownHrefs = buildKnownHrefs();
 
+// Dev-only static serving for build-emitted companion files. `.md` twins,
+// served `.py` scripts, and scripts.json are written to dist/ by build:artifacts
+// (never to public/), so `vite dev` would 404 them and the review workspace's
+// Markdown/script tabs couldn't load. In production Vercel serves these from the
+// prebuilt dist/ directly (with the same content-types); this middleware mirrors
+// that for local dev. It only fires for those extensions and falls through to
+// Vite's normal SPA handling for everything else.
+function devCompanionFiles(): Plugin {
+  const distDir = path.resolve(__dirname, "dist");
+  const TYPES: Record<string, string> = {
+    ".md": "text/markdown; charset=utf-8",
+    ".py": "text/x-python; charset=utf-8",
+    ".json": "application/json; charset=utf-8",
+  };
+  return {
+    name: "docs-factory:dev-companion-files",
+    apply: "serve",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = (req.url ?? "").split("?")[0];
+        const isCompanion =
+          url.endsWith(".md") || url.endsWith(".py") || url === "/scripts.json";
+        if (!isCompanion) return next();
+
+        // Resolve within dist/ and guard against path traversal escaping it.
+        const rel = decodeURIComponent(url.replace(/^\//, ""));
+        const abs = path.resolve(distDir, rel);
+        if (abs !== distDir && !abs.startsWith(distDir + path.sep)) return next();
+        try {
+          if (!statSync(abs).isFile()) return next();
+        } catch {
+          return next(); // not built yet → let the SPA/404 handling take over
+        }
+        res.setHeader("Content-Type", TYPES[path.extname(abs)] ?? "application/octet-stream");
+        res.setHeader("X-Robots-Tag", "noindex");
+        createReadStream(abs).pipe(res);
+      });
+    },
+  };
+}
+
 export default defineConfig({
   server: {
     host: "::",
@@ -117,6 +158,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    devCompanionFiles(),
     {
       enforce: "pre",
       ...mdx({

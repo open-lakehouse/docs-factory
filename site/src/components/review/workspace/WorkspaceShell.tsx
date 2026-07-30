@@ -193,6 +193,7 @@ function WorkspaceLayout() {
                 key={tab.token}
                 token={tab.token}
                 contentRef={tab.ref}
+                view={tab.view}
                 isActive={tab.token === activeToken}
               />
             ))

@@ -1,7 +1,11 @@
-// One open tab in the workspace's middle pane. Renders a single page's fully
-// rendered content inside its OWN SelectionProvider + ReviewProvider (scoped to
-// that page's ContentRef) with its own articleRef — the same stack the /docs and
-// /blog routes mount, so the review chrome behaves identically.
+// One open tab in the workspace's middle pane. A tab shows one VIEW of a page,
+// selected by `view`:
+//   - rendered: the page's fully rendered content inside its OWN SelectionProvider
+//     + ReviewProvider (scoped to the ContentRef) with its own articleRef — the
+//     same stack /docs and /blog mount, so review chrome behaves identically.
+//   - md:       the read-only `.md` twin (MarkdownTwinView) — no review layer.
+//   - script:   a served runnable script (ScriptView) — its own review layer for
+//     line comments.
 //
 // Every open tab stays mounted (scroll position, expanded code boxes, and the
 // warm listComments cache all survive tab switches), but an INACTIVE tab is
@@ -18,12 +22,16 @@ import CommentSidebar from "../CommentSidebar";
 import { ScrollContainerProvider } from "../scroll-container-context";
 import { useRightPaneSlot } from "./right-pane-slot";
 import { useDeepLinkTarget } from "./use-deep-link-target";
-import { tabDomId, tabPanelDomId } from "./tab-ids";
+import { panelLabelledBy, tabPanelDomId } from "./tab-ids";
 import ReviewPageChrome from "../ReviewPageChrome";
 import MdxProvider from "../../../MdxProvider";
 import RelatedContent from "../../RelatedContent";
 import { findBlog, findDoc, type ContentPage } from "../../../content";
 import { cn } from "@/lib/utils";
+import type { TabView } from "./view-token";
+import { useScriptsIndex } from "../../../lib/scripts-index";
+import MarkdownTwinView from "./MarkdownTwinView";
+import ScriptView from "./ScriptView";
 
 function pageFor(ref: ContentRef): ContentPage | undefined {
   return ref.area === ContentArea.BLOGS
@@ -37,6 +45,84 @@ function highlightKeyFor(token: string): string {
 }
 
 export default function ReviewTab({
+  token,
+  contentRef,
+  view,
+  isActive,
+}: {
+  token: string;
+  contentRef: ContentRef;
+  view: TabView;
+  isActive: boolean;
+}) {
+  if (view.kind === "md") {
+    return <MarkdownTwinTab token={token} contentRef={contentRef} isActive={isActive} />;
+  }
+  if (view.kind === "script") {
+    return (
+      <ScriptTab token={token} contentRef={contentRef} fetchUrl={view.fetchUrl} isActive={isActive} />
+    );
+  }
+  return <RenderedTab token={token} contentRef={contentRef} isActive={isActive} />;
+}
+
+/** The read-only `.md` twin view, wrapped in the shared tabpanel shell. */
+function MarkdownTwinTab({
+  token,
+  contentRef,
+  isActive,
+}: {
+  token: string;
+  contentRef: ContentRef;
+  isActive: boolean;
+}) {
+  return (
+    <div
+      id={tabPanelDomId(token)}
+      role="tabpanel"
+      aria-labelledby={panelLabelledBy(token)}
+      tabIndex={isActive ? 0 : -1}
+      className={cn("flex min-h-0 flex-1 flex-col focus-visible:outline-none", !isActive && "hidden")}
+      hidden={!isActive}
+    >
+      <MarkdownTwinView contentRef={contentRef} />
+    </div>
+  );
+}
+
+/** A served runnable script view (builds its own tabpanel + review layer). */
+function ScriptTab({
+  token,
+  contentRef,
+  fetchUrl,
+  isActive,
+}: {
+  token: string;
+  contentRef: ContentRef;
+  fetchUrl: string;
+  isActive: boolean;
+}) {
+  const scriptsIndex = useScriptsIndex();
+  const entry = scriptsIndex.scripts.find((s) => s.fetchUrl === fetchUrl);
+  if (!entry) {
+    return (
+      <div
+        id={tabPanelDomId(token)}
+        role="tabpanel"
+        aria-labelledby={panelLabelledBy(token)}
+        tabIndex={isActive ? 0 : -1}
+        className={cn("flex min-h-0 flex-1 flex-col", !isActive && "hidden")}
+        hidden={!isActive}
+      >
+        <p className="p-6 text-muted-foreground">Script not found: {fetchUrl}</p>
+      </div>
+    );
+  }
+  return <ScriptView token={token} contentRef={contentRef} entry={entry} isActive={isActive} />;
+}
+
+/** The default rendered-page view: the full MDX render + comment layer. */
+function RenderedTab({
   token,
   contentRef,
   isActive,
@@ -105,7 +191,7 @@ function ReviewTabBody({
       <div
         id={tabPanelDomId(token)}
         role="tabpanel"
-        aria-labelledby={tabDomId(token)}
+        aria-labelledby={panelLabelledBy(token)}
         tabIndex={isActive ? 0 : -1}
         className={cn(
           "flex min-h-0 flex-1 flex-col focus-visible:outline-none",

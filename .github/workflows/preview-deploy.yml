@@ -90,6 +90,10 @@ jobs:
       # and the LikeC4 PNG export needs Chromium. Vercel's own build image has
       # neither, so we produce the full corpus here and deploy it `--prebuilt`.
       - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      # The committed uv.lock pins package URLs at the internal Databricks
+      # pypi-proxy (unreachable from GitHub runners); rewrite them to public PyPI
+      # before any `uv sync`, exactly as the content/python-tests/lint jobs do.
+      - uses: ./.github/actions/pypi-public
       # `docsnip scripts --json` (invoked by build:artifacts) runs via `uv run
       # docsnip`, so docsnip must be installed — setup-uv only installs the uv
       # binary. Scope to the docsnip package only: it avoids pulling the heavy

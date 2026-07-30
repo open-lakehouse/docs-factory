@@ -1082,7 +1082,9 @@ body {
 .prose .callout[data-type="warning"],
 .prose .callout[data-type="caution"] { --callout-accent: #d97706; }  /* amber */
 .prose .callout[data-type="danger"] { --callout-accent: #dc2626; }   /* red */
+.prose .callout[data-type="tldr"] { --callout-accent: #7c3aed; }     /* violet — key takeaways */
 :root.dark .prose .callout[data-type="tip"] { --callout-accent: #22c55e; }
+:root.dark .prose .callout[data-type="tldr"] { --callout-accent: #a78bfa; }
 :root.dark .prose .callout[data-type="warning"],
 :root.dark .prose .callout[data-type="caution"] { --callout-accent: #f59e0b; }
 :root.dark .prose .callout[data-type="danger"] { --callout-accent: #f87171; }

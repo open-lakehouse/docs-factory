@@ -31,47 +31,95 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { buildRedirectRoutes } from "./build-redirects.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
 const outPath = resolve(siteRoot, ".vercel/output/config.json");
 
-const functionHost = process.env.NEON_FUNCTION_HOST;
-
-if (!functionHost || functionHost.trim() === "") {
-  console.error(
-    "gen-vercel-config: missing required env: NEON_FUNCTION_HOST.\n" +
-      "Set it (per Vercel environment) before building — see docs/deploy/runbook.md.",
-  );
-  process.exit(1);
-}
-
 // Strip any accidental scheme/trailing slash so the `https://` prefix below is
 // the single source of the scheme.
-const host = (v) => v.replace(/^https?:\/\//, "").replace(/\/+$/, "");
-const fnHost = host(functionHost);
+const stripHost = (v) => v.replace(/^https?:\/\//, "").replace(/\/+$/, "");
 
-// Build Output API v3 routing. Order matters:
-//   1. `/api/(.*)` proxies RPCs to the Function, stripping the `/api` prefix
-//      (the Hono app mounts Connect at root: /<package>.<Service>/<Method>).
-//      This MUST precede the filesystem handler so POSTs aren't swallowed by the
-//      SPA fallback below.
-//   2. `handle: filesystem` serves the built static assets (…/static/*).
-//   3. Catch-all rewrites everything else to index.html (client-side routing).
-const config = {
-  version: 3,
-  routes: [
+/**
+ * Build the Build Output API v3 `routes` array (pure, for testing). Order matters:
+ *   1. `/api/(.*)` proxies RPCs to the Function, stripping the `/api` prefix (the
+ *      Hono app mounts Connect at root). MUST precede filesystem so POSTs aren't
+ *      swallowed by the SPA fallback.
+ *   2. 308 redirects for renamed pages (Phase 1g) — before filesystem so they beat
+ *      the SPA catch-all.
+ *   3. `.md` / `.py` header rules (Phase 1c / 3.4): noindex + Content-Type, with
+ *      `continue: true` so the filesystem handler still serves the actual file.
+ *   4. `Accept: text/markdown` negotiation (Phase 1b): rewrite a doc/blog HTML
+ *      route to its `.md` twin. `Vary: Accept` on those routes so caches don't
+ *      serve markdown to an HTML client.
+ *   5. `handle: filesystem` serves the built static assets (incl. the .md twins,
+ *      .py scripts, sitemap, llms.txt, …).
+ *   6. Catch-all → index.html (client-side routing).
+ */
+export function buildRoutes({ fnHost, redirectRoutes = [] }) {
+  return [
     { src: "/api/(.*)", dest: `https://${fnHost}/$1` },
+
+    ...redirectRoutes, // { src, dest, status: 308 }
+
+    // .md twins: noindex + text/markdown; continue → filesystem serves the file.
+    {
+      src: "/(.*)\\.md",
+      headers: {
+        "X-Robots-Tag": "noindex",
+        "Content-Type": "text/markdown; charset=utf-8",
+        Vary: "Accept",
+      },
+      continue: true,
+    },
+    // Raw runnable .py scripts: noindex + text/x-python (Phase 3).
+    {
+      src: "/(.*)\\.py",
+      headers: {
+        "X-Robots-Tag": "noindex",
+        "Content-Type": "text/x-python; charset=utf-8",
+      },
+      continue: true,
+    },
+    // Transparent content negotiation: an agent sending `Accept: text/markdown`
+    // for a doc/blog route gets the .md twin. (Least-proven Build Output API
+    // feature; the explicit .md URLs advertised in rel=alternate + llms.txt are
+    // the fallback if this proves flaky — drop just this rule then.)
+    {
+      src: "/(docs/.*|blog/.*)",
+      has: [{ type: "header", key: "accept", value: "(.*text/markdown.*)" }],
+      dest: "/$1.md",
+    },
+    { src: "/(docs/.*|blog/.*)", headers: { Vary: "Accept" }, continue: true },
+
     { handle: "filesystem" },
     { src: "/.*", dest: "/index.html" },
-  ],
-};
+  ];
+}
 
-// Serialize + self-validate (JSON.stringify can't produce invalid JSON, but keep
-// the round-trip so a future non-serializable value fails here, not in Vercel).
-const rendered = JSON.stringify(config, null, 2);
-JSON.parse(rendered);
+function main() {
+  const functionHost = process.env.NEON_FUNCTION_HOST;
+  if (!functionHost || functionHost.trim() === "") {
+    console.error(
+      "gen-vercel-config: missing required env: NEON_FUNCTION_HOST.\n" +
+        "Set it (per Vercel environment) before building — see docs/deploy/runbook.md.",
+    );
+    process.exit(1);
+  }
+  const fnHost = stripHost(functionHost);
+  const config = { version: 3, routes: buildRoutes({ fnHost, redirectRoutes: buildRedirectRoutes() }) };
 
-mkdirSync(dirname(outPath), { recursive: true });
-writeFileSync(outPath, rendered);
-console.log(`gen-vercel-config: wrote .vercel/output/config.json (api→${fnHost}).`);
+  // Serialize + self-validate (JSON.stringify can't produce invalid JSON, but keep
+  // the round-trip so a future non-serializable value fails here, not in Vercel).
+  const rendered = JSON.stringify(config, null, 2);
+  JSON.parse(rendered);
+
+  mkdirSync(dirname(outPath), { recursive: true });
+  writeFileSync(outPath, rendered);
+  console.log(`gen-vercel-config: wrote .vercel/output/config.json (api→${fnHost}).`);
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
+}

@@ -280,6 +280,20 @@ bullets. Copy this to start a post.
     A managed `CREATE` must set `delta.feature.catalogManaged = 'supported'`.
     :::
     ````
+  - **TL;DR / key-takeaways box.** Mark the key-takeaways box (see [QUALITY.md](./QUALITY.md)
+    — "the single most-quoted block" for AI) with the `:::tldr` container directive:
+    3–5 fact-rich bullets near the top. It renders as a styled box in-app and
+    flattens to a `> **TL;DR**` blockquote in the `.md` twins an agent fetches, so
+    the takeaways travel inline. Override the label with `:::tldr[Key takeaways]`.
+    The TL;DR is **body content only** — the page's exposed description stays
+    frontmatter `summary`, never the TL;DR. Do **not** author it as a bare
+    `**TL;DR**` label or a `# TL;DR` heading; the directive is the one canonical marker.
+    ````markdown
+    :::tldr
+    - The UC Delta API is a versioned, intent-based, atomic REST surface.
+    - It runs locally today against OSS Unity Catalog 0.5.
+    :::
+    ````
   - *Python — inline deps, run with `uv`.* Declare dependencies inside the `.py` in
     a [PEP 723](https://peps.python.org/pep-0723/) `# /// script … # ///` block so a
     reader copies the file and runs `uv run <file>.py` with no venv or `pip` — `uv`

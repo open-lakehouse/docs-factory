@@ -255,35 +255,46 @@ function readSidecar(draftDir) {
   }
 }
 
-// --- main ------------------------------------------------------------------
+// --- core: emit one file ---------------------------------------------------
 
-async function main() {
-  const { slug, target: targetName } = parseArgs(process.argv.slice(2));
-  if (!slug) throw new Error("usage: bun emit.mjs --slug <slug> --target <target>");
-  if (!targetName) throw new Error("usage: bun emit.mjs --slug <slug> --target <target>");
+/** Default architecture LikeC4 workspace, the source for `likec4=` view PNGs. */
+export function defaultModelDir() {
+  return join(REPO_ROOT, "architecture", "model");
+}
 
-  const target = await loadTarget(targetName);
-  const draftDir = join(REPO_ROOT, "blogs", slug);
-  const draftPath = join(draftDir, "index.md");
-  if (!existsSync(draftPath)) throw new Error(`draft not found: ${draftPath}`);
-
-  // dist/ root holds the shared, target-agnostic LikeC4 PNG export; each target's
-  // FLATTENED/RENDERED output lands under dist/<target>/ so cross-publishing to
-  // several targets (gdocs review → unitycatalog → …) is non-destructive: one
-  // target's index.mdx never clobbers another's <slug>.md. dist/ is gitignored.
-  const distDir = join(draftDir, "dist");
-  const targetDistDir = join(distDir, targetName);
-  mkdirSync(targetDistDir, { recursive: true });
-
-  const input = readFileSync(draftPath, "utf8");
-  const assetsDir = join(draftDir, "assets");
-  const architectureModelDir = join(REPO_ROOT, "architecture", "model");
+/**
+ * The target-agnostic emitter core: parse ONE source markdown file, flatten its
+ * rich constructs per `target`, and return the rendered string + captured
+ * frontmatter + image manifest. WRITES NOTHING — callers decide where output and
+ * assets land (the blog CLI in `main()`; the site twin driver in
+ * `site/scripts/build-md-twins.mjs`).
+ *
+ * @param {object} o
+ * @param {string} o.inputPath     absolute path to the source .md
+ *                                  (blogs/<slug>/index.md OR content/**\/*.md).
+ * @param {object} o.target        a loaded target module (see targets/*.mjs).
+ * @param {string} [o.modelDir]    architecture model dir for LikeC4 export
+ *                                  (default: `defaultModelDir()`).
+ * @param {string} o.likec4OutDir  throwaway dir where regenerated <viewId>.png land.
+ * @param {string} [o.assetsDir]   dir the likec4-md plugin resolves non-likec4
+ *                                  images against (default: dirname(inputPath)).
+ * @param {string} [o.webComponentPath] where to write the LikeC4 web-component
+ *                                  bundle (only for targets with `likec4WebComponent`).
+ * @returns {Promise<{output:string, frontmatter:object, manifest:Array, likec4Dir:(string|null), webComponentPath:(string|null)}>}
+ */
+export async function emitOne({
+  inputPath,
+  target,
+  modelDir = defaultModelDir(),
+  likec4OutDir,
+  assetsDir,
+  webComponentPath: webComponentOut,
+}) {
+  if (!existsSync(inputPath)) throw new Error(`source not found: ${inputPath}`);
+  const input = readFileSync(inputPath, "utf8");
+  const imageDir = assetsDir ?? dirname(inputPath);
   const hasLikeC4Refs = /\blikec4=\S+/.test(input);
-  const likec4Dir = regenerateLikeC4(
-    architectureModelDir,
-    join(distDir, ".likec4-export"),
-    hasLikeC4Refs,
-  );
+  const likec4Dir = regenerateLikeC4(modelDir, likec4OutDir, hasLikeC4Refs);
 
   const capture = {};
   const manifest = [];
@@ -312,15 +323,17 @@ async function main() {
     }) // strip draft fm + comments, opt. title → # H1, opt. emit target frontmatter
     .use(remarkCodeSnippets); // inline file=/start=/end= (real code from snippets/)
 
-  // Callouts, then journey (so a callout nested in a step is already rendered),
-  // then code-caption, then likec4 — mirroring the preview's plugin order.
+  // TL;DR, then callouts, then journey (so a callout/tldr nested in a step is
+  // already rendered), then code-caption, then likec4 — mirroring the preview's
+  // plugin order. A target that doesn't declare a construct simply skips it.
+  if (constructs.tldr) processor = processor.use(constructs.tldr, { componentImportBase });
   if (constructs.callouts) processor = processor.use(constructs.callouts, { componentImportBase });
   if (constructs.journey) processor = processor.use(constructs.journey, { componentImportBase });
   if (constructs.codeCaption) processor = processor.use(constructs.codeCaption);
   if (constructs.likec4)
     processor = processor.use(constructs.likec4, {
       manifest,
-      assetsDir: draftDir,
+      assetsDir: imageDir,
       likec4Dir,
       renderImage: target.renderImage,
       componentImportBase,
@@ -337,21 +350,56 @@ async function main() {
   if (stringifyExtension) processor = processor.use(stringifyExtension);
   processor = processor.use(remarkStringify, target.stringify);
 
-  const file = await processor.process({ value: input, path: draftPath });
+  const file = await processor.process({ value: input, path: inputPath });
   const output = String(file);
 
   // Interactive-LikeC4 targets (no React) get the framework-agnostic web-component
   // bundle registering <likec4-view>. Deterministic + no network, so it belongs in
-  // the core. Guarded on the target opting in AND the draft actually having a
-  // .likec4 source.
+  // the core. Guarded on the target opting in, a write path being supplied, AND the
+  // source actually having a .likec4 reference.
   let webComponentPath = null;
-  if (target.likec4WebComponent) {
-    webComponentPath = generateLikeC4WebComponent(
-      architectureModelDir,
-      join(targetDistDir, "likec4-webcomponent.mjs"),
-      hasLikeC4Refs,
-    );
+  if (target.likec4WebComponent && webComponentOut) {
+    webComponentPath = generateLikeC4WebComponent(modelDir, webComponentOut, hasLikeC4Refs);
   }
+
+  return {
+    output,
+    frontmatter: capture.frontmatter ?? {},
+    manifest,
+    likec4Dir,
+    webComponentPath,
+  };
+}
+
+// --- main (blog CLI) -------------------------------------------------------
+
+async function main() {
+  const { slug, target: targetName } = parseArgs(process.argv.slice(2));
+  if (!slug) throw new Error("usage: bun emit.mjs --slug <slug> --target <target>");
+  if (!targetName) throw new Error("usage: bun emit.mjs --slug <slug> --target <target>");
+
+  const target = await loadTarget(targetName);
+  const draftDir = join(REPO_ROOT, "blogs", slug);
+  const draftPath = join(draftDir, "index.md");
+  if (!existsSync(draftPath)) throw new Error(`draft not found: ${draftPath}`);
+
+  // dist/ root holds the shared, target-agnostic LikeC4 PNG export; each target's
+  // FLATTENED/RENDERED output lands under dist/<target>/ so cross-publishing to
+  // several targets (gdocs review → unitycatalog → …) is non-destructive: one
+  // target's index.mdx never clobbers another's <slug>.md. dist/ is gitignored.
+  const distDir = join(draftDir, "dist");
+  const targetDistDir = join(distDir, targetName);
+  mkdirSync(targetDistDir, { recursive: true });
+
+  const { output, frontmatter, manifest, webComponentPath } = await emitOne({
+    inputPath: draftPath,
+    target,
+    likec4OutDir: join(distDir, ".likec4-export"),
+    // The likec4-md plugin resolves committed (non-likec4) images against the
+    // draft folder itself, as before.
+    assetsDir: draftDir,
+    webComponentPath: join(targetDistDir, "likec4-webcomponent.mjs"),
+  });
 
   // Existing delivery (if any) for this target — the create-vs-update hint. It
   // lives in the post's sidecar `.emitted.json` (keyed by target), self-contained
@@ -369,7 +417,7 @@ async function main() {
       {
         slug,
         target: targetName,
-        title: capture.frontmatter?.title ?? null,
+        title: frontmatter?.title ?? null,
         // The delivery agent reads this: null → CREATE (a new Doc / a new post
         // dir) and record it in the sidecar `.emitted.json`; set → UPDATE that
         // target in place. Shape is target-specific (gdocs: { doc_id, url,
@@ -395,7 +443,11 @@ async function main() {
   );
 }
 
-main().catch((err) => {
-  console.error(`emit: ${err.message}`);
-  process.exitCode = 1;
-});
+// Run the blog CLI only when invoked directly (bun emit.mjs …), not when this
+// module is imported for its exported core (emitOne) — e.g. by the site twin driver.
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error(`emit: ${err.message}`);
+    process.exitCode = 1;
+  });
+}

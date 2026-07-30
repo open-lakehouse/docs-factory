@@ -90,9 +90,13 @@ jobs:
         run: uv run docsnip check
       # content-core is the shared parsing authority (render plugin + version
       # manifest + site libs). Its drift tests assert the fence/slug/identity/
-      # normalize/vocab contract stays identical across every consumer.
+      # normalize/vocab contract stays identical across every consumer. Some of
+      # these tests exercise the emitter across the site↔emit boundary (the .md
+      # twin target, emitOne), so emit's deps must be installed too.
       - name: content-core drift tests
-        run: cd site && bun install --frozen-lockfile && bun test src/content-core
+        run: |
+          cd emit && bun install --frozen-lockfile && cd ..
+          cd site && bun install --frozen-lockfile && bun test src/content-core
 
   preview-build:
     runs-on: ubuntu-latest

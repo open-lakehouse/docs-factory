@@ -11,25 +11,3 @@ export function tabDomId(token: string): string {
 export function tabPanelDomId(token: string): string {
   return `${tabDomId(token)}-panel`;
 }
-
-/**
- * DOM id for an ITEM (group) tab in the strip's top row. Distinct from
- * `tabDomId` so it never collides with the rendered sub-view's tab id (whose
- * token equals the group key). The active panel is aria-labelledby its own
- * sub-view tab, so the group tab id only needs to be unique.
- */
-export function groupTabDomId(groupKey: string): string {
-  return `review-group-${groupKey.replace(/[^A-Za-z0-9_-]/g, "_")}`;
-}
-
-/**
- * The tab element a panel should be `aria-labelledby`: the ITEM tab in the top
- * row, which is always present (the sub-view row only renders for multi-view
- * items, so a panel can't rely on its own sub-view tab existing). Derives the
- * group key from the panel's token.
- */
-export function panelLabelledBy(token: string): string {
-  const hash = token.indexOf("#");
-  const groupKey = hash === -1 ? token : token.slice(0, hash);
-  return groupTabDomId(groupKey);
-}

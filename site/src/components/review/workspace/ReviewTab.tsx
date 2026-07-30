@@ -22,7 +22,7 @@ import CommentSidebar from "../CommentSidebar";
 import { ScrollContainerProvider } from "../scroll-container-context";
 import { useRightPaneSlot } from "./right-pane-slot";
 import { useDeepLinkTarget } from "./use-deep-link-target";
-import { panelLabelledBy, tabPanelDomId } from "./tab-ids";
+import { tabDomId, tabPanelDomId } from "./tab-ids";
 import ReviewPageChrome from "../ReviewPageChrome";
 import MdxProvider from "../../../MdxProvider";
 import RelatedContent from "../../RelatedContent";
@@ -80,7 +80,7 @@ function MarkdownTwinTab({
     <div
       id={tabPanelDomId(token)}
       role="tabpanel"
-      aria-labelledby={panelLabelledBy(token)}
+      aria-labelledby={tabDomId(token)}
       tabIndex={isActive ? 0 : -1}
       className={cn("flex min-h-0 flex-1 flex-col focus-visible:outline-none", !isActive && "hidden")}
       hidden={!isActive}
@@ -109,7 +109,7 @@ function ScriptTab({
       <div
         id={tabPanelDomId(token)}
         role="tabpanel"
-        aria-labelledby={panelLabelledBy(token)}
+        aria-labelledby={tabDomId(token)}
         tabIndex={isActive ? 0 : -1}
         className={cn("flex min-h-0 flex-1 flex-col", !isActive && "hidden")}
         hidden={!isActive}
@@ -191,7 +191,7 @@ function ReviewTabBody({
       <div
         id={tabPanelDomId(token)}
         role="tabpanel"
-        aria-labelledby={panelLabelledBy(token)}
+        aria-labelledby={tabDomId(token)}
         tabIndex={isActive ? 0 : -1}
         className={cn(
           "flex min-h-0 flex-1 flex-col focus-visible:outline-none",

@@ -94,11 +94,19 @@ export function buildRoutes({ fnHost, redirectRoutes = [] }) {
       continue: true,
     },
     // Transparent content negotiation: an agent sending `Accept: text/markdown`
-    // for a doc/blog route gets the .md twin. (Least-proven Build Output API
-    // feature; the explicit .md URLs advertised in rel=alternate + llms.txt are
+    // for a BARE doc/blog HTML route gets the .md twin. (Least-proven Build Output
+    // API feature; the explicit .md URLs advertised in rel=alternate + llms.txt are
     // the fallback if this proves flaky — drop just this rule then.)
+    //
+    // The `(?!.*\\.md$)` negative lookahead is load-bearing: this rule must NOT
+    // match a path that ALREADY ends in `.md`. The review workspace's twin fetch
+    // requests the `.md` URL directly AND sends `Accept: text/markdown`; without the
+    // guard this rule rewrites `/blog/slug.md` → `/blog/slug.md.md`, which doesn't
+    // exist → the miss guard below 404s it (pre-#102 it fell through to the SPA
+    // shell, i.e. the original "No markdown twin" symptom). Only bare routes like
+    // `/blog/slug` should be negotiated up to their twin.
     {
-      src: "/(docs/.*|blog/.*)",
+      src: "/((?!.*\\.md$)(?:docs/.*|blog/.*))",
       has: [{ type: "header", key: "accept", value: "(.*text/markdown.*)" }],
       dest: "/$1.md",
     },

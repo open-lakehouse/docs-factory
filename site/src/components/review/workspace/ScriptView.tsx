@@ -26,7 +26,7 @@ import { SelectionProvider, useSelectionState } from "../selection-context";
 import { ReviewProvider } from "../review-context";
 import CommentSidebar from "../CommentSidebar";
 import { useRightPaneSlot } from "./right-pane-slot";
-import { panelLabelledBy, tabPanelDomId } from "./tab-ids";
+import { tabDomId, tabPanelDomId } from "./tab-ids";
 import { useAuth } from "../../../lib/auth-context";
 import { cn } from "@/lib/utils";
 
@@ -131,7 +131,7 @@ function ScriptViewBody({
       <div
         id={tabPanelDomId(token)}
         role="tabpanel"
-        aria-labelledby={panelLabelledBy(token)}
+        aria-labelledby={tabDomId(token)}
         tabIndex={isActive ? 0 : -1}
         className={cn("flex min-h-0 flex-1 flex-col focus-visible:outline-none", !isActive && "hidden")}
         hidden={!isActive}

@@ -19,11 +19,16 @@ import { cn } from "@/lib/utils";
 async function fetchTwin(url: string): Promise<string> {
   const res = await fetch(url, { headers: { Accept: "text/markdown" } });
   if (!res.ok) throw new Error(`twin ${res.status}`);
-  const ct = res.headers.get("content-type") ?? "";
-  // A negotiated route that falls through to the SPA shell returns HTML, not the
-  // twin — treat that as "no twin" rather than rendering the app's index.html.
-  if (ct.includes("text/html")) throw new Error("no twin");
-  return res.text();
+  const text = await res.text();
+  // When a twin doesn't exist the request falls through to the SPA and returns
+  // index.html — and the `.md` header rule (continue: true) may even stamp it
+  // text/markdown, so the content-type can't be trusted. Detect the app shell by
+  // its body and treat it as "no twin" rather than rendering index.html.
+  const head = text.slice(0, 512).toLowerCase();
+  if (head.includes("<!doctype html") || head.includes('<div id="root"')) {
+    throw new Error("no twin");
+  }
+  return text;
 }
 
 export default function MarkdownTwinView({ contentRef }: { contentRef: ContentRef }) {

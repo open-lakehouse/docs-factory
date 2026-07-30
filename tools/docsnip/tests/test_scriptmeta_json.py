@@ -10,7 +10,13 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from docsnip.cli import SCRIPTS_JSON_VERSION, _paths, _tutorial_slug, cmd_scripts
+from docsnip.cli import (
+    SCRIPTS_JSON_VERSION,
+    _blog_slug,
+    _paths,
+    _tutorial_slug,
+    cmd_scripts,
+)
 from docsnip.scriptmeta import discover
 
 
@@ -47,13 +53,15 @@ def test_every_entry_has_required_keys(capsys) -> None:
     }
     for entry in payload["scripts"]:
         assert required <= set(entry), f"missing keys in {entry}"
-        assert entry["path"].startswith("content/")  # repo-relative POSIX
+        # Scripts live under content/ (tutorials) OR blogs/ (posts).
+        assert entry["path"].startswith(("content/", "blogs/"))  # repo-relative POSIX
 
 
 def test_json_matches_discover(capsys) -> None:
     payload = _payload(capsys)
     root = _repo_root()
-    discovered = discover(root / "content")
+    # The payload merges scripts discovered under both content/ and blogs/.
+    discovered = [*discover(root / "content"), *discover(root / "blogs")]
     json_paths = sorted(e["path"] for e in payload["scripts"])
     disc_paths = sorted(
         m.path.resolve().relative_to(root).as_posix() for m in discovered
@@ -69,3 +77,11 @@ def test_tutorial_slug_strips_order_prefix(tmp_path) -> None:
     script.parent.mkdir(parents=True)
     script.write_text("# /// script\n# ///\n")
     assert _tutorial_slug(script, content) == "explore-history"
+
+
+def test_blog_slug_is_the_folder_name(tmp_path) -> None:
+    blogs = tmp_path / "blogs"
+    script = blogs / "unity-catalog-delta-api" / "snippets" / "read_delta_duckdb.py"
+    script.parent.mkdir(parents=True)
+    script.write_text("# /// script\n# ///\n")
+    assert _blog_slug(script, blogs) == "unity-catalog-delta-api"

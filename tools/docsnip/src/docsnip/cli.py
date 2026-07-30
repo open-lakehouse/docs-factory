@@ -162,6 +162,24 @@ def _tutorial_slug(script_path: Path, content_root: Path) -> str | None:
     return re.sub(r"^\d+-", "", slug)
 
 
+def _blog_slug(script_path: Path, blogs_root: Path) -> str | None:
+    """The owning blog's slug for a colocated script, or None.
+
+    A blog script lives at ``blogs/<slug>/[snippets/]<file>.py``; the slug is the
+    directory segment directly under ``blogs/``. Blogs carry no ``NNN-`` order
+    prefix, so the folder name is the slug as-is (mirroring slugFromBlogPath in
+    the JS content layer). Returns None if the path isn't under a blog folder.
+    """
+    try:
+        parts = script_path.resolve().relative_to(blogs_root.resolve()).parts
+    except ValueError:
+        return None
+    # parts: <slug>/[snippets/]<file>.py — need at least <slug>, <file>.
+    if len(parts) < 2:
+        return None
+    return parts[0]
+
+
 def cmd_scripts(p, as_json: bool = True) -> int:
     """Emit the discovered PEP 723 tutorial scripts as JSON (a build contract).
 
@@ -172,20 +190,27 @@ def cmd_scripts(p, as_json: bool = True) -> int:
     repo-relative POSIX.
     """
     content_root = p["content"]
+    blogs_root = p["blogs"]
     repo_root = p["root"]
+    # Runnable scripts live beside BOTH tutorial pages (content/) and blog posts
+    # (blogs/). Discover each root with its own slug derivation; the JS side
+    # (scriptEntry) turns the repo-relative path into the served route.
     scripts = []
-    for meta in discover_scripts(content_root):
-        scripts.append(
-            {
-                "path": meta.path.resolve().relative_to(repo_root.resolve()).as_posix(),
-                "requires_python": meta.requires_python,
-                "dependencies": meta.dependencies,
-                "compose": meta.docs_factory.compose,
-                "services": meta.docs_factory.services,
-                "base_url_env": meta.docs_factory.base_url_env,
-                "tutorial_slug": _tutorial_slug(meta.path, content_root),
-            }
-        )
+    for root, slug_fn in ((content_root, _tutorial_slug), (blogs_root, _blog_slug)):
+        for meta in discover_scripts(root):
+            scripts.append(
+                {
+                    "path": meta.path.resolve()
+                    .relative_to(repo_root.resolve())
+                    .as_posix(),
+                    "requires_python": meta.requires_python,
+                    "dependencies": meta.dependencies,
+                    "compose": meta.docs_factory.compose,
+                    "services": meta.docs_factory.services,
+                    "base_url_env": meta.docs_factory.base_url_env,
+                    "tutorial_slug": slug_fn(meta.path, root),
+                }
+            )
     payload = {"version": SCRIPTS_JSON_VERSION, "scripts": scripts}
     print(json.dumps(payload, indent=2))
     return 0

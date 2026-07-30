@@ -1,12 +1,14 @@
 // Emit dist/scripts.json + copy the raw runnable .py scripts into dist/ (Phase 3
 // of the agentic-docs plan).
 //
-// From a tutorial's .md twin (and /llms.txt, and the future MCP), an agent gets a
+// From a page's .md twin (and /llms.txt, and the future MCP), an agent gets a
 // machine-readable pointer to each git-committed, CI-verified PEP 723 script plus
-// its runtime contract, so it can fetch the exact source and `uv run` it. There is
-// ONE parser: this shells out to `docsnip scripts --json` (scriptmeta.py) rather
-// than re-implementing PEP 723 in JS. The served .py is byte-identical to the
-// committed source; gen-vercel-config serves it noindex + text/x-python.
+// its runtime contract, so it can fetch the exact source and `uv run` it. Scripts
+// come from BOTH tutorial pages (content/) and blog posts (blogs/) — docsnip
+// discovers both. There is ONE parser: this shells out to `docsnip scripts --json`
+// (scriptmeta.py) rather than re-implementing PEP 723 in JS. The served .py is
+// byte-identical to the committed source; gen-vercel-config serves it noindex +
+// text/x-python.
 //
 // Run order (CI prebuild, where uv is available): before build-md-twins (which
 // enriches tutorial twins' "Runnable examples" from dist/scripts.json) and before
@@ -57,17 +59,29 @@ export function runDocsnipScripts(root = repoRoot) {
 
 /**
  * Map one docsnip script entry to a served index entry (pure, for testing).
- * `entry.path` is repo-relative POSIX, e.g.
- * `content/<project>/<bucket>/<NNN-slug>/[snippets/]<file>.py`. The tutorial route
- * strips the `NNN-` order prefix (docsnip's `tutorial_slug`); the fetch URL serves
- * the file under that route, preserving any `snippets/` subpath + filename.
+ * `entry.path` is repo-relative POSIX. Two layouts, matching the routes the site
+ * serves (so `tutorialRoute` equals the owning page's refHref):
+ *   - docs:  `content/<project>/<bucket>/<NNN-slug>/[snippets/]<file>.py`
+ *            → `/docs/<project>/<bucket>/<slug>` (docsnip strips the `NNN-` prefix)
+ *   - blogs: `blogs/<slug>/[snippets/]<file>.py`
+ *            → `/blog/<slug>`
+ * The fetch URL serves the file under that route, preserving any subpath + name.
  */
 export function scriptEntry(entry) {
-  const parts = entry.path.split("/"); // content, project, bucket, orderedSlug, ...rest, file
-  const [, project, bucket] = parts;
+  const parts = entry.path.split("/");
   const slug = entry.tutorial_slug;
-  const rest = parts.slice(4).join("/"); // subpath under the tutorial dir (e.g. snippets/x.py)
-  const tutorialRoute = project && bucket && slug ? `/docs/${project}/${bucket}/${slug}` : null;
+  let tutorialRoute = null;
+  let rest = null;
+  if (parts[0] === "blogs") {
+    // blogs, <slug>, ...rest, file
+    rest = parts.slice(2).join("/");
+    tutorialRoute = slug ? `/blog/${slug}` : null;
+  } else {
+    // content, project, bucket, orderedSlug, ...rest, file
+    const [, project, bucket] = parts;
+    rest = parts.slice(4).join("/");
+    tutorialRoute = project && bucket && slug ? `/docs/${project}/${bucket}/${slug}` : null;
+  }
   const fetchUrl = tutorialRoute ? `${tutorialRoute}/${rest}` : null;
   return {
     gitPath: entry.path,

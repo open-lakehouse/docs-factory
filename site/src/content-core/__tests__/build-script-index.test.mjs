@@ -35,3 +35,13 @@ test("scriptEntry handles a script directly in the tutorial dir (no snippets/)",
   const e = scriptEntry({ ...DOCSNIP_ENTRY, path: "content/uc/tutorials/002-python-client/catalog_flow.py", tutorial_slug: "python-client" });
   expect(e.fetchUrl).toBe("/docs/uc/tutorials/python-client/catalog_flow.py");
 });
+
+test("scriptEntry maps a blog script to its /blog/<slug> route", () => {
+  const e = scriptEntry({
+    ...DOCSNIP_ENTRY,
+    path: "blogs/unity-catalog-delta-api/snippets/read_delta_duckdb.py",
+    tutorial_slug: "unity-catalog-delta-api",
+  });
+  expect(e.tutorialRoute).toBe("/blog/unity-catalog-delta-api");
+  expect(e.fetchUrl).toBe("/blog/unity-catalog-delta-api/snippets/read_delta_duckdb.py");
+});

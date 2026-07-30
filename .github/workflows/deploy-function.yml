@@ -170,18 +170,23 @@ jobs:
         run: cd site && bun install --frozen-lockfile && bunx playwright install --with-deps chromium
 
       # Link the Vercel project at the repo root for the PRODUCTION environment
-      # (no --git-branch — unlike previews) and pull its env. `vercel pull` writes
+      # (no --git-branch — unlike previews) and pull its env. We `vercel link`
+      # explicitly first: for the production environment `vercel pull` alone fails
+      # to resolve the project from VERCEL_ORG_ID/VERCEL_PROJECT_ID env vars
+      # ("Could not retrieve Project Settings") — the preview path only avoids this
+      # because its --git-branch pull establishes the link. `link` writes
       # <root>/.vercel/project.json (so the later `vercel deploy --prebuilt` targets
-      # the right project); `vercel env pull` writes the Production env — critically
-      # VITE_NEON_AUTH_URL, a Vite bundle var the SPA reads via import.meta.env — to
-      # .vercel/.env.production.local for the build to source.
+      # the right project); `vercel env pull` then writes the Production env —
+      # critically VITE_NEON_AUTH_URL, a Vite bundle var the SPA reads via
+      # import.meta.env — to .vercel/.env.production.local for the build to source.
       - name: Link Vercel project + pull production env
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
-          bunx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          bunx vercel link --yes --scope="$VERCEL_ORG_ID" \
+            --project="$VERCEL_PROJECT_ID" --token="$VERCEL_TOKEN"
           bunx vercel env pull .vercel/.env.production.local --yes \
             --environment=production --token="$VERCEL_TOKEN"
           if ! grep -q '^VITE_NEON_AUTH_URL=' .vercel/.env.production.local; then

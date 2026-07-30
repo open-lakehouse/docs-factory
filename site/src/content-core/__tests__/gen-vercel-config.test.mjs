@@ -44,8 +44,28 @@ test(".py rule sets noindex + text/x-python and continues", () => {
 
 test("Accept: text/markdown negotiation rewrites doc/blog routes to their .md twin", () => {
   const neg = routes.find((r) => r.dest === "/$1.md");
-  expect(neg.src).toBe("/(docs/.*|blog/.*)");
+  expect(neg.src).toBe("/((?!.*\\.md$)(?:docs/.*|blog/.*))");
   expect(neg.has[0]).toEqual({ type: "header", key: "accept", value: "(.*text/markdown.*)" });
+});
+
+test("negotiation rewrite matches BARE routes but never a path already ending in .md", () => {
+  // The review workspace's twin fetch requests the `.md` URL directly with
+  // `Accept: text/markdown`. If this rewrite matched it, it would rewrite
+  // `/blog/slug.md` → `/blog/slug.md.md` (a miss → 404 by the guard below, or the
+  // SPA shell pre-#102 — the original "No markdown twin" symptom). Only bare HTML
+  // routes should be negotiated up to their twin.
+  const neg = routes.find((r) => r.dest === "/$1.md");
+  // Anchor the src exactly as Vercel matches a full path.
+  const re = new RegExp(`^${neg.src}$`);
+  expect(re.test("/blog/unity-catalog-delta-api")).toBe(true);
+  expect(re.test("/docs/delta/how-to/read-a-delta-table")).toBe(true);
+  expect(re.test("/blog/unity-catalog-delta-api.md")).toBe(false);
+  expect(re.test("/docs/delta/how-to/read-a-delta-table.md")).toBe(false);
+  expect(re.test("/blog/slug.md.md")).toBe(false);
+  // The capture (used as `/$1.md`) drops the leading slash, yielding the twin path.
+  expect("/blog/unity-catalog-delta-api".replace(re, "/$1.md")).toBe(
+    "/blog/unity-catalog-delta-api.md",
+  );
 });
 
 test("companion-file misses 404 AFTER filesystem and BEFORE the SPA catch-all", () => {

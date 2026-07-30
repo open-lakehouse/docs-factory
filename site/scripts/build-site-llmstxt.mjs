@@ -77,8 +77,14 @@ export function renderLlmsIndex(entries, { title = SITE_TITLE, summary = SITE_SU
   }
   if (blog.length) lines.push("## Blog", "", ...blog.sort(), "");
 
-  // Resources (Phase 2/3 add concepts.json / scripts.json here).
-  lines.push("## Resources", "", `- [Full-text corpus](/llms-full.txt): every page's Markdown twin concatenated.`, "");
+  // Resources (Phase 2 adds concepts.json here).
+  lines.push(
+    "## Resources",
+    "",
+    `- [Full-text corpus](/llms-full.txt): every page's Markdown twin concatenated.`,
+    `- [Runnable scripts index](/scripts.json): CI-verified PEP 723 tutorial scripts + their runtime contracts.`,
+    "",
+  );
 
   return `${lines.join("\n").replace(/\s+$/, "")}\n`;
 }

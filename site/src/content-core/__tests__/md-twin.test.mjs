@@ -4,7 +4,7 @@
 // shape twin paths, frontmatter, and image URLs with no I/O.
 import { test, expect } from "bun:test";
 import mdTwin, { renderImage, frontmatter, LIKEC4_ASSET_BASE } from "../../../../emit/targets/md-twin.mjs";
-import { twinPathForHref, injectCanonical, scaffoldSections } from "../../../scripts/build-md-twins.mjs";
+import { twinPathForHref, injectCanonical, scaffoldSections, runnableExamplesSection } from "../../../scripts/build-md-twins.mjs";
 
 test("renderImage points a likec4 view at the site-served PNG, wrapped in a paragraph", () => {
   const node = renderImage({ likec4: "managedTableFlow", filename: "x.png", altText: "Flow" });
@@ -63,4 +63,32 @@ test("scaffoldSections appends Related concepts; Runnable examples only for tuto
   const tut = scaffoldSections("Body\n", { isTutorial: true });
   expect(tut).toContain("## Related concepts");
   expect(tut).toContain("## Runnable examples");
+  expect(tut).toContain("_None yet._"); // placeholder when no examples supplied
+});
+
+test("scaffoldSections uses a supplied Runnable examples body over the placeholder", () => {
+  const examples = "## Runnable examples\n\n- [`x.py`](/docs/a/tutorials/b/x.py)\n";
+  const tut = scaffoldSections("Body\n", { isTutorial: true, examples });
+  expect(tut).toContain("- [`x.py`](/docs/a/tutorials/b/x.py)");
+  expect(tut).not.toContain("## Runnable examples\n\n_None yet._");
+});
+
+test("runnableExamplesSection lists fetch URL + PEP 723 contract; empty when no scripts", () => {
+  expect(runnableExamplesSection([])).toBe("");
+  const md = runnableExamplesSection([
+    {
+      fetchUrl: "/docs/uc/tutorials/getting-started/snippets/catalog_flow.py",
+      requiresPython: ">=3.11",
+      dependencies: ["unitycatalog-client>=0.5"],
+      compose: "compose.yaml",
+      services: ["unitycatalog"],
+    },
+  ]);
+  expect(md).toContain("## Runnable examples");
+  expect(md).toContain("the script *is* the test");
+  expect(md).toContain("[`catalog_flow.py`](/docs/uc/tutorials/getting-started/snippets/catalog_flow.py)");
+  expect(md).toContain("requires Python `>=3.11`");
+  expect(md).toContain("`unitycatalog-client>=0.5`");
+  expect(md).toContain("needs Docker Compose `compose.yaml`");
+  expect(md).toContain("services: `unitycatalog`");
 });

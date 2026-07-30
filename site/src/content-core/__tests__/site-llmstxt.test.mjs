@@ -40,9 +40,10 @@ test("each llms.txt entry links both the canonical route and its .md twin", () =
   expect(out).toContain("([md](https://x.test/docs/delta/x/read.md))");
 });
 
-test("llms.txt lists the full-text corpus resource", () => {
+test("llms.txt lists the full-text corpus + runnable scripts resources", () => {
   const out = renderLlmsIndex([]);
   expect(out).toContain("/llms-full.txt");
+  expect(out).toContain("/scripts.json");
 });
 
 test("llms-full.txt concatenates twin bodies under route headers, skipping empties", () => {

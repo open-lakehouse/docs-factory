@@ -14,6 +14,8 @@ content-contract validator; it no longer emits artifacts.
 from __future__ import annotations
 
 import argparse
+import json
+import re
 import sys
 from pathlib import Path
 
@@ -30,7 +32,12 @@ from .frontmatter import (
     validate,
 )
 from .scriptmeta import check as check_scripts
+from .scriptmeta import discover as discover_scripts
 from .snippetcheck import check_blogs, check_content
+
+# The docsnip scripts --json output is a build contract consumed by the site's
+# build-script-index.mjs; bump when the shape changes so the JS side can assert it.
+SCRIPTS_JSON_VERSION = 1
 
 
 def _repo_root() -> Path:
@@ -41,6 +48,7 @@ def _repo_root() -> Path:
 def _paths(root: Path | None):
     root = root or _repo_root()
     return {
+        "root": root,
         "content": root / "content",
         "blogs": root / "blogs",
         "arch_model": root / "architecture" / "dist" / "model.json",
@@ -134,6 +142,55 @@ def cmd_snippetcheck(p) -> int:
     return 0
 
 
+def _tutorial_slug(script_path: Path, content_root: Path) -> str | None:
+    """The owning tutorial's slug for a colocated script, or None.
+
+    A script lives at ``content/<project>/<bucket>/<slug>/[snippets/]<file>.py``.
+    The slug is the directory segment directly under the bucket, with its ``NNN-``
+    order prefix stripped — mirroring the JS docIdentity slug derivation (and
+    ``_py_doc_identity`` in tests/test_cross_language.py). Returns None if the path
+    doesn't sit under a ``<project>/<bucket>/<slug>/`` folder.
+    """
+    try:
+        parts = script_path.resolve().relative_to(content_root.resolve()).parts
+    except ValueError:
+        return None
+    # parts: <project>/<bucket>/<slug>/[snippets/]<file>.py — need >= project, bucket, slug, file.
+    if len(parts) < 4:
+        return None
+    slug = parts[2]
+    return re.sub(r"^\d+-", "", slug)
+
+
+def cmd_scripts(p, as_json: bool = True) -> int:
+    """Emit the discovered PEP 723 tutorial scripts as JSON (a build contract).
+
+    Wraps scriptmeta.discover() — the one authoritative parser — so the site build
+    (build-script-index.mjs) never re-implements PEP 723 parsing in JS. Output is a
+    versioned object: ``{"version": N, "scripts": [{path, requires_python,
+    dependencies, compose, services, base_url_env, tutorial_slug}]}``. ``path`` is
+    repo-relative POSIX.
+    """
+    content_root = p["content"]
+    repo_root = p["root"]
+    scripts = []
+    for meta in discover_scripts(content_root):
+        scripts.append(
+            {
+                "path": meta.path.resolve().relative_to(repo_root.resolve()).as_posix(),
+                "requires_python": meta.requires_python,
+                "dependencies": meta.dependencies,
+                "compose": meta.docs_factory.compose,
+                "services": meta.docs_factory.services,
+                "base_url_env": meta.docs_factory.base_url_env,
+                "tutorial_slug": _tutorial_slug(meta.path, content_root),
+            }
+        )
+    payload = {"version": SCRIPTS_JSON_VERSION, "scripts": scripts}
+    print(json.dumps(payload, indent=2))
+    return 0
+
+
 def cmd_check(p) -> int:
     """CI entry point: validate + snippetcheck."""
     rc = cmd_validate(p) or cmd_snippetcheck(p)
@@ -156,9 +213,18 @@ def main(argv: list[str] | None = None) -> int:
             default=None,
             help="content dir (unused; autodetected)",
         )
+    # `scripts --json` emits the PEP 723 tutorial-script index (a build contract for
+    # the site's build-script-index.mjs). --json is the only (and default) format.
+    sp_scripts = sub.add_parser("scripts")
+    sp_scripts.add_argument(
+        "--json", action="store_true", default=True, help="emit JSON (default)"
+    )
 
     args = parser.parse_args(argv)
     p = _paths(args.root)
+
+    if args.cmd == "scripts":
+        return cmd_scripts(p, as_json=args.json)
 
     dispatch = {
         "validate": cmd_validate,

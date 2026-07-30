@@ -2,7 +2,13 @@
 // tabs are open, which is active, and any one-shot deep-link intent) lives in
 // the query string so a workspace layout is shareable and back/forward-navigable:
 //
-//   /review?tabs=docs:slug:project:bucket,blogs:slug::&active=<token>&thread=<id>&anchor=<slug>
+//   /review?tabs=docs:slug:project:bucket,docs:slug:project:bucket#md,…&active=<token>&thread=<id>&anchor=<slug>
+//
+// Opening a sidebar ITEM opens a GROUP of tabs — the rendered page plus one tab
+// per companion VIEW (its `.md` twin, each runnable script). Every tab token is
+// `refToParam(ref)` optionally suffixed with `#<view>`; tabs sharing a ref token
+// (the groupKey) belong to one item. The rendered view has no suffix, so old
+// shared links (bare ref tokens) still parse.
 //
 // `thread`/`anchor` are one-shot navigation intents (Phase 3 consumes them):
 // after the target tab selects + scrolls, it clears them. Transient per-tab UI
@@ -17,19 +23,30 @@ import {
   type ReactNode,
 } from "react";
 import { useSearchParams } from "react-router-dom";
-import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { refFromParam, refToParam } from "../../../lib/content-ref";
+import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
+import { findBlog, findDoc, type ContentPage } from "../../../content";
+import { useScriptsIndex } from "../../../lib/scripts-index";
+import { viewsFor } from "./item-views";
+import {
+  parseTabToken,
+  refTokenOf,
+  tabTokenFor,
+  type TabView,
+} from "./view-token";
 
-// Cap the number of simultaneously-mounted tabs. Every open tab keeps its full
-// MDX render + ReviewProvider warm, so an unbounded workspace would pin heavy
-// Shiki/diagram trees and N warm caches in memory. When opening a tab would
-// exceed this, the least-recently-ACTIVE tab is evicted (never the active one,
-// never the tab being opened).
-const MAX_TABS = 8;
+// Cap the number of simultaneously-open ITEMS (groups), not individual tabs:
+// one click opens a whole group, and only the rendered view keeps a heavy MDX
+// render + ReviewProvider warm (twin/script views are light fetch + <pre>). When
+// opening an item would exceed this, the least-recently-ACTIVE group is evicted
+// whole (never the active group, never the group just opened).
+const MAX_GROUPS = 6;
 
 export interface OpenTab {
   token: string;
   ref: ContentRef;
+  view: TabView;
+  /** The ref token shared by every view of one item; groups sibling tabs. */
+  groupKey: string;
 }
 
 /** A deep-link intent attached when opening a tab from a cross-nav row. */
@@ -43,13 +60,25 @@ interface TabsValue {
   activeToken: string | null;
   /** The active tab's deep-link intent, if any (cleared via clearIntent). */
   intent: OpenIntent;
+  /** Open an item: its rendered view + every companion view, rendered active. */
   openTab: (ref: ContentRef, intent?: OpenIntent) => void;
+  /** Activate a specific view of an item (opening it if not already open). */
+  openView: (ref: ContentRef, view: TabView, intent?: OpenIntent) => void;
+  /** Close a single view tab. */
   closeTab: (token: string) => void;
+  /** Close a whole item group (every view sharing the groupKey). */
+  closeGroup: (groupKey: string) => void;
   setActive: (token: string) => void;
   clearIntent: () => void;
 }
 
 const TabsContext = createContext<TabsValue | undefined>(undefined);
+
+function pageFor(ref: ContentRef): ContentPage | undefined {
+  return ref.area === ContentArea.BLOGS
+    ? findBlog(ref.slug)
+    : findDoc(ref.project ?? "", ref.bucket ?? "", ref.slug);
+}
 
 function parseTabs(raw: string | null): OpenTab[] {
   if (!raw) return [];
@@ -57,16 +86,21 @@ function parseTabs(raw: string | null): OpenTab[] {
   const seen = new Set<string>();
   for (const token of raw.split(",")) {
     if (!token || seen.has(token)) continue;
-    const ref = refFromParam(token);
-    if (!ref) continue;
+    const parsed = parseTabToken(token);
+    if (!parsed) continue;
     seen.add(token);
-    out.push({ token, ref });
+    out.push({ token, ref: parsed.ref, view: parsed.view, groupKey: refTokenOf(token) });
   }
   return out;
 }
 
 export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   const [params, setParams] = useSearchParams();
+  // Preloaded once for the workspace so openTab can compute an item's views
+  // synchronously (group membership stays stable across the open).
+  const scriptsIndex = useScriptsIndex();
+  const scriptsRef = useRef(scriptsIndex);
+  scriptsRef.current = scriptsIndex;
 
   const tabs = useMemo(() => parseTabs(params.get("tabs")), [params]);
   const activeParam = params.get("active");
@@ -80,72 +114,105 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
     [params],
   );
 
-  // Activation recency, most-recent LAST, kept in memory (not the URL — a shared
-  // link shouldn't carry local eviction history). Used to pick the LRU victim
-  // when the cap is hit; tabs never explicitly activated fall back to open order.
+  // Group activation recency, most-recent LAST, kept in memory (not the URL — a
+  // shared link shouldn't carry local eviction history). Keyed on groupKey, so
+  // activating any view of an item marks the whole item recently-used. Used to
+  // pick the LRU victim group when the cap is hit.
   const recencyRef = useRef<string[]>([]);
   useEffect(() => {
     if (!activeToken) return;
-    const r = recencyRef.current.filter((t) => t !== activeToken);
-    r.push(activeToken);
+    const group = refTokenOf(activeToken);
+    const r = recencyRef.current.filter((g) => g !== group);
+    r.push(group);
     recencyRef.current = r;
   }, [activeToken]);
 
-  // Trim the tab list to MAX_TABS by evicting least-recently-active tabs, always
-  // keeping `keep` (the tab just opened/activated). Returns tokens in their
-  // original order minus the evicted ones.
-  const applyCap = useCallback((tokens: string[], keep: string): string[] => {
-    if (tokens.length <= MAX_TABS) return tokens;
+  // Trim to MAX_GROUPS by evicting least-recently-active GROUPS, always keeping
+  // `keepGroup` (the item just opened/activated). Returns the surviving tokens
+  // in their original order (whole groups dropped together).
+  const applyCap = useCallback((tokens: string[], keepGroup: string): string[] => {
+    const groups: string[] = [];
+    for (const t of tokens) {
+      const g = refTokenOf(t);
+      if (!groups.includes(g)) groups.push(g);
+    }
+    if (groups.length <= MAX_GROUPS) return tokens;
     const recency = recencyRef.current;
-    // Least-recently-active first; a tab absent from recency (never activated)
-    // sorts before any activated tab, so it's evicted first.
-    const rank = (t: string) => {
-      const i = recency.lastIndexOf(t);
-      return i === -1 ? -1 : i;
-    };
-    const evictable = tokens.filter((t) => t !== keep).sort((a, b) => rank(a) - rank(b));
-    const toEvict = new Set(evictable.slice(0, tokens.length - MAX_TABS));
-    return tokens.filter((t) => !toEvict.has(t));
+    // Least-recently-active group first; a group never activated sorts first.
+    const rank = (g: string) => recency.lastIndexOf(g);
+    const evictable = groups.filter((g) => g !== keepGroup).sort((a, b) => rank(a) - rank(b));
+    const toEvict = new Set(evictable.slice(0, groups.length - MAX_GROUPS));
+    return tokens.filter((t) => !toEvict.has(refTokenOf(t)));
+  }, []);
+
+  const applyIntent = useCallback((p: URLSearchParams, next?: OpenIntent) => {
+    if (next?.thread) p.set("thread", next.thread);
+    else p.delete("thread");
+    if (next?.anchor) p.set("anchor", next.anchor);
+    else p.delete("anchor");
   }, []);
 
   const openTab = useCallback(
     (ref: ContentRef, next?: OpenIntent) => {
-      const token = refToParam(ref);
+      const group = tabTokenFor(ref, { kind: "rendered" });
+      const views = viewsFor(ref, pageFor(ref), scriptsRef.current);
+      const groupTokens = views.map((v) => tabTokenFor(ref, v));
       setParams(
         (prev) => {
           const p = new URLSearchParams(prev);
-          const existing = parseTabs(p.get("tabs"));
-          let tokens = existing.map((t) => t.token);
-          if (!tokens.includes(token)) {
-            tokens = applyCap([...tokens, token], token);
-            p.set("tabs", tokens.join(","));
-          }
-          p.set("active", token);
-          if (next?.thread) p.set("thread", next.thread);
-          else p.delete("thread");
-          if (next?.anchor) p.set("anchor", next.anchor);
-          else p.delete("anchor");
+          const existing = parseTabs(p.get("tabs")).map((t) => t.token);
+          // Add any of this item's views that aren't open yet, preserving order.
+          let tokens = existing.slice();
+          for (const t of groupTokens) if (!tokens.includes(t)) tokens.push(t);
+          tokens = applyCap(tokens, group);
+          if (tokens.length) p.set("tabs", tokens.join(","));
+          // Land on the rendered view — the page the reviewer expects to see.
+          p.set("active", group);
+          applyIntent(p, next);
           return p;
         },
         { replace: false },
       );
     },
-    [setParams, applyCap],
+    [setParams, applyCap, applyIntent],
   );
 
-  const closeTab = useCallback(
-    (token: string) => {
+  const openView = useCallback(
+    (ref: ContentRef, view: TabView, next?: OpenIntent) => {
+      const token = tabTokenFor(ref, view);
+      const group = tabTokenFor(ref, { kind: "rendered" });
+      setParams(
+        (prev) => {
+          const p = new URLSearchParams(prev);
+          let tokens = parseTabs(p.get("tabs")).map((t) => t.token);
+          if (!tokens.includes(token)) {
+            tokens = applyCap([...tokens, token], group);
+            p.set("tabs", tokens.join(","));
+          }
+          p.set("active", token);
+          applyIntent(p, next);
+          return p;
+        },
+        { replace: false },
+      );
+    },
+    [setParams, applyCap, applyIntent],
+  );
+
+  const closeTokens = useCallback(
+    (drop: (t: OpenTab) => boolean) => {
       setParams(
         (prev) => {
           const p = new URLSearchParams(prev);
           const existing = parseTabs(p.get("tabs"));
-          const remaining = existing.filter((t) => t.token !== token);
+          const remaining = existing.filter((t) => !drop(t));
           if (remaining.length) p.set("tabs", remaining.map((t) => t.token).join(","));
           else p.delete("tabs");
-          // If we closed the active tab, activate its right-hand neighbor (or the
-          // new last tab), matching editor muscle memory.
-          if (p.get("active") === token) {
-            const idx = existing.findIndex((t) => t.token === token);
+          // If the active tab went away, activate a surviving neighbor (the tab
+          // at the closed position, clamped), matching editor muscle memory.
+          const active = p.get("active");
+          if (active && !remaining.some((t) => t.token === active)) {
+            const idx = existing.findIndex((t) => t.token === active);
             const fallback = remaining[Math.min(idx, remaining.length - 1)];
             if (fallback) p.set("active", fallback.token);
             else p.delete("active");
@@ -158,6 +225,12 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
       );
     },
     [setParams],
+  );
+
+  const closeTab = useCallback((token: string) => closeTokens((t) => t.token === token), [closeTokens]);
+  const closeGroup = useCallback(
+    (groupKey: string) => closeTokens((t) => t.groupKey === groupKey),
+    [closeTokens],
   );
 
   const setActive = useCallback(
@@ -191,8 +264,18 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   }, [setParams]);
 
   const value = useMemo<TabsValue>(
-    () => ({ tabs, activeToken, intent, openTab, closeTab, setActive, clearIntent }),
-    [tabs, activeToken, intent, openTab, closeTab, setActive, clearIntent],
+    () => ({
+      tabs,
+      activeToken,
+      intent,
+      openTab,
+      openView,
+      closeTab,
+      closeGroup,
+      setActive,
+      clearIntent,
+    }),
+    [tabs, activeToken, intent, openTab, openView, closeTab, closeGroup, setActive, clearIntent],
   );
 
   return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>;

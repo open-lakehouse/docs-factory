@@ -8,6 +8,21 @@
 import { createHash } from "node:crypto";
 import yaml from "js-yaml";
 
+/**
+ * The frontmatter `status` value at which a page becomes part of the PUBLIC
+ * corpus — the single git-authoritative publish gate shared by every build
+ * surface (llms.txt, prerendered shells, the .md twins). Pages default to
+ * `draft` when unset. The review server keeps its own `READY_STATUS` mirror
+ * (server/src/services/review.ts) by the repo's no-cross-package-import
+ * convention; both must agree.
+ */
+export const PUBLISH_STATUS = "ready";
+
+/** Whether a page's frontmatter marks it public (`status: ready`). */
+export function isPublic(meta) {
+  return (meta?.status ?? "draft") === PUBLISH_STATUS;
+}
+
 /** Split YAML frontmatter from the markdown body. */
 export function splitFrontmatter(raw) {
   const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/.exec(raw);

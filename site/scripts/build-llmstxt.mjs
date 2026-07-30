@@ -20,7 +20,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { splitFrontmatter } from "../src/content-core/frontmatter.mjs";
+import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
 import { parseDocPath } from "../src/content-core/identity.mjs";
 import { walkContent } from "../src/content-core/walk.mjs";
 import { DIATAXIS } from "../src/content-core/vocab.mjs";
@@ -75,7 +75,7 @@ function render(project, cfg, pages) {
   const bySection = Object.fromEntries(DIATAXIS.map((k) => [k, []]));
 
   for (const { absPath, meta } of pages) {
-    if ((meta.status ?? "draft") !== "ready") continue;
+    if (!isPublic(meta)) continue;
     const quadrant = meta.diataxis;
     if (!(quadrant in bySection)) continue;
     const url = pageUrl(cfg.urlBase, absPath, meta);

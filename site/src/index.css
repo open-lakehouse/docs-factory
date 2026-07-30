@@ -575,16 +575,8 @@ body {
   gap: 0.5rem;
   margin-bottom: 1rem;
 }
-.admin-input {
-  flex: 1 1 16rem;
-  min-width: 12rem;
-  padding: 0.4rem 0.6rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--background);
-  color: inherit;
-  font-size: 0.9rem;
-}
+/* Sizing only — the field itself is the shadcn <Input>. */
+.admin-add-input { flex: 1 1 16rem; min-width: 12rem; }
 .admin-role-toggle { display: inline-flex; gap: 0.35rem; }
 .admin-table {
   width: 100%;
@@ -610,17 +602,7 @@ body {
   justify-content: flex-end;
   flex-wrap: wrap;
 }
-.admin-role {
-  display: inline-block;
-  padding: 0.1rem 0.5rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  border: 1px solid var(--border);
-}
-.admin-role-maintainer { color: var(--accent); border-color: var(--accent); }
-.admin-role-reviewer { color: var(--foreground); }
-.admin-role-none { color: var(--muted-foreground); }
+/* Role chips use the shared shadcn <Badge> (see ROLE_VARIANT in AdminDashboard). */
 
 .content { max-width: 60rem; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
 .muted { color: var(--muted-foreground); }

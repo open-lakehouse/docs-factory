@@ -13,15 +13,14 @@ import {
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
-import { diffTrees, type ChangeKind } from "../../lib/tree-diff";
-
-const CHANGE_LABEL: Record<ChangeKind, string> = {
-  added: "added",
-  removed: "removed",
-  modified: "modified",
-  "modified-descendants": "sub-changed",
-  moved: "moved",
-};
+import { diffTrees, CHANGE_LABEL, CHANGE_CLASS } from "../../lib/tree-diff";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 function shortSha(sha: string): string {
   return sha && sha !== "unknown" ? sha.slice(0, 8) : "—";
@@ -72,23 +71,33 @@ export default function VersionHistory({ contentRef }: { contentRef: ContentRef 
           <div className="version-history-pickers">
             <label>
               <span className="muted">Baseline</span>
-              <select value={baseline ?? ""} onChange={(e) => setBaselineId(e.target.value)}>
-                {versions.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {shortSha(v.gitSha)} · {v.createdAt ? timestampDate(v.createdAt).toLocaleDateString() : ""}
-                  </option>
-                ))}
-              </select>
+              <Select value={baseline ?? ""} onValueChange={setBaselineId}>
+                <SelectTrigger size="sm" className="w-full">
+                  <SelectValue placeholder="Choose a version" />
+                </SelectTrigger>
+                <SelectContent>
+                  {versions.map((v) => (
+                    <SelectItem key={v.id} value={v.id}>
+                      {shortSha(v.gitSha)} · {v.createdAt ? timestampDate(v.createdAt).toLocaleDateString() : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </label>
             <label>
               <span className="muted">Compare</span>
-              <select value={target ?? ""} onChange={(e) => setTargetId(e.target.value)}>
-                {versions.map((v) => (
-                  <option key={v.id} value={v.id}>
-                    {shortSha(v.gitSha)} · {v.createdAt ? timestampDate(v.createdAt).toLocaleDateString() : ""}
-                  </option>
-                ))}
-              </select>
+              <Select value={target ?? ""} onValueChange={setTargetId}>
+                <SelectTrigger size="sm" className="w-full">
+                  <SelectValue placeholder="Choose a version" />
+                </SelectTrigger>
+                <SelectContent>
+                  {versions.map((v) => (
+                    <SelectItem key={v.id} value={v.id}>
+                      {shortSha(v.gitSha)} · {v.createdAt ? timestampDate(v.createdAt).toLocaleDateString() : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </label>
           </div>
           {diff.length === 0 ? (
@@ -96,8 +105,8 @@ export default function VersionHistory({ contentRef }: { contentRef: ContentRef 
           ) : (
             <ul className="version-diff-list">
               {diff.map((d) => (
-                <li key={d.key} className={`version-diff-row change-${d.change}`}>
-                  <span className={`change-badge change-${d.change}`}>{CHANGE_LABEL[d.change]}</span>
+                <li key={d.key} className={`version-diff-row change-${CHANGE_CLASS[d.change]}`}>
+                  <span className={`change-badge change-${CHANGE_CLASS[d.change]}`}>{CHANGE_LABEL[d.change]}</span>
                   <span className="version-diff-kind">{d.kind}</span>
                   <span className="version-diff-label">{d.label}</span>
                 </li>

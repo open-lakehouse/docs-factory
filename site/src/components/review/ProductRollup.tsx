@@ -11,24 +11,16 @@ import { useQuery } from "@connectrpc/connect-query";
 import {
   productChanges,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { ChangeKind } from "../../gen/docs_factory/review/v1/review_service_pb";
 import { useAuth } from "../../lib/auth-context";
+import { CHANGE_LABEL, CHANGE_CLASS, changeKindFromProto } from "../../lib/tree-diff";
 import { TOPICS } from "../../vocab";
-
-const CHANGE_LABEL: Record<number, string> = {
-  [ChangeKind.ADDED]: "added",
-  [ChangeKind.REMOVED]: "removed",
-  [ChangeKind.MODIFIED]: "modified",
-  [ChangeKind.MODIFIED_DESCENDANTS]: "sub-changed",
-  [ChangeKind.MOVED]: "moved",
-};
-const CHANGE_CLASS: Record<number, string> = {
-  [ChangeKind.ADDED]: "added",
-  [ChangeKind.REMOVED]: "removed",
-  [ChangeKind.MODIFIED]: "modified",
-  [ChangeKind.MODIFIED_DESCENDANTS]: "modified-descendants",
-  [ChangeKind.MOVED]: "moved",
-};
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 /** Pretty product label from a topic id (e.g. "unity-catalog" → "Unity Catalog"). */
 function topicLabel(topic: string): string {
@@ -58,13 +50,18 @@ export default function ProductRollup() {
     <div className="product-rollup">
       <div className="product-rollup-head">
         <p className="blog-aside-title">What changed for…</p>
-        <select value={topic} onChange={(e) => setTopic(e.target.value)}>
-          {TOPICS.map((t) => (
-            <option key={t} value={t}>
-              {topicLabel(t)}
-            </option>
-          ))}
-        </select>
+        <Select value={topic} onValueChange={setTopic}>
+          <SelectTrigger size="sm" className="w-full">
+            <SelectValue placeholder="Choose a product" />
+          </SelectTrigger>
+          <SelectContent>
+            {TOPICS.map((t) => (
+              <SelectItem key={t} value={t}>
+                {topicLabel(t)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {isLoading ? (
@@ -94,15 +91,18 @@ export default function ProductRollup() {
                     )}
                   </div>
                   <ul className="product-rollup-changes">
-                    {e.changedNodes.map((n) => (
-                      <li key={n.key} className={`version-diff-row change-${CHANGE_CLASS[n.change]}`}>
-                        <span className={`change-badge change-${CHANGE_CLASS[n.change]}`}>
-                          {CHANGE_LABEL[n.change] ?? "changed"}
-                        </span>
-                        <span className="version-diff-kind">{n.kind}</span>
-                        <span className="version-diff-label">{n.label}</span>
-                      </li>
-                    ))}
+                    {e.changedNodes.map((n) => {
+                      const change = changeKindFromProto(n.change);
+                      return (
+                        <li key={n.key} className={`version-diff-row change-${CHANGE_CLASS[change]}`}>
+                          <span className={`change-badge change-${CHANGE_CLASS[change]}`}>
+                            {CHANGE_LABEL[change]}
+                          </span>
+                          <span className="version-diff-kind">{n.kind}</span>
+                          <span className="version-diff-label">{n.label}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </li>
               ))}

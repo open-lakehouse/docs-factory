@@ -31,7 +31,9 @@ import {
 import { useAuth } from "../lib/auth-context";
 import { useReviewInvalidation } from "../lib/review-queries";
 import Shell from "../components/layout/Shell";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -47,14 +49,18 @@ function roleLabel(role: Role): string {
   return "No status";
 }
 
+// Role → shadcn Badge variant, so role chips share the design-token badge the
+// rest of the site uses (StatusBadge / review-status) rather than a bespoke
+// `admin-role` class set. Maintainer is the emphasized role, reviewer is
+// secondary, "no status" is a muted outline.
+const ROLE_VARIANT: Partial<Record<Role, "default" | "secondary" | "outline">> = {
+  [Role.MAINTAINER]: "default",
+  [Role.REVIEWER]: "secondary",
+  [Role.ANONYMOUS]: "outline",
+};
+
 function RoleBadge({ role }: { role: Role }) {
-  const cls =
-    role === Role.MAINTAINER
-      ? "admin-role admin-role-maintainer"
-      : role === Role.REVIEWER
-        ? "admin-role admin-role-reviewer"
-        : "admin-role admin-role-none";
-  return <span className={cls}>{roleLabel(role)}</span>;
+  return <Badge variant={ROLE_VARIANT[role] ?? "outline"}>{roleLabel(role)}</Badge>;
 }
 
 function fmtDate(ts: { seconds: bigint } | undefined): string {
@@ -194,8 +200,8 @@ export default function AdminDashboard() {
               void submitAdd();
             }}
           >
-            <input
-              className="admin-input"
+            <Input
+              className="admin-add-input"
               placeholder="GitHub login or email"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
@@ -403,15 +409,26 @@ export default function AdminDashboard() {
       </Dialog>
 
       {/* Confirm erasure ------------------------------------------------- */}
-      <Dialog open={!!confirmErase} onOpenChange={(o) => !o && setConfirmErase(null)}>
+      <Dialog
+        open={!!confirmErase}
+        onOpenChange={(o) => {
+          if (!o) {
+            setConfirmErase(null);
+            // Clear the previous result/error so reopening for another user
+            // never shows the last erasure's counts (they'd be misattributed).
+            erase.reset();
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Erase this user’s footprint?</DialogTitle>
             <DialogDescription>
               Tombstones their comments (keeping thread structure), scrubs their
-              identity from review-state, resolutions, and approvals, and deletes
-              their read-state. Content-version provenance is untouched. This does
-              not remove their allowlist access — do that separately. Cannot be
+              identity from review-state, resolutions, and approvals, cancels any
+              open review requests addressed to them, and deletes their
+              read-state. Content-version provenance is untouched. This does not
+              remove their allowlist access — do that separately. Cannot be
               undone.
             </DialogDescription>
           </DialogHeader>
@@ -420,7 +437,8 @@ export default function AdminDashboard() {
             <p className="muted">
               Tombstoned {erase.data.commentsTombstoned} comment(s), scrubbed{" "}
               {erase.data.reviewStatesScrubbed} review-state and{" "}
-              {erase.data.resolutionsScrubbed} resolution actor(s), deleted{" "}
+              {erase.data.resolutionsScrubbed} resolution actor(s), cancelled{" "}
+              {erase.data.requestsCancelled} open review request(s), deleted{" "}
               {erase.data.seenRowsDeleted} read-state row(s).
             </p>
           )}

@@ -139,6 +139,11 @@ import { notifyCommentsChanged } from "../notify.js";
 // author intent and the sticky release outcome — decoupled from the live
 // review_state, so a released page can be reopened for changes without dropping
 // out of public view unless a maintainer explicitly unpublishes.
+//
+// This is the server's mirror of content-core's PUBLISH_STATUS
+// (site/src/content-core/frontmatter.mjs); the value MUST match its build-side
+// twin. We keep a local copy rather than import across the package boundary,
+// following the same no-cross-package-import convention as anchor.ts.
 const READY_STATUS = "ready";
 // Maximum reply nesting under a thread root (root = depth 0). Keeps the tree
 // legible and client indentation bounded; enforced in createComment.
@@ -1515,6 +1520,16 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             where (${userId}::text is not null and approver_user_id = ${userId})
                or (${login}::text is not null and approver_login = ${login})
           `;
+          // An OPEN review request is keyed to the reviewer's login and can only
+          // ever be satisfied by that reviewer approving. Once they're erased no
+          // one can satisfy it, so a required one would block release forever —
+          // cancel any still-open request addressed to this login. (Already
+          // satisfied/cancelled requests are terminal and left as-is.)
+          const requests = await sql`
+            update review_request set status = 'cancelled', cancelled_at = now()
+            where status = 'open'
+              and ${login}::text is not null and lower(reviewer_login) = lower(${login})
+          `;
           // Read-state is worthless once the user is gone — hard-delete it.
           const seen = await sql`
             delete from comment_seen
@@ -1525,6 +1540,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             comments: tombstoned.count,
             reviewStates: reviewStates.count,
             resolutions: resolutions.count,
+            requests: requests.count,
             seen: seen.count,
           };
         });
@@ -1533,6 +1549,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           commentsTombstoned: counts.comments,
           reviewStatesScrubbed: counts.reviewStates,
           resolutionsScrubbed: counts.resolutions,
+          requestsCancelled: counts.requests,
           seenRowsDeleted: counts.seen,
         });
       },

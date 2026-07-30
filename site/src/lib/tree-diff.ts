@@ -3,10 +3,54 @@
 // (kept in sync deliberately — the two run the same algorithm so the interactive
 // tree view and the ProductChanges rollup agree). Matches by `key` (the depth
 // path), not ordinal, so a moved section reads as a move; subtree_hash gives a
-// free structural-equality fast-out.
+// free structural-equality fast-out. tree-diff-parity.test.ts pins this against
+// the server copy so the mirror can't silently drift.
 import type { MerkleNode } from "../gen/docs_factory/review/v1/messages_pb";
+import { ChangeKind as ProtoChangeKind } from "../gen/docs_factory/review/v1/review_service_pb";
 
 export type ChangeKind = "added" | "removed" | "modified" | "modified-descendants" | "moved";
+
+/**
+ * Human-readable label per change kind — the single source shared by every
+ * review surface that renders a diff badge (VersionHistory, ProductRollup), so
+ * the wording can't drift between them.
+ */
+export const CHANGE_LABEL: Record<ChangeKind, string> = {
+  added: "added",
+  removed: "removed",
+  modified: "modified",
+  "modified-descendants": "sub-changed",
+  moved: "moved",
+};
+
+/** CSS modifier class per change kind (`change-<class>` badge styling). */
+export const CHANGE_CLASS: Record<ChangeKind, string> = {
+  added: "added",
+  removed: "removed",
+  modified: "modified",
+  "modified-descendants": "modified-descendants",
+  moved: "moved",
+};
+
+/**
+ * Map a proto ChangeKind enum value (from ProductChanges) to the string kind
+ * this module keys on, so the server-side rollup and the client-side diff share
+ * one label/class vocabulary. UNSPECIFIED/unknown falls back to "modified".
+ */
+export function changeKindFromProto(kind: ProtoChangeKind): ChangeKind {
+  switch (kind) {
+    case ProtoChangeKind.ADDED:
+      return "added";
+    case ProtoChangeKind.REMOVED:
+      return "removed";
+    case ProtoChangeKind.MODIFIED_DESCENDANTS:
+      return "modified-descendants";
+    case ProtoChangeKind.MOVED:
+      return "moved";
+    default:
+      return "modified";
+  }
+}
 
 export interface DiffEntry {
   key: string;
@@ -44,10 +88,16 @@ function entry(node: MerkleNode, change: ChangeKind): DiffEntry {
   };
 }
 
-/** Diff two trees → one entry per changed node (unchanged subtrees pruned). */
+/**
+ * Diff two Merkle trees. Returns one entry per changed node (unchanged subtrees
+ * are pruned). Empty when the roots are structurally identical.
+ */
 export function diffTrees(before: MerkleNode | null, after: MerkleNode | null): DiffEntry[] {
   if (!after) return [];
-  if (!before) return [...indexTree(after).values()].map(({ node }) => entry(node, "added"));
+  if (!before) {
+    // Everything is new relative to the baseline.
+    return [...indexTree(after).values()].map(({ node }) => entry(node, "added"));
+  }
   if (before.subtreeHash === after.subtreeHash) return [];
 
   const a = indexTree(before);
@@ -61,6 +111,7 @@ export function diffTrees(before: MerkleNode | null, after: MerkleNode | null): 
     }
     const moved = prev.parentKey !== parentKey || prev.ordinal !== ordinal;
     if (prev.node.subtreeHash === node.subtreeHash) {
+      // Unchanged content; surface a pure move if it relocated, else prune.
       if (moved) out.push(entry(node, "moved"));
       continue;
     }
@@ -76,7 +127,7 @@ export function diffTrees(before: MerkleNode | null, after: MerkleNode | null): 
   return out;
 }
 
-/** Set of node keys with a change of the given kinds (for badge lookup). */
+/** Set of node keys → change kind (for badge lookup). */
 export function changeByKey(entries: DiffEntry[]): Map<string, ChangeKind> {
   return new Map(entries.map((e) => [e.key, e.change]));
 }

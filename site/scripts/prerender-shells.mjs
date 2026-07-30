@@ -66,6 +66,9 @@ function renderHeadTags(head) {
     head.twin
       ? `<link rel="alternate" type="text/markdown" href="${esc(head.twin)}" title="Markdown" />`
       : "",
+    head.rss
+      ? `<link rel="alternate" type="application/rss+xml" href="${esc(head.rss)}" title="Blog RSS" />`
+      : "",
     ...head.og.map(([p, c]) => `<meta property="${esc(p)}" content="${esc(c)}" />`),
     ...head.twitter.map(([n, c]) => `<meta name="${esc(n)}" content="${esc(c)}" />`),
     head.jsonLd
@@ -171,11 +174,14 @@ function stripTitleSuffix(title) {
 function renderIndex(template, href, title, description) {
   const identity = { area: "site" };
   const canonical = href === "/" ? origin : `${origin}${href}`;
+  // Advertise the blog RSS feed on the home and blog index pages.
+  const rss = href === "/" || href === "/blog" ? `${origin}/blog/rss.xml` : null;
   const head = {
     title: title,
     description,
     canonical,
     twin: null,
+    rss,
     og: [
       ["og:title", title],
       ["og:description", description],

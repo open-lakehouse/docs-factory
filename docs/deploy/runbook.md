@@ -122,10 +122,15 @@ Just create accounts/projects and record identifiers. Nothing is deployed here.
    - **GitHub OAuth callback URL** to register in the GitHub app: per the Neon Auth
      docs for your project (the callback is on the Neon Auth origin, not the site
      domain). Confirm the exact path in the console when connecting GitHub.
-   - **Trusted origins.** Add every site origin that starts a login (prod domain +
-     the Vercel preview origin/wildcard) to Neon Auth's `trusted_origins`
-     (`project_config.trusted_origins`), or Better Auth rejects the post-login
-     redirect back to the site.
+   - **Trusted origins.** Add every site origin that starts a login to Neon Auth's
+     `trusted_origins` (`project_config.trusted_origins`), or Better Auth rejects
+     the post-login redirect back to the site. Because `preview-deploy.yml` deploys
+     via `vercel deploy` (CLI), each preview gets a UNIQUE per-push URL
+     (`https://docs-factory-<hash>-<org>.vercel.app`) — a static origin will never
+     match. Add a **wildcard**: `https://*.vercel.app` (or the tighter
+     `https://docs-factory-*-<org>.vercel.app` if the matcher supports it), plus the
+     prod domain. This is what lets sign-in complete on previews (see §1.5, which
+     injects `VITE_NEON_AUTH_URL`; the workflow now sources it into the SPA build).
    Confirm the `neon_auth` table/column shapes match `server/src/auth/neon-auth.ts`,
    which resolves the viewer by querying `neon_auth.session` / `"user"` / `account`
    directly ([a supported pattern](https://neon.com/docs/auth/authentication-flow) —

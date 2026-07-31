@@ -28,10 +28,12 @@ Deployment shape for v1:
   Function** (entrypoint `server/src/handler.ts`). It branches with the database:
   **one Neon branch per PR** for previews, plus the default branch for production.
 - **Auth** — **Neon Auth** (GitHub OAuth). The server verifies the request's JWT
-  to a trusted user id + email, enriches it with the GitHub login from
-  `neon_auth.account`, then looks the login/email up in the `reviewer_allowlist` table.
-  The allowlist is the effective access list — the site is private and only
-  allowlisted users are admitted (see `site/src/components/AccessGate.tsx`).
+  to a trusted user id, then reads the persisted `user_identity` row for it (the
+  GitHub login is resolved from `neon_auth.account` + a one-time GitHub `/user`
+  call at first login and stored there), and looks the **user id** up in the
+  `reviewer_allowlist` table. Everything keys on the stable user id, not the
+  mutable login. The allowlist is the effective access list — the site is private
+  and only allowlisted users are admitted (see `site/src/components/AccessGate.tsx`).
 
 ---
 
@@ -170,11 +172,24 @@ Function URL — those don't exist until Phase 4.
    DATABASE_URL='<prod-direct-url>' node server/scripts/migrate.mjs
    ```
    Applies `server/db/migrations/*.sql` (idempotent; tracked in `schema_migrations`).
-2. **Seed the allowlist** — at least one `maintainer`; this is what admits users
-   past the AccessGate:
-   ```sql
-   insert into reviewer_allowlist (github_login, role) values ('your-gh-login', 'maintainer');
-   ```
+2. **Bootstrap the first maintainer.** The allowlist is keyed by the stable Neon
+   Auth user id and FKs `user_identity`, so **pre-login grants are no longer
+   possible** — a person must sign in once (which upserts their `user_identity`
+   row) before they can be granted a role. To bootstrap:
+   1. Sign in to the deployed site with the intended maintainer's GitHub account
+      once. (They'll land on "access pending" — expected, they're not allowlisted
+      yet.) This creates their `user_identity` row.
+   2. Grant them by user id, resolved from the login:
+      ```sql
+      insert into reviewer_allowlist (user_id, role, added_by)
+      select user_id, 'maintainer', 'bootstrap' from user_identity
+      where lower(github_login) = lower('your-gh-login')
+      on conflict (user_id) do nothing;
+      ```
+   After that first maintainer exists, everyone else is granted through the admin
+   UI (`/admin`) — no more direct SQL. Existing login-seeded allowlist rows from
+   the old schema do **not** carry over; re-grant each person once they've signed
+   in.
 
 ---
 

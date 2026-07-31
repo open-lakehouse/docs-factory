@@ -73,7 +73,6 @@ export default function ReviewControls({
   onRequestReview?: () => void;
 }) {
   const { isAllowlisted, isMaintainer, reviewActive, viewer } = useAuth();
-  const login = viewer?.login;
   const { invalidateDrafts, invalidateContentEvents, invalidateReviewRequests } =
     useReviewInvalidation();
   const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
@@ -105,7 +104,7 @@ export default function ReviewControls({
   const approvals = summary?.approvals ?? [];
   const pendingRequired = summary?.pendingRequiredLogins ?? [];
   const iApproved =
-    !!login && approvals.some((a) => a.approverLogin.toLowerCase() === login.toLowerCase());
+    !!viewer?.userId && approvals.some((a) => a.approverUserId === viewer.userId);
 
   async function go(to: ReviewState) {
     await transition.mutateAsync({ ref: contentRef, toState: to });
@@ -275,7 +274,7 @@ export default function ReviewControls({
       {actionControl && <div className="review-controls-actions">{actionControl}</div>}
       {approvals.length > 0 && (
         <p className="review-controls-hint muted">
-          Approved by {approvals.map((a) => a.approverLogin).join(", ")}.
+          Approved by {approvals.map((a) => a.approverLogin || a.approverUserId).join(", ")}.
         </p>
       )}
       {pendingRequired.length > 0 && (

@@ -1,5 +1,6 @@
 // Reviewer allowlist lookups. The allowlist is ours (reviewer_allowlist table),
-// independent of how identity is established (Neon Auth in prod, mock locally).
+// keyed by the stable Neon Auth user id, independent of how identity is
+// established (Neon Auth in prod, mock locally).
 import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 import type { Queryable } from "./db.js";
 
@@ -11,42 +12,19 @@ export function roleFromDb(role: string | null): Role {
 }
 
 /**
- * Resolve an identity's role from the allowlist by github login(s) and/or any of
- * the identity's emails (all case-insensitive). Returns ANONYMOUS when not
- * listed. Maintainer wins if entries disagree.
- *
- * Why a list of logins: `github_login` may be seeded as the @handle OR the
- * numeric GitHub account id. We can only resolve the @handle by exchanging the
- * stored OAuth token via GitHub's /user API, which can fail (expired/revoked
- * token) and fall back to the numeric id — so we match on BOTH candidates,
- * letting a login-seeded row hit either way.
- *
- * Why a list of emails: a reviewer's row is often seeded with a different address
- * than their GitHub *primary* email — and Neon Auth stores only the primary in
- * neon_auth."user".email. Matching every GitHub-verified email (see neon-auth.ts)
- * makes an email-seeded row hit regardless of which address the user later makes
- * primary.
+ * Resolve a user's role from the allowlist by their stable user id. Returns
+ * ANONYMOUS when the user is not listed (or has never logged in — an allowlist
+ * row cannot exist without a matching user_identity row). The lookup is an exact
+ * user_id match, so a GitHub login rename never changes the resolved role.
  */
 export async function lookupRole(
   sql: Queryable,
-  opts: { logins?: string[]; emails?: string[] },
+  opts: { userId?: string | null },
 ): Promise<Role> {
-  // Normalize + dedupe both sides; drop empties so a blank can't match a blank row.
-  const norm = (xs: string[] | undefined) =>
-    [...new Set((xs ?? []).map((x) => x.trim().toLowerCase()).filter(Boolean))];
-  const logins = norm(opts.logins);
-  const emails = norm(opts.emails);
-  if (logins.length === 0 && emails.length === 0) return Role.ANONYMOUS;
+  const userId = opts.userId?.trim();
+  if (!userId) return Role.ANONYMOUS;
   const rows = await sql<{ role: string }[]>`
-    select role from reviewer_allowlist
-    where (lower(github_login) = any(${logins}::text[]))
-       or (lower(email) = any(${emails}::text[]))
+    select role from reviewer_allowlist where user_id = ${userId}
   `;
-  let best = Role.ANONYMOUS;
-  for (const r of rows) {
-    const role = roleFromDb(r.role);
-    if (role === Role.MAINTAINER) return Role.MAINTAINER;
-    if (role === Role.REVIEWER) best = Role.REVIEWER;
-  }
-  return best;
+  return roleFromDb(rows[0]?.role ?? null);
 }

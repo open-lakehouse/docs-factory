@@ -1,25 +1,12 @@
-// GitHub identity enrichment shared by the auth path and the maintainer admin
-// discovery view. neon_auth.account stores GitHub's numeric OAuth "accountId",
-// NOT the @handle; we exchange the account's stored "accessToken" for the real
-// login (and its verified emails) via GitHub's API, memoized per user id so it
-// isn't a per-request / per-row network hit. Every call fails soft — a network
-// error, revoked token, or missing scope returns the numeric-id / empty
-// fallback rather than throwing, so neither auth nor the admin roster breaks.
-
-/**
- * Per-user-id cache of the resolved GitHub @handle, so the /user call happens
- * once per process per user rather than on every request. Sessions are
- * long-lived and a user's login rarely changes, so a plain in-memory map (reset
- * on cold start) is sufficient — no TTL needed for correctness.
- */
-const loginCache = new Map<string, string>();
-
-/**
- * Per-user-id cache of the GitHub-verified emails, memoized like loginCache so
- * the /user/emails call happens once per process per user. Never a TTL: emails
- * change rarely and a cold start re-reads them.
- */
-const emailsCache = new Map<string, string[]>();
+// GitHub identity enrichment used at first login to POPULATE our user_identity
+// table. neon_auth.account stores GitHub's numeric OAuth "accountId", NOT the
+// @handle; we exchange the account's stored "accessToken" for the real login
+// (and its verified emails) via GitHub's API. This runs once per user (when
+// their user_identity row is absent or has no resolved login), not on every
+// request — the read path reads the persisted row. Every call fails soft — a
+// network error, revoked token, or missing scope returns null/empty rather than
+// throwing, and the numeric id is NEVER stored as a fake login.
+import type { Queryable } from "../db.js";
 
 /** GitHub API headers shared by the /user and /user/emails calls. */
 function githubHeaders(accessToken: string): HeadersInit {
@@ -32,8 +19,8 @@ function githubHeaders(accessToken: string): HeadersInit {
 
 /**
  * Exchange a GitHub OAuth access token for the account's @handle via /user.
- * Returns null on any failure (network, revoked token, rate limit) so the
- * caller can fall back to the numeric id without crashing verification.
+ * Returns null on any failure (network, revoked token, rate limit); the caller
+ * then leaves github_login null rather than storing the numeric id as a handle.
  */
 async function fetchGithubLogin(accessToken: string): Promise<string | null> {
   try {
@@ -68,38 +55,81 @@ async function fetchGithubEmails(accessToken: string): Promise<string[]> {
   }
 }
 
-/**
- * Resolve the GitHub @handle for a user, preferring the memoized value and
- * falling back to the numeric account id when the token can't be exchanged.
- */
-export async function resolveLogin(
+/** A persisted user_identity row (our resolved mirror of a Neon Auth user). */
+export interface UserIdentityRow {
+  user_id: string;
+  github_login: string | null;
+  github_id: string | null;
+  name: string | null;
+  email: string | null;
+  avatar_url: string | null;
+}
+
+/** Read the persisted user_identity row for a user id, or null if none yet. */
+export async function readUserIdentity(
+  sql: Queryable,
   userId: string,
-  accountId: string,
-  accessToken: string | null,
-): Promise<string> {
-  const cached = loginCache.get(userId);
-  if (cached) return cached;
-  const login = accessToken ? await fetchGithubLogin(accessToken) : null;
-  const resolved = login ?? accountId;
-  if (login) loginCache.set(userId, login);
-  return resolved;
+): Promise<UserIdentityRow | null> {
+  const rows = await sql<UserIdentityRow[]>`
+    select user_id, github_login, github_id, name, email, avatar_url
+    from user_identity where user_id = ${userId}
+    limit 1
+  `;
+  return rows[0] ?? null;
 }
 
 /**
- * All emails to attribute to this user: the Neon Auth user-row primary plus
- * every GitHub-verified address, memoized per user id. `primaryEmail` is always
- * included so the allowlist still works when the /user/emails call fails or the
- * OAuth token lacks the `user:email` scope.
+ * Resolve the GitHub identity for a freshly-seen (or unresolved) user from their
+ * neon_auth.account, then UPSERT it into user_identity. This is the one-time
+ * GitHub API round-trip: it runs at first login (or when github_login is still
+ * null from a prior failed attempt), never on the read path. The numeric account
+ * id is stored in github_id — it is NEVER written to github_login (a failed
+ * handle resolution leaves github_login null). Returns the persisted row.
+ *
+ * Fails soft: a GitHub API or DB error still returns a row built from the JWT/
+ * neon_auth values, so a validly-authenticated identity is never dropped.
  */
-export async function resolveEmails(
-  userId: string,
-  primaryEmail: string | null,
-  accessToken: string | null,
-): Promise<string[]> {
-  const base = primaryEmail ? [primaryEmail] : [];
-  const cached = emailsCache.get(userId);
-  if (cached) return [...new Set([...base, ...cached])];
-  const github = accessToken ? await fetchGithubEmails(accessToken) : [];
-  if (github.length) emailsCache.set(userId, github);
-  return [...new Set([...base, ...github])];
+export async function persistUserIdentity(
+  sql: Queryable,
+  input: {
+    userId: string;
+    accountId: string | null;
+    accessToken: string | null;
+    jwtEmail: string | null;
+    userRowEmail: string | null;
+    name: string | null;
+  },
+): Promise<UserIdentityRow> {
+  const login = input.accessToken ? await fetchGithubLogin(input.accessToken) : null;
+  const githubEmails = input.accessToken ? await fetchGithubEmails(input.accessToken) : [];
+  // Prefer a GitHub-verified email, then the neon_auth user-row primary, then
+  // the JWT email. All are trusted origins for this identity.
+  const email = githubEmails[0] ?? input.userRowEmail ?? input.jwtEmail ?? null;
+  const avatarUrl = login ? `https://github.com/${login}.png` : null;
+  const row: UserIdentityRow = {
+    user_id: input.userId,
+    github_login: login,
+    github_id: input.accountId,
+    name: input.name,
+    email,
+    avatar_url: avatarUrl,
+  };
+  try {
+    // Upsert: never overwrite a resolved github_login with null (coalesce), so a
+    // later login whose GitHub call fails can't erase a previously-resolved handle.
+    await sql`
+      insert into user_identity (user_id, github_login, github_id, name, email, avatar_url, updated_at)
+      values (${row.user_id}, ${row.github_login}, ${row.github_id}, ${row.name}, ${row.email}, ${row.avatar_url}, now())
+      on conflict (user_id) do update set
+        github_login = coalesce(excluded.github_login, user_identity.github_login),
+        github_id    = coalesce(excluded.github_id, user_identity.github_id),
+        name         = coalesce(excluded.name, user_identity.name),
+        email        = coalesce(excluded.email, user_identity.email),
+        avatar_url   = coalesce(excluded.avatar_url, user_identity.avatar_url),
+        updated_at   = now()
+    `;
+  } catch {
+    // DB write failed — return the in-memory row; the next login retries the upsert.
+  }
+  return row;
 }

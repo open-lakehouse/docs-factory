@@ -1,7 +1,16 @@
 -- Review & release lifecycle schema. The database is authoritative for review
 -- state and comments; git frontmatter carries only the orthogonal authoring
--- `status`. Neon Auth owns neon_auth.user / neon_auth.account — we only
--- reference their ids and join account (provider=github) to resolve a login.
+-- `status`.
+--
+-- Identity: the canonical key for a person is the Neon Auth user id (the JWT
+-- `sub` UUID), stable across a GitHub login rename and provider-agnostic. Neon
+-- Auth owns neon_auth.user / neon_auth.account; at first login we resolve the
+-- GitHub login/id + emails from there ONCE and persist them into our own
+-- user_identity table (below), which everything else references. github_login
+-- and email are display/search attributes, NEVER keys. Everyone referenced by
+-- the allowlist, a review request, or an approval must be REGISTERED — i.e. have
+-- a user_identity row from at least one login; there is no pre-adding someone who
+-- has never signed in.
 --
 -- IDs are time-ordered UUIDv7, generated server-side by Postgres on insert
 -- (`default uuidv7()`, native in PostgreSQL 18). Clients never send an id; the
@@ -221,57 +230,80 @@ create table if not exists content_source (
 create index if not exists content_source_version_idx
   on content_source (version_id);
 
--- Reviewer allowlist, by github login and/or email.
-create table if not exists reviewer_allowlist (
-  id           uuid primary key default uuidv7(),
-  github_login text,
-  email        text,
-  role         text not null default 'reviewer' check (role in ('reviewer', 'maintainer')),
-  added_by     text,
-  created_at   timestamptz not null default now(),
-  check (github_login is not null or email is not null)
+-- Our persisted mirror of a Neon Auth identity, keyed by the stable user id
+-- (JWT `sub`). Written (upserted) on each login from the neon_auth.user/account
+-- join + a one-time GitHub /user resolution, so the rest of the app reads a
+-- resolved login/email/name from here with no GitHub API round-trip. Because it
+-- is OUR table (not neon_auth's), it exists in every environment — including the
+-- local mock provider — which is what makes user search testable without a real
+-- Neon Auth database.
+--
+-- github_login is the resolved @handle (nullable until a login resolves it; a
+-- transient resolution failure leaves it null rather than storing the numeric id
+-- as a fake handle). github_id is the numeric OAuth account id (neon_auth.account
+-- .accountId), kept for later backend GitHub integration. Erasure (EraseUser)
+-- scrubs the PII columns here but keeps the row so stable references survive.
+create table if not exists user_identity (
+  user_id       text primary key,
+  github_login  text,
+  github_id     text,
+  name          text,
+  email         text,
+  avatar_url    text,
+  first_seen_at timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
 );
-create unique index if not exists reviewer_allowlist_login_idx
-  on reviewer_allowlist (lower(github_login));
-create unique index if not exists reviewer_allowlist_email_idx
-  on reviewer_allowlist (lower(email));
+create unique index if not exists user_identity_login_idx
+  on user_identity (lower(github_login));
+create index if not exists user_identity_email_idx
+  on user_identity (lower(email));
+
+-- Reviewer allowlist, keyed by the stable user id. A row can only exist for a
+-- REGISTERED user (FK to user_identity), so there is no pre-adding someone who
+-- has never logged in. Display (login/email/name) comes from the user_identity
+-- join. on delete cascade: erasing the identity drops the grant with it.
+create table if not exists reviewer_allowlist (
+  user_id    text primary key references user_identity (user_id) on delete cascade,
+  role       text not null default 'reviewer' check (role in ('reviewer', 'maintainer')),
+  added_by   text,
+  created_at timestamptz not null default now()
+);
 
 -- A request for a named reviewer to review one (area, slug). Reviewers are
--- addressed by github login (email fallback) matched against reviewer_allowlist
--- — the allowlist has no stable user id and a requested reviewer may not have
--- logged in yet, so "requests to me" compares lower(reviewer_login) to the
--- viewer's login. Unlike the append-only review_state, a request is a small
--- stateful entity with three terminal outcomes; the immutable audit trail lives
--- in content_event, so this stays mutable (status is updated in place).
+-- addressed by their stable user id (reviewer_user_id → user_identity), so a
+-- GitHub rename never breaks "requests to me" — the inbox filter is an exact
+-- reviewer_user_id = viewer.userId. The reviewer must be registered (FK) and is
+-- validated against reviewer_allowlist when the request is created. Unlike the
+-- append-only review_state, a request is a small stateful entity with three
+-- terminal outcomes; the immutable audit trail lives in content_event, so this
+-- stays mutable (status is updated in place).
 --
 -- Satisfaction is per-reviewer: a required request is satisfied when the reviewer
 -- it names records an approval (content_approval). A required, still-open request
 -- keeps the derived state at NEEDS_REVIEW and blocks release until that specific
 -- reviewer approves. Optional requests are advisory only.
 create table if not exists review_request (
-  id             uuid primary key default uuidv7(),
-  area           text not null check (area in ('blogs', 'docs')),
-  slug           text not null,
-  reviewer_login text,
-  reviewer_email text,
-  requirement    text not null default 'required'
-                   check (requirement in ('required', 'optional')),
-  status         text not null default 'open'
-                   check (status in ('open', 'satisfied', 'cancelled')),
-  requested_by   text not null,
-  note           text,
-  created_at     timestamptz not null default now(),
-  satisfied_at   timestamptz,
-  satisfied_by   text,
-  cancelled_at   timestamptz,
-  check (reviewer_login is not null or reviewer_email is not null)
+  id               uuid primary key default uuidv7(),
+  area             text not null check (area in ('blogs', 'docs')),
+  slug             text not null,
+  reviewer_user_id text not null references user_identity (user_id),
+  requirement      text not null default 'required'
+                     check (requirement in ('required', 'optional')),
+  status           text not null default 'open'
+                     check (status in ('open', 'satisfied', 'cancelled')),
+  requested_by     text not null,
+  note             text,
+  created_at       timestamptz not null default now(),
+  satisfied_at     timestamptz,
+  satisfied_by     text,
+  cancelled_at     timestamptz
 );
 -- Release-block + per-artifact request lists filter by (area, slug, status).
 create index if not exists review_request_ref_idx
   on review_request (area, slug, status);
--- A reviewer's inbox ("requests to me") filters by lower(login) + status.
+-- A reviewer's inbox ("requests to me") filters by reviewer_user_id + status.
 create index if not exists review_request_reviewer_idx
-  on review_request (lower(reviewer_login), status);
+  on review_request (reviewer_user_id, status);
 
 -- One reviewer's approval of one artifact. Approvals are per-reviewer and
 -- artifact-level, and they PERSIST across content versions: an edit is normally
@@ -289,16 +321,15 @@ create table if not exists content_approval (
   area             text not null check (area in ('blogs', 'docs')),
   slug             text not null,
   version_id       uuid references content_version (id),
-  approver_login   text not null,
-  approver_user_id text,
+  approver_user_id text not null references user_identity (user_id),
   dismissed_at     timestamptz,
   created_at       timestamptz not null default now()
 );
--- At most one ACTIVE approval per (area, slug, reviewer); dismissed rows are kept
--- for the timeline, so uniqueness is partial on the active set. Approver is
--- matched case-insensitively (as review_request reviewer_login is).
+-- At most one ACTIVE approval per (area, slug, approver); dismissed rows are kept
+-- for the timeline, so uniqueness is partial on the active set. Approver is keyed
+-- by the stable user id (exact match, no case folding needed).
 create unique index if not exists content_approval_active_idx
-  on content_approval (area, slug, lower(approver_login))
+  on content_approval (area, slug, approver_user_id)
   where dismissed_at is null;
 create index if not exists content_approval_ref_idx
   on content_approval (area, slug);

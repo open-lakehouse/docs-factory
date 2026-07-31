@@ -198,6 +198,17 @@ export const listAllowlist = ReviewService.method.listAllowlist;
 export const listRegisteredUsers = ReviewService.method.listRegisteredUsers;
 
 /**
+ * Allowlisted-scoped typeahead over registered users (our user_identity
+ * table), for the reviewer/allowlist pickers. Unlike ListRegisteredUsers
+ * (maintainer-only, reads neon_auth audit data), this is visible to any
+ * allowlisted reviewer and returns only lean UserSummary rows matching the
+ * query on login/name/email.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.SearchUsers
+ */
+export const searchUsers = ReviewService.method.searchUsers;
+
+/**
  * Maintainer-only right-to-erasure. Removes a user's personal footprint —
  * tombstones their authored comments (keeping thread structure), scrubs their
  * identity from review-state and resolution actors, and deletes their

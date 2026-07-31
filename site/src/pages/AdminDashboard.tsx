@@ -27,13 +27,14 @@ import {
   Role,
   type AllowlistEntryDetail,
   type RegisteredUser,
+  type UserSummary,
 } from "../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../lib/auth-context";
 import { useReviewInvalidation } from "../lib/review-queries";
 import Shell from "../components/layout/Shell";
+import UserPicker from "../components/review/UserPicker";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -69,7 +70,7 @@ function fmtDate(ts: { seconds: bigint } | undefined): string {
 }
 
 /** Identity of an allowlist row a maintainer wants to add/edit/remove. */
-type AllowlistOp = { githubLogin?: string; email?: string; role: Role };
+type AllowlistOp = { userId: string; role: Role };
 
 export default function AdminDashboard() {
   const { isLoading: authLoading, isMaintainer, viewer } = useAuth();
@@ -96,8 +97,8 @@ export default function AdminDashboard() {
   const manage = useMutation(manageAllowlist, { onSuccess: refreshRoster });
   const erase = useMutation(eraseUser, { onSuccess: refreshRoster });
 
-  // Add-form state.
-  const [identifier, setIdentifier] = useState("");
+  // Add-form state: a single picked registered user + the role to grant.
+  const [addUser, setAddUser] = useState<UserSummary[]>([]);
   const [addRole, setAddRole] = useState<Role>(Role.REVIEWER);
 
   // Confirm dialogs (self/last-maintainer removal, and erasure).
@@ -126,10 +127,9 @@ export default function AdminDashboard() {
   const entries = allowlistData?.entries ?? [];
   const registered = registeredData?.users ?? [];
   const maintainerCount = entries.filter((e) => e.role === Role.MAINTAINER).length;
-  const myLogin = (viewer?.login ?? "").toLowerCase();
+  const myUserId = viewer?.userId ?? "";
 
-  const isSelf = (e: AllowlistEntryDetail) =>
-    !!e.githubLogin && e.githubLogin.toLowerCase() === myLogin;
+  const isSelf = (e: AllowlistEntryDetail) => !!e.userId && e.userId === myUserId;
   // A remove that would be blocked by the server (last maintainer), or that
   // demotes the viewer's own access — warn before firing.
   const needsConfirm = (e: AllowlistEntryDetail) =>
@@ -138,19 +138,15 @@ export default function AdminDashboard() {
   const doAdd = async (op: AllowlistOp) => {
     await manage.mutateAsync({
       action: ManageAllowlistRequest_Action.ADD,
-      entry: { githubLogin: op.githubLogin, email: op.email, role: op.role },
+      entry: { userId: op.userId, role: op.role },
     });
   };
 
   const submitAdd = async () => {
-    const id = identifier.trim();
-    if (!id) return;
-    // A value containing "@" is treated as an email; otherwise a GitHub login.
-    const entry: AllowlistOp = id.includes("@")
-      ? { email: id, role: addRole }
-      : { githubLogin: id, role: addRole };
-    await doAdd(entry);
-    setIdentifier("");
+    const user = addUser[0];
+    if (!user) return;
+    await doAdd({ userId: user.userId, role: addRole });
+    setAddUser([]);
     setAddRole(Role.REVIEWER);
   };
 
@@ -160,16 +156,13 @@ export default function AdminDashboard() {
       window.alert("Can't demote the last maintainer. Add another maintainer first.");
       return;
     }
-    await doAdd({ githubLogin: e.githubLogin, email: e.email, role });
+    await doAdd({ userId: e.userId, role });
   };
 
   const doRemove = async (e: AllowlistEntryDetail) => {
     await manage.mutateAsync({
       action: ManageAllowlistRequest_Action.REMOVE,
-      // Remove keys on one identity; prefer the login (the server's primary key).
-      entry: e.githubLogin
-        ? { githubLogin: e.githubLogin, role: e.role }
-        : { email: e.email, role: e.role },
+      entry: { userId: e.userId, role: e.role },
     });
     setConfirmRemove(null);
   };
@@ -184,8 +177,9 @@ export default function AdminDashboard() {
       <div className="admin-page">
         <h1>Admin</h1>
         <p className="review-dash-hint">
-          Manage who can review and maintain the site. Roles resolve from GitHub
-          login or email — a user can be added before they've ever logged in.
+          Manage who can review and maintain the site. Only people who have signed
+          in can be granted a role — search for them below or grant a registered
+          user directly.
         </p>
 
         {manage.error && <p className="admin-error">{manage.error.message}</p>}
@@ -200,13 +194,14 @@ export default function AdminDashboard() {
               void submitAdd();
             }}
           >
-            <Input
-              className="admin-add-input"
-              placeholder="GitHub login or email"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-              aria-label="GitHub login or email"
-            />
+            <div className="admin-add-input">
+              <UserPicker
+                value={addUser}
+                onChange={setAddUser}
+                multiple={false}
+                placeholder="Search registered people…"
+              />
+            </div>
             <div className="admin-role-toggle" role="group" aria-label="Role">
               <Button
                 type="button"
@@ -225,7 +220,7 @@ export default function AdminDashboard() {
                 Maintainer
               </Button>
             </div>
-            <Button type="submit" size="sm" disabled={manage.isPending || !identifier.trim()}>
+            <Button type="submit" size="sm" disabled={manage.isPending || addUser.length === 0}>
               Add
             </Button>
           </form>
@@ -248,7 +243,7 @@ export default function AdminDashboard() {
               </thead>
               <tbody>
                 {entries.map((e) => (
-                  <tr key={e.id}>
+                  <tr key={e.userId}>
                     <td>
                       <RoleBadge role={e.role} />
                     </td>
@@ -334,13 +329,7 @@ export default function AdminDashboard() {
                             variant="outline"
                             size="xs"
                             disabled={manage.isPending}
-                            onClick={() =>
-                              void doAdd({
-                                githubLogin: u.githubLogin,
-                                email: u.email,
-                                role: Role.REVIEWER,
-                              })
-                            }
+                            onClick={() => void doAdd({ userId: u.userId, role: Role.REVIEWER })}
                           >
                             Grant reviewer
                           </Button>
@@ -348,13 +337,7 @@ export default function AdminDashboard() {
                             variant="outline"
                             size="xs"
                             disabled={manage.isPending}
-                            onClick={() =>
-                              void doAdd({
-                                githubLogin: u.githubLogin,
-                                email: u.email,
-                                role: Role.MAINTAINER,
-                              })
-                            }
+                            onClick={() => void doAdd({ userId: u.userId, role: Role.MAINTAINER })}
                           >
                             Grant maintainer
                           </Button>

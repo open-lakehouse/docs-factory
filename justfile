@@ -83,10 +83,17 @@ db-down:
 db-reset: _server-deps
     cd server && docker compose down -v && docker compose up -d --wait
     just db-migrate
+    just db-seed
 
 # Apply db/migrations/*.sql. Reads DATABASE_URL or the PG* parts from server/.env.
 db-migrate: _server-deps
     cd server && set -a && [ -f .env ] && . ./.env; set +a; node scripts/migrate.mjs
+
+# Apply db/seed/*.sql (LOCAL DEV ONLY): synthetic registered users + allowlist
+# grants matching the mock provider's personas, so the pickers have content.
+# Idempotent (on conflict do nothing). Runs as part of db-reset.
+db-seed: _server-deps
+    cd server && set -a && [ -f .env ] && . ./.env; set +a; node scripts/seed.mjs
 
 # Run the review backend locally (same Hono+Connect app the Neon Function runs).
 # Defaults AUTH_MODE=anon (Phase 1); Phase 2 adds mock impersonation. Reads

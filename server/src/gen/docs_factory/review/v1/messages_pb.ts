@@ -19,7 +19,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file docs_factory/review/v1/messages.proto.
  */
 export const file_docs_factory_review_v1_messages: GenFile = /*@__PURE__*/
-  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQi6AIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYSEQoJcm9vdF9oYXNoGAkgASgJEg4KBnRvcGljcxgKIAMoCRI1CgR0cmVlGAsgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5NZXJrbGVOb2RlSACIAQFCBwoFX3RyZWUi4gEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBRIRCglub2RlX2hhc2gYCCABKAkSFAoMc3VidHJlZV9oYXNoGAkgASgJEhoKEnBhcmVudF9hbmNob3Jfc2x1ZxgKIAEoCRISCgpkZXB0aF9wYXRoGAsgASgJIqoCCgpNZXJrbGVOb2RlEgsKA2tleRgBIAEoCRIMCgRraW5kGAIgASgJEhEKCW5vZGVfaGFzaBgDIAEoCRIUCgxzdWJ0cmVlX2hhc2gYBCABKAkSDQoFbGV2ZWwYBSABKAUSDQoFbGFiZWwYBiABKAkSNAoIY2hpbGRyZW4YByADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLk1lcmtsZU5vZGUSGAoLYW5jaG9yX3NsdWcYCCABKAlIAIgBARIZCgxzbmlwcGV0X3BhdGgYCSABKAlIAYgBARIbCg5zbmlwcGV0X3JlZ2lvbhgKIAEoCUgCiAEBQg4KDF9hbmNob3Jfc2x1Z0IPCg1fc25pcHBldF9wYXRoQhEKD19zbmlwcGV0X3JlZ2lvbiJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIr8BCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAgSFAoHdXNlcl9pZBgFIAEoCUgBiAEBEhEKBG5hbWUYBiABKAlIAogBAUIICgZfbG9naW5CCgoIX3VzZXJfaWRCBwoFX25hbWUi/gQKB0NvbW1lbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhMKC2FuY2hvcl9zbHVnGAMgASgJEhoKEmFuY2hvcl9maW5nZXJwcmludBgEIAEoCRIWCglwYXJlbnRfaWQYBSABKAlIAIgBARIUCgxhdXRob3JfbG9naW4YBiABKAkSDwoHYm9keV9tZBgHIAEoCRIYCgthdXRob3JfbmFtZRgPIAEoCUgBiAEBEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIQCghvcnBoYW5lZBgKIAEoCBI7CghzZWxlY3RvchgLIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGV4dFNlbGVjdG9ySAOIAQESQAoNY29kZV9zZWxlY3RvchgMIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29kZVNlbGVjdG9ySASIAQESIAoTYXV0aG9yZWRfdmVyc2lvbl9pZBgNIAEoCUgFiAEBEh0KEGF1dGhvcmVkX2dpdF9zaGEYDiABKAlIBogBAUIMCgpfcGFyZW50X2lkQg4KDF9hdXRob3JfbmFtZUIMCgpfZWRpdGVkX2F0QgsKCV9zZWxlY3RvckIQCg5fY29kZV9zZWxlY3RvckIWChRfYXV0aG9yZWRfdmVyc2lvbl9pZEITChFfYXV0aG9yZWRfZ2l0X3NoYSKVAgoGVGhyZWFkEi0KBHJvb3QYASABKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbW1lbnQSMAoHcmVwbGllcxgCIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIQCghyZXNvbHZlZBgDIAEoCBIYCgtyZXNvbHZlZF9ieRgEIAEoCUgAiAEBEjQKC3Jlc29sdmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBEhIKCmhhc191bnJlYWQYBiABKAgSFAoMdW5yZWFkX2NvdW50GAcgASgFQg4KDF9yZXNvbHZlZF9ieUIOCgxfcmVzb2x2ZWRfYXQitwQKDERyYWZ0U3VtbWFyeRIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSDQoFdGl0bGUYAiABKAkSGgoSZnJvbnRtYXR0ZXJfc3RhdHVzGAMgASgJEjkKDHJldmlld19zdGF0ZRgEIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSQwoObGF0ZXN0X3ZlcnNpb24YBSABKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRWZXJzaW9uSACIAQESGgoSb3Blbl9jb21tZW50X2NvdW50GAYgASgFEhUKCHByaW9yaXR5GAcgASgFSAGIAQESPAoTdGFyZ2V0X3JlbGVhc2VfZGF0ZRgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIjChtvcGVuX3JlcXVpcmVkX3JlcXVlc3RfY291bnQYCSABKAUSEQoJcHVibGlzaGVkGAogASgIEjMKCWFwcHJvdmFscxgLIAMoCzIgLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQXBwcm92YWwSHwoXcGVuZGluZ19yZXF1aXJlZF9sb2dpbnMYDCADKAkSFAoMbmVlZHNfcmV2aWV3GA0gASgIQhEKD19sYXRlc3RfdmVyc2lvbkILCglfcHJpb3JpdHlCFgoUX3RhcmdldF9yZWxlYXNlX2RhdGUihgEKDkFsbG93bGlzdEVudHJ5EhkKDGdpdGh1Yl9sb2dpbhgBIAEoCUgAiAEBEhIKBWVtYWlsGAIgASgJSAGIAQESKgoEcm9sZRgDIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZUIPCg1fZ2l0aHViX2xvZ2luQggKBl9lbWFpbCLsAQoUQWxsb3dsaXN0RW50cnlEZXRhaWwSCgoCaWQYASABKAkSGQoMZ2l0aHViX2xvZ2luGAIgASgJSACIAQESEgoFZW1haWwYAyABKAlIAYgBARIqCgRyb2xlGAQgASgOMhwuZG9jc19mYWN0b3J5LnJldmlldy52MS5Sb2xlEhUKCGFkZGVkX2J5GAUgASgJSAKIAQESLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCDwoNX2dpdGh1Yl9sb2dpbkIICgZfZW1haWxCCwoJX2FkZGVkX2J5It8BCg5SZWdpc3RlcmVkVXNlchIPCgd1c2VyX2lkGAEgASgJEhkKDGdpdGh1Yl9sb2dpbhgCIAEoCUgAiAEBEhIKBWVtYWlsGAMgASgJSAGIAQESKgoEcm9sZRgEIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZRI1CgxsYXN0X3NlZW5fYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAKIAQFCDwoNX2dpdGh1Yl9sb2dpbkIICgZfZW1haWxCDwoNX2xhc3Rfc2Vlbl9hdCLGAQoNUmVjZW50Q29tbWVudBIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50Ei8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhITCgthbmNob3Jfc2x1ZxgDIAEoCRIUCgxoZWFkaW5nX3RleHQYBCABKAkSEAoIcmVzb2x2ZWQYBSABKAgSFQoNY29udGVudF90aXRsZRgGIAEoCSK5AwoNUmV2aWV3UmVxdWVzdBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGwoOcmV2aWV3ZXJfbG9naW4YAyABKAlIAIgBARIbCg5yZXZpZXdlcl9lbWFpbBgEIAEoCUgBiAEBEjgKC3JlcXVpcmVtZW50GAUgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1aXJlbWVudBI1CgZzdGF0dXMYBiABKA4yJS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJlcXVlc3RTdGF0dXMSFAoMcmVxdWVzdGVkX2J5GAcgASgJEgwKBG5vdGUYCCABKAkSLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNQoMc2F0aXNmaWVkX2F0GAogASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgCiAEBQhEKD19yZXZpZXdlcl9sb2dpbkIRCg9fcmV2aWV3ZXJfZW1haWxCDwoNX3NhdGlzZmllZF9hdCLrAQoIQXBwcm92YWwSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhYKDmFwcHJvdmVyX2xvZ2luGAMgASgJEh0KEGFwcHJvdmVyX3VzZXJfaWQYBCABKAlIAIgBARIXCgp2ZXJzaW9uX2lkGAUgASgJSAGIAQESLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCEwoRX2FwcHJvdmVyX3VzZXJfaWRCDQoLX3ZlcnNpb25faWQijwMKDENvbnRlbnRFdmVudBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSLwoEa2luZBgDIAEoDjIhLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuRXZlbnRLaW5kEg0KBWFjdG9yGAQgASgJEgwKBG5vdGUYBSABKAkSPAoKZnJvbV9zdGF0ZRgGIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGVIAIgBARI6Cgh0b19zdGF0ZRgHIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGVIAYgBARIbCg5yZXZpZXdlcl9sb2dpbhgIIAEoCUgCiAEBEi4KCmNyZWF0ZWRfYXQYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQg0KC19mcm9tX3N0YXRlQgsKCV90b19zdGF0ZUIRCg9fcmV2aWV3ZXJfbG9naW4qWgoLQ29udGVudEFyZWESHAoYQ09OVEVOVF9BUkVBX1VOU1BFQ0lGSUVEEAASFgoSQ09OVEVOVF9BUkVBX0JMT0dTEAESFQoRQ09OVEVOVF9BUkVBX0RPQ1MQAiq7AQoLUmV2aWV3U3RhdGUSHAoYUkVWSUVXX1NUQVRFX1VOU1BFQ0lGSUVEEAASFQoRUkVWSUVXX1NUQVRFX05PTkUQARIdChlSRVZJRVdfU1RBVEVfTkVFRFNfUkVWSUVXEAISIgoeUkVWSUVXX1NUQVRFX0NIQU5HRVNfUkVRVUVTVEVEEAMSGQoVUkVWSUVXX1NUQVRFX0FQUFJPVkVEEAQSGQoVUkVWSUVXX1NUQVRFX1JFTEVBU0VEEAUqWAoEUm9sZRIUChBST0xFX1VOU1BFQ0lGSUVEEAASEgoOUk9MRV9BTk9OWU1PVVMQARIRCg1ST0xFX1JFVklFV0VSEAISEwoPUk9MRV9NQUlOVEFJTkVSEAMqXgoLUmVxdWlyZW1lbnQSGwoXUkVRVUlSRU1FTlRfVU5TUEVDSUZJRUQQABIYChRSRVFVSVJFTUVOVF9SRVFVSVJFRBABEhgKFFJFUVVJUkVNRU5UX09QVElPTkFMEAIqhAEKDVJlcXVlc3RTdGF0dXMSHgoaUkVRVUVTVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIXChNSRVFVRVNUX1NUQVRVU19PUEVOEAESHAoYUkVRVUVTVF9TVEFUVVNfU0FUSVNGSUVEEAISHAoYUkVRVUVTVF9TVEFUVVNfQ0FOQ0VMTEVEEAMqoAMKCUV2ZW50S2luZBIaChZFVkVOVF9LSU5EX1VOU1BFQ0lGSUVEEAASHwobRVZFTlRfS0lORF9SRVZJRVdfUkVRVUVTVEVEEAESIAocRVZFTlRfS0lORF9SRVFVRVNUX1NBVElTRklFRBACEiAKHEVWRU5UX0tJTkRfUkVRVUVTVF9DQU5DRUxMRUQQAxIeChpFVkVOVF9LSU5EX1NUQVRFX0lOX1JFVklFVxAEEiYKIkVWRU5UX0tJTkRfU1RBVEVfQ0hBTkdFU19SRVFVRVNURUQQBRIdChlFVkVOVF9LSU5EX1NUQVRFX0FQUFJPVkVEEAYSFwoTRVZFTlRfS0lORF9SRUxFQVNFRBAHEhoKFkVWRU5UX0tJTkRfVU5QVUJMSVNIRUQQCBIaChZFVkVOVF9LSU5EX1JFUFVCTElTSEVEEAkSFwoTRVZFTlRfS0lORF9BUFBST1ZFRBAKEiEKHUVWRU5UX0tJTkRfQVBQUk9WQUxfRElTTUlTU0VEEAsSHgoaRVZFTlRfS0lORF9DT05URU5UX1JFVklTRUQQDGIGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQi6AIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYSEQoJcm9vdF9oYXNoGAkgASgJEg4KBnRvcGljcxgKIAMoCRI1CgR0cmVlGAsgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5NZXJrbGVOb2RlSACIAQFCBwoFX3RyZWUi4gEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBRIRCglub2RlX2hhc2gYCCABKAkSFAoMc3VidHJlZV9oYXNoGAkgASgJEhoKEnBhcmVudF9hbmNob3Jfc2x1ZxgKIAEoCRISCgpkZXB0aF9wYXRoGAsgASgJIqoCCgpNZXJrbGVOb2RlEgsKA2tleRgBIAEoCRIMCgRraW5kGAIgASgJEhEKCW5vZGVfaGFzaBgDIAEoCRIUCgxzdWJ0cmVlX2hhc2gYBCABKAkSDQoFbGV2ZWwYBSABKAUSDQoFbGFiZWwYBiABKAkSNAoIY2hpbGRyZW4YByADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLk1lcmtsZU5vZGUSGAoLYW5jaG9yX3NsdWcYCCABKAlIAIgBARIZCgxzbmlwcGV0X3BhdGgYCSABKAlIAYgBARIbCg5zbmlwcGV0X3JlZ2lvbhgKIAEoCUgCiAEBQg4KDF9hbmNob3Jfc2x1Z0IPCg1fc25pcHBldF9wYXRoQhEKD19zbmlwcGV0X3JlZ2lvbiJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIr8BCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAgSFAoHdXNlcl9pZBgFIAEoCUgBiAEBEhEKBG5hbWUYBiABKAlIAogBAUIICgZfbG9naW5CCgoIX3VzZXJfaWRCBwoFX25hbWUi/gQKB0NvbW1lbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhMKC2FuY2hvcl9zbHVnGAMgASgJEhoKEmFuY2hvcl9maW5nZXJwcmludBgEIAEoCRIWCglwYXJlbnRfaWQYBSABKAlIAIgBARIUCgxhdXRob3JfbG9naW4YBiABKAkSDwoHYm9keV9tZBgHIAEoCRIYCgthdXRob3JfbmFtZRgPIAEoCUgBiAEBEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIQCghvcnBoYW5lZBgKIAEoCBI7CghzZWxlY3RvchgLIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGV4dFNlbGVjdG9ySAOIAQESQAoNY29kZV9zZWxlY3RvchgMIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29kZVNlbGVjdG9ySASIAQESIAoTYXV0aG9yZWRfdmVyc2lvbl9pZBgNIAEoCUgFiAEBEh0KEGF1dGhvcmVkX2dpdF9zaGEYDiABKAlIBogBAUIMCgpfcGFyZW50X2lkQg4KDF9hdXRob3JfbmFtZUIMCgpfZWRpdGVkX2F0QgsKCV9zZWxlY3RvckIQCg5fY29kZV9zZWxlY3RvckIWChRfYXV0aG9yZWRfdmVyc2lvbl9pZEITChFfYXV0aG9yZWRfZ2l0X3NoYSKVAgoGVGhyZWFkEi0KBHJvb3QYASABKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbW1lbnQSMAoHcmVwbGllcxgCIAMoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIQCghyZXNvbHZlZBgDIAEoCBIYCgtyZXNvbHZlZF9ieRgEIAEoCUgAiAEBEjQKC3Jlc29sdmVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBEhIKCmhhc191bnJlYWQYBiABKAgSFAoMdW5yZWFkX2NvdW50GAcgASgFQg4KDF9yZXNvbHZlZF9ieUIOCgxfcmVzb2x2ZWRfYXQitwQKDERyYWZ0U3VtbWFyeRIvCgNyZWYYASABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSDQoFdGl0bGUYAiABKAkSGgoSZnJvbnRtYXR0ZXJfc3RhdHVzGAMgASgJEjkKDHJldmlld19zdGF0ZRgEIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmV2aWV3U3RhdGUSQwoObGF0ZXN0X3ZlcnNpb24YBSABKAsyJi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRWZXJzaW9uSACIAQESGgoSb3Blbl9jb21tZW50X2NvdW50GAYgASgFEhUKCHByaW9yaXR5GAcgASgFSAGIAQESPAoTdGFyZ2V0X3JlbGVhc2VfZGF0ZRgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIjChtvcGVuX3JlcXVpcmVkX3JlcXVlc3RfY291bnQYCSABKAUSEQoJcHVibGlzaGVkGAogASgIEjMKCWFwcHJvdmFscxgLIAMoCzIgLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQXBwcm92YWwSHwoXcGVuZGluZ19yZXF1aXJlZF9sb2dpbnMYDCADKAkSFAoMbmVlZHNfcmV2aWV3GA0gASgIQhEKD19sYXRlc3RfdmVyc2lvbkILCglfcHJpb3JpdHlCFgoUX3RhcmdldF9yZWxlYXNlX2RhdGUi2AEKC1VzZXJTdW1tYXJ5Eg8KB3VzZXJfaWQYASABKAkSGQoMZ2l0aHViX2xvZ2luGAIgASgJSACIAQESEQoEbmFtZRgDIAEoCUgBiAEBEhIKBWVtYWlsGAQgASgJSAKIAQESFwoKYXZhdGFyX3VybBgFIAEoCUgDiAEBEioKBHJvbGUYBiABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGVCDwoNX2dpdGh1Yl9sb2dpbkIHCgVfbmFtZUIICgZfZW1haWxCDQoLX2F2YXRhcl91cmwiUwoOQWxsb3dsaXN0RW50cnkSDwoHdXNlcl9pZBgBIAEoCRIqCgRyb2xlGAMgASgOMhwuZG9jc19mYWN0b3J5LnJldmlldy52MS5Sb2xlSgQIAhADIo0CChRBbGxvd2xpc3RFbnRyeURldGFpbBIPCgd1c2VyX2lkGAEgASgJEhkKDGdpdGh1Yl9sb2dpbhgCIAEoCUgAiAEBEhIKBWVtYWlsGAMgASgJSAGIAQESKgoEcm9sZRgEIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZRIVCghhZGRlZF9ieRgFIAEoCUgCiAEBEi4KCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhEKBG5hbWUYByABKAlIA4gBAUIPCg1fZ2l0aHViX2xvZ2luQggKBl9lbWFpbEILCglfYWRkZWRfYnlCBwoFX25hbWUi+wEKDlJlZ2lzdGVyZWRVc2VyEg8KB3VzZXJfaWQYASABKAkSGQoMZ2l0aHViX2xvZ2luGAIgASgJSACIAQESEgoFZW1haWwYAyABKAlIAYgBARIqCgRyb2xlGAQgASgOMhwuZG9jc19mYWN0b3J5LnJldmlldy52MS5Sb2xlEjUKDGxhc3Rfc2Vlbl9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIRCgRuYW1lGAYgASgJSAOIAQFCDwoNX2dpdGh1Yl9sb2dpbkIICgZfZW1haWxCDwoNX2xhc3Rfc2Vlbl9hdEIHCgVfbmFtZSLGAQoNUmVjZW50Q29tbWVudBIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50Ei8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhITCgthbmNob3Jfc2x1ZxgDIAEoCRIUCgxoZWFkaW5nX3RleHQYBCABKAkSEAoIcmVzb2x2ZWQYBSABKAgSFQoNY29udGVudF90aXRsZRgGIAEoCSLXAwoNUmV2aWV3UmVxdWVzdBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGAoQcmV2aWV3ZXJfdXNlcl9pZBgDIAEoCRI4CgtyZXF1aXJlbWVudBgFIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVxdWlyZW1lbnQSNQoGc3RhdHVzGAYgASgOMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0U3RhdHVzEhQKDHJlcXVlc3RlZF9ieRgHIAEoCRIMCgRub3RlGAggASgJEi4KCmNyZWF0ZWRfYXQYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjUKDHNhdGlzZmllZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBARIbCg5yZXZpZXdlcl9sb2dpbhgLIAEoCUgBiAEBEhoKDXJldmlld2VyX25hbWUYDCABKAlIAogBAUIPCg1fc2F0aXNmaWVkX2F0QhEKD19yZXZpZXdlcl9sb2dpbkIQCg5fcmV2aWV3ZXJfbmFtZUoECAQQBSLpAQoIQXBwcm92YWwSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhsKDmFwcHJvdmVyX2xvZ2luGAMgASgJSACIAQESGAoQYXBwcm92ZXJfdXNlcl9pZBgEIAEoCRIXCgp2ZXJzaW9uX2lkGAUgASgJSAGIAQESLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCEQoPX2FwcHJvdmVyX2xvZ2luQg0KC192ZXJzaW9uX2lkIo8DCgxDb250ZW50RXZlbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEi8KBGtpbmQYAyABKA4yIS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkV2ZW50S2luZBINCgVhY3RvchgEIAEoCRIMCgRub3RlGAUgASgJEjwKCmZyb21fc3RhdGUYBiABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJldmlld1N0YXRlSACIAQESOgoIdG9fc3RhdGUYByABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJldmlld1N0YXRlSAGIAQESGwoOcmV2aWV3ZXJfbG9naW4YCCABKAlIAogBARIuCgpjcmVhdGVkX2F0GAkgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEINCgtfZnJvbV9zdGF0ZUILCglfdG9fc3RhdGVCEQoPX3Jldmlld2VyX2xvZ2luKloKC0NvbnRlbnRBcmVhEhwKGENPTlRFTlRfQVJFQV9VTlNQRUNJRklFRBAAEhYKEkNPTlRFTlRfQVJFQV9CTE9HUxABEhUKEUNPTlRFTlRfQVJFQV9ET0NTEAIquwEKC1Jldmlld1N0YXRlEhwKGFJFVklFV19TVEFURV9VTlNQRUNJRklFRBAAEhUKEVJFVklFV19TVEFURV9OT05FEAESHQoZUkVWSUVXX1NUQVRFX05FRURTX1JFVklFVxACEiIKHlJFVklFV19TVEFURV9DSEFOR0VTX1JFUVVFU1RFRBADEhkKFVJFVklFV19TVEFURV9BUFBST1ZFRBAEEhkKFVJFVklFV19TVEFURV9SRUxFQVNFRBAFKlgKBFJvbGUSFAoQUk9MRV9VTlNQRUNJRklFRBAAEhIKDlJPTEVfQU5PTllNT1VTEAESEQoNUk9MRV9SRVZJRVdFUhACEhMKD1JPTEVfTUFJTlRBSU5FUhADKl4KC1JlcXVpcmVtZW50EhsKF1JFUVVJUkVNRU5UX1VOU1BFQ0lGSUVEEAASGAoUUkVRVUlSRU1FTlRfUkVRVUlSRUQQARIYChRSRVFVSVJFTUVOVF9PUFRJT05BTBACKoQBCg1SZXF1ZXN0U3RhdHVzEh4KGlJFUVVFU1RfU1RBVFVTX1VOU1BFQ0lGSUVEEAASFwoTUkVRVUVTVF9TVEFUVVNfT1BFThABEhwKGFJFUVVFU1RfU1RBVFVTX1NBVElTRklFRBACEhwKGFJFUVVFU1RfU1RBVFVTX0NBTkNFTExFRBADKqADCglFdmVudEtpbmQSGgoWRVZFTlRfS0lORF9VTlNQRUNJRklFRBAAEh8KG0VWRU5UX0tJTkRfUkVWSUVXX1JFUVVFU1RFRBABEiAKHEVWRU5UX0tJTkRfUkVRVUVTVF9TQVRJU0ZJRUQQAhIgChxFVkVOVF9LSU5EX1JFUVVFU1RfQ0FOQ0VMTEVEEAMSHgoaRVZFTlRfS0lORF9TVEFURV9JTl9SRVZJRVcQBBImCiJFVkVOVF9LSU5EX1NUQVRFX0NIQU5HRVNfUkVRVUVTVEVEEAUSHQoZRVZFTlRfS0lORF9TVEFURV9BUFBST1ZFRBAGEhcKE0VWRU5UX0tJTkRfUkVMRUFTRUQQBxIaChZFVkVOVF9LSU5EX1VOUFVCTElTSEVEEAgSGgoWRVZFTlRfS0lORF9SRVBVQkxJU0hFRBAJEhcKE0VWRU5UX0tJTkRfQVBQUk9WRUQQChIhCh1FVkVOVF9LSU5EX0FQUFJPVkFMX0RJU01JU1NFRBALEh4KGkVWRU5UX0tJTkRfQ09OVEVOVF9SRVZJU0VEEAxiBnByb3RvMw", [file_google_protobuf_timestamp]);
 
 /**
  * Stable reference to one piece of content. `project`/`bucket` are set only for
@@ -744,8 +744,10 @@ export type DraftSummary = Message<"docs_factory.review.v1.DraftSummary"> & {
   approvals: Approval[];
 
   /**
-   * Logins of required reviewers whose approval is still pending (the open
-   * required requests). Drives the "required: A, B still pending" UI.
+   * Resolved display logins of required reviewers whose approval is still
+   * pending (the open required requests). Drives the "required: A, B still
+   * pending" UI. Keyed internally on user_id; these are the joined display
+   * handles (a reviewer with no resolved handle appears by name/user id).
    *
    * @generated from field: repeated string pending_required_logins = 12;
    */
@@ -768,20 +770,64 @@ export const DraftSummarySchema: GenMessage<DraftSummary> = /*@__PURE__*/
   messageDesc(file_docs_factory_review_v1_messages, 11);
 
 /**
- * One allowlist entry.
+ * A registered user, keyed by the stable Neon Auth user id, with resolved
+ * display attributes. The result shape of SearchUsers and the identity carried
+ * by the reviewer/allowlist pickers. github_login/name/email are display+search
+ * attributes (may be absent until a login resolves them); `role` is the user's
+ * current allowlist role (ANONYMOUS = registered but not allowlisted).
+ *
+ * @generated from message docs_factory.review.v1.UserSummary
+ */
+export type UserSummary = Message<"docs_factory.review.v1.UserSummary"> & {
+  /**
+   * @generated from field: string user_id = 1;
+   */
+  userId: string;
+
+  /**
+   * @generated from field: optional string github_login = 2;
+   */
+  githubLogin?: string | undefined;
+
+  /**
+   * @generated from field: optional string name = 3;
+   */
+  name?: string | undefined;
+
+  /**
+   * @generated from field: optional string email = 4;
+   */
+  email?: string | undefined;
+
+  /**
+   * @generated from field: optional string avatar_url = 5;
+   */
+  avatarUrl?: string | undefined;
+
+  /**
+   * @generated from field: docs_factory.review.v1.Role role = 6;
+   */
+  role: Role;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.UserSummary.
+ * Use `create(UserSummarySchema)` to create a new message.
+ */
+export const UserSummarySchema: GenMessage<UserSummary> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 12);
+
+/**
+ * The write shape for ManageAllowlist: grant/adjust a role for a REGISTERED
+ * user, addressed by their stable user id (they must have a user_identity row).
  *
  * @generated from message docs_factory.review.v1.AllowlistEntry
  */
 export type AllowlistEntry = Message<"docs_factory.review.v1.AllowlistEntry"> & {
   /**
-   * @generated from field: optional string github_login = 1;
+   * @generated from field: string user_id = 1;
    */
-  githubLogin?: string | undefined;
-
-  /**
-   * @generated from field: optional string email = 2;
-   */
-  email?: string | undefined;
+  userId: string;
 
   /**
    * @generated from field: docs_factory.review.v1.Role role = 3;
@@ -794,21 +840,21 @@ export type AllowlistEntry = Message<"docs_factory.review.v1.AllowlistEntry"> & 
  * Use `create(AllowlistEntrySchema)` to create a new message.
  */
 export const AllowlistEntrySchema: GenMessage<AllowlistEntry> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 12);
+  messageDesc(file_docs_factory_review_v1_messages, 13);
 
 /**
- * A reviewer_allowlist row with its audit metadata, for the maintainer admin
- * list view. Distinct from AllowlistEntry (the write shape used by
- * ManageAllowlist / RequestReview) so those stay unchanged. `id` is the row
- * uuid, so a remove/edit can target a precise row.
+ * A reviewer_allowlist row with resolved display attributes + audit metadata,
+ * for the maintainer admin list view. Keyed by user_id (also the row key now
+ * that the allowlist PK is the user id). github_login/email/name come from the
+ * user_identity join and are display-only.
  *
  * @generated from message docs_factory.review.v1.AllowlistEntryDetail
  */
 export type AllowlistEntryDetail = Message<"docs_factory.review.v1.AllowlistEntryDetail"> & {
   /**
-   * @generated from field: string id = 1;
+   * @generated from field: string user_id = 1;
    */
-  id: string;
+  userId: string;
 
   /**
    * @generated from field: optional string github_login = 2;
@@ -834,6 +880,11 @@ export type AllowlistEntryDetail = Message<"docs_factory.review.v1.AllowlistEntr
    * @generated from field: google.protobuf.Timestamp created_at = 6;
    */
   createdAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: optional string name = 7;
+   */
+  name?: string | undefined;
 };
 
 /**
@@ -841,16 +892,14 @@ export type AllowlistEntryDetail = Message<"docs_factory.review.v1.AllowlistEntr
  * Use `create(AllowlistEntryDetailSchema)` to create a new message.
  */
 export const AllowlistEntryDetailSchema: GenMessage<AllowlistEntryDetail> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 13);
+  messageDesc(file_docs_factory_review_v1_messages, 14);
 
 /**
- * A person known to the auth provider (neon_auth), joined to their current
+ * A person who has logged in (has a user_identity row), joined to their current
  * allowlist role — the input to the admin "who has logged in" discovery view.
- * `github_login` is the resolved @handle, falling back to the numeric GitHub
- * account id when the OAuth token can't be exchanged (same fallback as viewer
- * resolution). `role` is ANONYMOUS for a logged-in user who is not on the
- * allowlist ("no status"). `last_seen_at` is a best-effort activity signal and
- * may be absent.
+ * `github_login` is the resolved @handle (absent if never resolved). `role` is
+ * ANONYMOUS for a logged-in user who is not on the allowlist ("no status").
+ * `last_seen_at` is a best-effort activity signal (user_identity.updated_at).
  *
  * @generated from message docs_factory.review.v1.RegisteredUser
  */
@@ -879,6 +928,11 @@ export type RegisteredUser = Message<"docs_factory.review.v1.RegisteredUser"> & 
    * @generated from field: optional google.protobuf.Timestamp last_seen_at = 5;
    */
   lastSeenAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: optional string name = 6;
+   */
+  name?: string | undefined;
 };
 
 /**
@@ -886,7 +940,7 @@ export type RegisteredUser = Message<"docs_factory.review.v1.RegisteredUser"> & 
  * Use `create(RegisteredUserSchema)` to create a new message.
  */
 export const RegisteredUserSchema: GenMessage<RegisteredUser> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 14);
+  messageDesc(file_docs_factory_review_v1_messages, 15);
 
 /**
  * A recent comment for the reviewer dashboard's "latest comments" feed. Carries
@@ -938,13 +992,14 @@ export type RecentComment = Message<"docs_factory.review.v1.RecentComment"> & {
  * Use `create(RecentCommentSchema)` to create a new message.
  */
 export const RecentCommentSchema: GenMessage<RecentComment> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 15);
+  messageDesc(file_docs_factory_review_v1_messages, 16);
 
 /**
- * A request for a named reviewer to review one artifact. Reviewers are addressed
- * by GitHub login (email fallback) matched against the reviewer allowlist — the
- * allowlist has no stable user id, and a requested reviewer may not have logged
- * in yet. "Requests to me" matches lower(reviewer_login) == lower(viewer.login).
+ * A request for a registered reviewer to review one artifact. Reviewers are
+ * addressed by their stable user id (reviewer_user_id), so "requests to me" is
+ * an exact reviewer_user_id == viewer.user_id and a GitHub rename never breaks
+ * it. reviewer_login / reviewer_name are resolved display fields from the
+ * user_identity join.
  *
  * @generated from message docs_factory.review.v1.ReviewRequest
  */
@@ -960,16 +1015,11 @@ export type ReviewRequest = Message<"docs_factory.review.v1.ReviewRequest"> & {
   ref?: ContentRef | undefined;
 
   /**
-   * Whom the review is requested from. At least one of login/email is set.
+   * Whom the review is requested from (stable Neon Auth user id).
    *
-   * @generated from field: optional string reviewer_login = 3;
+   * @generated from field: string reviewer_user_id = 3;
    */
-  reviewerLogin?: string | undefined;
-
-  /**
-   * @generated from field: optional string reviewer_email = 4;
-   */
-  reviewerEmail?: string | undefined;
+  reviewerUserId: string;
 
   /**
    * @generated from field: docs_factory.review.v1.Requirement requirement = 5;
@@ -982,7 +1032,7 @@ export type ReviewRequest = Message<"docs_factory.review.v1.ReviewRequest"> & {
   status: RequestStatus;
 
   /**
-   * Who opened the request (actor identity: user id or login).
+   * Who opened the request (actor user id).
    *
    * @generated from field: string requested_by = 7;
    */
@@ -1002,6 +1052,18 @@ export type ReviewRequest = Message<"docs_factory.review.v1.ReviewRequest"> & {
    * @generated from field: optional google.protobuf.Timestamp satisfied_at = 10;
    */
   satisfiedAt?: Timestamp | undefined;
+
+  /**
+   * Resolved display attributes of the reviewer (from user_identity).
+   *
+   * @generated from field: optional string reviewer_login = 11;
+   */
+  reviewerLogin?: string | undefined;
+
+  /**
+   * @generated from field: optional string reviewer_name = 12;
+   */
+  reviewerName?: string | undefined;
 };
 
 /**
@@ -1009,7 +1071,7 @@ export type ReviewRequest = Message<"docs_factory.review.v1.ReviewRequest"> & {
  * Use `create(ReviewRequestSchema)` to create a new message.
  */
 export const ReviewRequestSchema: GenMessage<ReviewRequest> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 16);
+  messageDesc(file_docs_factory_review_v1_messages, 17);
 
 /**
  * One reviewer's approval of an artifact. Approvals are per-reviewer and
@@ -1033,16 +1095,19 @@ export type Approval = Message<"docs_factory.review.v1.Approval"> & {
   ref?: ContentRef | undefined;
 
   /**
-   * @generated from field: string approver_login = 3;
+   * Resolved display login of the approver (from user_identity); may be absent
+   * if the handle was never resolved.
+   *
+   * @generated from field: optional string approver_login = 3;
    */
-  approverLogin: string;
+  approverLogin?: string | undefined;
 
   /**
-   * Stable Neon Auth user id when available (else the login was all we had).
+   * Stable Neon Auth user id — the approval's key.
    *
-   * @generated from field: optional string approver_user_id = 4;
+   * @generated from field: string approver_user_id = 4;
    */
-  approverUserId?: string | undefined;
+  approverUserId: string;
 
   /**
    * The content_version this approval was recorded against — provenance only.
@@ -1062,7 +1127,7 @@ export type Approval = Message<"docs_factory.review.v1.Approval"> & {
  * Use `create(ApprovalSchema)` to create a new message.
  */
 export const ApprovalSchema: GenMessage<Approval> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 17);
+  messageDesc(file_docs_factory_review_v1_messages, 18);
 
 /**
  * One entry in an artifact's review timeline. `kind` is the event type; `actor`
@@ -1123,7 +1188,7 @@ export type ContentEvent = Message<"docs_factory.review.v1.ContentEvent"> & {
  * Use `create(ContentEventSchema)` to create a new message.
  */
 export const ContentEventSchema: GenMessage<ContentEvent> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 18);
+  messageDesc(file_docs_factory_review_v1_messages, 19);
 
 /**
  * Which content tree a piece of content lives in.

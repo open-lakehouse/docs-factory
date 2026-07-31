@@ -62,6 +62,10 @@ export default function ThreadCard({
   const replyCount = thread.replies.length;
 
   function onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    // Only the card itself acts as a button. Keys pressed inside the expanded
+    // conversation (composer, buttons) keep their native behavior — otherwise
+    // Space would never reach the reply textarea.
+    if (e.target !== e.currentTarget) return;
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       jumpToContext();

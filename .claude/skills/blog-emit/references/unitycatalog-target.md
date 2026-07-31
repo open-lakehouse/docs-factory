@@ -7,8 +7,8 @@ installed** — it's a reference/re-verify checklist, not a to-do.
 
 The sibling repo is expected at `../unitycatalog-website`. Confirm it exists and is
 on a clean working branch before writing into it. No MCP needed — it's a repo the
-user owns, so this is a human-in-the-loop copy (like gdocs never auto-shares, this
-never pushes/opens a PR — that is the user's action).
+user owns, so this is a human-in-the-loop copy: this never pushes/opens a PR — that
+is the user's action.
 
 ## A. Reconcile the author → profile (the sharp edge — BEFORE copying)
 

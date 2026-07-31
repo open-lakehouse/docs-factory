@@ -9,7 +9,7 @@
  *   - Delta tables are registered as external tables.
  *   :::
  *
- * On a flattening target (Google Docs, the .md twins) it becomes a plain
+ * On a flattening target (the .md twins) it becomes a plain
  * blockquote led by a bold **TL;DR** label — the portable form that survives any
  * plain-Markdown consumer and reads unambiguously for an agent:
  *

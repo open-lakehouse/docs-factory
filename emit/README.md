@@ -10,43 +10,29 @@ consume.
 ```bash
 cd emit
 bun install                                             # first run only
-bun emit.mjs --slug unity-catalog-delta-api --target gdocs
-#   → blogs/unity-catalog-delta-api/dist/unity-catalog-delta-api.md
-#   → blogs/unity-catalog-delta-api/dist/assets.json
+bun emit.mjs --slug unity-catalog-delta-api --target unitycatalog
+#   → blogs/unity-catalog-delta-api/dist/unitycatalog/index.mdx
+#   → blogs/unity-catalog-delta-api/dist/unitycatalog/assets.json
 ```
 
 This is the **deterministic, scriptable half** of the emitter. It needs no agent
 and no network beyond the one-time LikeC4 PNG export. Actual *delivery* to a target
-(creating a Google Doc, uploading images, sharing) is a separate, agent-driven step
-— the `/blog-emit` skill — because that needs the Google MCP tools, which a plain
-Node script can't call.
+(copying the MDX post into the sibling site repo, uploading images) is a separate,
+agent-driven step — the `/blog-emit` skill — because that needs judgment and
+filesystem writes into another repo.
 
-> **Review now happens in-app, not in Google Docs.** The `site/` app has a
+> **Review happens in-app, not in an external Google Doc.** The `site/` app has a
 > per-section commenting + review/release surface (allowlisted reviewers comment
 > on the deployed draft; re-editing re-anchors comments instead of orphaning
-> them — the friction that motivated the move). The `gdocs` target is retained as
-> an **opt-in flat export** (e.g. for a stakeholder who wants a Doc), not the
-> review mechanism. Prefer sharing the deployed draft URL for review.
+> them). The old `gdocs` export target was removed once this landed — share the
+> deployed draft URL for review instead.
 
 ## What it produces
 
 Output is written **per target** under `blogs/<slug>/dist/<target>/`, so
-cross-publishing (gdocs review → unitycatalog → …) is non-destructive. The
+cross-publishing (unitycatalog → delta → …) is non-destructive. The
 regenerated LikeC4 PNG export is shared at `dist/.likec4-export/`
 (target-agnostic) and comes from the unified `architecture/model` workspace.
-
-For the `gdocs` (FLATTENING) target, `dist/gdocs/`:
-
-- **`<slug>.md`** — resolved, self-contained CommonMark + GFM:
-  - `file=` snippet fences are **inlined** with the real code from `snippets/*`.
-  - `::::journey` timelines are **flattened** to numbered `### Step N — …` headings.
-  - `:::tip` / `:::warning` / … callouts are **flattened** to bold-led blockquotes.
-  - `likec4=`-titled images become plain images pointing at the regenerated PNG.
-  - Frontmatter is consumed (its `title` becomes the top `#` heading); HTML
-    `<!-- comments -->` are stripped.
-  - Hard-wrapped prose is **unwrapped** to one line per paragraph (code untouched)
-    so Google Docs' in-place `replace_section` converter reflows it cleanly instead
-    of shredding each wrapped line into its own paragraph.
 
 For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
 
@@ -55,8 +41,8 @@ For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
     (interactive canvas); `:::` callouts are **left as directives** (the site styles
     them); `file=` snippets inlined; a snippet's filename is **kept on the fence** as
     `title="x.py"` meta — the site renders fences with Expressive Code, which turns
-    that into a native filename frame (so, unlike gdocs, this target does NOT run
-    `remark-code-caption`).
+    that into a native filename frame (so, unlike a flattening target, this one does
+    NOT run `remark-code-caption`).
   - Frontmatter is **mapped** to the site's zod schema (title / authors[] from the
     draft author / `category: guide` / human date / optional description); the title
     is NOT emitted as a body H1 (the site renders it) and prose is not unwrapped.
@@ -65,6 +51,15 @@ For the `unitycatalog` (RICH, component) target, `dist/unitycatalog/`:
   bundle (when the post has a diagram).
 - **`assets.json`** — a manifest of every image in the output, so a delivery
   adapter can upload/insert images from data rather than re-parsing Markdown.
+
+The `delta` target (`dist/delta/`) is the same shape with a delta-io-shaped
+frontmatter schema and a callout-vocabulary remap.
+
+The one **FLATTENING** target is the internal `md-twin` (used by the site build,
+not `/blog-emit`): it renders portable CommonMark instead of MDX components —
+`::::journey` → numbered `### Step N — …` headings, `:::` callouts → bold-led
+blockquotes, `likec4=` images → plain images, and hard-wrapped prose reflowed to one
+line per paragraph. See [`targets/md-twin.mjs`](targets/md-twin.mjs).
 
 ## How it reuses the preview's transforms
 
@@ -81,15 +76,15 @@ React (JSX) components; this emitter emits Markdown. So the journey/callout/like
 transforms have **Markdown-emitting** variants living here in `plugins/`
 (`remark-journey-md.mjs`, `remark-callouts-md.mjs`, `remark-likec4-md.mjs`,
 `remark-code-caption.mjs`). One implementation per render flavor, deliberately.
-`remark-code-caption` is now **gdocs-only** — it exists because plain Markdown has
-no code-block chrome to hang a filename on, so it lifts a fence's `title=` into a
-bold caption line; the `unitycatalog` target instead leaves `title=` on the fence
-for Expressive Code to render.
+`remark-code-caption` is used only by **FLATTENING** targets (md-twin) — it exists
+because plain Markdown has no code-block chrome to hang a filename on, so it lifts a
+fence's `title=` into a bold caption line; the `unitycatalog`/`delta` targets instead
+leave `title=` on the fence for Expressive Code to render.
 
-## Idempotency — update the same Doc, don't duplicate
+## Idempotency — update the same post, don't duplicate
 
-`index.md` (and its `dist/<slug>.md` render) is the canonical source; a delivered
-Google Doc is a *copy* that should be **refreshed in place** on re-emit, not
+`index.md` (and its `dist/<target>/index.mdx` render) is the canonical source; a
+delivered post is a *copy* that should be **refreshed in place** on re-emit, not
 duplicated. The delivery mapping lives in a committed **sidecar dotfile next to the
 draft**, `blogs/<slug>/.emitted.json`, keyed by target — so it is self-contained in
 the post folder and travels with the post (no global registry), while `index.md`
@@ -97,16 +92,15 @@ itself stays pure (no tooling state in the canonical source):
 
 ```json
 {
-  "gdocs": {
-    "doc_id": "1AbC…",
-    "url": "https://docs.google.com/document/d/1AbC…/edit",
-    "updated": "2026-07-14"
+  "unitycatalog": {
+    "post_dir": "2026-07-03-unity-catalog-delta-api",
+    "updated": "2026-07-17"
   }
 }
 ```
 
 On each run the core reads `.emitted.json` and prints — and echoes into
-`assets.json` as `existing` — whether delivery should **CREATE** a new Doc or
+`assets.json` as `existing` — whether delivery should **CREATE** a new post or
 **UPDATE** the recorded one. The `/blog-emit` skill performs the create/update and,
 on create, writes the target's entry back into the sidecar. The sidecar is tracked
 (a dotfile so it reads as tooling metadata, not content; only `dist/` is
@@ -125,16 +119,17 @@ gitignored).
 
 ## Targets
 
-`--target` selects a target module in `targets/`:
+`--target` is **required** and selects a target module in `targets/`:
 
-- **`gdocs`** (default) — Google Docs (a FLATTENING target).
 - **`unitycatalog`** — the UnityCatalog.io / OpenLakehouse Astro site (a RICH,
   component target: MDX with interactive LikeC4 + `<Journey>` + `:::` callouts).
 - **`delta`** — the Delta.io Astro site (`delta-io/website`, sibling `../website`) —
   also a RICH, component target (same interactive LikeC4 + `<Journey>` + `:::`
   callouts), with a delta-shaped frontmatter schema and callout-vocabulary remap.
 
-Delivery for all three is the single `/blog-emit` skill (`--target` picks the runbook).
+Delivery for both is the single `/blog-emit` skill (`--target` picks the runbook).
+There is also an internal **`md-twin`** (FLATTENING) target, invoked by the site
+build (`site/scripts/build-md-twins.mjs`), not by `/blog-emit`.
 
 The pipeline is **target-aware**: a target module declares its per-construct
 renderers (`constructs: { callouts, journey, codeCaption, likec4 }`) plus flags

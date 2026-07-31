@@ -8,7 +8,7 @@
  *      title (it was only ever a tooltip / the interactive key) and reduce the
  *      URL to a bare filename (`./assets/managedTableFlow.png` → `managedTableFlow.png`);
  *   2. record it in a shared manifest so the delivery adapter can upload + insert
- *      the real PNG (Google Docs' Markdown import won't embed a local path).
+ *      the real PNG (a plain Markdown reference won't embed a local path).
  *
  * This plugin also records **every other image** in the draft (D2 SVG/PNG,
  * screenshots — the graceful-degradation path) in the manifest, normalizing their
@@ -20,8 +20,9 @@
  * `{ filename, localPath, altText, originalTitle, likec4 }` entries onto
  * `manifest`, resolves `localPath` against `assetsDir` (the draft's folder), and
  * asks the target's `renderImage(entry)` for the mdast node to leave in the tree
- * (e.g. gdocs returns a placeholder paragraph). If `renderImage` is omitted, the
- * image is left as a plain filename-only image (the portable default).
+ * (e.g. md-twin returns a paragraph-wrapped image pointing at the site-served PNG).
+ * If `renderImage` is omitted, the image is left as a plain filename-only image
+ * (the portable default).
  *
  * For a `likec4=<viewId>` image, `localPath` points at the FRESHLY regenerated
  * PNG in `likec4Dir` (`<likec4Dir>/<viewId>.png`) rather than the committed
@@ -81,8 +82,8 @@ export default function remarkLikeC4Md(options = {}) {
       for (let i = 0; i < node.children.length; i++) {
         const child = node.children[i];
         // A standalone image is a `paragraph` wrapping exactly one image. Replace
-        // the *paragraph* so a block-level target node (a gdocs placeholder
-        // paragraph) isn't nested inside another paragraph.
+        // the *paragraph* so a block-level target node (e.g. md-twin's
+        // paragraph-wrapped image) isn't nested inside another paragraph.
         if (
           child.type === "paragraph" &&
           child.children?.length === 1 &&

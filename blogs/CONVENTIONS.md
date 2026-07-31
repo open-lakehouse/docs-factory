@@ -97,7 +97,7 @@ target: <delta | unitycatalog | openlakehouse | …>
 ---
 ```
 
-Where a post is *emitted* (Google Doc, a published site) is recorded per target in
+Where a post is *emitted* (a published site) is recorded per target in
 the post's `blogs/<slug>/.emitted.json` sidecar (§5), not in the front matter — a
 draft can go to several targets, and the SEO canonical `<link>` is the publishing
 site's concern at render time, not a draft field.
@@ -184,7 +184,7 @@ bullets. Copy this to start a post.
   post to carry purpose-built, protocol-level views with slug-prefixed ids.
   - **Richness is a property of the renderer, never the source.** `index.md`
     stays plain, portable Markdown that renders acceptably everywhere — on GitHub,
-    in any Markdown viewer, and through the Google Docs export (below). A diagram
+    in any Markdown viewer, and as the flattened `.md` twin the site serves. A diagram
     is embedded as its committed **static image** and *upgraded* to an interactive
     LikeC4 view only by a richer renderer (the local `site/` harness and the
     published MDX site). Never put JSX or builder-specific syntax in `index.md`.
@@ -335,34 +335,31 @@ bullets. Copy this to start a post.
     the examples are few and several need live cloud storage or a JVM, so a generic
     runner would be ceremony that can't run the interesting cases. Other tools are
     fine; if a post needs one, note why in that post.
-- **Emit to a downstream target (Google Docs today).** `index.md` is canonical,
-  portable CommonMark; a *target emitter* resolves it into what a downstream target
-  consumes. The deterministic core [`emit/`](../emit/) reuses the same
-  snippet-inlining and LikeC4 PNG-regeneration the `site/` harness runs, and
-  *flattens* the rich constructs to portable Markdown: a `file=` fence becomes a
-  real fenced code block, a `::::journey` becomes numbered `### Step N — …`
-  headings, `:::tip`/`:::warning`/… callouts become bold-led blockquotes, and each
-  `likec4=` image is re-exported from the unified `architecture/model` workspace
-  to a PNG. Run it with:
+- **Emit to a downstream target.** `index.md` is canonical, portable CommonMark; a
+  *target emitter* resolves it into what a downstream target consumes. The
+  deterministic core [`emit/`](../emit/) reuses the same snippet-inlining and LikeC4
+  PNG-regeneration the `site/` harness runs, and renders each rich construct the way
+  the chosen target needs: a `file=` fence is inlined with the real code, and each
+  `likec4=` image is re-exported from the unified `architecture/model` workspace to a
+  PNG. Run it with a **required** target:
   ```
-  bun emit/emit.mjs --slug <slug> --target gdocs
+  bun emit/emit.mjs --slug <slug> --target unitycatalog
   ```
-  which writes `blogs/<slug>/dist/<slug>.md` + `assets.json` (the `dist/` render is
-  throwaway and gitignored — the draft stays the source of truth). **Google Docs
-  delivery** is the [`/blog-emit`](../.claude/skills/blog-emit/) skill: it creates
-  the Doc from the flattened Markdown (`docs_document_create_from_markdown`), uploads
-  each PNG to Drive and inserts it inline, and shares it — and on re-emit it
-  **updates the same Doc in place** (the Doc id/url live in a committed
-  `blogs/<slug>/.emitted.json` sidecar, so the mapping travels with the post while
-  `index.md` stays pure), so the draft stays canonical and the shared link never
-  duplicates. Do **not** feed raw `index.md` to the Doc importer — its `file=`
-  fences are empty and its `::::journey`/`:::tip` markers leak as literal text. The
-  same `/blog-emit` skill also cross-publishes to the **UnityCatalog.io** and
-  **Delta.io** Astro sites (`--target unitycatalog` / `--target delta`) — RICH
-  targets that keep the constructs interactive (native MDX `<Journey>`, `<LikeC4View>`,
-  styled `:::` callouts) rather than flattening them. A new target is a new
-  `emit/targets/<name>.mjs` reusing the same core, plus a `references/<name>-target.md`
-  runbook in the skill.
+  which writes `blogs/<slug>/dist/<target>/index.mdx` + `assets.json` (the `dist/`
+  render is throwaway and gitignored — the draft stays the source of truth). The
+  [`/blog-emit`](../.claude/skills/blog-emit/) skill cross-publishes to the
+  **UnityCatalog.io** and **Delta.io** Astro sites (`--target unitycatalog` /
+  `--target delta`) — RICH targets that keep the constructs interactive (native MDX
+  `<Journey>`, `<LikeC4View>`, styled `:::` callouts). On re-emit it **updates the
+  same post in place** (the post dir lives in a committed `blogs/<slug>/.emitted.json`
+  sidecar, so the mapping travels with the post while `index.md` stays pure), so the
+  draft stays canonical and delivery never duplicates. Do **not** feed raw `index.md`
+  to a target — its `file=` fences are empty and its `::::journey`/`:::tip` markers
+  leak as literal text; always deliver the core's `dist/<target>/` render. A new
+  target is a new `emit/targets/<name>.mjs` reusing the same core, plus a
+  `references/<name>-target.md` runbook in the skill.
+  > Draft **review** happens in-app (the `site/` per-section commenting + review
+  > surface), not via an external Google Doc export — share the deployed draft URL.
 
 **Citability (human + AI readability).** Structure the draft so both a skimming
 human and an AI can find, quote, and trust it: an answer-first intro, a

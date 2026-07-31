@@ -2,8 +2,8 @@
  * remark-journey-md — the Markdown-flattening counterpart of the preview's
  * remark-journey.mjs. The preview turns a `::::journey` container into a
  * `<Journey>`/`<JourneyStep>` React timeline; this flattens it to plain
- * `###`-heading step sequences that read as an ordered walkthrough on a static
- * target (Google Docs has no timeline chrome).
+ * `###`-heading step sequences that read as an ordered walkthrough on a plain
+ * Markdown (flattening) target, which has no timeline chrome.
  *
  *   ::::journey
  *   ### Point Spark at the UC catalog

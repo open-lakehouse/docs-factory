@@ -2,13 +2,11 @@
  * remark-unwrap-prose — collapse hard-wrapped prose into one line per paragraph.
  *
  * Blog drafts hard-wrap prose at ~85 cols for readable diffs. That newline lives
- * INSIDE the mdast text node's value (`"…do more\nthan point…"`), and both
- * remark-stringify AND Google Docs' Markdown converters treat it literally:
- * `create_from_markdown` reflows it, but the in-place `replace_section` converter
- * turns every wrapped line into its OWN paragraph (with a blank line between) —
- * shredding a flowing paragraph into a ragged column. Emitting one line per
- * paragraph makes BOTH converters render identically and cleanly, so the
- * stable-URL update path matches the rich importer.
+ * INSIDE the mdast text node's value (`"…do more\nthan point…"`) — an authoring
+ * artifact, not reader structure. A flattening target (md-twin) reflows to one line
+ * per paragraph so the served twin reads cleanly: the hard wraps are dropped, and
+ * adjacent blocks keep their blank-line separators instead of being glued together.
+ * (Component targets like unitycatalog opt out — MDX must keep authored line breaks.)
  *
  * We only touch `text` nodes inside prose containers (paragraph, heading,
  * blockquote, list items via recursion). We never descend into `code` /

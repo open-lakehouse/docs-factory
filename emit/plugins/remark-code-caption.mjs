@@ -5,9 +5,9 @@
  * The preview's remark-code-snippets.mjs resolves a `file=./snippets/x.py` fence
  * and records the source basename as `title="x.py"` in the code node's `meta`,
  * which the preview's <CodeBlock> chrome renders as a filename header. A plain
- * Markdown target (Google Docs) shows nothing from fence meta, so the "this code
- * came from x.py" cue would be lost. This lifts it to a **bold caption paragraph**
- * immediately above the fence:
+ * Markdown (FLATTENING) target has no code-block chrome to render fence meta, so
+ * the "this code came from x.py" cue would be lost. This lifts it to a **bold
+ * caption paragraph** immediately above the fence:
  *
  *   **read_write_delta_spark.py**
  *

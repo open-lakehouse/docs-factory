@@ -19,7 +19,7 @@ target: <delta | unitycatalog | openlakehouse | …>
 ---
 ```
 
-Where a post is *emitted* (Google Doc, published site) is recorded per target in
+Where a post is *emitted* (a published site) is recorded per target in
 `blogs/<slug>/.emitted.json`, not in front matter (a draft can go to several
 targets; the SEO canonical `<link>` is the publishing site's concern). See
 CONVENTIONS.md §5, "Emit to a downstream target".

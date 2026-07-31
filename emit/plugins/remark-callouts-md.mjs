@@ -3,7 +3,7 @@
  * remark-callouts.mjs. Where the preview turns a `:::tip` / `:::warning` / …
  * container directive into a `<Callout>` React box, this turns it into a plain
  * **blockquote led by a bold type label** — the portable, no-admonition form that
- * survives a Google Docs import (and any plain-Markdown target):
+ * survives any plain-Markdown (flattening) target, e.g. the md-twins:
  *
  *   :::warning
  *   A managed CREATE must set delta.feature.catalogManaged = 'supported'.

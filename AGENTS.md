@@ -23,7 +23,7 @@ lakehouse we document. The dividing line is `architecture/adr/ADR-0002`.
 ```
 content/          Diátaxis-organized Markdown + colocated, tested snippets/ per page (tutorials / how-to / reference / explanation)
 blogs/            narrative blog drafts (index.md + assets/ + snippets/ per post) + STORYLINE
-emit/             deterministic blog draft → flattened Markdown (Google Docs today)
+emit/             deterministic blog draft → downstream target render (unitycatalog.io / delta.io MDX)
 seed/             docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
 tools/docsnip/    content validation tooling (frontmatter validate, snippet check)
 site/             throwaway Vite + React + MDX preview (docs + blogs); site/src/content-core is the shared parsing authority; build emits per-project llms.txt into site/public/
@@ -94,7 +94,7 @@ existing entry from `blogs/tags.yml`; only add a new tag in the same change.
 ```bash
 uv sync --all-packages                 # install every workspace package
 just preview                           # Vite preview at :4321 (docs + blogs)
-just emit <slug>                       # flatten a blog draft for Google Docs
+just emit <slug> <target>              # emit a blog draft (target: unitycatalog | delta)
 uv run pytest                          # docsnip tests + colocated tutorial scripts
 cd site && bun test src/content-core   # content-core parsing-contract drift tests
 uv run docsnip check                   # frontmatter + snippets

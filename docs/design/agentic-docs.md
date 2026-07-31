@@ -202,8 +202,8 @@ PNGs** (`regenerateLikeC4()` → `likec4 export png --sequence --flat` →
 `dist/.likec4-export/<viewId>.png`, keyed by view id) with a per-image
 `assets.json` manifest (`{filename, localPath, altText, likec4}`).
 
-**Add `emit/targets/md-twin.mjs`** (a target module, mirroring `gdocs.mjs`, the
-closest flattening target): reuse the `-md` construct plugins (callouts, journey) +
+**Add `emit/targets/md-twin.mjs`** (a target module — the flattening target that
+renders portable Markdown rather than MDX components): reuse the `-md` construct plugins (callouts, journey) +
 shared snippet inlining; `titleAsH1: false`, `unwrapProse: false` (preserve
 authored breaks for readability); a small preamble/frontmatter hook (title,
 canonical site URL, summary, diataxis, project); `renderImage` emitting a
@@ -217,7 +217,7 @@ route. `likec4=` handled by the `-md` variant (`remark-likec4-md.mjs`) →
 AI — is authored as a `:::tldr` container directive (3–5 fact-rich bullets),
 first-class alongside `:::callout` / `::::journey`. It needs a small renderer per
 target family: an `-md` variant (`emit/plugins/remark-tldr-md.mjs`) that flattens
-it to a labelled block for the flattening targets (gdocs, the new md-twin), and an
+it to a labelled block for the flattening target (the new md-twin), and an
 `-mdx` variant for the rich sibling-site targets (a styled callout component). The
 twin therefore carries the TL;DR bullets inline where an agent will see them — but
 the exposed **description stays frontmatter `summary`** (see Decisions); the

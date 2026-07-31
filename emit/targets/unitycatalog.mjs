@@ -1,7 +1,7 @@
 /**
  * targets/unitycatalog.mjs — the UnityCatalog.io / OpenLakehouse.io site target.
  *
- * Unlike gdocs (a FLATTENING target), this is a RICH, component target: the sibling
+ * Unlike a FLATTENING target (md-twin), this is a RICH, component target: the sibling
  * `unitycatalog-website` repo is Astro 6 + `@astrojs/mdx`, so a draft's rich
  * constructs are emitted as an `.mdx` post that renders interactively:
  *   - `::::journey`  → `<Journey><JourneyStep>` (rich timeline, Journey.astro).
@@ -12,11 +12,12 @@
  *                       callouts (no `constructs.callouts`).
  *   - code captions  → LEFT ON THE FENCE. The UC site renders code fences with
  *                       Expressive Code, which turns a fence's `title="x.py"` meta
- *                       into a native editor-frame filename tab. So — unlike gdocs,
- *                       which has no code chrome and lifts the title to a bold
- *                       caption line via remark-code-caption — this target does NOT
- *                       run codeCaption; the `title=` meta that remark-code-snippets
- *                       already put on the fence passes straight through.
+ *                       into a native editor-frame filename tab. So — unlike a
+ *                       flattening target, which has no code chrome and lifts the
+ *                       title to a bold caption line via remark-code-caption — this
+ *                       target does NOT run codeCaption; the `title=` meta that
+ *                       remark-code-snippets already put on the fence passes straight
+ *                       through.
  *
  * The post is written to `dist/unitycatalog/index.mdx` (the content-collection
  * filename) with UC-shaped YAML frontmatter. Delivery — copying the folder into the

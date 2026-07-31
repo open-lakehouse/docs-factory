@@ -3,9 +3,9 @@
  * directives (unflattened), but remap our draft's callout vocabulary onto the
  * target site's supported set.
  *
- * Unlike remark-callouts-md (which flattens `:::tip` → a bold-led blockquote for
- * Google Docs) and unlike the unitycatalog target (which passes `:::` through
- * VERBATIM because its remark handler styles our exact names), the delta.io site's
+ * Unlike remark-callouts-md (which flattens `:::tip` → a bold-led blockquote for a
+ * plain-Markdown target) and unlike the unitycatalog target (which passes `:::`
+ * through VERBATIM because its remark handler styles our exact names), the delta.io site's
  * handler (`lib/remarkPlugins.ts`) only styles a fixed set — `note`, `info`,
  * `warning`, `danger`. A draft callout whose name isn't in that set would render as
  * an unstyled `<div>` (or leak), so we rename it to the closest supported name and

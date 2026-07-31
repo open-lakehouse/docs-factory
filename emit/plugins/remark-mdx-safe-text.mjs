@@ -5,7 +5,7 @@
  * MDX is stricter than CommonMark: a bare `<`, `>`, or `{`/`}` in text is parsed
  * as JSX / an expression. Drafts are authored as portable Markdown ("richness is a
  * property of the renderer, never the source") and legitimately contain prose like
- * `engine <> catalog` or `{id}` — which is fine on GitHub / in the Google Docs
+ * `engine <> catalog` or `{id}` — which is fine on GitHub / in a plain-Markdown
  * flatten, but breaks when the unitycatalog target re-serializes the tree as MDX
  * (remark-mdx throws "Expected a closing tag for `<>`").
  *

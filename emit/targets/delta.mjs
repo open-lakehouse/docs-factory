@@ -2,7 +2,7 @@
  * targets/delta.mjs — the Delta.io website (`delta-io/website`, sibling `../website`)
  * target.
  *
- * Like unitycatalog (and unlike gdocs), this is a RICH, component target: the draft's
+ * Like unitycatalog (and unlike a FLATTENING target), this is a RICH, component target: the draft's
  * rich constructs are emitted as an `.mdx` post that renders interactively on the
  * Astro site.
  *   - `::::journey`   → `<Journey><JourneyStep>` (rich timeline, Journey.astro).

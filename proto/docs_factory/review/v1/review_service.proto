@@ -106,6 +106,13 @@ service ReviewService {
   // it is only meaningful against a real Neon Auth database.
   rpc ListRegisteredUsers(ListRegisteredUsersRequest) returns (ListRegisteredUsersResponse);
 
+  // Allowlisted-scoped typeahead over registered users (our user_identity
+  // table), for the reviewer/allowlist pickers. Unlike ListRegisteredUsers
+  // (maintainer-only, reads neon_auth audit data), this is visible to any
+  // allowlisted reviewer and returns only lean UserSummary rows matching the
+  // query on login/name/email.
+  rpc SearchUsers(SearchUsersRequest) returns (SearchUsersResponse);
+
   // Maintainer-only right-to-erasure. Removes a user's personal footprint —
   // tombstones their authored comments (keeping thread structure), scrubs their
   // identity from review-state and resolution actors, and deletes their
@@ -253,9 +260,9 @@ message RecordApprovalResponse {
 
 message DismissApprovalRequest {
   ContentRef ref = 1;
-  // Whose approval to dismiss. Omitted = the current viewer's own approval;
-  // set = a maintainer dismissing that reviewer's approval.
-  optional string approver_login = 2;
+  // Whose approval to dismiss (by stable user id). Omitted = the current
+  // viewer's own approval; set = a maintainer dismissing that reviewer's.
+  optional string approver_user_id = 2;
 }
 message DismissApprovalResponse {
   DraftSummary draft = 1;
@@ -279,11 +286,11 @@ message SetTargetReleaseDateResponse {
   DraftSummary draft = 1;
 }
 
-// One reviewer to request a review from. At least one of login/email must be
-// set, and it must resolve to an allowlist entry.
+// One reviewer to request a review from, addressed by their stable user id. The
+// user must be REGISTERED (have a user_identity row) and on the allowlist.
 message ReviewerTarget {
-  optional string login = 1;
-  optional string email = 2;
+  string user_id = 1;
+  reserved 2;  // was `email`
 }
 
 message RequestReviewRequest {
@@ -359,6 +366,20 @@ message ListAllowlistResponse {
 message ListRegisteredUsersRequest {}
 message ListRegisteredUsersResponse {
   repeated RegisteredUser users = 1;
+}
+
+message SearchUsersRequest {
+  // Typeahead query, matched (case-insensitive) against github_login, name, and
+  // email. Empty returns the first page of registered users.
+  string query = 1;
+  // Max results (server clamps; defaults to a modest page).
+  optional int32 limit = 2;
+  // When true, restrict to allowlisted users (role != ANONYMOUS) — used by the
+  // reviewer-request picker, which can only target allowlisted reviewers.
+  optional bool allowlisted_only = 3;
+}
+message SearchUsersResponse {
+  repeated UserSummary users = 1;
 }
 
 message EraseUserRequest {

@@ -315,47 +315,64 @@ message DraftSummary {
   bool published = 10;
   // Active (non-dismissed) approvals on this content — the "approved by whom".
   repeated Approval approvals = 11;
-  // Logins of required reviewers whose approval is still pending (the open
-  // required requests). Drives the "required: A, B still pending" UI.
+  // Resolved display logins of required reviewers whose approval is still
+  // pending (the open required requests). Drives the "required: A, B still
+  // pending" UI. Keyed internally on user_id; these are the joined display
+  // handles (a reviewer with no resolved handle appears by name/user id).
   repeated string pending_required_logins = 12;
   // Convenience mirror of `review_state == NEEDS_REVIEW`, so the client need not
   // re-derive it.
   bool needs_review = 13;
 }
 
-// One allowlist entry.
-message AllowlistEntry {
-  optional string github_login = 1;
-  optional string email = 2;
-  Role role = 3;
+// A registered user, keyed by the stable Neon Auth user id, with resolved
+// display attributes. The result shape of SearchUsers and the identity carried
+// by the reviewer/allowlist pickers. github_login/name/email are display+search
+// attributes (may be absent until a login resolves them); `role` is the user's
+// current allowlist role (ANONYMOUS = registered but not allowlisted).
+message UserSummary {
+  string user_id = 1;
+  optional string github_login = 2;
+  optional string name = 3;
+  optional string email = 4;
+  optional string avatar_url = 5;
+  Role role = 6;
 }
 
-// A reviewer_allowlist row with its audit metadata, for the maintainer admin
-// list view. Distinct from AllowlistEntry (the write shape used by
-// ManageAllowlist / RequestReview) so those stay unchanged. `id` is the row
-// uuid, so a remove/edit can target a precise row.
+// The write shape for ManageAllowlist: grant/adjust a role for a REGISTERED
+// user, addressed by their stable user id (they must have a user_identity row).
+message AllowlistEntry {
+  string user_id = 1;
+  Role role = 3;
+  reserved 2;  // was `email` (allowlist is no longer email-keyed)
+}
+
+// A reviewer_allowlist row with resolved display attributes + audit metadata,
+// for the maintainer admin list view. Keyed by user_id (also the row key now
+// that the allowlist PK is the user id). github_login/email/name come from the
+// user_identity join and are display-only.
 message AllowlistEntryDetail {
-  string id = 1;
+  string user_id = 1;
   optional string github_login = 2;
   optional string email = 3;
   Role role = 4;
   optional string added_by = 5;
   google.protobuf.Timestamp created_at = 6;
+  optional string name = 7;
 }
 
-// A person known to the auth provider (neon_auth), joined to their current
+// A person who has logged in (has a user_identity row), joined to their current
 // allowlist role — the input to the admin "who has logged in" discovery view.
-// `github_login` is the resolved @handle, falling back to the numeric GitHub
-// account id when the OAuth token can't be exchanged (same fallback as viewer
-// resolution). `role` is ANONYMOUS for a logged-in user who is not on the
-// allowlist ("no status"). `last_seen_at` is a best-effort activity signal and
-// may be absent.
+// `github_login` is the resolved @handle (absent if never resolved). `role` is
+// ANONYMOUS for a logged-in user who is not on the allowlist ("no status").
+// `last_seen_at` is a best-effort activity signal (user_identity.updated_at).
 message RegisteredUser {
   string user_id = 1;
   optional string github_login = 2;
   optional string email = 3;
   Role role = 4;
   optional google.protobuf.Timestamp last_seen_at = 5;
+  optional string name = 6;
 }
 
 // A recent comment for the reviewer dashboard's "latest comments" feed. Carries
@@ -375,23 +392,27 @@ message RecentComment {
   string content_title = 6;
 }
 
-// A request for a named reviewer to review one artifact. Reviewers are addressed
-// by GitHub login (email fallback) matched against the reviewer allowlist — the
-// allowlist has no stable user id, and a requested reviewer may not have logged
-// in yet. "Requests to me" matches lower(reviewer_login) == lower(viewer.login).
+// A request for a registered reviewer to review one artifact. Reviewers are
+// addressed by their stable user id (reviewer_user_id), so "requests to me" is
+// an exact reviewer_user_id == viewer.user_id and a GitHub rename never breaks
+// it. reviewer_login / reviewer_name are resolved display fields from the
+// user_identity join.
 message ReviewRequest {
   string id = 1;
   ContentRef ref = 2;
-  // Whom the review is requested from. At least one of login/email is set.
-  optional string reviewer_login = 3;
-  optional string reviewer_email = 4;
+  // Whom the review is requested from (stable Neon Auth user id).
+  string reviewer_user_id = 3;
   Requirement requirement = 5;
   RequestStatus status = 6;
-  // Who opened the request (actor identity: user id or login).
+  // Who opened the request (actor user id).
   string requested_by = 7;
   string note = 8;
   google.protobuf.Timestamp created_at = 9;
   optional google.protobuf.Timestamp satisfied_at = 10;
+  // Resolved display attributes of the reviewer (from user_identity).
+  optional string reviewer_login = 11;
+  optional string reviewer_name = 12;
+  reserved 4;  // was `reviewer_email` (requests are no longer email-addressed)
 }
 
 // One reviewer's approval of an artifact. Approvals are per-reviewer and
@@ -403,9 +424,11 @@ message ReviewRequest {
 message Approval {
   string id = 1;
   ContentRef ref = 2;
-  string approver_login = 3;
-  // Stable Neon Auth user id when available (else the login was all we had).
-  optional string approver_user_id = 4;
+  // Resolved display login of the approver (from user_identity); may be absent
+  // if the handle was never resolved.
+  optional string approver_login = 3;
+  // Stable Neon Auth user id — the approval's key.
+  string approver_user_id = 4;
   // The content_version this approval was recorded against — provenance only.
   optional string version_id = 5;
   google.protobuf.Timestamp created_at = 6;

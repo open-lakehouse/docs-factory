@@ -25,7 +25,7 @@ export function TreeRow({
   depth: number;
   icon?: ReactNode;
   label: string;
-  /** Optional right-side adornment (e.g. a status dot). */
+  /** Optional right-side adornment (e.g. status count strip). */
   trailing?: ReactNode;
   expandable?: boolean;
   open?: boolean;

@@ -2437,6 +2437,40 @@ a.blog-row-title:hover { color: var(--accent); }
   box-shadow: 0 0 0 1.5px color-mix(in srgb, #4f9c5a 45%, transparent);
 }
 
+/* Leaf-row icons tinted with the same effective-status tones as the dots. */
+.tree-status-icon-ready,
+.tree-status-icon-released {
+  color: #4f9c5a;
+}
+.tree-status-icon-idea {
+  color: #b7791f;
+}
+.tree-status-icon-draft,
+.tree-status-icon-none {
+  color: var(--muted-foreground);
+  opacity: 0.7;
+}
+.tree-status-icon-in-review {
+  color: #8b5cf6;
+}
+
+/* Branch rollup: compact per-status counts (dot + n). */
+.tree-status-counts {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  line-height: 1;
+  color: var(--muted-foreground);
+}
+.tree-status-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
 /* Expanded detail row */
 .blog-detail-row {
   border-bottom: 1px solid var(--border);

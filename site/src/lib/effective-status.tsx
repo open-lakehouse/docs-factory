@@ -64,6 +64,87 @@ export function effectiveStatusDotClass(status: EffectiveStatus): string {
     : reviewStateDotClass(status.state);
 }
 
+/** Text/icon tone class mirroring the tree-status-dot colors. */
+export function effectiveStatusIconClass(status: EffectiveStatus): string {
+  return effectiveStatusDotClass(status).replace("tree-status-dot-", "tree-status-icon-");
+}
+
+/** Stable bucket keys for rollup counts (ordered sharpest → quietest). */
+export type StatusBucket =
+  | "changes-requested"
+  | "needs-review"
+  | "idea"
+  | "draft"
+  | "approved"
+  | "released"
+  | "none";
+
+export const STATUS_BUCKET_ORDER: StatusBucket[] = [
+  "changes-requested",
+  "needs-review",
+  "idea",
+  "draft",
+  "approved",
+  "released",
+  "none",
+];
+
+export function statusBucket(status: EffectiveStatus): StatusBucket {
+  if (status.kind === "authoring") {
+    const s = status.status.toLowerCase();
+    if (s === "idea") return "idea";
+    return "draft";
+  }
+  switch (status.state) {
+    case ReviewState.CHANGES_REQUESTED:
+      return "changes-requested";
+    case ReviewState.NEEDS_REVIEW:
+      return "needs-review";
+    case ReviewState.APPROVED:
+      return "approved";
+    case ReviewState.RELEASED:
+      return "released";
+    default:
+      return "none";
+  }
+}
+
+export function statusBucketLabel(bucket: StatusBucket): string {
+  switch (bucket) {
+    case "changes-requested":
+      return "changes requested";
+    case "needs-review":
+      return "needs review";
+    case "idea":
+      return "idea";
+    case "draft":
+      return "draft";
+    case "approved":
+      return "approved";
+    case "released":
+      return "released";
+    case "none":
+      return "not started";
+  }
+}
+
+export function statusBucketDotClass(bucket: StatusBucket): string {
+  switch (bucket) {
+    case "changes-requested":
+    case "idea":
+      return "tree-status-dot-idea";
+    case "needs-review":
+      return "tree-status-dot-in-review";
+    case "approved":
+      return "tree-status-dot-ready";
+    case "released":
+      return "tree-status-dot-released";
+    case "draft":
+    case "none":
+      return "tree-status-dot-draft";
+  }
+}
+
 /** Single badge for compact chrome — authoring or review, never both. */
 export function EffectiveStatusBadge({
   frontmatterStatus,

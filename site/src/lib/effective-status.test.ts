@@ -1,6 +1,11 @@
 import { expect, test, describe } from "bun:test";
 import { ReviewState } from "../gen/docs_factory/review/v1/messages_pb";
-import { effectiveStatus, effectiveStatusLabel } from "./effective-status";
+import {
+  effectiveStatus,
+  effectiveStatusIconClass,
+  effectiveStatusLabel,
+  statusBucket,
+} from "./effective-status";
 
 describe("effectiveStatus", () => {
   test("idea with no review → authoring idea", () => {
@@ -49,5 +54,23 @@ describe("effectiveStatus", () => {
       state: ReviewState.NONE,
     });
     expect(effectiveStatusLabel(effectiveStatus(undefined, undefined))).toBe("not started");
+  });
+
+  test("icon class mirrors the status tone", () => {
+    expect(effectiveStatusIconClass(effectiveStatus("idea", ReviewState.NONE))).toBe(
+      "tree-status-icon-idea",
+    );
+    expect(effectiveStatusIconClass(effectiveStatus("ready", ReviewState.NEEDS_REVIEW))).toBe(
+      "tree-status-icon-in-review",
+    );
+  });
+
+  test("statusBucket maps authoring and review states", () => {
+    expect(statusBucket(effectiveStatus("idea", ReviewState.NONE))).toBe("idea");
+    expect(statusBucket(effectiveStatus("draft", ReviewState.NONE))).toBe("draft");
+    expect(statusBucket(effectiveStatus("ready", ReviewState.NEEDS_REVIEW))).toBe("needs-review");
+    expect(statusBucket(effectiveStatus("ready", ReviewState.CHANGES_REQUESTED))).toBe(
+      "changes-requested",
+    );
   });
 });

@@ -1,21 +1,23 @@
-# Post-merge content-version registration for the review backend.
+# MANUAL content-version registration for the review backend.
 #
-# Why post-merge: the version manifest embeds `git rev-parse HEAD`. On a PR
-# branch that is the branch tip, but `main` squash-merges, so the merged commit
-# has a different sha the PR-time manifest never sees. Building + registering
-# once here, after merge, stamps every content_version with the real, stable
-# main sha — the git provenance the app correlates comments to. Note: the
-# manifest is intentionally NOT committed on this path (generated at build time
-# from blogs/ and content/; see `just version-manifest`). Provenance comes from
-# the real merged sha stamped here.
+# The automatic post-merge registration runs as the `register` job INSIDE
+# deploy-function.yml (needs: deploy), so it is guaranteed to run only AFTER the
+# prod deploy has migrated the schema and swapped the Function — no cross-workflow
+# race. This workflow is the manual/ad-hoc escape hatch (re-register without a
+# redeploy); it is workflow_dispatch-only and shares the same steps.
+#
+# Why registration is post-deploy: the version manifest embeds `git rev-parse
+# HEAD`. On a PR branch that is the branch tip, but `main` squash-merges, so the
+# merged commit has a different sha the PR-time manifest never sees. Registering
+# after merge stamps every content_version with the real, stable main sha — the
+# git provenance the app correlates comments to. The manifest is intentionally
+# NOT committed (generated at build time from blogs/ and content/; see
+# `just version-manifest`).
 
 name: Register content versions
 
 on:
   workflow_dispatch: {}
-  # Runs once per push to main so registered versions carry the real merged sha.
-  push:
-    branches: [main]
 
 concurrency:
   group: register-versions
@@ -27,9 +29,9 @@ permissions:
 jobs:
   register:
     runs-on: ubuntu-latest
-    # Runs on every push to main (and on manual dispatch). Targets prod
-    # (REVIEW_API_URL, REVIEW_BUILD_SECRET) → the `production` environment, whose
-    # main-only branch restriction is the real gate. See runbook §3.
+    # Targets prod (REVIEW_API_URL, REVIEW_BUILD_SECRET) → the `production`
+    # environment, whose main-only branch restriction is the real gate. See
+    # runbook §3.
     environment: production
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0

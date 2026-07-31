@@ -219,3 +219,43 @@ jobs:
           mv site/.vercel/output .vercel/output
           DEPLOY_URL=$(bunx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN" | tail -n1)
           echo "::notice::deployed production SPA: $DEPLOY_URL"
+
+  # Register the content-version manifest with the LIVE prod Function, in the
+  # SAME workflow as the deploy so it is ordered AFTER the schema migration + the
+  # Function swap (needs: deploy). Doing this as a separate workflow triggered on
+  # push:main raced the deploy — register could hit the old Function or run before
+  # migrate. (An identical manual escape-hatch lives in register-versions.yml,
+  # workflow_dispatch-only, for re-registering without a redeploy.)
+  #
+  # Registration is post-merge so the manifest's git sha is the real, stable main
+  # sha (PR branches squash-merge). It does NOT need the SPA, only the deployed
+  # Function + migrated schema, so it depends on `deploy`, not `deploy-site`.
+  register:
+    needs: deploy
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/bun-setup
+      - name: Guard required secrets
+        env:
+          API_URL: ${{ secrets.REVIEW_API_URL }}
+          BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
+        run: |
+          if [ -z "${API_URL:-}" ] || [ -z "${BUILD_SECRET:-}" ]; then
+            echo "::error::REVIEW_API_URL / REVIEW_BUILD_SECRET secrets are not set — provision prod first (docs/deploy/runbook.md)."
+            exit 1
+          fi
+      - name: Build version manifest (stamps the real main sha)
+        run: |
+          cd site && bun install --frozen-lockfile
+          node scripts/build-version-manifest.mjs
+      - name: Register versions with the review API
+        env:
+          API_URL: ${{ secrets.REVIEW_API_URL }}
+          BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
+        run: |
+          cd server && bun install --frozen-lockfile
+          bun run scripts/register-versions.mjs

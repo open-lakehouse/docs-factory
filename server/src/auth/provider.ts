@@ -30,6 +30,13 @@ export interface ViewerIdentity {
   userId?: string;
   /** Display name for the UI (falls back to the login when absent). */
   name?: string;
+  /**
+   * Site admin, from Neon Auth's admin role. Orthogonal to `role`: callers that
+   * set this should also elevate `role` to at least MAINTAINER (see neon-auth.ts)
+   * so admins pass the existing allowlisted/maintainer guards; this flag then
+   * additionally gates the admin panel + allowlist management.
+   */
+  isSiteAdmin?: boolean;
 }
 
 /** An authenticated viewer at the given role (allowlisted iff not anonymous). */
@@ -41,6 +48,7 @@ export function viewer(login: string, role: Role, identity: ViewerIdentity = {})
     isAllowlisted: role === Role.REVIEWER || role === Role.MAINTAINER,
     userId: identity.userId,
     name: identity.name,
+    isSiteAdmin: identity.isSiteAdmin ?? false,
   });
 }
 

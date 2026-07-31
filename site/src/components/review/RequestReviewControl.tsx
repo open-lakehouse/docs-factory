@@ -1,9 +1,9 @@
 // "Request review" affordance for a rendered artifact. Opens a dialog where an
-// allowlisted reviewer names one or more reviewers (by GitHub login), marks the
-// batch required or optional, and adds an optional note. The server validates
-// each login against the reviewer allowlist and rejects off-list names, so this
-// control keeps a light free-text input rather than shipping the allowlist to
-// the client. Gated on reviewActive, like ReviewControls.
+// allowlisted reviewer picks one or more reviewers via a typeahead search over
+// registered, allowlisted users (UserPicker), marks the batch required or
+// optional, and adds an optional note. Reviewers are addressed by stable user
+// id, so the server needn't re-validate free text and a rename never breaks a
+// request. Gated on reviewActive, like ReviewControls.
 import { useState, type ReactNode } from "react";
 import { useMutation, useQuery } from "@connectrpc/connect-query";
 import {
@@ -15,10 +15,12 @@ import {
   Requirement,
   RequestStatus,
   type ContentRef,
+  type UserSummary,
 } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { ReviewRequestBadge } from "../../lib/review-status";
+import UserPicker from "./UserPicker";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -40,7 +42,7 @@ export default function RequestReviewControl({
   const { reviewActive, isMaintainer, viewer } = useAuth();
   const { invalidateReviewRequests, invalidateDrafts } = useReviewInvalidation();
   const [open, setOpen] = useState(false);
-  const [logins, setLogins] = useState("");
+  const [reviewers, setReviewers] = useState<UserSummary[]>([]);
   const [requirement, setRequirement] = useState<Requirement>(Requirement.REQUIRED);
   const [note, setNote] = useState("");
 
@@ -55,7 +57,7 @@ export default function RequestReviewControl({
     onSuccess: () => {
       void invalidateReviewRequests();
       void invalidateDrafts();
-      setLogins("");
+      setReviewers([]);
       setNote("");
       setOpen(false);
     },
@@ -69,18 +71,14 @@ export default function RequestReviewControl({
 
   if (!reviewActive) return null;
 
-  const parsedLogins = logins
-    .split(/[\s,]+/)
-    .map((s) => s.trim())
-    .filter(Boolean);
   const existing = data?.requests ?? [];
   const actor = viewer?.userId ?? viewer?.login ?? "";
 
   async function send() {
-    if (parsedLogins.length === 0) return;
+    if (reviewers.length === 0) return;
     await submit.mutateAsync({
       ref: contentRef,
-      reviewers: parsedLogins.map((login) => ({ login })),
+      reviewers: reviewers.map((u) => ({ userId: u.userId })),
       requirement,
       note: note.trim() || undefined,
     });
@@ -96,7 +94,7 @@ export default function RequestReviewControl({
             return (
               <li key={r.id} className="request-review-open-row">
                 <span className="request-review-reviewer">
-                  {r.reviewerLogin || r.reviewerEmail || "someone"}
+                  {r.reviewerLogin || r.reviewerName || "someone"}
                 </span>
                 <ReviewRequestBadge requirement={r.requirement} status={r.status} />
                 {canCancel && r.status === RequestStatus.OPEN && (
@@ -128,21 +126,23 @@ export default function RequestReviewControl({
           <DialogHeader>
             <DialogTitle>Request a review</DialogTitle>
             <DialogDescription>
-              Name one or more reviewers by GitHub login. They must be on the reviewer
-              allowlist. Required requests block release until approved.
+              Search for one or more reviewers. Only people who have signed in and
+              are on the reviewer allowlist can be requested. Required requests
+              block release until approved.
             </DialogDescription>
           </DialogHeader>
 
-          <label className="request-review-field">
-            <span>Reviewers (GitHub logins, comma or space separated)</span>
-            <Textarea
-              value={logins}
-              onChange={(e) => setLogins(e.target.value)}
-              placeholder="octocat, hubot"
-              rows={2}
+          <div className="request-review-field">
+            <span>Reviewers</span>
+            <UserPicker
+              value={reviewers}
+              onChange={setReviewers}
+              multiple
+              allowlistedOnly
+              placeholder="Search reviewers…"
               autoFocus
             />
-          </label>
+          </div>
 
           <div className="request-review-field">
             <span>Requirement</span>
@@ -184,7 +184,7 @@ export default function RequestReviewControl({
             <Button variant="outline" onClick={() => setOpen(false)} disabled={submit.isPending}>
               Cancel
             </Button>
-            <Button onClick={() => void send()} disabled={submit.isPending || parsedLogins.length === 0}>
+            <Button onClick={() => void send()} disabled={submit.isPending || reviewers.length === 0}>
               {submit.isPending ? "Requesting…" : "Request"}
             </Button>
           </DialogFooter>

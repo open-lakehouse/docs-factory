@@ -271,7 +271,7 @@ export default function ReviewDashboard() {
                   )}
                   <span className="review-dash-meta">
                     <span className="review-dash-count">
-                      → {r.reviewerLogin || r.reviewerEmail || "someone"}
+                      → {r.reviewerLogin || r.reviewerName || "someone"}
                     </span>
                     <ReviewRequestBadge requirement={r.requirement} status={r.status} />
                   </span>

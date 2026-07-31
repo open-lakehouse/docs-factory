@@ -653,7 +653,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // nested two or more levels down (its parent is another reply, not the
         // root that comment_resolution is keyed by).
         const rows = await sql<RecentCommentRow[]>`
-          with latest as (
+          with recursive latest as (
             select distinct on (area, slug) id, area, slug, project, bucket, title
             from content_version
             order by area, slug, created_at desc
@@ -1195,6 +1195,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       // The review timeline for one artifact (most-recent first). Allowlist-gated.
+      // Version add/revise markers are NOT stored here — the client derives them
+      // from content_version. Legacy content-revised rows are filtered out.
       async listContentEvents(req: ListContentEventsRequest, ctx) {
         requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
@@ -1204,6 +1206,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const rows = await sql<ContentEventRow[]>`
           select * from content_event
           where area = ${area} and slug = ${req.ref.slug}
+            and kind <> 'content-revised'
           order by id desc limit ${limit}
         `;
         return create(ListContentEventsResponseSchema, {
@@ -1562,8 +1565,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const sql = db();
 
         // The prior latest version (before this upsert) — its Merkle tree drives
-        // the structural diff, the content-revised timeline event, and the
-        // re-anchoring fast path. Selected once here so we don't re-query it.
+        // the re-anchoring fast path. Version timeline entries (document added /
+        // content revised) are DERIVED from content_version rows in the UI, not
+        // written as content_event rows.
         const [prior] = await sql<{ id: string; root_hash: string | null; merkle_tree: MerkleNodeJson | null }[]>`
           select id, root_hash, merkle_tree from content_version
           where area = ${area} and slug = ${slug}
@@ -1679,21 +1683,6 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           })),
           req.sourceFiles.map((f) => ({ path: f.path, text: f.text, fileHash: f.fileHash })),
         );
-
-        // When the structure actually changed, drop a `content-revised` event on
-        // the timeline with the add/remove/modify/move counts, so the review UI
-        // surfaces structural evolution next to review events.
-        if (prior && req.rootHash && prior.root_hash && prior.root_hash !== req.rootHash) {
-          const diff = diffTrees(prior.merkle_tree ?? null, treeJson);
-          const counts = tallyChanges(diff);
-          await logEvent(sql, area, slug, "content-revised", "build", row.id, {
-            from_version_id: prior.id,
-            added: String(counts.added),
-            removed: String(counts.removed),
-            modified: String(counts.modified),
-            moved: String(counts.moved),
-          });
-        }
 
         return create(RegisterVersionResponseSchema, {
           version: contentVersionFromRow(row, req.ref),
@@ -1924,18 +1913,6 @@ const CHANGE_KIND_BY_DIFF: Record<DiffEntry["change"], ChangeKind> = {
   "modified-descendants": ChangeKind.MODIFIED_DESCENDANTS,
   moved: ChangeKind.MOVED,
 };
-
-/** Summary counts for a content-revised timeline payload. */
-function tallyChanges(diff: DiffEntry[]): { added: number; removed: number; modified: number; moved: number } {
-  const counts = { added: 0, removed: 0, modified: 0, moved: 0 };
-  for (const d of diff) {
-    if (d.change === "added") counts.added++;
-    else if (d.change === "removed") counts.removed++;
-    else if (d.change === "moved") counts.moved++;
-    else counts.modified++; // modified + modified-descendants
-  }
-  return counts;
-}
 
 async function logEvent(
   tx: Queryable,

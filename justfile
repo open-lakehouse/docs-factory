@@ -27,9 +27,10 @@ _site-deps:
 
 # --- Emit a blog draft to a downstream target ------------------------------
 
-# Emit blogs/<slug>/index.md to a target's flattened Markdown (default gdocs).
-# Produces blogs/<slug>/dist/<slug>.md + assets.json. See emit/README.md.
-emit slug target="gdocs": _emit-deps
+# Emit blogs/<slug>/index.md to a downstream target. `target` is required:
+# `unitycatalog` (unitycatalog.io) or `delta` (delta.io). Produces
+# blogs/<slug>/dist/<target>/. See emit/README.md.
+emit slug target: _emit-deps
     cd emit && bun emit.mjs --slug {{slug}} --target {{target}}
 
 _emit-deps:

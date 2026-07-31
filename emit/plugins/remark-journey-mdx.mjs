@@ -1,8 +1,8 @@
 /**
  * remark-journey-mdx — the MDX-emitting counterpart of the emitter's
  * remark-journey-md.mjs. Where the `-md` variant FLATTENS a `::::journey` to
- * numbered `### Step N — …` headings (for Google Docs, which has no timeline
- * chrome), this UPGRADES it to a `<Journey><JourneyStep step="…">…</JourneyStep>`
+ * numbered `### Step N — …` headings (for a plain-Markdown target, which has no
+ * timeline chrome), this UPGRADES it to a `<Journey><JourneyStep step="…">…</JourneyStep>`
  * element for an MDX target (UnityCatalog's Astro site) whose `Journey.astro`
  * renders the rich vertical timeline.
  *

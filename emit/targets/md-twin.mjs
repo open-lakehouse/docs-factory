@@ -9,8 +9,8 @@
  * site-served PNG. The raw `content/**` / `blogs/*` source is NEVER served — only
  * this twin. See docs/design/agentic-docs.md (Phase 1a).
  *
- * A flattening target like gdocs (targets/gdocs.mjs) is the closest sibling; the
- * key differences:
+ * This is the one FLATTENING target (unitycatalog/delta upgrade to MDX components
+ * instead). Its shape:
  *   - `titleAsH1: false` — the twin route already carries the title; keep the body
  *     clean (the driver puts title in the twin's own frontmatter).
  *   - `unwrapProse: true` — reflow the authoring-time hard wraps (80-col line
@@ -19,7 +19,7 @@
  *     leaves adjacent blocks glued without their blank-line separators. A reflowed
  *     twin is what a human or agent actually wants to read.
  *   - `renderImage` points a likec4 view at `/assets/likec4/<viewId>.png` (the
- *     site-served copy the driver writes), not a Docs placeholder.
+ *     site-served copy the driver writes).
  *   - `frontmatter` emits a small agent-readable preamble; the driver post-injects
  *     the `canonical:` line (it alone knows identity/origin), so this module stays
  *     free of any site/content-core dependency.
@@ -41,8 +41,7 @@ export const LIKEC4_ASSET_BASE = "/assets/likec4";
  * the likec4-md plugin replaces the whole standalone-image *paragraph* with what
  * this returns, and remark-stringify only inserts blank-line separators between
  * BLOCK nodes — returning a bare inline `image` here glues the following block
- * (e.g. the next heading) onto it. Mirrors gdocs wrapping its placeholder in a
- * paragraph, for the same reason.
+ * (e.g. the next heading) onto it, so wrap it in a paragraph.
  */
 export function renderImage(entry) {
   const url = entry.likec4 ? `${LIKEC4_ASSET_BASE}/${entry.likec4}.png` : entry.filename;
@@ -71,7 +70,7 @@ export function frontmatter(draft) {
 const mdTwin = {
   name: "md-twin",
   outputFile: undefined, // the driver writes to the twin route path explicitly
-  // Same portable markdown flavor as gdocs: fenced code, `-` bullets.
+  // Portable markdown flavor: fenced code, `-` bullets.
   stringify: {
     bullet: "-",
     fences: true,

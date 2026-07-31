@@ -47,6 +47,7 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write # upsert the sticky preview-URL comment on the PR
 
 jobs:
   preview:
@@ -190,6 +191,18 @@ jobs:
           VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
         run: |
+          # Source the pulled preview env so the SPA build sees VITE_* — chiefly
+          # VITE_NEON_AUTH_URL (integration-injected). Vite inlines VITE_* from
+          # process.env at build time; without this the client hides "Sign in"
+          # (canSignIn() → false, site/src/lib/auth-actions.ts). Same set -a idiom
+          # as the migrate/Function steps. Safe: the build reads only
+          # NEON_FUNCTION_HOST + VITE_*; DATABASE_URL* are unused by any build script.
+          set -a; . .vercel/.env.preview.local; set +a
+          if [ -z "${VITE_NEON_AUTH_URL:-}" ]; then
+            echo "::error::VITE_NEON_AUTH_URL not present in the pulled preview env — the SPA build would ship with sign-in disabled (docs/deploy/runbook.md §1.5)."
+            exit 1
+          fi
+          echo "VITE_NEON_AUTH_URL is set for the SPA build (value hidden)."
           # Build inside site/ so the Build Output tree lands at site/.vercel/
           # output/ (the generator + assembler resolve paths relative to site/).
           # `build:vercel` reads NEON_FUNCTION_HOST to bake the /api rewrite. The
@@ -203,10 +216,23 @@ jobs:
           # built tree up to the repo-root .vercel/ the link already lives in.
           rm -rf .vercel/output
           mv site/.vercel/output .vercel/output
+          # Positive check that the auth host was inlined into the built JS (don't
+          # print the URL). A miss means the SPA would still gate sign-in.
+          AUTH_HOST="$(printf '%s' "$VITE_NEON_AUTH_URL" | sed -E 's#^https?://([^/]+).*#\1#')"
+          if grep -rqF "$AUTH_HOST" .vercel/output/static; then
+            echo "Confirmed: auth host inlined into built assets."
+          else
+            echo "::warning::auth host not found in built assets — sign-in may still be gated."
+          fi
           # --prebuilt uploads .vercel/output as-is (no second build). `vercel
-          # deploy` prints the deployment URL as its last stdout line.
-          DEPLOY_URL=$(bunx vercel deploy --prebuilt --token="$VERCEL_TOKEN" | tail -n1)
+          # deploy` prints the deployment URL to stdout (last line) and the
+          # per-deploy "Inspect: <url>" to stderr. Tee stderr to a file so we can
+          # surface the Inspect link in the PR comment while stdout yields the URL.
+          DEPLOY_URL=$(bunx vercel deploy --prebuilt --token="$VERCEL_TOKEN" 2> >(tee /tmp/vercel-deploy.err >&2) | tail -n1)
+          # Vercel prints "Inspect: https://vercel.com/…" on stderr; pull that URL.
+          INSPECT_URL=$(sed -n 's/.*Inspect:[[:space:]]*\(https:\/\/[^ ]*\).*/\1/p' /tmp/vercel-deploy.err | head -n1 || true)
           echo "deploy_url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+          echo "inspect_url=$INSPECT_URL" >> "$GITHUB_OUTPUT"
           echo "Deployed preview: $DEPLOY_URL"
 
       # Pass 2: redeploy the Function with ALLOWED_ORIGIN locked to the preview's
@@ -235,3 +261,49 @@ jobs:
             --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
             --env NEON_AUTH_URL="$NEON_AUTH_URL")
           echo "review Function locked to origin $ALLOWED_ORIGIN (host $HOST)"
+
+      # Sticky PR comment with the preview URL. We deploy via the Vercel CLI
+      # (--prebuilt), NOT the Git integration, so Vercel never posts its own
+      # preview comment — we synthesize one. Upsert by a hidden marker so each
+      # push updates the SAME comment. Runs even if pass-2 (CORS lock) failed, as
+      # long as a deploy URL was captured — the preview is already live. Uses the
+      # preinstalled gh CLI (no new third-party action → keeps zizmor's
+      # supply-chain surface minimal).
+      - name: Upsert preview URL PR comment
+        if: always() && steps.vercel.outputs.deploy_url != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          DEPLOY_URL: ${{ steps.vercel.outputs.deploy_url }}
+          INSPECT_URL: ${{ steps.vercel.outputs.inspect_url }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          MARKER='<!-- preview-deploy-comment -->'
+          INSPECT_ROW=""
+          [ -n "${INSPECT_URL:-}" ] && INSPECT_ROW="| **Inspect** | ${INSPECT_URL} |"
+          BODY="$(cat <<EOF
+          $MARKER
+          ### 🔎 Preview deploy
+
+          | | |
+          |---|---|
+          | **Preview** | ${DEPLOY_URL} |
+          ${INSPECT_ROW}
+          | **Commit** | \`${HEAD_SHA}\` |
+
+          _This URL is unique per push and changes on every commit._
+          _Deployed via \`vercel deploy --prebuilt\` (CLI), not the Git integration._
+          EOF
+          )"
+          # Find an existing marker comment on this PR (paginate; tolerate none).
+          EXISTING=$(gh api --paginate \
+            "repos/${GH_REPO}/issues/${PR_NUMBER}/comments" \
+            --jq "map(select(.body | contains(\"${MARKER}\"))) | .[0].id // empty")
+          if [ -n "$EXISTING" ]; then
+            gh api --method PATCH "repos/${GH_REPO}/issues/comments/${EXISTING}" -f body="$BODY"
+            echo "Updated existing preview comment ($EXISTING)."
+          else
+            gh api --method POST "repos/${GH_REPO}/issues/${PR_NUMBER}/comments" -f body="$BODY"
+            echo "Posted new preview comment."
+          fi

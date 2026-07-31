@@ -2,18 +2,21 @@
 // (Delta, Unity Catalog, DuckDB, …) and the server diffs every artifact tagged
 // with it against its baseline, returning the changed sections + open-comment
 // counts per document. Read-only, allowlist-gated. The diff is done server-side
-// (ProductChanges) because it fans out over a whole product's version pairs;
-// this component just renders the result. A topic with no tagged content (e.g.
-// duckdb before we've written about it) renders a valid empty state — itself a
-// useful DevRel signal.
+// (ProductChanges / reviewDiff) because it fans out over a whole product's
+// version pairs; this component just renders the result with the same
+// StructuralDiff chrome as VersionHistory. A topic with no tagged content
+// (e.g. duckdb before we've written about it) renders a valid empty state —
+// itself a useful DevRel signal.
 import { useState } from "react";
 import { useQuery } from "@connectrpc/connect-query";
+import { MessageSquare } from "lucide-react";
 import {
   productChanges,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
-import { CHANGE_LABEL, CHANGE_CLASS, changeKindFromProto } from "../../lib/tree-diff";
+import { changeKindFromProto, type DiffEntry } from "../../lib/tree-diff";
 import { TOPICS } from "../../vocab";
+import StructuralDiff from "./StructuralDiff";
 import {
   Select,
   SelectContent,
@@ -28,6 +31,10 @@ function topicLabel(topic: string): string {
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
+}
+
+function shortSha(sha: string): string {
+  return sha && sha !== "unknown" ? sha.slice(0, 8) : "—";
 }
 
 export default function ProductRollup() {
@@ -79,33 +86,36 @@ export default function ProductRollup() {
             <p className="review-empty">Nothing changed since the baseline.</p>
           ) : (
             <ul className="product-rollup-list">
-              {entries.map((e) => (
-                <li key={e.latestVersionId} className="product-rollup-entry">
-                  <div className="product-rollup-entry-head">
-                    <span className="product-rollup-title">{e.title}</span>
-                    {e.openCommentCount > 0 && (
-                      <span className="product-rollup-comments">
-                        {e.openCommentCount} open{" "}
-                        {e.openCommentCount === 1 ? "comment" : "comments"} on changed sections
-                      </span>
-                    )}
-                  </div>
-                  <ul className="product-rollup-changes">
-                    {e.changedNodes.map((n) => {
-                      const change = changeKindFromProto(n.change);
-                      return (
-                        <li key={n.key} className={`version-diff-row change-${CHANGE_CLASS[change]}`}>
-                          <span className={`change-badge change-${CHANGE_CLASS[change]}`}>
-                            {CHANGE_LABEL[change]}
-                          </span>
-                          <span className="version-diff-kind">{n.kind}</span>
-                          <span className="version-diff-label">{n.label}</span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </li>
-              ))}
+              {entries.map((e) => {
+                const diff: DiffEntry[] = e.changedNodes.map((n) => ({
+                  key: n.key,
+                  kind: n.kind,
+                  change: changeKindFromProto(n.change),
+                  label: n.label,
+                  ...(n.anchorSlug ? { anchorSlug: n.anchorSlug } : {}),
+                }));
+                return (
+                  <li key={e.latestVersionId} className="product-rollup-entry">
+                    <div className="product-rollup-entry-head">
+                      <div className="product-rollup-entry-title-block">
+                        <span className="product-rollup-title">{e.title}</span>
+                        <span className="product-rollup-sha">
+                          {shortSha(e.latestGitSha)}
+                          {!e.baselineVersionId && " · new"}
+                        </span>
+                      </div>
+                      {e.openCommentCount > 0 && (
+                        <span className="product-rollup-comments">
+                          <MessageSquare aria-hidden="true" />
+                          {e.openCommentCount} open{" "}
+                          {e.openCommentCount === 1 ? "comment" : "comments"}
+                        </span>
+                      )}
+                    </div>
+                    <StructuralDiff entries={diff} />
+                  </li>
+                );
+              })}
             </ul>
           )}
         </>

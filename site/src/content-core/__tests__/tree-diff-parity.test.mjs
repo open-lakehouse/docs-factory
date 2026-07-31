@@ -24,7 +24,7 @@ const clientSrc = readFileSync(resolve(repoRoot, "site/src/lib/tree-diff.ts"), "
 // The functions both files must implement identically. `unchangedSlugs` is
 // server-only and the label maps / proto adapter are client-only, so parity is
 // asserted over just the genuinely-shared algorithm.
-const SHARED_FNS = ["indexTree", "entry", "diffTrees"];
+const SHARED_FNS = ["indexTree", "entry", "diffTrees", "compactDiff", "reviewDiff"];
 
 /**
  * Extract a top-level function's full text (signature through its closing brace)

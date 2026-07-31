@@ -127,6 +127,53 @@ export function diffTrees(before: MerkleNode | null, after: MerkleNode | null): 
   return out;
 }
 
+/**
+ * Collapse a raw Merkle diff into review-level changes:
+ * - descendant-only entries are context, not changes of their own;
+ * - a newly added/removed subtree is represented by its highest changed node,
+ *   instead of repeating every prose/code leaf below it.
+ */
+export function compactDiff(
+  entries: DiffEntry[],
+  before: MerkleNode | null,
+  after: MerkleNode | null,
+): DiffEntry[] {
+  const beforeIndex = before ? indexTree(before) : new Map<string, Indexed>();
+  const afterIndex = after ? indexTree(after) : new Map<string, Indexed>();
+  const changed = new Map(entries.map((e) => [e.key, e]));
+
+  return entries.filter((entry) => {
+    if (entry.change === "modified-descendants") return false;
+    if (entry.change !== "added" && entry.change !== "removed") return true;
+
+    const index = entry.change === "removed" ? beforeIndex : afterIndex;
+    let parentKey: string | undefined = index.get(entry.key)?.parentKey;
+    // Top-level children parent to the doc root (""), which is never itself a
+    // change entry — falsy parentKey ends the walk there.
+    while (parentKey) {
+      if (changed.get(parentKey)?.change === entry.change) return false;
+      parentKey = index.get(parentKey)?.parentKey;
+    }
+    return true;
+  });
+}
+
+/**
+ * Review-facing diff. A null baseline means the artifact is brand new — surface
+ * a single "Document added" summary instead of every leaf as added. Otherwise
+ * return the compacted structural diff.
+ */
+export function reviewDiff(
+  before: MerkleNode | null,
+  after: MerkleNode | null,
+): DiffEntry[] {
+  if (!after) return [];
+  if (!before) {
+    return [{ key: "", kind: "doc", change: "added", label: "Document added" }];
+  }
+  return compactDiff(diffTrees(before, after), before, after);
+}
+
 /** Set of node keys → change kind (for badge lookup). */
 export function changeByKey(entries: DiffEntry[]): Map<string, ChangeKind> {
   return new Map(entries.map((e) => [e.key, e.change]));

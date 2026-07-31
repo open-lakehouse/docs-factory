@@ -1326,15 +1326,36 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             );
           }
           const role = req.entry.role === Role.MAINTAINER ? "maintainer" : "reviewer";
-          // Registered-only: the user must have a user_identity row (the allowlist
-          // FK requires it), so a maintainer can't grant access to someone who has
-          // never signed in.
-          const [ident] = await sql<{ user_id: string }[]>`
+          // The allowlist FK requires a user_identity row. If the user hasn't made
+          // an authenticated request yet (no row), but IS a registered Neon Auth
+          // user, materialize a stub identity so an admin can pre-grant them a role;
+          // persistUserIdentity's coalescing upsert backfills the real github_login/
+          // email on their first login. Guarded: under the mock provider (no
+          // neon_auth schema) the stub insert throws and is skipped.
+          let [ident] = await sql<{ user_id: string }[]>`
             select user_id from user_identity where user_id = ${userId} limit 1
           `;
           if (!ident) {
+            try {
+              await sql`
+                insert into user_identity (user_id, name, email, updated_at)
+                select u.id, (to_jsonb(u) ->> 'name'), (to_jsonb(u) ->> 'email'), now()
+                from neon_auth."user" u
+                where u.id = ${userId}
+                on conflict (user_id) do nothing
+              `;
+            } catch {
+              // neon_auth unavailable → no stub; the re-check below rejects.
+            }
+            [ident] = await sql<{ user_id: string }[]>`
+              select user_id from user_identity where user_id = ${userId} limit 1
+            `;
+          }
+          if (!ident) {
+            // Not a known identity and not a registered Neon Auth user — never
+            // create an allowlist row for a bogus id.
             throw new ConnectError(
-              "user must have signed in before being added",
+              "user must be a registered Neon Auth user before being added",
               Code.FailedPrecondition,
             );
           }
@@ -1437,25 +1458,65 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const like = `%${q}%`;
         const limit = Math.min(Math.max(req.limit ?? 10, 1), 50);
         const allowlistedOnly = req.allowlistedOnly ?? false;
-        const rows = await sql<
-          {
-            user_id: string;
-            github_login: string | null;
-            name: string | null;
-            email: string | null;
-            avatar_url: string | null;
-            role: string | null;
-          }[]
-        >`
-          select ui.user_id, ui.github_login, ui.name, ui.email, ui.avatar_url, a.role
-          from user_identity ui
-          left join reviewer_allowlist a on a.user_id = ui.user_id
-          where (${q} = '' or ui.github_login ilike ${like}
-                 or ui.name ilike ${like} or ui.email ilike ${like})
-            and (${allowlistedOnly} = false or a.role is not null)
-          order by ui.github_login nulls last, ui.name nulls last
-          limit ${limit}
-        `;
+        type Row = {
+          user_id: string;
+          github_login: string | null;
+          name: string | null;
+          email: string | null;
+          avatar_url: string | null;
+          role: string | null;
+        };
+        let rows: Row[];
+        // The allowlisted-only picker (review requests) only targets people who
+        // already have a row, so keep its cheap user_identity-only query. The
+        // grant picker (allowlistedOnly=false) needs parity with the admin table:
+        // union in Neon Auth-registered users who haven't logged in yet. Guarded
+        // the same way as listRegisteredUsers — falls back under mock/anon.
+        if (!allowlistedOnly) {
+          try {
+            rows = await sql<Row[]>`
+              with all_users as (
+                select ui.user_id, ui.github_login, ui.name, ui.email, ui.avatar_url
+                from user_identity ui
+                union
+                select u.id as user_id, null::text as github_login,
+                       (to_jsonb(u) ->> 'name') as name,
+                       (to_jsonb(u) ->> 'email') as email,
+                       null::text as avatar_url
+                from neon_auth."user" u
+                where u.id not in (select user_id from user_identity)
+              )
+              select au.user_id, au.github_login, au.name, au.email, au.avatar_url, a.role
+              from all_users au
+              left join reviewer_allowlist a on a.user_id = au.user_id
+              where (${q} = '' or au.github_login ilike ${like}
+                     or au.name ilike ${like} or au.email ilike ${like})
+              order by au.github_login nulls last, au.name nulls last
+              limit ${limit}
+            `;
+          } catch {
+            rows = await sql<Row[]>`
+              select ui.user_id, ui.github_login, ui.name, ui.email, ui.avatar_url, a.role
+              from user_identity ui
+              left join reviewer_allowlist a on a.user_id = ui.user_id
+              where (${q} = '' or ui.github_login ilike ${like}
+                     or ui.name ilike ${like} or ui.email ilike ${like})
+              order by ui.github_login nulls last, ui.name nulls last
+              limit ${limit}
+            `;
+          }
+        } else {
+          rows = await sql<Row[]>`
+            select ui.user_id, ui.github_login, ui.name, ui.email, ui.avatar_url, a.role
+            from user_identity ui
+            left join reviewer_allowlist a on a.user_id = ui.user_id
+            where (${q} = '' or ui.github_login ilike ${like}
+                   or ui.name ilike ${like} or ui.email ilike ${like})
+              and a.role is not null
+            order by ui.github_login nulls last, ui.name nulls last
+            limit ${limit}
+          `;
+        }
         return create(SearchUsersResponseSchema, {
           users: rows.map((r) =>
             create(UserSummarySchema, {
@@ -1470,30 +1531,57 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         });
       },
 
-      // Everyone who has logged in (has a user_identity row), joined to their
-      // resolved allowlist role — so a site admin can find people who logged in
-      // but never got a status and grant them access. Reads our own
-      // user_identity table (no GitHub API, no neon_auth probe), so it also works
-      // under the local mock provider. Site-admin-only.
+      // Everyone Neon Auth knows about, joined to their resolved allowlist role —
+      // so a site admin can find people (including those who registered but have
+      // never made an authenticated request, so have no user_identity row yet) and
+      // grant them access. Unions our own user_identity mirror with neon_auth."user";
+      // the neon_auth probe degrades gracefully (try/catch, same as readSiteAdmin)
+      // to a user_identity-only read under the local mock provider or any DB without
+      // the Neon-managed schema. Site-admin-only.
       async listRegisteredUsers(_req, ctx) {
         requireSiteAdmin(ctx);
         const sql = db();
-        const rows = await sql<
-          {
-            user_id: string;
-            github_login: string | null;
-            name: string | null;
-            email: string | null;
-            role: string | null;
-            last_seen_at: Date | null;
-          }[]
-        >`
-          select ui.user_id, ui.github_login, ui.name, ui.email,
-                 a.role, ui.updated_at as last_seen_at
-          from user_identity ui
-          left join reviewer_allowlist a on a.user_id = ui.user_id
-          order by ui.email nulls last
-        `;
+        type Row = {
+          user_id: string;
+          github_login: string | null;
+          name: string | null;
+          email: string | null;
+          role: string | null;
+          last_seen_at: Date | null;
+        };
+        let rows: Row[];
+        try {
+          // Union the resolved mirror with every Neon Auth-registered user not yet
+          // mirrored (github_login/last_seen null until their first login).
+          rows = await sql<Row[]>`
+            with all_users as (
+              select ui.user_id, ui.github_login, ui.name, ui.email,
+                     ui.updated_at as last_seen_at
+              from user_identity ui
+              union
+              select u.id as user_id, null::text as github_login,
+                     (to_jsonb(u) ->> 'name') as name,
+                     (to_jsonb(u) ->> 'email') as email,
+                     null::timestamptz as last_seen_at
+              from neon_auth."user" u
+              where u.id not in (select user_id from user_identity)
+            )
+            select au.user_id, au.github_login, au.name, au.email,
+                   a.role, au.last_seen_at
+            from all_users au
+            left join reviewer_allowlist a on a.user_id = au.user_id
+            order by au.github_login nulls last, au.email nulls last
+          `;
+        } catch {
+          // neon_auth unavailable (mock/anon, or schema-less DB) → user_identity only.
+          rows = await sql<Row[]>`
+            select ui.user_id, ui.github_login, ui.name, ui.email,
+                   a.role, ui.updated_at as last_seen_at
+            from user_identity ui
+            left join reviewer_allowlist a on a.user_id = ui.user_id
+            order by ui.email nulls last
+          `;
+        }
         return create(ListRegisteredUsersResponseSchema, {
           users: rows.map((r) =>
             create(RegisteredUserSchema, {

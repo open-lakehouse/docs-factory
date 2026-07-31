@@ -28,7 +28,8 @@ export default function App() {
             inside the page. */}
         <Route path="/review" element={<ReviewWorkspace />} />
         <Route path="/review/dashboard" element={<ReviewDashboard />} />
-        {/* Reviewer-only blog pipeline: priority order + target release dates. */}
+        {/* Reviewer-only blog pipeline + product rollup: now live under Review
+            workspace Overview; keep the path as a redirect for old bookmarks. */}
         <Route path="/review/revops" element={<RevOpsDashboard />} />
 
         {/* Maintainer-only admin roster: allowlist management + registered-user

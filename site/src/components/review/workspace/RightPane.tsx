@@ -53,7 +53,8 @@ export default function RightPane({
 }) {
   const { openTab, tabs, activeToken } = useWorkspaceTabs();
   const { recent, toMe } = useReviewInbox();
-  const activeRef = tabs.find((tab) => tab.token === activeToken)?.ref;
+  const activeTab = tabs.find((tab) => tab.token === activeToken);
+  const activeRef = activeTab?.kind === "content" ? activeTab.ref : undefined;
 
   const openComment = (rc: RecentComment) => {
     if (!rc.ref) return;

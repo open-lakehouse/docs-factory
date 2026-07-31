@@ -26,8 +26,24 @@ import { useAuth } from "../lib/auth-context";
 import { refHref } from "../lib/content-ref";
 import { ReviewStateBadge, ReviewRequestBadge } from "../lib/review-status";
 import Shell from "../components/layout/Shell";
+import BlogPipeline from "../components/review/BlogPipeline";
+import ProductRollup from "../components/review/ProductRollup";
+import {
+  overviewTabsParam,
+  overviewToken,
+} from "../components/review/workspace/overview-token";
 
 const READY = "ready";
+
+/** Deep-link into the desktop workspace Overview (ignored on narrow, where this
+ *  dashboard itself surfaces the pipeline + rollup below). */
+function overviewHref(): string {
+  const search = new URLSearchParams({
+    tabs: overviewTabsParam(),
+    active: overviewToken("pipeline"),
+  });
+  return `/review?${search.toString()}`;
+}
 
 /** Review states that count as active pending work for a reviewer. */
 const PENDING_STATES = new Set<ReviewState>([
@@ -104,7 +120,7 @@ export default function ReviewDashboard() {
         <h1>Review</h1>
         <p className="muted">
           Pending work and recent activity across all content.{" "}
-          <Link to="/review/revops">Blog pipeline →</Link>
+          <Link to={overviewHref()}>Overview →</Link>
         </p>
 
         <section className="review-dash-section">
@@ -263,6 +279,15 @@ export default function ReviewDashboard() {
               ))}
             </ul>
           )}
+        </section>
+
+        {/* Narrow / classic dashboard: Overview lives here because the 3-pane
+            workspace (and its sidebar Overview item) only mounts on desktop. */}
+        <section className="review-dash-section" aria-label="Blog pipeline">
+          <BlogPipeline />
+        </section>
+        <section className="review-dash-section revops-product-rollup" aria-label="What changed by product">
+          <ProductRollup />
         </section>
       </div>
     </Shell>

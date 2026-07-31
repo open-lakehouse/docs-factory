@@ -51,21 +51,6 @@ function ReviewNavItem() {
   );
 }
 
-// Reviewer-only top-nav entry linking to the blog planning view
-// (/review/revops): priority order + target release dates.
-function PlanNavItem() {
-  const { reviewActive } = useAuth();
-  if (!reviewActive) return null;
-  return (
-    <NavLink
-      to="/review/revops"
-      className={({ isActive }) => (isActive ? "active" : undefined)}
-    >
-      Plan
-    </NavLink>
-  );
-}
-
 // Maintainer-only top-nav entry linking to the admin roster (/admin): allowlist
 // management + registered-user discovery. Gated on isMaintainer (not
 // reviewActive) so it's reachable whenever a maintainer is signed in, regardless
@@ -151,7 +136,6 @@ export default function Shell({
               </NavLink>
             ))}
             <ReviewNavItem />
-            <PlanNavItem />
             <AdminNavItem />
           </nav>
           <ThemeToggle />

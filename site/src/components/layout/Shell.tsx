@@ -5,8 +5,7 @@ import { useQuery } from "@connectrpc/connect-query";
 import TopbarPath from "./TopbarPath";
 import StatusMenu from "./StatusMenu";
 import { useAuth } from "../../lib/auth-context";
-import { listDrafts } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { ReviewState } from "../../gen/docs_factory/review/v1/messages_pb";
+import { listReviewRequests } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { scopeAccent, useScope, withScope } from "../../scope";
 
 /** Two top-level content areas: Docs (all four Diátaxis axes on one page) + blog. */
@@ -31,22 +30,22 @@ export function useSidebar() {
   return ctx;
 }
 
-// Reviewer-only top-nav entry linking to the /review dashboard. Badges the count
-// of content actively in review so a reviewer sees pending work at a glance. The
-// listDrafts query is shared (cached) with the dashboard and content-visibility.
+// Reviewer-only top-nav entry linking to the /review workspace. Badges the
+// count of open review requests addressed to the current viewer (same signal
+// as the left-tree UserCheck indicators).
 function ReviewNavItem() {
   const { reviewActive } = useAuth();
-  const { data } = useQuery(listDrafts, {}, { enabled: reviewActive });
+  const { data } = useQuery(
+    listReviewRequests,
+    { mine: true, openOnly: true },
+    { enabled: reviewActive },
+  );
   if (!reviewActive) return null;
-  const pending = (data?.drafts ?? []).filter(
-    (d) =>
-      d.reviewState === ReviewState.NEEDS_REVIEW ||
-      d.reviewState === ReviewState.CHANGES_REQUESTED,
-  ).length;
+  const requested = data?.requests.length ?? 0;
   return (
     <NavLink to="/review" className={({ isActive }) => (isActive ? "active" : undefined)}>
       Review
-      {pending > 0 && <span className="topnav-badge">{pending}</span>}
+      {requested > 0 && <span className="topnav-badge">{requested}</span>}
     </NavLink>
   );
 }

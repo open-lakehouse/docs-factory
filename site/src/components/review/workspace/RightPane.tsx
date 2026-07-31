@@ -1,46 +1,16 @@
 // The workspace's right column. Two zones:
-//   1. Cross-tab inbox sections (requested-from-me, latest comments) — NOT tied
-//      to the active tab. Pending review lives on the left tree aggregates
-//      instead. Clicking a row opens/activates that page's tab (and, for a
-//      comment, carries a deep-link intent to select + scroll to the thread).
+//   1. Cross-tab inbox (latest comments) — NOT tied to the active tab.
+//      Requested-from-me lives on the left tree (UserCheck indicators) instead.
+//      Clicking a comment opens/activates that page's tab with a deep-link
+//      intent to select + scroll to the thread.
 //   2. A portal slot the ACTIVE tab fills with its own comment view. The slot
 //      lives here; the active ReviewTab renders into it from inside its
 //      ReviewProvider so the comments follow the active tab for free.
 import { PanelRightClose } from "lucide-react";
-import type { ContentRef, RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { ReviewRequestBadge } from "../../../lib/review-status";
+import type { RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useReviewInbox } from "../../../lib/review-inbox";
 import ContentEventTimeline from "../ContentEventTimeline";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
-
-function OpenRow({
-  ref: contentRef,
-  label,
-  onOpen,
-  children,
-}: {
-  ref?: ContentRef;
-  label: string;
-  onOpen: (ref: ContentRef) => void;
-  children?: React.ReactNode;
-}) {
-  return (
-    <li className="review-dash-row">
-      {contentRef ? (
-        <button
-          type="button"
-          className="review-dash-title text-left hover:underline"
-          onClick={() => onOpen(contentRef)}
-        >
-          {label}
-        </button>
-      ) : (
-        <span className="review-dash-title">{label}</span>
-      )}
-      <span className="review-dash-meta">{children}</span>
-    </li>
-  );
-}
 
 export default function RightPane({
   setSlot,
@@ -52,7 +22,7 @@ export default function RightPane({
   collapseDisabled?: boolean;
 }) {
   const { openTab, tabs, activeToken } = useWorkspaceTabs();
-  const { recent, toMe } = useReviewInbox();
+  const { recent } = useReviewInbox();
   const activeTab = tabs.find((tab) => tab.token === activeToken);
   const activeRef = activeTab?.kind === "content" ? activeTab.ref : undefined;
 
@@ -94,20 +64,6 @@ export default function RightPane({
             </button>
           )}
         </div>
-        <section className="review-dash-section">
-          <h2>Requested from me</h2>
-          {toMe.length === 0 ? (
-            <p className="review-empty">No open requests.</p>
-          ) : (
-            <ul className="review-dash-list">
-              {toMe.map((r) => (
-                <OpenRow key={r.id} ref={r.ref} label={r.ref?.slug ?? "(unknown)"} onOpen={openTab}>
-                  <ReviewRequestBadge requirement={r.requirement} status={r.status} />
-                </OpenRow>
-              ))}
-            </ul>
-          )}
-        </section>
 
         <section className="review-dash-section">
           <h2>Latest comments</h2>

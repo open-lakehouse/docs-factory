@@ -3,13 +3,25 @@
 // (project → bucket, blog series) expand/collapse; leaves open the page in a
 // middle-pane tab. Built from build-time content (tree-model.ts), expansion
 // persisted in sessionStorage (expansion-context.tsx). Leaf icons tint with
-// the effective status; branch trailings show descendant counts by status.
+// the effective status; branches show descendant counts by status immediately
+// after their label. A right-edge icon marks items requested from the viewer.
 import { useMemo } from "react";
 import { useQuery } from "@connectrpc/connect-query";
-import { Files, FileText, FolderTree, LayoutDashboard, Layers3, Newspaper } from "lucide-react";
+import {
+  Files,
+  FileText,
+  FolderTree,
+  LayoutDashboard,
+  Layers3,
+  Newspaper,
+  UserCheck,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import DiataxisIcon from "../../DiataxisIcon";
-import { listDrafts } from "../../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import {
+  listDrafts,
+  listReviewRequests,
+} from "../../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../../lib/auth-context";
 import { refToParam } from "../../../lib/content-ref";
@@ -98,14 +110,39 @@ function LeafIcon({ status }: { status: LeafStatus }) {
   );
 }
 
+/** Number of requested-from-viewer leaves in this subtree. */
+function requestedInSubtree(node: TreeNode, requestedRefs: Set<string>): number {
+  if (node.kind === "leaf") {
+    return requestedRefs.has(refKey(node.ref)) ? 1 : 0;
+  }
+  return node.children.reduce(
+    (total, child) => total + requestedInSubtree(child, requestedRefs),
+    0,
+  );
+}
+
+function RequestedReviewIndicator({ count = 1 }: { count?: number }) {
+  const label =
+    count === 1 ? "Review requested from you" : `${count} reviews requested from you`;
+  return (
+    <UserCheck
+      className="h-3.5 w-3.5 shrink-0 text-primary"
+      title={label}
+      aria-label={label}
+    />
+  );
+}
+
 function Node({
   node,
   depth,
   reviewByRef,
+  requestedRefs,
 }: {
   node: TreeNode;
   depth: number;
   reviewByRef: Map<string, ReviewState>;
+  requestedRefs: Set<string>;
 }) {
   const { isOpen, toggle } = useExpansion();
   const { openTab, activeToken } = useWorkspaceTabs();
@@ -122,6 +159,9 @@ function Node({
           />
         }
         label={node.label}
+        trailing={
+          requestedRefs.has(refKey(node.ref)) ? <RequestedReviewIndicator /> : undefined
+        }
         // The active tab may be any of this item's views (rendered/md/script);
         // compare on the group key so the row stays highlighted across them.
         selected={activeToken !== null && refTokenOf(activeToken) === token}
@@ -132,6 +172,7 @@ function Node({
 
   const open = isOpen(node.id);
   const counts = statusCountsInSubtree(node, reviewByRef);
+  const requestedCount = requestedInSubtree(node, requestedRefs);
   return (
     <>
       <TreeRow
@@ -140,7 +181,12 @@ function Node({
         label={node.label}
         expandable
         open={open}
-        trailing={<StatusCountStrip counts={counts} />}
+        afterLabel={<StatusCountStrip counts={counts} />}
+        trailing={
+          requestedCount > 0 ? (
+            <RequestedReviewIndicator count={requestedCount} />
+          ) : undefined
+        }
         onToggle={() => toggle(node.id)}
       />
       {open &&
@@ -150,6 +196,7 @@ function Node({
             node={child}
             depth={depth + 1}
             reviewByRef={reviewByRef}
+            requestedRefs={requestedRefs}
           />
         ))}
     </>
@@ -160,6 +207,11 @@ export default function ReviewTree() {
   const { tree, isLoading } = useReviewTree();
   const { isAllowlisted } = useAuth();
   const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
+  const { data: requestData } = useQuery(
+    listReviewRequests,
+    { mine: true, openOnly: true },
+    { enabled: isAllowlisted },
+  );
   const { openOverview, activeToken } = useWorkspaceTabs();
 
   const reviewByRef = useMemo(() => {
@@ -169,6 +221,14 @@ export default function ReviewTree() {
     }
     return map;
   }, [data?.drafts]);
+
+  const requestedRefs = useMemo(() => {
+    const refs = new Set<string>();
+    for (const request of requestData?.requests ?? []) {
+      if (request.ref) refs.add(refKey(request.ref));
+    }
+    return refs;
+  }, [requestData?.requests]);
 
   const overviewSelected =
     activeToken !== null && isOverviewGroup(refTokenOf(activeToken));
@@ -195,6 +255,7 @@ export default function ReviewTree() {
             node={node}
             depth={0}
             reviewByRef={reviewByRef}
+            requestedRefs={requestedRefs}
           />
         ))
       )}

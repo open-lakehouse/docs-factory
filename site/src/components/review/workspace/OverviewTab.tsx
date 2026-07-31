@@ -32,7 +32,7 @@ export default function OverviewTab({
     >
       <div className="overview-tab-body">
         {view === "pipeline" ? (
-          <BlogPipeline />
+          <BlogPipeline heading="" showIntro={false} />
         ) : (
           <section aria-label="What changed by product">
             <h1>Product changes</h1>

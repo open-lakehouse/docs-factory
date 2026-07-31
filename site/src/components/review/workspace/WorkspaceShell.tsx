@@ -19,6 +19,7 @@ import { RightPaneSlotContext } from "./right-pane-slot";
 import ReviewTree from "./ReviewTree";
 import TabBar from "./TabBar";
 import ReviewTab from "./ReviewTab";
+import OverviewTab from "./OverviewTab";
 import RightPane from "./RightPane";
 
 const RIGHT_COLLAPSED_KEY = "docs.review.right-collapsed";
@@ -185,18 +186,27 @@ function WorkspaceLayout() {
           <TabBar />
           {tabs.length === 0 ? (
             <div className="flex flex-1 items-center justify-center p-8 text-center text-muted-foreground">
-              Select a page from the tree to open it here.
+              Select Overview or a page from the tree to open it here.
             </div>
           ) : (
-            tabs.map((tab) => (
-              <ReviewTab
-                key={tab.token}
-                token={tab.token}
-                contentRef={tab.ref}
-                view={tab.view}
-                isActive={tab.token === activeToken}
-              />
-            ))
+            tabs.map((tab) =>
+              tab.kind === "overview" ? (
+                <OverviewTab
+                  key={tab.token}
+                  token={tab.token}
+                  view={tab.overviewView}
+                  isActive={tab.token === activeToken}
+                />
+              ) : (
+                <ReviewTab
+                  key={tab.token}
+                  token={tab.token}
+                  contentRef={tab.ref}
+                  view={tab.view}
+                  isActive={tab.token === activeToken}
+                />
+              ),
+            )
           )}
           {rightCollapsed && (
             <button

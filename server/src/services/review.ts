@@ -109,7 +109,7 @@ import {
   type ContentVersionRow,
   type MerkleNodeJson,
 } from "../db-map.js";
-import { diffTrees, unchangedSlugs, type DiffEntry } from "../tree-diff.js";
+import { reviewDiff, unchangedSlugs, type DiffEntry } from "../tree-diff.js";
 import { roleFromDb, lookupRole } from "../allowlist.js";
 import { resolveLogin } from "../auth/github-identity.js";
 import {
@@ -1767,7 +1767,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               and (${sinceDate}::timestamptz is null or created_at <= ${sinceDate})
             order by created_at desc limit 1
           `;
-          const diff = diffTrees(base?.merkle_tree ?? null, cur.merkle_tree ?? null);
+          // Review-level diff: compact subtree noise; brand-new artifacts
+          // collapse to a single "Document added" summary.
+          const diff = reviewDiff(base?.merkle_tree ?? null, cur.merkle_tree ?? null);
           if (diff.length === 0) continue;
 
           // Open comments sitting on a section whose subtree changed.

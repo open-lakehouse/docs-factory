@@ -18,10 +18,12 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { tabLabel, viewLabel } from "./tab-label";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
+import { overviewViewLabel } from "./overview-token";
 import { useWorkspaceTabs, type OpenTab } from "./workspace-tabs-context";
 
 /** The strip label for a view tab: page title for rendered, view name otherwise. */
 function labelFor(tab: OpenTab): string {
+  if (tab.kind === "overview") return overviewViewLabel(tab.overviewView);
   return tab.view.kind === "rendered" ? tabLabel(tab.ref) : viewLabel(tab.view);
 }
 

@@ -93,6 +93,53 @@ function entry(node: MerkleNodeJson, change: ChangeKind): DiffEntry {
 }
 
 /**
+ * Collapse a raw Merkle diff into review-level changes:
+ * - descendant-only entries are context, not changes of their own;
+ * - a newly added/removed subtree is represented by its highest changed node,
+ *   instead of repeating every prose/code leaf below it.
+ */
+export function compactDiff(
+  entries: DiffEntry[],
+  before: MerkleNodeJson | null,
+  after: MerkleNodeJson | null,
+): DiffEntry[] {
+  const beforeIndex = before ? indexTree(before) : new Map<string, IndexedNode>();
+  const afterIndex = after ? indexTree(after) : new Map<string, IndexedNode>();
+  const changed = new Map(entries.map((e) => [e.key, e]));
+
+  return entries.filter((entry) => {
+    if (entry.change === "modified-descendants") return false;
+    if (entry.change !== "added" && entry.change !== "removed") return true;
+
+    const index = entry.change === "removed" ? beforeIndex : afterIndex;
+    let parentKey: string | undefined = index.get(entry.key)?.parentKey;
+    // Top-level children parent to the doc root (""), which is never itself a
+    // change entry — falsy parentKey ends the walk there.
+    while (parentKey) {
+      if (changed.get(parentKey)?.change === entry.change) return false;
+      parentKey = index.get(parentKey)?.parentKey;
+    }
+    return true;
+  });
+}
+
+/**
+ * Review-facing diff. A null baseline means the artifact is brand new — surface
+ * a single "Document added" summary instead of every leaf as added. Otherwise
+ * return the compacted structural diff.
+ */
+export function reviewDiff(
+  before: MerkleNodeJson | null,
+  after: MerkleNodeJson | null,
+): DiffEntry[] {
+  if (!after) return [];
+  if (!before) {
+    return [{ key: "", kind: "doc", change: "added", label: "Document added" }];
+  }
+  return compactDiff(diffTrees(before, after), before, after);
+}
+
+/**
  * The anchor slugs of sections whose ENTIRE subtree (own prose + subsections +
  * code + snippets) is unchanged vs. the baseline — the set the re-anchoring fast
  * path keeps without a scan. Keyed on the HEADING node's subtree hash (the whole

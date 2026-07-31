@@ -1,19 +1,21 @@
-// The workspace's left navigation: a file-explorer-style tree of all reviewable
-// content. Branches (project → bucket, blog series) expand/collapse; leaves open
-// the page in a middle-pane tab. Built from build-time content (tree-model.ts),
-// expansion persisted in sessionStorage (expansion-context.tsx). Leaf rows show
-// compact status dots: frontmatter authoring (idea / draft / ready) then DB
-// review lifecycle (none / in review / changes requested / approved / released).
+// The workspace's left navigation: Overview (blog pipeline + product rollup)
+// above a file-explorer-style tree of all reviewable content. Branches
+// (project → bucket, blog series) expand/collapse; leaves open the page in a
+// middle-pane tab. Built from build-time content (tree-model.ts), expansion
+// persisted in sessionStorage (expansion-context.tsx). Leaf rows show compact
+// status dots: frontmatter authoring (idea / draft / ready) then DB review
+// lifecycle (none / in review / changes requested / approved / released).
 // Branch aggregates show a review status dot when any descendant is pending.
 import { useMemo } from "react";
 import { useQuery } from "@connectrpc/connect-query";
-import { Files, FileText, FolderTree, Layers3, Newspaper } from "lucide-react";
+import { Files, FileText, FolderTree, LayoutDashboard, Layers3, Newspaper } from "lucide-react";
 import { cn } from "@/lib/utils";
 import DiataxisIcon from "../../DiataxisIcon";
 import { listDrafts } from "../../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../../lib/auth-context";
 import { refToParam } from "../../../lib/content-ref";
+import { isOverviewGroup } from "./overview-token";
 import { refTokenOf } from "./view-token";
 import { statusDotClass } from "../../../lib/frontmatter-status";
 import { PENDING_REVIEW_STATES } from "../../../lib/review-inbox";
@@ -156,6 +158,7 @@ export default function ReviewTree() {
   const { tree, isLoading } = useReviewTree();
   const { isAllowlisted } = useAuth();
   const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
+  const { openOverview, activeToken } = useWorkspaceTabs();
 
   const reviewByRef = useMemo(() => {
     const map = new Map<string, ReviewState>();
@@ -165,9 +168,19 @@ export default function ReviewTree() {
     return map;
   }, [data?.drafts]);
 
+  const overviewSelected =
+    activeToken !== null && isOverviewGroup(refTokenOf(activeToken));
+
   return (
-    <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto p-2" aria-label="Content">
-      <p className="flex items-center gap-1.5 px-2 py-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
+    <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto p-2" aria-label="Review">
+      <TreeRow
+        depth={0}
+        icon={<LayoutDashboard className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+        label="Overview"
+        selected={overviewSelected}
+        onSelect={() => openOverview()}
+      />
+      <p className="mt-2 flex items-center gap-1.5 px-2 py-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
         <Files className="h-3.5 w-3.5 text-primary/80" aria-hidden="true" />
         Content
       </p>

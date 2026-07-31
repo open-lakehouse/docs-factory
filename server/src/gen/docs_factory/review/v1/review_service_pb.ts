@@ -1411,7 +1411,8 @@ export type ProductChangeEntry = Message<"docs_factory.review.v1.ProductChangeEn
 
   /**
    * The baseline version compared against (empty if the artifact is brand new
-   * relative to `since`, in which case every node reads as added).
+   * relative to `since`). Brand-new artifacts return a single "Document added"
+   * ChangedNode instead of every leaf as added.
    *
    * @generated from field: string baseline_version_id = 5;
    */

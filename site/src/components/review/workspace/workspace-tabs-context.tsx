@@ -3,12 +3,15 @@
 // the query string so a workspace layout is shareable and back/forward-navigable:
 //
 //   /review?tabs=docs:slug:project:bucket,docs:slug:project:bucket#md,…&active=<token>&thread=<id>&anchor=<slug>
+//   /review?tabs=overview#pipeline,overview#product&active=overview#pipeline
 //
-// Opening a sidebar ITEM opens a GROUP of tabs — the rendered page plus one tab
-// per companion VIEW (its `.md` twin, each runnable script). Every tab token is
-// `refToParam(ref)` optionally suffixed with `#<view>`; tabs sharing a ref token
-// (the groupKey) belong to one item. The rendered view has no suffix, so old
-// shared links (bare ref tokens) still parse.
+// Opening a sidebar ITEM opens a GROUP of tabs — for content, the rendered page
+// plus companion views (`.md` twin, each runnable script); for Overview, the
+// blog pipeline + ProductChanges panels. Every content tab token is
+// `refToParam(ref)` optionally suffixed with `#<view>`; Overview tokens use the
+// synthetic group key `overview`. Tabs sharing a groupKey belong to one item.
+// The rendered content view has no suffix, so old shared links (bare ref tokens)
+// still parse.
 //
 // The workspace shows ONE item at a time: opening an item REPLACES the open set
 // with just that item's group, so clicking around the tree navigates rather than
@@ -32,19 +35,33 @@ import { findBlog, findDoc, type ContentPage } from "../../../content";
 import { useScriptsIndex } from "../../../lib/scripts-index";
 import { viewsFor } from "./item-views";
 import {
+  overviewTabsParam,
+  overviewToken,
+  parseOverviewToken,
+  type OverviewView,
+} from "./overview-token";
+import {
   parseTabToken,
   refTokenOf,
   tabTokenFor,
   type TabView,
 } from "./view-token";
 
-export interface OpenTab {
-  token: string;
-  ref: ContentRef;
-  view: TabView;
-  /** The ref token shared by every view of one item; groups sibling tabs. */
-  groupKey: string;
-}
+export type OpenTab =
+  | {
+      kind: "content";
+      token: string;
+      ref: ContentRef;
+      view: TabView;
+      /** The ref token shared by every view of one item; groups sibling tabs. */
+      groupKey: string;
+    }
+  | {
+      kind: "overview";
+      token: string;
+      overviewView: OverviewView;
+      groupKey: "overview";
+    };
 
 /** A deep-link intent attached when opening a tab from a cross-nav row. */
 export interface OpenIntent {
@@ -61,6 +78,8 @@ interface TabsValue {
   openTab: (ref: ContentRef, intent?: OpenIntent) => void;
   /** Activate a specific view of an item (opening it if not already open). */
   openView: (ref: ContentRef, view: TabView, intent?: OpenIntent) => void;
+  /** Open the Overview item (blog pipeline + product changes). */
+  openOverview: (view?: OverviewView) => void;
   /** Close a single view tab. */
   closeTab: (token: string) => void;
   /** Close a whole item group (every view sharing the groupKey). */
@@ -83,10 +102,29 @@ function parseTabs(raw: string | null): OpenTab[] {
   const seen = new Set<string>();
   for (const token of raw.split(",")) {
     if (!token || seen.has(token)) continue;
+    const overviewView = parseOverviewToken(token);
+    if (overviewView) {
+      const normalized = overviewToken(overviewView);
+      if (seen.has(normalized)) continue;
+      seen.add(normalized);
+      out.push({
+        kind: "overview",
+        token: normalized,
+        overviewView,
+        groupKey: "overview",
+      });
+      continue;
+    }
     const parsed = parseTabToken(token);
     if (!parsed) continue;
     seen.add(token);
-    out.push({ token, ref: parsed.ref, view: parsed.view, groupKey: refTokenOf(token) });
+    out.push({
+      kind: "content",
+      token,
+      ref: parsed.ref,
+      view: parsed.view,
+      groupKey: refTokenOf(token),
+    });
   }
   return out;
 }
@@ -101,9 +139,15 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
 
   const tabs = useMemo(() => parseTabs(params.get("tabs")), [params]);
   const activeParam = params.get("active");
+  // Normalize bare `overview` → `overview#pipeline` so active matches parsed tabs.
+  const normalizedActive = useMemo(() => {
+    if (!activeParam) return null;
+    const overviewView = parseOverviewToken(activeParam);
+    return overviewView ? overviewToken(overviewView) : activeParam;
+  }, [activeParam]);
   // Keep `active` valid: fall back to the last tab if the param is stale/missing.
   const activeToken =
-    (activeParam && tabs.some((t) => t.token === activeParam) && activeParam) ||
+    (normalizedActive && tabs.some((t) => t.token === normalizedActive) && normalizedActive) ||
     (tabs.length ? tabs[tabs.length - 1].token : null);
 
   const intent = useMemo<OpenIntent>(
@@ -162,6 +206,23 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
       );
     },
     [setParams, applyIntent],
+  );
+
+  const openOverview = useCallback(
+    (view: OverviewView = "pipeline") => {
+      setParams(
+        (prev) => {
+          const p = new URLSearchParams(prev);
+          p.set("tabs", overviewTabsParam());
+          p.set("active", overviewToken(view));
+          p.delete("thread");
+          p.delete("anchor");
+          return p;
+        },
+        { replace: false },
+      );
+    },
+    [setParams],
   );
 
   const closeTokens = useCallback(
@@ -235,12 +296,24 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
       intent,
       openTab,
       openView,
+      openOverview,
       closeTab,
       closeGroup,
       setActive,
       clearIntent,
     }),
-    [tabs, activeToken, intent, openTab, openView, closeTab, closeGroup, setActive, clearIntent],
+    [
+      tabs,
+      activeToken,
+      intent,
+      openTab,
+      openView,
+      openOverview,
+      closeTab,
+      closeGroup,
+      setActive,
+      clearIntent,
+    ],
   );
 
   return <TabsContext.Provider value={value}>{children}</TabsContext.Provider>;

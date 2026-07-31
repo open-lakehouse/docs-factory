@@ -2,7 +2,7 @@
 // classification (added/removed/modified/modified-descendants/moved), and the
 // unchangedSlugs set the re-anchoring fast path consumes.
 import { expect, test, describe } from "bun:test";
-import { diffTrees, unchangedSlugs } from "./tree-diff.js";
+import { compactDiff, diffTrees, reviewDiff, unchangedSlugs } from "./tree-diff.js";
 import type { MerkleNodeJson } from "./db-map.js";
 
 /** Build a heading node with a prose child, for compact fixtures. */
@@ -79,6 +79,48 @@ describe("diffTrees", () => {
     // Both moved (their ordinals swapped) but content is identical.
     expect(changes.find((c) => c.key === "a")?.change).toBe("moved");
     expect(changes.find((c) => c.key === "b")?.change).toBe("moved");
+  });
+});
+
+describe("compactDiff", () => {
+  test("drops modified-descendants and collapses added subtrees", () => {
+    const setup = heading("intro/setup", "setup-s1");
+    const after = doc([heading("intro", "intro-s1", { children: [setup] })], "r1");
+    const raw = diffTrees(null, after);
+    const compact = compactDiff(raw, null, after);
+    expect(compact.map((c) => c.key)).toEqual(["intro"]);
+    expect(compact.every((c) => c.change === "added")).toBe(true);
+  });
+
+  test("keeps sibling adds and genuine modifications", () => {
+    const before = doc([heading("intro", "s1")], "r1");
+    const after = doc(
+      [heading("intro", "s1-CHANGED", { proseHash: "p2" }), heading("usage", "s2")],
+      "r2",
+    );
+    const compact = compactDiff(diffTrees(before, after), before, after);
+    const byKey = Object.fromEntries(compact.map((c) => [c.key, c.change]));
+    expect(byKey["intro#prose"]).toBe("modified");
+    expect(byKey["usage"]).toBe("added");
+    expect(byKey["intro"]).toBeUndefined(); // modified-descendants dropped
+    expect(byKey["usage#prose"]).toBeUndefined(); // collapsed under usage
+  });
+});
+
+describe("reviewDiff", () => {
+  test("null baseline → single Document added summary", () => {
+    const after = doc([heading("intro", "s1"), heading("usage", "s2")], "r1");
+    expect(reviewDiff(null, after)).toEqual([
+      { key: "", kind: "doc", change: "added", label: "Document added" },
+    ]);
+  });
+
+  test("with baseline → compacted structural diff", () => {
+    const before = doc([heading("intro", "s1")], "r1");
+    const after = doc([heading("intro", "s1"), heading("usage", "s2")], "r2");
+    expect(reviewDiff(before, after)).toEqual([
+      expect.objectContaining({ key: "usage", change: "added" }),
+    ]);
   });
 });
 

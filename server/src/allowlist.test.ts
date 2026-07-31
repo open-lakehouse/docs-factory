@@ -1,10 +1,9 @@
 // Unit tests for the allowlist role lookup. Run with `bun test`.
 //
-// lookupRole builds a tagged-template SQL query, so we stub the `sql` tag with a
-// fake that captures the interpolated values (the logins array, then the emails
-// array) and returns canned rows. That lets us assert both the matching
-// semantics (any login OR any email, case-insensitive; maintainer wins) and the
-// query's shape without a live Postgres.
+// lookupRole builds a tagged-template SQL query keyed on the stable user id, so
+// we stub the `sql` tag with a fake that captures the interpolated value (the
+// user id) and returns canned rows. That lets us assert the query is an exact
+// user_id match and the role mapping, without a live Postgres.
 import { expect, test, describe } from "bun:test";
 import { lookupRole, roleFromDb } from "./allowlist.js";
 import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
@@ -12,8 +11,7 @@ import type { Queryable } from "./db.js";
 
 /**
  * A fake `sql` tag: records the interpolated values from the last call and
- * returns `rows`. The query has two `${...}::text[]` holes — `values[0]` is the
- * logins array, `values[1]` the emails array.
+ * returns `rows`. The query has one `${userId}` hole — `values[0]`.
  */
 function fakeSql(rows: { role: string }[]) {
   const calls: unknown[][] = [];
@@ -25,44 +23,33 @@ function fakeSql(rows: { role: string }[]) {
 }
 
 describe("lookupRole", () => {
-  test("returns ANONYMOUS with neither logins nor emails (no query)", async () => {
+  test("returns ANONYMOUS with no user id (no query)", async () => {
     const { tag, calls } = fakeSql([]);
     expect(await lookupRole(tag, {})).toBe(Role.ANONYMOUS);
-    expect(await lookupRole(tag, { logins: [], emails: [] })).toBe(Role.ANONYMOUS);
-    expect(await lookupRole(tag, { logins: [""], emails: ["  "] })).toBe(Role.ANONYMOUS);
+    expect(await lookupRole(tag, { userId: null })).toBe(Role.ANONYMOUS);
+    expect(await lookupRole(tag, { userId: "  " })).toBe(Role.ANONYMOUS);
     expect(calls.length).toBe(0); // short-circuits before touching the db
   });
 
-  test("normalizes logins + emails: trims, lowercases, dedupes, drops blanks", async () => {
-    const { tag, calls } = fakeSql([]);
-    await lookupRole(tag, {
-      logins: [" Roeap ", "roeap", "", "42610831"],
-      emails: ["  A@X.io ", "a@x.io", "   ", "b@x.io"],
-    });
-    expect(calls[0][0]).toEqual(["roeap", "42610831"]);
-    expect(calls[0][1]).toEqual(["a@x.io", "b@x.io"]);
+  test("queries by the trimmed user id", async () => {
+    const { tag, calls } = fakeSql([{ role: "reviewer" }]);
+    await lookupRole(tag, { userId: "  user-abc  " });
+    expect(calls[0][0]).toBe("user-abc");
   });
 
-  test("matches on a login candidate (e.g. the numeric account id)", async () => {
+  test("maps a maintainer row to MAINTAINER", async () => {
     const { tag } = fakeSql([{ role: "maintainer" }]);
-    expect(await lookupRole(tag, { logins: ["42610831"], emails: [] })).toBe(Role.MAINTAINER);
+    expect(await lookupRole(tag, { userId: "user-abc" })).toBe(Role.MAINTAINER);
   });
 
-  test("maintainer wins over reviewer when rows disagree", async () => {
-    const { tag } = fakeSql([{ role: "reviewer" }, { role: "maintainer" }]);
-    expect(await lookupRole(tag, { logins: ["x"], emails: ["y@z.io"] })).toBe(Role.MAINTAINER);
-  });
-
-  test("reviewer when that's the only match", async () => {
+  test("maps a reviewer row to REVIEWER", async () => {
     const { tag } = fakeSql([{ role: "reviewer" }]);
-    expect(await lookupRole(tag, { emails: ["y@z.io"] })).toBe(Role.REVIEWER);
+    expect(await lookupRole(tag, { userId: "user-abc" })).toBe(Role.REVIEWER);
   });
 
-  test("ANONYMOUS when the query returns no rows", async () => {
+  test("ANONYMOUS when the query returns no rows (not on the allowlist)", async () => {
     const { tag } = fakeSql([]);
-    expect(await lookupRole(tag, { logins: ["nobody"], emails: ["no@one.io"] })).toBe(
-      Role.ANONYMOUS,
-    );
+    expect(await lookupRole(tag, { userId: "nobody" })).toBe(Role.ANONYMOUS);
   });
 });
 

@@ -39,6 +39,7 @@ import {
   ManageAllowlistResponseSchema,
   ListAllowlistResponseSchema,
   ListRegisteredUsersResponseSchema,
+  SearchUsersResponseSchema,
   EraseUserResponseSchema,
   RegisterVersionResponseSchema,
   ListVersionsResponseSchema,
@@ -80,11 +81,13 @@ import {
   type RequestChangesOnPublishedRequest,
   type RecordApprovalRequest,
   type DismissApprovalRequest,
+  type SearchUsersRequest,
 } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import {
   AllowlistEntrySchema,
   AllowlistEntryDetailSchema,
   RegisteredUserSchema,
+  UserSummarySchema,
   DraftSummarySchema,
   ContentRefSchema,
   ThreadSchema,
@@ -111,7 +114,6 @@ import {
 } from "../db-map.js";
 import { reviewDiff, unchangedSlugs, type DiffEntry } from "../tree-diff.js";
 import { roleFromDb, lookupRole } from "../allowlist.js";
-import { resolveLogin } from "../auth/github-identity.js";
 import {
   reviewRequestFromRow,
   contentEventFromRow,
@@ -231,10 +233,12 @@ export interface DeriveReviewStateInput {
   explicitOutcome: "changes-requested" | "approved" | "released" | null;
   explicitOutcomeAt: Date | null;
   // Active (non-dismissed) approvals, and when the most recent one was recorded.
-  activeApprovals: { approverLogin: string }[];
+  // `approverUserId` is the stable per-reviewer key (only membership/count matter
+  // to the derivation, so ids vs logins are equivalent here — ids are just stable).
+  activeApprovals: { approverUserId: string }[];
   latestApprovalAt: Date | null;
-  // Logins of reviewers with an open REQUIRED request (still-pending preconditions).
-  openRequiredLogins: string[];
+  // User ids of reviewers with an open REQUIRED request (still-pending preconditions).
+  openRequiredUserIds: string[];
   // Whether ANY required request exists on the artifact (open or already
   // satisfied) — distinguishes "no required reviewers" from "all satisfied".
   hasRequiredRequests: boolean;
@@ -242,7 +246,7 @@ export interface DeriveReviewStateInput {
 
 export interface DerivedReviewState {
   state: ReviewState;
-  pendingRequiredLogins: string[];
+  pendingRequiredUserIds: string[];
   needsReview: boolean;
 }
 
@@ -269,18 +273,18 @@ export function deriveReviewState(input: DeriveReviewStateInput): DerivedReviewS
     explicitOutcomeAt,
     activeApprovals,
     latestApprovalAt,
-    openRequiredLogins,
+    openRequiredUserIds,
     hasRequiredRequests,
   } = input;
-  const pendingRequiredLogins = openRequiredLogins;
+  const pendingRequiredUserIds = openRequiredUserIds;
 
   if (explicitOutcome === "released") {
-    return { state: ReviewState.RELEASED, pendingRequiredLogins, needsReview: false };
+    return { state: ReviewState.RELEASED, pendingRequiredUserIds, needsReview: false };
   }
 
   // The maintainer override wins over a pending change request.
   if (explicitOutcome === "approved") {
-    return { state: ReviewState.APPROVED, pendingRequiredLogins: [], needsReview: false };
+    return { state: ReviewState.APPROVED, pendingRequiredUserIds: [], needsReview: false };
   }
 
   // A changes-requested outcome holds while it is at least as recent as the
@@ -290,20 +294,20 @@ export function deriveReviewState(input: DeriveReviewStateInput): DerivedReviewS
     (latestApprovalAt == null ||
       (explicitOutcomeAt != null && explicitOutcomeAt.getTime() >= latestApprovalAt.getTime()));
   if (changesRequestedHolds) {
-    return { state: ReviewState.CHANGES_REQUESTED, pendingRequiredLogins, needsReview: false };
+    return { state: ReviewState.CHANGES_REQUESTED, pendingRequiredUserIds, needsReview: false };
   }
 
   const isApproved = hasRequiredRequests
-    ? openRequiredLogins.length === 0 && activeApprovals.length > 0
+    ? openRequiredUserIds.length === 0 && activeApprovals.length > 0
     : activeApprovals.length > 0;
   if (isApproved) {
-    return { state: ReviewState.APPROVED, pendingRequiredLogins: [], needsReview: false };
+    return { state: ReviewState.APPROVED, pendingRequiredUserIds: [], needsReview: false };
   }
 
   if (frontmatterStatus === READY_STATUS) {
-    return { state: ReviewState.NEEDS_REVIEW, pendingRequiredLogins, needsReview: true };
+    return { state: ReviewState.NEEDS_REVIEW, pendingRequiredUserIds, needsReview: true };
   }
-  return { state: ReviewState.NONE, pendingRequiredLogins, needsReview: false };
+  return { state: ReviewState.NONE, pendingRequiredUserIds, needsReview: false };
 }
 
 // The joined shape behind a DraftSummary: latest version metadata + current
@@ -324,11 +328,13 @@ type DraftSummaryRow = {
   // Raw inputs to deriveReviewState (the effective review_state is computed, not
   // read from a single column):
   //   explicit_outcome/_at — latest stored review_state row (or null)
-  //   pending_required_logins — logins of open required requests
+  //   pending_required_user_ids — user ids of open required requests (for derive)
+  //   pending_required_logins — resolved display logins of the same (for the UI)
   //   has_required_requests — any required request exists (open or satisfied)
   //   approvals — active (non-dismissed) approval rows, most-recent last
   explicit_outcome: string | null;
   explicit_outcome_at: Date | null;
+  pending_required_user_ids: string[] | null;
   pending_required_logins: string[] | null;
   has_required_requests: boolean;
   approvals: ContentApprovalRow[] | null;
@@ -367,11 +373,22 @@ function draftSummaryFromRow(r: DraftSummaryRow) {
     frontmatterStatus: r.frontmatter_status,
     explicitOutcome,
     explicitOutcomeAt: r.explicit_outcome_at,
-    activeApprovals: approvalRows.map((a) => ({ approverLogin: a.approver_login })),
+    activeApprovals: approvalRows.map((a) => ({ approverUserId: a.approver_user_id })),
     latestApprovalAt,
-    openRequiredLogins: r.pending_required_logins ?? [],
+    openRequiredUserIds: r.pending_required_user_ids ?? [],
     hasRequiredRequests: r.has_required_requests,
   });
+  // The proto surfaces resolved display logins (id-keyed internally): map each
+  // pending user id to its joined login, falling back to the id when unresolved.
+  const loginByUserId = new Map<string, string>();
+  for (let i = 0; i < (r.pending_required_user_ids ?? []).length; i++) {
+    const uid = r.pending_required_user_ids![i];
+    const login = (r.pending_required_logins ?? [])[i];
+    if (uid) loginByUserId.set(uid, login || uid);
+  }
+  const pendingRequiredLogins = derived.pendingRequiredUserIds.map(
+    (uid) => loginByUserId.get(uid) ?? uid,
+  );
   return create(DraftSummarySchema, {
     ref,
     title: r.title ?? r.slug,
@@ -383,7 +400,7 @@ function draftSummaryFromRow(r: DraftSummaryRow) {
     published: r.published ?? false,
     openRequiredRequestCount: r.open_required_requests,
     approvals: approvalRows.map(approvalFromRow),
-    pendingRequiredLogins: derived.pendingRequiredLogins,
+    pendingRequiredLogins,
     needsReview: derived.needsReview,
     latestVersion:
       r.version_id == null
@@ -442,8 +459,13 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string) {
       (select count(*)::int from review_request rq
         where rq.area = ${area} and rq.slug = ${slug}
           and rq.requirement = 'required' and rq.status = 'open') as open_required_requests,
-      (select coalesce(array_agg(rq.reviewer_login) filter (where rq.reviewer_login is not null), '{}')
+      (select coalesce(array_agg(rq.reviewer_user_id order by rq.created_at), '{}')
         from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}
+          and rq.requirement = 'required' and rq.status = 'open') as pending_required_user_ids,
+      (select coalesce(array_agg(coalesce(ui.github_login, ui.name, rq.reviewer_user_id) order by rq.created_at), '{}')
+        from review_request rq
+        left join user_identity ui on ui.user_id = rq.reviewer_user_id
         where rq.area = ${area} and rq.slug = ${slug}
           and rq.requirement = 'required' and rq.status = 'open') as pending_required_logins,
       (select exists (select 1 from review_request rq
@@ -451,9 +473,10 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string) {
           and rq.requirement = 'required')) as has_required_requests,
       (select coalesce(jsonb_agg(
           jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
-            'approver_login', ca.approver_login, 'approver_user_id', ca.approver_user_id,
+            'approver_login', ui.github_login, 'approver_user_id', ca.approver_user_id,
             'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
         from content_approval ca
+        left join user_identity ui on ui.user_id = ca.approver_user_id
         where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as approvals
     from (select 1) one
     left join latest l on true
@@ -518,8 +541,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             (select count(*)::int from review_request rq
               where rq.area = k.area and rq.slug = k.slug
                 and rq.requirement = 'required' and rq.status = 'open') as open_required_requests,
-            (select coalesce(array_agg(rq.reviewer_login) filter (where rq.reviewer_login is not null), '{}')
+            (select coalesce(array_agg(rq.reviewer_user_id order by rq.created_at), '{}')
               from review_request rq
+              where rq.area = k.area and rq.slug = k.slug
+                and rq.requirement = 'required' and rq.status = 'open') as pending_required_user_ids,
+            (select coalesce(array_agg(coalesce(ui.github_login, ui.name, rq.reviewer_user_id) order by rq.created_at), '{}')
+              from review_request rq
+              left join user_identity ui on ui.user_id = rq.reviewer_user_id
               where rq.area = k.area and rq.slug = k.slug
                 and rq.requirement = 'required' and rq.status = 'open') as pending_required_logins,
             (select exists (select 1 from review_request rq
@@ -527,9 +555,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 and rq.requirement = 'required')) as has_required_requests,
             (select coalesce(jsonb_agg(
                 jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
-                  'approver_login', ca.approver_login, 'approver_user_id', ca.approver_user_id,
+                  'approver_login', ui.github_login, 'approver_user_id', ca.approver_user_id,
                   'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
               from content_approval ca
+              left join user_identity ui on ui.user_id = ca.approver_user_id
               where ca.area = k.area and ca.slug = k.slug and ca.dismissed_at is null) as approvals
           from keys k
           left join latest l on l.area = k.area and l.slug = k.slug
@@ -891,10 +920,14 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       async recordApproval(req: RecordApprovalRequest, ctx) {
         const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        if (!viewer.userId) {
+          throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
+        }
         const sql = db();
         const area = areaToDb(req.ref.area);
         const slug = req.ref.slug;
         const actor = actorId(viewer);
+        const userId = viewer.userId;
         const login = viewer.login ?? actor;
         const versionId = await latestVersionId(sql, area, slug);
 
@@ -902,9 +935,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           // Upsert the approval: re-approving is a no-op (keeps the original
           // timestamp); a previously-dismissed approval is revived.
           await tx`
-            insert into content_approval (area, slug, version_id, approver_login, approver_user_id)
-            values (${area}, ${slug}, ${versionId}, ${login}, ${viewer.userId ?? null})
-            on conflict (area, slug, lower(approver_login)) where dismissed_at is null
+            insert into content_approval (area, slug, version_id, approver_user_id)
+            values (${area}, ${slug}, ${versionId}, ${userId})
+            on conflict (area, slug, approver_user_id) where dismissed_at is null
               do nothing
           `;
           // Revive a prior dismissed approval by the same reviewer, if any.
@@ -912,22 +945,20 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             update content_approval
             set dismissed_at = null, version_id = ${versionId}, created_at = now()
             where area = ${area} and slug = ${slug}
-              and lower(approver_login) = lower(${login}) and dismissed_at is not null
+              and approver_user_id = ${userId} and dismissed_at is not null
               and not exists (
                 select 1 from content_approval a2
                 where a2.area = ${area} and a2.slug = ${slug}
-                  and lower(a2.approver_login) = lower(${login}) and a2.dismissed_at is null
+                  and a2.approver_user_id = ${userId} and a2.dismissed_at is null
               )
           `;
           // Per-reviewer satisfaction: close this reviewer's own open requests
-          // (required or optional), matched by login. A request addressed only by
-          // email is satisfied once that reviewer logs in and approves under the
-          // matching login (the allowlist ties login↔email).
+          // (required or optional), matched by the stable user id.
           const satisfied = await tx<{ id: string }[]>`
             update review_request
             set status = 'satisfied', satisfied_at = now(), satisfied_by = ${actor}
             where area = ${area} and slug = ${slug} and status = 'open'
-              and lower(reviewer_login) = lower(${login})
+              and reviewer_user_id = ${userId}
             returning id
           `;
           for (const r of satisfied) {
@@ -937,6 +968,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           }
           await logEvent(tx, area, slug, "approved-by", actor, versionId, {
             reviewer_login: login,
+            reviewer_user_id: userId,
           });
         });
         const draft = await loadDraftSummary(sql, area, slug);
@@ -944,22 +976,22 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       // Dismiss an approval. A reviewer may dismiss their own; a maintainer may
-      // dismiss anyone's (via approver_login). Soft-delete (dismissed_at) so it
+      // dismiss anyone's (via approver_user_id). Soft-delete (dismissed_at) so it
       // stays on the timeline. The matching required request is left satisfied —
       // dismissing only affects the derived state, not the request lifecycle.
       async dismissApproval(req: DismissApprovalRequest, ctx) {
         const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        if (!viewer.userId) {
+          throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
+        }
         const sql = db();
         const area = areaToDb(req.ref.area);
         const slug = req.ref.slug;
         const actor = actorId(viewer);
         // Dismissing someone else's approval is a maintainer action.
-        const target = req.approverLogin ?? viewer.login ?? actor;
-        if (
-          req.approverLogin &&
-          req.approverLogin.toLowerCase() !== (viewer.login ?? "").toLowerCase()
-        ) {
+        const target = req.approverUserId ?? viewer.userId;
+        if (req.approverUserId && req.approverUserId !== viewer.userId) {
           requireMaintainer(ctx);
         }
         const versionId = await latestVersionId(sql, area, slug);
@@ -967,12 +999,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           const [dismissed] = await tx<{ id: string }[]>`
             update content_approval set dismissed_at = now()
             where area = ${area} and slug = ${slug}
-              and lower(approver_login) = lower(${target}) and dismissed_at is null
+              and approver_user_id = ${target} and dismissed_at is null
             returning id
           `;
           if (dismissed) {
             await logEvent(tx, area, slug, "approval-dismissed", actor, versionId, {
-              reviewer_login: target,
+              reviewer_user_id: target,
             });
           }
         });
@@ -1080,8 +1112,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       // Request a review of one artifact from one or more allowlisted reviewers.
-      // Each reviewer must resolve to an allowlist entry (by login or email); an
-      // off-list target is rejected so a request always addresses a real reviewer.
+      // Each reviewer is addressed by user id and must be REGISTERED (have a
+      // user_identity row) AND on the allowlist; an off-list or unregistered
+      // target is rejected so a request always addresses a real reviewer.
       async requestReview(req: RequestReviewRequest, ctx) {
         const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
@@ -1098,31 +1131,40 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const created = await sql.begin(async (tx) => {
           const rows: ReviewRequestRow[] = [];
           for (const target of req.reviewers) {
-            const login = target.login?.trim() || null;
-            const email = target.email?.trim() || null;
-            if (!login && !email) {
-              throw new ConnectError("each reviewer needs a login or email", Code.InvalidArgument);
+            const userId = target.userId?.trim() || null;
+            if (!userId) {
+              throw new ConnectError("each reviewer needs a user id", Code.InvalidArgument);
             }
-            const role = await lookupRole(tx, {
-              logins: login ? [login] : [],
-              emails: email ? [email] : [],
-            });
+            // Registered? (an unregistered id has no user_identity row / FK target)
+            const [ident] = await tx<{ github_login: string | null }[]>`
+              select github_login from user_identity where user_id = ${userId} limit 1
+            `;
+            if (!ident) {
+              throw new ConnectError(
+                `reviewer ${userId} has not signed in`,
+                Code.FailedPrecondition,
+              );
+            }
+            const role = await lookupRole(tx, { userId });
             if (role === Role.ANONYMOUS) {
               throw new ConnectError(
-                `reviewer ${login ?? email} is not on the allowlist`,
+                `reviewer ${ident.github_login ?? userId} is not on the allowlist`,
                 Code.FailedPrecondition,
               );
             }
             const [row] = await tx<ReviewRequestRow[]>`
               insert into review_request
-                (area, slug, reviewer_login, reviewer_email, requirement, requested_by, note)
-              values (${area}, ${slug}, ${login}, ${email}, ${requirement}, ${actor}, ${req.note ?? null})
-              returning *
+                (area, slug, reviewer_user_id, requirement, requested_by, note)
+              values (${area}, ${slug}, ${userId}, ${requirement}, ${actor}, ${req.note ?? null})
+              returning *,
+                (select github_login from user_identity where user_id = ${userId}) as reviewer_login,
+                (select name from user_identity where user_id = ${userId}) as reviewer_name
             `;
             rows.push(row);
             await logEvent(tx, area, slug, "review-requested", actor, versionId, {
               request_id: row.id,
-              reviewer_login: login ?? undefined,
+              reviewer_login: ident.github_login ?? undefined,
+              reviewer_user_id: userId,
               requirement,
               note: req.note ?? undefined,
             });
@@ -1144,7 +1186,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const actor = actorId(viewer);
 
         const [existing] = await sql<ReviewRequestRow[]>`
-          select * from review_request where id = ${req.requestId}
+          select rq.*, ui.github_login as reviewer_login, ui.name as reviewer_name
+          from review_request rq
+          left join user_identity ui on ui.user_id = rq.reviewer_user_id
+          where rq.id = ${req.requestId}
         `;
         if (!existing) throw new ConnectError("request not found", Code.NotFound);
         if (existing.status !== "open") {
@@ -1158,12 +1203,16 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           const [row] = await tx<ReviewRequestRow[]>`
             update review_request
             set status = 'cancelled', cancelled_at = now()
-            where id = ${req.requestId} returning *
+            where id = ${req.requestId}
+            returning *,
+              (select github_login from user_identity where user_id = review_request.reviewer_user_id) as reviewer_login,
+              (select name from user_identity where user_id = review_request.reviewer_user_id) as reviewer_name
           `;
           const versionId = await latestVersionId(tx, existing.area, existing.slug);
           await logEvent(tx, existing.area, existing.slug, "request-cancelled", actor, versionId, {
             request_id: existing.id,
             reviewer_login: existing.reviewer_login ?? undefined,
+            reviewer_user_id: existing.reviewer_user_id,
           });
           return row;
         });
@@ -1179,15 +1228,19 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const sql = db();
         const area = req.ref ? areaToDb(req.ref.area) : null;
         const slug = req.ref?.slug ?? null;
-        const mineLogin = req.mine ? (viewer.login ?? "\0") : null;
+        // Inbox ("requests to me") is an exact user-id match — a GitHub rename
+        // never breaks it. "\0" is an unmatchable sentinel for an id-less viewer.
+        const mineUserId = req.mine ? (viewer.userId ?? "\0") : null;
         const byMe = req.byMe ? actorId(viewer) : null;
         const rows = await sql<ReviewRequestRow[]>`
-          select * from review_request
-          where (${area}::text is null or (area = ${area} and slug = ${slug}))
-            and (${mineLogin}::text is null or lower(reviewer_login) = lower(${mineLogin}))
-            and (${byMe}::text is null or requested_by = ${byMe})
-            and (${req.openOnly ?? false} = false or status = 'open')
-          order by id desc
+          select rq.*, ui.github_login as reviewer_login, ui.name as reviewer_name
+          from review_request rq
+          left join user_identity ui on ui.user_id = rq.reviewer_user_id
+          where (${area}::text is null or (rq.area = ${area} and rq.slug = ${slug}))
+            and (${mineUserId}::text is null or rq.reviewer_user_id = ${mineUserId})
+            and (${byMe}::text is null or rq.requested_by = ${byMe})
+            and (${req.openOnly ?? false} = false or rq.status = 'open')
+          order by rq.id desc
         `;
         return create(ListReviewRequestsResponseSchema, {
           requests: rows.map(reviewRequestFromRow),
@@ -1259,9 +1312,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const actor = getViewer(ctx).login ?? "unknown";
         const sql = db();
         if (!req.entry) throw new ConnectError("entry is required", Code.InvalidArgument);
-        const { githubLogin, email } = req.entry;
-        if (!githubLogin && !email) {
-          throw new ConnectError("entry needs a github_login or email", Code.InvalidArgument);
+        const userId = req.entry.userId?.trim() || null;
+        if (!userId) {
+          throw new ConnectError("entry needs a user_id", Code.InvalidArgument);
         }
 
         if (req.action === ManageAllowlistRequest_Action.ADD) {
@@ -1272,123 +1325,98 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             );
           }
           const role = req.entry.role === Role.MAINTAINER ? "maintainer" : "reviewer";
-          // An entry can key on github_login, email, or both, and each has its
-          // own partial-unique index — so no single `on conflict` target covers
-          // both. Match an existing row by EITHER identifier and update it;
-          // otherwise insert. Idempotent for a re-add by login or by email.
-          const [existing] = await sql<{ id: string; role: string }[]>`
-            select id, role from reviewer_allowlist
-            where (${githubLogin ?? null}::text is not null
-                     and lower(github_login) = lower(${githubLogin ?? null}))
-               or (${email ?? null}::text is not null
-                     and lower(email) = lower(${email ?? null}))
-            limit 1
+          // Registered-only: the user must have a user_identity row (the allowlist
+          // FK requires it), so a maintainer can't grant access to someone who has
+          // never signed in.
+          const [ident] = await sql<{ user_id: string }[]>`
+            select user_id from user_identity where user_id = ${userId} limit 1
           `;
-          if (existing) {
-            // Demoting the last maintainer to reviewer would empty the allowlist
-            // of maintainers — block it (see removesLastMaintainer).
-            if (
-              removesLastMaintainer(
-                await maintainerCount(sql),
-                existing.role === "maintainer",
-                role !== "maintainer",
-              )
-            ) {
-              throw new ConnectError(
-                "cannot demote the last maintainer",
-                Code.FailedPrecondition,
-              );
-            }
-            await sql`
-              update reviewer_allowlist
-              set github_login = coalesce(${githubLogin ?? null}, github_login),
-                  email = coalesce(${email ?? null}, email),
-                  role = ${role}
-              where id = ${existing.id}
-            `;
-          } else {
-            await sql`
-              insert into reviewer_allowlist (github_login, email, role, added_by)
-              values (${githubLogin ?? null}, ${email ?? null}, ${role}, ${actor})
-            `;
+          if (!ident) {
+            throw new ConnectError(
+              "user must have signed in before being added",
+              Code.FailedPrecondition,
+            );
           }
+          // Demoting the last maintainer to reviewer would empty the allowlist of
+          // maintainers — block it (see removesLastMaintainer).
+          const [existing] = await sql<{ role: string }[]>`
+            select role from reviewer_allowlist where user_id = ${userId} limit 1
+          `;
+          if (
+            existing &&
+            removesLastMaintainer(
+              await maintainerCount(sql),
+              existing.role === "maintainer",
+              role !== "maintainer",
+            )
+          ) {
+            throw new ConnectError("cannot demote the last maintainer", Code.FailedPrecondition);
+          }
+          // Upsert by user id: ADD doubles as a role change.
+          await sql`
+            insert into reviewer_allowlist (user_id, role, added_by)
+            values (${userId}, ${role}, ${actor})
+            on conflict (user_id) do update set role = ${role}
+          `;
         } else if (req.action === ManageAllowlistRequest_Action.REMOVE) {
-          // Remove targets ONE identity. When both are supplied we key on the
-          // github_login (the primary identifier); OR-ing across both could
-          // delete two unrelated entries if the caller passed a login and an
-          // email belonging to different people.
-          // Look up the target's current role first so we can block removing the
-          // last maintainer before we delete anything.
-          const [target] = githubLogin
-            ? await sql<{ role: string }[]>`
-                select role from reviewer_allowlist
-                where lower(github_login) = lower(${githubLogin}) limit 1`
-            : await sql<{ role: string }[]>`
-                select role from reviewer_allowlist
-                where lower(email) = lower(${email ?? null}) limit 1`;
+          // Block removing the last maintainer before deleting anything.
+          const [target] = await sql<{ role: string }[]>`
+            select role from reviewer_allowlist where user_id = ${userId} limit 1
+          `;
           if (
             target &&
             removesLastMaintainer(await maintainerCount(sql), target.role === "maintainer", true)
           ) {
-            throw new ConnectError(
-              "cannot remove the last maintainer",
-              Code.FailedPrecondition,
-            );
+            throw new ConnectError("cannot remove the last maintainer", Code.FailedPrecondition);
           }
-          if (githubLogin) {
-            await sql`
-              delete from reviewer_allowlist
-              where lower(github_login) = lower(${githubLogin})
-            `;
-          } else {
-            await sql`
-              delete from reviewer_allowlist
-              where lower(email) = lower(${email ?? null})
-            `;
-          }
+          await sql`delete from reviewer_allowlist where user_id = ${userId}`;
         } else {
           throw new ConnectError("unknown allowlist action", Code.InvalidArgument);
         }
 
-        const entries = await sql<{ github_login: string | null; email: string | null; role: string }[]>`
-          select github_login, email, role from reviewer_allowlist order by created_at
+        const entries = await sql<{ user_id: string; role: string }[]>`
+          select user_id, role from reviewer_allowlist order by created_at
         `;
         return create(ManageAllowlistResponseSchema, {
           entries: entries.map((e) =>
             create(AllowlistEntrySchema, {
-              githubLogin: e.github_login ?? undefined,
-              email: e.email ?? undefined,
+              userId: e.user_id,
               role: roleFromDb(e.role),
             }),
           ),
         });
       },
 
-      // Read the allowlist with its audit metadata (id/added_by/created_at),
-      // without the mutation ManageAllowlist required to see it. Maintainer-only.
+      // Read the allowlist with resolved display attributes + audit metadata
+      // (added_by/created_at), without the mutation ManageAllowlist required to
+      // see it. Joins user_identity for display. Maintainer-only.
       async listAllowlist(_req, ctx) {
         requireMaintainer(ctx);
         const sql = db();
         const rows = await sql<
           {
-            id: string;
+            user_id: string;
             github_login: string | null;
             email: string | null;
+            name: string | null;
             role: string;
             added_by: string | null;
             created_at: Date;
           }[]
         >`
-          select id, github_login, email, role, added_by, created_at
-          from reviewer_allowlist
-          order by role, created_at
+          select a.user_id, ui.github_login, ui.email, ui.name,
+                 a.role, a.added_by, a.created_at
+          from reviewer_allowlist a
+          left join user_identity ui on ui.user_id = a.user_id
+          order by a.role, a.created_at
         `;
         return create(ListAllowlistResponseSchema, {
           entries: rows.map((r) =>
             create(AllowlistEntryDetailSchema, {
-              id: r.id,
+              userId: r.user_id,
               githubLogin: r.github_login ?? undefined,
               email: r.email ?? undefined,
+              name: r.name ?? undefined,
               role: roleFromDb(r.role),
               addedBy: r.added_by ?? undefined,
               createdAt: timestampFromDate(r.created_at),
@@ -1397,147 +1425,165 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         });
       },
 
-      // Everyone who has authenticated via GitHub OAuth (from neon_auth), joined
-      // to their resolved allowlist role — so a maintainer can find people who
-      // logged in but never got a status and grant them access. Maintainer-only.
-      //
-      // neon_auth is the auth provider's own schema (prod only); it does not
-      // exist under the local mock provider. If it's absent we return an empty
-      // list rather than erroring — the admin page's other sections still work.
+      // Allowlisted-scoped typeahead over registered users (user_identity),
+      // joined to their allowlist role. Powers the reviewer/allowlist pickers.
+      // `allowlistedOnly` restricts to reviewers/maintainers (for the review-
+      // request picker, which can only target allowlisted reviewers).
+      async searchUsers(req: SearchUsersRequest, ctx) {
+        requireAllowlisted(ctx);
+        const sql = db();
+        const q = req.query?.trim() ?? "";
+        const like = `%${q}%`;
+        const limit = Math.min(Math.max(req.limit ?? 10, 1), 50);
+        const allowlistedOnly = req.allowlistedOnly ?? false;
+        const rows = await sql<
+          {
+            user_id: string;
+            github_login: string | null;
+            name: string | null;
+            email: string | null;
+            avatar_url: string | null;
+            role: string | null;
+          }[]
+        >`
+          select ui.user_id, ui.github_login, ui.name, ui.email, ui.avatar_url, a.role
+          from user_identity ui
+          left join reviewer_allowlist a on a.user_id = ui.user_id
+          where (${q} = '' or ui.github_login ilike ${like}
+                 or ui.name ilike ${like} or ui.email ilike ${like})
+            and (${allowlistedOnly} = false or a.role is not null)
+          order by ui.github_login nulls last, ui.name nulls last
+          limit ${limit}
+        `;
+        return create(SearchUsersResponseSchema, {
+          users: rows.map((r) =>
+            create(UserSummarySchema, {
+              userId: r.user_id,
+              githubLogin: r.github_login ?? undefined,
+              name: r.name ?? undefined,
+              email: r.email ?? undefined,
+              avatarUrl: r.avatar_url ?? undefined,
+              role: roleFromDb(r.role),
+            }),
+          ),
+        });
+      },
+
+      // Everyone who has logged in (has a user_identity row), joined to their
+      // resolved allowlist role — so a maintainer can find people who logged in
+      // but never got a status and grant them access. Reads our own
+      // user_identity table (no GitHub API, no neon_auth probe), so it also works
+      // under the local mock provider. Maintainer-only.
       async listRegisteredUsers(_req, ctx) {
         requireMaintainer(ctx);
         const sql = db();
-
-        // Better Auth's neon_auth schema is external and its exact columns aren't
-        // guaranteed. Probe for a usable "last activity" timestamp instead of
-        // hard-coding one that might not exist; prefer the account's updatedAt
-        // (per-login), else the user's. Also confirms neon_auth is present at all.
-        let lastSeenExpr = "null::timestamptz";
-        let neonAuthPresent = false;
-        try {
-          const cols = await sql<{ table_name: string; column_name: string }[]>`
-            select table_name, column_name
-            from information_schema.columns
-            where table_schema = 'neon_auth'
-              and table_name in ('user', 'account')
-          `;
-          neonAuthPresent = cols.some((c) => c.table_name === "user");
-          const has = (t: string, c: string) =>
-            cols.some((col) => col.table_name === t && col.column_name === c);
-          if (has("account", "updatedAt")) lastSeenExpr = `acc."updatedAt"`;
-          else if (has("user", "updatedAt")) lastSeenExpr = `u."updatedAt"`;
-          else if (has("user", "createdAt")) lastSeenExpr = `u."createdAt"`;
-        } catch {
-          neonAuthPresent = false;
-        }
-        if (!neonAuthPresent) {
-          return create(ListRegisteredUsersResponseSchema, { users: [] });
-        }
-
-        // The same user⋈github-account join the auth path uses (neon-auth.ts).
-        // Built via sql.unsafe because the only interpolated part is lastSeenExpr,
-        // which is chosen from a fixed literal allowlist above (never user input);
-        // there are no dynamic *values* in this query.
-        const rows = await sql.unsafe<
+        const rows = await sql<
           {
             user_id: string;
+            github_login: string | null;
+            name: string | null;
             email: string | null;
-            account_id: string | null;
-            access_token: string | null;
+            role: string | null;
             last_seen_at: Date | null;
           }[]
-        >(`
-          select u.id as user_id, u.email as email,
-                 acc."accountId" as account_id, acc."accessToken" as access_token,
-                 ${lastSeenExpr} as last_seen_at
-          from neon_auth."user" u
-          left join neon_auth.account acc
-            on acc."userId" = u.id and acc."providerId" = 'github'
-          order by u.email nulls last
-        `);
-
-        const users = await Promise.all(
-          rows.map(async (r) => {
-            // Prefer the resolved @handle; fall back to the numeric account id.
-            // Role matches on both candidates + the user email (lookupRole).
-            const login = r.account_id
-              ? await resolveLogin(r.user_id, r.account_id, r.access_token)
-              : undefined;
-            const role = await lookupRole(sql, {
-              logins: [login, r.account_id].filter((x): x is string => !!x),
-              emails: [r.email].filter((x): x is string => !!x),
-            });
-            return create(RegisteredUserSchema, {
+        >`
+          select ui.user_id, ui.github_login, ui.name, ui.email,
+                 a.role, ui.updated_at as last_seen_at
+          from user_identity ui
+          left join reviewer_allowlist a on a.user_id = ui.user_id
+          order by ui.email nulls last
+        `;
+        return create(ListRegisteredUsersResponseSchema, {
+          users: rows.map((r) =>
+            create(RegisteredUserSchema, {
               userId: r.user_id,
-              githubLogin: login ?? r.account_id ?? undefined,
+              githubLogin: r.github_login ?? undefined,
+              name: r.name ?? undefined,
               email: r.email ?? undefined,
-              role,
+              role: roleFromDb(r.role),
               lastSeenAt: r.last_seen_at ? timestampFromDate(r.last_seen_at) : undefined,
-            });
-          }),
-        );
-        return create(ListRegisteredUsersResponseSchema, { users });
+            }),
+          ),
+        });
       },
 
       async eraseUser(req: EraseUserRequest, ctx) {
         requireMaintainer(ctx);
-        const userId = req.userId?.trim() || null;
+        const sql0 = db();
+        let userId = req.userId?.trim() || null;
         const login = req.login?.trim() || null;
         if (!userId && !login) {
           throw new ConnectError("user_id or login is required", Code.InvalidArgument);
+        }
+        // Everything keys on the stable user id now; resolve a login to its id.
+        if (!userId && login) {
+          const [ident] = await sql0<{ user_id: string }[]>`
+            select user_id from user_identity where lower(github_login) = lower(${login}) limit 1
+          `;
+          userId = ident?.user_id ?? null;
+          if (!userId) {
+            throw new ConnectError(`no registered user for login ${login}`, Code.NotFound);
+          }
         }
         // The tombstone keeps thread structure legible after erasure (hard-delete
         // would cascade via parent_id and take others' replies with it).
         const TOMBSTONE = "deleted-user";
 
-        // One transaction so a user is never left half-erased. Every identity
-        // column is matched against BOTH the stable user id and the login, so a
-        // rename before erasure can't leave part of the footprint behind.
+        // One transaction so a user is never left half-erased.
         const counts = await db().begin(async (sql) => {
-          // author_user_id is the stable id; author_login is the login. Match
-          // either. Tombstone content + identity but keep the row + its edges.
+          // Tombstone content + identity but keep the row + its edges.
           const tombstoned = await sql`
             update comment set
               author_login = ${TOMBSTONE},
               author_user_id = ${TOMBSTONE},
               author_name = null,
               body_md = '[removed]'
-            where (${userId}::text is not null and author_user_id = ${userId})
-               or (${login}::text is not null and author_login = ${login})
+            where author_user_id = ${userId}
           `;
-          // review_state / resolution actors are written from the login today.
           const reviewStates = await sql`
             update review_state set actor_user_id = ${TOMBSTONE}
-            where (${userId}::text is not null and actor_user_id = ${userId})
-               or (${login}::text is not null and actor_user_id = ${login})
+            where actor_user_id = ${userId}
           `;
           const resolutions = await sql`
             update comment_resolution set resolved_by = ${TOMBSTONE}
-            where (${userId}::text is not null and resolved_by = ${userId})
-               or (${login}::text is not null and resolved_by = ${login})
+            where resolved_by = ${userId}
           `;
-          // Approvals carry the reviewer's identity — scrub it. The approval row
-          // stays (it still counts toward the derived state) but is anonymized.
+          // Approvals carry the reviewer's user id. The approval FK to
+          // user_identity means we can't null it without dropping the row, so
+          // reassign it to a shared tombstone identity row (created below) — the
+          // approval still counts toward the derived state but is anonymized.
           await sql`
-            update content_approval set approver_login = ${TOMBSTONE}, approver_user_id = ${TOMBSTONE}
-            where (${userId}::text is not null and approver_user_id = ${userId})
-               or (${login}::text is not null and approver_login = ${login})
+            insert into user_identity (user_id, github_login, name, email)
+            values (${TOMBSTONE}, null, 'Deleted user', null)
+            on conflict (user_id) do nothing
           `;
-          // An OPEN review request is keyed to the reviewer's login and can only
-          // ever be satisfied by that reviewer approving. Once they're erased no
-          // one can satisfy it, so a required one would block release forever —
-          // cancel any still-open request addressed to this login. (Already
-          // satisfied/cancelled requests are terminal and left as-is.)
+          await sql`
+            update content_approval set approver_user_id = ${TOMBSTONE}
+            where approver_user_id = ${userId}
+          `;
+          // An OPEN review request can only ever be satisfied by that reviewer
+          // approving. Once they're erased no one can satisfy it, so a required
+          // one would block release forever — cancel any still-open request
+          // addressed to them. Then reassign the FK to the tombstone so the
+          // identity row can be scrubbed.
           const requests = await sql`
             update review_request set status = 'cancelled', cancelled_at = now()
-            where status = 'open'
-              and ${login}::text is not null and lower(reviewer_login) = lower(${login})
+            where status = 'open' and reviewer_user_id = ${userId}
+          `;
+          await sql`
+            update review_request set reviewer_user_id = ${TOMBSTONE}
+            where reviewer_user_id = ${userId}
           `;
           // Read-state is worthless once the user is gone — hard-delete it.
           const seen = await sql`
-            delete from comment_seen
-            where (${userId}::text is not null and viewer_id = ${userId})
-               or (${login}::text is not null and viewer_id = ${login})
+            delete from comment_seen where viewer_id = ${userId}
+          `;
+          // Scrub the identity row's PII but keep it (allowlist FK / references).
+          await sql`
+            update user_identity
+            set github_login = null, github_id = null, name = null, email = null,
+                avatar_url = null, updated_at = now()
+            where user_id = ${userId}
           `;
           return {
             comments: tombstoned.count,
@@ -1942,9 +1988,9 @@ async function loadDerivedState(sql: Sql, area: string, slug: string): Promise<D
       frontmatter_status: string | null;
       explicit_outcome: string | null;
       explicit_outcome_at: Date | null;
-      pending_required_logins: string[] | null;
+      pending_required_user_ids: string[] | null;
       has_required_requests: boolean;
-      approver_logins: string[] | null;
+      approver_user_ids: string[] | null;
       latest_approval_at: Date | null;
     }[]
   >`
@@ -1958,16 +2004,16 @@ async function loadDerivedState(sql: Sql, area: string, slug: string): Promise<D
       (select rs.created_at from review_state rs
         where rs.area = ${area} and rs.slug = ${slug}
         order by rs.created_at desc limit 1) as explicit_outcome_at,
-      (select coalesce(array_agg(rq.reviewer_login) filter (where rq.reviewer_login is not null), '{}')
+      (select coalesce(array_agg(rq.reviewer_user_id), '{}')
         from review_request rq
         where rq.area = ${area} and rq.slug = ${slug}
-          and rq.requirement = 'required' and rq.status = 'open') as pending_required_logins,
+          and rq.requirement = 'required' and rq.status = 'open') as pending_required_user_ids,
       (select exists (select 1 from review_request rq
         where rq.area = ${area} and rq.slug = ${slug}
           and rq.requirement = 'required')) as has_required_requests,
-      (select coalesce(array_agg(ca.approver_login order by ca.created_at), '{}')
+      (select coalesce(array_agg(ca.approver_user_id order by ca.created_at), '{}')
         from content_approval ca
-        where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as approver_logins,
+        where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as approver_user_ids,
       (select max(ca.created_at) from content_approval ca
         where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as latest_approval_at
   `;
@@ -1980,9 +2026,9 @@ async function loadDerivedState(sql: Sql, area: string, slug: string): Promise<D
     frontmatterStatus: row?.frontmatter_status ?? null,
     explicitOutcome,
     explicitOutcomeAt: row?.explicit_outcome_at ?? null,
-    activeApprovals: (row?.approver_logins ?? []).map((approverLogin) => ({ approverLogin })),
+    activeApprovals: (row?.approver_user_ids ?? []).map((approverUserId) => ({ approverUserId })),
     latestApprovalAt: row?.latest_approval_at ?? null,
-    openRequiredLogins: row?.pending_required_logins ?? [],
+    openRequiredUserIds: row?.pending_required_user_ids ?? [],
     hasRequiredRequests: row?.has_required_requests ?? false,
   });
 }

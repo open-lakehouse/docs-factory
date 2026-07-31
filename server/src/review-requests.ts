@@ -74,8 +74,10 @@ export interface ReviewRequestRow {
   id: string;
   area: string;
   slug: string;
+  reviewer_user_id: string;
+  // Resolved display attributes from the user_identity join (nullable).
   reviewer_login: string | null;
-  reviewer_email: string | null;
+  reviewer_name: string | null;
   requirement: string;
   status: string;
   requested_by: string;
@@ -126,8 +128,9 @@ export function reviewRequestFromRow(r: ReviewRequestRow): ReviewRequest {
   return create(ReviewRequestSchema, {
     id: r.id,
     ref: refFor(r.area, r.slug),
+    reviewerUserId: r.reviewer_user_id,
     reviewerLogin: r.reviewer_login ?? undefined,
-    reviewerEmail: r.reviewer_email ?? undefined,
+    reviewerName: r.reviewer_name ?? undefined,
     requirement: REQUIREMENT_BY_DB[r.requirement] ?? Requirement.REQUIRED,
     status: REQUEST_STATUS_BY_DB[r.status] ?? RequestStatus.OPEN,
     requestedBy: r.requested_by,
@@ -170,8 +173,9 @@ export interface ContentApprovalRow {
   area: string;
   slug: string;
   version_id: string | null;
-  approver_login: string;
-  approver_user_id: string | null;
+  approver_user_id: string;
+  // Resolved display login from the user_identity join (nullable).
+  approver_login: string | null;
   created_at: Date;
 }
 
@@ -179,8 +183,8 @@ export function approvalFromRow(r: ContentApprovalRow): Approval {
   return create(ApprovalSchema, {
     id: r.id,
     ref: refFor(r.area, r.slug),
-    approverLogin: r.approver_login,
-    approverUserId: r.approver_user_id ?? undefined,
+    approverUserId: r.approver_user_id,
+    approverLogin: r.approver_login ?? undefined,
     versionId: r.version_id ?? undefined,
     createdAt: timestampFromDate(r.created_at),
   });

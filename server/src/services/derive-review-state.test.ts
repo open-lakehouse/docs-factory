@@ -12,7 +12,7 @@ function base(over: Partial<DeriveReviewStateInput> = {}): DeriveReviewStateInpu
     explicitOutcomeAt: null,
     activeApprovals: [],
     latestApprovalAt: null,
-    openRequiredLogins: [],
+    openRequiredUserIds: [],
     hasRequiredRequests: false,
     ...over,
   };
@@ -36,7 +36,7 @@ describe("deriveReviewState", () => {
     const d = deriveReviewState(
       base({
         frontmatterStatus: "ready",
-        activeApprovals: [{ approverLogin: "alice" }],
+        activeApprovals: [{ approverUserId: "alice" }],
         latestApprovalAt: T0,
       }),
     );
@@ -50,21 +50,21 @@ describe("deriveReviewState", () => {
       base({
         frontmatterStatus: "ready",
         hasRequiredRequests: true,
-        openRequiredLogins: ["bob"],
-        activeApprovals: [{ approverLogin: "alice" }],
+        openRequiredUserIds: ["bob"],
+        activeApprovals: [{ approverUserId: "alice" }],
         latestApprovalAt: T0,
       }),
     );
     expect(partial.state).toBe(ReviewState.NEEDS_REVIEW);
-    expect(partial.pendingRequiredLogins).toEqual(["bob"]);
+    expect(partial.pendingRequiredUserIds).toEqual(["bob"]);
 
     // Both approved (no open required left) -> APPROVED.
     const full = deriveReviewState(
       base({
         frontmatterStatus: "ready",
         hasRequiredRequests: true,
-        openRequiredLogins: [],
-        activeApprovals: [{ approverLogin: "alice" }, { approverLogin: "bob" }],
+        openRequiredUserIds: [],
+        activeApprovals: [{ approverUserId: "alice" }, { approverUserId: "bob" }],
         latestApprovalAt: T1,
       }),
     );
@@ -75,7 +75,7 @@ describe("deriveReviewState", () => {
     // Guard: with required requests, APPROVED needs open==0 AND >=1 approval, so
     // a brand-new artifact with no requests recorded yet can't derive approved.
     const d = deriveReviewState(
-      base({ frontmatterStatus: "ready", hasRequiredRequests: true, openRequiredLogins: [] }),
+      base({ frontmatterStatus: "ready", hasRequiredRequests: true, openRequiredUserIds: [] }),
     );
     expect(d.state).toBe(ReviewState.NEEDS_REVIEW);
   });
@@ -86,7 +86,7 @@ describe("deriveReviewState", () => {
         frontmatterStatus: "ready",
         explicitOutcome: "changes-requested",
         explicitOutcomeAt: T1,
-        activeApprovals: [{ approverLogin: "alice" }],
+        activeApprovals: [{ approverUserId: "alice" }],
         latestApprovalAt: T0,
       }),
     );
@@ -99,7 +99,7 @@ describe("deriveReviewState", () => {
         frontmatterStatus: "ready",
         explicitOutcome: "changes-requested",
         explicitOutcomeAt: T0,
-        activeApprovals: [{ approverLogin: "alice" }],
+        activeApprovals: [{ approverUserId: "alice" }],
         latestApprovalAt: T1,
       }),
     );
@@ -119,7 +119,7 @@ describe("deriveReviewState", () => {
         frontmatterStatus: "ready",
         explicitOutcome: "released",
         explicitOutcomeAt: T0,
-        activeApprovals: [{ approverLogin: "alice" }],
+        activeApprovals: [{ approverUserId: "alice" }],
         latestApprovalAt: T1,
       }),
     );

@@ -7,14 +7,15 @@
  * an image manifest. See emit/README.md and blogs/CONVENTIONS.md §5.
  *
  *   bun emit.mjs --slug <slug> --target <target>
- *     → blogs/<slug>/dist/<slug>.md
- *     → blogs/<slug>/dist/assets.json
+ *     → blogs/<slug>/dist/<target>/index.mdx
+ *     → blogs/<slug>/dist/<target>/assets.json
  *
  * The two target-agnostic transforms (snippet inlining, the prose-colon guard) are
  * imported VERBATIM from the preview harness so there is exactly one implementation
- * of each. The construct FLATTENS (journey/callout/likec4/code-caption) are
- * Markdown-emitting variants that live here. Delivery to the target (create a
- * Google Doc, upload images, share) is a separate agent step — the /blog-emit skill.
+ * of each. The construct renderers (journey/callout/likec4/code-caption) come in
+ * Markdown-flattening and MDX-component variants that live here. Delivery to the
+ * target (copy the MDX post into the sibling site repo, upload images) is a separate
+ * agent step — the /blog-emit skill.
  */
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -37,7 +38,7 @@ import remarkDirectiveProseGuard from "../site/src/plugins/remark-directive-pros
 // prose-unwrap are now TARGET-PROVIDED (each target module declares which plugins
 // it uses via its `constructs` map + flags), so the core imports none of them
 // directly — see emit/targets/*.mjs. This keeps one linear core pipeline while
-// letting a target flatten (gdocs) OR upgrade to components (unitycatalog).
+// letting a target flatten (md-twin) OR upgrade to components (unitycatalog).
 import remarkUnwrapProse from "./plugins/remark-unwrap-prose.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -110,14 +111,14 @@ function stripComments(node) {
 /**
  * @param capture  object the parsed frontmatter is captured onto (`capture.frontmatter`).
  * @param opts     `{ titleAsH1, frontmatter }`:
- *                 - `titleAsH1` — when true (Google Docs), the frontmatter `title`
- *                   is prepended as a top-level `#` heading (Docs has no title field
- *                   of its own). Targets whose site renders the title from
- *                   frontmatter (e.g. UnityCatalog's `BlogPost.astro` renders
- *                   `post.data.title`) pass `titleAsH1: false` so it isn't duplicated.
+ *                 - `titleAsH1` — when true, the frontmatter `title` is prepended as
+ *                   a top-level `#` heading, for a target whose body has no title of
+ *                   its own. Targets whose site renders the title from frontmatter
+ *                   (e.g. UnityCatalog's `BlogPost.astro` renders `post.data.title`)
+ *                   pass `titleAsH1: false` so it isn't duplicated.
  *                 - `frontmatter(draftFm) → object | string` — an OUTPUT-frontmatter
- *                   hook. gdocs omits it (its body carries no YAML). A content-
- *                   collection target (unitycatalog) returns the target-shaped
+ *                   hook. A target may omit it (a plain body carries no YAML). A
+ *                   content-collection target (unitycatalog) returns the target-shaped
  *                   frontmatter, which is prepended to the tree as a `yaml` node so
  *                   remark-frontmatter serializes it as a leading `--- … ---` block.
  */
@@ -236,7 +237,7 @@ function generateLikeC4WebComponent(modelDir, outFile, hasLikeC4Refs) {
 
 // Each post carries its delivery state in a committed sidecar dotfile next to
 // index.md: `blogs/<slug>/.emitted.json`, keyed by target →
-// { doc_id, url, updated }. Self-contained in the post folder (so it travels with
+// { post_dir, updated }. Self-contained in the post folder (so it travels with
 // the post, no global registry) while keeping index.md itself PURE — no tooling
 // state in the canonical source. The core READS it (create-vs-update hint); the
 // /blog-emit skill WRITES it after a create. A dotfile so it reads as tooling
@@ -299,10 +300,10 @@ export async function emitOne({
   const capture = {};
   const manifest = [];
 
-  // The construct renderers are TARGET-PROVIDED. gdocs supplies its `-md`
-  // flatteners; unitycatalog supplies MDX-emitting variants (+ a no-op for
-  // callouts, which its site styles from the raw `:::` directive). The shared
-  // core (parse/gfm/directive/proseGuard/frontmatter/prelude/codeSnippets) is
+  // The construct renderers are TARGET-PROVIDED. A flattening target (md-twin)
+  // supplies the `-md` flatteners; unitycatalog supplies MDX-emitting variants (+ a
+  // no-op for callouts, which its site styles from the raw `:::` directive). The
+  // shared core (parse/gfm/directive/proseGuard/frontmatter/prelude/codeSnippets) is
   // identical for every target.
   const constructs = target.constructs ?? {};
   const componentImportBase = target.componentImportBase;
@@ -339,8 +340,8 @@ export async function emitOne({
       componentImportBase,
     });
 
-  // Prose-unwrap is only for targets whose importer reflows (Google Docs); MDX
-  // must keep authored line breaks, so unitycatalog opts out.
+  // Prose-unwrap is only for flattening targets that reflow authoring hard-wraps
+  // (md-twin); MDX must keep authored line breaks, so unitycatalog opts out.
   if (target.unwrapProse ?? true) processor = processor.use(remarkUnwrapProse);
 
   processor = processor.use(remarkGfm);
@@ -384,9 +385,9 @@ async function main() {
   if (!existsSync(draftPath)) throw new Error(`draft not found: ${draftPath}`);
 
   // dist/ root holds the shared, target-agnostic LikeC4 PNG export; each target's
-  // FLATTENED/RENDERED output lands under dist/<target>/ so cross-publishing to
-  // several targets (gdocs review → unitycatalog → …) is non-destructive: one
-  // target's index.mdx never clobbers another's <slug>.md. dist/ is gitignored.
+  // RENDERED output lands under dist/<target>/ so cross-publishing to several
+  // targets (unitycatalog → delta → …) is non-destructive: one target's index.mdx
+  // never clobbers another's. dist/ is gitignored.
   const distDir = join(draftDir, "dist");
   const targetDistDir = join(distDir, targetName);
   mkdirSync(targetDistDir, { recursive: true });
@@ -418,10 +419,9 @@ async function main() {
         slug,
         target: targetName,
         title: frontmatter?.title ?? null,
-        // The delivery agent reads this: null → CREATE (a new Doc / a new post
-        // dir) and record it in the sidecar `.emitted.json`; set → UPDATE that
-        // target in place. Shape is target-specific (gdocs: { doc_id, url,
-        // updated }; unitycatalog: { post_dir, updated }).
+        // The delivery agent reads this: null → CREATE (a new post dir) and
+        // record it in the sidecar `.emitted.json`; set → UPDATE that target in
+        // place. Shape is { post_dir, updated }.
         existing,
         images: manifest,
       },
@@ -438,7 +438,7 @@ async function main() {
   if (webComponentPath) console.log(`  ${rel(webComponentPath)}  (LikeC4 web component)`);
   console.log(
     existing
-      ? `  delivery: UPDATE existing ${targetName} target (${existing.url ?? existing.post_dir ?? "recorded"})`
+      ? `  delivery: UPDATE existing ${targetName} target (${existing.post_dir ?? "recorded"})`
       : `  delivery: CREATE new ${targetName} target (no "${targetName}" in ${slug}/.emitted.json)`,
   );
 }

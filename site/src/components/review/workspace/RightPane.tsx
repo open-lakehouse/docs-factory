@@ -10,6 +10,7 @@ import { PanelRightClose } from "lucide-react";
 import type { ContentRef, RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { ReviewRequestBadge } from "../../../lib/review-status";
 import { useReviewInbox } from "../../../lib/review-inbox";
+import ContentEventTimeline from "../ContentEventTimeline";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
 
 function OpenRow({
@@ -50,8 +51,9 @@ export default function RightPane({
   onCollapse?: () => void;
   collapseDisabled?: boolean;
 }) {
-  const { openTab } = useWorkspaceTabs();
+  const { openTab, tabs, activeToken } = useWorkspaceTabs();
   const { recent, toMe } = useReviewInbox();
+  const activeRef = tabs.find((tab) => tab.token === activeToken)?.ref;
 
   const openComment = (rc: RecentComment) => {
     if (!rc.ref) return;
@@ -66,6 +68,12 @@ export default function RightPane({
       {/* Active tab's comment view renders here via portal — it follows the
           active tab (see ReviewTab + right-pane-slot). */}
       <div ref={setSlot} className="workspace-section-divider empty:hidden" />
+
+      {activeRef && (
+        <section className="workspace-activity">
+          <ContentEventTimeline contentRef={activeRef} heading="Activity" />
+        </section>
+      )}
 
       <div className="review-dashboard p-3">
         <div className="mb-1 flex items-center justify-between gap-2 px-1">

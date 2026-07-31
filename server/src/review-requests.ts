@@ -95,7 +95,8 @@ export interface ContentEventRow {
     from_state?: string;
     to_state?: string;
     reviewer_login?: string;
-    // content-revised: structural change counts (stored as strings).
+    // content-revised: legacy structural change counts (no longer written;
+    // version timeline is derived from content_version). Kept for old rows.
     added?: string;
     removed?: string;
     modified?: string;

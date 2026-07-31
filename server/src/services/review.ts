@@ -1339,9 +1339,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             try {
               await sql`
                 insert into user_identity (user_id, name, email, updated_at)
-                select u.id, (to_jsonb(u) ->> 'name'), (to_jsonb(u) ->> 'email'), now()
+                select u.id::text, (to_jsonb(u) ->> 'name'), (to_jsonb(u) ->> 'email'), now()
                 from neon_auth."user" u
-                where u.id = ${userId}
+                where u.id::text = ${userId}
                 on conflict (user_id) do nothing
               `;
             } catch {
@@ -1479,12 +1479,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 select ui.user_id, ui.github_login, ui.name, ui.email, ui.avatar_url
                 from user_identity ui
                 union
-                select u.id as user_id, null::text as github_login,
+                select u.id::text as user_id, null::text as github_login,
                        (to_jsonb(u) ->> 'name') as name,
                        (to_jsonb(u) ->> 'email') as email,
                        null::text as avatar_url
                 from neon_auth."user" u
-                where u.id not in (select user_id from user_identity)
+                where u.id::text not in (select user_id from user_identity)
               )
               select au.user_id, au.github_login, au.name, au.email, au.avatar_url, a.role
               from all_users au
@@ -1559,12 +1559,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                      ui.updated_at as last_seen_at
               from user_identity ui
               union
-              select u.id as user_id, null::text as github_login,
+              select u.id::text as user_id, null::text as github_login,
                      (to_jsonb(u) ->> 'name') as name,
                      (to_jsonb(u) ->> 'email') as email,
                      null::timestamptz as last_seen_at
               from neon_auth."user" u
-              where u.id not in (select user_id from user_identity)
+              where u.id::text not in (select user_id from user_identity)
             )
             select au.user_id, au.github_login, au.name, au.email,
                    a.role, au.last_seen_at

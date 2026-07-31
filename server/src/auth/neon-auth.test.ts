@@ -1,11 +1,13 @@
-// Unit tests for session-token extraction. Run with `bun test`.
+// Unit tests for session-token extraction + the site-admin role elevation. Run
+// with `bun test`.
 //
 // Neon Auth sets its session token in `__Secure-neonauth.session_token` (Secure,
 // HttpOnly, SameSite=None). The resolver must find the token whether or not the
 // `__Secure-`/`__Host-` prefix is present (so http dev and https prod share code)
 // and honor an Authorization: Bearer header.
 import { expect, test, describe } from "bun:test";
-import { sessionToken } from "./neon-auth.js";
+import { sessionToken, elevateRoleForAdmin } from "./neon-auth.js";
+import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
 
 function headers(init: Record<string, string>): Headers {
   return new Headers(init);
@@ -43,5 +45,20 @@ describe("sessionToken", () => {
   test("returns undefined when neither header carries a token", () => {
     expect(sessionToken(headers({}))).toBeUndefined();
     expect(sessionToken(headers({ cookie: "unrelated=x" }))).toBeUndefined();
+  });
+});
+
+describe("elevateRoleForAdmin", () => {
+  test("a site admin is elevated to MAINTAINER regardless of allowlist role", () => {
+    // The security-critical rule: an admin needs no reviewer_allowlist row.
+    expect(elevateRoleForAdmin(Role.ANONYMOUS, true)).toBe(Role.MAINTAINER);
+    expect(elevateRoleForAdmin(Role.REVIEWER, true)).toBe(Role.MAINTAINER);
+    expect(elevateRoleForAdmin(Role.MAINTAINER, true)).toBe(Role.MAINTAINER);
+  });
+
+  test("a non-admin keeps their allowlist role unchanged", () => {
+    expect(elevateRoleForAdmin(Role.ANONYMOUS, false)).toBe(Role.ANONYMOUS);
+    expect(elevateRoleForAdmin(Role.REVIEWER, false)).toBe(Role.REVIEWER);
+    expect(elevateRoleForAdmin(Role.MAINTAINER, false)).toBe(Role.MAINTAINER);
   });
 });

@@ -241,6 +241,13 @@ message Viewer {
   // convenience for the UI (falls back to the login when absent).
   optional string user_id = 5;
   optional string name = 6;
+  // Site admin, sourced from Neon Auth (Better Auth admin plugin): the
+  // neon_auth."user".role column contains 'admin' (comma-separated membership,
+  // not equality). Orthogonal to Role — a site admin is elevated to at least
+  // MAINTAINER and is_allowlisted, and this flag additionally gates the admin
+  // panel + allowlist management. Persists across app DB drops because
+  // neon_auth is Neon-managed, not part of our migrations.
+  bool is_site_admin = 7;
 }
 
 // One comment. Thread roots have no `parent_id`. When the section a comment was

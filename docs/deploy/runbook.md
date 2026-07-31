@@ -34,6 +34,9 @@ Deployment shape for v1:
   `reviewer_allowlist` table. Everything keys on the stable user id, not the
   mutable login. The allowlist is the effective access list — the site is private
   and only allowlisted users are admitted (see `site/src/components/AccessGate.tsx`).
+  A **site admin** (Neon Auth's admin role, set in the Neon Console — see Phase 2)
+  is admitted with maintainer access even without an allowlist row, and is the
+  only role that can open the admin panel and manage the allowlist.
 
 ---
 
@@ -163,7 +166,7 @@ Function URL — those don't exist until Phase 4.
 
 ---
 
-## Phase 2 — Schema + allowlist (production branch)
+## Phase 2 — Schema + bootstrap the first admin (production branch)
 
 1. **Apply the base schema to the production branch.** Grab the branch's *direct*
    (unpooled) connection string from the Neon console — this is the same value you
@@ -172,24 +175,33 @@ Function URL — those don't exist until Phase 4.
    DATABASE_URL='<prod-direct-url>' node server/scripts/migrate.mjs
    ```
    Applies `server/db/migrations/*.sql` (idempotent; tracked in `schema_migrations`).
-2. **Bootstrap the first maintainer.** The allowlist is keyed by the stable Neon
-   Auth user id and FKs `user_identity`, so **pre-login grants are no longer
-   possible** — a person must sign in once (which upserts their `user_identity`
-   row) before they can be granted a role. To bootstrap:
-   1. Sign in to the deployed site with the intended maintainer's GitHub account
-      once. (They'll land on "access pending" — expected, they're not allowlisted
-      yet.) This creates their `user_identity` row.
-   2. Grant them by user id, resolved from the login:
-      ```sql
-      insert into reviewer_allowlist (user_id, role, added_by)
-      select user_id, 'maintainer', 'bootstrap' from user_identity
-      where lower(github_login) = lower('your-gh-login')
-      on conflict (user_id) do nothing;
-      ```
-   After that first maintainer exists, everyone else is granted through the admin
-   UI (`/admin`) — no more direct SQL. Existing login-seeded allowlist rows from
-   the old schema do **not** carry over; re-grant each person once they've signed
-   in.
+2. **Bootstrap the first admin — no SQL.** In the **Neon Console → Auth → Users**,
+   open the ⋯ menu next to your user and choose **Make admin** (this needs the Better
+   Auth **admin plugin** enabled on the project — the default for Neon Auth). That
+   sets `neon_auth."user".role = 'admin'`, which the app reads as **site admin**: you
+   are admitted past the AccessGate with **maintainer** access (release/review/erase)
+   **and** you can open `/admin` to manage the reviewer allowlist — no seed row needed.
+
+   > **Why this replaces the old `insert into reviewer_allowlist` bootstrap:**
+   > `neon_auth` is a **Neon-managed** schema, *not* part of `server/db/migrations/*.sql`.
+   > So the admin designation **survives dropping/recreating the app database** — after
+   > a reset you re-run step 1 only, and you're still admitted with no re-seeding. The
+   > old maintainer seed lived in our own `reviewer_allowlist` table and was lost on
+   > every reset. (It was also awkward: because the allowlist is now keyed by the
+   > stable user id and FKs `user_identity`, a pre-login SQL grant isn't even possible —
+   > the person had to sign in once first. "Make admin" sidesteps that entirely.)
+
+3. **(Optional) Seed additional reviewers/maintainers.** Once you're a site admin,
+   add everyone else through the `/admin` panel — no SQL. As a fallback, you can still
+   grant by SQL, but the allowlist keys on the stable user id (which FKs
+   `user_identity`), so the person must have **signed in once** first; then grant by
+   the id resolved from their login:
+   ```sql
+   insert into reviewer_allowlist (user_id, role, added_by)
+   select user_id, 'reviewer', 'bootstrap' from user_identity
+   where lower(github_login) = lower('some-login')
+   on conflict (user_id) do nothing;
+   ```
 
 ---
 

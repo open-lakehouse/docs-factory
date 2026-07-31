@@ -5,7 +5,7 @@
 // user id) and returns canned rows. That lets us assert the query is an exact
 // user_id match and the role mapping, without a live Postgres.
 import { expect, test, describe } from "bun:test";
-import { lookupRole, roleFromDb } from "./allowlist.js";
+import { lookupRole, roleFromDb, hasAdminRole } from "./allowlist.js";
 import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 import type { Queryable } from "./db.js";
 
@@ -59,5 +59,34 @@ describe("roleFromDb", () => {
     expect(roleFromDb("reviewer")).toBe(Role.REVIEWER);
     expect(roleFromDb("something-else")).toBe(Role.ANONYMOUS);
     expect(roleFromDb(null)).toBe(Role.ANONYMOUS);
+  });
+});
+
+describe("hasAdminRole", () => {
+  test("true for the bare admin role", () => {
+    expect(hasAdminRole("admin")).toBe(true);
+    expect(hasAdminRole(" Admin ")).toBe(true); // trimmed + case-insensitive
+  });
+
+  test("true when admin is one of several comma-separated roles", () => {
+    expect(hasAdminRole("user,admin")).toBe(true);
+    expect(hasAdminRole("admin,superuser")).toBe(true);
+    expect(hasAdminRole("user, admin , editor")).toBe(true);
+  });
+
+  test("false when admin is absent", () => {
+    expect(hasAdminRole("user")).toBe(false);
+    expect(hasAdminRole("user,editor")).toBe(false);
+  });
+
+  test("membership, not substring: administrator does NOT match", () => {
+    expect(hasAdminRole("administrator")).toBe(false);
+    expect(hasAdminRole("user,administrator")).toBe(false);
+  });
+
+  test("false for null/undefined/empty (plugin not enabled → no role column)", () => {
+    expect(hasAdminRole(null)).toBe(false);
+    expect(hasAdminRole(undefined)).toBe(false);
+    expect(hasAdminRole("")).toBe(false);
   });
 });

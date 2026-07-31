@@ -27,7 +27,7 @@
 // unauthenticated request simply sees published content.
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { db } from "../db.js";
-import { lookupRole } from "../allowlist.js";
+import { hasAdminRole, lookupRole } from "../allowlist.js";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 // GitHub @handle / verified-email resolution + persistence into user_identity.
@@ -215,6 +215,42 @@ async function resolveIdentity(token: string): Promise<NeonIdentity | null> {
   };
 }
 
+/**
+ * Whether the user is a Neon Auth site admin, read FRESH per request from
+ * neon_auth."user".role (Better Auth's admin plugin, set via the Neon Console).
+ * Read live rather than cached in user_identity because the role can toggle in
+ * the console at any time. Uses (to_jsonb(u) ->> 'role') so a project WITHOUT the
+ * admin plugin — no `role` column — returns NULL instead of throwing; any DB
+ * error fails closed to false. This is the persistent, DB-drop-surviving anchor
+ * for admins: neon_auth is Neon-managed, not part of our migrations.
+ */
+async function readSiteAdmin(userId: string): Promise<boolean> {
+  try {
+    const rows = await db()<{ role: string | null }[]>`
+      select (to_jsonb(u) ->> 'role') as role
+      from neon_auth."user" u
+      where u.id = ${userId}
+      limit 1
+    `;
+    return hasAdminRole(rows[0]?.role ?? null);
+  } catch {
+    return false; // neon_auth / role column unavailable → not an admin.
+  }
+}
+
+/**
+ * The role a viewer is admitted at, given their allowlist role and whether Neon
+ * Auth marks them a site admin. A site admin implies at least MAINTAINER — no
+ * reviewer_allowlist row needed — so admins can release/review/erase with zero
+ * seeding; a non-admin keeps their allowlist role unchanged. Elevating here (so
+ * viewer() derives is_allowlisted from an already-elevated role) is what makes an
+ * admin pass every existing requireAllowlisted/requireMaintainer guard. Pure and
+ * exported so this security-critical rule is unit-tested without a DB.
+ */
+export function elevateRoleForAdmin(role: Role, isSiteAdmin: boolean): Role {
+  return isSiteAdmin && role !== Role.MAINTAINER ? Role.MAINTAINER : role;
+}
+
 export function createNeonAuthProvider(): AuthProvider {
   return {
     async verify(header) {
@@ -222,14 +258,16 @@ export function createNeonAuthProvider(): AuthProvider {
       if (!token) return anonymousViewer();
       const identity = await resolveIdentity(token);
       if (!identity) return anonymousViewer();
-      // Allowlist role keys on the stable user id.
-      const role = await lookupRole(db(), { userId: identity.userId });
-      const ident = { userId: identity.userId, name: identity.name };
-      // Authenticated but not allowlisted: known identity, published-only access.
-      if (role === Role.ANONYMOUS) {
-        return viewer(identity.login, Role.ANONYMOUS, ident);
-      }
-      return viewer(identity.login, role, ident);
+      // Allowlist role keys on the stable user id; the admin flag is read fresh
+      // from neon_auth. Both key on the same trusted user id, so run in parallel.
+      const [role, isSiteAdmin] = await Promise.all([
+        lookupRole(db(), { userId: identity.userId }),
+        readSiteAdmin(identity.userId),
+      ]);
+      const ident = { userId: identity.userId, name: identity.name, isSiteAdmin };
+      // Authenticated but neither allowlisted nor admin: known identity,
+      // published-only access.
+      return viewer(identity.login, elevateRoleForAdmin(role, isSiteAdmin), ident);
     },
   };
 }

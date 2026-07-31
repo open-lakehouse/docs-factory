@@ -6,15 +6,15 @@ export const DEV_PERSONA_HEADER = "x-dev-persona";
 const STORAGE_KEY = "review.devPersona";
 
 /** Persona header values understood by the server mock provider. */
-export type DevPersona = "anon" | "reviewer" | "maintainer";
+export type DevPersona = "anon" | "reviewer" | "maintainer" | "admin";
 
-export const DEV_PERSONAS: DevPersona[] = ["anon", "reviewer", "maintainer"];
+export const DEV_PERSONAS: DevPersona[] = ["anon", "reviewer", "maintainer", "admin"];
 
 /** Read the current persona from localStorage (default "anon"). */
 export function readDevPersona(): DevPersona {
   if (typeof localStorage === "undefined") return "anon";
   const v = localStorage.getItem(STORAGE_KEY);
-  return v === "reviewer" || v === "maintainer" ? v : "anon";
+  return v === "reviewer" || v === "maintainer" || v === "admin" ? v : "anon";
 }
 
 /** Persist the persona and reload so all queries re-resolve under it. */

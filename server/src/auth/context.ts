@@ -39,3 +39,17 @@ export function requireMaintainer(ctx: Parameters<typeof getViewer>[0]): Viewer 
   }
   return v;
 }
+
+/**
+ * Require a site admin (Neon Auth's admin role); throws otherwise. Gates the
+ * admin panel + allowlist management. A site admin also passes requireMaintainer
+ * (they're elevated to MAINTAINER on resolution), but a plain maintainer does
+ * NOT pass this.
+ */
+export function requireSiteAdmin(ctx: Parameters<typeof getViewer>[0]): Viewer {
+  const v = getViewer(ctx);
+  if (!v.isSiteAdmin) {
+    throw new ConnectError("site admin access required", Code.PermissionDenied);
+  }
+  return v;
+}

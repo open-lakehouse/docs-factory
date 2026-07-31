@@ -7,6 +7,7 @@
 //   anon                     → anonymous (logged out)
 //   reviewer[:<login>]       → allowlisted reviewer  (default login "dev-reviewer")
 //   maintainer[:<login>]     → allowlisted maintainer (default login "dev-maintainer")
+//   admin[:<login>]          → site admin, implies maintainer (default "dev-admin")
 // Missing/unrecognized header → anonymous.
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
@@ -51,6 +52,14 @@ export const mockProvider: AuthProvider = {
       await registerMockIdentity(ident.userId, login);
       const role = kind === "maintainer" ? Role.MAINTAINER : Role.REVIEWER;
       return viewer(login, role, ident);
+    }
+    if (kind === "admin") {
+      // A site admin implies maintainer (see neon-auth.ts) — mirror that here so
+      // /admin and all maintainer affordances are testable under one persona.
+      const login = loginRaw?.trim() || "dev-admin";
+      const ident = identity(login);
+      await registerMockIdentity(ident.userId, login);
+      return viewer(login, Role.MAINTAINER, { ...ident, isSiteAdmin: true });
     }
     return anonymousViewer();
   },

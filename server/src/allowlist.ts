@@ -12,6 +12,21 @@ export function roleFromDb(role: string | null): Role {
 }
 
 /**
+ * Whether Neon Auth's `role` column marks the user a site admin. Distinct from
+ * the reviewer_allowlist role above: this is Better Auth's admin-plugin column on
+ * neon_auth."user", set via the Neon Console and independent of our allowlist.
+ * Better Auth stores multiple roles comma-separated ("user,admin"), so we test
+ * membership, not equality — lower/trim each entry so "admin" matches but
+ * "administrator" does not.
+ */
+export function hasAdminRole(role: string | null | undefined): boolean {
+  return (role ?? "")
+    .split(",")
+    .map((r) => r.trim().toLowerCase())
+    .includes("admin");
+}
+
+/**
  * Resolve a user's role from the allowlist by their stable user id. Returns
  * ANONYMOUS when the user is not listed (or has never logged in — an allowlist
  * row cannot exist without a matching user_identity row). The lookup is an exact

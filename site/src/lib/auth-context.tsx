@@ -36,6 +36,12 @@ export interface AuthState {
   isAllowlisted: boolean;
   isMaintainer: boolean;
   /**
+   * Site admin (Neon Auth's admin role). Gates the admin panel + allowlist
+   * management. A site admin is also a maintainer (isMaintainer is true too), but
+   * a plain maintainer is not a site admin.
+   */
+  isSiteAdmin: boolean;
+  /**
    * The allowlisted viewer's view mode. Always "normal" for non-allowlisted
    * viewers (who never reach the site anyway — see AccessGate).
    */
@@ -60,6 +66,7 @@ const AuthContext = createContext<AuthState>({
   isAuthenticated: false,
   isAllowlisted: false,
   isMaintainer: false,
+  isSiteAdmin: false,
   viewMode: "normal",
   setViewMode: () => {},
   reviewActive: false,
@@ -127,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAuthenticated: viewer?.authenticated ?? false,
     isAllowlisted,
     isMaintainer: viewer?.role === Role.MAINTAINER,
+    isSiteAdmin: viewer?.isSiteAdmin ?? false,
     viewMode,
     setViewMode,
     reviewActive: viewMode === "review",

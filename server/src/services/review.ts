@@ -101,6 +101,7 @@ import {
   getViewer,
   requireAllowlisted,
   requireMaintainer,
+  requireSiteAdmin,
 } from "../auth/context.js";
 import { db, type Sql, type Queryable } from "../db.js";
 import {
@@ -1308,7 +1309,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       async manageAllowlist(req: ManageAllowlistRequest, ctx) {
-        requireMaintainer(ctx);
+        requireSiteAdmin(ctx);
         const actor = getViewer(ctx).login ?? "unknown";
         const sql = db();
         if (!req.entry) throw new ConnectError("entry is required", Code.InvalidArgument);
@@ -1389,9 +1390,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       // Read the allowlist with resolved display attributes + audit metadata
       // (added_by/created_at), without the mutation ManageAllowlist required to
-      // see it. Joins user_identity for display. Maintainer-only.
+      // see it. Joins user_identity for display. Site-admin-only.
       async listAllowlist(_req, ctx) {
-        requireMaintainer(ctx);
+        requireSiteAdmin(ctx);
         const sql = db();
         const rows = await sql<
           {
@@ -1470,12 +1471,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       // Everyone who has logged in (has a user_identity row), joined to their
-      // resolved allowlist role — so a maintainer can find people who logged in
+      // resolved allowlist role — so a site admin can find people who logged in
       // but never got a status and grant them access. Reads our own
       // user_identity table (no GitHub API, no neon_auth probe), so it also works
-      // under the local mock provider. Maintainer-only.
+      // under the local mock provider. Site-admin-only.
       async listRegisteredUsers(_req, ctx) {
-        requireMaintainer(ctx);
+        requireSiteAdmin(ctx);
         const sql = db();
         const rows = await sql<
           {
@@ -1508,7 +1509,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       async eraseUser(req: EraseUserRequest, ctx) {
-        requireMaintainer(ctx);
+        requireSiteAdmin(ctx);
         const sql0 = db();
         let userId = req.userId?.trim() || null;
         const login = req.login?.trim() || null;

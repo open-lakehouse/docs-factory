@@ -3,7 +3,7 @@ import TagList from "./TagList";
 import AuthorBadge from "./AuthorBadge";
 import type { ContentPage } from "../content";
 
-/** Expandable metadata panel for a blog post (summary + series/author/date/status/target/tags). */
+/** Expandable metadata panel for a blog post (summary + series/author/status/target/tags). */
 export default function BlogPostDetail({ post }: { post: ContentPage }) {
   const fm = post.frontmatter;
   return (
@@ -30,12 +30,6 @@ export default function BlogPostDetail({ post }: { post: ContentPage }) {
             <dd>
               <AuthorBadge byline={fm.author} />
             </dd>
-          </div>
-        )}
-        {fm.date && (
-          <div className="blog-meta">
-            <dt>Date</dt>
-            <dd className="mono">{fm.date}</dd>
           </div>
         )}
         {fm.status && (

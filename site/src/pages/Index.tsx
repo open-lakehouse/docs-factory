@@ -84,7 +84,6 @@ export default function Index() {
                   <span className="draft-card-title">{d.frontmatter.title ?? d.slug}</span>
                   <span className="meta">
                     {vis.showStatusColumns ? vis.statusFor(d).frontmatter : ""}
-                    {d.frontmatter.date ? ` · ${d.frontmatter.date}` : ""}
                   </span>
                 </Link>
               </li>

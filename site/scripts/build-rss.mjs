@@ -1,10 +1,12 @@
 // Emit dist/blog/rss.xml (Phase 1f of the agentic-docs plan).
 //
-// Blog ordering authority is content.ts's `blogPosts` (sorted by frontmatter
-// `date` DESC, then slug). content.ts is Vite/glob-coupled and not importable by a
-// plain node script, so we RE-DERIVE the identical comparator here — the same
-// pattern build-llmstxt uses to re-derive published URLs. Keep the comparator in
-// step with content.ts:blogPosts.
+// Blog ordering authority is content.ts's `blogPosts` (sorted by slug). content.ts
+// is Vite/glob-coupled and not importable by a plain node script, so we RE-DERIVE
+// the identical comparator here — the same pattern build-llmstxt uses to re-derive
+// published URLs. Keep the comparator in step with content.ts:blogPosts.
+//
+// Publish dates are no longer frontmatter; RSS omits pubDate unless a legacy
+// `date` is still present. Lastmod for sitemaps falls back to git/mtime.
 //
 // Run order: after `vite build`, before assemble-vercel-output.mjs. Advertised via
 // rel=alternate type=application/rss+xml in the Phase-0 head on /blog and /.
@@ -38,18 +40,14 @@ export function rfc822(date) {
 
 /**
  * The ordered RSS items (pure, for testing). `pages` is `[{ absPath, meta, body }]`
- * for blog posts; non-public posts are dropped and the rest are sorted by `date`
- * DESC then slug — identical to content.ts:blogPosts. Each item is `{ title, link,
- * description, pubDate }`.
+ * for blog posts; non-public posts are dropped and the rest are sorted by slug —
+ * identical to content.ts:blogPosts. Each item is `{ title, link, description,
+ * pubDate }` (`pubDate` empty unless a legacy frontmatter `date` remains).
  */
 export function rssItems(pages, origin = siteOrigin()) {
   return pages
     .filter(({ meta }) => isPublic(meta))
-    .sort(
-      (a, b) =>
-        (b.meta.date ?? "").localeCompare(a.meta.date ?? "") ||
-        (a.meta.slug ?? "").localeCompare(b.meta.slug ?? ""),
-    )
+    .sort((a, b) => (a.meta.slug ?? "").localeCompare(b.meta.slug ?? ""))
     .map(({ absPath, meta, body }) => {
       const identity = docIdentity(absPath, meta);
       return {

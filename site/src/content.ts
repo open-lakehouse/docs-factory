@@ -96,11 +96,7 @@ export const pages: ContentPage[] = [...blogPages, ...docPages].sort((a, b) => {
   return a.slug.localeCompare(b.slug);
 });
 
-export const blogPosts = [...blogPages].sort(
-  (a, b) =>
-    (b.frontmatter.date ?? "").localeCompare(a.frontmatter.date ?? "") ||
-    a.slug.localeCompare(b.slug),
-);
+export const blogPosts = [...blogPages].sort((a, b) => a.slug.localeCompare(b.slug));
 
 export const docs = docPages;
 
@@ -138,7 +134,7 @@ export function blogsBySeries(): { series: BlogSeriesGroup[]; standalone: Conten
       posts: [...posts].sort(
         (a, b) =>
           (a.frontmatter.series_order ?? 0) - (b.frontmatter.series_order ?? 0) ||
-          (b.frontmatter.date ?? "").localeCompare(a.frontmatter.date ?? ""),
+          a.slug.localeCompare(b.slug),
       ),
     }))
     .sort((a, b) => a.series.localeCompare(b.series));
@@ -193,7 +189,7 @@ export function blogsBySeriesFiltered(
       posts: [...grouped].sort(
         (a, b) =>
           (a.frontmatter.series_order ?? 0) - (b.frontmatter.series_order ?? 0) ||
-          (b.frontmatter.date ?? "").localeCompare(a.frontmatter.date ?? ""),
+          a.slug.localeCompare(b.slug),
       ),
     }))
     .sort((a, b) => a.series.localeCompare(b.series));

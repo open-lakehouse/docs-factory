@@ -14,13 +14,6 @@ interface BlogTableProps {
   vis: ContentVisibility;
 }
 
-function latestDate(posts: ContentPage[]): string | undefined {
-  return posts
-    .map((p) => p.frontmatter.date)
-    .filter((d): d is string => Boolean(d))
-    .sort((a, b) => b.localeCompare(a))[0];
-}
-
 function SeriesDetail({ posts }: { posts: ContentPage[] }) {
   return (
     <ol className="blog-series-posts">
@@ -36,7 +29,6 @@ function SeriesDetail({ posts }: { posts: ContentPage[] }) {
                 {fm.title ?? post.slug}
               </Link>
               <div className="blog-series-post-meta">
-                {fm.date && <span className="mono">{fm.date}</span>}
                 {fm.status && <span className="blog-post-status">{fm.status}</span>}
               </div>
               {fm.summary && <p className="blog-series-post-summary">{fm.summary}</p>}
@@ -59,7 +51,6 @@ export default function BlogTable({ series, standalone, vis }: BlogTableProps) {
       title: group.series,
       titleBadge: `${group.posts.length} posts`,
       author: <span className="author-badge-empty">—</span>,
-      date: latestDate(group.posts),
       frontmatterStatus: "series",
       detail: <SeriesDetail posts={group.posts} />,
     })),
@@ -72,7 +63,6 @@ export default function BlogTable({ series, standalone, vis }: BlogTableProps) {
         title: fm.title ?? post.slug,
         titleHref: post.href,
         author: <AuthorBadge byline={fm.author} />,
-        date: fm.date,
         frontmatterStatus: status.frontmatter,
         reviewState: status.reviewState,
         detail: <BlogPostDetail post={post} />,

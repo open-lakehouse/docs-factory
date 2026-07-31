@@ -2,7 +2,6 @@
 title: How a Kernel becomes a (AS)Tree
 slug: kernel-becomes-tree
 status: idea
-date: 2026-07-03
 tags: [delta-lake, delta-kernel, table-formats, rust, datafusion]
 author: Robert Pack
 target: delta

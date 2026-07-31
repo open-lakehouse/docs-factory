@@ -2,7 +2,6 @@
 title: Fine-grained access control is a cross-service contract
 slug: cross-repo-abac
 status: draft
-date: 2026-07-10
 tags: [governance, unity-catalog, datafusion, lakehouse, rust]
 series: Building the Open Lakehouse
 series_order: 2

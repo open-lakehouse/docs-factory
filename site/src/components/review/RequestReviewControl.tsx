@@ -3,7 +3,8 @@
 // registered, allowlisted users (UserPicker), marks the batch required or
 // optional, and adds an optional note. Reviewers are addressed by stable user
 // id, so the server needn't re-validate free text and a rename never breaks a
-// request. Gated on reviewActive, like ReviewControls.
+// request. Open requests + "Request review" live in one compact dropdown.
+// Gated on reviewActive, like ReviewControls.
 import { useState, type ReactNode } from "react";
 import { useMutation, useQuery } from "@connectrpc/connect-query";
 import {
@@ -21,8 +22,17 @@ import { useAuth } from "../../lib/auth-context";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { ReviewRequestBadge } from "../../lib/review-status";
 import UserPicker from "./UserPicker";
+import { Plus, Trash2, UsersRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -34,10 +44,11 @@ import {
 
 export default function RequestReviewControl({
   contentRef,
-  renderTrigger,
+  children,
 }: {
   contentRef: ContentRef;
-  renderTrigger?: (openDialog: () => void) => ReactNode;
+  /** Sibling chrome (e.g. ReviewControls) rendered beside the reviews menu. */
+  children?: ReactNode;
 }) {
   const { reviewActive, isMaintainer, viewer } = useAuth();
   const { invalidateReviewRequests, invalidateDrafts } = useReviewInvalidation();
@@ -86,40 +97,56 @@ export default function RequestReviewControl({
 
   return (
     <div className="request-review-control">
-      {existing.length > 0 && (
-        <ul className="request-review-open-list">
-          {existing.map((r) => {
-            // Requester or maintainer can cancel (mirrors the server check).
-            const canCancel = isMaintainer || r.requestedBy === actor;
-            return (
-              <li key={r.id} className="request-review-open-row">
-                <span className="request-review-reviewer">
-                  {r.reviewerLogin || r.reviewerName || "someone"}
-                </span>
-                <ReviewRequestBadge requirement={r.requirement} status={r.status} />
-                {canCancel && r.status === RequestStatus.OPEN && (
-                  <Button
-                    variant="ghost"
-                    size="xs"
-                    onClick={() => void cancel.mutateAsync({ requestId: r.id })}
-                    disabled={cancel.isPending}
-                  >
-                    Cancel
-                  </Button>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="xs" className="gap-1.5 px-2">
+            <UsersRound aria-hidden className="size-3.5" />
+            Reviews{existing.length > 0 ? ` · ${existing.length}` : ""}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="min-w-64">
+          <DropdownMenuLabel className="text-xs text-muted-foreground">
+            Open review requests
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {existing.length === 0 ? (
+            <p className="px-2 py-1.5 text-xs text-muted-foreground">None yet.</p>
+          ) : (
+            existing.map((r) => {
+              // Requester or maintainer can cancel (mirrors the server check).
+              const canCancel = isMaintainer || r.requestedBy === actor;
+              const reviewer = r.reviewerLogin || r.reviewerName || "someone";
+              return (
+                <div key={r.id} className="flex items-center gap-2 px-2 py-1.5">
+                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                    {reviewer}
+                  </span>
+                  <ReviewRequestBadge requirement={r.requirement} status={r.status} />
+                  {canCancel && r.status === RequestStatus.OPEN && (
+                    <DropdownMenuItem
+                      variant="destructive"
+                      className="size-7 shrink-0 justify-center p-0"
+                      disabled={cancel.isPending}
+                      aria-label={`Remove review request for ${reviewer}`}
+                      title="Remove review request"
+                      onSelect={() => void cancel.mutateAsync({ requestId: r.id })}
+                    >
+                      <Trash2 aria-hidden className="size-3.5" />
+                    </DropdownMenuItem>
+                  )}
+                </div>
+              );
+            })
+          )}
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={() => setOpen(true)}>
+            <Plus aria-hidden className="size-3.5" />
+            Request review
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-      {renderTrigger ? (
-        renderTrigger(() => setOpen(true))
-      ) : (
-        <Button variant="outline" size="xs" onClick={() => setOpen(true)}>
-          Request review
-        </Button>
-      )}
+      {children}
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>

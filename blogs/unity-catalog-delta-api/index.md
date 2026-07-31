@@ -2,7 +2,6 @@
 title: Introducing the UC Delta API
 slug: unity-catalog-delta-api
 status: ready
-date: 2026-07-03
 tags: [unity-catalog, delta-lake, lakehouse]
 series:
 series_order:

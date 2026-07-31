@@ -2,9 +2,8 @@
 // above a file-explorer-style tree of all reviewable content. Branches
 // (project → bucket, blog series) expand/collapse; leaves open the page in a
 // middle-pane tab. Built from build-time content (tree-model.ts), expansion
-// persisted in sessionStorage (expansion-context.tsx). Leaf rows show compact
-// status dots: frontmatter authoring (idea / draft / ready) then DB review
-// lifecycle (none / in review / changes requested / approved / released).
+// persisted in sessionStorage (expansion-context.tsx). Leaf rows show one
+// effective status dot (idea/draft, or needs-review/approved/… once ready).
 // Branch aggregates show a review status dot when any descendant is pending.
 import { useMemo } from "react";
 import { useQuery } from "@connectrpc/connect-query";
@@ -18,6 +17,7 @@ import { refToParam } from "../../../lib/content-ref";
 import { isOverviewGroup } from "./overview-token";
 import { refTokenOf } from "./view-token";
 import { statusDotClass } from "../../../lib/frontmatter-status";
+import { EffectiveStatusDot } from "../../../lib/effective-status";
 import { PENDING_REVIEW_STATES } from "../../../lib/review-inbox";
 import { refKey } from "../../../lib/review-queries";
 import { REVIEW_STATE_LABEL, reviewStateDotClass } from "../../../lib/review-status";
@@ -25,17 +25,6 @@ import { useExpansion } from "./expansion-context";
 import { useReviewTree, type TreeNode } from "./tree-model";
 import { TreeRow } from "./TreeRow";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
-
-function FrontmatterStatusDot({ status }: { status?: string }) {
-  const label = (status ?? "draft").toLowerCase();
-  return (
-    <span
-      className={cn("tree-status-dot", statusDotClass(status))}
-      title={label}
-      aria-label={`Authoring: ${label}`}
-    />
-  );
-}
 
 function ReviewStatusDot({ state }: { state: ReviewState }) {
   const label = REVIEW_STATE_LABEL[state] ?? "unknown";
@@ -45,21 +34,6 @@ function ReviewStatusDot({ state }: { state: ReviewState }) {
       title={label}
       aria-label={`Review: ${label}`}
     />
-  );
-}
-
-function LeafTrailing({
-  frontmatterStatus,
-  reviewState,
-}: {
-  frontmatterStatus?: string;
-  reviewState: ReviewState;
-}) {
-  return (
-    <span className="flex shrink-0 items-center gap-1">
-      <FrontmatterStatusDot status={frontmatterStatus} />
-      <ReviewStatusDot state={reviewState} />
-    </span>
   );
 }
 
@@ -118,7 +92,10 @@ function Node({
         icon={<FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
         label={node.label}
         trailing={
-          <LeafTrailing frontmatterStatus={node.frontmatterStatus} reviewState={reviewState} />
+          <EffectiveStatusDot
+            frontmatterStatus={node.frontmatterStatus}
+            reviewState={reviewState}
+          />
         }
         // The active tab may be any of this item's views (rendered/md/script);
         // compare on the group key so the row stays highlighted across them.

@@ -8,9 +8,11 @@
 -- GitHub login/id + emails from there ONCE and persist them into our own
 -- user_identity table (below), which everything else references. github_login
 -- and email are display/search attributes, NEVER keys. Everyone referenced by
--- the allowlist, a review request, or an approval must be REGISTERED — i.e. have
--- a user_identity row from at least one login; there is no pre-adding someone who
--- has never signed in.
+-- the allowlist, a review request, or an approval must have a user_identity row.
+-- Most rows arrive from a first login, but a site admin may pre-grant a role to a
+-- user who has registered in Neon Auth without signing into the app yet: the grant
+-- path (manageAllowlist ADD) materializes a stub user_identity row for that
+-- registered user, which their eventual first login backfills with real details.
 --
 -- IDs are time-ordered UUIDv7, generated server-side by Postgres on insert
 -- (`default uuidv7()`, native in PostgreSQL 18). Clients never send an id; the
@@ -258,10 +260,11 @@ create unique index if not exists user_identity_login_idx
 create index if not exists user_identity_email_idx
   on user_identity (lower(email));
 
--- Reviewer allowlist, keyed by the stable user id. A row can only exist for a
--- REGISTERED user (FK to user_identity), so there is no pre-adding someone who
--- has never logged in. Display (login/email/name) comes from the user_identity
--- join. on delete cascade: erasing the identity drops the grant with it.
+-- Reviewer allowlist, keyed by the stable user id. The FK requires a user_identity
+-- row; the grant path stubs one for a registered Neon Auth user who hasn't logged
+-- in yet (see identity note at top), so an admin can pre-grant a role. Display
+-- (login/email/name) comes from the user_identity join. on delete cascade: erasing
+-- the identity drops the grant with it.
 create table if not exists reviewer_allowlist (
   user_id    text primary key references user_identity (user_id) on delete cascade,
   role       text not null default 'reviewer' check (role in ('reviewer', 'maintainer')),

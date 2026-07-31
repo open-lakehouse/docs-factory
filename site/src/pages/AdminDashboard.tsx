@@ -295,16 +295,17 @@ export default function AdminDashboard() {
         <section className="review-dash-section">
           <h2>Registered users</h2>
           <p className="review-dash-hint">
-            Everyone who has signed in with GitHub. People with “no status” have
-            logged in but can only see published content — grant them a role to
-            let them review.
+            Everyone registered in Neon Auth. People with “no status” can only see
+            published content — grant them a role to let them review. Users who
+            haven’t signed into the app yet show no GitHub login or last-seen date
+            until their first visit.
           </p>
           {registeredLoading ? (
             <p className="muted">Loading…</p>
           ) : registered.length === 0 ? (
             <p className="muted">
-              No registered users to show. (Discovery reads the auth provider’s
-              tables, which exist only against the real Neon Auth database.)
+              No registered users to show. (Discovery reads Neon Auth’s tables,
+              which exist only against the real Neon Auth database.)
             </p>
           ) : (
             <table className="admin-table">

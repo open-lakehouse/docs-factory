@@ -51,13 +51,13 @@ function ReviewNavItem() {
   );
 }
 
-// Maintainer-only top-nav entry linking to the admin roster (/admin): allowlist
-// management + registered-user discovery. Gated on isMaintainer (not
-// reviewActive) so it's reachable whenever a maintainer is signed in, regardless
-// of view mode.
+// Site-admin-only top-nav entry linking to the admin roster (/admin): allowlist
+// management + registered-user discovery. Gated on isSiteAdmin (Neon Auth's
+// admin role, not reviewActive) so it's reachable whenever a site admin is
+// signed in, regardless of view mode. Hidden from plain maintainers.
 function AdminNavItem() {
-  const { isMaintainer } = useAuth();
-  if (!isMaintainer) return null;
+  const { isSiteAdmin } = useAuth();
+  if (!isSiteAdmin) return null;
   return (
     <NavLink to="/admin" className={({ isActive }) => (isActive ? "active" : undefined)}>
       Admin

@@ -1,5 +1,7 @@
-// The maintainer admin roster (/admin). Maintainer-only. Replaces the old
-// direct-SQL-only workflow for managing who can review/maintain the site:
+// The site-admin roster (/admin). Site-admin-only (Neon Auth's admin role, set
+// via the Neon Console — the persistent, DB-drop-surviving anchor for admins).
+// Replaces the old direct-SQL-only workflow for managing who can review/maintain
+// the site:
 //   1. Allowlist — the current reviewer_allowlist with audit metadata; add,
 //      remove, or change a role in place.
 //   2. Registered users — everyone who has logged in via GitHub OAuth (from the
@@ -8,10 +10,11 @@
 //   3. Erase user — the right-to-erasure flow (tombstone footprint), behind a
 //      destructive-action confirmation.
 //
-// Gated on isMaintainer inside the page (mirrors ReviewDashboard's guard) so the
-// route stays SSR-renderable and hydration resolves access. All writes go through
-// the existing maintainer-only ManageAllowlist / EraseUser RPCs; the server owns
-// the last-maintainer invariant, this UI only warns before firing it.
+// Gated on isSiteAdmin inside the page (mirrors ReviewDashboard's guard) so the
+// route stays SSR-renderable and hydration resolves access. A plain maintainer
+// does NOT reach this page. All writes go through the site-admin-only
+// ManageAllowlist / EraseUser RPCs; the server owns the last-maintainer
+// invariant, this UI only warns before firing it.
 import { useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useMutation, useQuery } from "@connectrpc/connect-query";
@@ -73,18 +76,18 @@ function fmtDate(ts: { seconds: bigint } | undefined): string {
 type AllowlistOp = { userId: string; role: Role };
 
 export default function AdminDashboard() {
-  const { isLoading: authLoading, isMaintainer, viewer } = useAuth();
+  const { isLoading: authLoading, isSiteAdmin, viewer } = useAuth();
   const { invalidateAllowlist, invalidateRegisteredUsers } = useReviewInvalidation();
 
   const { data: allowlistData, isLoading: allowlistLoading } = useQuery(
     listAllowlist,
     {},
-    { enabled: isMaintainer },
+    { enabled: isSiteAdmin },
   );
   const { data: registeredData, isLoading: registeredLoading } = useQuery(
     listRegisteredUsers,
     {},
-    { enabled: isMaintainer },
+    { enabled: isSiteAdmin },
   );
 
   const refreshRoster = () => {
@@ -105,8 +108,9 @@ export default function AdminDashboard() {
   const [confirmRemove, setConfirmRemove] = useState<AllowlistEntryDetail | null>(null);
   const [confirmErase, setConfirmErase] = useState<RegisteredUser | null>(null);
 
-  // Route guard: maintainer-only. Wait for the viewer to resolve first so we
-  // don't flash "not found" at a maintainer mid-hydration (mirrors DocPage).
+  // Route guard: site-admin-only (Neon Auth admin role). Wait for the viewer to
+  // resolve first so we don't flash "not found" at an admin mid-hydration
+  // (mirrors DocPage). A plain maintainer falls through to "not found" here.
   if (authLoading) {
     return (
       <Shell wide>
@@ -114,7 +118,7 @@ export default function AdminDashboard() {
       </Shell>
     );
   }
-  if (!isMaintainer) {
+  if (!isSiteAdmin) {
     return (
       <Shell wide>
         <p>

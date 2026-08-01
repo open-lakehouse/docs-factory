@@ -248,6 +248,14 @@ message Viewer {
   // panel + allowlist management. Persists across app DB drops because
   // neon_auth is Neon-managed, not part of our migrations.
   bool is_site_admin = 7;
+  // True when the viewer holds at least one scoped content grant — a
+  // non-cancelled review_request addressed to them — despite NOT being on the
+  // reviewer allowlist. It lets the site-wide AccessGate admit an external
+  // contributor to the specific content shared with them without granting
+  // site-wide reviewer access. Orthogonal to is_allowlisted (which stays false
+  // for an external): per-item authorization on the server remains the source
+  // of truth; this is only the client-side admission signal.
+  bool has_scoped_grants = 8;
 }
 
 // One comment. Thread roots have no `parent_id`. When the section a comment was

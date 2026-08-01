@@ -2,7 +2,6 @@
 title: "Open Lakehouse Docs: Where AI meets Crypto"
 slug: ai-meets-crypto
 status: idea
-date: 2026-07-31
 tags: [lakehouse]
 series:
 series_order:

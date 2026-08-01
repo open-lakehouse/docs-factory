@@ -2,7 +2,6 @@
 title: What is a Databrick?
 slug: what-is-a-databrick
 status: idea
-date: 2026-07-03
 tags: [lakehouse]
 series: Building the Open Lakehouse
 series_order: 1

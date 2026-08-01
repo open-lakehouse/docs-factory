@@ -15,6 +15,7 @@ export function TreeRow({
   depth,
   icon,
   label,
+  afterLabel,
   trailing,
   expandable,
   open,
@@ -25,7 +26,9 @@ export function TreeRow({
   depth: number;
   icon?: ReactNode;
   label: string;
-  /** Optional right-side adornment (e.g. a status dot). */
+  /** Adornment directly after the label (e.g. branch status counts). */
+  afterLabel?: ReactNode;
+  /** Optional right-aligned adornment (e.g. requested-review indicator). */
   trailing?: ReactNode;
   expandable?: boolean;
   open?: boolean;
@@ -72,7 +75,9 @@ export function TreeRow({
           className="flex min-w-0 flex-1 items-center gap-1.5 px-1 py-1.5 text-left text-sm"
         >
           {icon}
-          <span className="min-w-0 flex-1 truncate font-medium">{label}</span>
+          <span className="min-w-0 truncate font-medium">{label}</span>
+          {afterLabel}
+          <span className="min-w-0 flex-1" />
           {trailing}
         </button>
       </div>

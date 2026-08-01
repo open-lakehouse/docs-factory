@@ -45,11 +45,15 @@ function authorSlug(name) {
 }
 
 /** The delta site's `publishedAt` is `z.coerce.date()` — an ISO `YYYY-MM-DD` string
- *  coerces cleanly. Pass the draft date through as-is (normalized to that form when
- *  possible), else leave it for zod to coerce/reject. */
+ *  coerces cleanly. Drafts no longer carry a frontmatter date; emit stamps today
+ *  (the ship day) when none is present. */
 function isoDate(v) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v ?? "").trim());
-  return m ? m[0] : v == null ? undefined : String(v);
+  return m ? m[0] : undefined;
+}
+
+function emitDay() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 /**
@@ -72,7 +76,7 @@ function frontmatter(draft) {
     description: draft.summary ? String(draft.summary) : undefined,
     // `author` accepts a single ref or an array; emit an array (1+ ids) uniformly.
     author: authors,
-    publishedAt: isoDate(draft.date),
+    publishedAt: isoDate(draft.date) ?? emitDay(),
   };
   // `thumbnail` is a REQUIRED image reference (`./<file>`). The draft may carry a
   // `thumbnail`/`hero`; emit it as a co-located `./` path when present, else leave

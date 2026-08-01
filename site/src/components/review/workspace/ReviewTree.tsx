@@ -1,67 +1,49 @@
-// The workspace's left navigation: Overview (blog pipeline + product rollup)
+// The workspace's left navigation: Overview (pipeline + product + comments)
 // above a file-explorer-style tree of all reviewable content. Branches
 // (project → bucket, blog series) expand/collapse; leaves open the page in a
 // middle-pane tab. Built from build-time content (tree-model.ts), expansion
-// persisted in sessionStorage (expansion-context.tsx). Leaf rows show compact
-// status dots: frontmatter authoring (idea / draft / ready) then DB review
-// lifecycle (none / in review / changes requested / approved / released).
-// Branch aggregates show a review status dot when any descendant is pending.
+// persisted in sessionStorage (expansion-context.tsx). Leaf icons tint with
+// the effective status; branches show descendant counts by status immediately
+// after their label. A right-edge icon marks items requested from the viewer.
 import { useMemo } from "react";
 import { useQuery } from "@connectrpc/connect-query";
-import { Files, FileText, FolderTree, LayoutDashboard, Layers3, Newspaper } from "lucide-react";
+import {
+  Files,
+  FileText,
+  FolderTree,
+  LayoutDashboard,
+  Layers3,
+  Newspaper,
+  UserCheck,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import DiataxisIcon from "../../DiataxisIcon";
-import { listDrafts } from "../../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import {
+  listDrafts,
+  listReviewRequests,
+} from "../../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../../lib/auth-context";
 import { refToParam } from "../../../lib/content-ref";
 import { isOverviewGroup } from "./overview-token";
 import { refTokenOf } from "./view-token";
-import { statusDotClass } from "../../../lib/frontmatter-status";
-import { PENDING_REVIEW_STATES } from "../../../lib/review-inbox";
+import {
+  effectiveStatus,
+  effectiveStatusIconClass,
+  effectiveStatusLabel,
+  STATUS_BUCKET_ORDER,
+  statusBucket,
+  statusBucketDotClass,
+  statusBucketLabel,
+  type StatusBucket,
+} from "../../../lib/effective-status";
 import { refKey } from "../../../lib/review-queries";
-import { REVIEW_STATE_LABEL, reviewStateDotClass } from "../../../lib/review-status";
 import { useExpansion } from "./expansion-context";
 import { useReviewTree, type TreeNode } from "./tree-model";
 import { TreeRow } from "./TreeRow";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
 
-function FrontmatterStatusDot({ status }: { status?: string }) {
-  const label = (status ?? "draft").toLowerCase();
-  return (
-    <span
-      className={cn("tree-status-dot", statusDotClass(status))}
-      title={label}
-      aria-label={`Authoring: ${label}`}
-    />
-  );
-}
-
-function ReviewStatusDot({ state }: { state: ReviewState }) {
-  const label = REVIEW_STATE_LABEL[state] ?? "unknown";
-  return (
-    <span
-      className={cn("tree-status-dot", reviewStateDotClass(state))}
-      title={label}
-      aria-label={`Review: ${label}`}
-    />
-  );
-}
-
-function LeafTrailing({
-  frontmatterStatus,
-  reviewState,
-}: {
-  frontmatterStatus?: string;
-  reviewState: ReviewState;
-}) {
-  return (
-    <span className="flex shrink-0 items-center gap-1">
-      <FrontmatterStatusDot status={frontmatterStatus} />
-      <ReviewStatusDot state={reviewState} />
-    </span>
-  );
-}
+type LeafStatus = { frontmatterStatus?: string; reviewState: ReviewState };
 
 function BranchIcon({ node }: { node: Extract<TreeNode, { kind: "branch" }> }) {
   const className = "h-3.5 w-3.5 shrink-0 text-muted-foreground";
@@ -77,34 +59,90 @@ function BranchIcon({ node }: { node: Extract<TreeNode, { kind: "branch" }> }) {
   return <FolderTree className={className} aria-hidden="true" />;
 }
 
-/** Highest-priority pending review state in a subtree, if any. Changes-
- *  requested wins over in-review so collapsed groups surface the sharper signal. */
-function pendingInSubtree(
+/** Count every leaf descendant by effective status bucket. */
+function statusCountsInSubtree(
   node: TreeNode,
   reviewByRef: Map<string, ReviewState>,
-): ReviewState | undefined {
+): Map<StatusBucket, number> {
+  const counts = new Map<StatusBucket, number>();
+  function bump(bucket: StatusBucket) {
+    counts.set(bucket, (counts.get(bucket) ?? 0) + 1);
+  }
+  function walk(n: TreeNode) {
+    if (n.kind === "leaf") {
+      const reviewState = reviewByRef.get(refKey(n.ref)) ?? ReviewState.NONE;
+      bump(statusBucket(effectiveStatus(n.frontmatterStatus, reviewState)));
+      return;
+    }
+    for (const child of n.children) walk(child);
+  }
+  walk(node);
+  return counts;
+}
+
+function StatusCountStrip({ counts }: { counts: Map<StatusBucket, number> }) {
+  const entries = STATUS_BUCKET_ORDER.filter((bucket) => (counts.get(bucket) ?? 0) > 0);
+  if (entries.length === 0) return null;
+  const summary = entries
+    .map((bucket) => `${counts.get(bucket)} ${statusBucketLabel(bucket)}`)
+    .join(", ");
+  return (
+    <span className="tree-status-counts" title={summary} aria-label={summary}>
+      {entries.map((bucket) => (
+        <span key={bucket} className="tree-status-count">
+          <span className={cn("tree-status-dot", statusBucketDotClass(bucket))} aria-hidden />
+          {counts.get(bucket)}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function LeafIcon({ status }: { status: LeafStatus }) {
+  const effective = effectiveStatus(status.frontmatterStatus, status.reviewState);
+  const label = effectiveStatusLabel(effective);
+  return (
+    <FileText
+      className={cn("h-3.5 w-3.5 shrink-0", effectiveStatusIconClass(effective))}
+      aria-label={label}
+      title={label}
+    />
+  );
+}
+
+/** Number of requested-from-viewer leaves in this subtree. */
+function requestedInSubtree(node: TreeNode, requestedRefs: Set<string>): number {
   if (node.kind === "leaf") {
-    const state = reviewByRef.get(refKey(node.ref)) ?? ReviewState.NONE;
-    return PENDING_REVIEW_STATES.has(state) ? state : undefined;
+    return requestedRefs.has(refKey(node.ref)) ? 1 : 0;
   }
-  let found: ReviewState | undefined;
-  for (const child of node.children) {
-    const childPending = pendingInSubtree(child, reviewByRef);
-    if (childPending === undefined) continue;
-    if (childPending === ReviewState.CHANGES_REQUESTED) return childPending;
-    found = childPending;
-  }
-  return found;
+  return node.children.reduce(
+    (total, child) => total + requestedInSubtree(child, requestedRefs),
+    0,
+  );
+}
+
+function RequestedReviewIndicator({ count = 1 }: { count?: number }) {
+  const label =
+    count === 1 ? "Review requested from you" : `${count} reviews requested from you`;
+  return (
+    <UserCheck
+      className="h-3.5 w-3.5 shrink-0 text-primary"
+      title={label}
+      aria-label={label}
+    />
+  );
 }
 
 function Node({
   node,
   depth,
   reviewByRef,
+  requestedRefs,
 }: {
   node: TreeNode;
   depth: number;
   reviewByRef: Map<string, ReviewState>;
+  requestedRefs: Set<string>;
 }) {
   const { isOpen, toggle } = useExpansion();
   const { openTab, activeToken } = useWorkspaceTabs();
@@ -115,10 +153,14 @@ function Node({
     return (
       <TreeRow
         depth={depth}
-        icon={<FileText className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+        icon={
+          <LeafIcon
+            status={{ frontmatterStatus: node.frontmatterStatus, reviewState }}
+          />
+        }
         label={node.label}
         trailing={
-          <LeafTrailing frontmatterStatus={node.frontmatterStatus} reviewState={reviewState} />
+          requestedRefs.has(refKey(node.ref)) ? <RequestedReviewIndicator /> : undefined
         }
         // The active tab may be any of this item's views (rendered/md/script);
         // compare on the group key so the row stays highlighted across them.
@@ -129,7 +171,8 @@ function Node({
   }
 
   const open = isOpen(node.id);
-  const pendingState = pendingInSubtree(node, reviewByRef);
+  const counts = statusCountsInSubtree(node, reviewByRef);
+  const requestedCount = requestedInSubtree(node, requestedRefs);
   return (
     <>
       <TreeRow
@@ -138,7 +181,12 @@ function Node({
         label={node.label}
         expandable
         open={open}
-        trailing={pendingState !== undefined ? <ReviewStatusDot state={pendingState} /> : undefined}
+        afterLabel={<StatusCountStrip counts={counts} />}
+        trailing={
+          requestedCount > 0 ? (
+            <RequestedReviewIndicator count={requestedCount} />
+          ) : undefined
+        }
         onToggle={() => toggle(node.id)}
       />
       {open &&
@@ -148,6 +196,7 @@ function Node({
             node={child}
             depth={depth + 1}
             reviewByRef={reviewByRef}
+            requestedRefs={requestedRefs}
           />
         ))}
     </>
@@ -158,6 +207,11 @@ export default function ReviewTree() {
   const { tree, isLoading } = useReviewTree();
   const { isAllowlisted } = useAuth();
   const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
+  const { data: requestData } = useQuery(
+    listReviewRequests,
+    { mine: true, openOnly: true },
+    { enabled: isAllowlisted },
+  );
   const { openOverview, activeToken } = useWorkspaceTabs();
 
   const reviewByRef = useMemo(() => {
@@ -167,6 +221,14 @@ export default function ReviewTree() {
     }
     return map;
   }, [data?.drafts]);
+
+  const requestedRefs = useMemo(() => {
+    const refs = new Set<string>();
+    for (const request of requestData?.requests ?? []) {
+      if (request.ref) refs.add(refKey(request.ref));
+    }
+    return refs;
+  }, [requestData?.requests]);
 
   const overviewSelected =
     activeToken !== null && isOverviewGroup(refTokenOf(activeToken));
@@ -193,6 +255,7 @@ export default function ReviewTree() {
             node={node}
             depth={0}
             reviewByRef={reviewByRef}
+            requestedRefs={requestedRefs}
           />
         ))
       )}

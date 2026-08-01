@@ -6,9 +6,11 @@ import {
   unresolveThread,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
-import { Check, X } from "lucide-react";
+import { Check, Link2, RotateCcw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { copyToClipboard } from "../../lib/clipboard";
+import { refToParam } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import CommentBubble from "./CommentBubble";
 import ReviewComposer from "./ReviewComposer";
@@ -18,7 +20,22 @@ interface ThreadConversationProps {
   sectionLabel?: string;
   onChange: () => void;
   onClose?: () => void;
+  /** Called after a successful resolve so the rail card can collapse. */
+  onCollapse?: () => void;
   compact?: boolean;
+}
+
+/** Absolute review-workspace URL that opens this thread. */
+function threadDeepLink(thread: Thread): string | null {
+  const root = thread.root;
+  if (!root?.ref || !root.id) return null;
+  const token = refToParam(root.ref);
+  const url = new URL("/review", window.location.origin);
+  url.searchParams.set("tabs", token);
+  url.searchParams.set("active", token);
+  url.searchParams.set("thread", root.id);
+  if (root.anchorSlug) url.searchParams.set("anchor", root.anchorSlug);
+  return url.toString();
 }
 
 export default function ThreadConversation({
@@ -26,6 +43,7 @@ export default function ThreadConversation({
   sectionLabel,
   onChange,
   onClose,
+  onCollapse,
   compact = false,
 }: ThreadConversationProps) {
   const contentRef = thread.root?.ref;
@@ -40,6 +58,7 @@ export default function ThreadConversation({
   const unresolve = useMutation(unresolveThread, mutationOpts);
   const [text, setText] = useState("");
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   // Depth of each comment (root = 0), derived from the parent_id chain. The wire
   // list is a flat depth-first pre-order, so we can resolve depths in one pass.
@@ -90,15 +109,35 @@ export default function ThreadConversation({
     );
   }
 
-  async function toggleResolved() {
+  async function doResolve(e: React.MouseEvent) {
+    e.stopPropagation();
     const id = thread.root?.id;
     if (!id) return;
-    if (thread.resolved) await unresolve.mutateAsync({ threadRootId: id });
-    else await resolve.mutateAsync({ threadRootId: id });
+    await resolve.mutateAsync({ threadRootId: id });
+    onChange();
+    onCollapse?.();
+  }
+
+  async function doReopen(e: React.MouseEvent) {
+    e.stopPropagation();
+    const id = thread.root?.id;
+    if (!id) return;
+    await unresolve.mutateAsync({ threadRootId: id });
     onChange();
   }
 
+  async function copyThreadLink(e: React.MouseEvent) {
+    e.stopPropagation();
+    const link = threadDeepLink(thread);
+    if (!link) return;
+    const ok = await copyToClipboard(link);
+    if (!ok) return;
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1200);
+  }
+
   const label = sectionLabel || (thread.root?.orphaned ? "Removed section" : "Section");
+  const busy = resolve.isPending || unresolve.isPending;
 
   // Inline surfaces (compact) sit directly under the highlighted prose/code, so
   // the section tag + quoted target would just repeat the surrounding context.
@@ -118,20 +157,55 @@ export default function ThreadConversation({
                 type="button"
                 variant="ghost"
                 size="icon-xs"
-                className={cn(thread.resolved && "text-accent hover:text-accent")}
-                onClick={() => void toggleResolved()}
-                aria-label={thread.resolved ? "Reopen thread" : "Resolve thread"}
-                title={thread.resolved ? "Reopen" : "Resolve"}
+                className="review-thread-action"
+                data-tooltip={copied ? "Copied" : "Copy link"}
+                onClick={(e) => void copyThreadLink(e)}
+                aria-label={copied ? "Link copied" : "Copy link to thread"}
               >
-                <Check />
+                {copied ? <Check className="text-emerald-500" /> : <Link2 />}
               </Button>
             )}
+            {thread.root &&
+              (thread.resolved ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  className="review-thread-action"
+                  data-tooltip="Reopen thread"
+                  disabled={busy}
+                  onClick={(e) => void doReopen(e)}
+                  aria-label="Reopen thread"
+                >
+                  <RotateCcw />
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-xs"
+                  className="review-thread-action"
+                  data-tooltip="Resolve thread"
+                  disabled={busy}
+                  onClick={(e) => void doResolve(e)}
+                  aria-label="Resolve thread"
+                >
+                  <Check />
+                </Button>
+              ))}
             {onClose && (
               <Button
                 type="button"
                 variant="ghost"
                 size="icon-xs"
-                onClick={onClose}
+                className="review-thread-action"
+                data-tooltip="Collapse thread"
+                onClick={(e) => {
+                  // The rail card wraps this in its own onClick (jump/select),
+                  // which would immediately re-expand what we just collapsed.
+                  e.stopPropagation();
+                  onClose();
+                }}
                 aria-label="Close"
               >
                 <X />

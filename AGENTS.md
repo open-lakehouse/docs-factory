@@ -60,7 +60,7 @@ research/         existing research reports (leave alone)
    locally with `just llmstxt`; there is nothing to commit.
 
 5. **Every content page carries frontmatter.** Required: `title`, `diataxis`,
-   `project`. Blog drafts require `title`, `slug`, `status`, `date`, `tags`, `author`,
+   `project`. Blog drafts require `title`, `slug`, `status`, `tags`, `author`,
    `target` (tags must exist in `blogs/tags.yml`).
 
    **Status is two orthogonal axes — don't conflate them.** A content page's git

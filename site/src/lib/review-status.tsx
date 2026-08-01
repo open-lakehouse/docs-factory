@@ -1,7 +1,7 @@
 // Shared presentation for the DB review lifecycle state (distinct from the git
-// frontmatter authoring status). The badge tones and labels live here so the
-// doc-page ReviewControls, the index tables' Review column, and the workspace
-// inbox all render the state identically — one component, one look.
+// frontmatter authoring status). Compact chrome folds both axes into one
+// effective badge (see effective-status.tsx); detailed listings (pipeline,
+// ContentTable) still render this Review column beside the authoring status.
 import { ReviewState, Requirement, RequestStatus } from "../gen/docs_factory/review/v1/messages_pb";
 import { StatusBadge } from "../components/StatusBadge";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +30,8 @@ export const REVIEW_STATE_LABEL: Record<number, string> = {
 /** Extra badge class for a review state tint (ready / idea / needs-review). */
 export function reviewStateBadgeClass(state: ReviewState): string {
   switch (state) {
+    case ReviewState.RELEASED:
+      return "status-badge-released";
     case ReviewState.APPROVED:
       return "status-badge-ready";
     case ReviewState.CHANGES_REQUESTED:

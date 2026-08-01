@@ -2,7 +2,6 @@
 title: Introducing the UC Delta API — a Delta-native REST catalog
 slug: unity-catalog-delta-api
 status: draft
-date: 2026-07-03
 tags: [unity-catalog, delta-lake, lakehouse]
 series:
 series_order:

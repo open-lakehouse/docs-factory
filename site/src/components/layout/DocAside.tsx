@@ -1,7 +1,7 @@
-// Docs right-hand aside: mirrors the blog aside on the docs layout. "On this
-// page" (heading nav) is always present; the review controls sit on top when a
-// reviewer is in review mode, and comments render below in rail mode (a Sheet
-// drawer on narrow screens). The global docs nav stays on the left (DocsSidebar).
+// Docs right-hand aside: "On this page" (heading nav) plus, in review mode, the
+// same review sections as the workspace RightPane (comments + Activity). The
+// global docs nav stays on the left (DocsSidebar). Narrow screens open review
+// in a Sheet drawer.
 import { useEffect, useState, type RefObject } from "react";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { useAuth } from "../../lib/auth-context";
 import OnThisPage from "./OnThisPage";
-import ContentEventTimeline from "../review/ContentEventTimeline";
-import VersionHistory from "../review/VersionHistory";
-import CommentSidebar from "../review/CommentSidebar";
+import PageReviewRail from "./PageReviewRail";
 import { useSelectionState } from "../review/selection-context";
 import { useReview } from "../review/review-context";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
@@ -37,26 +35,20 @@ export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
     if (pending && showComments) setDrawerOpen(true);
   }, [pending, showComments]);
 
-  const reviewRail = reviewActive ? (
-    <section className="blog-aside-review" aria-label="Review history">
-      <ContentEventTimeline contentRef={contentRef} />
-      <VersionHistory contentRef={contentRef} />
-    </section>
-  ) : null;
-
   return (
     <div className="review-rail-host">
-      {/* Desktop: sticky right column (On this page + review chrome). Hidden on
-          narrow screens, where comments open in the Sheet drawer below. */}
+      {/* Desktop: sticky right column. Hidden on narrow screens, where review
+          opens in the Sheet drawer below. */}
       <div className="review-rail max-[960px]:hidden">
-        {reviewRail}
+        {reviewActive ? (
+          <PageReviewRail articleRef={articleRef} contentRef={contentRef} />
+        ) : null}
         <div className="review-rail-body">
           <OnThisPage articleRef={articleRef} />
-          {showComments && <CommentSidebar articleRef={articleRef} />}
         </div>
       </div>
 
-      {/* Narrow screens: a floating toggle opens the comment rail in a drawer. */}
+      {/* Narrow screens: floating toggle opens the review rail in a drawer. */}
       {showComments && (
         <>
           <Button
@@ -84,9 +76,7 @@ export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
                   Review
                 </SheetTitle>
               </SheetHeader>
-              <div className="review-rail-body p-4">
-                <CommentSidebar articleRef={articleRef} />
-              </div>
+              <PageReviewRail articleRef={articleRef} contentRef={contentRef} />
             </SheetContent>
           </Sheet>
         </>

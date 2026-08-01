@@ -1,9 +1,10 @@
 // One Overview panel in the workspace middle pane. Mirrors ReviewTab's tabpanel
 // shell (ARIA ids, keep-mounted / hide-when-inactive) but hosts the blog
-// pipeline or ProductChanges rollup instead of a content page.
+// pipeline, ProductChanges rollup, or latest-comments inbox instead of a page.
 import { cn } from "@/lib/utils";
 import BlogPipeline from "../BlogPipeline";
 import ProductRollup from "../ProductRollup";
+import LatestComments from "./LatestComments";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
 import {
   overviewViewLabel,
@@ -32,8 +33,8 @@ export default function OverviewTab({
     >
       <div className="overview-tab-body">
         {view === "pipeline" ? (
-          <BlogPipeline />
-        ) : (
+          <BlogPipeline heading="" showIntro={false} />
+        ) : view === "product" ? (
           <section aria-label="What changed by product">
             <h1>Product changes</h1>
             <p className="muted">
@@ -42,6 +43,8 @@ export default function OverviewTab({
             </p>
             <ProductRollup />
           </section>
+        ) : (
+          <LatestComments />
         )}
       </div>
     </div>

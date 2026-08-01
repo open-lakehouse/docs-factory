@@ -46,14 +46,19 @@ const MONTHS = [
   "July", "August", "September", "October", "November", "December",
 ];
 
-/** Reformat a draft ISO date (`2026-07-03`) to the UC human string
- *  (`July 3, 2026`). Parsed as UTC parts to avoid timezone drift; falls back to
- *  the raw value if it isn't a plain `YYYY-MM-DD`. */
+/** Reformat an ISO date (`2026-07-03`) to the UC human string (`July 3, 2026`).
+ *  Parsed as UTC parts to avoid timezone drift; falls back to the raw value if it
+ *  isn't a plain `YYYY-MM-DD`. Drafts no longer carry a frontmatter date; emit
+ *  stamps today (the ship day) when none is present. */
 function humanDate(iso) {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso ?? "").trim());
   if (!m) return iso == null ? undefined : String(iso);
   const [, y, mo, d] = m;
   return `${MONTHS[Number(mo) - 1]} ${Number(d)}, ${y}`;
+}
+
+function emitDay() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 /**
@@ -70,7 +75,7 @@ function frontmatter(draft) {
       .filter(Boolean)
       .map(authorSlug),
     category: "guide", // the only value the UC schema's enum accepts today
-    date: humanDate(draft.date),
+    date: humanDate(draft.date ?? emitDay()),
   };
   // `summary` → optional `description`; omit when absent (schema marks it optional).
   if (draft.summary) fm.description = String(draft.summary);

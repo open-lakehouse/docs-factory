@@ -70,11 +70,14 @@
   --body: rgb(15 27 45 / 0.86);
   --muted-foreground: #64748b;
 
-  /* --- Console code palette (same in both themes) --- */
-  --code-bg: #0a0f16;
-  --code-surface: #12181f;
-  --code-fg: #e6ebf2;
-  --code-border: #232a31;
+  /* --- Light code palette --- */
+  --code-bg: #f6f8fa;
+  --code-surface: #eef2f6;
+  --code-fg: #24292f;
+  --code-border: #d8dee4;
+  --inline-code-bg: #f1f4f7;
+  --inline-code-fg: #334155;
+  --inline-code-border: #e2e7ec;
 
   --radius: 0.5rem;
   /* Clearance for #anchor jumps: the topbar is sticky, so a heading scrolled to
@@ -104,6 +107,13 @@
   --heading: #f5f8fc;
   --body: rgb(230 235 242 / 0.84);
   --muted-foreground: #8b939c;
+  --code-bg: #0a0f16;
+  --code-surface: #12181f;
+  --code-fg: #e6ebf2;
+  --code-border: #232a31;
+  --inline-code-bg: var(--code-surface);
+  --inline-code-fg: var(--code-fg);
+  --inline-code-border: var(--code-border);
 }
 
 /* Per-project accent switch (set data-accent on .shell) */
@@ -253,13 +263,6 @@ body {
   gap: 0.45rem 0.75rem;
   min-width: 0;
 }
-.review-page-chrome-series {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--accent);
-}
 .review-page-chrome-muted {
   font-size: 0.78rem;
   color: var(--muted-foreground);
@@ -280,20 +283,92 @@ body {
   align-items: center;
   gap: 0.4rem 0.65rem;
 }
-.review-page-chrome .request-review-open-list {
-  display: inline-flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.35rem 0.55rem;
-  margin: 0;
+.review-page-chrome-history {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+  line-height: inherit;
+  box-shadow: inset 0 -1px 0 transparent;
+  transition: color 100ms ease, box-shadow 100ms ease;
 }
-.review-page-chrome .request-review-open-row {
+.review-page-chrome-history:hover,
+.review-page-chrome-history:focus-visible {
+  color: var(--foreground);
+  box-shadow: inset 0 -1px 0 color-mix(in srgb, var(--foreground) 32%, transparent);
+}
+.review-page-chrome-history:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--primary) 45%, transparent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.version-history-hovercard {
+  width: 18.5rem;
+  padding: 0.55rem 0.6rem 0.65rem;
+  border-radius: 4px;
+  border-color: color-mix(in srgb, var(--border) 62%, transparent);
+  background: color-mix(in srgb, var(--card) 94%, var(--background));
+  box-shadow:
+    0 8px 24px rgb(0 0 0 / 0.18),
+    0 1px 2px rgb(0 0 0 / 0.12);
+}
+.version-history-hovercard-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.version-history-hovercard-empty {
   margin: 0;
-  padding: 0.1rem 0.35rem;
-  border: 1px solid var(--workspace-border, var(--border));
-  border-radius: 0.3rem;
-  background: var(--surface);
-  font-size: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.version-history-hovercard-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  max-height: 16rem;
+  overflow-y: auto;
+}
+.version-history-hovercard-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+.version-history-hovercard-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-top: 0.12rem;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+.version-history-hovercard-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+.version-history-hovercard-label {
+  font-size: 0.78rem;
+  font-weight: 550;
+  color: var(--foreground);
+  line-height: 1.2;
+}
+.version-history-hovercard-meta {
+  font-size: 0.7rem;
+  color: var(--muted-foreground);
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Console navbar — pure black, mono-forward */
@@ -398,6 +473,9 @@ body {
   height: 0.7rem;
 }
 .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: 1px solid #2a2f38;
   border-radius: 0.3rem;
@@ -406,6 +484,11 @@ body {
   color: #9ca3af;
   font-family: var(--font-mono);
   font-size: 0.8rem;
+}
+.theme-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.8;
 }
 .theme-toggle:hover {
   border-color: var(--accent);
@@ -576,11 +659,80 @@ body {
   padding: 0.6rem 0.75rem;
   border: 1px solid #1f232b;
   border-radius: 0.45rem;
+  overflow: hidden;
+}
+.latest-comment-card { padding: 0; }
+.latest-comment-requested-icon {
+  flex: none;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-top: 0.15rem;
+  color: var(--primary);
 }
 .review-dash-comment-target { font-size: 0.8rem; text-decoration: none; color: var(--muted-foreground); }
 .review-dash-comment-target:hover { color: var(--accent); }
 .review-dash-comment-body { margin: 0.3rem 0 0; font-size: 0.9rem; }
 .review-dash-comment-author { font-weight: 600; }
+.latest-comment-row {
+  display: flex;
+  width: 100%;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.latest-comment-row:hover,
+.latest-comment-row:focus-visible {
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+.latest-comment-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.latest-comment-avatar { flex: none; margin-top: 0.1rem; }
+.latest-comment-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.latest-comment-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+.latest-comment-meta strong { color: var(--foreground); font-size: 0.85rem; }
+.latest-comment-meta time { margin-left: auto; white-space: nowrap; }
+.latest-comment-body {
+  overflow: hidden;
+  color: var(--foreground);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.latest-comment-location {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.2rem;
+  overflow: hidden;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.latest-comment-location .review-dash-resolved {
+  flex: none;
+  margin: 0 0 0 auto;
+}
 .review-dash-resolved {
   display: inline-block;
   margin-top: 0.35rem;
@@ -710,6 +862,17 @@ body {
   color: var(--code-fg);
   padding: 0.12em 0.38em;
   border-radius: 0.3rem;
+}
+.prose :not(pre) > code {
+  color: var(--inline-code-fg);
+  background: var(--inline-code-bg);
+  border: 1px solid var(--inline-code-border);
+}
+/* Tailwind Typography wraps inline code in literal backticks; the tinted chip
+   already reads as code, so drop them. */
+.prose code::before,
+.prose code::after {
+  content: none;
 }
 /* Code blocks — build-time Shiki <pre> wrapped by our chrome
    (src/components/code-block.tsx). Sleek, DevHub-style: no header bar, just a
@@ -877,6 +1040,9 @@ body {
   border: 0;
   border-radius: 0;
   background: transparent !important;
+  /* Plain-text fences have no Shiki inline token colors. Override Tailwind
+     Typography's light-on-dark `pre` color with the active code palette. */
+  color: var(--code-fg);
   padding: 1rem 1.1rem;
   overflow-x: auto;
   font-size: 0.9rem;
@@ -885,6 +1051,12 @@ body {
   /* Container so the inline-review row can size to the VISIBLE code width
      (100cqi) instead of the grid track set by the widest code line. */
   container-type: inline-size;
+}
+/* Shiki emits the light token color as the inline default and the dark color
+   in --shiki-dark. Switch that variable on with the app's class-based theme. */
+:root.dark .prose .cb-pre.shiki,
+:root.dark .prose .cb-pre.shiki span {
+  color: var(--shiki-dark) !important;
 }
 .prose .cb-pre code {
   background: none;
@@ -1000,6 +1172,51 @@ body {
   align-items: center;
   gap: 0.1rem;
   flex: none;
+}
+.review-thread-action {
+  position: relative;
+  border: 1px solid transparent;
+}
+.review-thread-action:hover,
+.review-thread-action:focus-visible {
+  border-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+  background: color-mix(in srgb, var(--foreground) 9%, transparent);
+}
+.review-thread-action::after {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  width: max-content;
+  max-width: 10rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  color: var(--foreground);
+  background: var(--popover, var(--card));
+  box-shadow: 0 4px 12px rgb(0 0 0 / 28%);
+  content: attr(data-tooltip);
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition:
+    opacity 80ms ease,
+    transform 80ms ease;
+  visibility: hidden;
+}
+.review-thread-action:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 550ms;
+  visibility: visible;
+}
+.review-thread-action:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
 }
 /* Compact: the resolve + close icons float over the top-right corner of the
    scrolling thread. Small rounded chips (panel background) keep the glyphs
@@ -2409,6 +2626,11 @@ a.blog-row-title:hover { color: var(--accent); }
   background: color-mix(in srgb, #4f9c5a 12%, transparent);
   border-color: color-mix(in srgb, #4f9c5a 30%, transparent);
 }
+.status-badge-released {
+  color: #f4fff6;
+  background: #3f844b;
+  border-color: #3f844b;
+}
 /* Idea: earliest, not-yet-committed stage. A distinct amber so reviewers can
  * spot posts still open to structural feedback at a glance. */
 .status-badge-idea {
@@ -2450,6 +2672,40 @@ a.blog-row-title:hover { color: var(--accent); }
 .tree-status-dot-released {
   background: #4f9c5a;
   box-shadow: 0 0 0 1.5px color-mix(in srgb, #4f9c5a 45%, transparent);
+}
+
+/* Leaf-row icons tinted with the same effective-status tones as the dots. */
+.tree-status-icon-ready,
+.tree-status-icon-released {
+  color: #4f9c5a;
+}
+.tree-status-icon-idea {
+  color: #b7791f;
+}
+.tree-status-icon-draft,
+.tree-status-icon-none {
+  color: var(--muted-foreground);
+  opacity: 0.7;
+}
+.tree-status-icon-in-review {
+  color: #8b5cf6;
+}
+
+/* Branch rollup: compact per-status counts (dot + n). */
+.tree-status-counts {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  line-height: 1;
+  color: var(--muted-foreground);
+}
+.tree-status-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
 }
 
 /* Expanded detail row */
@@ -2730,24 +2986,7 @@ a.blog-row-title:hover { color: var(--accent); }
   border-bottom: 0;
 }
 
-/* Request-review control (aside) + its open-request list. */
-.request-review-open-list {
-  list-style: none;
-  margin: 0 0 0.5rem;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-.request-review-open-row {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.8rem;
-}
-.request-review-reviewer {
-  font-weight: 500;
-}
+/* Request-review dialog. */
 .request-review-field {
   display: flex;
   flex-direction: column;
@@ -2758,10 +2997,6 @@ a.blog-row-title:hover { color: var(--accent); }
 .request-review-field > span {
   color: var(--muted-foreground);
   font-size: 0.78rem;
-}
-.request-review-requirement {
-  display: flex;
-  gap: 0.4rem;
 }
 .request-review-error {
   color: var(--destructive);
@@ -2783,6 +3018,11 @@ a.blog-row-title:hover { color: var(--accent); }
   flex-wrap: wrap;
   gap: 0.35rem;
 }
+.user-picker-chips.cards {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+}
 .user-picker-chip {
   display: flex;
   align-items: center;
@@ -2791,6 +3031,29 @@ a.blog-row-title:hover { color: var(--accent); }
   border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.8rem;
+}
+.user-picker-chip.card {
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--foreground) 2.5%, transparent);
+}
+.user-picker-chip.card > :first-child {
+  min-width: 0;
+  flex: 1;
+}
+.user-picker-chip-req {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
 }
 .user-picker-chip-remove {
   border: 0;
@@ -2825,11 +3088,15 @@ a.blog-row-title:hover { color: var(--accent); }
 }
 .user-picker-result {
   padding: 0.35rem 0.4rem;
-  border-radius: 0.35rem;
+  border-radius: 0.25rem;
   cursor: pointer;
 }
+.user-picker-result:hover {
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
 .user-picker-result.active {
-  background: var(--accent);
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
 }
 .user-picker-empty {
   position: absolute;
@@ -3103,6 +3370,15 @@ a.blog-row-title:hover { color: var(--accent); }
   letter-spacing: 0.06em;
   color: var(--accent);
   margin: 0 0 0.5rem;
+}
+.prose .review-article-series {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-foreground);
 }
 .blog-post-meta {
   display: flex;
@@ -3660,12 +3936,6 @@ a.model-ref-label:hover {
   margin: 0 0 0.35rem;
 }
 .review-comments-head .review-comments-title { margin-bottom: 0; }
-.review-add-section {
-  flex: none;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-}
-.review-add-section-form { margin-top: 0.6rem; }
 .review-empty {
   margin: 0.75rem 0;
   font-size: 0.8rem;
@@ -4027,6 +4297,15 @@ a.version-diff-label:hover {
   align-items: baseline;
   gap: 0.5rem;
   min-width: 0;
+}
+.review-thread-reopen {
+  flex: none;
+  margin-left: auto;
+  align-self: center;
+  color: var(--muted-foreground);
+}
+.review-thread-reopen:hover {
+  color: var(--foreground);
 }
 /* Unread indicator — a small accent dot before the section label when the
    thread has comments newer than the viewer's read watermark. */
@@ -4438,15 +4717,15 @@ a.review-author:hover span {
 
 /* Script view (workspace tab): a served .py rendered line-by-line so reviewers
    can comment on any line. Same structure as .source-lines; the code text is
-   Shiki-highlighted per line, so it sits on the highlighter's dark surface. */
+   Shiki-highlighted per line and follows the active light/dark code palette. */
 .script-lines {
   margin: 0;
   padding: 0.5rem 0;
   list-style: none;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  background: #22272e; /* github-dark-dimmed surface, matches build-time blocks */
-  color: #adbac7;
+  background: var(--code-bg);
+  color: var(--code-fg);
   min-height: 100%;
 }
 .script-line {
@@ -4456,7 +4735,7 @@ a.review-author:hover span {
   padding: 0.1rem 0.75rem;
 }
 .script-line:hover {
-  background: color-mix(in oklab, white 6%, transparent);
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
 }
 .script-line-comment {
   visibility: hidden;
@@ -4485,6 +4764,9 @@ a.review-author:hover span {
 .script-line-text {
   white-space: pre;
   overflow-wrap: normal;
+}
+:root.dark .script-line-text span {
+  color: var(--shiki-dark) !important;
 }
 
 /* Review status + transition controls are shadcn Badge + Button (allowlisted

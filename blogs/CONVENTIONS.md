@@ -88,7 +88,6 @@ target with minimal reshaping — we are not inventing a metadata scheme.
 title: <Working title>
 slug: <kebab-slug>
 status: idea | draft | ready
-date: <YYYY-MM-DD>            # last touched; advances as the post matures
 tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
@@ -96,6 +95,11 @@ author: <Full Name>           # real person; the byline (§10). never "Admin"
 target: <delta | unitycatalog | openlakehouse | …>
 ---
 ```
+
+Publish timing is **not** frontmatter. Last-updated comes from registered
+`content_version` rows (review app); the intended ship day is RevOps
+`target_release_date` (blog pipeline). Emit stamps the downstream site's
+publish date at emit time.
 
 Where a post is *emitted* (a published site) is recorded per target in
 the post's `blogs/<slug>/.emitted.json` sidecar (§5), not in the front matter — a

@@ -203,6 +203,9 @@ function ReviewTabBody({
         <div ref={setScrollPane} className="min-h-0 flex-1 overflow-y-auto">
           {page ? (
             <article className="prose mx-auto max-w-3xl px-6 py-8" ref={articleRef}>
+              {contentRef.area === ContentArea.BLOGS && page.frontmatter.series && (
+                <p className="review-article-series">{page.frontmatter.series}</p>
+              )}
               {page.frontmatter.title && <h1>{page.frontmatter.title}</h1>}
               {page.frontmatter.summary && <p className="lead muted">{page.frontmatter.summary}</p>}
               <MdxProvider>

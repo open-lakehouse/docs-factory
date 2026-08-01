@@ -2,7 +2,6 @@
 title: Make the lakehouse UI composable — copy the visuals, package the logic
 slug: headless-lakehouse-ui
 status: draft
-date: 2026-07-10
 tags: [lakehouse, unity-catalog, ui-components]
 series:
 series_order:

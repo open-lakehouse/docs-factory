@@ -4,21 +4,22 @@
 //
 //   overview#pipeline  → Blog pipeline (priority + target dates)
 //   overview#product   → ProductChanges rollup
+//   overview#comments  → Latest comments inbox
 //
 // Same URL shape as content views (`?tabs=…&active=…`), so Overview is shareable
 // and back/forward-navigable like any other workspace item.
 export const OVERVIEW_GROUP_KEY = "overview";
 
-export type OverviewView = "pipeline" | "product";
+export type OverviewView = "pipeline" | "product" | "comments";
 
-/** The two Overview panels, in TabBar order. */
-export const OVERVIEW_VIEWS: readonly OverviewView[] = ["pipeline", "product"];
+/** Overview panels, in TabBar order. */
+export const OVERVIEW_VIEWS: readonly OverviewView[] = ["pipeline", "product", "comments"];
 
 export function overviewToken(view: OverviewView): string {
   return `${OVERVIEW_GROUP_KEY}#${view}`;
 }
 
-/** All Overview tab tokens (pipeline + product), joined for `?tabs=`. */
+/** All Overview tab tokens, joined for `?tabs=`. */
 export function overviewTabsParam(): string {
   return OVERVIEW_VIEWS.map(overviewToken).join(",");
 }
@@ -30,6 +31,7 @@ export function overviewTabsParam(): string {
 export function parseOverviewToken(token: string): OverviewView | null {
   if (token === OVERVIEW_GROUP_KEY || token === overviewToken("pipeline")) return "pipeline";
   if (token === overviewToken("product")) return "product";
+  if (token === overviewToken("comments")) return "comments";
   return null;
 }
 
@@ -39,6 +41,8 @@ export function overviewViewLabel(view: OverviewView): string {
       return "Blog pipeline";
     case "product":
       return "Product changes";
+    case "comments":
+      return "Latest comments";
   }
 }
 

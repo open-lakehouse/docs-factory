@@ -10,7 +10,6 @@ ever diverge.
 title: <Working title>
 slug: <kebab-slug>
 status: idea | draft | ready
-date: <YYYY-MM-DD>            # last touched; advances as the post matures
 tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
@@ -18,6 +17,10 @@ author: <Full Name>           # real person; the byline. never "Admin"
 target: <delta | unitycatalog | openlakehouse | …>
 ---
 ```
+
+Publish timing is not frontmatter: last-updated comes from registered
+`content_version` rows; the intended ship day is RevOps `target_release_date`.
+Emit stamps the downstream site's publish date at emit time.
 
 Where a post is *emitted* (a published site) is recorded per target in
 `blogs/<slug>/.emitted.json`, not in front matter (a draft can go to several
@@ -31,4 +34,4 @@ CONVENTIONS.md §5, "Emit to a downstream target".
   facet (e)). The visible bio/credentials and the `Person`/`sameAs` Microdata are
   supplied by the **publishing target** at release, not duplicated per post — see
   QUALITY.md's publish-target section.
-- **`status`** advances through the lifecycle; `date` is the last-touched date.
+- **`status`** advances through the lifecycle (idea → draft → ready).

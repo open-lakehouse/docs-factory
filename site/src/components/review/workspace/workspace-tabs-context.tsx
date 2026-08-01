@@ -3,15 +3,18 @@
 // the query string so a workspace layout is shareable and back/forward-navigable:
 //
 //   /review?tabs=docs:slug:project:bucket,docs:slug:project:bucket#md,…&active=<token>&thread=<id>&anchor=<slug>
-//   /review?tabs=overview#pipeline,overview#product&active=overview#pipeline
+//   /review?tabs=overview#pipeline,overview#product,overview#comments&active=overview#pipeline
 //
 // Opening a sidebar ITEM opens a GROUP of tabs — for content, the rendered page
 // plus companion views (`.md` twin, each runnable script); for Overview, the
-// blog pipeline + ProductChanges panels. Every content tab token is
+// blog pipeline + ProductChanges + latest-comments panels. Every content tab token is
 // `refToParam(ref)` optionally suffixed with `#<view>`; Overview tokens use the
 // synthetic group key `overview`. Tabs sharing a groupKey belong to one item.
 // The rendered content view has no suffix, so old shared links (bare ref tokens)
 // still parse.
+//
+// Bare `/review` (no `tabs`) soft-defaults to Overview and writes that into the
+// URL with replace, so the left-nav Overview row is selected on entry.
 //
 // The workspace shows ONE item at a time: opening an item REPLACES the open set
 // with just that item's group, so clicking around the tree navigates rather than
@@ -25,6 +28,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   type ReactNode,
@@ -35,6 +39,7 @@ import { findBlog, findDoc, type ContentPage } from "../../../content";
 import { useScriptsIndex } from "../../../lib/scripts-index";
 import { viewsFor } from "./item-views";
 import {
+  OVERVIEW_VIEWS,
   overviewTabsParam,
   overviewToken,
   parseOverviewToken,
@@ -78,7 +83,7 @@ interface TabsValue {
   openTab: (ref: ContentRef, intent?: OpenIntent) => void;
   /** Activate a specific view of an item (opening it if not already open). */
   openView: (ref: ContentRef, view: TabView, intent?: OpenIntent) => void;
-  /** Open the Overview item (blog pipeline + product changes). */
+  /** Open the Overview item (pipeline + product + comments). */
   openOverview: (view?: OverviewView) => void;
   /** Close a single view tab. */
   closeTab: (token: string) => void;
@@ -129,6 +134,16 @@ function parseTabs(raw: string | null): OpenTab[] {
   return out;
 }
 
+/** Default landing when /review has no `tabs` — Overview (pipeline + product). */
+function defaultOverviewTabs(): OpenTab[] {
+  return OVERVIEW_VIEWS.map((view) => ({
+    kind: "overview" as const,
+    token: overviewToken(view),
+    overviewView: view,
+    groupKey: "overview" as const,
+  }));
+}
+
 export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   const [params, setParams] = useSearchParams();
   // Preloaded once for the workspace so openTab can compute an item's views
@@ -137,7 +152,11 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   const scriptsRef = useRef(scriptsIndex);
   scriptsRef.current = scriptsIndex;
 
-  const tabs = useMemo(() => parseTabs(params.get("tabs")), [params]);
+  const rawTabs = params.get("tabs");
+  const parsedTabs = useMemo(() => parseTabs(rawTabs), [rawTabs]);
+  // Soft-default Overview on first paint when the URL has no tabs yet (the
+  // effect below writes that into the query string with replace).
+  const tabs = parsedTabs.length > 0 ? parsedTabs : defaultOverviewTabs();
   const activeParam = params.get("active");
   // Normalize bare `overview` → `overview#pipeline` so active matches parsed tabs.
   const normalizedActive = useMemo(() => {
@@ -146,9 +165,27 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
     return overviewView ? overviewToken(overviewView) : activeParam;
   }, [activeParam]);
   // Keep `active` valid: fall back to the last tab if the param is stale/missing.
+  // When soft-defaulting Overview, land on pipeline (first Overview view).
   const activeToken =
     (normalizedActive && tabs.some((t) => t.token === normalizedActive) && normalizedActive) ||
-    (tabs.length ? tabs[tabs.length - 1].token : null);
+    (parsedTabs.length > 0
+      ? parsedTabs[parsedTabs.length - 1].token
+      : overviewToken("pipeline"));
+
+  // Bare /review (no tabs) → Overview selected. replace:true so back doesn't
+  // bounce through the empty landing state.
+  useEffect(() => {
+    setParams(
+      (prev) => {
+        if (prev.get("tabs")) return prev;
+        const p = new URLSearchParams(prev);
+        p.set("tabs", overviewTabsParam());
+        p.set("active", overviewToken("pipeline"));
+        return p;
+      },
+      { replace: true },
+    );
+  }, [setParams]);
 
   const intent = useMemo<OpenIntent>(
     () => ({ thread: params.get("thread") ?? undefined, anchor: params.get("anchor") ?? undefined }),

@@ -26,8 +26,8 @@ const ISO_DATE = /^\d{4}-\d{2}-\d{2}/;
 /** The synthetic index routes prerender-shells also emits. */
 const INDEX_ROUTES = ["/", "/docs", "/blog"];
 
-/** A page's <lastmod>: frontmatter `date` if ISO, else the file's git commit date,
- *  else its mtime. Returns an ISO date string. */
+/** A page's <lastmod>: git commit date (preferred), else mtime. A legacy
+ *  frontmatter `date` is still honored when present. Returns an ISO date string. */
 function lastmod(absPath, meta) {
   if (typeof meta.date === "string" && ISO_DATE.test(meta.date)) return meta.date.slice(0, 10);
   try {

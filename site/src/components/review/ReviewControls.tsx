@@ -1,7 +1,8 @@
 // Review status badge + transition controls for a rendered blog/doc page.
-// Allowlisted viewers see the current review state (distinct from the git
-// frontmatter authoring status) and can advance it; maintainers can Release.
-// Reads state from listDrafts (small list) and mutates via connect-query.
+// Allowlisted viewers see one effective status (authoring idea/draft, or the
+// review lifecycle once ready derives to needs-review) and can advance it;
+// maintainers can Release. Reads state from listDrafts and mutates via
+// connect-query.
 import { useState, type ReactNode } from "react";
 import { useQuery, useMutation } from "@connectrpc/connect-query";
 import {
@@ -15,7 +16,7 @@ import {
 import { ReviewState, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
-import { ReviewStateBadge } from "../../lib/review-status";
+import { EffectiveStatusBadge } from "../../lib/effective-status";
 import { cn } from "@/lib/utils";
 import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -59,18 +60,20 @@ const NEXT: Record<number, { to: ReviewState; label: string; variant: Transition
 
 export default function ReviewControls({
   contentRef,
+  frontmatterStatus,
   layout = "inline",
   heading,
-  onRequestReview,
+  showStatus = true,
 }: {
   contentRef: ContentRef;
+  /** Git authoring status — folded with reviewState into one effective badge. */
+  frontmatterStatus?: string;
   layout?: ReviewControlsLayout;
   /** When set, renders a section heading with the state badge beside it (used
    * by the blog aside) instead of a standalone `review: <state>` badge. */
   heading?: string;
-  /** Opens the shared request-review dialog. When present, requesting a review
-   * participates in the same single/dropdown action control as transitions. */
-  onRequestReview?: () => void;
+  /** Compact chrome may render the effective status separately at its leading edge. */
+  showStatus?: boolean;
 }) {
   const { isAllowlisted, isMaintainer, reviewActive, viewer } = useAuth();
   const { invalidateDrafts, invalidateContentEvents, invalidateReviewRequests } =
@@ -102,7 +105,6 @@ export default function ReviewControls({
   const state = summary?.reviewState ?? ReviewState.NONE;
   const openRequired = summary?.openRequiredRequestCount ?? 0;
   const approvals = summary?.approvals ?? [];
-  const pendingRequired = summary?.pendingRequiredLogins ?? [];
   const iApproved =
     !!viewer?.userId && approvals.some((a) => a.approverUserId === viewer.userId);
 
@@ -136,7 +138,9 @@ export default function ReviewControls({
     approve.isPending ||
     dismiss.isPending;
   const actions = NEXT[state] ?? [];
-  const badge = <ReviewStateBadge state={state} />;
+  const badge = (
+    <EffectiveStatusBadge frontmatterStatus={frontmatterStatus} reviewState={state} />
+  );
   const size = layout === "inline" ? "xs" : "sm";
   type ActionOption = {
     key: string;
@@ -147,8 +151,9 @@ export default function ReviewControls({
   };
   // Approve (or Dismiss my approval) is the happy-path primary while the artifact
   // is still open for review; then any explicit transitions (Request changes);
-  // then Release/reopen; then request-review. The first `default` option becomes
-  // the split-button primary; the rest open from the chevron.
+  // then Release/reopen. Request-review lives in RequestReviewControl's menu.
+  // The first `default` option becomes the split-button primary; the rest open
+  // from the chevron.
   const actionOptions: ActionOption[] = [];
   const canApprove =
     state === ReviewState.NEEDS_REVIEW ||
@@ -185,14 +190,6 @@ export default function ReviewControls({
       label: "Request changes",
       variant: "outline",
       run: () => setReopenOpen(true),
-    });
-  }
-  if (onRequestReview) {
-    actionOptions.push({
-      key: "request-review",
-      label: "Request review",
-      variant: "outline",
-      run: onRequestReview,
     });
   }
 
@@ -266,22 +263,12 @@ export default function ReviewControls({
       {heading ? (
         <div className="review-controls-header">
           <p className="blog-aside-title">{heading}</p>
-          {badge}
+          {showStatus && badge}
         </div>
-      ) : (
+      ) : showStatus ? (
         badge
-      )}
+      ) : null}
       {actionControl && <div className="review-controls-actions">{actionControl}</div>}
-      {approvals.length > 0 && (
-        <p className="review-controls-hint muted">
-          Approved by {approvals.map((a) => a.approverLogin || a.approverUserId).join(", ")}.
-        </p>
-      )}
-      {pendingRequired.length > 0 && (
-        <p className="review-controls-hint muted">
-          Required: {pendingRequired.join(", ")} still pending.
-        </p>
-      )}
       {state === ReviewState.APPROVED && isMaintainer && openRequired > 0 && (
         <p className="review-controls-hint muted">
           Blocked: {openRequired} required review

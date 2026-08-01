@@ -93,13 +93,13 @@ def validate_blog(page: Page, known_tags: set[str]) -> list[str]:
     status = require("status")
     if status is not None and status not in BLOG_STATUSES:
         errors.append(f"status '{status}' not in {sorted(BLOG_STATUSES)}")
-    if not require("date"):
-        pass
     if not require("author"):
         pass
     # An idea is the earliest folder: it hasn't chosen a publish target yet, so
     # `target` is only required once the post is a real draft. Everything else
-    # (title/slug/date/author/tags) is required even for ideas.
+    # (title/slug/author/tags) is required even for ideas. Publish timing lives
+    # in RevOps (`target_release_date`) and content_version (`created_at`), not
+    # git frontmatter.
     if status != "idea" and not require("target"):
         pass
 

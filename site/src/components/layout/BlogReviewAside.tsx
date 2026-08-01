@@ -1,4 +1,5 @@
-// Blog right aside: review history and, in rail mode, review comments.
+// Blog right aside in review mode: same review sections as the workspace
+// RightPane (comments + Activity). Narrow screens open the same body in a Sheet.
 import { useEffect, useState, type RefObject } from "react";
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,12 +11,10 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useAuth } from "../../lib/auth-context";
-import CommentSidebar from "../review/CommentSidebar";
-import ContentEventTimeline from "../review/ContentEventTimeline";
-import VersionHistory from "../review/VersionHistory";
 import { useSelectionState } from "../review/selection-context";
 import { useReview } from "../review/review-context";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
+import PageReviewRail from "./PageReviewRail";
 
 interface BlogReviewAsideProps {
   articleRef: RefObject<HTMLElement | null>;
@@ -39,13 +38,7 @@ export default function BlogReviewAside({
   if (!reviewActive) return null;
 
   const reviewContent = (
-    <>
-      <section className="blog-aside-review" aria-label="Review history">
-        <ContentEventTimeline contentRef={contentRef} />
-        <VersionHistory contentRef={contentRef} />
-      </section>
-      {showComments && <CommentSidebar articleRef={articleRef} />}
-    </>
+    <PageReviewRail articleRef={articleRef} contentRef={contentRef} />
   );
 
   return (
@@ -81,7 +74,7 @@ export default function BlogReviewAside({
                   Review
                 </SheetTitle>
               </SheetHeader>
-              <div className="blog-aside-body p-4">{reviewContent}</div>
+              <div className="blog-aside-body p-0">{reviewContent}</div>
             </SheetContent>
           </Sheet>
         </>

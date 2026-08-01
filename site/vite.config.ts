@@ -190,7 +190,7 @@ export default defineConfig({
             rehypeShiki,
             {
               themes: {
-                light: "github-dark-dimmed",
+                light: "github-light",
                 dark: "github-dark-dimmed",
               },
               transformers: [codeChromeTransformer],

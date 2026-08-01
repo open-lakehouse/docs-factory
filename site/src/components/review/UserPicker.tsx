@@ -8,12 +8,11 @@
 // There is no shadcn `command`/`combobox` in the design system (and `cmdk` isn't
 // a dependency), so this is a small hand-rolled combobox on the existing Input +
 // a filtered results dropdown, with keyboard nav. Single- or multi-select.
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useQuery } from "@connectrpc/connect-query";
 import { searchUsers } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { Role, type UserSummary } from "../../gen/docs_factory/review/v1/messages_pb";
+import { type UserSummary } from "../../gen/docs_factory/review/v1/messages_pb";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 /** Debounce a value by `ms`, so we don't fire a query on every keystroke. */
@@ -26,15 +25,8 @@ function useDebounced<T>(value: T, ms: number): T {
   return debounced;
 }
 
-function roleLabel(role: Role): string | null {
-  if (role === Role.MAINTAINER) return "Maintainer";
-  if (role === Role.REVIEWER) return "Reviewer";
-  return null;
-}
-
-/** Avatar + name/login + optional role badge for one user row. */
+/** Avatar + name/login for one user row. */
 function UserRow({ user }: { user: UserSummary }) {
-  const label = roleLabel(user.role);
   const handle = user.githubLogin || user.userId;
   return (
     <span className="user-picker-row-inner">
@@ -46,9 +38,6 @@ function UserRow({ user }: { user: UserSummary }) {
         {user.name || handle}
         {user.name && <span className="user-picker-login">@{handle}</span>}
       </span>
-      {label && (
-        <Badge variant={user.role === Role.MAINTAINER ? "default" : "secondary"}>{label}</Badge>
-      )}
     </span>
   );
 }
@@ -61,6 +50,10 @@ export interface UserPickerProps {
   multiple?: boolean;
   /** Only surface allowlisted users (for the reviewer-request picker). */
   allowlistedOnly?: boolean;
+  /** Optional controls rendered inside each selected chip (e.g. per-user toggles). */
+  renderChipExtra?: (user: UserSummary) => ReactNode;
+  /** When chip extras are present, use a card-shaped chip instead of a pill. */
+  chipVariant?: "pill" | "card";
   placeholder?: string;
   autoFocus?: boolean;
 }
@@ -70,6 +63,8 @@ export default function UserPicker({
   onChange,
   multiple = true,
   allowlistedOnly = false,
+  renderChipExtra,
+  chipVariant = "pill",
   placeholder = "Search people…",
   autoFocus,
 }: UserPickerProps) {
@@ -130,23 +125,6 @@ export default function UserPicker({
 
   return (
     <div className="user-picker" ref={boxRef}>
-      {value.length > 0 && (
-        <ul className="user-picker-chips">
-          {value.map((u) => (
-            <li key={u.userId} className="user-picker-chip">
-              <UserRow user={u} />
-              <button
-                type="button"
-                className="user-picker-chip-remove"
-                aria-label={`Remove ${u.githubLogin || u.userId}`}
-                onClick={() => remove(u.userId)}
-              >
-                ×
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
       {(multiple || value.length === 0) && (
         <div className="user-picker-input-wrap">
           <Input
@@ -185,6 +163,27 @@ export default function UserPicker({
             <div className="user-picker-empty">No matching people.</div>
           )}
         </div>
+      )}
+      {value.length > 0 && (
+        <ul className={chipVariant === "card" ? "user-picker-chips cards" : "user-picker-chips"}>
+          {value.map((u) => (
+            <li
+              key={u.userId}
+              className={chipVariant === "card" ? "user-picker-chip card" : "user-picker-chip"}
+            >
+              <UserRow user={u} />
+              {renderChipExtra?.(u)}
+              <button
+                type="button"
+                className="user-picker-chip-remove"
+                aria-label={`Remove ${u.githubLogin || u.userId}`}
+                onClick={() => remove(u.userId)}
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );

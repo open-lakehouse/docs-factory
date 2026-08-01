@@ -65,11 +65,11 @@ test("jsonLd is TechArticle for docs and BlogPosting for blogs", () => {
 
   const blog = jsonLd({
     identity: { area: "blogs", slug: "x" },
-    meta: { title: "T", date: "2026-07-03", author: "Robert Pack", tags: ["a", "b"] },
+    meta: { title: "T", author: "Robert Pack", tags: ["a", "b"] },
     origin: ORIGIN,
   });
   expect(blog["@type"]).toBe("BlogPosting");
-  expect(blog.datePublished).toBe("2026-07-03");
+  expect(blog.datePublished).toBeUndefined();
   expect(blog.author).toEqual({ "@type": "Person", name: "Robert Pack" });
 });
 

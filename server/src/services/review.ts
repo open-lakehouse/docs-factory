@@ -7,8 +7,9 @@
 //     content_event; release is blocked while a required request is open and sets
 //     the published latch).
 //   - Review requests: RequestReview / CancelReviewRequest / ListReviewRequests —
-//     request reviews from allowlisted reviewers, required blocks release, satisfied
-//     when the artifact is approved.
+//     request reviews from allowlisted reviewers (one open request per reviewer;
+//     optional upgrades to required), required blocks release, satisfied when the
+//     artifact is approved.
 //   - RequestChangesOnPublished — reopen a released page to changes-requested, with
 //     an optional unpublish (clears the latch, DB-only).
 //   - ListContentEvents — the append-only per-artifact lifecycle timeline.
@@ -1116,6 +1117,15 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       // Each reviewer is addressed by user id and must be REGISTERED (have a
       // user_identity row) AND on the allowlist; an off-list or unregistered
       // target is rejected so a request always addresses a real reviewer.
+      //
+      // Dedup: at most one OPEN request per (artifact, reviewer). A second
+      // request for the same open reviewer is a no-op — unless the existing
+      // row is optional and the new one is required, in which case the open
+      // request is upgraded in place (required never downgrades to optional).
+      //
+      // A request that actually changes something (new open row or optional →
+      // required upgrade) dismisses that reviewer's active approval. Other
+      // reviewers' sign-offs remain valid.
       async requestReview(req: RequestReviewRequest, ctx) {
         const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
@@ -1128,14 +1138,19 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const actor = actorId(viewer);
         const requirement = requirementToDb(req.requirement);
         const versionId = await latestVersionId(sql, area, slug);
+        const note = req.note ?? null;
 
         const created = await sql.begin(async (tx) => {
           const rows: ReviewRequestRow[] = [];
+          // Same reviewer listed twice in one batch collapses to one pass.
+          const seen = new Set<string>();
           for (const target of req.reviewers) {
             const userId = target.userId?.trim() || null;
             if (!userId) {
               throw new ConnectError("each reviewer needs a user id", Code.InvalidArgument);
             }
+            if (seen.has(userId)) continue;
+            seen.add(userId);
             // Registered? (an unregistered id has no user_identity row / FK target)
             const [ident] = await tx<{ github_login: string | null }[]>`
               select github_login from user_identity where user_id = ${userId} limit 1
@@ -1153,22 +1168,35 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 Code.FailedPrecondition,
               );
             }
-            const [row] = await tx<ReviewRequestRow[]>`
-              insert into review_request
-                (area, slug, reviewer_user_id, requirement, requested_by, note)
-              values (${area}, ${slug}, ${userId}, ${requirement}, ${actor}, ${req.note ?? null})
-              returning *,
-                (select github_login from user_identity where user_id = ${userId}) as reviewer_login,
-                (select name from user_identity where user_id = ${userId}) as reviewer_name
-            `;
-            rows.push(row);
-            await logEvent(tx, area, slug, "review-requested", actor, versionId, {
-              request_id: row.id,
-              reviewer_login: ident.github_login ?? undefined,
-              reviewer_user_id: userId,
+
+            const { row, changed } = await upsertOpenReviewRequest(tx, {
+              area,
+              slug,
+              userId,
               requirement,
-              note: req.note ?? undefined,
+              actor,
+              note,
             });
+            rows.push(row);
+            // Log only when something actually changed (new row, or optional →
+            // required upgrade). Pure dedupe of an already-open request is silent.
+            if (changed) {
+              await logEvent(tx, area, slug, "review-requested", actor, versionId, {
+                request_id: row.id,
+                reviewer_login: ident.github_login ?? undefined,
+                reviewer_user_id: userId,
+                requirement: row.requirement,
+                note: row.note ?? undefined,
+              });
+              await dismissActiveApprovalForReviewer(
+                tx,
+                area,
+                slug,
+                userId,
+                actor,
+                versionId,
+              );
+            }
           }
           return rows;
         });
@@ -2064,6 +2092,133 @@ async function logEvent(
     insert into content_event (area, slug, kind, actor, version_id, payload)
     values (${area}, ${slug}, ${kind}, ${actor}, ${versionId}, ${tx.json(payload)})
   `;
+}
+
+/** Soft-dismiss the requested reviewer's active approval, when one exists. */
+async function dismissActiveApprovalForReviewer(
+  tx: Queryable,
+  area: string,
+  slug: string,
+  reviewerUserId: string,
+  actor: string,
+  versionId: string | null,
+): Promise<void> {
+  const [dismissed] = await tx<{ approver_user_id: string }[]>`
+    update content_approval set dismissed_at = now()
+    where area = ${area}
+      and slug = ${slug}
+      and approver_user_id = ${reviewerUserId}
+      and dismissed_at is null
+    returning approver_user_id
+  `;
+  if (dismissed) {
+    await logEvent(tx, area, slug, "approval-dismissed", actor, versionId, {
+      reviewer_user_id: dismissed.approver_user_id,
+    });
+  }
+}
+
+/**
+ * Insert or reconcile an OPEN review request for one (artifact, reviewer).
+ * - No open row → insert.
+ * - Open optional + new required → upgrade requirement in place (and refresh note
+ *   when one was provided).
+ * - Otherwise (same requirement, or required already open) → return existing,
+ *   unchanged. Required never downgrades to optional.
+ */
+async function upsertOpenReviewRequest(
+  tx: Queryable,
+  args: {
+    area: string;
+    slug: string;
+    userId: string;
+    requirement: "required" | "optional";
+    actor: string;
+    note: string | null;
+  },
+): Promise<{ row: ReviewRequestRow; changed: boolean }> {
+  const { area, slug, userId, requirement, actor, note } = args;
+
+  const [existing] = await tx<ReviewRequestRow[]>`
+    select rq.*,
+      ui.github_login as reviewer_login,
+      ui.name as reviewer_name
+    from review_request rq
+    left join user_identity ui on ui.user_id = rq.reviewer_user_id
+    where rq.area = ${area}
+      and rq.slug = ${slug}
+      and rq.reviewer_user_id = ${userId}
+      and rq.status = 'open'
+    for update of rq
+  `;
+
+  if (existing) {
+    const shouldUpgrade =
+      existing.requirement === "optional" && requirement === "required";
+    if (!shouldUpgrade) {
+      return { row: existing, changed: false };
+    }
+    const [row] = await tx<ReviewRequestRow[]>`
+      update review_request
+      set requirement = 'required',
+          note = coalesce(${note}, note)
+      where id = ${existing.id}
+      returning *,
+        (select github_login from user_identity where user_id = ${userId}) as reviewer_login,
+        (select name from user_identity where user_id = ${userId}) as reviewer_name
+    `;
+    return { row, changed: true };
+  }
+
+  try {
+    const [row] = await tx<ReviewRequestRow[]>`
+      insert into review_request
+        (area, slug, reviewer_user_id, requirement, requested_by, note)
+      values (${area}, ${slug}, ${userId}, ${requirement}, ${actor}, ${note})
+      returning *,
+        (select github_login from user_identity where user_id = ${userId}) as reviewer_login,
+        (select name from user_identity where user_id = ${userId}) as reviewer_name
+    `;
+    return { row, changed: true };
+  } catch (err) {
+    // Concurrent insert hit review_request_open_unique — reconcile as above.
+    if (!isUniqueViolation(err)) throw err;
+    const [raced] = await tx<ReviewRequestRow[]>`
+      select rq.*,
+        ui.github_login as reviewer_login,
+        ui.name as reviewer_name
+      from review_request rq
+      left join user_identity ui on ui.user_id = rq.reviewer_user_id
+      where rq.area = ${area}
+        and rq.slug = ${slug}
+        and rq.reviewer_user_id = ${userId}
+        and rq.status = 'open'
+      for update of rq
+    `;
+    if (!raced) throw err;
+    if (!(raced.requirement === "optional" && requirement === "required")) {
+      return { row: raced, changed: false };
+    }
+    const [row] = await tx<ReviewRequestRow[]>`
+      update review_request
+      set requirement = 'required',
+          note = coalesce(${note}, note)
+      where id = ${raced.id}
+      returning *,
+        (select github_login from user_identity where user_id = ${userId}) as reviewer_login,
+        (select name from user_identity where user_id = ${userId}) as reviewer_name
+    `;
+    return { row, changed: true };
+  }
+}
+
+function isUniqueViolation(err: unknown): boolean {
+  return (
+    typeof err === "object" &&
+    err !== null &&
+    "code" in err &&
+    (err as { code: unknown }).code === "23505"
+  );
 }
 
 /**

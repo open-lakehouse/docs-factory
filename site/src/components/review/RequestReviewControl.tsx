@@ -1,9 +1,10 @@
 // "Request review" affordance for a rendered artifact. Opens a dialog where an
 // allowlisted reviewer picks one or more reviewers via a typeahead search over
-// registered, allowlisted users (UserPicker), marks the batch required or
-// optional, and adds an optional note. Reviewers are addressed by stable user
-// id, so the server needn't re-validate free text and a rename never breaks a
-// request.
+// registered, allowlisted users (UserPicker), sets Required/Optional per
+// selected chip, and adds an optional note. Reviewers are addressed by stable
+// user id, so the server needn't re-validate free text and a rename never
+// breaks a request. The create RPC is still batch-scoped on requirement, so
+// submit groups chips into up to two calls.
 //
 // The Reviews menu lists active outcomes for this page — open requests,
 // recorded approvals (including unsolicited ones), and the current
@@ -39,6 +40,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
@@ -51,7 +53,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -70,7 +71,8 @@ export default function RequestReviewControl({
     useReviewInvalidation();
   const [open, setOpen] = useState(false);
   const [reviewers, setReviewers] = useState<UserSummary[]>([]);
-  const [requirement, setRequirement] = useState<Requirement>(Requirement.REQUIRED);
+  /** Per selected reviewer; defaults to REQUIRED when a chip is added. */
+  const [requirements, setRequirements] = useState<Record<string, Requirement>>({});
   const [note, setNote] = useState("");
 
   // Requests already open on this artifact (so the reviewer can see + cancel).
@@ -89,22 +91,28 @@ export default function RequestReviewControl({
     { enabled: reviewActive },
   );
 
-  const submit = useMutation(requestReview, {
-    onSuccess: () => {
-      void invalidateReviewRequests();
-      void invalidateDrafts();
-      void invalidateContentEvents();
-      setReviewers([]);
-      setNote("");
-      setOpen(false);
-    },
-  });
+  const submit = useMutation(requestReview);
   const cancel = useMutation(cancelReviewRequest, {
     onSuccess: () => {
       void invalidateReviewRequests();
       void invalidateDrafts();
     },
   });
+
+  function setReviewerList(next: UserSummary[]) {
+    setReviewers(next);
+    setRequirements((prev) => {
+      const out: Record<string, Requirement> = {};
+      for (const u of next) {
+        out[u.userId] = prev[u.userId] ?? Requirement.REQUIRED;
+      }
+      return out;
+    });
+  }
+
+  function setReviewerRequirement(userId: string, requirement: Requirement) {
+    setRequirements((prev) => ({ ...prev, [userId]: requirement }));
+  }
 
   const summary = draftsData?.drafts.find((d) => d.ref && sameRef(d.ref, contentRef));
   const approvals = summary?.approvals ?? [];
@@ -132,12 +140,37 @@ export default function RequestReviewControl({
 
   async function send() {
     if (reviewers.length === 0) return;
-    await submit.mutateAsync({
-      ref: contentRef,
-      reviewers: reviewers.map((u) => ({ userId: u.userId })),
-      requirement,
-      note: note.trim() || undefined,
-    });
+    const noteText = note.trim() || undefined;
+    const required = reviewers.filter(
+      (u) => (requirements[u.userId] ?? Requirement.REQUIRED) === Requirement.REQUIRED,
+    );
+    const optional = reviewers.filter(
+      (u) => requirements[u.userId] === Requirement.OPTIONAL,
+    );
+    // One requirement per RPC — split into at most two batches.
+    if (required.length > 0) {
+      await submit.mutateAsync({
+        ref: contentRef,
+        reviewers: required.map((u) => ({ userId: u.userId })),
+        requirement: Requirement.REQUIRED,
+        note: noteText,
+      });
+    }
+    if (optional.length > 0) {
+      await submit.mutateAsync({
+        ref: contentRef,
+        reviewers: optional.map((u) => ({ userId: u.userId })),
+        requirement: Requirement.OPTIONAL,
+        note: noteText,
+      });
+    }
+    void invalidateReviewRequests();
+    void invalidateDrafts();
+    void invalidateContentEvents();
+    setReviewers([]);
+    setRequirements({});
+    setNote("");
+    setOpen(false);
   }
 
   return (
@@ -240,45 +273,38 @@ export default function RequestReviewControl({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Request a review</DialogTitle>
-            <DialogDescription>
-              Search for one or more reviewers. Only people who have signed in and
-              are on the reviewer allowlist can be requested. Required requests
-              block release until approved.
-            </DialogDescription>
           </DialogHeader>
 
           <div className="request-review-field">
             <span>Reviewers</span>
             <UserPicker
               value={reviewers}
-              onChange={setReviewers}
+              onChange={setReviewerList}
               multiple
               allowlistedOnly
+              chipVariant="card"
               placeholder="Search reviewers…"
               autoFocus
+              renderChipExtra={(u) => {
+                const required =
+                  (requirements[u.userId] ?? Requirement.REQUIRED) === Requirement.REQUIRED;
+                return (
+                  <label className="user-picker-chip-req">
+                    <span>{required ? "Required" : "Optional"}</span>
+                    <Switch
+                      checked={required}
+                      aria-label={`Required review for ${u.githubLogin || u.userId}`}
+                      onCheckedChange={(on) =>
+                        setReviewerRequirement(
+                          u.userId,
+                          on ? Requirement.REQUIRED : Requirement.OPTIONAL,
+                        )
+                      }
+                    />
+                  </label>
+                );
+              }}
             />
-          </div>
-
-          <div className="request-review-field">
-            <span>Requirement</span>
-            <div className="request-review-requirement">
-              <Button
-                type="button"
-                variant={requirement === Requirement.REQUIRED ? "default" : "outline"}
-                size="sm"
-                onClick={() => setRequirement(Requirement.REQUIRED)}
-              >
-                Required
-              </Button>
-              <Button
-                type="button"
-                variant={requirement === Requirement.OPTIONAL ? "default" : "outline"}
-                size="sm"
-                onClick={() => setRequirement(Requirement.OPTIONAL)}
-              >
-                Optional
-              </Button>
-            </div>
           </div>
 
           <label className="request-review-field">

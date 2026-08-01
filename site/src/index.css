@@ -2911,10 +2911,6 @@ a.blog-row-title:hover { color: var(--accent); }
   color: var(--muted-foreground);
   font-size: 0.78rem;
 }
-.request-review-requirement {
-  display: flex;
-  gap: 0.4rem;
-}
 .request-review-error {
   color: var(--destructive);
   font-size: 0.8rem;
@@ -2935,6 +2931,11 @@ a.blog-row-title:hover { color: var(--accent); }
   flex-wrap: wrap;
   gap: 0.35rem;
 }
+.user-picker-chips.cards {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+}
 .user-picker-chip {
   display: flex;
   align-items: center;
@@ -2943,6 +2944,29 @@ a.blog-row-title:hover { color: var(--accent); }
   border: 1px solid var(--border);
   border-radius: 999px;
   font-size: 0.8rem;
+}
+.user-picker-chip.card {
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  gap: 0.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  background: color-mix(in srgb, var(--foreground) 2.5%, transparent);
+}
+.user-picker-chip.card > :first-child {
+  min-width: 0;
+  flex: 1;
+}
+.user-picker-chip-req {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--muted-foreground);
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
 }
 .user-picker-chip-remove {
   border: 0;
@@ -2977,11 +3001,15 @@ a.blog-row-title:hover { color: var(--accent); }
 }
 .user-picker-result {
   padding: 0.35rem 0.4rem;
-  border-radius: 0.35rem;
+  border-radius: 0.25rem;
   cursor: pointer;
 }
+.user-picker-result:hover {
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
+}
 .user-picker-result.active {
-  background: var(--accent);
+  background: color-mix(in srgb, var(--accent) 13%, transparent);
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--accent) 70%, transparent);
 }
 .user-picker-empty {
   position: absolute;

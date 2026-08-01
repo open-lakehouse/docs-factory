@@ -37,7 +37,12 @@ function GateShell({ children }: { children: ReactNode }) {
 }
 
 export default function AccessGate({ children }: { children: ReactNode }) {
-  const { isLoading, isAuthenticated, isAllowlisted } = useAuth();
+  const { isLoading, isAuthenticated, isAllowlisted, hasScopedGrants } = useAuth();
+  // An external contributor (not allowlisted) is admitted when they hold a scoped
+  // content grant — a review invitation. They see only the content shared with
+  // them (server-enforced per item); every drafts/dashboard/admin surface stays
+  // gated on isAllowlisted, so admission here grants no site-wide access.
+  const admitted = isAllowlisted || hasScopedGrants;
 
   // Neutral splash while the viewer resolves — mirrors StatusMenu's loading
   // placeholder so an already-authenticated reviewer never sees the sign-in wall.
@@ -49,7 +54,7 @@ export default function AccessGate({ children }: { children: ReactNode }) {
 
   // Admitted: render the real app. The dev switcher rides along (no-op in prod)
   // so you can flip persona — e.g. back to anon — from inside the admitted app.
-  if (isAuthenticated && isAllowlisted) {
+  if (isAuthenticated && admitted) {
     return (
       <>
         {children}
@@ -58,8 +63,9 @@ export default function AccessGate({ children }: { children: ReactNode }) {
     );
   }
 
-  // Authenticated but not on the allowlist: known identity, no access yet.
-  if (isAuthenticated && !isAllowlisted) {
+  // Authenticated but neither allowlisted nor holding a scoped grant: known
+  // identity, no access yet.
+  if (isAuthenticated && !admitted) {
     return (
       <GateShell>
         <h1 className="text-lg font-semibold">Access pending</h1>

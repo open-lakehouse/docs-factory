@@ -20,7 +20,7 @@ export default function CommentSidebar({
 }: {
   articleRef: RefObject<HTMLElement | null>;
 }) {
-  const { reviewActive } = useAuth();
+  const { canComment } = useAuth();
   const {
     contentRef,
     threads,
@@ -45,7 +45,7 @@ export default function CommentSidebar({
       if (n.id) found.push({ id: n.id, text: n.textContent ?? "" });
     });
     setHeadings(found);
-  }, [articleRef, reviewActive]);
+  }, [articleRef, canComment]);
 
   // `headings` doubles as a readiness signal that the article DOM is mounted
   // and queryable — without it, articleRef.current alone wouldn't re-sort.
@@ -58,7 +58,7 @@ export default function CommentSidebar({
     [orphaned, headings, articleRef],
   );
 
-  if (!reviewActive || !contentRef || displayMode !== "rail") return null;
+  if (!canComment || !contentRef || displayMode !== "rail") return null;
 
   const headingText = new Map(headings.map((h) => [h.id, h.text]));
   const sectionLabelFor = (slug?: string) => (slug && headingText.get(slug)) || "";

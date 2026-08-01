@@ -82,7 +82,7 @@ export default function SelectionLayer({
    * mouse listeners + fixed float). Defaults to true for single-page routes. */
   isActive?: boolean;
 }) {
-  const { reviewActive } = useAuth();
+  const { canComment } = useAuth();
   const { setPending } = useSelectionState();
   const [float, setFloat] = useState<FloatUI | null>(null);
   const [menu, setMenu] = useState<FloatUI | null>(null);
@@ -90,7 +90,7 @@ export default function SelectionLayer({
   floatRef.current = float;
 
   useEffect(() => {
-    if (!isActive || !reviewActive) return;
+    if (!isActive || !canComment) return;
     const article = articleRef.current;
     if (!article) return;
     const art = article;
@@ -218,9 +218,9 @@ export default function SelectionLayer({
       window.removeEventListener("scroll", reposition, true);
       window.removeEventListener("resize", reposition);
     };
-  }, [articleRef, isActive, reviewActive]);
+  }, [articleRef, isActive, canComment]);
 
-  if (!isActive || !reviewActive) return null;
+  if (!isActive || !canComment) return null;
 
   async function commit(ui: FloatUI) {
     const anchor = await ui.build();

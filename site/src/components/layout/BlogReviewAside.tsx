@@ -25,7 +25,11 @@ export default function BlogReviewAside({
   articleRef,
   contentRef,
 }: BlogReviewAsideProps) {
-  const { reviewActive } = useAuth();
+  // canComment includes an external contributor's scoped grant, so the comment
+  // rail mounts for them. The Activity timeline inside PageReviewRail self-gates
+  // on reviewActive and stays hidden for externals (reviewer-only), so widening
+  // here lights up comments without exposing the review-workflow timeline.
+  const { canComment } = useAuth();
   const { openCount, displayMode } = useReview();
   const { pending } = useSelectionState();
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -35,7 +39,7 @@ export default function BlogReviewAside({
     if (pending && showComments) setDrawerOpen(true);
   }, [pending, showComments]);
 
-  if (!reviewActive) return null;
+  if (!canComment) return null;
 
   const reviewContent = (
     <PageReviewRail articleRef={articleRef} contentRef={contentRef} />

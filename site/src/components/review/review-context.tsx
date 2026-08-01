@@ -88,10 +88,13 @@ export function ReviewProvider({
    * tabs don't each hit the API. Defaults to true for the single-page routes. */
   isActive?: boolean;
 }) {
-  const { reviewActive } = useAuth();
+  // canComment folds in an external contributor's scoped grant (they comment in
+  // normal mode) on top of an allowlisted reviewer's active review mode. Keep
+  // reviewActive too: mark-thread-seen is a reviewer-only affordance.
+  const { canComment, reviewActive } = useAuth();
   // An inactive tab is only "live" enough to keep its cache warm; it neither
   // polls nor streams.
-  const live = reviewActive && isActive;
+  const live = canComment && isActive;
   const { commentsKey, invalidateComments, queryClient } = useReviewInvalidation();
   // Poll so a reviewer sees other reviewers' comments arrive without a reload.
   // Gated on `reviewActive` (allowlisted AND Site review mode on) — a reviewer
@@ -107,7 +110,7 @@ export function ReviewProvider({
     {
       // An inactive tab still fetches once (warm cache for instant tab switch)
       // but only the active tab keeps polling / refetching on focus.
-      enabled: reviewActive,
+      enabled: canComment,
       refetchInterval: live ? pollInterval : false,
       refetchIntervalInBackground: false,
       refetchOnWindowFocus: live,
@@ -212,6 +215,8 @@ export function ReviewProvider({
   const selectThread = useCallback(
     (id: string | null) => {
       setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 }));
+      // Mark-read is a reviewer affordance (markThreadSeen is allowlist-gated
+      // server-side); skip it for an external contributor to avoid a denied RPC.
       if (id === null || !reviewActive) return;
       // Mark read on open; the mutation's onMutate owns the optimistic unread
       // clear + rollback (see the markThreadSeen useMutation above).

@@ -3,6 +3,8 @@
 // getViewer(ctx) and enforce with requireAllowlisted / requireMaintainer.
 import { Code, ConnectError, createContextKey, type Interceptor } from "@connectrpc/connect";
 import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
+import { hasContentGrant } from "../allowlist.js";
+import type { Queryable } from "../db.js";
 import { anonymousViewer, type AuthProvider } from "./provider.js";
 
 const kViewer = createContextKey<Viewer>(anonymousViewer(), { description: "review.viewer" });
@@ -29,6 +31,25 @@ export function requireAllowlisted(ctx: Parameters<typeof getViewer>[0]): Viewer
     throw new ConnectError("reviewer access required", Code.PermissionDenied);
   }
   return v;
+}
+
+/**
+ * Require access to one piece of content: allowlisted globally, OR holding a
+ * scoped grant (a non-cancelled review_request addressed to the viewer for this
+ * `(area, slug)`). The async, per-item analogue of requireAllowlisted — used by
+ * the handlers an external contributor may call on the content shared with them
+ * (view, list/create comments, approve, per-artifact timeline). `area` is
+ * db-form ('blogs'|'docs').
+ */
+export async function requireContentAccess(
+  ctx: Parameters<typeof getViewer>[0],
+  sql: Queryable,
+  area: string,
+  slug: string,
+): Promise<Viewer> {
+  const v = getViewer(ctx);
+  if (await hasContentGrant(sql, v, area, slug)) return v;
+  throw new ConnectError("content access required", Code.PermissionDenied);
 }
 
 /** Require a maintainer; throws otherwise. */

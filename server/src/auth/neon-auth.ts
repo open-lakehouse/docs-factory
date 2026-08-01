@@ -27,7 +27,7 @@
 // unauthenticated request simply sees published content.
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { db } from "../db.js";
-import { hasAdminRole, lookupRole } from "../allowlist.js";
+import { hasAdminRole, hasAnyContentGrant, lookupRole } from "../allowlist.js";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 // GitHub @handle / verified-email resolution + persistence into user_identity.
@@ -264,10 +264,19 @@ export function createNeonAuthProvider(): AuthProvider {
         lookupRole(db(), { userId: identity.userId }),
         readSiteAdmin(identity.userId),
       ]);
-      const ident = { userId: identity.userId, name: identity.name, isSiteAdmin };
+      const effRole = elevateRoleForAdmin(role, isSiteAdmin);
+      const isAllowlisted = effRole === Role.REVIEWER || effRole === Role.MAINTAINER;
+      // For a non-allowlisted viewer, a scoped content grant (a non-cancelled
+      // review_request addressed to them) lets the client AccessGate admit them
+      // to the shared content. Allowlisted viewers are admitted regardless, so
+      // skip the lookup for them.
+      const hasScopedGrants = isAllowlisted
+        ? false
+        : await hasAnyContentGrant(db(), identity.userId);
+      const ident = { userId: identity.userId, name: identity.name, isSiteAdmin, hasScopedGrants };
       // Authenticated but neither allowlisted nor admin: known identity,
-      // published-only access.
-      return viewer(identity.login, elevateRoleForAdmin(role, isSiteAdmin), ident);
+      // published-only access plus any content shared with them.
+      return viewer(identity.login, effRole, ident);
     },
   };
 }

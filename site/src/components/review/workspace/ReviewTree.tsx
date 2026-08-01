@@ -101,12 +101,16 @@ function StatusCountStrip({ counts }: { counts: Map<StatusBucket, number> }) {
 function LeafIcon({ status }: { status: LeafStatus }) {
   const effective = effectiveStatus(status.frontmatterStatus, status.reviewState);
   const label = effectiveStatusLabel(effective);
+  // Titled span so the status shows as a native hover tooltip: lucide icons
+  // don't render a `title` prop as an SVG <title> child. aria-label on the icon
+  // supplies the accessible name.
   return (
-    <FileText
-      className={cn("h-3.5 w-3.5 shrink-0", effectiveStatusIconClass(effective))}
-      aria-label={label}
-      title={label}
-    />
+    <span title={label} className="inline-flex">
+      <FileText
+        className={cn("h-3.5 w-3.5 shrink-0", effectiveStatusIconClass(effective))}
+        aria-label={label}
+      />
+    </span>
   );
 }
 
@@ -125,11 +129,9 @@ function RequestedReviewIndicator({ count = 1 }: { count?: number }) {
   const label =
     count === 1 ? "Review requested from you" : `${count} reviews requested from you`;
   return (
-    <UserCheck
-      className="h-3.5 w-3.5 shrink-0 text-primary"
-      title={label}
-      aria-label={label}
-    />
+    <span title={label} className="inline-flex">
+      <UserCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-label={label} />
+    </span>
   );
 }
 

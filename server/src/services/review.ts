@@ -499,6 +499,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       async listDrafts(req: ListDraftsRequest, ctx) {
         const viewer = getViewer(ctx);
         const sql = db();
+        // Scoped-grant match for an external contributor. Computed in JS so the
+        // query binds a plain boolean + a guaranteed-string user id — never a
+        // bare NULL parameter, which postgres.js cannot type-infer here and which
+        // corrupts the bind (08P01 "insufficient data left in message"), 500ing
+        // every listDrafts. Empty string is an unmatchable id when absent.
+        const grantUserId = viewer.userId?.trim() || "";
+        const canHaveGrant = grantUserId.length > 0;
         const areaFilter =
           req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
 
@@ -575,15 +582,16 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               )
               -- An external contributor sees the specific content shared with
               -- them: a non-cancelled review_request addressed to their user id.
-              -- Bind NULL (not a sentinel string) for an id-less/anonymous viewer
-              -- and guard the subquery on it — a NUL-byte sentinel ('\0') is an
-              -- invalid UTF-8 text parameter and 500s every anonymous listDrafts.
-              or exists (
-                select 1 from review_request rq
-                where ${viewer.userId ?? null}::text is not null
-                  and rq.area = k.area and rq.slug = k.slug
-                  and rq.reviewer_user_id = ${viewer.userId ?? null}
-                  and rq.status <> 'cancelled'
+              -- Gated on a JS boolean so an id-less/anonymous viewer skips it
+              -- entirely; the bound user id is always a plain string (never NULL).
+              or (
+                ${canHaveGrant}
+                and exists (
+                  select 1 from review_request rq
+                  where rq.area = k.area and rq.slug = k.slug
+                    and rq.reviewer_user_id = ${grantUserId}
+                    and rq.status <> 'cancelled'
+                )
               )
             )
           order by

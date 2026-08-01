@@ -181,6 +181,7 @@ export default function InlineReviewSurface({
             sectionLabel={headings.get(selected.root?.anchorSlug ?? "")}
             onChange={refetch}
             onClose={() => selectThread(null)}
+            onCollapse={() => selectThread(null)}
             compact
           />
         )}

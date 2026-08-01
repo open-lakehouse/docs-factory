@@ -3,11 +3,11 @@
 // the query string so a workspace layout is shareable and back/forward-navigable:
 //
 //   /review?tabs=docs:slug:project:bucket,docs:slug:project:bucket#md,…&active=<token>&thread=<id>&anchor=<slug>
-//   /review?tabs=overview#pipeline,overview#product&active=overview#pipeline
+//   /review?tabs=overview#pipeline,overview#product,overview#comments&active=overview#pipeline
 //
 // Opening a sidebar ITEM opens a GROUP of tabs — for content, the rendered page
 // plus companion views (`.md` twin, each runnable script); for Overview, the
-// blog pipeline + ProductChanges panels. Every content tab token is
+// blog pipeline + ProductChanges + latest-comments panels. Every content tab token is
 // `refToParam(ref)` optionally suffixed with `#<view>`; Overview tokens use the
 // synthetic group key `overview`. Tabs sharing a groupKey belong to one item.
 // The rendered content view has no suffix, so old shared links (bare ref tokens)
@@ -83,7 +83,7 @@ interface TabsValue {
   openTab: (ref: ContentRef, intent?: OpenIntent) => void;
   /** Activate a specific view of an item (opening it if not already open). */
   openView: (ref: ContentRef, view: TabView, intent?: OpenIntent) => void;
-  /** Open the Overview item (blog pipeline + product changes). */
+  /** Open the Overview item (pipeline + product + comments). */
   openOverview: (view?: OverviewView) => void;
   /** Close a single view tab. */
   closeTab: (token: string) => void;

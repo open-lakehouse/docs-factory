@@ -53,9 +53,6 @@ export default function ReviewPageChrome({
           />
         )}
         {!reviewActive && fm.status && <FrontmatterStatusBadge status={fm.status} />}
-        {isBlog && fm.series && (
-          <span className="review-page-chrome-series">{fm.series}</span>
-        )}
         {isBlog && fm.author && <AuthorBadge byline={fm.author} />}
         {reviewActive && lastUpdated && (
           <span

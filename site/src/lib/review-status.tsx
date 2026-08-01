@@ -30,6 +30,8 @@ export const REVIEW_STATE_LABEL: Record<number, string> = {
 /** Extra badge class for a review state tint (ready / idea / needs-review). */
 export function reviewStateBadgeClass(state: ReviewState): string {
   switch (state) {
+    case ReviewState.RELEASED:
+      return "status-badge-released";
     case ReviewState.APPROVED:
       return "status-badge-ready";
     case ReviewState.CHANGES_REQUESTED:

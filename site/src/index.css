@@ -253,13 +253,6 @@ body {
   gap: 0.45rem 0.75rem;
   min-width: 0;
 }
-.review-page-chrome-series {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--accent);
-}
 .review-page-chrome-muted {
   font-size: 0.78rem;
   color: var(--muted-foreground);
@@ -561,11 +554,80 @@ body {
   padding: 0.6rem 0.75rem;
   border: 1px solid #1f232b;
   border-radius: 0.45rem;
+  overflow: hidden;
+}
+.latest-comment-card { padding: 0; }
+.latest-comment-requested-icon {
+  flex: none;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-top: 0.15rem;
+  color: var(--primary);
 }
 .review-dash-comment-target { font-size: 0.8rem; text-decoration: none; color: var(--muted-foreground); }
 .review-dash-comment-target:hover { color: var(--accent); }
 .review-dash-comment-body { margin: 0.3rem 0 0; font-size: 0.9rem; }
 .review-dash-comment-author { font-weight: 600; }
+.latest-comment-row {
+  display: flex;
+  width: 100%;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.latest-comment-row:hover,
+.latest-comment-row:focus-visible {
+  background: color-mix(in srgb, var(--accent) 7%, transparent);
+}
+.latest-comment-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+.latest-comment-avatar { flex: none; margin-top: 0.1rem; }
+.latest-comment-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.latest-comment-meta {
+  display: flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+}
+.latest-comment-meta strong { color: var(--foreground); font-size: 0.85rem; }
+.latest-comment-meta time { margin-left: auto; white-space: nowrap; }
+.latest-comment-body {
+  overflow: hidden;
+  color: var(--foreground);
+  font-size: 0.9rem;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.latest-comment-location {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.2rem;
+  overflow: hidden;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.latest-comment-location .review-dash-resolved {
+  flex: none;
+  margin: 0 0 0 auto;
+}
 .review-dash-resolved {
   display: inline-block;
   margin-top: 0.35rem;
@@ -985,6 +1047,51 @@ body {
   align-items: center;
   gap: 0.1rem;
   flex: none;
+}
+.review-thread-action {
+  position: relative;
+  border: 1px solid transparent;
+}
+.review-thread-action:hover,
+.review-thread-action:focus-visible {
+  border-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+  background: color-mix(in srgb, var(--foreground) 9%, transparent);
+}
+.review-thread-action::after {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  width: max-content;
+  max-width: 10rem;
+  padding: 0.25rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 0.3rem;
+  color: var(--foreground);
+  background: var(--popover, var(--card));
+  box-shadow: 0 4px 12px rgb(0 0 0 / 28%);
+  content: attr(data-tooltip);
+  font-size: 0.68rem;
+  font-weight: 500;
+  line-height: 1.2;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-2px);
+  transition:
+    opacity 80ms ease,
+    transform 80ms ease;
+  visibility: hidden;
+}
+.review-thread-action:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 550ms;
+  visibility: visible;
+}
+.review-thread-action:focus-visible::after {
+  opacity: 1;
+  transform: translateY(0);
+  visibility: visible;
 }
 /* Compact: the resolve + close icons float over the top-right corner of the
    scrolling thread. Small rounded chips (panel background) keep the glyphs
@@ -2394,6 +2501,11 @@ a.blog-row-title:hover { color: var(--accent); }
   background: color-mix(in srgb, #4f9c5a 12%, transparent);
   border-color: color-mix(in srgb, #4f9c5a 30%, transparent);
 }
+.status-badge-released {
+  color: #f4fff6;
+  background: #3f844b;
+  border-color: #3f844b;
+}
 /* Idea: earliest, not-yet-committed stage. A distinct amber so reviewers can
  * spot posts still open to structural feedback at a glance. */
 .status-badge-idea {
@@ -3106,6 +3218,15 @@ a.blog-row-title:hover { color: var(--accent); }
   color: var(--accent);
   margin: 0 0 0.5rem;
 }
+.prose .review-article-series {
+  margin: 0 0 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted-foreground);
+}
 .blog-post-meta {
   display: flex;
   flex-wrap: wrap;
@@ -3662,12 +3783,6 @@ a.model-ref-label:hover {
   margin: 0 0 0.35rem;
 }
 .review-comments-head .review-comments-title { margin-bottom: 0; }
-.review-add-section {
-  flex: none;
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-}
-.review-add-section-form { margin-top: 0.6rem; }
 .review-empty {
   margin: 0.75rem 0;
   font-size: 0.8rem;
@@ -4029,6 +4144,15 @@ a.version-diff-label:hover {
   align-items: baseline;
   gap: 0.5rem;
   min-width: 0;
+}
+.review-thread-reopen {
+  flex: none;
+  margin-left: auto;
+  align-self: center;
+  color: var(--muted-foreground);
+}
+.review-thread-reopen:hover {
+  color: var(--foreground);
 }
 /* Unread indicator — a small accent dot before the section label when the
    thread has comments newer than the viewer's read watermark. */

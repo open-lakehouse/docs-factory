@@ -269,11 +269,6 @@ export default function ReviewControls({
         badge
       ) : null}
       {actionControl && <div className="review-controls-actions">{actionControl}</div>}
-      {approvals.length > 0 && (
-        <p className="review-controls-hint muted">
-          Approved by {approvals.map((a) => a.approverLogin || a.approverUserId).join(", ")}.
-        </p>
-      )}
       {state === ReviewState.APPROVED && isMaintainer && openRequired > 0 && (
         <p className="review-controls-hint muted">
           Blocked: {openRequired} required review

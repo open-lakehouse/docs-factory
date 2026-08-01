@@ -1,4 +1,4 @@
-// The workspace's left navigation: Overview (blog pipeline + product rollup)
+// The workspace's left navigation: Overview (pipeline + product + comments)
 // above a file-explorer-style tree of all reviewable content. Branches
 // (project → bucket, blog series) expand/collapse; leaves open the page in a
 // middle-pane tab. Built from build-time content (tree-model.ts), expansion

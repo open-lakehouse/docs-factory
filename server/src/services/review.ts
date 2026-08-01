@@ -575,11 +575,14 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
               )
               -- An external contributor sees the specific content shared with
               -- them: a non-cancelled review_request addressed to their user id.
-              -- "\0" is an unmatchable sentinel for an id-less/anonymous viewer.
+              -- Bind NULL (not a sentinel string) for an id-less/anonymous viewer
+              -- and guard the subquery on it — a NUL-byte sentinel ('\0') is an
+              -- invalid UTF-8 text parameter and 500s every anonymous listDrafts.
               or exists (
                 select 1 from review_request rq
-                where rq.area = k.area and rq.slug = k.slug
-                  and rq.reviewer_user_id = ${viewer.userId ?? "\0"}
+                where ${viewer.userId ?? null}::text is not null
+                  and rq.area = k.area and rq.slug = k.slug
+                  and rq.reviewer_user_id = ${viewer.userId ?? null}
                   and rq.status <> 'cancelled'
               )
             )
@@ -1286,8 +1289,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             ? await requireContentAccess(ctx, sql, area, slug)
             : requireAllowlisted(ctx);
         // Inbox ("requests to me") is an exact user-id match — a GitHub rename
-        // never breaks it. "\0" is an unmatchable sentinel for an id-less viewer.
-        const mineUserId = req.mine ? (viewer.userId ?? "\0") : null;
+        // never breaks it. An empty string is an unmatchable sentinel for an
+        // id-less viewer (no user_id can be ''), avoiding the invalid-UTF-8
+        // NUL-byte parameter while keeping "id-less mine => no rows" semantics.
+        const mineUserId = req.mine ? (viewer.userId || "") : null;
         const byMe = req.byMe ? actorId(viewer) : null;
         const rows = await sql<ReviewRequestRow[]>`
           select rq.*, ui.github_login as reviewer_login, ui.name as reviewer_name

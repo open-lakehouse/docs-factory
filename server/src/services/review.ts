@@ -101,6 +101,7 @@ import {
   authInterceptor,
   getViewer,
   requireAllowlisted,
+  requireContentAccess,
   requireMaintainer,
   requireSiteAdmin,
 } from "../auth/context.js";
@@ -572,6 +573,15 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 l.frontmatter_status = ${READY_STATUS}
                 and coalesce(rv.published, false) = true
               )
+              -- An external contributor sees the specific content shared with
+              -- them: a non-cancelled review_request addressed to their user id.
+              -- "\0" is an unmatchable sentinel for an id-less/anonymous viewer.
+              or exists (
+                select 1 from review_request rq
+                where rq.area = k.area and rq.slug = k.slug
+                  and rq.reviewer_user_id = ${viewer.userId ?? "\0"}
+                  and rq.status <> 'cancelled'
+              )
             )
           order by
             k.area,
@@ -604,7 +614,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         `;
         const isPublic =
           row.frontmatter_status === READY_STATUS && revops?.published === true;
-        if (!isPublic) requireAllowlisted(ctx);
+        // Non-public content is visible to allowlisted viewers AND to an external
+        // contributor holding a scoped grant on this exact (area, slug).
+        if (!isPublic) await requireContentAccess(ctx, sql, area, req.ref.slug);
 
         // The rendered HTML lives in the SPA bundle; this RPC authorizes access
         // and returns the version. Body delivery is wired when the bundle is
@@ -617,11 +629,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       async listComments(req: ListCommentsRequest, ctx) {
-        // Comments are a reviewer artifact: allowlist-only, for all content.
-        const viewer = requireAllowlisted(ctx);
+        // Comments are visible to allowlisted viewers on any content, and to an
+        // external contributor on the content shared with them (scoped grant).
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         const sql = db();
         const area = areaToDb(req.ref.area);
+        const viewer = await requireContentAccess(ctx, sql, area, req.ref.slug);
         const viewerId = viewer.userId ?? viewer.login;
         const rows = await sql<CommentRow[]>`
           select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
@@ -726,13 +739,15 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       async createComment(req: CreateCommentRequest, ctx) {
-        const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         if (!req.bodyMd.trim()) {
           throw new ConnectError("body_md is required", Code.InvalidArgument);
         }
         const sql = db();
         const area = areaToDb(req.ref.area);
+        // An external contributor may comment on the content shared with them;
+        // allowlisted reviewers on any content. Authorship keys on viewer.userId.
+        const viewer = await requireContentAccess(ctx, sql, area, req.ref.slug);
 
         // Nesting is capped so the reply tree stays legible and indentation
         // bounded. A root is depth 0; a reply is parent.depth + 1. Rejecting at
@@ -920,14 +935,18 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       // The effective state then DERIVES to APPROVED once preconditions are met —
       // there is no state write here.
       async recordApproval(req: RecordApprovalRequest, ctx) {
-        const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
-        if (!viewer.userId) {
-          throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
-        }
         const sql = db();
         const area = areaToDb(req.ref.area);
         const slug = req.ref.slug;
+        // Approving is the normal review action for both allowlisted reviewers and
+        // an external contributor on the content shared with them. It flips the
+        // reviewer's own open request to `satisfied`, which still grants access
+        // (only a cancelled request revokes it), so the external keeps view+comment.
+        const viewer = await requireContentAccess(ctx, sql, area, slug);
+        if (!viewer.userId) {
+          throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
+        }
         const actor = actorId(viewer);
         const userId = viewer.userId;
         const login = viewer.login ?? actor;
@@ -1161,19 +1180,22 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 Code.FailedPrecondition,
               );
             }
+            // A registered user who is NOT on the allowlist is invited as an
+            // EXTERNAL contributor: the open request itself is the scoped grant
+            // that lets them view+comment this one artifact (see hasContentGrant),
+            // without any site-wide reviewer access. External invites are forced
+            // to `optional` so they never block release (only open REQUIRED
+            // requests gate releaseContent) — in a mixed batch the external target
+            // is silently coerced, allowlisted targets keep the requested level.
             const role = await lookupRole(tx, { userId });
-            if (role === Role.ANONYMOUS) {
-              throw new ConnectError(
-                `reviewer ${ident.github_login ?? userId} is not on the allowlist`,
-                Code.FailedPrecondition,
-              );
-            }
+            const external = role === Role.ANONYMOUS;
+            const effRequirement = external ? "optional" : requirement;
 
             const { row, changed } = await upsertOpenReviewRequest(tx, {
               area,
               slug,
               userId,
-              requirement,
+              requirement: effRequirement,
               actor,
               note,
             });
@@ -1253,10 +1275,16 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       // List review requests: scope to one artifact (`ref`), the viewer's inbox
       // (`mine`), the viewer's outbox (`by_me`), and/or open-only. Allowlist-gated.
       async listReviewRequests(req: ListReviewRequestsRequest, ctx) {
-        const viewer = requireAllowlisted(ctx);
         const sql = db();
         const area = req.ref ? areaToDb(req.ref.area) : null;
         const slug = req.ref?.slug ?? null;
+        // Scoped to one artifact: an external contributor may list its requests
+        // (to see who else is reviewing the content shared with them). The
+        // cross-content `mine`/`by_me` views stay allowlist-only.
+        const viewer =
+          req.ref && area && slug
+            ? await requireContentAccess(ctx, sql, area, slug)
+            : requireAllowlisted(ctx);
         // Inbox ("requests to me") is an exact user-id match — a GitHub rename
         // never breaks it. "\0" is an unmatchable sentinel for an id-less viewer.
         const mineUserId = req.mine ? (viewer.userId ?? "\0") : null;
@@ -1280,10 +1308,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       // Version add/revise markers are NOT stored here — the client derives them
       // from content_version. Legacy content-revised rows are filtered out.
       async listContentEvents(req: ListContentEventsRequest, ctx) {
-        requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         const sql = db();
         const area = areaToDb(req.ref.area);
+        // Per-artifact timeline: allowlisted on any content, external contributor
+        // on the content shared with them.
+        await requireContentAccess(ctx, sql, area, req.ref.slug);
         const limit = Math.min(Math.max(req.limit ?? CONTENT_EVENTS_DEFAULT, 1), CONTENT_EVENTS_MAX);
         const rows = await sql<ContentEventRow[]>`
           select * from content_event

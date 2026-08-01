@@ -14,7 +14,7 @@ export default function HeadingCommentAffordance({
   articleRef: RefObject<HTMLElement | null>;
   isActive?: boolean;
 }) {
-  const { reviewActive } = useAuth();
+  const { canComment } = useAuth();
   const { setPending } = useSelectionState();
   const [heading, setHeading] = useState<HTMLElement | null>(null);
 
@@ -53,13 +53,13 @@ export default function HeadingCommentAffordance({
       article.removeEventListener("pointerover", onOver);
       article.removeEventListener("pointerout", onOut);
     };
-  }, [articleRef, isActive, reviewActive]);
+  }, [articleRef, isActive, canComment]);
 
   if (!isActive || !heading) return null;
 
   const text = (heading.textContent ?? "").trim();
 
-  const action = reviewActive ? (
+  const action = canComment ? (
     <button
       type="button"
       className="heading-affordance-btn"

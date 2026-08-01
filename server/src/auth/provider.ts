@@ -37,6 +37,13 @@ export interface ViewerIdentity {
    * additionally gates the admin panel + allowlist management.
    */
   isSiteAdmin?: boolean;
+  /**
+   * Whether this viewer holds a scoped content grant despite not being on the
+   * allowlist (an external contributor). Only the client-side AccessGate reads
+   * it; per-item server authorization is the source of truth. Set only for a
+   * non-allowlisted viewer — allowlisted viewers are admitted regardless.
+   */
+  hasScopedGrants?: boolean;
 }
 
 /** An authenticated viewer at the given role (allowlisted iff not anonymous). */
@@ -49,6 +56,7 @@ export function viewer(login: string, role: Role, identity: ViewerIdentity = {})
     userId: identity.userId,
     name: identity.name,
     isSiteAdmin: identity.isSiteAdmin ?? false,
+    hasScopedGrants: identity.hasScopedGrants ?? false,
   });
 }
 

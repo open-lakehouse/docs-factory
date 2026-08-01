@@ -42,6 +42,14 @@ export interface AuthState {
    */
   isSiteAdmin: boolean;
   /**
+   * An external contributor: NOT allowlisted, but holding a scoped grant on at
+   * least one piece of content (a review invitation). Such a viewer is admitted
+   * by AccessGate and may view+comment the shared content, but sees no drafts
+   * dashboard and no maintainer actions. Per-item access is enforced server-side;
+   * this flag only drives client admission + comment chrome on the shared item.
+   */
+  hasScopedGrants: boolean;
+  /**
    * The allowlisted viewer's view mode. Always "normal" for non-allowlisted
    * viewers (who never reach the site anyway — see AccessGate).
    */
@@ -53,6 +61,16 @@ export interface AuthState {
    * anonymous viewers, for reviewers browsing normally, and in anon-preview.
    */
   reviewActive: boolean;
+  /**
+   * The gate the per-page COMMENT surfaces check (thread rail, selection layer,
+   * heading affordance, inline surface, listComments query). True when reviewActive
+   * OR when an external contributor holds a scoped grant — the latter can view and
+   * comment on the content shared with them, but has no drafts dashboard, no
+   * release/approve-transition machinery, and no cross-content timeline (those
+   * stay gated on reviewActive / isAllowlisted). The server authorizes each item,
+   * so this can be viewer-scoped without knowing the current contentRef.
+   */
+  canComment: boolean;
   /**
    * True when an allowlisted viewer is previewing the site as an anonymous
    * visitor would see it. content-visibility reads this to narrow the visible
@@ -67,9 +85,11 @@ const AuthContext = createContext<AuthState>({
   isAllowlisted: false,
   isMaintainer: false,
   isSiteAdmin: false,
+  hasScopedGrants: false,
   viewMode: "normal",
   setViewMode: () => {},
   reviewActive: false,
+  canComment: false,
   previewAsAnon: false,
 });
 
@@ -135,9 +155,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isAllowlisted,
     isMaintainer: viewer?.role === Role.MAINTAINER,
     isSiteAdmin: viewer?.isSiteAdmin ?? false,
+    hasScopedGrants: viewer?.hasScopedGrants ?? false,
     viewMode,
     setViewMode,
     reviewActive: viewMode === "review",
+    // An external contributor (scoped grant, not allowlisted) comments in "normal"
+    // mode — there is no review-mode toggle for them — so canComment is true
+    // whenever review chrome is active OR they hold a grant.
+    canComment: viewMode === "review" || (viewer?.hasScopedGrants ?? false),
     previewAsAnon: viewMode === "anon-preview",
   };
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;

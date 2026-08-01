@@ -80,6 +80,11 @@ export default function RequestReviewControl({
   const [reviewers, setReviewers] = useState<UserSummary[]>([]);
   /** Per selected reviewer; defaults to REQUIRED when a chip is added. */
   const [requirements, setRequirements] = useState<Record<string, Requirement>>({});
+  // External contributors: registered users NOT on the allowlist, invited to
+  // view+comment this one artifact. They're always invited as OPTIONAL (they
+  // never block release) — the server coerces regardless, but we send optional
+  // so the client stays consistent and shows no required/optional switch.
+  const [externals, setExternals] = useState<UserSummary[]>([]);
   const [note, setNote] = useState("");
 
   useEffect(
@@ -187,14 +192,23 @@ export default function RequestReviewControl({
     (summary?.openRequiredRequestCount ?? 0) === 0;
 
   async function send() {
-    if (reviewers.length === 0) return;
+    if (reviewers.length === 0 && externals.length === 0) return;
     const noteText = note.trim() || undefined;
     const required = reviewers.filter(
       (u) => (requirements[u.userId] ?? Requirement.REQUIRED) === Requirement.REQUIRED,
     );
-    const optional = reviewers.filter(
-      (u) => requirements[u.userId] === Requirement.OPTIONAL,
-    );
+    // Allowlisted reviewers marked optional, plus every external invitee — both
+    // go out as OPTIONAL. Dedupe so a user listed in both pickers isn't sent twice.
+    const optionalIds = new Set<string>();
+    const optional: UserSummary[] = [];
+    for (const u of [
+      ...reviewers.filter((u) => requirements[u.userId] === Requirement.OPTIONAL),
+      ...externals,
+    ]) {
+      if (optionalIds.has(u.userId)) continue;
+      optionalIds.add(u.userId);
+      optional.push(u);
+    }
     // One requirement per RPC — split into at most two batches.
     if (required.length > 0) {
       await submit.mutateAsync({
@@ -217,6 +231,7 @@ export default function RequestReviewControl({
     void invalidateContentEvents();
     setReviewers([]);
     setRequirements({});
+    setExternals([]);
     setNote("");
     setOpen(false);
   }
@@ -390,7 +405,7 @@ export default function RequestReviewControl({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Request a review</DialogTitle>
+            <DialogTitle>Request a review or invite a contributor</DialogTitle>
           </DialogHeader>
 
           <div className="request-review-field">
@@ -425,6 +440,22 @@ export default function RequestReviewControl({
             />
           </div>
 
+          <div className="request-review-field">
+            <span>External contributors</span>
+            <UserPicker
+              value={externals}
+              onChange={setExternals}
+              multiple
+              chipVariant="card"
+              placeholder="Search registered users…"
+            />
+            <p className="request-review-hint">
+              Invite a registered user who isn't a reviewer to view and comment on
+              this content. They see only what's shared with them and never block
+              its release.
+            </p>
+          </div>
+
           <label className="request-review-field">
             <span>Note (optional)</span>
             <Textarea
@@ -443,7 +474,12 @@ export default function RequestReviewControl({
             <Button variant="outline" onClick={() => setOpen(false)} disabled={submit.isPending}>
               Cancel
             </Button>
-            <Button onClick={() => void send()} disabled={submit.isPending || reviewers.length === 0}>
+            <Button
+              onClick={() => void send()}
+              disabled={
+                submit.isPending || (reviewers.length === 0 && externals.length === 0)
+              }
+            >
               {submit.isPending ? "Requesting…" : "Request"}
             </Button>
           </DialogFooter>

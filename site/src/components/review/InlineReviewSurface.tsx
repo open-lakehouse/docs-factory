@@ -40,7 +40,7 @@ export default function InlineReviewSurface({
   /** Per-tab quote-highlight namespace, passed through to QuoteHighlights. */
   highlightKey?: string;
 }) {
-  const { reviewActive } = useAuth();
+  const { canComment } = useAuth();
   const {
     contentRef,
     threads,
@@ -68,7 +68,7 @@ export default function InlineReviewSurface({
       if (n.id) map.set(n.id, n.textContent ?? "");
     });
     setHeadings(map);
-  }, [articleRef, reviewActive]);
+  }, [articleRef, canComment]);
 
   const showProsePending = displayMode === "inline" && pending?.kind === "prose";
   const showSectionPending = displayMode === "inline" && pending?.kind === "section";
@@ -148,7 +148,7 @@ export default function InlineReviewSurface({
     selectNonce,
   ]);
 
-  if (!isActive || !reviewActive || !contentRef) return null;
+  if (!isActive || !canComment || !contentRef) return null;
 
   const panel =
     placement && (showInlinePending || showProseThread) ? (

@@ -18,6 +18,7 @@ import {
   listDrafts,
   listContentEvents,
   recordApproval,
+  dismissApproval,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import {
   EventKind,
@@ -39,6 +40,7 @@ import {
   Trash2,
   UserRoundPlus,
   UsersRound,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -119,6 +121,13 @@ export default function RequestReviewControl({
 
   const submit = useMutation(requestReview);
   const approve = useMutation(recordApproval, {
+    onSuccess: () => {
+      void invalidateReviewRequests();
+      void invalidateDrafts();
+      void invalidateContentEvents();
+    },
+  });
+  const dismiss = useMutation(dismissApproval, {
     onSuccess: () => {
       void invalidateReviewRequests();
       void invalidateDrafts();
@@ -276,6 +285,7 @@ export default function RequestReviewControl({
           ) : null}
           {approvals.map((a) => {
             const who = a.approverLogin || a.approverUserId || "someone";
+            const isMine = !!viewer?.userId && a.approverUserId === viewer.userId;
             return (
               <div key={a.id} className="flex items-center gap-2 px-2 py-1.5">
                 <Check
@@ -283,6 +293,18 @@ export default function RequestReviewControl({
                   className="size-3.5 shrink-0 text-emerald-500"
                 />
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">{who}</span>
+                {isMine && (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    className="size-7 shrink-0 justify-center p-0"
+                    disabled={dismiss.isPending}
+                    aria-label="Dismiss my approval"
+                    title="Dismiss my approval"
+                    onSelect={() => void dismiss.mutateAsync({ ref: contentRef })}
+                  >
+                    <X aria-hidden className="size-3.5" />
+                  </DropdownMenuItem>
+                )}
               </div>
             );
           })}

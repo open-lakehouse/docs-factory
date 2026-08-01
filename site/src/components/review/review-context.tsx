@@ -255,6 +255,8 @@ export function ReviewProvider({
         if (!c?.path || c.path !== path) continue;
         if (region && c.region && c.region !== region) continue;
         if (!t.root?.id) continue;
+        // Match prose highlights: hide resolved code anchors until focused.
+        if (t.resolved && t.root.id !== activeThreadId) continue;
         out.push({
           line: c.line,
           endLine: c.endLine && c.endLine >= c.line ? c.endLine : c.line,

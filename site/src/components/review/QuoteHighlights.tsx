@@ -1,12 +1,14 @@
-// QuoteHighlights — paints a highlight over every prose thread's quoted range
-// in the rendered article and makes those ranges clickable "backlinks" to their
-// thread. Uses the CSS Custom Highlight API (Highlight + CSS.highlights), so it
-// never mutates the compiled-MDX DOM: it registers Ranges under named highlights
-// that ::highlight() styles. Because painted highlights are not hit-testable, a
-// click listener on the article hit-tests the pointer against the resolved
-// ranges and selects the matching thread. Ranges are resolved with
-// locateSelector (exact, then prefix-disambiguated). If a quote no longer
-// resolves, it's simply skipped here — the thread still lives in the sidebar.
+// QuoteHighlights — paints a highlight over every open prose thread's quoted
+// range in the rendered article and makes those ranges clickable "backlinks"
+// to their thread. Resolved threads stay unpainted until hovered/selected, so
+// closed feedback doesn't keep tinting the page. Uses the CSS Custom Highlight
+// API (Highlight + CSS.highlights), so it never mutates the compiled-MDX DOM:
+// it registers Ranges under named highlights that ::highlight() styles. Because
+// painted highlights are not hit-testable, a click listener on the article
+// hit-tests the pointer against the resolved ranges and selects the matching
+// thread. Ranges are resolved with locateSelector (exact, then
+// prefix-disambiguated). If a quote no longer resolves, it's simply skipped
+// here — the thread still lives in the sidebar.
 import { useEffect, type RefObject } from "react";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
@@ -58,8 +60,12 @@ export default function QuoteHighlights({
     for (const t of threads) {
       const range = resolveRange(t, article);
       if (!range) continue;
+      const focused = t.root?.id === focusedThreadId;
+      // Resolved threads stay quiet in the article until hovered/selected —
+      // then they get the focus highlight so you can still find the target.
+      if (t.resolved && !focused) continue;
       if (t.root?.id) byThread.push({ id: t.root.id, range });
-      if (t.root?.id === focusedThreadId) focusRanges.push(range);
+      if (focused) focusRanges.push(range);
       else allRanges.push(range);
     }
 

@@ -227,7 +227,13 @@ function useShikiLines(code: string): string[] | null {
     void (async () => {
       try {
         const { codeToHtml } = await import("shiki");
-        const html = await codeToHtml(code, { lang: "python", theme: "github-dark-dimmed" });
+        const html = await codeToHtml(code, {
+          lang: "python",
+          themes: {
+            light: "github-light",
+            dark: "github-dark-dimmed",
+          },
+        });
         if (!alive) return;
         // Shiki wraps each source line in <span class="line">…</span>; pull the
         // inner HTML of each so we can place one line per commentable row.

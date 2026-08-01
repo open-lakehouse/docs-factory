@@ -70,11 +70,14 @@
   --body: rgb(15 27 45 / 0.86);
   --muted-foreground: #64748b;
 
-  /* --- Console code palette (same in both themes) --- */
-  --code-bg: #0a0f16;
-  --code-surface: #12181f;
-  --code-fg: #e6ebf2;
-  --code-border: #232a31;
+  /* --- Light code palette --- */
+  --code-bg: #f6f8fa;
+  --code-surface: #eef2f6;
+  --code-fg: #24292f;
+  --code-border: #d8dee4;
+  --inline-code-bg: #f1f4f7;
+  --inline-code-fg: #334155;
+  --inline-code-border: #e2e7ec;
 
   --radius: 0.5rem;
   /* Clearance for #anchor jumps: the topbar is sticky, so a heading scrolled to
@@ -104,6 +107,13 @@
   --heading: #f5f8fc;
   --body: rgb(230 235 242 / 0.84);
   --muted-foreground: #8b939c;
+  --code-bg: #0a0f16;
+  --code-surface: #12181f;
+  --code-fg: #e6ebf2;
+  --code-border: #232a31;
+  --inline-code-bg: var(--code-surface);
+  --inline-code-fg: var(--code-fg);
+  --inline-code-border: var(--code-border);
 }
 
 /* Per-project accent switch (set data-accent on .shell) */
@@ -758,6 +768,11 @@ body {
   padding: 0.12em 0.38em;
   border-radius: 0.3rem;
 }
+.prose :not(pre) > code {
+  color: var(--inline-code-fg);
+  background: var(--inline-code-bg);
+  border: 1px solid var(--inline-code-border);
+}
 /* Code blocks — build-time Shiki <pre> wrapped by our chrome
    (src/components/code-block.tsx). Sleek, DevHub-style: no header bar, just a
    clean surface with a floating copy button in the top-right. The highlighted
@@ -924,6 +939,9 @@ body {
   border: 0;
   border-radius: 0;
   background: transparent !important;
+  /* Plain-text fences have no Shiki inline token colors. Override Tailwind
+     Typography's light-on-dark `pre` color with the active code palette. */
+  color: var(--code-fg);
   padding: 1rem 1.1rem;
   overflow-x: auto;
   font-size: 0.9rem;
@@ -932,6 +950,12 @@ body {
   /* Container so the inline-review row can size to the VISIBLE code width
      (100cqi) instead of the grid track set by the widest code line. */
   container-type: inline-size;
+}
+/* Shiki emits the light token color as the inline default and the dark color
+   in --shiki-dark. Switch that variable on with the app's class-based theme. */
+:root.dark .prose .cb-pre.shiki,
+:root.dark .prose .cb-pre.shiki span {
+  color: var(--shiki-dark) !important;
 }
 .prose .cb-pre code {
   background: none;
@@ -4564,15 +4588,15 @@ a.review-author:hover span {
 
 /* Script view (workspace tab): a served .py rendered line-by-line so reviewers
    can comment on any line. Same structure as .source-lines; the code text is
-   Shiki-highlighted per line, so it sits on the highlighter's dark surface. */
+   Shiki-highlighted per line and follows the active light/dark code palette. */
 .script-lines {
   margin: 0;
   padding: 0.5rem 0;
   list-style: none;
   font-family: var(--font-mono);
   font-size: 0.8rem;
-  background: #22272e; /* github-dark-dimmed surface, matches build-time blocks */
-  color: #adbac7;
+  background: var(--code-bg);
+  color: var(--code-fg);
   min-height: 100%;
 }
 .script-line {
@@ -4582,7 +4606,7 @@ a.review-author:hover span {
   padding: 0.1rem 0.75rem;
 }
 .script-line:hover {
-  background: color-mix(in oklab, white 6%, transparent);
+  background: color-mix(in oklab, var(--foreground) 6%, transparent);
 }
 .script-line-comment {
   visibility: hidden;
@@ -4611,6 +4635,9 @@ a.review-author:hover span {
 .script-line-text {
   white-space: pre;
   overflow-wrap: normal;
+}
+:root.dark .script-line-text span {
+  color: var(--shiki-dark) !important;
 }
 
 /* Review status + transition controls are shadcn Badge + Button (allowlisted

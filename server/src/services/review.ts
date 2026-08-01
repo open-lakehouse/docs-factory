@@ -945,16 +945,19 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       // that reviewer (per-reviewer, not artifact-level), and logs `approved-by`.
       // The effective state then DERIVES to APPROVED once preconditions are met —
       // there is no state write here.
+      //
+      // Approving is ALLOWLIST-ONLY. An external contributor may view+comment on
+      // the content shared with them, but not drive its review state: their
+      // approval must never flip an artifact to APPROVED (deriveReviewState counts
+      // any active approval, and dismissApproval is allowlist-only, so an external
+      // approval would also be irretractable). External contributors are
+      // comment-only reviewers.
       async recordApproval(req: RecordApprovalRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         const sql = db();
         const area = areaToDb(req.ref.area);
         const slug = req.ref.slug;
-        // Approving is the normal review action for both allowlisted reviewers and
-        // an external contributor on the content shared with them. It flips the
-        // reviewer's own open request to `satisfied`, which still grants access
-        // (only a cancelled request revokes it), so the external keeps view+comment.
-        const viewer = await requireContentAccess(ctx, sql, area, slug);
         if (!viewer.userId) {
           throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
         }
@@ -1290,12 +1293,19 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const area = req.ref ? areaToDb(req.ref.area) : null;
         const slug = req.ref?.slug ?? null;
         // Scoped to one artifact: an external contributor may list its requests
-        // (to see who else is reviewing the content shared with them). The
-        // cross-content `mine`/`by_me` views stay allowlist-only.
+        // (to know their own review is being tracked on the content shared with
+        // them). The cross-content `mine`/`by_me` views stay allowlist-only.
         const viewer =
           req.ref && area && slug
             ? await requireContentAccess(ctx, sql, area, slug)
             : requireAllowlisted(ctx);
+        // An external contributor (scoped grant, not allowlisted) must not learn
+        // the identities of the OTHER reviewers assigned to the shared artifact —
+        // that leaks internal reviewer logins/names beyond what the invite implies.
+        // They see their own request rows in full; everyone else's are redacted to
+        // just the row (reviewer_login/name null, user id withheld) below.
+        const redactOthers = !viewer.isAllowlisted;
+        const viewerUserId = viewer.userId || "";
         // Inbox ("requests to me") is an exact user-id match — a GitHub rename
         // never breaks it. An empty string is an unmatchable sentinel for an
         // id-less viewer (no user_id can be ''), avoiding the invalid-UTF-8
@@ -1312,8 +1322,15 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             and (${req.openOnly ?? false} = false or rq.status = 'open')
           order by rq.id desc
         `;
+        const visible = redactOthers
+          ? rows.map((r) =>
+              r.reviewer_user_id === viewerUserId
+                ? r
+                : { ...r, reviewer_user_id: "", reviewer_login: null, reviewer_name: null },
+            )
+          : rows;
         return create(ListReviewRequestsResponseSchema, {
-          requests: rows.map(reviewRequestFromRow),
+          requests: visible.map(reviewRequestFromRow),
         });
       },
 

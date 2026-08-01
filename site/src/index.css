@@ -386,6 +386,9 @@ body {
   height: 0.7rem;
 }
 .theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: 1px solid #2a2f38;
   border-radius: 0.3rem;
@@ -394,6 +397,11 @@ body {
   color: #9ca3af;
   font-family: var(--font-mono);
   font-size: 0.8rem;
+}
+.theme-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  stroke-width: 1.8;
 }
 .theme-toggle:hover {
   border-color: var(--accent);
@@ -772,6 +780,12 @@ body {
   color: var(--inline-code-fg);
   background: var(--inline-code-bg);
   border: 1px solid var(--inline-code-border);
+}
+/* Tailwind Typography wraps inline code in literal backticks; the tinted chip
+   already reads as code, so drop them. */
+.prose code::before,
+.prose code::after {
+  content: none;
 }
 /* Code blocks — build-time Shiki <pre> wrapped by our chrome
    (src/components/code-block.tsx). Sleek, DevHub-style: no header bar, just a

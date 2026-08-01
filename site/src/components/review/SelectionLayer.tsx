@@ -237,8 +237,12 @@ export default function SelectionLayer({
     if (!anchor) return;
     const url = new URL(window.location.href);
     url.hash = anchor.anchorSlug;
+    // Narrow on kind explicitly: `code` carries path/line, `prose` a quote, and
+    // `section` neither (the heading hash alone is the link). Treating the
+    // non-prose case as `code` would read path/line off a `section` anchor and
+    // produce `?code=undefined:undefined`.
     if (anchor.kind === "prose") url.searchParams.set("sel", anchor.selector.quote);
-    else url.searchParams.set("code", `${anchor.path}:${anchor.line}`);
+    else if (anchor.kind === "code") url.searchParams.set("code", `${anchor.path}:${anchor.line}`);
     void copyToClipboard(url.toString());
   }
 

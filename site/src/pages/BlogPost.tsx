@@ -54,9 +54,6 @@ export default function BlogPost() {
               {frontmatter.title && <h1>{frontmatter.title}</h1>}
               <div className="blog-post-meta">
                 {frontmatter.author && <AuthorBadge byline={frontmatter.author} />}
-                {frontmatter.status && (
-                  <span className="blog-post-status">{frontmatter.status}</span>
-                )}
                 <BlogReadingTime articleRef={articleRef} />
               </div>
             </header>

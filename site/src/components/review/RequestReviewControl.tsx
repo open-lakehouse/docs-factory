@@ -3,26 +3,41 @@
 // registered, allowlisted users (UserPicker), marks the batch required or
 // optional, and adds an optional note. Reviewers are addressed by stable user
 // id, so the server needn't re-validate free text and a rename never breaks a
-// request. Open requests + "Request review" live in one compact dropdown.
-// Gated on reviewActive, like ReviewControls.
-import { useState, type ReactNode } from "react";
+// request.
+//
+// The Reviews menu lists active outcomes for this page — open requests,
+// recorded approvals (including unsolicited ones), and the current
+// changes-requested actor when that state is active. Gated on reviewActive.
+import { useMemo, useState, type ReactNode } from "react";
 import { useMutation, useQuery } from "@connectrpc/connect-query";
 import {
   requestReview,
   cancelReviewRequest,
   listReviewRequests,
+  listDrafts,
+  listContentEvents,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import {
+  EventKind,
   Requirement,
   RequestStatus,
+  ReviewState,
   type ContentRef,
   type UserSummary,
 } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
-import { useReviewInvalidation } from "../../lib/review-queries";
-import { ReviewRequestBadge } from "../../lib/review-status";
+import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
 import UserPicker from "./UserPicker";
-import { Plus, Trash2, UsersRound } from "lucide-react";
+import {
+  Check,
+  CircleDashed,
+  MessageSquareWarning,
+  Plus,
+  ShieldAlert,
+  Trash2,
+  UserRoundPlus,
+  UsersRound,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -51,7 +66,8 @@ export default function RequestReviewControl({
   children?: ReactNode;
 }) {
   const { reviewActive, isMaintainer, viewer } = useAuth();
-  const { invalidateReviewRequests, invalidateDrafts } = useReviewInvalidation();
+  const { invalidateReviewRequests, invalidateDrafts, invalidateContentEvents } =
+    useReviewInvalidation();
   const [open, setOpen] = useState(false);
   const [reviewers, setReviewers] = useState<UserSummary[]>([]);
   const [requirement, setRequirement] = useState<Requirement>(Requirement.REQUIRED);
@@ -63,11 +79,21 @@ export default function RequestReviewControl({
     { ref: contentRef, openOnly: true },
     { enabled: reviewActive },
   );
+  // Approvals live on the draft summary (active / non-dismissed), including
+  // reviewers who approved without an open request.
+  const { data: draftsData } = useQuery(listDrafts, {}, { enabled: reviewActive });
+  // Changes-requested is a state transition; the latest actor comes from events.
+  const { data: eventsData } = useQuery(
+    listContentEvents,
+    { ref: contentRef },
+    { enabled: reviewActive },
+  );
 
   const submit = useMutation(requestReview, {
     onSuccess: () => {
       void invalidateReviewRequests();
       void invalidateDrafts();
+      void invalidateContentEvents();
       setReviewers([]);
       setNote("");
       setOpen(false);
@@ -80,10 +106,29 @@ export default function RequestReviewControl({
     },
   });
 
+  const summary = draftsData?.drafts.find((d) => d.ref && sameRef(d.ref, contentRef));
+  const approvals = summary?.approvals ?? [];
+  const existing = data?.requests ?? [];
+  // When the artifact is in changes-requested, surface who last flipped it —
+  // that actor may never have had an open "review request" row.
+  const latestChangesRequest = useMemo(() => {
+    if (summary?.reviewState !== ReviewState.CHANGES_REQUESTED) return undefined;
+    const candidates = (eventsData?.events ?? []).filter(
+      (e) => e.kind === EventKind.STATE_CHANGES_REQUESTED,
+    );
+    if (candidates.length === 0) return undefined;
+    return candidates.reduce((best, e) => {
+      const a = e.createdAt?.seconds ?? 0n;
+      const b = best.createdAt?.seconds ?? 0n;
+      return a >= b ? e : best;
+    });
+  }, [eventsData?.events, summary?.reviewState]);
+
   if (!reviewActive) return null;
 
-  const existing = data?.requests ?? [];
   const actor = viewer?.userId ?? viewer?.login ?? "";
+  const signalCount =
+    existing.length + approvals.length + (latestChangesRequest ? 1 : 0);
 
   async function send() {
     if (reviewers.length === 0) return;
@@ -101,43 +146,86 @@ export default function RequestReviewControl({
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="xs" className="gap-1.5 px-2">
             <UsersRound aria-hidden className="size-3.5" />
-            Reviews{existing.length > 0 ? ` · ${existing.length}` : ""}
+            Reviews{signalCount > 0 ? ` · ${signalCount}` : ""}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-64">
           <DropdownMenuLabel className="text-xs text-muted-foreground">
-            Open review requests
+            Reviews
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          {existing.length === 0 ? (
+          {signalCount === 0 ? (
             <p className="px-2 py-1.5 text-xs text-muted-foreground">None yet.</p>
-          ) : (
-            existing.map((r) => {
-              // Requester or maintainer can cancel (mirrors the server check).
-              const canCancel = isMaintainer || r.requestedBy === actor;
-              const reviewer = r.reviewerLogin || r.reviewerName || "someone";
-              return (
-                <div key={r.id} className="flex items-center gap-2 px-2 py-1.5">
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                    {reviewer}
-                  </span>
-                  <ReviewRequestBadge requirement={r.requirement} status={r.status} />
-                  {canCancel && r.status === RequestStatus.OPEN && (
-                    <DropdownMenuItem
-                      variant="destructive"
-                      className="size-7 shrink-0 justify-center p-0"
-                      disabled={cancel.isPending}
-                      aria-label={`Remove review request for ${reviewer}`}
-                      title="Remove review request"
-                      onSelect={() => void cancel.mutateAsync({ requestId: r.id })}
-                    >
-                      <Trash2 aria-hidden className="size-3.5" />
-                    </DropdownMenuItem>
-                  )}
-                </div>
-              );
-            })
+          ) : null}
+          {approvals.map((a) => {
+            const who = a.approverLogin || a.approverUserId || "someone";
+            return (
+              <div key={a.id} className="flex items-center gap-2 px-2 py-1.5">
+                <Check
+                  aria-label="Approved"
+                  title="Approved"
+                  className="size-3.5 shrink-0 text-emerald-500"
+                />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">{who}</span>
+              </div>
+            );
+          })}
+
+          {latestChangesRequest && (
+            <div className="flex items-center gap-2 px-2 py-1.5">
+              <MessageSquareWarning
+                aria-label="Changes requested"
+                title="Changes requested"
+                className="size-3.5 shrink-0 text-amber-500"
+              />
+              <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                {latestChangesRequest.actor || "someone"}
+              </span>
+            </div>
           )}
+
+          {existing.map((r) => {
+            // Requester or maintainer can cancel (mirrors the server check).
+            const canCancel = isMaintainer || r.requestedBy === actor;
+            const reviewer = r.reviewerLogin || r.reviewerName || "someone";
+            const required = r.requirement === Requirement.REQUIRED;
+            return (
+              <div key={r.id} className="flex items-center gap-2 px-2 py-1.5">
+                <UserRoundPlus
+                  aria-label="Review requested"
+                  title="Review requested"
+                  className="size-3.5 shrink-0 text-sky-500"
+                />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  {reviewer}
+                </span>
+                {required ? (
+                  <ShieldAlert
+                    aria-label="Required review, open"
+                    title="Required review · open"
+                    className="size-3.5 shrink-0 text-amber-500"
+                  />
+                ) : (
+                  <CircleDashed
+                    aria-label="Optional review, open"
+                    title="Optional review · open"
+                    className="size-3.5 shrink-0 text-muted-foreground"
+                  />
+                )}
+                {canCancel && r.status === RequestStatus.OPEN && (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    className="size-7 shrink-0 justify-center p-0"
+                    disabled={cancel.isPending}
+                    aria-label={`Remove review request for ${reviewer}`}
+                    title="Remove review request"
+                    onSelect={() => void cancel.mutateAsync({ requestId: r.id })}
+                  >
+                    <Trash2 aria-hidden className="size-3.5" />
+                  </DropdownMenuItem>
+                )}
+              </div>
+            );
+          })}
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => setOpen(true)}>
             <Plus aria-hidden className="size-3.5" />

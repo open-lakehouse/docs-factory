@@ -25,11 +25,17 @@ interface DocAsideProps {
 }
 
 export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
-  const { reviewActive } = useAuth();
+  // canComment includes an external contributor's scoped grant, so the comment
+  // rail mounts for them too — mirroring BlogReviewAside. Gating on reviewActive
+  // instead (reviewer-only) left externals able to select-to-comment via
+  // ReviewSurfaces but with no rail to see existing threads. The Activity
+  // timeline inside PageReviewRail self-gates on reviewActive and stays hidden
+  // for externals. "On this page" nav is unconditional.
+  const { canComment } = useAuth();
   const { openCount, displayMode } = useReview();
   const { pending } = useSelectionState();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const showComments = reviewActive && displayMode === "rail";
+  const showComments = canComment && displayMode === "rail";
 
   useEffect(() => {
     if (pending && showComments) setDrawerOpen(true);
@@ -40,7 +46,7 @@ export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
       {/* Desktop: sticky right column. Hidden on narrow screens, where review
           opens in the Sheet drawer below. */}
       <div className="review-rail max-[960px]:hidden">
-        {reviewActive ? (
+        {canComment ? (
           <PageReviewRail articleRef={articleRef} contentRef={contentRef} />
         ) : null}
         <div className="review-rail-body">

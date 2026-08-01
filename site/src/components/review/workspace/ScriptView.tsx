@@ -77,7 +77,7 @@ function ScriptViewBody({
   isActive: boolean;
   articleRef: React.RefObject<HTMLElement | null>;
 }) {
-  const { reviewActive } = useAuth();
+  const { canComment: canCommentContent } = useAuth();
   const { setPending } = useSelectionState();
   const slot = useRightPaneSlot();
 
@@ -96,7 +96,11 @@ function ScriptViewBody({
     { ref: contentRef, path: entry.gitPath },
     { retry: false },
   );
-  const canComment = reviewActive && Boolean(source?.fileHash);
+  // Derive from the auth-context comment gate (reviewActive OR a scoped grant),
+  // not reviewActive alone — so the name no longer shadows a different notion of
+  // canComment and an external contributor with a grant would get script comment
+  // affordances too. Still requires a registered source (fileHash) to anchor.
+  const canCommentScript = canCommentContent && Boolean(source?.fileHash);
 
   // One normalized source string drives BOTH the line list and highlighting, so
   // line numbers, comment affordances, and highlighted tokens stay aligned.
@@ -109,7 +113,7 @@ function ScriptViewBody({
   const [selecting, setSelecting] = useState(false);
 
   async function commentOnLine(lineNo: number, lineText: string) {
-    if (!canComment) return;
+    if (!canCommentScript) return;
     setSelecting(true);
     setPending({
       kind: "code",
@@ -146,7 +150,7 @@ function ScriptViewBody({
                 const lineNo = i + 1;
                 return (
                   <li key={lineNo} className="script-line">
-                    {canComment && (
+                    {canCommentScript && (
                       <button
                         type="button"
                         className="script-line-comment"

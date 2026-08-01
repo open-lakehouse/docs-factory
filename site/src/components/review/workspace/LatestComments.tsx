@@ -97,11 +97,19 @@ export default function LatestComments() {
                     </span>
                   </span>
                   {requested && (
-                    <UserCheck
-                      className="latest-comment-requested-icon"
-                      aria-label="Review requested from you"
+                    // Wrap in a titled span: lucide icons don't render a `title`
+                    // prop as an SVG <title> child, so a native hover tooltip
+                    // needs the attribute on a wrapping element. aria-label on the
+                    // icon supplies the accessible name.
+                    <span
+                      className="latest-comment-requested"
                       title="Review requested from you"
-                    />
+                    >
+                      <UserCheck
+                        className="latest-comment-requested-icon"
+                        aria-label="Review requested from you"
+                      />
+                    </span>
                   )}
                 </button>
               </li>

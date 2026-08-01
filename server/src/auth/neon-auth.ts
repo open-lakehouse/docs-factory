@@ -258,21 +258,23 @@ export function createNeonAuthProvider(): AuthProvider {
       if (!token) return anonymousViewer();
       const identity = await resolveIdentity(token);
       if (!identity) return anonymousViewer();
-      // Allowlist role keys on the stable user id; the admin flag is read fresh
-      // from neon_auth. Both key on the same trusted user id, so run in parallel.
-      const [role, isSiteAdmin] = await Promise.all([
+      // Role, admin flag, and the scoped-grant existence check all key on the
+      // same trusted user id and are independent, so resolve them in one parallel
+      // batch rather than adding a serial round-trip on the auth hot path (this
+      // runs for every authenticated request). The grant result is only consulted
+      // for a non-allowlisted viewer (allowlisted viewers are admitted regardless);
+      // computing it eagerly costs one already-in-flight query, not a fourth trip.
+      const [role, isSiteAdmin, anyGrant] = await Promise.all([
         lookupRole(db(), { userId: identity.userId }),
         readSiteAdmin(identity.userId),
+        hasAnyContentGrant(db(), identity.userId),
       ]);
       const effRole = elevateRoleForAdmin(role, isSiteAdmin);
       const isAllowlisted = effRole === Role.REVIEWER || effRole === Role.MAINTAINER;
-      // For a non-allowlisted viewer, a scoped content grant (a non-cancelled
-      // review_request addressed to them) lets the client AccessGate admit them
-      // to the shared content. Allowlisted viewers are admitted regardless, so
-      // skip the lookup for them.
-      const hasScopedGrants = isAllowlisted
-        ? false
-        : await hasAnyContentGrant(db(), identity.userId);
+      // A scoped content grant (a non-cancelled review_request addressed to them)
+      // lets the client AccessGate admit a non-allowlisted viewer to the shared
+      // content; allowlisted viewers are admitted regardless, so it never applies.
+      const hasScopedGrants = isAllowlisted ? false : anyGrant;
       const ident = { userId: identity.userId, name: identity.name, isSiteAdmin, hasScopedGrants };
       // Authenticated but neither allowlisted nor admin: known identity,
       // published-only access plus any content shared with them.

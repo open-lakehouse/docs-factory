@@ -198,8 +198,11 @@ export default function RequestReviewControl({
       (u) => (requirements[u.userId] ?? Requirement.REQUIRED) === Requirement.REQUIRED,
     );
     // Allowlisted reviewers marked optional, plus every external invitee — both
-    // go out as OPTIONAL. Dedupe so a user listed in both pickers isn't sent twice.
-    const optionalIds = new Set<string>();
+    // go out as OPTIONAL. Dedupe against the REQUIRED batch as well as within the
+    // optional list, so a user selected as both a required reviewer AND an
+    // external isn't sent two contradictory requests (REQUIRED wins — a required
+    // ask is never downgraded by also appearing in the external picker).
+    const optionalIds = new Set<string>(required.map((u) => u.userId));
     const optional: UserSummary[] = [];
     for (const u of [
       ...reviewers.filter((u) => requirements[u.userId] === Requirement.OPTIONAL),

@@ -25,12 +25,16 @@ concurrency:
 
 permissions:
   contents: read
+  # Mint a GitHub Actions OIDC token so register-versions.mjs can authenticate to
+  # the review Function (repo + environment pinned server-side; no tracked secret).
+  id-token: write
 
 jobs:
   register:
     runs-on: ubuntu-latest
-    # Targets prod (REVIEW_API_URL, REVIEW_BUILD_SECRET) → the `production`
-    # environment, whose main-only branch restriction is the real gate. See
+    # Targets prod (REVIEW_API_URL) → the `production` environment, whose main-only
+    # branch restriction is the real gate. Running in this environment also stamps
+    # the OIDC token's `environment: production` claim the Function pins on. See
     # runbook §3.
     environment: production
     steps:
@@ -38,15 +42,14 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/bun-setup
-      # Guard the prod secrets BEFORE the build, so a missing secret fails fast
-      # rather than after building the manifest (mirrors deploy-function.yml).
-      - name: Guard required secrets
+      # Guard the API URL BEFORE the build, so a missing config fails fast rather
+      # than after building the manifest (mirrors deploy-function.yml).
+      - name: Guard required config
         env:
           API_URL: ${{ secrets.REVIEW_API_URL }}
-          BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          if [ -z "${API_URL:-}" ] || [ -z "${BUILD_SECRET:-}" ]; then
-            echo "::error::REVIEW_API_URL / REVIEW_BUILD_SECRET secrets are not set — provision prod first (docs/deploy/runbook.md)."
+          if [ -z "${API_URL:-}" ]; then
+            echo "::error::REVIEW_API_URL secret is not set — provision prod first (docs/deploy/runbook.md)."
             exit 1
           fi
       - name: Build version manifest (stamps the real main sha)
@@ -56,7 +59,6 @@ jobs:
       - name: Register versions with the review API
         env:
           API_URL: ${{ secrets.REVIEW_API_URL }}
-          BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
           cd server && bun install --frozen-lockfile
           bun run scripts/register-versions.mjs

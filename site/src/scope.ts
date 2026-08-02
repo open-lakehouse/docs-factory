@@ -15,8 +15,8 @@
 import { useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import type { ContentPage } from "./content";
-import { effectiveRefIds } from "./graph";
 import { getExplainElement } from "./explain";
+import { effectiveRefIds } from "./graph";
 
 export const ALL_SCOPE = "open-lakehouse";
 
@@ -79,19 +79,17 @@ function expandedAnchors(scope: Scope): Set<string> {
     const el = getExplainElement(id);
     if (!el) continue;
     for (const rel of el.outgoing()) {
-      if (SCOPE_EDGE_KINDS.has(rel.kind)) out.add(String(rel.target.id));
+      if (rel.kind && SCOPE_EDGE_KINDS.has(rel.kind)) out.add(String(rel.target.id));
     }
     for (const rel of el.incoming()) {
-      if (SCOPE_EDGE_KINDS.has(rel.kind)) out.add(String(rel.source.id));
+      if (rel.kind && SCOPE_EDGE_KINDS.has(rel.kind)) out.add(String(rel.source.id));
     }
   }
   return out;
 }
 
 // Precompute per scope so the predicate stays O(refs).
-const anchorSets = new Map<string, Set<string>>(
-  SCOPES.map((s) => [s.id, expandedAnchors(s)]),
-);
+const anchorSets = new Map<string, Set<string>>(SCOPES.map((s) => [s.id, expandedAnchors(s)]));
 
 /**
  * Is this content page in the given scope? A page matches when its `project`
@@ -114,7 +112,10 @@ export function elementInScope(id: string, scopeId: string | null | undefined): 
 }
 
 /** Filter content pages by the active scope. */
-export function filterByScope<T extends ContentPage>(pages: T[], scopeId: string | null | undefined): T[] {
+export function filterByScope<T extends ContentPage>(
+  pages: T[],
+  scopeId: string | null | undefined,
+): T[] {
   if (!isRealScope(scopeId)) return pages;
   return pages.filter((p) => inScope(p, scopeId));
 }

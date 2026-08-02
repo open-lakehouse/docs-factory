@@ -19,9 +19,14 @@
 import { Code, ConnectError } from "@connectrpc/connect";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
-// GitHub's OIDC issuer is a fixed, well-known constant. Its JWKS lives at the
-// standard discovery path under the issuer origin.
+// GitHub's OIDC issuer is a fixed, well-known constant.
 const GITHUB_OIDC_ISSUER = "https://token.actions.githubusercontent.com";
+
+// GitHub's JWKS endpoint. NOTE: it is `/.well-known/jwks`, NOT `.../jwks.json`
+// (the `.json` path 404s) — this is the `jwks_uri` from the issuer's
+// openid-configuration. Getting this wrong makes createRemoteJWKSet fail to fetch
+// keys and every verification throw, surfacing as "invalid GitHub OIDC token".
+export const GITHUB_OIDC_JWKS_URL = `${GITHUB_OIDC_ISSUER}/.well-known/jwks`;
 
 // The audience we mint the token with on the runner and verify here. A fixed
 // string (not the Function URL, which the register script may not know) — GitHub
@@ -45,7 +50,7 @@ export interface GithubOidcClaims {
 let jwks: ReturnType<typeof createRemoteJWKSet> | undefined;
 function getJwks() {
   if (!jwks) {
-    jwks = createRemoteJWKSet(new URL(`${GITHUB_OIDC_ISSUER}/.well-known/jwks.json`));
+    jwks = createRemoteJWKSet(new URL(GITHUB_OIDC_JWKS_URL));
   }
   return jwks;
 }
@@ -83,8 +88,11 @@ export async function verifyGithubOidcWith(
       environment: typeof payload.environment === "string" ? payload.environment : undefined,
       ref: typeof payload.ref === "string" ? payload.ref : undefined,
     };
-  } catch {
-    // Signature/exp/iss/aud failure, or a raw opaque token that isn't a JWT.
+  } catch (err) {
+    // Signature/exp/iss/aud failure, JWKS fetch failure, or a raw opaque token
+    // that isn't a JWT. Log the reason (no token) so a rejection is diagnosable
+    // in the Function logs — the caller only sees a generic "invalid" error.
+    console.warn(`[github-oidc] token verification failed: ${err instanceof Error ? `${err.name}: ${err.message}` : String(err)}`);
     return null;
   }
 }

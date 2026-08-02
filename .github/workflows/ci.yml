@@ -105,9 +105,12 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/bun-setup
+      - name: Install site deps
+        run: cd site && bun install --frozen-lockfile
+      - name: Typecheck site
+        run: cd site && bun run typecheck
       - name: Build site (content + review surface)
-        run: |
-          cd site && bun install --frozen-lockfile && bun run build
+        run: cd site && bun run build
 
   review-api:
     # Proto → Connect RPC contract + the Neon Function backend. Lints the
@@ -149,3 +152,22 @@ jobs:
       - name: Validate LikeC4 architecture model
         run: |
           cd architecture && bun install --frozen-lockfile && bun run check
+
+  lint-js:
+    # Biome lint + format check across the TS/JS projects. Each project's
+    # biome.json extends the root // config; `biome ci` is the read-only,
+    # non-writing gate (lint + formatting). The pinned @biomejs/biome devDep
+    # makes `bunx biome` resolve the identical version locally, in pre-commit,
+    # and here.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/bun-setup
+      - name: Biome check (site)
+        run: cd site && bun install --frozen-lockfile && bunx biome ci
+      - name: Biome check (server)
+        run: cd server && bun install --frozen-lockfile && bunx biome ci
+      - name: Biome check (emit)
+        run: cd emit && bun install --frozen-lockfile && bunx biome ci

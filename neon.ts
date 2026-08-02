@@ -33,10 +33,12 @@ export default defineConfig({
         env: {
           AUTH_MODE: "neon",
           NODE_ENV: "production",
-          // ALLOWED_ORIGIN, BUILD_SECRET, and NEON_AUTH_URL are supplied at
-          // deploy time (workflow / CLI). NEON_AUTH_URL is the Neon Auth base
-          // (same value as the client's VITE_NEON_AUTH_URL) — the JWT
-          // issuer/audience + JWKS base the Function verifies bearers against.
+          // ALLOWED_ORIGIN, OIDC_ALLOWED_REPO, OIDC_ALLOWED_ENVIRONMENTS, and
+          // NEON_AUTH_URL are supplied at deploy time (workflow / CLI).
+          // NEON_AUTH_URL is the Neon Auth base (same value as the client's
+          // VITE_NEON_AUTH_URL) — the JWT issuer/audience + JWKS base the Function
+          // verifies bearers against. OIDC_ALLOWED_* pin the GitHub Actions OIDC
+          // token that authenticates RegisterVersion (repo + environment).
         },
       },
     },

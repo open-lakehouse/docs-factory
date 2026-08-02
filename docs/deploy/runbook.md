@@ -284,7 +284,6 @@ variables → Actions.
 | Name | Kind | Set at | Value / notes |
 |---|---|---|---|
 | `NEON_API_KEY` | secret | `preview` + `production` | preview: least-privilege key; production: prod key |
-| `REVIEW_BUILD_SECRET` | secret | `preview` + `production` | same shared value in both envs |
 | `DATABASE_URL` | secret | `production` | prod branch **direct** URL (same value used in Phase 2.1) |
 | `REVIEW_API_URL` | secret | `production` | ⏳ **deferred to Phase 5** — live prod Function URL |
 | `VERCEL_TOKEN` | secret | `preview` + `production` | non-interactive Vercel CLI auth (both workflows deploy prebuilt to Vercel) |
@@ -298,6 +297,25 @@ variables → Actions.
 > environment's **main-only branch restriction** (Phase 3c) — GitHub refuses to
 > expose its secrets to any other ref, so a branch build can't deploy prod even
 > if it tries. Previews run on every PR against the `preview` environment.
+
+> **RegisterVersion has no tracked secret.** The post-merge `register` job (and
+> the manual `register-versions.yml`) authenticate to the Function with a GitHub
+> Actions **OIDC token** — the job declares `permissions: id-token: write`,
+> `register-versions.mjs` mints a token for the fixed `docs-factory-register`
+> audience, and the Function verifies it against GitHub's JWKS and pins the
+> `repository` + `environment` claims. The pin is set on the Function at deploy
+> time via `OIDC_ALLOWED_REPO` (= `${{ github.repository }}`) and
+> `OIDC_ALLOWED_ENVIRONMENTS` (shipped as `production`). There is nothing to
+> rotate. To let preview deploys register too, add `preview` to
+> `OIDC_ALLOWED_ENVIRONMENTS` (config-only) and add a register step to
+> `preview-deploy.yml` — not wired today. Locally the Function runs dev-open
+> (no pin configured, `NODE_ENV != production`), so `just register-versions`
+> needs no token.
+>
+> **Retiring the old secret:** the former `REVIEW_BUILD_SECRET` GitHub secret is
+> no longer read. Delete it from both environments once this ships:
+> `gh secret delete REVIEW_BUILD_SECRET --env preview` and
+> `gh secret delete REVIEW_BUILD_SECRET --env production`.
 
 ---
 

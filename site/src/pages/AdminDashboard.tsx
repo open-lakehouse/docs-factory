@@ -15,27 +15,11 @@
 // does NOT reach this page. All writes go through the site-admin-only
 // ManageAllowlist / EraseUser RPCs; the server owns the last-maintainer
 // invariant, this UI only warns before firing it.
-import { useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { useMutation, useQuery } from "@connectrpc/connect-query";
+
 import { timestampDate } from "@bufbuild/protobuf/wkt";
-import {
-  listAllowlist,
-  listRegisteredUsers,
-  manageAllowlist,
-  eraseUser,
-} from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { ManageAllowlistRequest_Action } from "../gen/docs_factory/review/v1/review_service_pb";
-import {
-  Role,
-  type AllowlistEntryDetail,
-  type RegisteredUser,
-  type UserSummary,
-} from "../gen/docs_factory/review/v1/messages_pb";
-import { useAuth } from "../lib/auth-context";
-import { useReviewInvalidation } from "../lib/review-queries";
-import Shell from "../components/layout/Shell";
-import UserPicker from "../components/review/UserPicker";
+import { useMutation, useQuery } from "@connectrpc/connect-query";
+import { type ReactNode, useState } from "react";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,6 +30,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import Shell from "../components/layout/Shell";
+import UserPicker from "../components/review/UserPicker";
+import {
+  type AllowlistEntryDetail,
+  type RegisteredUser,
+  Role,
+  type UserSummary,
+} from "../gen/docs_factory/review/v1/messages_pb";
+import { ManageAllowlistRequest_Action } from "../gen/docs_factory/review/v1/review_service_pb";
+import {
+  eraseUser,
+  listAllowlist,
+  listRegisteredUsers,
+  manageAllowlist,
+} from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useAuth } from "../lib/auth-context";
+import { useReviewInvalidation } from "../lib/review-queries";
 
 function roleLabel(role: Role): string {
   if (role === Role.MAINTAINER) return "Maintainer";
@@ -181,9 +182,8 @@ export default function AdminDashboard() {
       <div className="admin-page">
         <h1>Admin</h1>
         <p className="review-dash-hint">
-          Manage who can review and maintain the site. Only people who have signed
-          in can be granted a role — search for them below or grant a registered
-          user directly.
+          Manage who can review and maintain the site. Only people who have signed in can be granted
+          a role — search for them below or grant a registered user directly.
         </p>
 
         {manage.error && <p className="admin-error">{manage.error.message}</p>}
@@ -295,17 +295,16 @@ export default function AdminDashboard() {
         <section className="review-dash-section">
           <h2>Registered users</h2>
           <p className="review-dash-hint">
-            Everyone registered in Neon Auth. People with “no status” can only see
-            published content — grant them a role to let them review. Users who
-            haven’t signed into the app yet show no GitHub login or last-seen date
-            until their first visit.
+            Everyone registered in Neon Auth. People with “no status” can only see published content
+            — grant them a role to let them review. Users who haven’t signed into the app yet show
+            no GitHub login or last-seen date until their first visit.
           </p>
           {registeredLoading ? (
             <p className="muted">Loading…</p>
           ) : registered.length === 0 ? (
             <p className="muted">
-              No registered users to show. (Discovery reads Neon Auth’s tables,
-              which exist only against the real Neon Auth database.)
+              No registered users to show. (Discovery reads Neon Auth’s tables, which exist only
+              against the real Neon Auth database.)
             </p>
           ) : (
             <table className="admin-table">
@@ -412,22 +411,19 @@ export default function AdminDashboard() {
           <DialogHeader>
             <DialogTitle>Erase this user’s footprint?</DialogTitle>
             <DialogDescription>
-              Tombstones their comments (keeping thread structure), scrubs their
-              identity from review-state, resolutions, and approvals, cancels any
-              open review requests addressed to them, and deletes their
-              read-state. Content-version provenance is untouched. This does not
-              remove their allowlist access — do that separately. Cannot be
-              undone.
+              Tombstones their comments (keeping thread structure), scrubs their identity from
+              review-state, resolutions, and approvals, cancels any open review requests addressed
+              to them, and deletes their read-state. Content-version provenance is untouched. This
+              does not remove their allowlist access — do that separately. Cannot be undone.
             </DialogDescription>
           </DialogHeader>
           {erase.error && <p className="admin-error">{erase.error.message}</p>}
           {erase.data && (
             <p className="muted">
               Tombstoned {erase.data.commentsTombstoned} comment(s), scrubbed{" "}
-              {erase.data.reviewStatesScrubbed} review-state and{" "}
-              {erase.data.resolutionsScrubbed} resolution actor(s), cancelled{" "}
-              {erase.data.requestsCancelled} open review request(s), deleted{" "}
-              {erase.data.seenRowsDeleted} read-state row(s).
+              {erase.data.reviewStatesScrubbed} review-state and {erase.data.resolutionsScrubbed}{" "}
+              resolution actor(s), cancelled {erase.data.requestsCancelled} open review request(s),
+              deleted {erase.data.seenRowsDeleted} read-state row(s).
             </p>
           )}
           <DialogFooter>

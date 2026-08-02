@@ -1,13 +1,13 @@
-import { useEffect, useRef, type RefObject } from "react";
 import { useMutation } from "@connectrpc/connect-query";
 import { RotateCcw } from "lucide-react";
-import { unresolveThread } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
-import { scrollToThreadContext } from "../../lib/scroll-to-context";
-import { useReviewInvalidation } from "../../lib/review-queries";
+import { type RefObject, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { useScrollContainer } from "./scroll-container-context";
 import { cn } from "@/lib/utils";
+import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
+import { unresolveThread } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useReviewInvalidation } from "../../lib/review-queries";
+import { scrollToThreadContext } from "../../lib/scroll-to-context";
+import { useScrollContainer } from "./scroll-container-context";
 import ThreadConversation from "./ThreadConversation";
 
 interface ThreadCardProps {

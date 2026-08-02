@@ -1,10 +1,7 @@
 // content.ts — discover builder-agnostic sources and expose them to the app.
 import type { ComponentType } from "react";
-import {
-  parseDocPath,
-  slugFromBlogPath,
-} from "./lib/content-source";
 import { registerExplanation } from "./explain-bindings";
+import { parseDocPath, slugFromBlogPath } from "./lib/content-source";
 
 export interface Frontmatter {
   title?: string;
@@ -166,9 +163,10 @@ export function blogsByTags(tags: string[]): ContentPage[] {
   });
 }
 
-export function blogsBySeriesFiltered(
-  posts: ContentPage[],
-): { series: BlogSeriesGroup[]; standalone: ContentPage[] } {
+export function blogsBySeriesFiltered(posts: ContentPage[]): {
+  series: BlogSeriesGroup[];
+  standalone: ContentPage[];
+} {
   const seriesMap = new Map<string, ContentPage[]>();
   const standalone: ContentPage[] = [];
 

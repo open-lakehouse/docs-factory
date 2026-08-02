@@ -20,83 +20,8 @@
 import { create } from "@bufbuild/protobuf";
 import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type ConnectRouter } from "@connectrpc/connect";
-import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb.js";
-import {
-  GetViewerResponseSchema,
-  ListDraftsResponseSchema,
-  GetDraftContentResponseSchema,
-  ListCommentsResponseSchema,
-  ListRecentCommentsResponseSchema,
-  CreateCommentResponseSchema,
-  ResolveThreadResponseSchema,
-  UnresolveThreadResponseSchema,
-  MarkThreadSeenResponseSchema,
-  GetSourceFileResponseSchema,
-  TransitionReviewResponseSchema,
-  ReleaseContentResponseSchema,
-  SetPriorityResponseSchema,
-  SetTargetReleaseDateResponseSchema,
-  ManageAllowlistRequest_Action,
-  ManageAllowlistResponseSchema,
-  ListAllowlistResponseSchema,
-  ListRegisteredUsersResponseSchema,
-  SearchUsersResponseSchema,
-  EraseUserResponseSchema,
-  RegisterVersionResponseSchema,
-  ListVersionsResponseSchema,
-  GetVersionTreeResponseSchema,
-  ProductChangesResponseSchema,
-  ProductChangeEntrySchema,
-  ChangedNodeSchema,
-  ChangeKind,
-  RequestReviewResponseSchema,
-  CancelReviewRequestResponseSchema,
-  ListReviewRequestsResponseSchema,
-  ListContentEventsResponseSchema,
-  RequestChangesOnPublishedResponseSchema,
-  RecordApprovalResponseSchema,
-  DismissApprovalResponseSchema,
-  type ListDraftsRequest,
-  type GetDraftContentRequest,
-  type ListCommentsRequest,
-  type ListRecentCommentsRequest,
-  type CreateCommentRequest,
-  type ResolveThreadRequest,
-  type UnresolveThreadRequest,
-  type MarkThreadSeenRequest,
-  type GetSourceFileRequest,
-  type TransitionReviewRequest,
-  type ReleaseContentRequest,
-  type SetPriorityRequest,
-  type SetTargetReleaseDateRequest,
-  type ManageAllowlistRequest,
-  type EraseUserRequest,
-  type RegisterVersionRequest,
-  type ListVersionsRequest,
-  type GetVersionTreeRequest,
-  type ProductChangesRequest,
-  type RequestReviewRequest,
-  type CancelReviewRequestRequest,
-  type ListReviewRequestsRequest,
-  type ListContentEventsRequest,
-  type RequestChangesOnPublishedRequest,
-  type RecordApprovalRequest,
-  type DismissApprovalRequest,
-  type SearchUsersRequest,
-} from "../gen/docs_factory/review/v1/review_service_pb.js";
-import {
-  AllowlistEntrySchema,
-  AllowlistEntryDetailSchema,
-  RegisteredUserSchema,
-  UserSummarySchema,
-  DraftSummarySchema,
-  ContentRefSchema,
-  ThreadSchema,
-  SnippetRefSchema,
-  ReviewState,
-  Role,
-} from "../gen/docs_factory/review/v1/messages_pb.js";
-import type { AuthProvider } from "../auth/provider.js";
+import { lookupRole, roleFromDb } from "../allowlist.js";
+import { reanchorCodeThreads, reanchorThreads } from "../anchor.js";
 import {
   authInterceptor,
   getViewer,
@@ -106,38 +31,113 @@ import {
   requireSiteAdmin,
 } from "../auth/context.js";
 import { assertRegisterAllowed, isRegisterDevOpen, verifyGithubOidc } from "../auth/github-oidc.js";
-import { db, type Sql, type Queryable } from "../db.js";
-import {
-  areaToDb,
-  areaFromDb,
-  contentVersionFromRow,
-  merkleNodeToJson,
-  dateOnlyToUtcTimestamp,
-  type ContentVersionRow,
-  type MerkleNodeJson,
-} from "../db-map.js";
-import { reviewDiff, unchangedSlugs, type DiffEntry } from "../tree-diff.js";
-import { roleFromDb, lookupRole } from "../allowlist.js";
-import {
-  reviewRequestFromRow,
-  contentEventFromRow,
-  approvalFromRow,
-  requirementToDb,
-  EVENT_KIND_BY_STATE,
-  type ReviewRequestRow,
-  type ContentEventRow,
-  type ContentApprovalRow,
-} from "../review-requests.js";
-import { reanchorThreads, reanchorCodeThreads } from "../anchor.js";
+import type { AuthProvider } from "../auth/provider.js";
 import {
   assembleThreads,
-  commentFromRow,
-  recentCommentFromRow,
   type CommentRow,
+  commentFromRow,
   type RecentCommentRow,
   type ResolutionRow,
+  recentCommentFromRow,
 } from "../comments.js";
+import { db, type Queryable, type Sql } from "../db.js";
+import {
+  areaFromDb,
+  areaToDb,
+  type ContentVersionRow,
+  contentVersionFromRow,
+  dateOnlyToUtcTimestamp,
+  type MerkleNodeJson,
+  merkleNodeToJson,
+} from "../db-map.js";
+import {
+  AllowlistEntryDetailSchema,
+  AllowlistEntrySchema,
+  ContentRefSchema,
+  DraftSummarySchema,
+  RegisteredUserSchema,
+  ReviewState,
+  Role,
+  SnippetRefSchema,
+  ThreadSchema,
+  UserSummarySchema,
+} from "../gen/docs_factory/review/v1/messages_pb.js";
+import {
+  type CancelReviewRequestRequest,
+  CancelReviewRequestResponseSchema,
+  ChangedNodeSchema,
+  ChangeKind,
+  type CreateCommentRequest,
+  CreateCommentResponseSchema,
+  type DismissApprovalRequest,
+  DismissApprovalResponseSchema,
+  type EraseUserRequest,
+  EraseUserResponseSchema,
+  type GetDraftContentRequest,
+  GetDraftContentResponseSchema,
+  type GetSourceFileRequest,
+  GetSourceFileResponseSchema,
+  type GetVersionTreeRequest,
+  GetVersionTreeResponseSchema,
+  GetViewerResponseSchema,
+  ListAllowlistResponseSchema,
+  type ListCommentsRequest,
+  ListCommentsResponseSchema,
+  type ListContentEventsRequest,
+  ListContentEventsResponseSchema,
+  type ListDraftsRequest,
+  ListDraftsResponseSchema,
+  type ListRecentCommentsRequest,
+  ListRecentCommentsResponseSchema,
+  ListRegisteredUsersResponseSchema,
+  type ListReviewRequestsRequest,
+  ListReviewRequestsResponseSchema,
+  type ListVersionsRequest,
+  ListVersionsResponseSchema,
+  type ManageAllowlistRequest,
+  ManageAllowlistRequest_Action,
+  ManageAllowlistResponseSchema,
+  type MarkThreadSeenRequest,
+  MarkThreadSeenResponseSchema,
+  ProductChangeEntrySchema,
+  type ProductChangesRequest,
+  ProductChangesResponseSchema,
+  type RecordApprovalRequest,
+  RecordApprovalResponseSchema,
+  type RegisterVersionRequest,
+  RegisterVersionResponseSchema,
+  type ReleaseContentRequest,
+  ReleaseContentResponseSchema,
+  type RequestChangesOnPublishedRequest,
+  RequestChangesOnPublishedResponseSchema,
+  type RequestReviewRequest,
+  RequestReviewResponseSchema,
+  type ResolveThreadRequest,
+  ResolveThreadResponseSchema,
+  ReviewService,
+  type SearchUsersRequest,
+  SearchUsersResponseSchema,
+  type SetPriorityRequest,
+  SetPriorityResponseSchema,
+  type SetTargetReleaseDateRequest,
+  SetTargetReleaseDateResponseSchema,
+  type TransitionReviewRequest,
+  TransitionReviewResponseSchema,
+  type UnresolveThreadRequest,
+  UnresolveThreadResponseSchema,
+} from "../gen/docs_factory/review/v1/review_service_pb.js";
 import { notifyCommentsChanged } from "../notify.js";
+import {
+  approvalFromRow,
+  type ContentApprovalRow,
+  type ContentEventRow,
+  contentEventFromRow,
+  EVENT_KIND_BY_STATE,
+  type ReviewRequestRow,
+  requirementToDb,
+  reviewRequestFromRow,
+} from "../review-requests.js";
+import { type DiffEntry, reviewDiff, unchangedSlugs } from "../tree-diff.js";
 
 // A page is shown to anonymous (non-allowlisted) viewers only when BOTH hold:
 // its git authoring intent is `ready` (frontmatter_status) AND the published
@@ -507,8 +507,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // every listDrafts. Empty string is an unmatchable id when absent.
         const grantUserId = viewer.userId?.trim() || "";
         const canHaveGrant = grantUserId.length > 0;
-        const areaFilter =
-          req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
+        const areaFilter = req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
 
         // Every (area, slug) with either a registered version OR standalone
         // review activity (a review_state or a comment). Transitions and
@@ -624,8 +623,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           select coalesce(published, false) as published from content_revops
           where area = ${area} and slug = ${req.ref.slug}
         `;
-        const isPublic =
-          row.frontmatter_status === READY_STATUS && revops?.published === true;
+        const isPublic = row.frontmatter_status === READY_STATUS && revops?.published === true;
         // Non-public content is visible to allowlisted viewers AND to an external
         // contributor holding a scoped grant on this exact (area, slug).
         if (!isPublic) await requireContentAccess(ctx, sql, area, req.ref.slug);
@@ -689,8 +687,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // A cross-content reviewer artifact: allowlist-only.
         requireAllowlisted(ctx);
         const sql = db();
-        const areaFilter =
-          req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
+        const areaFilter = req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
         const limit = Math.min(
           Math.max(req.limit && req.limit > 0 ? req.limit : RECENT_COMMENTS_DEFAULT, 1),
           RECENT_COMMENTS_MAX,
@@ -764,7 +761,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // Nesting is capped so the reply tree stays legible and indentation
         // bounded. A root is depth 0; a reply is parent.depth + 1. Rejecting at
         // MAX_REPLY_DEPTH keeps at most that many levels of replies under a root.
-        let parentId: string | null = req.parentId ?? null;
+        const parentId: string | null = req.parentId ?? null;
         if (parentId) {
           const [parent] = await sql<{ id: string; parent_id: string | null }[]>`
             select id, parent_id from comment
@@ -911,7 +908,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         if (!src) throw new ConnectError("source file not found", Code.NotFound);
 
         const snippetRows = await sql<
-          { path: string; region: string; start_line: number; end_line: number; file_hash: string }[]
+          {
+            path: string;
+            region: string;
+            start_line: number;
+            end_line: number;
+            file_hash: string;
+          }[]
         >`
           select path, region, start_line, end_line, file_hash
           from content_snippet
@@ -1225,14 +1228,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 requirement: row.requirement,
                 note: row.note ?? undefined,
               });
-              await dismissActiveApprovalForReviewer(
-                tx,
-                area,
-                slug,
-                userId,
-                actor,
-                versionId,
-              );
+              await dismissActiveApprovalForReviewer(tx, area, slug, userId, actor, versionId);
             }
           }
           return rows;
@@ -1262,7 +1258,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           throw new ConnectError("only open requests can be cancelled", Code.FailedPrecondition);
         }
         if (viewer.role !== Role.MAINTAINER && existing.requested_by !== actor) {
-          throw new ConnectError("only the requester or a maintainer can cancel", Code.PermissionDenied);
+          throw new ConnectError(
+            "only the requester or a maintainer can cancel",
+            Code.PermissionDenied,
+          );
         }
 
         const updated = await sql.begin(async (tx) => {
@@ -1311,7 +1310,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // never breaks it. An empty string is an unmatchable sentinel for an
         // id-less viewer (no user_id can be ''), avoiding the invalid-UTF-8
         // NUL-byte parameter while keeping "id-less mine => no rows" semantics.
-        const mineUserId = req.mine ? (viewer.userId || "") : null;
+        const mineUserId = req.mine ? viewer.userId || "" : null;
         const byMe = req.byMe ? actorId(viewer) : null;
         const rows = await sql<ReviewRequestRow[]>`
           select rq.*, ui.github_login as reviewer_login, ui.name as reviewer_name
@@ -1345,7 +1344,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // Per-artifact timeline: allowlisted on any content, external contributor
         // on the content shared with them.
         await requireContentAccess(ctx, sql, area, req.ref.slug);
-        const limit = Math.min(Math.max(req.limit ?? CONTENT_EVENTS_DEFAULT, 1), CONTENT_EVENTS_MAX);
+        const limit = Math.min(
+          Math.max(req.limit ?? CONTENT_EVENTS_DEFAULT, 1),
+          CONTENT_EVENTS_MAX,
+        );
         const rows = await sql<ContentEventRow[]>`
           select * from content_event
           where area = ${area} and slug = ${req.ref.slug}
@@ -1371,7 +1373,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
         // Transition first (validates released -> changes-requested and logs the
         // state event). Then, if unpublishing, clear the latch + log it.
-        const state = await transition(req.ref, ReviewState.CHANGES_REQUESTED, req.note, ctx, actor);
+        const state = await transition(
+          req.ref,
+          ReviewState.CHANGES_REQUESTED,
+          req.note,
+          ctx,
+          actor,
+        );
         let published = true;
         if (req.unpublish) {
           await sql.begin(async (tx) => {
@@ -1409,10 +1417,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
         if (req.action === ManageAllowlistRequest_Action.ADD) {
           if (req.entry.role === Role.UNSPECIFIED || req.entry.role === Role.ANONYMOUS) {
-            throw new ConnectError(
-              "role must be REVIEWER or MAINTAINER",
-              Code.InvalidArgument,
-            );
+            throw new ConnectError("role must be REVIEWER or MAINTAINER", Code.InvalidArgument);
           }
           const role = req.entry.role === Role.MAINTAINER ? "maintainer" : "reviewer";
           // The allowlist FK requires a user_identity row. If the user hasn't made
@@ -1792,7 +1797,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // the re-anchoring fast path. Version timeline entries (document added /
         // content revised) are DERIVED from content_version rows in the UI, not
         // written as content_event rows.
-        const [prior] = await sql<{ id: string; root_hash: string | null; merkle_tree: MerkleNodeJson | null }[]>`
+        const [prior] = await sql<
+          { id: string; root_hash: string | null; merkle_tree: MerkleNodeJson | null }[]
+        >`
           select id, root_hash, merkle_tree from content_version
           where area = ${area} and slug = ${slug}
           order by created_at desc limit 1
@@ -1921,7 +1928,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         const sql = db();
         const area = areaToDb(req.ref.area);
-        const limit = Math.min(Math.max(req.limit ?? CONTENT_EVENTS_DEFAULT, 1), CONTENT_EVENTS_MAX);
+        const limit = Math.min(
+          Math.max(req.limit ?? CONTENT_EVENTS_DEFAULT, 1),
+          CONTENT_EVENTS_MAX,
+        );
         const rows = await sql<ContentVersionRow[]>`
           select id, area, slug, project, bucket, content_hash, git_sha, title,
                  frontmatter_status, root_hash, topics, created_at
@@ -2214,8 +2224,7 @@ async function upsertOpenReviewRequest(
   `;
 
   if (existing) {
-    const shouldUpgrade =
-      existing.requirement === "optional" && requirement === "required";
+    const shouldUpgrade = existing.requirement === "optional" && requirement === "required";
     if (!shouldUpgrade) {
       return { row: existing, changed: false };
     }
@@ -2370,10 +2379,7 @@ async function transition(
   const from = DB_BY_DERIVED_STATE[current.state] ?? "none";
   if (from === toDb) return toState; // idempotent no-op — no write, no event
   if (!(ALLOWED_TRANSITIONS[from] ?? []).includes(toDb)) {
-    throw new ConnectError(
-      `illegal transition ${from} -> ${toDb}`,
-      Code.FailedPrecondition,
-    );
+    throw new ConnectError(`illegal transition ${from} -> ${toDb}`, Code.FailedPrecondition);
   }
 
   // Stamp against the latest version for provenance (nullable if unregistered).
@@ -2430,7 +2436,10 @@ async function assertRegisterAuthorized(header: Headers): Promise<void> {
   const auth = header.get("authorization");
   const token = auth?.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : undefined;
   if (!token) {
-    throw new ConnectError("a GitHub OIDC bearer is required to register versions", Code.Unauthenticated);
+    throw new ConnectError(
+      "a GitHub OIDC bearer is required to register versions",
+      Code.Unauthenticated,
+    );
   }
   const claims = await verifyGithubOidc(token);
   if (!claims) {

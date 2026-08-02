@@ -1,12 +1,7 @@
 /**
  * remark-likec4-views — upgrade `likec4=<viewId>` image titles to <LikeC4View>.
  */
-import {
-  injectImport,
-  jsxFlow,
-  stringAttr,
-  walkTree,
-} from "./lib/mdx-helpers.mjs";
+import { injectImport, jsxFlow, stringAttr, walkTree } from "./lib/mdx-helpers.mjs";
 
 const LIKEC4_TITLE_RE = /^likec4=(\S+)$/;
 const IMPORT_SOURCE = "@/components/LikeC4View";
@@ -26,10 +21,7 @@ function soleLikeC4Image(node) {
 
 function likec4ViewNode(viewId) {
   return jsxFlow(IMPORT_NAME, {
-    attributes: [
-      stringAttr("viewId", viewId),
-      stringAttr("dynamicViewVariant", "sequence"),
-    ],
+    attributes: [stringAttr("viewId", viewId), stringAttr("dynamicViewVariant", "sequence")],
   });
 }
 

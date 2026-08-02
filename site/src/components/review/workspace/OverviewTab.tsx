@@ -5,11 +5,8 @@ import { cn } from "@/lib/utils";
 import BlogPipeline from "../BlogPipeline";
 import ProductRollup from "../ProductRollup";
 import LatestComments from "./LatestComments";
+import { type OverviewView, overviewViewLabel } from "./overview-token";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
-import {
-  overviewViewLabel,
-  type OverviewView,
-} from "./overview-token";
 
 export default function OverviewTab({
   token,
@@ -38,8 +35,7 @@ export default function OverviewTab({
           <section aria-label="What changed by product">
             <h1>Product changes</h1>
             <p className="muted">
-              Structural changes since each artifact&apos;s baseline, rolled up
-              by product topic.
+              Structural changes since each artifact&apos;s baseline, rolled up by product topic.
             </p>
             <ProductRollup />
           </section>

@@ -4,16 +4,14 @@
 // same assertion against its own derived constants, so the site and docsnip
 // share one source of truth — the old hand-maintained "mirror in X" maps are
 // gone.
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
-import { DIATAXIS, PROJECTS, STATUSES, PAGE_WORTHY_KINDS } from "../vocab.mjs";
+import { fileURLToPath } from "node:url";
+import { DIATAXIS, PAGE_WORTHY_KINDS, PROJECTS, STATUSES } from "../vocab.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
-const json = JSON.parse(
-  readFileSync(resolve(here, "../../../../content/vocab.json"), "utf8"),
-);
+const json = JSON.parse(readFileSync(resolve(here, "../../../../content/vocab.json"), "utf8"));
 
 test("content/vocab.json has the four expected keys, all non-empty", () => {
   for (const key of ["diataxis", "projects", "statuses", "pageWorthyKinds"]) {
@@ -30,7 +28,5 @@ test("content-core exports mirror the JSON exactly", () => {
 });
 
 test("the Diátaxis quadrants are exactly the canonical four", () => {
-  expect([...json.diataxis].sort()).toEqual(
-    ["explanation", "how-to", "reference", "tutorial"],
-  );
+  expect([...json.diataxis].sort()).toEqual(["explanation", "how-to", "reference", "tutorial"]);
 });

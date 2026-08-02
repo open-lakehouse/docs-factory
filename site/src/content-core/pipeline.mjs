@@ -9,18 +9,18 @@
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
-import { splitFrontmatter, hashBody, hashSource } from "./frontmatter.mjs";
-import { extractHeadings } from "./slug.mjs";
-import { parseFenceMeta, resolveFence, FILE_RE } from "./fences.mjs";
-import { docIdentity } from "./identity.mjs";
-import { walkBlogs, walkContent } from "./walk.mjs";
-import { buildMerkleTree, PREAMBLE_KEY } from "./tree.mjs";
-import { normalizeTopics } from "./topics.mjs";
-import { normalizeText } from "./normalize.mjs";
+import GithubSlugger from "github-slugger";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toString as mdastToString } from "mdast-util-to-string";
 import { visit } from "unist-util-visit";
-import GithubSlugger from "github-slugger";
+import { FILE_RE, parseFenceMeta, resolveFence } from "./fences.mjs";
+import { hashBody, hashSource, splitFrontmatter } from "./frontmatter.mjs";
+import { docIdentity } from "./identity.mjs";
+import { normalizeText } from "./normalize.mjs";
+import { extractHeadings } from "./slug.mjs";
+import { normalizeTopics } from "./topics.mjs";
+import { buildMerkleTree, PREAMBLE_KEY } from "./tree.mjs";
+import { walkBlogs, walkContent } from "./walk.mjs";
 
 /** The git sha of HEAD, for provenance (falls back to "unknown" outside git). */
 export function gitSha(repoRoot) {
@@ -139,13 +139,20 @@ function entryFor(path, repoRoot) {
   // The structural Merkle tree — a stricter fingerprint than contentHash, whose
   // node keys are the same heading anchors comments pin to. contentHash stays the
   // version identity; rootHash answers "this structure" vs "these bytes".
-  const { rootHash, tree, sections } = buildMerkleTree({ headings, snippets, codeBlocks, preamble });
+  const { rootHash, tree, sections } = buildMerkleTree({
+    headings,
+    snippets,
+    codeBlocks,
+    preamble,
+  });
   // The product/topic axis for the review layer's "what changed for X" rollup.
   const topics = normalizeTopics({
     tags: Array.isArray(meta.tags) ? meta.tags : undefined,
     project: id.area === "docs" ? id.project : undefined,
     warn: (label) =>
-      console.warn(`[topics] ${id.area}/${id.slug}: unknown tag "${label}" (not in content/vocab.json topics)`),
+      console.warn(
+        `[topics] ${id.area}/${id.slug}: unknown tag "${label}" (not in content/vocab.json topics)`,
+      ),
   });
   return {
     ...id, // {area, slug} or {area, project, bucket, slug}

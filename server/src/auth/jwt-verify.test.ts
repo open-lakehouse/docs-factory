@@ -5,8 +5,8 @@
 // The key invariant under test is the iss/aud vs. base-path split: Neon Auth's
 // JWKS lives under the full auth base path, but the token's iss/aud are the
 // base's ORIGIN. verifyJwtWith must validate against the origin, not the path.
-import { expect, test, describe } from "bun:test";
-import { generateKeyPair, SignJWT, exportJWK, createLocalJWKSet } from "jose";
+import { describe, expect, test } from "bun:test";
+import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from "jose";
 import { verifyJwtWith } from "./neon-auth.js";
 
 const BASE = "https://ep-frosty.neonauth.c-4.us-east-2.aws.neon.tech/neondb/auth";
@@ -18,7 +18,10 @@ const { publicKey, privateKey } = await generateKeyPair("EdDSA");
 const jwk = await exportJWK(publicKey);
 const keys = createLocalJWKSet({ keys: [{ ...jwk, alg: "EdDSA" }] });
 
-function mint(claims: Record<string, unknown>, opts?: { iss?: string; aud?: string; exp?: string }) {
+function mint(
+  claims: Record<string, unknown>,
+  opts?: { iss?: string; aud?: string; exp?: string },
+) {
   return new SignJWT(claims)
     .setProtectedHeader({ alg: "EdDSA" })
     .setIssuedAt()

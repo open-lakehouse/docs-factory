@@ -13,7 +13,8 @@
  * walk, pipeline, vocab) are re-exported from the sibling `node.mjs` barrel, or
  * imported directly by leaf path. Do NOT add a Node-only re-export here.
  */
-export * from "./normalize.mjs";
+
 export * from "./fences.mjs";
-export * from "./slug.mjs";
 export * from "./identity.mjs";
+export * from "./normalize.mjs";
+export * from "./slug.mjs";

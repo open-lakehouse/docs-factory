@@ -3,19 +3,14 @@
 // Connect transport sends as x-dev-persona, which the server's mock provider
 // resolves. Also exposes the experimental rail/inline review display mode toggle.
 import { useEffect, useState } from "react";
+import { useAuth } from "../lib/auth-context";
+import { DEV_PERSONAS, type DevPersona, readDevPersona, setDevPersona } from "../lib/dev-persona";
 import {
-  DEV_PERSONAS,
-  readDevPersona,
-  setDevPersona,
-  type DevPersona,
-} from "../lib/dev-persona";
-import {
-  readReviewDisplayMode,
-  setReviewDisplayMode,
   REVIEW_DISPLAY_MODE_EVENT,
   type ReviewDisplayMode,
+  readReviewDisplayMode,
+  setReviewDisplayMode,
 } from "../lib/review-display-mode";
-import { useAuth } from "../lib/auth-context";
 
 export default function DevPersonaSwitcher() {
   if (!import.meta.env.DEV) return null;

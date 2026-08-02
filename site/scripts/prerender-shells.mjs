@@ -23,11 +23,11 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
+import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs";
+import { jsonLd, pageHead, siteOrigin } from "../src/content-core/head.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
-import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
-import { pageHead, siteOrigin, jsonLd } from "../src/content-core/head.mjs";
 import { renderMarkdownToHtml } from "../src/content-core/render-markdown.mjs";
+import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
 import { twinPathForHref } from "./build-md-twins.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -71,9 +71,7 @@ function renderHeadTags(head) {
       : "",
     ...head.og.map(([p, c]) => `<meta property="${esc(p)}" content="${esc(c)}" />`),
     ...head.twitter.map(([n, c]) => `<meta name="${esc(n)}" content="${esc(c)}" />`),
-    head.jsonLd
-      ? `<script type="application/ld+json">${jsonLdScript(head.jsonLd)}</script>`
-      : "",
+    head.jsonLd ? `<script type="application/ld+json">${jsonLdScript(head.jsonLd)}</script>` : "",
   ];
   return lines.filter(Boolean).join("\n    ");
 }
@@ -218,7 +216,12 @@ function main() {
     renderIndex(template, "/", "Open Lakehouse", "Documentation for the open lakehouse stack."),
   );
   written.push(
-    renderIndex(template, "/docs", "Documentation — Open Lakehouse", "Diátaxis docs for Delta Lake, Unity Catalog, and the open lakehouse."),
+    renderIndex(
+      template,
+      "/docs",
+      "Documentation — Open Lakehouse",
+      "Diátaxis docs for Delta Lake, Unity Catalog, and the open lakehouse.",
+    ),
   );
   written.push(
     renderIndex(template, "/blog", "Blog — Open Lakehouse", "Deep dives on the open lakehouse."),

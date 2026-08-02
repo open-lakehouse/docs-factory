@@ -9,9 +9,10 @@
 //   maintainer[:<login>]     → allowlisted maintainer (default login "dev-maintainer")
 //   admin[:<login>]          → site admin, implies maintainer (default "dev-admin")
 // Missing/unrecognized header → anonymous.
+
+import { db } from "../db.js";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
-import { db } from "../db.js";
 
 export const DEV_PERSONA_HEADER = "x-dev-persona";
 

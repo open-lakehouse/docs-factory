@@ -1,19 +1,15 @@
 // Blog right aside in review mode: same review sections as the workspace
 // RightPane (comments + Activity). Narrow screens open the same body in a Sheet.
-import { useEffect, useState, type RefObject } from "react";
+
 import { MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { type RefObject, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { useAuth } from "../../lib/auth-context";
-import { useSelectionState } from "../review/selection-context";
-import { useReview } from "../review/review-context";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
+import { useAuth } from "../../lib/auth-context";
+import { useReview } from "../review/review-context";
+import { useSelectionState } from "../review/selection-context";
 import PageReviewRail from "./PageReviewRail";
 
 interface BlogReviewAsideProps {
@@ -21,10 +17,7 @@ interface BlogReviewAsideProps {
   contentRef: ContentRef;
 }
 
-export default function BlogReviewAside({
-  articleRef,
-  contentRef,
-}: BlogReviewAsideProps) {
+export default function BlogReviewAside({ articleRef, contentRef }: BlogReviewAsideProps) {
   // canComment includes an external contributor's scoped grant, so the comment
   // rail mounts for them. The Activity timeline inside PageReviewRail self-gates
   // on reviewActive and stays hidden for externals (reviewer-only), so widening
@@ -41,9 +34,7 @@ export default function BlogReviewAside({
 
   if (!canComment) return null;
 
-  const reviewContent = (
-    <PageReviewRail articleRef={articleRef} contentRef={contentRef} />
-  );
+  const reviewContent = <PageReviewRail articleRef={articleRef} contentRef={contentRef} />;
 
   return (
     <aside className="blog-review-aside" aria-label="Review">
@@ -69,10 +60,7 @@ export default function BlogReviewAside({
             )}
           </Button>
           <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-            <SheetContent
-              side="right"
-              className="w-[min(22rem,92vw)] gap-0 overflow-y-auto p-0"
-            >
+            <SheetContent side="right" className="w-[min(22rem,92vw)] gap-0 overflow-y-auto p-0">
               <SheetHeader className="border-b">
                 <SheetTitle className="font-mono text-xs uppercase tracking-[0.06em]">
                   Review

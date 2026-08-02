@@ -1,12 +1,7 @@
 /**
  * remark-model-links — upgrade `[label](model:<id>)` links into <ModelRef>.
  */
-import {
-  injectImport,
-  jsxText,
-  stringAttr,
-  walkTree,
-} from "./lib/mdx-helpers.mjs";
+import { injectImport, jsxText, stringAttr, walkTree } from "./lib/mdx-helpers.mjs";
 
 const MODEL_URL_RE = /^model:(.+)$/;
 const IMPORT_SOURCE = "@/components/ModelRef";

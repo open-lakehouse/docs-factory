@@ -1,7 +1,7 @@
 // The Build Output API routes array (Phase 1b/1c/1g/3.4). Order is load-bearing:
 // /api first, catch-all last, filesystem before catch-all; header rules use
 // continue:true; 308 routes carry status:308. Exercises the pure buildRoutes().
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { buildRoutes } from "../../../scripts/gen-vercel-config.mjs";
 
 const routes = buildRoutes({

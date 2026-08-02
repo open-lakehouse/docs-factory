@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { useMutation } from "@connectrpc/connect-query";
-import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
+import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { fingerprint } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
-import { type PendingAnchor } from "./selection-context";
 import ReviewComposer from "./ReviewComposer";
+import type { PendingAnchor } from "./selection-context";
 
 /** Composer for a pending prose/code selection captured by SelectionLayer. */
 export default function PendingComposer({

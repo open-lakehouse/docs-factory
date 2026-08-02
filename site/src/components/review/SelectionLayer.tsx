@@ -4,12 +4,13 @@
 // captures a selector (a prose text-quote, or a code source anchor when the
 // selection is inside a `file=` snippet block) and hands it to the shared
 // selection state, which the CommentSidebar turns into a composer.
-import { useEffect, useRef, useState, type RefObject } from "react";
-import { MessageSquare, Link2 } from "lucide-react";
-import { captureSelector, hashLine } from "../../lib/content-ref";
-import { copyToClipboard } from "../../lib/clipboard";
+
+import { Link2, MessageSquare } from "lucide-react";
+import { type RefObject, useEffect, useRef, useState } from "react";
 import { useAuth } from "../../lib/auth-context";
-import { useSelectionState, type PendingAnchor } from "./selection-context";
+import { copyToClipboard } from "../../lib/clipboard";
+import { captureSelector, hashLine } from "../../lib/content-ref";
+import { type PendingAnchor, useSelectionState } from "./selection-context";
 
 interface FloatUI {
   x: number;
@@ -19,7 +20,7 @@ interface FloatUI {
 
 /** Nearest preceding heading (h1–h4) with an id → the section anchor. */
 function enclosingHeading(el: Node, article: HTMLElement): { slug: string; text: string } {
-  let node: Node | null = el.nodeType === Node.TEXT_NODE ? el.parentElement : el;
+  const node: Node | null = el.nodeType === Node.TEXT_NODE ? el.parentElement : el;
   let cur: Element | null = node as Element | null;
   while (cur && cur !== article && !article.contains(cur)) cur = cur.parentElement;
   const headings = Array.from(article.querySelectorAll("h1, h2, h3, h4")) as HTMLElement[];
@@ -34,7 +35,8 @@ function enclosingHeading(el: Node, article: HTMLElement): { slug: string; text:
 
 /** The snippet block containing `node`, or null. */
 function enclosingCodeBlock(node: Node): HTMLElement | null {
-  let el: Element | null = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
+  let el: Element | null =
+    node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
   while (el) {
     if (el instanceof HTMLElement && el.dataset.srcPath) return el;
     el = el.parentElement;

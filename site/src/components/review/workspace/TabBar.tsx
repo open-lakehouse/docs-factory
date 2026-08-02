@@ -13,13 +13,14 @@
 // tab is in the tab order), ArrowLeft/Right + Home/End move focus AND activation,
 // Delete/Backspace closes the focused tab. Each tab carries a stable id so its
 // panel can be aria-labelledby it (see ReviewTab); focus follows activation.
-import { useRef } from "react";
+
 import { X } from "lucide-react";
+import { useRef } from "react";
 import { cn } from "@/lib/utils";
-import { tabLabel, viewLabel } from "./tab-label";
-import { tabDomId, tabPanelDomId } from "./tab-ids";
 import { overviewViewLabel } from "./overview-token";
-import { useWorkspaceTabs, type OpenTab } from "./workspace-tabs-context";
+import { tabDomId, tabPanelDomId } from "./tab-ids";
+import { tabLabel, viewLabel } from "./tab-label";
+import { type OpenTab, useWorkspaceTabs } from "./workspace-tabs-context";
 
 /** The strip label for a view tab: page title for rendered, view name otherwise. */
 function labelFor(tab: OpenTab): string {

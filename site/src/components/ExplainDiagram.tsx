@@ -1,8 +1,8 @@
-import { useState } from "react";
 import { Maximize2 } from "lucide-react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import ModelDiagram from "./ModelDiagram";
 import { pickScopedViewId } from "../model-refs";
+import ModelDiagram from "./ModelDiagram";
 
 /**
  * The estate "in context" diagram for an explanation page. Dense neighborhoods

@@ -3,18 +3,19 @@
 // their own refresh (via onSuccess) rather than every call site threading an
 // onChange/refetch callback up the tree. Also owns the canonical ContentRef
 // identity comparison used by both the SSE hint filter and ReviewControls.
-import { useCallback } from "react";
+
 import { createConnectQueryKey, useTransport } from "@connectrpc/connect-query";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  listComments,
-  listDrafts,
-  listReviewRequests,
-  listContentEvents,
-  listAllowlist,
-  listRegisteredUsers,
-} from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useCallback } from "react";
 import type { ContentRef } from "../gen/docs_factory/review/v1/messages_pb";
+import {
+  listAllowlist,
+  listComments,
+  listContentEvents,
+  listDrafts,
+  listRegisteredUsers,
+  listReviewRequests,
+} from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 
 /** Full ContentRef identity: area + slug + project + bucket (bucket/project optional). */
 export function sameRef(a: ContentRef, b: ContentRef): boolean {
@@ -54,8 +55,7 @@ export function useReviewInvalidation() {
   );
 
   const invalidateComments = useCallback(
-    (ref: ContentRef) =>
-      queryClient.invalidateQueries({ queryKey: commentsKey(ref) }),
+    (ref: ContentRef) => queryClient.invalidateQueries({ queryKey: commentsKey(ref) }),
     [queryClient, commentsKey],
   );
 

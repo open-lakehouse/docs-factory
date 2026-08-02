@@ -140,6 +140,35 @@ lint:
     uv run ruff check .
     uv run ty check
 
+# --- JS/TS tooling (Biome lint+format, tsc typecheck) -----------------------
+
+# Lint + format-check every JS/TS project with Biome (each project's biome.json
+# extends the root // config). Read-only; mirrors what CI's `biome ci` gates.
+lint-js: _site-deps _server-deps _emit-deps
+    cd site && bunx biome check
+    cd server && bunx biome check
+    cd emit && bunx biome check
+
+# Apply Biome's safe fixes (formatting + safe lint autofixes) across all JS/TS.
+format-js: _site-deps _server-deps _emit-deps
+    cd site && bunx biome check --write
+    cd server && bunx biome check --write
+    cd emit && bunx biome check --write
+
+# CI-form gate: lint + format-check, non-zero exit on any error (never writes).
+format-check: _site-deps _server-deps _emit-deps
+    cd site && bunx biome ci
+    cd server && bunx biome ci
+    cd emit && bunx biome ci
+
+# Typecheck the two TypeScript projects (site + server) with tsc --noEmit.
+typecheck-js: _site-deps _server-deps
+    cd site && bun run typecheck
+    cd server && bun run typecheck
+
+# Everything CI gates for JS/TS: Biome (lint+format) + tsc typecheck.
+check-js: format-check typecheck-js
+
 # Compile the Rust seed helper.
 rust:
     cargo build

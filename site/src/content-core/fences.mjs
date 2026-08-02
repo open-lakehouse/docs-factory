@@ -54,9 +54,7 @@ export function markerLine(lines, marker) {
 
 /** Strip the common leading indentation from a block of lines, joined with \n. */
 export function dedent(lines) {
-  const indents = lines
-    .filter((l) => l.trim().length > 0)
-    .map((l) => l.match(/^\s*/)[0].length);
+  const indents = lines.filter((l) => l.trim().length > 0).map((l) => l.match(/^\s*/)[0].length);
   const min = indents.length ? Math.min(...indents) : 0;
   return lines.map((l) => l.slice(min)).join("\n");
 }

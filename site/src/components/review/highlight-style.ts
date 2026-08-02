@@ -24,8 +24,7 @@ const ALL_DECL =
   " color: inherit;" +
   " text-decoration: underline dotted color-mix(in oklab, gold 70%, var(--border));" +
   " text-underline-offset: 2px;";
-const FOCUS_DECL =
-  "background: color-mix(in oklab, gold 55%, transparent); color: inherit;";
+const FOCUS_DECL = "background: color-mix(in oklab, gold 55%, transparent); color: inherit;";
 
 /** Highlight-registry names for a given tab key (or the shared static names). */
 export function highlightNames(key?: string): { all: string; focus: string } {

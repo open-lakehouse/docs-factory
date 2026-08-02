@@ -25,7 +25,8 @@ export default function remarkResolveImages() {
     const walk = (node) => {
       if (node.type === "image" && typeof node.url === "string") {
         const url = node.url;
-        const external = /^([a-z]+:)?\/\//i.test(url) || url.startsWith("data:") || url.startsWith("/");
+        const external =
+          /^([a-z]+:)?\/\//i.test(url) || url.startsWith("data:") || url.startsWith("/");
         if (!external) {
           node.url = "/@fs" + resolve(mdDir, url);
         }

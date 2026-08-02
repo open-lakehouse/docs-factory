@@ -1,12 +1,17 @@
 // /llms.txt groups docs by Diátaxis + a Blog section, each entry linking the
 // canonical route AND its .md twin. /llms-full.txt concatenates twin bodies under
 // route headers. Exercises the pure renderLlmsIndex()/renderLlmsFull().
-import { test, expect } from "bun:test";
-import { renderLlmsIndex, renderLlmsFull } from "../../../scripts/build-site-llmstxt.mjs";
+import { expect, test } from "bun:test";
+import { renderLlmsFull, renderLlmsIndex } from "../../../scripts/build-site-llmstxt.mjs";
 
 function docEntry(slug, diataxis) {
   return {
-    identity: { area: "docs", project: "delta", bucket: diataxis === "how-to" ? "how-to" : "explanation", slug },
+    identity: {
+      area: "docs",
+      project: "delta",
+      bucket: diataxis === "how-to" ? "how-to" : "explanation",
+      slug,
+    },
     diataxis,
     href: `/docs/delta/x/${slug}`,
     canonical: `https://x.test/docs/delta/x/${slug}`,
@@ -27,7 +32,11 @@ function blogEntry(slug) {
 }
 
 test("llms.txt has Diátaxis sections + a Blog section", () => {
-  const out = renderLlmsIndex([docEntry("read", "how-to"), docEntry("concepts", "explanation"), blogEntry("hello")]);
+  const out = renderLlmsIndex([
+    docEntry("read", "how-to"),
+    docEntry("concepts", "explanation"),
+    blogEntry("hello"),
+  ]);
   expect(out).toContain("# Open Lakehouse documentation");
   expect(out).toContain("## How-to guides");
   expect(out).toContain("## Explanation");

@@ -26,26 +26,16 @@ export default function Index() {
       <TerminalHero />
 
       <section className="product-grid">
-        <Link
-          to={deltaEntry?.href ?? "/docs"}
-          className="product-card"
-          data-accent="delta"
-        >
+        <Link to={deltaEntry?.href ?? "/docs"} className="product-card" data-accent="delta">
           <h2>delta/</h2>
           <p className="muted">
             Open table format — ACID transactions, time travel, schema enforcement.
           </p>
           <span className="product-card-link">cd delta →</span>
         </Link>
-        <Link
-          to={ucEntry?.href ?? "/docs"}
-          className="product-card"
-          data-accent="unitycatalog"
-        >
+        <Link to={ucEntry?.href ?? "/docs"} className="product-card" data-accent="unitycatalog">
           <h2>unitycatalog/</h2>
-          <p className="muted">
-            Open lakehouse catalog — unified governance across engines.
-          </p>
+          <p className="muted">Open lakehouse catalog — unified governance across engines.</p>
           <span className="product-card-link">cd unitycatalog →</span>
         </Link>
       </section>
@@ -55,7 +45,9 @@ export default function Index() {
           <h2 className="section-heading">
             <Link to="/docs">Start reading</Link>
           </h2>
-          <p className="muted">Diátaxis content under <code>content/</code>.</p>
+          <p className="muted">
+            Diátaxis content under <code>content/</code>.
+          </p>
           <ul className="draft-list compact card-list">
             {featuredDocs.map((item) => (
               <li key={item.href}>
@@ -76,7 +68,9 @@ export default function Index() {
           <h2 className="section-heading">
             <Link to="/blog">Latest from the blog</Link>
           </h2>
-          <p className="muted">Narrative drafts under <code>blogs/</code>.</p>
+          <p className="muted">
+            Narrative drafts under <code>blogs/</code>.
+          </p>
           <ul className="draft-list compact card-list">
             {latestPosts.map((d) => (
               <li key={d.href}>

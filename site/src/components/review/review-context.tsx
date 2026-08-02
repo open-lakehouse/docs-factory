@@ -6,30 +6,31 @@
 // Degrades to a no-op default when no provider is mounted (e.g. the Explain
 // page renders code boxes without a review context), so <Pre> can always call
 // useReview() safely.
+
+import { useMutation, useQuery } from "@connectrpc/connect-query";
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
 } from "react";
-import { useQuery, useMutation } from "@connectrpc/connect-query";
+import type { ContentRef, Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import {
   listComments,
   markThreadSeen,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import type { ContentRef, Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { baseUrl, sseEnabled } from "../../lib/review-client";
-import { useReviewInvalidation, refKey } from "../../lib/review-queries";
 import {
-  readReviewDisplayMode,
-  setReviewDisplayMode,
   REVIEW_DISPLAY_MODE_EVENT,
   type ReviewDisplayMode,
+  readReviewDisplayMode,
+  setReviewDisplayMode,
 } from "../../lib/review-display-mode";
+import { refKey, useReviewInvalidation } from "../../lib/review-queries";
 
 /** A commented source-line range within one file/region, for the code box. */
 export interface CommentedLines {
@@ -239,10 +240,7 @@ export function ReviewProvider({
     setReviewDisplayMode(mode);
   }, []);
 
-  const allThreads = useMemo(
-    () => [...threads, ...orphanedThreads],
-    [threads, orphanedThreads],
-  );
+  const allThreads = useMemo(() => [...threads, ...orphanedThreads], [threads, orphanedThreads]);
 
   const threadById = useCallback(
     (id: string) => allThreads.find((t) => t.root?.id === id),

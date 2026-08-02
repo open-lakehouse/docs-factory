@@ -4,7 +4,7 @@
 // picks it up (the emit/ package has no test runner of its own). Driven against a
 // hand-built mdast tree so it needs no remark parser (site/ doesn't depend on
 // unified); the end-to-end parse→flatten path is covered by emit-one.test.mjs.
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import remarkTldrMd from "../../../../emit/plugins/remark-tldr-md.mjs";
 
 /** A minimal containerDirective mdast node for `:::tldr[label?]` with bullet text. */

@@ -2,8 +2,8 @@ import { useMemo } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import type { BreadcrumbItemData, BreadcrumbSibling } from "../components/layout/Breadcrumbs";
 import { blogPosts, findBlog, findDoc } from "../content";
-import { docNav, useVisibleDocNav, type DocNavGroup } from "../sidebar";
 import { withScope } from "../scope";
+import { type DocNavGroup, docNav, useVisibleDocNav } from "../sidebar";
 
 /**
  * Top-level site areas — the first path segment after the `~/<scope>` root.
@@ -110,11 +110,7 @@ export function resolveRouteBreadcrumbs(
       activeBucket?.items.map((it) => ({ label: it.label, href: it.href })) ?? [];
 
     if (!page) {
-      items = [
-        { label: "docs", href: docsHref },
-        { label: project },
-        { label: slug },
-      ];
+      items = [{ label: "docs", href: docsHref }, { label: project }, { label: slug }];
     } else {
       items = [
         { label: "docs", href: docsHref },

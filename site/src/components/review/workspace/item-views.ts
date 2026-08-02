@@ -10,8 +10,9 @@
 //     page's frontmatter (build-script-index does NOT filter by status), so a
 //     DRAFT tutorial still has runnable scripts in scripts.json. Show them
 //     whenever an entry matches the page's route — never gate scripts on status.
-import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
+
 import type { ContentPage } from "../../../content";
+import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { refHref } from "../../../lib/content-ref";
 import type { ScriptsIndex } from "../../../lib/scripts-index";
 import type { TabView } from "./view-token";

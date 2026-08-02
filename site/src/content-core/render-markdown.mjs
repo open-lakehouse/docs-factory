@@ -16,11 +16,12 @@
  * output once Phase 1 twins exist; until then the raw body still produces a
  * usable fallback.
  */
+
+import { toHtml } from "hast-util-to-html";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { gfmFromMarkdown } from "mdast-util-gfm";
-import { gfm } from "micromark-extension-gfm";
 import { toHast } from "mdast-util-to-hast";
-import { toHtml } from "hast-util-to-html";
+import { gfm } from "micromark-extension-gfm";
 
 /** Render a markdown body to a semantic HTML fragment string. */
 export function renderMarkdownToHtml(body) {

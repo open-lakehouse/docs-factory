@@ -1,13 +1,13 @@
+import { TransportProvider } from "@connectrpc/connect-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ThemeProvider } from "next-themes";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { TransportProvider } from "@connectrpc/connect-query";
 import App from "./App.tsx";
 import AccessGate from "./components/AccessGate.tsx";
-import { transport } from "./lib/review-client.ts";
 import { AuthProvider } from "./lib/auth-context.tsx";
+import { transport } from "./lib/review-client.ts";
 import "./index.css";
 
 // One QueryClient for the app. connect-query's generated hooks resolve their

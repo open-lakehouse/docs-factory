@@ -1,14 +1,14 @@
-import { useState } from "react";
 import { useMutation } from "@connectrpc/connect-query";
+import { Check, Link2, RotateCcw, X } from "lucide-react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import {
   createComment,
   resolveThread,
   unresolveThread,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
-import { Check, Link2, RotateCcw, X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { copyToClipboard } from "../../lib/clipboard";
 import { refToParam } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
@@ -147,7 +147,13 @@ export default function ThreadConversation({
   const showContext = !compact;
 
   return (
-    <div className={cn("review-thread-conversation", thread.resolved && "resolved", compact && "compact")}>
+    <div
+      className={cn(
+        "review-thread-conversation",
+        thread.resolved && "resolved",
+        compact && "compact",
+      )}
+    >
       {(showContext || onClose) && (
         <div className="review-thread-conversation-head">
           {showContext && <span className="review-thread-section-tag">{label}</span>}

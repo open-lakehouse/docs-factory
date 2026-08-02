@@ -2,19 +2,21 @@
 // exact ids a real rehype-slug pass produces at render time, including the
 // duplicate-heading collision suffixes (-1, -2, …). If they diverge, comment
 // anchors registered against the manifest won't match the rendered DOM ids.
-import { test, expect } from "bun:test";
-import { extractHeadings } from "../slug.mjs";
-import { unified } from "unified";
+import { expect, test } from "bun:test";
+import rehypeSlug from "rehype-slug";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import rehypeSlug from "rehype-slug";
+import { unified } from "unified";
 import { visit } from "unist-util-visit";
+import { extractHeadings } from "../slug.mjs";
 
 /** The ids a real remark→rehype→rehype-slug pipeline assigns, in document order. */
 function rehypeSlugIds(md) {
-  const tree = unified().use(remarkParse).use(remarkRehype).use(rehypeSlug).runSync(
-    unified().use(remarkParse).parse(md),
-  );
+  const tree = unified()
+    .use(remarkParse)
+    .use(remarkRehype)
+    .use(rehypeSlug)
+    .runSync(unified().use(remarkParse).parse(md));
   const ids = [];
   visit(tree, "element", (node) => {
     if (/^h[1-6]$/.test(node.tagName) && node.properties?.id) ids.push(node.properties.id);

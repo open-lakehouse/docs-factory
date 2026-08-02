@@ -1,13 +1,9 @@
-import { lazy, Suspense, useState, type ReactNode } from "react";
-import { Link } from "react-router-dom";
 import { Network } from "lucide-react";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { lazy, type ReactNode, Suspense, useState } from "react";
+import { Link } from "react-router-dom";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { findModelElement, modelHref, resolveRef } from "../model-refs";
 import EntityCard from "./EntityCard";
-import { modelHref, findModelElement, resolveRef } from "../model-refs";
 
 const ModelDiagramModal = lazy(() => import("./ModelDiagramModal"));
 
@@ -15,13 +11,7 @@ const ModelDiagramModal = lazy(() => import("./ModelDiagramModal"));
  * Inline reference to a model element, produced from `[label](model:<id>)` by
  * remark-model-links.
  */
-export function ModelRef({
-  id,
-  children,
-}: {
-  id: string;
-  children?: ReactNode;
-}) {
+export function ModelRef({ id, children }: { id: string; children?: ReactNode }) {
   const [open, setOpen] = useState(false);
   const el = findModelElement(id);
   const info = resolveRef(id);
@@ -46,12 +36,7 @@ export function ModelRef({
       {label}
     </Link>
   ) : externalUrl ? (
-    <a
-      href={externalUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="model-ref-label"
-    >
+    <a href={externalUrl} target="_blank" rel="noopener noreferrer" className="model-ref-label">
       {label}
     </a>
   ) : (
@@ -62,11 +47,7 @@ export function ModelRef({
     <span className="model-ref">
       <HoverCard openDelay={120} closeDelay={80}>
         <HoverCardTrigger asChild>
-          <span
-            className="model-ref-trigger"
-            tabIndex={0}
-            onClick={(e) => e.stopPropagation()}
-          >
+          <span className="model-ref-trigger" tabIndex={0} onClick={(e) => e.stopPropagation()}>
             {labelNode}
           </span>
         </HoverCardTrigger>

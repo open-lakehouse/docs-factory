@@ -1,5 +1,5 @@
 import { BookOpen, GraduationCap, Library, Wrench } from "lucide-react";
-import { diataxisKeyOf, type DiataxisKey } from "../graph";
+import { type DiataxisKey, diataxisKeyOf } from "../graph";
 
 const ICONS = {
   tutorial: GraduationCap,

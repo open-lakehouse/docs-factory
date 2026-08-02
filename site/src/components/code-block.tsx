@@ -10,20 +10,21 @@
 // lines — reusing the native code surface rather than an overlay. In inline
 // review mode it also inserts a conversation row into the code grid after the
 // anchored line(s).
+
+import { ChevronRight } from "lucide-react";
 import {
   Children,
   cloneElement,
   isValidElement,
-  useState,
   type ReactElement,
   type ReactNode,
+  useState,
 } from "react";
-import { ChevronRight } from "lucide-react";
 import CodeCopyButton from "./CodeCopyButton";
 import LanguageIcon from "./LanguageIcon";
+import PendingComposer from "./review/PendingComposer";
 import { useReview } from "./review/review-context";
 import { useSelectionState } from "./review/selection-context";
-import PendingComposer from "./review/PendingComposer";
 import ThreadConversation from "./review/ThreadConversation";
 
 interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
@@ -50,14 +51,23 @@ function extractCode(children: ReactNode): string {
   return parts.join("");
 }
 
-type LineProps = { className?: string; children?: ReactNode; onClick?: (e: React.MouseEvent) => void };
+type LineProps = {
+  className?: string;
+  children?: ReactNode;
+  onClick?: (e: React.MouseEvent) => void;
+};
 
 function hasLineClass(node: ReactElement<LineProps>): boolean {
   const cls = node.props.className;
   return typeof cls === "string" && cls.split(/\s+/).includes("line");
 }
 
-function codeMatches(path: string, region: string, blockPath?: string, blockRegion?: string): boolean {
+function codeMatches(
+  path: string,
+  region: string,
+  blockPath?: string,
+  blockRegion?: string,
+): boolean {
   if (!blockPath || blockPath !== path) return false;
   if (region && blockRegion && region !== blockRegion) return false;
   return true;

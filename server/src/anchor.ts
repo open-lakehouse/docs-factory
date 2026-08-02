@@ -272,11 +272,7 @@ export async function reanchorCodeThreads(
 }
 
 /** Un-orphan a prose root and refresh its quote start offset. */
-async function refreshStart(
-  sql: Sql,
-  root: { id: string },
-  start: number,
-): Promise<void> {
+async function refreshStart(sql: Sql, root: { id: string }, start: number): Promise<void> {
   await sql`
     update comment
     set orphaned = false, selector_start = ${start}

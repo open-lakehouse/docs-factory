@@ -10,28 +10,26 @@
 //
 // All read-only over listDrafts + listRecentComments. Reuses the shared review
 // state badge so rows render identically to the doc-page controls and indexes.
-import { Link } from "react-router-dom";
+
 import { useQuery } from "@connectrpc/connect-query";
+import { Link } from "react-router-dom";
+import Shell from "../components/layout/Shell";
+import BlogPipeline from "../components/review/BlogPipeline";
+import ProductRollup from "../components/review/ProductRollup";
+import { overviewTabsParam, overviewToken } from "../components/review/workspace/overview-token";
+import {
+  type DraftSummary,
+  type ReviewRequest,
+  ReviewState,
+} from "../gen/docs_factory/review/v1/messages_pb";
 import {
   listDrafts,
   listRecentComments,
   listReviewRequests,
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import {
-  ReviewState,
-  type DraftSummary,
-  type ReviewRequest,
-} from "../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../lib/auth-context";
 import { refHref } from "../lib/content-ref";
-import { ReviewStateBadge, ReviewRequestBadge } from "../lib/review-status";
-import Shell from "../components/layout/Shell";
-import BlogPipeline from "../components/review/BlogPipeline";
-import ProductRollup from "../components/review/ProductRollup";
-import {
-  overviewTabsParam,
-  overviewToken,
-} from "../components/review/workspace/overview-token";
+import { ReviewRequestBadge, ReviewStateBadge } from "../lib/review-status";
 
 const READY = "ready";
 
@@ -195,8 +193,8 @@ export default function ReviewDashboard() {
             Approved · not <code>ready</code>
           </h2>
           <p className="muted review-dash-hint">
-            Cleared review in the app, but the author hasn't marked the source{" "}
-            <code>ready</code> — so it can't go live yet.
+            Cleared review in the app, but the author hasn't marked the source <code>ready</code> —
+            so it can't go live yet.
           </p>
           {draftsLoading ? (
             <p className="muted">Loading…</p>
@@ -286,7 +284,10 @@ export default function ReviewDashboard() {
         <section className="review-dash-section" aria-label="Blog pipeline">
           <BlogPipeline />
         </section>
-        <section className="review-dash-section revops-product-rollup" aria-label="What changed by product">
+        <section
+          className="review-dash-section revops-product-rollup"
+          aria-label="What changed by product"
+        >
           <ProductRollup />
         </section>
       </div>

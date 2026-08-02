@@ -16,8 +16,8 @@
 // the sign-in / pending screens, which is how you change identity locally.
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "../lib/auth-context";
 import { canSignIn, signIn, signOut } from "../lib/auth-actions";
+import { useAuth } from "../lib/auth-context";
 import DevPersonaSwitcher from "./DevPersonaSwitcher";
 
 /** A centered single-panel layout for the pre-admission screens. */
@@ -47,9 +47,7 @@ export default function AccessGate({ children }: { children: ReactNode }) {
   // Neutral splash while the viewer resolves — mirrors StatusMenu's loading
   // placeholder so an already-authenticated reviewer never sees the sign-in wall.
   if (isLoading) {
-    return (
-      <div className="flex min-h-dvh items-center justify-center bg-background" aria-hidden />
-    );
+    return <div className="flex min-h-dvh items-center justify-center bg-background" aria-hidden />;
   }
 
   // Admitted: render the real app. The dev switcher rides along (no-op in prod)
@@ -70,8 +68,8 @@ export default function AccessGate({ children }: { children: ReactNode }) {
       <GateShell>
         <h1 className="text-lg font-semibold">Access pending</h1>
         <p className="text-sm text-muted-foreground">
-          You're signed in, but your account isn't on the access list for this
-          preview yet. Reach out to a maintainer to be added.
+          You're signed in, but your account isn't on the access list for this preview yet. Reach
+          out to a maintainer to be added.
         </p>
         <Button type="button" variant="outline" size="sm" onClick={signOut}>
           Log out

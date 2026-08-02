@@ -3,32 +3,33 @@
 // "document added" and "content revised" — are DERIVED from content_version
 // rows (the Merkle registration history), not stored as events. Read-only and
 // allowlist-gated. Frontmatter authoring changes never appear here (git/CI).
-import { useMemo } from "react";
+
+import { type Timestamp, timestampDate } from "@bufbuild/protobuf/wkt";
 import { useQuery } from "@connectrpc/connect-query";
-import { timestampDate, type Timestamp } from "@bufbuild/protobuf/wkt";
 import {
   Check,
   CircleDot,
   EyeOff,
   FilePlus2,
   GitCommitHorizontal,
+  type LucideIcon,
   MessageSquare,
   Rocket,
   RotateCcw,
   UserPlus,
   X,
-  type LucideIcon,
 } from "lucide-react";
+import { useMemo } from "react";
+import {
+  type ContentEvent,
+  type ContentRef,
+  type ContentVersion,
+  EventKind,
+} from "../../gen/docs_factory/review/v1/messages_pb";
 import {
   listContentEvents,
   listVersions,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import {
-  EventKind,
-  type ContentEvent,
-  type ContentRef,
-  type ContentVersion,
-} from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 
 const KIND_LABEL: Record<number, string> = {

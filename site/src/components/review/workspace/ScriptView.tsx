@@ -13,22 +13,23 @@
 // Syntax highlighting uses Shiki at RUNTIME (the site otherwise highlights at
 // build time via @shikijs/rehype). codeToHtml is dynamically imported so its
 // bundle only loads when a script tab is actually opened.
+
+import { useQuery as useConnectQuery } from "@connectrpc/connect-query";
+import { useQuery } from "@tanstack/react-query";
+import { MessageSquarePlus } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useQuery } from "@tanstack/react-query";
-import { useQuery as useConnectQuery } from "@connectrpc/connect-query";
-import { MessageSquarePlus } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { getSourceFile } from "../../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useAuth } from "../../../lib/auth-context";
 import { hashLine } from "../../../lib/content-ref";
 import type { ScriptEntry } from "../../../lib/scripts-index";
-import { SelectionProvider, useSelectionState } from "../selection-context";
-import { ReviewProvider } from "../review-context";
 import CommentSidebar from "../CommentSidebar";
+import { ReviewProvider } from "../review-context";
+import { SelectionProvider, useSelectionState } from "../selection-context";
 import { useRightPaneSlot } from "./right-pane-slot";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
-import { useAuth } from "../../../lib/auth-context";
-import { cn } from "@/lib/utils";
 
 /** Fetch the raw served script text (used for display + read-only fallback). */
 async function fetchScript(url: string): Promise<string> {
@@ -82,7 +83,11 @@ function ScriptViewBody({
   const slot = useRightPaneSlot();
 
   // Raw served text — always available, drives display + highlighting.
-  const { data: raw, isLoading, error } = useQuery({
+  const {
+    data: raw,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["script-raw", entry.fetchUrl],
     queryFn: () => fetchScript(entry.fetchUrl),
     staleTime: Infinity,
@@ -137,7 +142,10 @@ function ScriptViewBody({
         role="tabpanel"
         aria-labelledby={tabDomId(token)}
         tabIndex={isActive ? 0 : -1}
-        className={cn("flex min-h-0 flex-1 flex-col focus-visible:outline-none", !isActive && "hidden")}
+        className={cn(
+          "flex min-h-0 flex-1 flex-col focus-visible:outline-none",
+          !isActive && "hidden",
+        )}
         hidden={!isActive}
       >
         <ContractHeader entry={entry} />
@@ -194,7 +202,8 @@ function ScriptViewBody({
 function ContractHeader({ entry }: { entry: ScriptEntry }) {
   const bits: { label: string; value: string }[] = [];
   if (entry.requiresPython) bits.push({ label: "python", value: entry.requiresPython });
-  if (entry.dependencies?.length) bits.push({ label: "deps", value: entry.dependencies.join(", ") });
+  if (entry.dependencies?.length)
+    bits.push({ label: "deps", value: entry.dependencies.join(", ") });
   if (entry.services?.length) bits.push({ label: "services", value: entry.services.join(", ") });
   if (entry.baseUrlEnv) bits.push({ label: "base url env", value: entry.baseUrlEnv });
   return (

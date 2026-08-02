@@ -13,10 +13,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
+import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs";
+import { canonicalUrl, metaDescription, siteOrigin } from "../src/content-core/head.mjs";
 import { docIdentity } from "../src/content-core/identity.mjs";
 import { walkBlogs } from "../src/content-core/walk.mjs";
-import { canonicalUrl, metaDescription, siteOrigin } from "../src/content-core/head.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
@@ -91,7 +91,9 @@ function main() {
   const outDir = resolve(distDir, "blog");
   mkdirSync(outDir, { recursive: true });
   writeFileSync(resolve(outDir, "rss.xml"), renderRss(items, origin));
-  console.log(`build-rss: wrote blog/rss.xml (${items.length} items) into ${relative(siteRoot, distDir)}/.`);
+  console.log(
+    `build-rss: wrote blog/rss.xml (${items.length} items) into ${relative(siteRoot, distDir)}/.`,
+  );
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

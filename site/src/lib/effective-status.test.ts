@@ -1,4 +1,4 @@
-import { expect, test, describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { ReviewState } from "../gen/docs_factory/review/v1/messages_pb";
 import {
   effectiveStatus,

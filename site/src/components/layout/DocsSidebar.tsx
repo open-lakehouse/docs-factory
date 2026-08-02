@@ -1,14 +1,10 @@
+import { ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 import { useVisibleDocNav } from "../../sidebar";
 import { useSidebar } from "./Shell";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
 
 interface DocsSidebarProps {
   activeProject?: string;
@@ -16,11 +12,7 @@ interface DocsSidebarProps {
   activeSlug?: string;
 }
 
-export default function DocsSidebar({
-  activeProject,
-  activeBucket,
-  activeSlug,
-}: DocsSidebarProps) {
+export default function DocsSidebar({ activeProject, activeBucket, activeSlug }: DocsSidebarProps) {
   const location = useLocation();
   const { mobileOpen, setMobileOpen } = useSidebar();
   // Viewer-aware nav: anonymous viewers see only published docs; while the
@@ -71,9 +63,7 @@ export default function DocsSidebar({
           <Link to="/docs" className="sidebar-home" onClick={() => setMobileOpen(false)}>
             Documentation
           </Link>
-          {isLoading && nav.length === 0 && (
-            <p className="sidebar-empty muted">Loading…</p>
-          )}
+          {isLoading && nav.length === 0 && <p className="sidebar-empty muted">Loading…</p>}
           {!isLoading && nav.length === 0 && (
             <p className="sidebar-empty muted">No published docs yet.</p>
           )}
@@ -89,10 +79,7 @@ export default function DocsSidebar({
                 className="sidebar-section"
               >
                 <CollapsibleTrigger
-                  className={cn(
-                    "sidebar-project",
-                    group.project === activeProject && "active",
-                  )}
+                  className={cn("sidebar-project", group.project === activeProject && "active")}
                 >
                   <span>{group.projectLabel}</span>
                   <ChevronDown
@@ -116,10 +103,7 @@ export default function DocsSidebar({
                         className="sidebar-bucket"
                       >
                         <CollapsibleTrigger
-                          className={cn(
-                            "sidebar-bucket-label",
-                            bucketActive && "active",
-                          )}
+                          className={cn("sidebar-bucket-label", bucketActive && "active")}
                         >
                           <span>{bucket.label}</span>
                           <ChevronDown

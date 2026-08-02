@@ -8,11 +8,7 @@ export type BootLine =
   | { type: "summary"; capabilities: number; specifications: number; implementations: number }
   | { type: "explore" };
 
-const KIND_ORDER: ExplainKind[] = [
-  "capability",
-  "openSpecification",
-  "implementation",
-];
+const KIND_ORDER: ExplainKind[] = ["capability", "openSpecification", "implementation"];
 
 const KIND_TAG: Record<ExplainKind, string> = {
   capability: "capability",

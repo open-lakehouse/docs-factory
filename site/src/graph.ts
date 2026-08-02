@@ -26,10 +26,10 @@
 // (content.ts registers into explain-bindings, not vice-versa), so pulling them
 // in here is safe.
 
-import { pages, type ContentPage } from "./content";
-import { getTag } from "./tags";
-import { resolveRef, type ModelRefInfo } from "./model-refs";
+import { type ContentPage, pages } from "./content";
 import { getExplainElement } from "./explain";
+import { type ModelRefInfo, resolveRef } from "./model-refs";
+import { getTag } from "./tags";
 
 // --- Effective references ---------------------------------------------------
 
@@ -161,12 +161,7 @@ export const DIATAXIS_LABELS: Record<DiataxisKey, string> = {
 };
 
 /** Diátaxis keys in reading order — Learn → Do → Look up → Understand. */
-export const DIATAXIS_ORDER: DiataxisKey[] = [
-  "tutorial",
-  "how-to",
-  "reference",
-  "explanation",
-];
+export const DIATAXIS_ORDER: DiataxisKey[] = ["tutorial", "how-to", "reference", "explanation"];
 
 // --- Facet vocabularies -----------------------------------------------------
 

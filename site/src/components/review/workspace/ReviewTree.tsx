@@ -5,42 +5,43 @@
 // persisted in sessionStorage (expansion-context.tsx). Leaf icons tint with
 // the effective status; branches show descendant counts by status immediately
 // after their label. A right-edge icon marks items requested from the viewer.
-import { useMemo } from "react";
+
 import { useQuery } from "@connectrpc/connect-query";
 import {
   Files,
   FileText,
   FolderTree,
-  LayoutDashboard,
   Layers3,
+  LayoutDashboard,
   Newspaper,
   UserCheck,
 } from "lucide-react";
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
-import DiataxisIcon from "../../DiataxisIcon";
+import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import {
   listDrafts,
   listReviewRequests,
 } from "../../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../../lib/auth-context";
 import { refToParam } from "../../../lib/content-ref";
-import { isOverviewGroup } from "./overview-token";
-import { refTokenOf } from "./view-token";
 import {
   effectiveStatus,
   effectiveStatusIconClass,
   effectiveStatusLabel,
   STATUS_BUCKET_ORDER,
+  type StatusBucket,
   statusBucket,
   statusBucketDotClass,
   statusBucketLabel,
-  type StatusBucket,
 } from "../../../lib/effective-status";
 import { refKey } from "../../../lib/review-queries";
+import DiataxisIcon from "../../DiataxisIcon";
 import { useExpansion } from "./expansion-context";
-import { useReviewTree, type TreeNode } from "./tree-model";
+import { isOverviewGroup } from "./overview-token";
 import { TreeRow } from "./TreeRow";
+import { type TreeNode, useReviewTree } from "./tree-model";
+import { refTokenOf } from "./view-token";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
 
 type LeafStatus = { frontmatterStatus?: string; reviewState: ReviewState };
@@ -126,8 +127,7 @@ function requestedInSubtree(node: TreeNode, requestedRefs: Set<string>): number 
 }
 
 function RequestedReviewIndicator({ count = 1 }: { count?: number }) {
-  const label =
-    count === 1 ? "Review requested from you" : `${count} reviews requested from you`;
+  const label = count === 1 ? "Review requested from you" : `${count} reviews requested from you`;
   return (
     <span title={label} className="inline-flex">
       <UserCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-label={label} />
@@ -155,15 +155,9 @@ function Node({
     return (
       <TreeRow
         depth={depth}
-        icon={
-          <LeafIcon
-            status={{ frontmatterStatus: node.frontmatterStatus, reviewState }}
-          />
-        }
+        icon={<LeafIcon status={{ frontmatterStatus: node.frontmatterStatus, reviewState }} />}
         label={node.label}
-        trailing={
-          requestedRefs.has(refKey(node.ref)) ? <RequestedReviewIndicator /> : undefined
-        }
+        trailing={requestedRefs.has(refKey(node.ref)) ? <RequestedReviewIndicator /> : undefined}
         // The active tab may be any of this item's views (rendered/md/script);
         // compare on the group key so the row stays highlighted across them.
         selected={activeToken !== null && refTokenOf(activeToken) === token}
@@ -185,9 +179,7 @@ function Node({
         open={open}
         afterLabel={<StatusCountStrip counts={counts} />}
         trailing={
-          requestedCount > 0 ? (
-            <RequestedReviewIndicator count={requestedCount} />
-          ) : undefined
+          requestedCount > 0 ? <RequestedReviewIndicator count={requestedCount} /> : undefined
         }
         onToggle={() => toggle(node.id)}
       />
@@ -232,8 +224,7 @@ export default function ReviewTree() {
     return refs;
   }, [requestData?.requests]);
 
-  const overviewSelected =
-    activeToken !== null && isOverviewGroup(refTokenOf(activeToken));
+  const overviewSelected = activeToken !== null && isOverviewGroup(refTokenOf(activeToken));
 
   return (
     <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto p-2" aria-label="Review">

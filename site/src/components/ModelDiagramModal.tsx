@@ -1,14 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import ModelDiagram from "./ModelDiagram";
-import { resolveRef, focusedViewId } from "../model-refs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { likec4model } from "../explain";
 import { explanationHref } from "../explain-bindings";
+import { focusedViewId, resolveRef } from "../model-refs";
+import ModelDiagram from "./ModelDiagram";
 
 function viewSubjectId(viewId: string): string | null {
   const of = likec4model.findView(viewId)?.viewOf;
@@ -19,13 +14,7 @@ function viewSubjectId(viewId: string): string | null {
  * Popup showing a model element's focused LikeC4 view. Mounted only while open
  * so ReactLikeC4 fits correctly on each open.
  */
-export default function ModelDiagramModal({
-  id,
-  onClose,
-}: {
-  id: string;
-  onClose: () => void;
-}) {
+export default function ModelDiagramModal({ id, onClose }: { id: string; onClose: () => void }) {
   const navigate = useNavigate();
   const info = resolveRef(id);
   const viewId = focusedViewId(id);
@@ -58,10 +47,7 @@ export default function ModelDiagramModal({
         {info.summary && <p className="model-modal-summary">{info.summary}</p>}
         <div className="model-modal-diagram">
           {viewId ? (
-            <ModelDiagram
-              viewId={viewId}
-              onNavigateTo={handleNavigateTo}
-            />
+            <ModelDiagram viewId={viewId} onNavigateTo={handleNavigateTo} />
           ) : (
             <p className="muted model-modal-empty">
               No focused view for “{info.title}” yet.

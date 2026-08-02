@@ -27,11 +27,12 @@
  * `../website/src/content/blog/<publishedAt>-<slug>/` — is the `/blog-emit` skill
  * with `--target delta` (see references/delta-target.md), mirroring UC.
  */
+
+import remarkCalloutsDirectiveRemap from "../plugins/remark-callouts-directive-remap.mjs";
 import remarkJourneyMdx from "../plugins/remark-journey-mdx.mjs";
 import remarkLikeC4Mdx from "../plugins/remark-likec4-mdx.mjs";
 import remarkMdxSafeText from "../plugins/remark-mdx-safe-text.mjs";
 import remarkStringifyMdx from "../plugins/remark-stringify-mdx.mjs";
-import remarkCalloutsDirectiveRemap from "../plugins/remark-callouts-directive-remap.mjs";
 
 /** Slugify an author's display name to a `profiles` collection id
  *  (`Robert Pack` → `robert-pack`). The delivery skill verifies the id exists. */

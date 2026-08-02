@@ -1,6 +1,6 @@
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { initials } from "../../lib/initials";
 
 interface CommentBubbleProps {

@@ -18,7 +18,6 @@ import { mdxToMarkdown } from "mdast-util-mdx";
 
 export default function remarkStringifyMdx() {
   const data = this.data();
-  const toMarkdownExtensions =
-    data.toMarkdownExtensions || (data.toMarkdownExtensions = []);
+  const toMarkdownExtensions = data.toMarkdownExtensions || (data.toMarkdownExtensions = []);
   toMarkdownExtensions.push(mdxToMarkdown());
 }

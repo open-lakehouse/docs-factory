@@ -1,6 +1,6 @@
 // sitemap.xml lists canonical HTML routes only — ready pages present, drafts and
 // .md twins absent. Exercises the pure sitemapUrls() over synthetic page records.
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { sitemapUrls } from "../../../scripts/build-sitemap.mjs";
 
 const ORIGIN = "https://example.test";

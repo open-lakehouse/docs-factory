@@ -2,15 +2,15 @@
 // We mint EdDSA tokens with a local key pair and verify against that same key
 // set, so there's no network/JWKS dependency (the real issuer is a fixed GitHub
 // URL; here we only exercise the signature/claim logic, not GitHub's JWKS).
-import { expect, test, describe, afterEach } from "bun:test";
-import { generateKeyPair, SignJWT, exportJWK, createLocalJWKSet } from "jose";
+import { afterEach, describe, expect, test } from "bun:test";
+import { createLocalJWKSet, exportJWK, generateKeyPair, SignJWT } from "jose";
 import {
-  verifyGithubOidcWith,
   assertRegisterAllowed,
-  isRegisterDevOpen,
-  REGISTER_AUDIENCE,
   GITHUB_OIDC_JWKS_URL,
   type GithubOidcClaims,
+  isRegisterDevOpen,
+  REGISTER_AUDIENCE,
+  verifyGithubOidcWith,
 } from "./github-oidc.js";
 
 const ISSUER = "https://token.actions.githubusercontent.com";
@@ -38,7 +38,9 @@ describe("GITHUB_OIDC_JWKS_URL", () => {
   // (the `.json` path 404s, which made createRemoteJWKSet fail and every token
   // verification throw). Keep the endpoint exactly `/.well-known/jwks`.
   test("uses GitHub's real jwks_uri path (no .json suffix)", () => {
-    expect(GITHUB_OIDC_JWKS_URL).toBe("https://token.actions.githubusercontent.com/.well-known/jwks");
+    expect(GITHUB_OIDC_JWKS_URL).toBe(
+      "https://token.actions.githubusercontent.com/.well-known/jwks",
+    );
     expect(GITHUB_OIDC_JWKS_URL.endsWith(".json")).toBe(false);
   });
 });
@@ -108,7 +110,9 @@ describe("assertRegisterAllowed", () => {
   test("rejects a token from a different repo", () => {
     process.env.OIDC_ALLOWED_REPO = REPO;
     process.env.OIDC_ALLOWED_ENVIRONMENTS = "production";
-    expect(() => assertRegisterAllowed(claims({ repository: "attacker/fork" }))).toThrow(/repository/);
+    expect(() => assertRegisterAllowed(claims({ repository: "attacker/fork" }))).toThrow(
+      /repository/,
+    );
   });
 
   test("rejects a token with no environment claim", () => {

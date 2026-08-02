@@ -135,7 +135,10 @@ function main() {
     process.exit(1);
   }
   const fnHost = stripHost(functionHost);
-  const config = { version: 3, routes: buildRoutes({ fnHost, redirectRoutes: buildRedirectRoutes() }) };
+  const config = {
+    version: 3,
+    routes: buildRoutes({ fnHost, redirectRoutes: buildRedirectRoutes() }),
+  };
 
   // Serialize + self-validate (JSON.stringify can't produce invalid JSON, but keep
   // the round-trip so a future non-serializable value fails here, not in Vercel).

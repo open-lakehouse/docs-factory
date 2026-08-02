@@ -20,10 +20,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
+import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs";
 import { parseDocPath } from "../src/content-core/identity.mjs";
-import { walkContent } from "../src/content-core/walk.mjs";
 import { DIATAXIS } from "../src/content-core/vocab.mjs";
+import { walkContent } from "../src/content-core/walk.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "../..");

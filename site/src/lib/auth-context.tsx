@@ -14,17 +14,22 @@
 // so only one holds at a time). Two derived booleans expose the mode to consumers:
 // `reviewActive` (the single gate the comment chrome short-circuits on) and
 // `previewAsAnon` (which content-visibility reads to force the anonymous subset).
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+
 import { useQuery } from "@connectrpc/connect-query";
-import { getViewer } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb";
-import { subscribeSession, sessionResolved } from "./auth-actions";
+import { getViewer } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { sessionResolved, subscribeSession } from "./auth-actions";
 import {
-  readReviewMode,
   setReviewMode as persistReviewMode,
   REVIEW_MODE_EVENT,
+  readReviewMode,
 } from "./review-mode";
-import { readAnonPreview, setAnonPreview as persistAnonPreview, VIEW_MODE_EVENT } from "./view-mode";
+import {
+  setAnonPreview as persistAnonPreview,
+  readAnonPreview,
+  VIEW_MODE_EVENT,
+} from "./view-mode";
 
 /** The allowlisted viewer's current view mode (normal browsing by default). */
 export type ViewMode = "normal" | "review" | "anon-preview";

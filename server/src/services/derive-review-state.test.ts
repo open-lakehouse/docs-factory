@@ -1,8 +1,8 @@
 // Unit tests for the pure review-state derivation (the single source of truth
 // for the effective ReviewState). No DB. Run with `bun test`.
-import { expect, test, describe } from "bun:test";
-import { deriveReviewState, type DeriveReviewStateInput } from "./review.js";
+import { describe, expect, test } from "bun:test";
 import { ReviewState } from "../gen/docs_factory/review/v1/messages_pb.js";
+import { type DeriveReviewStateInput, deriveReviewState } from "./review.js";
 
 // A baseline: frontmatter not ready, no outcome, no approvals, no requests.
 function base(over: Partial<DeriveReviewStateInput> = {}): DeriveReviewStateInput {
@@ -128,7 +128,11 @@ describe("deriveReviewState", () => {
 
   test("not-ready + changes-requested still shows CHANGES_REQUESTED (outcome outranks frontmatter)", () => {
     const d = deriveReviewState(
-      base({ frontmatterStatus: "draft", explicitOutcome: "changes-requested", explicitOutcomeAt: T0 }),
+      base({
+        frontmatterStatus: "draft",
+        explicitOutcome: "changes-requested",
+        explicitOutcomeAt: T0,
+      }),
     );
     expect(d.state).toBe(ReviewState.CHANGES_REQUESTED);
   });

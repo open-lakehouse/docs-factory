@@ -1,13 +1,8 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
-import { NavLink } from "react-router-dom";
-import { useTheme } from "next-themes";
 import { useQuery } from "@connectrpc/connect-query";
 import { Monitor, Moon, Sun } from "lucide-react";
-import TopbarPath from "./TopbarPath";
-import StatusMenu from "./StatusMenu";
-import { useAuth } from "../../lib/auth-context";
-import { listReviewRequests } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { scopeAccent, useScope, withScope } from "../../scope";
+import { useTheme } from "next-themes";
+import { createContext, type ReactNode, useContext, useState } from "react";
+import { NavLink } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,6 +11,11 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { listReviewRequests } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useAuth } from "../../lib/auth-context";
+import { scopeAccent, useScope, withScope } from "../../scope";
+import StatusMenu from "./StatusMenu";
+import TopbarPath from "./TopbarPath";
 
 /** Two top-level content areas: Docs (all four Diátaxis axes on one page) + blog. */
 const NAV_AXES: { to: string; label: string }[] = [

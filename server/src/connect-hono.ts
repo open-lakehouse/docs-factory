@@ -6,7 +6,7 @@
 // fetch handler. So we register one POST route per RPC path — no Node
 // req/res bridge, no gRPC server. The same mounted app runs unchanged in the
 // Neon Function (via app.fetch) and locally (via @hono/node-server).
-import { createConnectRouter, type ConnectRouter } from "@connectrpc/connect";
+import { type ConnectRouter, createConnectRouter } from "@connectrpc/connect";
 import { createFetchHandler } from "@connectrpc/connect/protocol";
 import type { Hono } from "hono";
 

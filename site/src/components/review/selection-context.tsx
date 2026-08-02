@@ -3,7 +3,7 @@
 // CommentSidebar / InlineReviewSurface (which open a composer for it). Kept
 // in a tiny context so the page wiring stays a drop-in without threading
 // callbacks through the page.
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, type ReactNode, useContext, useState } from "react";
 import type { CapturedSelector } from "../../lib/content-ref";
 
 /** A pending comment target the user picked by selecting text/code or a heading. */

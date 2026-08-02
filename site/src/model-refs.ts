@@ -9,7 +9,7 @@
 // content frontmatter, so the model becomes a bidirectional navigation index.
 
 import type { ElementModel } from "likec4/model";
-import { likec4model, kindLabel } from "./explain";
+import { kindLabel, likec4model } from "./explain";
 import { explanationHref } from "./explain-bindings";
 
 // Fallback reference views (whole-estate) if an element has no scoped view.

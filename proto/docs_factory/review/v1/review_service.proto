@@ -12,7 +12,8 @@ import "google/protobuf/timestamp.proto";
 //   - published-content reads: public
 //   - unpublished-content reads + all writes: allowlisted reviewers
 //   - release + allowlist management: maintainers
-//   - RegisterVersion: build-time only, guarded by a shared secret
+//   - RegisterVersion: build-time only, guarded by a GitHub Actions OIDC token
+//     in the Authorization header (repo + environment pinned), not viewer auth
 service ReviewService {
   // Resolve the current viewer (identity + role). Drives client UI gating and
   // the local dev impersonation switcher.
@@ -121,7 +122,8 @@ service ReviewService {
   rpc EraseUser(EraseUserRequest) returns (EraseUserResponse);
 
   // Build-time upsert of a content version + its sections; re-anchors open
-  // threads. Guarded by a shared secret, not by viewer auth.
+  // threads. Guarded by a GitHub Actions OIDC token in the Authorization header
+  // (see server/src/auth/github-oidc.ts), not by viewer auth.
   rpc RegisterVersion(RegisterVersionRequest) returns (RegisterVersionResponse);
 
   // The version history of one artifact, most-recent first (no trees — cheap
@@ -400,8 +402,10 @@ message EraseUserResponse {
 }
 
 message RegisterVersionRequest {
-  // Shared build-time secret; rejected if it does not match the server env.
-  string build_secret = 1;
+  // Field 1 was `build_secret` — the build now authenticates with a GitHub
+  // Actions OIDC token in the Authorization header, not a body-carried secret.
+  reserved 1;
+  reserved "build_secret";
   ContentRef ref = 2;
   string content_hash = 3;
   string git_sha = 4;

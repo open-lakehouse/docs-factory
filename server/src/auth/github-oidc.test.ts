@@ -9,6 +9,7 @@ import {
   assertRegisterAllowed,
   isRegisterDevOpen,
   REGISTER_AUDIENCE,
+  GITHUB_OIDC_JWKS_URL,
   type GithubOidcClaims,
 } from "./github-oidc.js";
 
@@ -31,6 +32,16 @@ function mint(
     .setExpirationTime(opts?.exp ?? "5m")
     .sign(privateKey);
 }
+
+describe("GITHUB_OIDC_JWKS_URL", () => {
+  // Regression guard: GitHub's jwks_uri is `/.well-known/jwks`, NOT `.../jwks.json`
+  // (the `.json` path 404s, which made createRemoteJWKSet fail and every token
+  // verification throw). Keep the endpoint exactly `/.well-known/jwks`.
+  test("uses GitHub's real jwks_uri path (no .json suffix)", () => {
+    expect(GITHUB_OIDC_JWKS_URL).toBe("https://token.actions.githubusercontent.com/.well-known/jwks");
+    expect(GITHUB_OIDC_JWKS_URL.endsWith(".json")).toBe(false);
+  });
+});
 
 describe("verifyGithubOidcWith", () => {
   test("verifies a well-formed token and extracts repository/environment/ref/sub", async () => {

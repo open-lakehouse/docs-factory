@@ -59,7 +59,25 @@ async function fetchOidcToken() {
   return value;
 }
 
+// Decode a JWT payload for logging (NOT verification) — the header/payload are
+// unsigned base64url and carry no secret, so this is safe to print in CI.
+function decodeJwtPayload(jwt) {
+  try {
+    const [, payload] = jwt.split(".");
+    return JSON.parse(Buffer.from(payload, "base64url").toString("utf8"));
+  } catch {
+    return null;
+  }
+}
+
 const oidcToken = await fetchOidcToken();
+if (oidcToken) {
+  const p = decodeJwtPayload(oidcToken) ?? {};
+  // Diagnostic: what the server will verify + pin against. No token printed.
+  console.log(
+    `OIDC token acquired: iss=${p.iss} aud=${JSON.stringify(p.aud)} repository=${p.repository} environment=${p.environment} ref=${p.ref}`,
+  );
+}
 
 // Interceptor that attaches the OIDC bearer to every RPC (when we have one).
 const authInterceptor = (next) => async (req) => {

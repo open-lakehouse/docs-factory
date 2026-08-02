@@ -31,7 +31,7 @@
 #      Vercel origin. Two passes because the origin only exists after the deploy,
 #      but the /api rewrite needs the Function host before the build.
 #
-# Secrets:  NEON_API_KEY, REVIEW_BUILD_SECRET, VERCEL_TOKEN
+# Secrets:  NEON_API_KEY, VERCEL_TOKEN
 # Vars:     NEON_PROJECT_ID, VERCEL_ORG_ID, VERCEL_PROJECT_ID
 
 name: Preview deploy
@@ -153,8 +153,6 @@ jobs:
       # applied only by an explicit `neon deploy` — not on branch creation, not on
       # code changes — so new server/ code only ships if we deploy here.
       - name: Deploy review Function (pass 1 — materialize host)
-        env:
-          REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
           # NEON_AUTH_URL (the JWT issuer/JWKS base the Function verifies bearers
           # against) = this preview's VITE_NEON_AUTH_URL, injected by the
@@ -168,10 +166,15 @@ jobs:
           # The Function host is NOT derivable from the git branch name — Neon forms
           # it as <branch_id>-<slug>.compute.<cell>.<region>.aws.neon.tech — so the
           # script reads invocation_url from `get` and echoes the host.
+          # RegisterVersion auth is via GitHub OIDC (repo + environment pinned).
+          # Preview registration isn't wired yet, so the environment allowlist is
+          # just `production` — a preview token isn't accepted until `preview` is
+          # added here (config-only, no code change).
           HOST=$(scripts/deploy-neon-function.sh "$SLUG" "$NEON_PROJECT_ID" \
             --branch "$BRANCH_NAME" \
             --env AUTH_MODE=neon --env NODE_ENV=production \
-            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            --env OIDC_ALLOWED_REPO="${{ github.repository }}" \
+            --env OIDC_ALLOWED_ENVIRONMENTS=production \
             --env NEON_AUTH_URL="$NEON_AUTH_URL")
           echo "NEON_FUNCTION_HOST=${HOST}" >> "$GITHUB_ENV"
 
@@ -240,7 +243,6 @@ jobs:
       # pattern. This is the deploy that ends up live; it carries the real env.
       - name: Deploy review Function (pass 2 — lock CORS origin)
         env:
-          REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
           DEPLOY_URL: ${{ steps.vercel.outputs.deploy_url }}
         run: |
           if [ -z "${DEPLOY_URL:-}" ]; then
@@ -258,7 +260,8 @@ jobs:
             --branch "$BRANCH_NAME" \
             --env AUTH_MODE=neon --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
-            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            --env OIDC_ALLOWED_REPO="${{ github.repository }}" \
+            --env OIDC_ALLOWED_ENVIRONMENTS=production \
             --env NEON_AUTH_URL="$NEON_AUTH_URL")
           echo "review Function locked to origin $ALLOWED_ORIGIN (host $HOST)"
 

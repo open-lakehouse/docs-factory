@@ -221,7 +221,8 @@ export const eraseUser = ReviewService.method.eraseUser;
 
 /**
  * Build-time upsert of a content version + its sections; re-anchors open
- * threads. Guarded by a shared secret, not by viewer auth.
+ * threads. Guarded by a GitHub Actions OIDC token in the Authorization header
+ * (see server/src/auth/github-oidc.ts), not by viewer auth.
  *
  * @generated from rpc docs_factory.review.v1.ReviewService.RegisterVersion
  */

@@ -105,6 +105,7 @@ import {
   requireMaintainer,
   requireSiteAdmin,
 } from "../auth/context.js";
+import { assertRegisterAllowed, isRegisterDevOpen, verifyGithubOidc } from "../auth/github-oidc.js";
 import { db, type Sql, type Queryable } from "../db.js";
 import {
   areaToDb,
@@ -1780,8 +1781,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         });
       },
 
-      async registerVersion(req: RegisterVersionRequest) {
-        assertBuildSecret(req.buildSecret);
+      async registerVersion(req: RegisterVersionRequest, ctx) {
+        await assertRegisterAuthorized(ctx.requestHeader);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         const area = areaToDb(req.ref.area);
         const { slug, project, bucket } = req.ref;
@@ -2417,13 +2418,23 @@ async function latestVersionId(sql: Queryable, area: string, slug: string): Prom
   return ver?.id ?? null;
 }
 
-/** Reject unless the request's build secret matches BUILD_SECRET (which must be set). */
-function assertBuildSecret(provided: string): void {
-  const expected = process.env.BUILD_SECRET;
-  if (!expected) {
-    throw new ConnectError("BUILD_SECRET is not configured on the server", Code.FailedPrecondition);
+/**
+ * Authorize a RegisterVersion call from its request headers. In prod (or any
+ * server with the OIDC pin configured) it requires a valid GitHub Actions OIDC
+ * bearer whose repo + environment claims match the pin. Locally, when no pin is
+ * configured and NODE_ENV isn't production, it's dev-open so `bun run
+ * register-versions` works without minting a token. See server/src/auth/github-oidc.ts.
+ */
+async function assertRegisterAuthorized(header: Headers): Promise<void> {
+  if (isRegisterDevOpen()) return;
+  const auth = header.get("authorization");
+  const token = auth?.toLowerCase().startsWith("bearer ") ? auth.slice(7).trim() : undefined;
+  if (!token) {
+    throw new ConnectError("a GitHub OIDC bearer is required to register versions", Code.Unauthenticated);
   }
-  if (provided !== expected) {
-    throw new ConnectError("invalid build secret", Code.PermissionDenied);
+  const claims = await verifyGithubOidc(token);
+  if (!claims) {
+    throw new ConnectError("invalid GitHub OIDC token", Code.Unauthenticated);
   }
+  assertRegisterAllowed(claims);
 }

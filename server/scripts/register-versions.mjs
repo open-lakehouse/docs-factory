@@ -5,9 +5,18 @@
 // Reads site/src/generated/content-versions.json (produced by
 // `just version-manifest`) and calls RegisterVersion once per entry.
 //
+// Auth: RegisterVersion is guarded by a GitHub Actions OIDC token (not a tracked
+// secret). On a runner with `permissions: id-token: write`, GitHub exposes
+// ACTIONS_ID_TOKEN_REQUEST_URL + ACTIONS_ID_TOKEN_REQUEST_TOKEN; we mint a token
+// for our fixed audience and send it as `Authorization: Bearer`. The server
+// verifies it against GitHub's JWKS and pins the repo + environment claims (see
+// server/src/auth/github-oidc.ts). Locally those env vars are absent and the
+// server runs dev-open, so no token is fetched.
+//
 // Env:
-//   API_URL       base URL of the review API (default http://localhost:8787)
-//   BUILD_SECRET  shared secret the server checks (required)
+//   API_URL  base URL of the review API (default http://localhost:8787)
+//   ACTIONS_ID_TOKEN_REQUEST_URL / ACTIONS_ID_TOKEN_REQUEST_TOKEN
+//            injected by GitHub Actions when id-token: write is granted; absent locally
 //
 // Run via `just register-versions` (local) or the post-merge GitHub Action
 // (.github/workflows/register-versions.yml, currently DISABLED — manual only).
@@ -29,14 +38,40 @@ const here = dirname(fileURLToPath(import.meta.url));
 const manifestPath = resolve(here, "../../site/src/generated/content-versions.json");
 
 const apiUrl = process.env.API_URL ?? "http://localhost:8787";
-const buildSecret = process.env.BUILD_SECRET;
-if (!buildSecret) {
-  console.error("BUILD_SECRET is required.");
-  process.exit(1);
+
+// Fixed audience — must match REGISTER_AUDIENCE in server/src/auth/github-oidc.ts.
+const REGISTER_AUDIENCE = "docs-factory-register";
+
+// Mint a GitHub Actions OIDC token for our audience, or null when not running on
+// a runner with id-token: write (e.g. local dev, where the server is dev-open).
+async function fetchOidcToken() {
+  const url = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
+  const reqToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
+  if (!url || !reqToken) return null;
+  const res = await fetch(`${url}&audience=${encodeURIComponent(REGISTER_AUDIENCE)}`, {
+    headers: { Authorization: `Bearer ${reqToken}` },
+  });
+  if (!res.ok) {
+    throw new Error(`OIDC token request failed: ${res.status} ${res.statusText}`);
+  }
+  const { value } = await res.json();
+  if (!value) throw new Error("OIDC token response had no `value`.");
+  return value;
 }
 
+const oidcToken = await fetchOidcToken();
+
+// Interceptor that attaches the OIDC bearer to every RPC (when we have one).
+const authInterceptor = (next) => async (req) => {
+  if (oidcToken) req.header.set("Authorization", `Bearer ${oidcToken}`);
+  return next(req);
+};
+
 const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
-const client = createClient(ReviewService, createConnectTransport({ baseUrl: apiUrl, httpVersion: "1.1" }));
+const client = createClient(
+  ReviewService,
+  createConnectTransport({ baseUrl: apiUrl, httpVersion: "1.1", interceptors: [authInterceptor] }),
+);
 
 const areaEnum = (area) => (area === "docs" ? ContentArea.DOCS : ContentArea.BLOGS);
 
@@ -44,7 +79,6 @@ let ok = 0;
 let orphanTotal = 0;
 for (const e of manifest) {
   const res = await client.registerVersion({
-    buildSecret,
     ref: { area: areaEnum(e.area), slug: e.slug, project: e.project, bucket: e.bucket },
     contentHash: e.contentHash,
     gitSha: e.gitSha,

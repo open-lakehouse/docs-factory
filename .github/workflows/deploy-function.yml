@@ -49,7 +49,6 @@ jobs:
       #   NEON_API_KEY            secret — authenticates the Neon CLI
       #   DATABASE_URL            secret — prod branch DIRECT (unpooled) URL, for
       #                                    migrations run here before the deploy
-      #   REVIEW_BUILD_SECRET     secret — shared secret RegisterVersion checks
       #   NEON_PROJECT_ID         var    — Neon project id
       #   REVIEW_ALLOWED_ORIGIN   var    — comma-separated CORS allowlist (Vercel origin)
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
@@ -94,7 +93,9 @@ jobs:
           SLUG: ${{ inputs.slug || vars.REVIEW_FUNCTION_SLUG || 'review' }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           ALLOWED_ORIGIN: ${{ vars.REVIEW_ALLOWED_ORIGIN }}
-          REVIEW_BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
+          # RegisterVersion is authenticated by a GitHub Actions OIDC token; the
+          # Function pins its claims to this repo + an allowlisted environment set.
+          OIDC_ALLOWED_REPO: ${{ github.repository }}
           # Neon Auth base URL (same value as the client's VITE_NEON_AUTH_URL) —
           # the JWT issuer/audience + JWKS base the Function verifies bearers against.
           NEON_AUTH_URL: ${{ vars.REVIEW_NEON_AUTH_URL }}
@@ -107,7 +108,8 @@ jobs:
             --env AUTH_MODE=neon \
             --env NODE_ENV=production \
             --env ALLOWED_ORIGIN="$ALLOWED_ORIGIN" \
-            --env BUILD_SECRET="$REVIEW_BUILD_SECRET" \
+            --env OIDC_ALLOWED_REPO="$OIDC_ALLOWED_REPO" \
+            --env OIDC_ALLOWED_ENVIRONMENTS=production \
             --env NEON_AUTH_URL="$NEON_AUTH_URL")
           # The prod host is stable across deploys (default branch id + slug).
           # Hand it to deploy-site as a job output so it bakes the /api rewrite —
@@ -234,28 +236,35 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     environment: production
+    # Override the workflow's read-only default for THIS job: mint a GitHub Actions
+    # OIDC token so register-versions.mjs can authenticate to the review Function
+    # (repo + environment pinned server-side; no tracked secret). deploy/deploy-site
+    # keep the least-privilege top-level `contents: read`.
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
       - uses: ./.github/actions/bun-setup
-      - name: Guard required secrets
+      - name: Guard required config
         env:
           API_URL: ${{ secrets.REVIEW_API_URL }}
-          BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
-          if [ -z "${API_URL:-}" ] || [ -z "${BUILD_SECRET:-}" ]; then
-            echo "::error::REVIEW_API_URL / REVIEW_BUILD_SECRET secrets are not set — provision prod first (docs/deploy/runbook.md)."
+          if [ -z "${API_URL:-}" ]; then
+            echo "::error::REVIEW_API_URL secret is not set — provision prod first (docs/deploy/runbook.md)."
             exit 1
           fi
       - name: Build version manifest (stamps the real main sha)
         run: |
           cd site && bun install --frozen-lockfile
           node scripts/build-version-manifest.mjs
+      # Runs in the `production` environment, so GitHub stamps the OIDC token's
+      # `environment: production` claim — which the Function pins on.
       - name: Register versions with the review API
         env:
           API_URL: ${{ secrets.REVIEW_API_URL }}
-          BUILD_SECRET: ${{ secrets.REVIEW_BUILD_SECRET }}
         run: |
           cd server && bun install --frozen-lockfile
           bun run scripts/register-versions.mjs

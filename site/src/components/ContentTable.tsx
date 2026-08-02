@@ -8,8 +8,9 @@
 // two orthogonal status axes) — so they can triage what still needs work.
 // Anonymous viewers see neither: their table is already narrowed to published
 // content, so a status column would be noise. Pass `showStatus` to toggle them.
-import { useState, type ReactNode } from "react";
+
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { type ReactNode, useState } from "react";
 import { Link } from "react-router-dom";
 import { ReviewState } from "../gen/docs_factory/review/v1/messages_pb";
 import { ReviewStateBadge } from "../lib/review-status";
@@ -119,8 +120,7 @@ function TableRow({
 }) {
   // Non-content rows (e.g. explanation coverage gaps) have no review state; they
   // carry only a frontmatterStatus label ("No explanation yet") and no ref.
-  const hasReview =
-    row.reviewState !== undefined && row.reviewState !== ReviewState.UNSPECIFIED;
+  const hasReview = row.reviewState !== undefined && row.reviewState !== ReviewState.UNSPECIFIED;
   // Detail spans every column to the right of the chevron.
   const detailSpan = showStatus ? 5 : 3;
   return (

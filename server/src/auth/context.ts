@@ -2,10 +2,10 @@
 // the viewer once and stashes it in the Connect context; RPCs read it via
 // getViewer(ctx) and enforce with requireAllowlisted / requireMaintainer.
 import { Code, ConnectError, createContextKey, type Interceptor } from "@connectrpc/connect";
-import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { hasContentGrant } from "../allowlist.js";
 import type { Queryable } from "../db.js";
-import { anonymousViewer, type AuthProvider } from "./provider.js";
+import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
+import { type AuthProvider, anonymousViewer } from "./provider.js";
 
 const kViewer = createContextKey<Viewer>(anonymousViewer(), { description: "review.viewer" });
 

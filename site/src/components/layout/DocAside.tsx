@@ -2,22 +2,18 @@
 // same review sections as the workspace RightPane (comments + Activity). The
 // global docs nav stays on the left (DocsSidebar). Narrow screens open review
 // in a Sheet drawer.
-import { useEffect, useState, type RefObject } from "react";
+
 import { MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { type RefObject, useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
+import { useReview } from "../review/review-context";
+import { useSelectionState } from "../review/selection-context";
 import OnThisPage from "./OnThisPage";
 import PageReviewRail from "./PageReviewRail";
-import { useSelectionState } from "../review/selection-context";
-import { useReview } from "../review/review-context";
-import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 
 interface DocAsideProps {
   articleRef: RefObject<HTMLElement | null>;
@@ -46,9 +42,7 @@ export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
       {/* Desktop: sticky right column. Hidden on narrow screens, where review
           opens in the Sheet drawer below. */}
       <div className="review-rail max-[960px]:hidden">
-        {canComment ? (
-          <PageReviewRail articleRef={articleRef} contentRef={contentRef} />
-        ) : null}
+        {canComment ? <PageReviewRail articleRef={articleRef} contentRef={contentRef} /> : null}
         <div className="review-rail-body">
           <OnThisPage articleRef={articleRef} />
         </div>
@@ -73,10 +67,7 @@ export default function DocAside({ articleRef, contentRef }: DocAsideProps) {
             )}
           </Button>
           <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
-            <SheetContent
-              side="right"
-              className="w-[min(22rem,92vw)] gap-0 overflow-y-auto p-0"
-            >
+            <SheetContent side="right" className="w-[min(22rem,92vw)] gap-0 overflow-y-auto p-0">
               <SheetHeader className="border-b">
                 <SheetTitle className="font-mono text-xs uppercase tracking-[0.06em]">
                   Review

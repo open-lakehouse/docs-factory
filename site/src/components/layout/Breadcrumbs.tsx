@@ -1,3 +1,5 @@
+import { Check, ChevronDown } from "lucide-react";
+import { Fragment } from "react";
 import { Link } from "react-router-dom";
 import {
   Breadcrumb,
@@ -12,8 +14,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Check, ChevronDown } from "lucide-react";
-import { Fragment } from "react";
 
 export interface BreadcrumbSibling {
   label: string;
@@ -54,7 +54,11 @@ export function CrumbDropdown({
         {siblings.map((sib) => {
           const active = sib.href === item.activeHref;
           return (
-            <DropdownMenuItem key={sib.href} asChild className={active ? "crumb-menu-item active" : "crumb-menu-item"}>
+            <DropdownMenuItem
+              key={sib.href}
+              asChild
+              className={active ? "crumb-menu-item active" : "crumb-menu-item"}
+            >
               <Link to={sib.href} aria-current={active ? "page" : undefined}>
                 <Check
                   className="crumb-menu-check"

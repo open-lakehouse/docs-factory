@@ -2,9 +2,18 @@
 // helpers (site/scripts/build-md-twins.mjs). The full emitter integration (LikeC4
 // PNG export needs Chromium) is exercised separately; these cover the parts that
 // shape twin paths, frontmatter, and image URLs with no I/O.
-import { test, expect } from "bun:test";
-import mdTwin, { renderImage, frontmatter, LIKEC4_ASSET_BASE } from "../../../../emit/targets/md-twin.mjs";
-import { twinPathForHref, injectCanonical, scaffoldSections, runnableExamplesSection } from "../../../scripts/build-md-twins.mjs";
+import { expect, test } from "bun:test";
+import mdTwin, {
+  frontmatter,
+  LIKEC4_ASSET_BASE,
+  renderImage,
+} from "../../../../emit/targets/md-twin.mjs";
+import {
+  injectCanonical,
+  runnableExamplesSection,
+  scaffoldSections,
+  twinPathForHref,
+} from "../../../scripts/build-md-twins.mjs";
 
 test("renderImage points a likec4 view at the site-served PNG, wrapped in a paragraph", () => {
   const node = renderImage({ likec4: "managedTableFlow", filename: "x.png", altText: "Flow" });
@@ -21,7 +30,13 @@ test("renderImage leaves a non-likec4 image as a plain filename", () => {
 });
 
 test("frontmatter emits title/summary/diataxis/project but never canonical", () => {
-  const fm = frontmatter({ title: "T", summary: "S", diataxis: "how-to", project: "delta", extra: "x" });
+  const fm = frontmatter({
+    title: "T",
+    summary: "S",
+    diataxis: "how-to",
+    project: "delta",
+    extra: "x",
+  });
   expect(fm).toEqual({ title: "T", summary: "S", diataxis: "how-to", project: "delta" });
   expect(fm.canonical).toBeUndefined();
 });
@@ -38,7 +53,9 @@ test("the md-twin target is a flattening target (no title H1, reflows prose)", (
 });
 
 test("twinPathForHref maps a route to canonical-route + .md under dist/", () => {
-  expect(twinPathForHref("/docs/delta/how-to/read")).toMatch(/\/dist\/docs\/delta\/how-to\/read\.md$/);
+  expect(twinPathForHref("/docs/delta/how-to/read")).toMatch(
+    /\/dist\/docs\/delta\/how-to\/read\.md$/,
+  );
   expect(twinPathForHref("/blog/my-post")).toMatch(/\/dist\/blog\/my-post\.md$/);
 });
 
@@ -86,7 +103,9 @@ test("runnableExamplesSection lists fetch URL + PEP 723 contract; empty when no 
   ]);
   expect(md).toContain("## Runnable examples");
   expect(md).toContain("the script *is* the test");
-  expect(md).toContain("[`catalog_flow.py`](/docs/uc/tutorials/getting-started/snippets/catalog_flow.py)");
+  expect(md).toContain(
+    "[`catalog_flow.py`](/docs/uc/tutorials/getting-started/snippets/catalog_flow.py)",
+  );
   expect(md).toContain("requires Python `>=3.11`");
   expect(md).toContain("`unitycatalog-client>=0.5`");
   expect(md).toContain("needs Docker Compose `compose.yaml`");

@@ -12,7 +12,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
+import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
 import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
 
@@ -22,7 +22,10 @@ const repoRoot = resolve(siteRoot, "..");
 const mapPath = resolve(siteRoot, "redirects.json");
 
 /** The set of known canonical routes (public pages' hrefs + the index routes). */
-export function knownRoutes(contentRoot = resolve(repoRoot, "content"), blogsRoot = resolve(repoRoot, "blogs")) {
+export function knownRoutes(
+  contentRoot = resolve(repoRoot, "content"),
+  blogsRoot = resolve(repoRoot, "blogs"),
+) {
   const routes = new Set(["/", "/docs", "/blog"]);
   for (const absPath of [...walkContent(contentRoot), ...walkBlogs(blogsRoot)]) {
     const { meta } = splitFrontmatter(readFileSync(absPath, "utf8"));
@@ -58,7 +61,9 @@ export function loadRedirectMap() {
   try {
     return JSON.parse(readFileSync(mapPath, "utf8"));
   } catch (err) {
-    throw new Error(`build-redirects: ${relative(repoRoot, mapPath)} is not valid JSON: ${err.message}`);
+    throw new Error(
+      `build-redirects: ${relative(repoRoot, mapPath)} is not valid JSON: ${err.message}`,
+    );
   }
 }
 

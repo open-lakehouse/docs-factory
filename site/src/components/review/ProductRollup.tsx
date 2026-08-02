@@ -7,16 +7,10 @@
 // StructuralDiff chrome as VersionHistory. A topic with no tagged content
 // (e.g. duckdb before we've written about it) renders a valid empty state —
 // itself a useful DevRel signal.
-import { useState } from "react";
+
 import { useQuery } from "@connectrpc/connect-query";
 import { MessageSquare } from "lucide-react";
-import {
-  productChanges,
-} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { useAuth } from "../../lib/auth-context";
-import { changeKindFromProto, type DiffEntry } from "../../lib/tree-diff";
-import { TOPICS } from "../../vocab";
-import StructuralDiff from "./StructuralDiff";
+import { useState } from "react";
 import {
   Select,
   SelectContent,
@@ -24,6 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { productChanges } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useAuth } from "../../lib/auth-context";
+import { changeKindFromProto, type DiffEntry } from "../../lib/tree-diff";
+import { TOPICS } from "../../vocab";
+import StructuralDiff from "./StructuralDiff";
 
 /** Pretty product label from a topic id (e.g. "unity-catalog" → "Unity Catalog"). */
 function topicLabel(topic: string): string {
@@ -79,8 +78,8 @@ export default function ProductRollup() {
         <>
           <p className="product-rollup-summary muted">
             {docCount} {docCount === 1 ? "doc" : "docs"} + {blogCount}{" "}
-            {blogCount === 1 ? "blog" : "blogs"} tagged {topicLabel(topic)};{" "}
-            {entries.length} with changes.
+            {blogCount === 1 ? "blog" : "blogs"} tagged {topicLabel(topic)}; {entries.length} with
+            changes.
           </p>
           {entries.length === 0 ? (
             <p className="review-empty">Nothing changed since the baseline.</p>

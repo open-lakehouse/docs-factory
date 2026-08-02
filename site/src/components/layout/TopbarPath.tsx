@@ -1,17 +1,11 @@
 import { Fragment } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useRouteBreadcrumbs } from "../../lib/route-breadcrumbs";
+import { ALL_SCOPE, SCOPES, useScope, withScope } from "../../scope";
 import type { BreadcrumbItemData } from "./Breadcrumbs";
 import { CrumbDropdown } from "./Breadcrumbs";
-import { ALL_SCOPE, SCOPES, useScope, withScope } from "../../scope";
 
-function PathSegment({
-  item,
-  isLast,
-}: {
-  item: BreadcrumbItemData;
-  isLast: boolean;
-}) {
+function PathSegment({ item, isLast }: { item: BreadcrumbItemData; isLast: boolean }) {
   const hasSiblings = (item.siblings?.length ?? 0) > 0;
 
   if (hasSiblings) {

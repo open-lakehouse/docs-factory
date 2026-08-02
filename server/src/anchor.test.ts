@@ -4,16 +4,16 @@
 // a tiny fake that (a) returns a queued result for the single SELECT of thread
 // roots, and (b) records every UPDATE so we can assert what changed. Queries are
 // distinguished by their SQL text (select vs update) — enough for these tests.
-import { expect, test, describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import {
-  normalize,
-  hashLine,
   findQuote,
-  reanchorThreads,
-  reanchorCodeThreads,
+  hashLine,
   type NewSection,
   type NewSnippet,
   type NewSource,
+  normalize,
+  reanchorCodeThreads,
+  reanchorThreads,
 } from "./anchor.js";
 import type { Sql } from "./db.js";
 
@@ -50,7 +50,9 @@ describe("findQuote", () => {
   });
   test("fuzzy-matches a lightly edited quote above threshold", () => {
     // one word changed out of four → 0.75 overlap; drop threshold to accept.
-    expect(findQuote(text, normalize("vends short-lived credentials tokens"), 0.6)).toBeGreaterThanOrEqual(0);
+    expect(
+      findQuote(text, normalize("vends short-lived credentials tokens"), 0.6),
+    ).toBeGreaterThanOrEqual(0);
   });
 });
 
@@ -85,8 +87,16 @@ function fakeSql(rootRows: unknown[]): { sql: Sql; updates: Update[] } {
 
 describe("reanchorThreads (prose)", () => {
   const sections: NewSection[] = [
-    { anchorSlug: "credential-vending", fingerprint: "credential vending", text: "The broker vends short-lived tokens to the engine." },
-    { anchorSlug: "governance", fingerprint: "governance", text: "Policies are enforced centrally by the catalog." },
+    {
+      anchorSlug: "credential-vending",
+      fingerprint: "credential vending",
+      text: "The broker vends short-lived tokens to the engine.",
+    },
+    {
+      anchorSlug: "governance",
+      fingerprint: "governance",
+      text: "Policies are enforced centrally by the catalog.",
+    },
   ];
 
   test("tier 1: quote stays in its own section → un-orphans + refreshes start", async () => {
@@ -213,7 +223,13 @@ describe("reanchorCodeThreads (code)", () => {
 
   test("tier 1: region still present → kept (un-orphaned)", async () => {
     const { sql, updates } = fakeSql([
-      { id: "1", orphaned: true, code_path: "snippets/x.py", code_region: "read", code_line_hash: hashLine("    df = spark.read") },
+      {
+        id: "1",
+        orphaned: true,
+        code_path: "snippets/x.py",
+        code_region: "read",
+        code_line_hash: hashLine("    df = spark.read"),
+      },
     ]);
     const orphaned = await reanchorCodeThreads(sql, "blogs", "x", snippets, sources);
     expect(orphaned).toBe(0);
@@ -221,9 +237,23 @@ describe("reanchorCodeThreads (code)", () => {
   });
 
   test("tier 2: line moved, region gone → relinks by line-hash", async () => {
-    const moved = ["# new header", "import x", "def read():", "    df = spark.read", "    return df"].join("\n");
+    const moved = [
+      "# new header",
+      "import x",
+      "def read():",
+      "    df = spark.read",
+      "    return df",
+    ].join("\n");
     const orphaned = await runCode(
-      [{ id: "2", orphaned: false, code_path: "snippets/x.py", code_region: "", code_line_hash: hashLine("    df = spark.read") }],
+      [
+        {
+          id: "2",
+          orphaned: false,
+          code_path: "snippets/x.py",
+          code_region: "",
+          code_line_hash: hashLine("    df = spark.read"),
+        },
+      ],
       [], // no regions
       [{ path: "snippets/x.py", text: moved, fileHash: "h2" }],
     );
@@ -238,7 +268,15 @@ describe("reanchorCodeThreads (code)", () => {
     // source keeps its indentation. A dedent-invariant hashLine must still
     // re-anchor by line-hash instead of orphaning the comment.
     const orphaned = await runCode(
-      [{ id: "4", orphaned: false, code_path: "snippets/x.py", code_region: "", code_line_hash: hashLine("df = spark.read") }],
+      [
+        {
+          id: "4",
+          orphaned: false,
+          code_path: "snippets/x.py",
+          code_region: "",
+          code_line_hash: hashLine("df = spark.read"),
+        },
+      ],
       [], // no regions
       [{ path: "snippets/x.py", text: fileText, fileHash: "h1" }],
     );
@@ -250,7 +288,15 @@ describe("reanchorCodeThreads (code)", () => {
 
   test("tier 3: line deleted → orphaned (kept), counted", async () => {
     const orphaned = await runCode(
-      [{ id: "3", orphaned: false, code_path: "snippets/x.py", code_region: "", code_line_hash: hashLine("gone line") }],
+      [
+        {
+          id: "3",
+          orphaned: false,
+          code_path: "snippets/x.py",
+          code_region: "",
+          code_line_hash: hashLine("gone line"),
+        },
+      ],
       [],
       [{ path: "snippets/x.py", text: fileText, fileHash: "h1" }],
     );

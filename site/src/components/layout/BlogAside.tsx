@@ -1,8 +1,8 @@
 // Blog left aside: context, heading navigation, and contributors.
 import type { RefObject } from "react";
-import OnThisPage from "./OnThisPage";
-import BlogContributors from "./BlogContributors";
 import TagList from "../TagList";
+import BlogContributors from "./BlogContributors";
+import OnThisPage from "./OnThisPage";
 
 interface BlogAsideProps {
   articleRef: RefObject<HTMLElement | null>;

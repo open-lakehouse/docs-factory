@@ -3,14 +3,7 @@
 // keyed by stable node ids (rather than per-node useState) so it survives tab
 // switches/remounts, persists to sessionStorage, and can be driven
 // programmatically (expand-to-path when a deep link opens a buried page).
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-} from "react";
+import { createContext, type ReactNode, useCallback, useContext, useMemo, useState } from "react";
 
 /** Stable node ids for the docs/blogs tree. */
 export const treeNodeId = {

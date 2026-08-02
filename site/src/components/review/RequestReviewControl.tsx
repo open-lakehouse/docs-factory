@@ -9,28 +9,8 @@
 // The Reviews menu lists active outcomes for this page — open requests,
 // recorded approvals (including unsolicited ones), and the current
 // changes-requested actor when that state is active. Gated on reviewActive.
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+
 import { useMutation, useQuery } from "@connectrpc/connect-query";
-import {
-  requestReview,
-  cancelReviewRequest,
-  listReviewRequests,
-  listDrafts,
-  listContentEvents,
-  recordApproval,
-  dismissApproval,
-} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import {
-  EventKind,
-  Requirement,
-  RequestStatus,
-  ReviewState,
-  type ContentRef,
-  type UserSummary,
-} from "../../gen/docs_factory/review/v1/messages_pb";
-import { useAuth } from "../../lib/auth-context";
-import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
-import UserPicker from "./UserPicker";
 import {
   Check,
   CircleDashed,
@@ -42,10 +22,15 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -54,13 +39,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  type ContentRef,
+  EventKind,
+  RequestStatus,
+  Requirement,
+  ReviewState,
+  type UserSummary,
+} from "../../gen/docs_factory/review/v1/messages_pb";
+import {
+  cancelReviewRequest,
+  dismissApproval,
+  listContentEvents,
+  listDrafts,
+  listReviewRequests,
+  recordApproval,
+  requestReview,
+} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useAuth } from "../../lib/auth-context";
+import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
+import UserPicker from "./UserPicker";
 
 export default function RequestReviewControl({
   contentRef,
@@ -182,8 +183,7 @@ export default function RequestReviewControl({
   if (!reviewActive) return null;
 
   const actor = viewer?.userId ?? viewer?.login ?? "";
-  const signalCount =
-    existing.length + approvals.length + (latestChangesRequest ? 1 : 0);
+  const signalCount = existing.length + approvals.length + (latestChangesRequest ? 1 : 0);
   // Soft cue on the trigger when required reviews are satisfied and the
   // artifact isn't blocked on changes-requested.
   const reviewClear =
@@ -251,7 +251,8 @@ export default function RequestReviewControl({
             size="xs"
             className={cn(
               "gap-1.5 px-2",
-              reviewClear && "text-emerald-600/80 hover:text-emerald-600 dark:text-emerald-400/80 dark:hover:text-emerald-400",
+              reviewClear &&
+                "text-emerald-600/80 hover:text-emerald-600 dark:text-emerald-400/80 dark:hover:text-emerald-400",
             )}
             aria-label={
               reviewClear
@@ -295,9 +296,7 @@ export default function RequestReviewControl({
             if (e.pointerType === "mouse") scheduleCloseMenu();
           }}
         >
-          <DropdownMenuLabel className="text-xs text-muted-foreground">
-            Reviews
-          </DropdownMenuLabel>
+          <DropdownMenuLabel className="text-xs text-muted-foreground">Reviews</DropdownMenuLabel>
           {signalCount === 0 ? (
             <p className="px-2 py-1.5 text-xs text-muted-foreground">None yet.</p>
           ) : null}
@@ -306,10 +305,7 @@ export default function RequestReviewControl({
             const isMine = !!viewer?.userId && a.approverUserId === viewer.userId;
             return (
               <div key={a.id} className="flex items-center gap-2 px-2 py-1.5">
-                <Check
-                  aria-label="Approved"
-                  className="size-3.5 shrink-0 text-emerald-500"
-                />
+                <Check aria-label="Approved" className="size-3.5 shrink-0 text-emerald-500" />
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">{who}</span>
                 {isMine && (
                   <DropdownMenuItem
@@ -355,9 +351,7 @@ export default function RequestReviewControl({
                   aria-label="Review requested"
                   className="size-3.5 shrink-0 text-sky-500"
                 />
-                <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                  {reviewer}
-                </span>
+                <span className="min-w-0 flex-1 truncate text-sm font-medium">{reviewer}</span>
                 {required ? (
                   <ShieldAlert
                     aria-label="Required review, open"
@@ -453,9 +447,8 @@ export default function RequestReviewControl({
               placeholder="Search registered users…"
             />
             <p className="request-review-hint">
-              Invite a registered user who isn't a reviewer to view and comment on
-              this content. They see only what's shared with them and never block
-              its release.
+              Invite a registered user who isn't a reviewer to view and comment on this content.
+              They see only what's shared with them and never block its release.
             </p>
           </div>
 
@@ -479,9 +472,7 @@ export default function RequestReviewControl({
             </Button>
             <Button
               onClick={() => void send()}
-              disabled={
-                submit.isPending || (reviewers.length === 0 && externals.length === 0)
-              }
+              disabled={submit.isPending || (reviewers.length === 0 && externals.length === 0)}
             >
               {submit.isPending ? "Requesting…" : "Request"}
             </Button>

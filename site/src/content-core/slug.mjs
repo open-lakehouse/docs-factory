@@ -8,9 +8,10 @@
  * real rehype-slug pass. The fingerprint is the normalized heading text — a
  * stable re-anchor key when the id changes.
  */
+
+import GithubSlugger from "github-slugger";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { toString as mdastToString } from "mdast-util-to-string";
-import GithubSlugger from "github-slugger";
 import { normalizeText } from "./normalize.mjs";
 
 /**

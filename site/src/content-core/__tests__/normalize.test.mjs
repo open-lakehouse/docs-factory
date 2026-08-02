@@ -3,10 +3,10 @@
 // (content-ref.ts), and the review server (anchor.ts) all depend on. These
 // assert content-core agrees with each of the OTHER copies' formulas, so the
 // "must match" comments are enforced by CI rather than by hope.
-import { test, expect } from "bun:test";
-import { normalizeText, fingerprint } from "../normalize.mjs";
-import { hashLineSync } from "../hash.mjs";
+import { expect, test } from "bun:test";
 import { createHash } from "node:crypto";
+import { hashLineSync } from "../hash.mjs";
+import { fingerprint, normalizeText } from "../normalize.mjs";
 
 // The exact formulas the other copies use (kept inline here so this test fails
 // if content-core ever diverges from them).

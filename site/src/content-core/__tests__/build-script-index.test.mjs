@@ -1,7 +1,7 @@
 // scripts.json entries (Phase 3): derive the served fetch URL + tutorial route
 // from a docsnip script entry's repo-relative path + tutorial_slug. Exercises the
 // pure scriptEntry().
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { scriptEntry } from "../../../scripts/build-script-index.mjs";
 
 const DOCSNIP_ENTRY = {
@@ -32,7 +32,11 @@ test("scriptEntry carries the PEP 723 runtime contract through", () => {
 });
 
 test("scriptEntry handles a script directly in the tutorial dir (no snippets/)", () => {
-  const e = scriptEntry({ ...DOCSNIP_ENTRY, path: "content/uc/tutorials/002-python-client/catalog_flow.py", tutorial_slug: "python-client" });
+  const e = scriptEntry({
+    ...DOCSNIP_ENTRY,
+    path: "content/uc/tutorials/002-python-client/catalog_flow.py",
+    tutorial_slug: "python-client",
+  });
   expect(e.fetchUrl).toBe("/docs/uc/tutorials/python-client/catalog_flow.py");
 });
 

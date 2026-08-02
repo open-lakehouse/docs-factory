@@ -4,17 +4,17 @@
 // we stub the `sql` tag with a fake that captures the interpolated value (the
 // user id) and returns canned rows. That lets us assert the query is an exact
 // user_id match and the role mapping, without a live Postgres.
-import { expect, test, describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import {
+  grantFromRequestRows,
+  hasAdminRole,
+  hasAnyContentGrant,
+  hasContentGrant,
   lookupRole,
   roleFromDb,
-  hasAdminRole,
-  grantFromRequestRows,
-  hasContentGrant,
-  hasAnyContentGrant,
 } from "./allowlist.js";
-import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 import type { Queryable } from "./db.js";
+import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 
 /**
  * A fake `sql` tag: records the interpolated values from the last call and
@@ -107,9 +107,9 @@ describe("grantFromRequestRows", () => {
   });
 
   test("external with an OPEN request has access", () => {
-    expect(
-      grantFromRequestRows({ isAllowlisted: false, userId: "u1" }, [{ status: "open" }]),
-    ).toBe(true);
+    expect(grantFromRequestRows({ isAllowlisted: false, userId: "u1" }, [{ status: "open" }])).toBe(
+      true,
+    );
   });
 
   test("external RETAINS access after approving (request satisfied, not cancelled)", () => {
@@ -130,9 +130,9 @@ describe("grantFromRequestRows", () => {
 
   test("an id-less (anonymous) viewer never has a grant", () => {
     expect(grantFromRequestRows({ isAllowlisted: false }, [{ status: "open" }])).toBe(false);
-    expect(
-      grantFromRequestRows({ isAllowlisted: false, userId: "  " }, [{ status: "open" }]),
-    ).toBe(false);
+    expect(grantFromRequestRows({ isAllowlisted: false, userId: "  " }, [{ status: "open" }])).toBe(
+      false,
+    );
   });
 });
 
@@ -161,9 +161,9 @@ describe("hasContentGrant", () => {
 
   test("external with a matching non-cancelled request is granted", async () => {
     const { tag, calls } = fakeGrantSql([{ status: "satisfied" }]);
-    expect(
-      await hasContentGrant(tag, { isAllowlisted: false, userId: "u1" }, "blogs", "x"),
-    ).toBe(true);
+    expect(await hasContentGrant(tag, { isAllowlisted: false, userId: "u1" }, "blogs", "x")).toBe(
+      true,
+    );
     // area, slug, user id are interpolated into the query.
     expect(calls[0]).toContain("blogs");
     expect(calls[0]).toContain("x");
@@ -172,9 +172,9 @@ describe("hasContentGrant", () => {
 
   test("external with no matching request is denied", async () => {
     const { tag } = fakeGrantSql([]);
-    expect(
-      await hasContentGrant(tag, { isAllowlisted: false, userId: "u1" }, "blogs", "x"),
-    ).toBe(false);
+    expect(await hasContentGrant(tag, { isAllowlisted: false, userId: "u1" }, "blogs", "x")).toBe(
+      false,
+    );
   });
 });
 

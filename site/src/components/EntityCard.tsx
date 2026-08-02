@@ -68,8 +68,8 @@ export default function EntityCard({ data }: { data: EntityCardData }) {
       </div>
       {summary && <p className="entity-card-summary">{summary}</p>}
       <ExternalLinkList externalUrl={externalUrl} externalRefs={externalRefs} />
-      {href && (
-        href.startsWith("http://") || href.startsWith("https://") ? (
+      {href &&
+        (href.startsWith("http://") || href.startsWith("https://") ? (
           <a
             href={href}
             target="_blank"
@@ -80,15 +80,10 @@ export default function EntityCard({ data }: { data: EntityCardData }) {
             Open page →
           </a>
         ) : (
-          <Link
-            to={href}
-            className="entity-card-cta"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <Link to={href} className="entity-card-cta" onClick={(e) => e.stopPropagation()}>
             Open page →
           </Link>
-        )
-      )}
+        ))}
     </div>
   );
 }

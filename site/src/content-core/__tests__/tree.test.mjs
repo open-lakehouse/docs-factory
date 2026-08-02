@@ -1,10 +1,10 @@
 // Merkle content-tree tests: deterministic hashing, precise change localization,
 // and snippet-source drift propagation — the properties the review layer's diff
 // and hash-aware re-anchoring rely on.
-import { test, expect } from "bun:test";
-import { buildMerkleTree, PREAMBLE_KEY } from "../tree.mjs";
+import { expect, test } from "bun:test";
 import { extractHeadings } from "../slug.mjs";
-import { normalizeTopics, canonicalizeTopic } from "../topics.mjs";
+import { canonicalizeTopic, normalizeTopics } from "../topics.mjs";
+import { buildMerkleTree, PREAMBLE_KEY } from "../tree.mjs";
 
 const MD = [
   "preamble prose",
@@ -76,11 +76,11 @@ test("editing one section changes only its hash + its ancestors' subtree hash", 
 });
 
 test("snippet-source drift propagates to root even with identical markdown", () => {
-  const snippets = [{ path: "src/x.py", region: "A..B", fileHash: "hash1", sectionSlug: "intro", position: 0 }];
+  const snippets = [
+    { path: "src/x.py", region: "A..B", fileHash: "hash1", sectionSlug: "intro", position: 0 },
+  ];
   const v1 = buildMerkleTree(inputsFor(MD, { snippets }));
-  const v2 = buildMerkleTree(
-    inputsFor(MD, { snippets: [{ ...snippets[0], fileHash: "hash2" }] }),
-  );
+  const v2 = buildMerkleTree(inputsFor(MD, { snippets: [{ ...snippets[0], fileHash: "hash2" }] }));
   // Same markdown, only the referenced file's content hash changed.
   expect(v2.rootHash).not.toBe(v1.rootHash);
   // The section the snippet lives in (Intro, order 1 falls in Intro's range) changed subtree.

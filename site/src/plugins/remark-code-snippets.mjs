@@ -21,8 +21,14 @@
  * resolved throws with a clear message so a broken reference fails the build.
  */
 import { readFileSync } from "node:fs";
-import { dirname, resolve, relative } from "node:path";
-import { parseFenceMeta, resolveFence, FILE_RE, START_RE, END_RE } from "../content-core/fences.mjs";
+import { dirname, relative, resolve } from "node:path";
+import {
+  END_RE,
+  FILE_RE,
+  parseFenceMeta,
+  resolveFence,
+  START_RE,
+} from "../content-core/fences.mjs";
 
 // Vite runs the site build from site/; the repo root is its parent. Used to emit
 // a repo-relative source path on each resolved fence so the rendered block can be

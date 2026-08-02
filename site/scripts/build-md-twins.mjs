@@ -20,12 +20,12 @@
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { emitOne, defaultModelDir } from "../../emit/emit.mjs";
+import { defaultModelDir, emitOne } from "../../emit/emit.mjs";
 import mdTwin from "../../emit/targets/md-twin.mjs";
-import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
+import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs";
+import { canonicalUrl, siteOrigin } from "../src/content-core/head.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
 import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
-import { canonicalUrl, siteOrigin } from "../src/content-core/head.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
@@ -83,9 +83,12 @@ export function runnableExamplesSection(scripts) {
   for (const s of scripts) {
     lines.push(`- [\`${s.fetchUrl.split("/").pop()}\`](${s.fetchUrl})`);
     if (s.requiresPython) lines.push(`  - requires Python \`${s.requiresPython}\``);
-    if (s.dependencies?.length) lines.push(`  - dependencies: ${s.dependencies.map((d) => `\`${d}\``).join(", ")}`);
+    if (s.dependencies?.length)
+      lines.push(`  - dependencies: ${s.dependencies.map((d) => `\`${d}\``).join(", ")}`);
     if (s.compose) {
-      const svc = s.services?.length ? ` (services: ${s.services.map((x) => `\`${x}\``).join(", ")})` : "";
+      const svc = s.services?.length
+        ? ` (services: ${s.services.map((x) => `\`${x}\``).join(", ")})`
+        : "";
       lines.push(`  - needs Docker Compose \`${s.compose}\`${svc}`);
     }
   }
@@ -127,7 +130,9 @@ function loadScriptsByRoute() {
     const { scripts } = JSON.parse(readFileSync(path, "utf8"));
     for (const s of scripts ?? []) {
       if (!s.tutorialRoute) continue;
-      (byRoute.get(s.tutorialRoute) ?? byRoute.set(s.tutorialRoute, []).get(s.tutorialRoute)).push(s);
+      (byRoute.get(s.tutorialRoute) ?? byRoute.set(s.tutorialRoute, []).get(s.tutorialRoute)).push(
+        s,
+      );
     }
   } catch {
     /* leave empty — placeholder stays */

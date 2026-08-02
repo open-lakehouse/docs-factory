@@ -82,7 +82,12 @@ function snippetHash(path, region, fileHash) {
  * @property {string|null} parentAnchorSlug
  * @property {string} depthPath
  */
-export function buildMerkleTree({ headings = [], snippets = [], codeBlocks = [], preamble = null } = {}) {
+export function buildMerkleTree({
+  headings = [],
+  snippets = [],
+  codeBlocks = [],
+  preamble = null,
+} = {}) {
   // Leaves that live under a heading, each tagged (by pipeline.mjs) with the
   // `sectionSlug` of its containing heading (or PREAMBLE_KEY when it precedes the
   // first heading) and a document-`position` so we keep source order. Attribution
@@ -248,7 +253,8 @@ export function buildMerkleTree({ headings = [], snippets = [], codeBlocks = [],
   // node for the preamble). Match by depthPath, which is unique per section.
   const byPath = new Map();
   (function collect(n) {
-    if (n.kind === "heading" || (n.kind === "prose" && n.key === PREAMBLE_KEY)) byPath.set(n.key, n);
+    if (n.kind === "heading" || (n.kind === "prose" && n.key === PREAMBLE_KEY))
+      byPath.set(n.key, n);
     for (const c of n.children) collect(c);
   })(root);
   for (const s of sections) {

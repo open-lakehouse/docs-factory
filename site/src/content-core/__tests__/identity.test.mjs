@@ -4,7 +4,7 @@
 // including folder-mode index.md. The folder-mode case is the bug this fixes:
 // the manifest used to register slug="index" for these pages, so their DB refs
 // could never match the site's docRef.
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { docIdentity, hrefFromIdentity, parseDocPath } from "../identity.mjs";
 
 test("folder-mode index.md resolves to the folder slug, order-prefix stripped", () => {

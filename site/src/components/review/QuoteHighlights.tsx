@@ -9,7 +9,7 @@
 // thread. Ranges are resolved with locateSelector (exact, then
 // prefix-disambiguated). If a quote no longer resolves, it's simply skipped
 // here — the thread still lives in the sidebar.
-import { useEffect, type RefObject } from "react";
+import { type RefObject, useEffect } from "react";
 import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
 import { ensureHighlightStyle, highlightNames } from "./highlight-style";

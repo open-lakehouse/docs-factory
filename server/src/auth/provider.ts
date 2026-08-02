@@ -4,7 +4,7 @@
 // testable with no GitHub OAuth. The mock provider is NEVER selectable under
 // AUTH_MODE=neon — that guard is a security invariant, not a convenience.
 import { create } from "@bufbuild/protobuf";
-import { Role, ViewerSchema, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
+import { Role, type Viewer, ViewerSchema } from "../gen/docs_factory/review/v1/messages_pb.js";
 
 export interface AuthProvider {
   /**

@@ -17,12 +17,7 @@ export default function TagList({
   return (
     <div className="tag-list">
       {tags.map((tag) => (
-        <TagChip
-          key={tag}
-          slug={tag}
-          active={activeTags?.includes(tag)}
-          onToggle={onToggle}
-        />
+        <TagChip key={tag} slug={tag} active={activeTags?.includes(tag)} onToggle={onToggle} />
       ))}
     </div>
   );

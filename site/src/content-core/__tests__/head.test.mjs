@@ -2,8 +2,8 @@
 // tricky parts are the description heuristic (prefer summary; else the first
 // SUBSTANTIAL prose paragraph, skipping label-only blocks like "**TL;DR**" and
 // list continuation lines) and the schema.org type selection per content area.
-import { test, expect } from "bun:test";
-import { metaDescription, pageTitle, jsonLd, canonicalUrl, pageHead } from "../head.mjs";
+import { expect, test } from "bun:test";
+import { canonicalUrl, jsonLd, metaDescription, pageHead, pageTitle } from "../head.mjs";
 
 const ORIGIN = "https://example.test";
 
@@ -13,19 +13,40 @@ test("metaDescription prefers frontmatter summary", () => {
 });
 
 test("metaDescription skips a bare **TL;DR** label and picks real prose", () => {
-  const body = ["**TL;DR**", "", "- a bullet point that is long enough to look like prose", "", "This is the first real sentence of prose in the document."].join("\n");
-  expect(metaDescription({}, body)).toBe("This is the first real sentence of prose in the document.");
+  const body = [
+    "**TL;DR**",
+    "",
+    "- a bullet point that is long enough to look like prose",
+    "",
+    "This is the first real sentence of prose in the document.",
+  ].join("\n");
+  expect(metaDescription({}, body)).toBe(
+    "This is the first real sentence of prose in the document.",
+  );
 });
 
 test("metaDescription skips headings and list blocks entirely", () => {
-  const body = ["## Heading", "", "- item one wraps", "  onto a second line here", "", "Actual prose paragraph follows the list."].join("\n");
+  const body = [
+    "## Heading",
+    "",
+    "- item one wraps",
+    "  onto a second line here",
+    "",
+    "Actual prose paragraph follows the list.",
+  ].join("\n");
   expect(metaDescription({}, body)).toBe("Actual prose paragraph follows the list.");
 });
 
 test("metaDescription skips a :::tldr directive block (never leaks into the description)", () => {
   // The :::tldr construct is body-only; the exposed description stays frontmatter
   // `summary`, and when absent, firstParagraph must skip the directive block.
-  const body = [":::tldr", "- a key takeaway bullet that is plenty long", ":::", "", "The first real prose paragraph of the page body."].join("\n");
+  const body = [
+    ":::tldr",
+    "- a key takeaway bullet that is plenty long",
+    ":::",
+    "",
+    "The first real prose paragraph of the page body.",
+  ].join("\n");
   expect(metaDescription({}, body)).toBe("The first real prose paragraph of the page body.");
 });
 

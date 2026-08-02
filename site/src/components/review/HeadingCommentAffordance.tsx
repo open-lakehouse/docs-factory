@@ -1,9 +1,10 @@
 // Hover affordance on article headings: hovering an h1–h4 with an id reveals an
 // inline action after the title (the conventional markdown permalink position).
 // In review mode it starts a section comment; otherwise it is the permalink.
-import { useEffect, useState, type RefObject } from "react";
-import { createPortal } from "react-dom";
+
 import { Link2, MessageSquare } from "lucide-react";
+import { type RefObject, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { useAuth } from "../../lib/auth-context";
 import { useSelectionState } from "./selection-context";
 

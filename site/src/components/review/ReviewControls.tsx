@@ -3,30 +3,11 @@
 // review lifecycle once ready derives to needs-review) and can advance it;
 // maintainers can Release. Reads state from listDrafts and mutates via
 // connect-query.
-import { useState, type ReactNode } from "react";
-import { useQuery, useMutation } from "@connectrpc/connect-query";
-import {
-  listDrafts,
-  transitionReview,
-  releaseContent,
-  requestChangesOnPublished,
-  recordApproval,
-  dismissApproval,
-} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { ReviewState, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
-import { useAuth } from "../../lib/auth-context";
-import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
-import { EffectiveStatusBadge } from "../../lib/effective-status";
-import { cn } from "@/lib/utils";
+
+import { useMutation, useQuery } from "@connectrpc/connect-query";
 import { ChevronDown } from "lucide-react";
+import { type ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -35,6 +16,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
+import { type ContentRef, ReviewState } from "../../gen/docs_factory/review/v1/messages_pb";
+import {
+  dismissApproval,
+  listDrafts,
+  recordApproval,
+  releaseContent,
+  requestChangesOnPublished,
+  transitionReview,
+} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useAuth } from "../../lib/auth-context";
+import { EffectiveStatusBadge } from "../../lib/effective-status";
+import { sameRef, useReviewInvalidation } from "../../lib/review-queries";
 
 type ReviewControlsLayout = "inline" | "aside" | "dock";
 
@@ -105,8 +106,7 @@ export default function ReviewControls({
   const state = summary?.reviewState ?? ReviewState.NONE;
   const openRequired = summary?.openRequiredRequestCount ?? 0;
   const approvals = summary?.approvals ?? [];
-  const iApproved =
-    !!viewer?.userId && approvals.some((a) => a.approverUserId === viewer.userId);
+  const iApproved = !!viewer?.userId && approvals.some((a) => a.approverUserId === viewer.userId);
 
   async function go(to: ReviewState) {
     await transition.mutateAsync({ ref: contentRef, toState: to });
@@ -138,9 +138,7 @@ export default function ReviewControls({
     approve.isPending ||
     dismiss.isPending;
   const actions = NEXT[state] ?? [];
-  const badge = (
-    <EffectiveStatusBadge frontmatterStatus={frontmatterStatus} reviewState={state} />
-  );
+  const badge = <EffectiveStatusBadge frontmatterStatus={frontmatterStatus} reviewState={state} />;
   const size = layout === "inline" ? "xs" : "sm";
   type ActionOption = {
     key: string;
@@ -281,8 +279,8 @@ export default function ReviewControls({
           <DialogHeader>
             <DialogTitle>Request changes on a published page</DialogTitle>
             <DialogDescription>
-              This reopens the review (state → changes requested). By default the page
-              stays public; choose to unpublish if it should be hidden while you work.
+              This reopens the review (state → changes requested). By default the page stays public;
+              choose to unpublish if it should be hidden while you work.
             </DialogDescription>
           </DialogHeader>
 
@@ -311,7 +309,11 @@ export default function ReviewControls({
           )}
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setReopenOpen(false)} disabled={reopen.isPending}>
+            <Button
+              variant="outline"
+              onClick={() => setReopenOpen(false)}
+              disabled={reopen.isPending}
+            >
               Cancel
             </Button>
             <Button onClick={() => void doReopen()} disabled={reopen.isPending}>

@@ -5,7 +5,7 @@
 //
 // Source metadata (data-src-*) lives on the inner Shiki <pre>, so we scan for
 // that and attach the button to the outer .cb chrome wrapper.
-import { useEffect, useState, type RefObject } from "react";
+import { type RefObject, useEffect, useState } from "react";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import SourceFilePane from "./SourceFilePane";

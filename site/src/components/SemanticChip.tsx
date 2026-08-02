@@ -1,10 +1,6 @@
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import EntityCard, { type EntityCardData } from "./EntityCard";
 
 function isExternal(href: string): boolean {

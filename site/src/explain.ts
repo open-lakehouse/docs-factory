@@ -16,8 +16,8 @@
 // ordinary content page under content/**/explanation/ (frontmatter
 // `explains: <id>`), not in the model.
 
-import type { ElementModel } from "likec4/model";
 import { $likec4model } from "likec4:single-project";
+import type { ElementModel } from "likec4/model";
 import { vocab } from "./vocab";
 
 // The plugin inlines the layouted model synchronously, so the atom is
@@ -64,9 +64,7 @@ export function elementSummary(el: ElementModel): string {
 // --- Element enumeration ----------------------------------------------------
 
 const allElements: ElementModel[] = [...likec4model.elements()];
-const byId = new Map<string, ElementModel>(
-  allElements.map((el) => [String(el.id), el]),
-);
+const byId = new Map<string, ElementModel>(allElements.map((el) => [String(el.id), el]));
 
 function toEntry(el: ElementModel): ExplainEntry {
   return {
@@ -77,18 +75,11 @@ function toEntry(el: ElementModel): ExplainEntry {
   };
 }
 
-const byTitle = (a: { title: string }, b: { title: string }) =>
-  a.title.localeCompare(b.title);
+const byTitle = (a: { title: string }, b: { title: string }) => a.title.localeCompare(b.title);
 
-const capabilities = allElements
-  .filter((el) => el.kind === "capability")
-  .sort(byTitle);
-const specifications = allElements
-  .filter((el) => el.kind === "openSpecification")
-  .sort(byTitle);
-const implementations = allElements
-  .filter((el) => el.kind === "implementation")
-  .sort(byTitle);
+const capabilities = allElements.filter((el) => el.kind === "capability").sort(byTitle);
+const specifications = allElements.filter((el) => el.kind === "openSpecification").sort(byTitle);
+const implementations = allElements.filter((el) => el.kind === "implementation").sort(byTitle);
 
 // Group each implementation under the specification it `implements`.
 const implementationsBySpec = new Map<string, ElementModel[]>();
@@ -114,9 +105,7 @@ function toSpecNode(spec: ElementModel): ExplainSpecificationNode {
   return {
     ...toEntry(spec),
     kind: "openSpecification",
-    implementations: (implementationsBySpec.get(String(spec.id)) ?? [])
-      .sort(byTitle)
-      .map(toEntry),
+    implementations: (implementationsBySpec.get(String(spec.id)) ?? []).sort(byTitle).map(toEntry),
   };
 }
 
@@ -144,9 +133,7 @@ for (const spec of specifications) {
 export const explainNav: ExplainCapabilityNode[] = capabilities.map((cap) => ({
   ...toEntry(cap),
   kind: "capability",
-  specs: (specsByCapability.get(String(cap.id)) ?? [])
-    .sort(byTitle)
-    .map(toSpecNode),
+  specs: (specsByCapability.get(String(cap.id)) ?? []).sort(byTitle).map(toSpecNode),
 }));
 
 /** Specifications that don't `specifies` any capability (surfaced separately). */

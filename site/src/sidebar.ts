@@ -22,17 +22,14 @@
  * `useVisibleDocNav`, `useDocNeighbors`, `useFirstVisibleDocForProject`.
  */
 import { useMemo } from "react";
+import { findDoc } from "./content";
 import {
   bucketFromPath,
   orderKeyFromPath,
   projectFromPath,
   slugFromPath,
 } from "./lib/content-source";
-import { findDoc } from "./content";
-import {
-  useContentVisibility,
-  type ContentVisibility,
-} from "./lib/content-visibility";
+import { type ContentVisibility, useContentVisibility } from "./lib/content-visibility";
 
 export interface DocNavItem {
   project: string;
@@ -119,10 +116,7 @@ const discoveredDocs: DiscoveredDoc[] = Object.entries(docTitleModules)
 function orderedDocs(project: string, bucket: string): DiscoveredDoc[] {
   return discoveredDocs
     .filter(
-      (d) =>
-        d.project === project &&
-        d.bucket === bucket &&
-        d.slug.toLowerCase() !== "readme",
+      (d) => d.project === project && d.bucket === bucket && d.slug.toLowerCase() !== "readme",
     )
     .sort((a, b) => a.sortKey.localeCompare(b.sortKey) || a.slug.localeCompare(b.slug));
 }
@@ -174,9 +168,7 @@ export function buildDocNav(): DocNavGroup[] {
 
 export const docNav = buildDocNav();
 
-export const docSequence: DocNavItem[] = docNav.flatMap((g) =>
-  g.buckets.flatMap((b) => b.items),
-);
+export const docSequence: DocNavItem[] = docNav.flatMap((g) => g.buckets.flatMap((b) => b.items));
 
 export function docNeighbors(href: string): { prev?: DocNavItem; next?: DocNavItem } {
   const idx = docSequence.findIndex((item) => item.href === href);

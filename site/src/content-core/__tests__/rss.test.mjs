@@ -2,7 +2,7 @@
 // drafts, and formats pubDate as RFC-822 when a legacy frontmatter date remains.
 // Exercises the pure rssItems() + rfc822().
 import { expect, test } from "bun:test";
-import { rssItems, rfc822 } from "../../../scripts/build-rss.mjs";
+import { rfc822, rssItems } from "../../../scripts/build-rss.mjs";
 
 function post(slug, date, status = "ready") {
   return {

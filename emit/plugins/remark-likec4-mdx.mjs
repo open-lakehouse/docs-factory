@@ -79,13 +79,10 @@ export default function remarkLikeC4Mdx(options = {}) {
 
   const makeEntry = (image) => {
     const filename = basename(image.url);
-    const titleM =
-      typeof image.title === "string" ? image.title.match(LIKEC4_TITLE_RE) : null;
+    const titleM = typeof image.title === "string" ? image.title.match(LIKEC4_TITLE_RE) : null;
     const viewId = titleM ? titleM[1] : null;
     const candidate =
-      viewId && likec4Dir
-        ? join(likec4Dir, `${viewId}.png`)
-        : resolve(draftDir, image.url);
+      viewId && likec4Dir ? join(likec4Dir, `${viewId}.png`) : resolve(draftDir, image.url);
     const entry = {
       filename,
       localPath: existsSync(candidate) ? candidate : null,
@@ -103,9 +100,7 @@ export default function remarkLikeC4Mdx(options = {}) {
     !(/^([a-z]+:)?\/\//i.test(n.url) || n.url.startsWith("data:"));
 
   const soleImage = (node) =>
-    node.type === "paragraph" &&
-    node.children?.length === 1 &&
-    isLocalImage(node.children[0])
+    node.type === "paragraph" && node.children?.length === 1 && isLocalImage(node.children[0])
       ? node.children[0]
       : null;
 

@@ -92,7 +92,9 @@ export async function verifyGithubOidcWith(
     // Signature/exp/iss/aud failure, JWKS fetch failure, or a raw opaque token
     // that isn't a JWT. Log the reason (no token) so a rejection is diagnosable
     // in the Function logs — the caller only sees a generic "invalid" error.
-    console.warn(`[github-oidc] token verification failed: ${err instanceof Error ? `${err.name}: ${err.message}` : String(err)}`);
+    console.warn(
+      `[github-oidc] token verification failed: ${err instanceof Error ? `${err.name}: ${err.message}` : String(err)}`,
+    );
     return null;
   }
 }
@@ -126,10 +128,16 @@ export function assertRegisterAllowed(claims: GithubOidcClaims): void {
     );
   }
   if (claims.repository !== allowedRepo) {
-    throw new ConnectError("OIDC token repository is not allowed to register versions", Code.PermissionDenied);
+    throw new ConnectError(
+      "OIDC token repository is not allowed to register versions",
+      Code.PermissionDenied,
+    );
   }
   if (!claims.environment || !allowedEnvs.includes(claims.environment)) {
-    throw new ConnectError("OIDC token environment is not allowed to register versions", Code.PermissionDenied);
+    throw new ConnectError(
+      "OIDC token environment is not allowed to register versions",
+      Code.PermissionDenied,
+    );
   }
 }
 
@@ -140,6 +148,8 @@ export function assertRegisterAllowed(claims: GithubOidcClaims): void {
  * the mock auth provider that is refused in production.
  */
 export function isRegisterDevOpen(): boolean {
-  const configured = !!process.env.OIDC_ALLOWED_REPO?.trim() && parseCsv(process.env.OIDC_ALLOWED_ENVIRONMENTS).length > 0;
+  const configured =
+    !!process.env.OIDC_ALLOWED_REPO?.trim() &&
+    parseCsv(process.env.OIDC_ALLOWED_ENVIRONMENTS).length > 0;
   return !configured && process.env.NODE_ENV !== "production";
 }

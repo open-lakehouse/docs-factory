@@ -4,7 +4,7 @@
 // Thread messages. These cover N-level nesting: replies are emitted as a flat
 // list in depth-first pre-order, each carrying its parent_id, and roots split
 // into resolved/orphaned buckets.
-import { expect, test, describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { assembleThreads, type CommentRow, type ResolutionRow } from "./comments.js";
 
 /** Minimal CommentRow factory — only the fields assembleThreads reads. */
@@ -46,12 +46,7 @@ describe("assembleThreads nesting", () => {
     // ├─ a
     // │  └─ a1
     // └─ b
-    const comments: CommentRow[] = [
-      row("r", null),
-      row("a", "r"),
-      row("a1", "a"),
-      row("b", "r"),
-    ];
+    const comments: CommentRow[] = [row("r", null), row("a", "r"), row("a1", "a"), row("b", "r")];
     const { threads, orphaned } = assembleThreads(ref, comments, []);
     expect(orphaned).toHaveLength(0);
     expect(threads).toHaveLength(1);

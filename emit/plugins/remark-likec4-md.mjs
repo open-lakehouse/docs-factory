@@ -51,15 +51,12 @@ export default function remarkLikeC4Md(options = {}) {
 
   const makeEntry = (image) => {
     const filename = basename(image.url);
-    const titleM =
-      typeof image.title === "string" ? image.title.match(LIKEC4_TITLE_RE) : null;
+    const titleM = typeof image.title === "string" ? image.title.match(LIKEC4_TITLE_RE) : null;
     const viewId = titleM ? titleM[1] : null;
     // A likec4= image resolves to the freshly exported <viewId>.png; anything
     // else resolves to its committed file next to the draft.
     const candidate =
-      viewId && likec4Dir
-        ? join(likec4Dir, `${viewId}.png`)
-        : resolve(draftDir, image.url);
+      viewId && likec4Dir ? join(likec4Dir, `${viewId}.png`) : resolve(draftDir, image.url);
     const entry = {
       filename,
       localPath: existsSync(candidate) ? candidate : null,

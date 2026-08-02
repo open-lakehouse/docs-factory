@@ -1,12 +1,7 @@
 /**
  * remark-journey — render a `::::journey` container as a Step 1 → 2 → … timeline.
  */
-import {
-  injectImport,
-  jsxFlow,
-  stringAttr,
-  walkTree,
-} from "./lib/mdx-helpers.mjs";
+import { injectImport, jsxFlow, stringAttr, walkTree } from "./lib/mdx-helpers.mjs";
 
 const IMPORT_SOURCE = "@/components/journey";
 
@@ -55,6 +50,10 @@ export default function remarkJourney() {
       }
     });
 
-    injectImport(tree, { names: ["Journey", "JourneyStep"], source: IMPORT_SOURCE, used: upgraded });
+    injectImport(tree, {
+      names: ["Journey", "JourneyStep"],
+      source: IMPORT_SOURCE,
+      used: upgraded,
+    });
   };
 }

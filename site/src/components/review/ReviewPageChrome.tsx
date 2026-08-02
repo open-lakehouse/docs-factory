@@ -1,10 +1,13 @@
 // Shared page metadata + review controls. The review workspace keeps this
 // visible for page context; regular content pages show it only in review mode.
 // The last-updated day opens a compact Merkle version history on hover.
-import { useMemo, useState } from "react";
+
+import { type Timestamp, timestampDate } from "@bufbuild/protobuf/wkt";
 import { useQuery } from "@connectrpc/connect-query";
-import { timestampDate, type Timestamp } from "@bufbuild/protobuf/wkt";
 import { FilePlus2, GitCommitHorizontal, History } from "lucide-react";
+import { useMemo, useState } from "react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import type { ContentPage } from "../../content";
 import {
   ContentArea,
   type ContentRef,
@@ -14,19 +17,13 @@ import {
   listDrafts,
   listVersions,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import type { ContentPage } from "../../content";
 import { useAuth } from "../../lib/auth-context";
 import { EffectiveStatusBadge } from "../../lib/effective-status";
 import { sameRef } from "../../lib/review-queries";
 import AuthorBadge from "../AuthorBadge";
 import { FrontmatterStatusBadge } from "../StatusBadge";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import ReviewControls from "./ReviewControls";
 import RequestReviewControl from "./RequestReviewControl";
+import ReviewControls from "./ReviewControls";
 
 interface ReviewPageChromeProps {
   contentRef: ContentRef;
@@ -91,11 +88,7 @@ function LastUpdatedWithHistory({
   lastUpdated: string;
 }) {
   const [open, setOpen] = useState(false);
-  const { data, isLoading } = useQuery(
-    listVersions,
-    { ref: contentRef },
-    { enabled: open },
-  );
+  const { data, isLoading } = useQuery(listVersions, { ref: contentRef }, { enabled: open });
   const rows = useMemo(
     () => compactVersionRows(data?.versions ?? []).slice(0, 12),
     [data?.versions],
@@ -165,10 +158,7 @@ export default function ReviewPageChrome({
         {/* Compact chrome leads with one effective status. Dual-axis display
             lives in detailed listings (blog pipeline, ContentTable). */}
         {reviewActive && (
-          <EffectiveStatusBadge
-            frontmatterStatus={fm.status}
-            reviewState={summary?.reviewState}
-          />
+          <EffectiveStatusBadge frontmatterStatus={fm.status} reviewState={summary?.reviewState} />
         )}
         {!reviewActive && fm.status && <FrontmatterStatusBadge status={fm.status} />}
         {isBlog && fm.author && <AuthorBadge byline={fm.author} />}

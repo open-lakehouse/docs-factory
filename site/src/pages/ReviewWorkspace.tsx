@@ -4,9 +4,9 @@
 // dashboard also stays reachable at /review/dashboard.
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../lib/auth-context";
 import Shell from "../components/layout/Shell";
 import WorkspaceShell from "../components/review/workspace/WorkspaceShell";
+import { useAuth } from "../lib/auth-context";
 import ReviewDashboard from "./ReviewDashboard";
 
 /** True on narrow screens (matches the DocAside `max-[960px]` breakpoint). */

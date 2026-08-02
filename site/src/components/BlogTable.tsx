@@ -1,11 +1,11 @@
 import { FileText, Layers } from "lucide-react";
 import { Link } from "react-router-dom";
-import TagList from "./TagList";
+import type { BlogSeriesGroup, ContentPage } from "../content";
+import type { ContentVisibility } from "../lib/content-visibility";
 import AuthorBadge from "./AuthorBadge";
 import BlogPostDetail from "./BlogPostDetail";
 import ContentTable, { type ContentRow } from "./ContentTable";
-import type { ContentVisibility } from "../lib/content-visibility";
-import type { BlogSeriesGroup, ContentPage } from "../content";
+import TagList from "./TagList";
 
 interface BlogTableProps {
   series: BlogSeriesGroup[];

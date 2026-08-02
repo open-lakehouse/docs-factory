@@ -14,11 +14,11 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
+import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs";
+import { canonicalUrl, metaDescription, siteOrigin, twinUrl } from "../src/content-core/head.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
-import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
 import { DIATAXIS } from "../src/content-core/vocab.mjs";
-import { canonicalUrl, twinUrl, metaDescription, siteOrigin } from "../src/content-core/head.mjs";
+import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
 import { twinPathForHref } from "./build-md-twins.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -128,7 +128,9 @@ function main() {
   mkdirSync(distDir, { recursive: true });
   writeFileSync(resolve(distDir, "llms.txt"), renderLlmsIndex(entries));
   writeFileSync(resolve(distDir, "llms-full.txt"), renderLlmsFull(entries, twinBody));
-  console.log(`build-site-llmstxt: wrote llms.txt + llms-full.txt (${entries.length} pages) into ${relative(siteRoot, distDir)}/.`);
+  console.log(
+    `build-site-llmstxt: wrote llms.txt + llms-full.txt (${entries.length} pages) into ${relative(siteRoot, distDir)}/.`,
+  );
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

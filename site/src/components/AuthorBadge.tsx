@@ -1,11 +1,7 @@
 import { Globe } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { getAuthors, type Author, type AuthorLinks } from "../authors";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
+import { type Author, type AuthorLinks, getAuthors } from "../authors";
 import { initials } from "../lib/initials";
 
 /* lucide-react ships no brand marks, so inline the three we need. */
@@ -91,11 +87,7 @@ function AuthorChip({ author }: { author: Author }) {
   return (
     <HoverCard openDelay={120} closeDelay={80}>
       <HoverCardTrigger asChild>
-        <span
-          className="author-chip"
-          tabIndex={0}
-          onClick={(e) => e.stopPropagation()}
-        >
+        <span className="author-chip" tabIndex={0} onClick={(e) => e.stopPropagation()}>
           <AuthorAvatar author={author} className="author-chip-avatar" />
           <span className="author-chip-name">{author.name}</span>
         </span>

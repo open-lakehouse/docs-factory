@@ -3,9 +3,9 @@
 // numeric account id is stored in github_id and is NEVER masqueraded as a
 // github_login (a failed /user resolution leaves github_login null). Run with
 // `bun test`.
-import { expect, test, describe, afterEach } from "bun:test";
-import { persistUserIdentity } from "./github-identity.js";
+import { afterEach, describe, expect, test } from "bun:test";
 import type { Queryable } from "../db.js";
+import { persistUserIdentity } from "./github-identity.js";
 
 /** A fake `sql` tag that records interpolated values and returns []. */
 function fakeSql() {
@@ -68,10 +68,9 @@ describe("persistUserIdentity", () => {
       if (String(url).endsWith("/user")) {
         return new Response(JSON.stringify({ login: "dev" }), { status: 200 });
       }
-      return new Response(
-        JSON.stringify([{ email: "verified@x.io", verified: true }]),
-        { status: 200 },
-      );
+      return new Response(JSON.stringify([{ email: "verified@x.io", verified: true }]), {
+        status: 200,
+      });
     }) as typeof fetch;
     const { tag } = fakeSql();
     const row = await persistUserIdentity(tag, {

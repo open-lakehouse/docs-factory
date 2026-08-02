@@ -1,11 +1,11 @@
 // Overview tab-token helpers: synthetic workspace item for the blog pipeline,
 // ProductChanges rollup, and latest-comments inbox. Locks the group key, view
 // labels, and bare-token fallback.
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import {
+  isOverviewGroup,
   OVERVIEW_GROUP_KEY,
   OVERVIEW_VIEWS,
-  isOverviewGroup,
   overviewTabsParam,
   overviewToken,
   overviewViewLabel,
@@ -17,9 +17,7 @@ test("overview tokens use the synthetic group key", () => {
   expect(overviewToken("product")).toBe("overview#product");
   expect(overviewToken("comments")).toBe("overview#comments");
   expect(OVERVIEW_VIEWS).toEqual(["pipeline", "product", "comments"]);
-  expect(overviewTabsParam()).toBe(
-    "overview#pipeline,overview#product,overview#comments",
-  );
+  expect(overviewTabsParam()).toBe("overview#pipeline,overview#product,overview#comments");
 });
 
 test("bare overview falls back to pipeline", () => {

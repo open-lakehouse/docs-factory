@@ -3,12 +3,12 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { streamSSE } from "hono/streaming";
-import { mountConnect } from "./connect-hono.js";
-import { registerReviewService } from "./services/review.js";
 import { selectProvider } from "./auth/provider.js";
+import { mountConnect } from "./connect-hono.js";
 import { listenerClient } from "./db.js";
-import { COMMENTS_CHANNEL, sseEnabled } from "./notify.js";
 import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
+import { COMMENTS_CHANNEL, sseEnabled } from "./notify.js";
+import { registerReviewService } from "./services/review.js";
 
 export async function createApp(): Promise<Hono> {
   const app = new Hono();

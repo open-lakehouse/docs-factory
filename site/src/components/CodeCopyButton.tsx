@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { useState } from "react";
 import { copyToClipboard } from "../lib/clipboard";
 
 /** Copy button for a build-time-highlighted code block. */

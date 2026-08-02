@@ -24,11 +24,12 @@
  *     the `canonical:` line (it alone knows identity/origin), so this module stays
  *     free of any site/content-core dependency.
  */
-import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
+
 import remarkCalloutsMd from "../plugins/remark-callouts-md.mjs";
-import remarkJourneyMd from "../plugins/remark-journey-md.mjs";
 import remarkCodeCaption from "../plugins/remark-code-caption.mjs";
+import remarkJourneyMd from "../plugins/remark-journey-md.mjs";
 import remarkLikeC4Md from "../plugins/remark-likec4-md.mjs";
+import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
 
 /** Where the twin driver serves the regenerated LikeC4 PNGs from. Kept here so the
  * driver's PNG copy destination and this renderImage URL agree on one path. */

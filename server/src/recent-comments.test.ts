@@ -3,8 +3,8 @@
 // recentCommentFromRow is pure — it maps a joined DB row into a RecentComment
 // message. These cover the deep-link context (ref + anchor + heading), the
 // title/heading fallbacks, and that the embedded Comment is populated.
-import { expect, test, describe } from "bun:test";
-import { recentCommentFromRow, type RecentCommentRow } from "./comments.js";
+import { describe, expect, test } from "bun:test";
+import { type RecentCommentRow, recentCommentFromRow } from "./comments.js";
 import { ContentArea } from "./gen/docs_factory/review/v1/messages_pb.js";
 
 /** Minimal RecentCommentRow factory. */

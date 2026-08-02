@@ -21,13 +21,12 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
-import { unified } from "unified";
-import remarkParse from "remark-parse";
-import remarkStringify from "remark-stringify";
-import remarkGfm from "remark-gfm";
 import remarkDirective from "remark-directive";
 import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+import { unified } from "unified";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 
 // Shared, target-agnostic transforms — imported verbatim from the preview.
@@ -79,12 +78,8 @@ const COMMENT_RE = /^\s*<!--[\s\S]*-->\s*$/;
  * its trailing comment is removed. */
 function stripComments(node) {
   if (!node.children) return;
-  const hadComment = node.children.some(
-    (c) => c.type === "html" && COMMENT_RE.test(c.value),
-  );
-  node.children = node.children.filter(
-    (c) => !(c.type === "html" && COMMENT_RE.test(c.value)),
-  );
+  const hadComment = node.children.some((c) => c.type === "html" && COMMENT_RE.test(c.value));
+  node.children = node.children.filter((c) => !(c.type === "html" && COMMENT_RE.test(c.value)));
   // A comment removed from mid-prose can leave a dangling whitespace-only text
   // node (the space that preceded it). Trim leading/trailing whitespace-only text
   // children so remark-stringify doesn't emit a stray `&#x20;`.
@@ -147,8 +142,7 @@ function remarkPrelude(capture, opts = {}) {
       (n) =>
         !(
           n.type === "paragraph" &&
-          (n.children.length === 0 ||
-            n.children.every((c) => c.type === "text" && !c.value.trim()))
+          (n.children.length === 0 || n.children.every((c) => c.type === "text" && !c.value.trim()))
         ),
     );
     if (title && titleAsH1) {
@@ -165,8 +159,7 @@ function remarkPrelude(capture, opts = {}) {
     if (frontmatterFn) {
       const mapped = frontmatterFn(capture.frontmatter ?? {});
       if (mapped != null) {
-        const yaml =
-          typeof mapped === "string" ? mapped : stringifyYaml(mapped).replace(/\n$/, "");
+        const yaml = typeof mapped === "string" ? mapped : stringifyYaml(mapped).replace(/\n$/, "");
         tree.children.unshift({ type: "yaml", value: yaml });
       }
     }
@@ -434,7 +427,9 @@ async function main() {
   const rel = (p) => p.replace(REPO_ROOT + "/", "");
   console.log(`emitted (${targetName}):`);
   console.log(`  ${rel(outPath)}`);
-  console.log(`  ${rel(assetsPath)}  (${manifest.length} image${manifest.length === 1 ? "" : "s"})`);
+  console.log(
+    `  ${rel(assetsPath)}  (${manifest.length} image${manifest.length === 1 ? "" : "s"})`,
+  );
   if (webComponentPath) console.log(`  ${rel(webComponentPath)}  (LikeC4 web component)`);
   console.log(
     existing

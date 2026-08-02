@@ -3,10 +3,10 @@
 // a temp fixture: a `:::callout`, a `:::tldr`, and a `file=` snippet fence must all
 // flatten/inline into portable markdown, and a doc with no images yields an empty
 // manifest (no LikeC4 export → no Chromium needed).
-import { test, expect } from "bun:test";
-import { mkdtempSync, writeFileSync, mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { expect, test } from "bun:test";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { emitOne } from "../../../../emit/emit.mjs";
 import mdTwin from "../../../../emit/targets/md-twin.mjs";
 

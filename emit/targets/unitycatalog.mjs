@@ -42,8 +42,18 @@ function authorSlug(name) {
 }
 
 const MONTHS = [
-  "January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 /** Reformat an ISO date (`2026-07-03`) to the UC human string (`July 3, 2026`).

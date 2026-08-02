@@ -14,24 +14,24 @@
 // the active tab (see the Phase 0 refactor).
 import { useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { cn } from "@/lib/utils";
+import { type ContentPage, findBlog, findDoc } from "../../../content";
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { SelectionProvider } from "../selection-context";
-import { ReviewProvider } from "../review-context";
-import ReviewSurfaces from "../ReviewSurfaces";
-import CommentSidebar from "../CommentSidebar";
-import { ScrollContainerProvider } from "../scroll-container-context";
-import { useRightPaneSlot } from "./right-pane-slot";
-import { useDeepLinkTarget } from "./use-deep-link-target";
-import { tabDomId, tabPanelDomId } from "./tab-ids";
-import ReviewPageChrome from "../ReviewPageChrome";
+import { useScriptsIndex } from "../../../lib/scripts-index";
 import MdxProvider from "../../../MdxProvider";
 import RelatedContent from "../../RelatedContent";
-import { findBlog, findDoc, type ContentPage } from "../../../content";
-import { cn } from "@/lib/utils";
-import type { TabView } from "./view-token";
-import { useScriptsIndex } from "../../../lib/scripts-index";
+import CommentSidebar from "../CommentSidebar";
+import ReviewPageChrome from "../ReviewPageChrome";
+import ReviewSurfaces from "../ReviewSurfaces";
+import { ReviewProvider } from "../review-context";
+import { ScrollContainerProvider } from "../scroll-container-context";
+import { SelectionProvider } from "../selection-context";
 import MarkdownTwinView from "./MarkdownTwinView";
+import { useRightPaneSlot } from "./right-pane-slot";
 import ScriptView from "./ScriptView";
+import { tabDomId, tabPanelDomId } from "./tab-ids";
+import { useDeepLinkTarget } from "./use-deep-link-target";
+import type { TabView } from "./view-token";
 
 function pageFor(ref: ContentRef): ContentPage | undefined {
   return ref.area === ContentArea.BLOGS
@@ -60,7 +60,12 @@ export default function ReviewTab({
   }
   if (view.kind === "script") {
     return (
-      <ScriptTab token={token} contentRef={contentRef} fetchUrl={view.fetchUrl} isActive={isActive} />
+      <ScriptTab
+        token={token}
+        contentRef={contentRef}
+        fetchUrl={view.fetchUrl}
+        isActive={isActive}
+      />
     );
   }
   return <RenderedTab token={token} contentRef={contentRef} isActive={isActive} />;
@@ -82,7 +87,10 @@ function MarkdownTwinTab({
       role="tabpanel"
       aria-labelledby={tabDomId(token)}
       tabIndex={isActive ? 0 : -1}
-      className={cn("flex min-h-0 flex-1 flex-col focus-visible:outline-none", !isActive && "hidden")}
+      className={cn(
+        "flex min-h-0 flex-1 flex-col focus-visible:outline-none",
+        !isActive && "hidden",
+      )}
       hidden={!isActive}
     >
       <MarkdownTwinView contentRef={contentRef} />

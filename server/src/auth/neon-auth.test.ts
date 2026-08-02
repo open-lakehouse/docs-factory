@@ -5,9 +5,9 @@
 // HttpOnly, SameSite=None). The resolver must find the token whether or not the
 // `__Secure-`/`__Host-` prefix is present (so http dev and https prod share code)
 // and honor an Authorization: Bearer header.
-import { expect, test, describe } from "bun:test";
-import { sessionToken, elevateRoleForAdmin } from "./neon-auth.js";
+import { describe, expect, test } from "bun:test";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
+import { elevateRoleForAdmin, sessionToken } from "./neon-auth.js";
 
 function headers(init: Record<string, string>): Headers {
   return new Headers(init);

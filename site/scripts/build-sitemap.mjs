@@ -11,10 +11,10 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { splitFrontmatter, isPublic } from "../src/content-core/frontmatter.mjs";
+import { isPublic, splitFrontmatter } from "../src/content-core/frontmatter.mjs";
+import { canonicalUrl, siteOrigin } from "../src/content-core/head.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
 import { walkBlogs, walkContent } from "../src/content-core/walk.mjs";
-import { canonicalUrl, siteOrigin } from "../src/content-core/head.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
@@ -66,10 +66,15 @@ export function sitemapUrls(pages, origin = siteOrigin()) {
 }
 
 function renderSitemap(urls) {
-  const lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
+  const lines = [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  ];
   for (const { loc, lastmod: lm } of urls) {
     lines.push(
-      lm ? `  <url><loc>${loc}</loc><lastmod>${lm}</lastmod></url>` : `  <url><loc>${loc}</loc></url>`,
+      lm
+        ? `  <url><loc>${loc}</loc><lastmod>${lm}</lastmod></url>`
+        : `  <url><loc>${loc}</loc></url>`,
     );
   }
   lines.push("</urlset>", "");
@@ -98,7 +103,9 @@ function main() {
   mkdirSync(distDir, { recursive: true });
   writeFileSync(resolve(distDir, "sitemap.xml"), renderSitemap(urls));
   writeFileSync(resolve(distDir, "robots.txt"), renderRobots(origin));
-  console.log(`build-sitemap: wrote sitemap.xml (${urls.length} urls) + robots.txt into ${relative(siteRoot, distDir)}/.`);
+  console.log(
+    `build-sitemap: wrote sitemap.xml (${urls.length} urls) + robots.txt into ${relative(siteRoot, distDir)}/.`,
+  );
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

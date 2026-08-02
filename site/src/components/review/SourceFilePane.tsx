@@ -5,19 +5,15 @@
 // covers are marked so reviewers see what the reader sees. Picking a line opens
 // the shared composer (via the selection context) with a code selector, so the
 // resulting thread lands in the same sidebar as in-doc code comments.
-import { useState } from "react";
+
 import { useQuery } from "@connectrpc/connect-query";
 import { MessageSquarePlus } from "lucide-react";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { getSourceFile } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
+import { getSourceFile } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { hashLine } from "../../lib/content-ref";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { useSelectionState } from "./selection-context";
 
 export default function SourceFilePane({
@@ -63,7 +59,12 @@ export default function SourceFilePane({
   }
 
   return (
-    <Dialog open onOpenChange={(next) => { if (!next) onClose(); }}>
+    <Dialog
+      open
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
+    >
       <DialogContent className="flex max-h-[85vh] max-w-3xl flex-col gap-0 overflow-hidden p-0">
         <DialogHeader className="source-pane-head shrink-0 border-b px-4 py-3">
           <DialogTitle className="source-pane-path font-mono text-sm">{path}</DialogTitle>

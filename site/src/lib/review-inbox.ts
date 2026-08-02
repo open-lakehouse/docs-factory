@@ -3,12 +3,12 @@
 // (to me / by me). Lifted from ReviewDashboard so the dashboard and the review
 // workspace's right pane read the same cached queries.
 import { useQuery } from "@connectrpc/connect-query";
+import { type DraftSummary, ReviewState } from "../gen/docs_factory/review/v1/messages_pb";
 import {
   listDrafts,
   listRecentComments,
   listReviewRequests,
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { ReviewState, type DraftSummary } from "../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "./auth-context";
 
 const READY = "ready";
@@ -49,7 +49,6 @@ export function useReviewInbox() {
     recent: recent.data?.comments ?? [],
     toMe: toMe.data?.requests ?? [],
     byMe: byMe.data?.requests ?? [],
-    isLoading:
-      drafts.isLoading || recent.isLoading || toMe.isLoading || byMe.isLoading,
+    isLoading: drafts.isLoading || recent.isLoading || toMe.isLoading || byMe.isLoading,
   };
 }

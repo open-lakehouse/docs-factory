@@ -2,12 +2,7 @@
  * remark-callouts — turn `:::tip` / `:::warning` / … container directives into
  * `<Callout type="…">` boxes.
  */
-import {
-  injectImport,
-  jsxFlow,
-  stringAttr,
-  takeDirectiveLabel,
-} from "./lib/mdx-helpers.mjs";
+import { injectImport, jsxFlow, stringAttr, takeDirectiveLabel } from "./lib/mdx-helpers.mjs";
 
 const TYPES = new Set(["tip", "warning", "note", "info", "caution", "danger"]);
 const IMPORT_SOURCE = "@/components/callout";

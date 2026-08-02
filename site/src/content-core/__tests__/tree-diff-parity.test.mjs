@@ -11,7 +11,7 @@
 // functions — indexTree, entry, diffTrees — are character-for-character
 // identical. If a future fix touches one copy's diff semantics without the
 // other, CI fails here instead of the two review surfaces silently disagreeing.
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -35,7 +35,7 @@ function extractFn(src, name) {
   const decl = new RegExp(`(export )?function ${name}\\b`);
   const m = decl.exec(src);
   if (!m) return "";
-  let i = src.indexOf("{", m.index);
+  const i = src.indexOf("{", m.index);
   if (i < 0) return "";
   let depth = 0;
   for (let j = i; j < src.length; j++) {
@@ -59,7 +59,7 @@ function normalizeAlgorithm(fnText) {
     .replace(/MerkleNode/g, "Node")
     .replace(/IndexedNode/g, "Indexed")
     .replace(/node\.children\?\./g, "node.children.") // optional vs required child access
-    .replace(/:\s*[A-Za-z0-9_<>\[\]| ]+(?=[),{])/g, "") // strip TS type annotations
+    .replace(/:\s*[A-Za-z0-9_<>[\]| ]+(?=[),{])/g, "") // strip TS type annotations
     .replace(/\s+/g, " ")
     .trim();
 }

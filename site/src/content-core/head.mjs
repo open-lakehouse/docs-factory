@@ -64,7 +64,10 @@ function firstParagraph(body) {
   const cleaned = body.replace(/<!--[\s\S]*?-->/g, "");
   const blocks = cleaned.split(/\r?\n\s*\r?\n/);
   for (const block of blocks) {
-    const lines = block.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const lines = block
+      .split(/\r?\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
     if (lines.length === 0) continue;
     if (/^(#{1,6}\s|[-*+]\s|\d+\.\s|>|```|:::|::::|\||!\[|<)/.test(lines[0])) continue;
     const text = lines.join(" ");
@@ -206,7 +209,9 @@ export function pageHead({ identity, meta, body = "", origin = siteOrigin(), typ
   const url = canonicalUrl(identity, origin);
   const title = pageTitle(meta, identity);
   const description = metaDescription(meta, body);
-  const ogType = type || (identity?.area === "blogs" ? "article" : identity?.area === "site" ? "website" : "article");
+  const ogType =
+    type ||
+    (identity?.area === "blogs" ? "article" : identity?.area === "site" ? "website" : "article");
   return {
     title,
     description,

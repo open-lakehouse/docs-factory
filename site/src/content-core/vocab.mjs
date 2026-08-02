@@ -8,8 +8,8 @@
  * the LikeC4 model (architecture/dist/model.json) — a different authority.
  */
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 // site/src/content-core -> repo root -> content/vocab.json

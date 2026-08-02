@@ -9,11 +9,12 @@
  * at load. Browser code imports the pure barrel `./index.mjs` (or leaf paths).
  * See docs/design/build-pipeline.md.
  */
-export * from "./index.mjs";
-export * from "./hash.mjs";
+
 export * from "./frontmatter.mjs";
-export * from "./walk.mjs";
+export * from "./hash.mjs";
+export * from "./index.mjs";
 export * from "./pipeline.mjs";
-export * from "./tree.mjs";
 export * from "./topics.mjs";
-export { vocab, DIATAXIS, PROJECTS, STATUSES, PAGE_WORTHY_KINDS } from "./vocab.mjs";
+export * from "./tree.mjs";
+export { DIATAXIS, PAGE_WORTHY_KINDS, PROJECTS, STATUSES, vocab } from "./vocab.mjs";
+export * from "./walk.mjs";

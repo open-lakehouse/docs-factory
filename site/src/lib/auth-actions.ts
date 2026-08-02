@@ -32,8 +32,9 @@
 //
 // Locally, sign-in is unnecessary — the dev persona switcher (x-dev-persona)
 // stands in for a real login, so these are effectively no-ops in dev.
-import { createInternalNeonAuth } from "@neondatabase/neon-js/auth";
+
 import { BetterAuthVanillaAdapter } from "@neondatabase/neon-js";
+import { createInternalNeonAuth } from "@neondatabase/neon-js/auth";
 
 /** The Neon Auth URL (full, incl. path), or undefined until provisioned. */
 function authUrl(): string | undefined {

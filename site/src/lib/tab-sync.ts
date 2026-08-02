@@ -46,11 +46,7 @@ function getStore(syncKey: string, fallback: string): SyncStore {
 }
 
 /** Subscribe to a sync group; returns the current value and an unsubscribe fn. */
-export function subscribeTabSync(
-  syncKey: string,
-  labels: string[],
-  onChange: Listener,
-): string {
+export function subscribeTabSync(syncKey: string, labels: string[], onChange: Listener): string {
   const fallback = labels[0] ?? "";
   const store = getStore(syncKey, fallback);
   const valid = labels.includes(store.value) ? store.value : fallback;

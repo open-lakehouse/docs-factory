@@ -4,23 +4,24 @@
 // open tabs stay mounted in the middle column; only the active one is visible
 // and "live" (see ReviewTab). The right pane is collapsible (persisted); it
 // auto-collapses in inline review mode where comments live in the article.
-import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
+
 import { PanelRight } from "lucide-react";
+import { type CSSProperties, useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
-import { useSidebarWidth } from "../../../lib/useSidebarWidth";
 import {
   REVIEW_DISPLAY_MODE_EVENT,
-  readReviewDisplayMode,
   type ReviewDisplayMode,
+  readReviewDisplayMode,
 } from "../../../lib/review-display-mode";
+import { useSidebarWidth } from "../../../lib/useSidebarWidth";
 import { ExpansionProvider } from "./expansion-context";
-import { WorkspaceTabsProvider, useWorkspaceTabs } from "./workspace-tabs-context";
-import { RightPaneSlotContext } from "./right-pane-slot";
-import ReviewTree from "./ReviewTree";
-import TabBar from "./TabBar";
-import ReviewTab from "./ReviewTab";
 import OverviewTab from "./OverviewTab";
+import ReviewTab from "./ReviewTab";
+import ReviewTree from "./ReviewTree";
 import RightPane from "./RightPane";
+import { RightPaneSlotContext } from "./right-pane-slot";
+import TabBar from "./TabBar";
+import { useWorkspaceTabs, WorkspaceTabsProvider } from "./workspace-tabs-context";
 
 const RIGHT_COLLAPSED_KEY = "docs.review.right-collapsed";
 
@@ -99,8 +100,18 @@ function WorkspaceLayout() {
     return () => window.removeEventListener(REVIEW_DISPLAY_MODE_EVENT, onMode);
   }, [setRightCollapsed]);
 
-  const left = useSidebarWidth({ storageKey: "docs.review.left-w", min: 220, max: 480, default: 288 });
-  const right = useSidebarWidth({ storageKey: "docs.review.right-w", min: 280, max: 640, default: 380 });
+  const left = useSidebarWidth({
+    storageKey: "docs.review.left-w",
+    min: 220,
+    max: 480,
+    default: 288,
+  });
+  const right = useSidebarWidth({
+    storageKey: "docs.review.right-w",
+    min: 280,
+    max: 640,
+    default: 380,
+  });
 
   // Left handle: width tracks the pointer's distance from the container's left.
   const startLeftDrag = useCallback(

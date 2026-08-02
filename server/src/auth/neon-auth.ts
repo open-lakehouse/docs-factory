@@ -26,12 +26,12 @@
 // (anonymous) only when there is no valid JWT — auth is additive, so an
 // unauthenticated request simply sees published content.
 import { createRemoteJWKSet, jwtVerify } from "jose";
-import { db } from "../db.js";
 import { hasAdminRole, hasAnyContentGrant, lookupRole } from "../allowlist.js";
+import { db } from "../db.js";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
-import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 // GitHub @handle / verified-email resolution + persistence into user_identity.
 import { persistUserIdentity, readUserIdentity } from "./github-identity.js";
+import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 
 interface NeonIdentity {
   /** Stable Neon Auth user id — the key for authorship, allowlist + read-state. */

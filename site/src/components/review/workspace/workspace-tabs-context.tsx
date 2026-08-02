@@ -26,31 +26,26 @@
 // (hover, composer, pending selection) stays in each tab's own providers.
 import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useRef,
-  type ReactNode,
 } from "react";
 import { useSearchParams } from "react-router-dom";
+import { type ContentPage, findBlog, findDoc } from "../../../content";
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { findBlog, findDoc, type ContentPage } from "../../../content";
 import { useScriptsIndex } from "../../../lib/scripts-index";
 import { viewsFor } from "./item-views";
 import {
   OVERVIEW_VIEWS,
+  type OverviewView,
   overviewTabsParam,
   overviewToken,
   parseOverviewToken,
-  type OverviewView,
 } from "./overview-token";
-import {
-  parseTabToken,
-  refTokenOf,
-  tabTokenFor,
-  type TabView,
-} from "./view-token";
+import { parseTabToken, refTokenOf, type TabView, tabTokenFor } from "./view-token";
 
 export type OpenTab =
   | {
@@ -168,9 +163,7 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   // When soft-defaulting Overview, land on pipeline (first Overview view).
   const activeToken =
     (normalizedActive && tabs.some((t) => t.token === normalizedActive) && normalizedActive) ||
-    (parsedTabs.length > 0
-      ? parsedTabs[parsedTabs.length - 1].token
-      : overviewToken("pipeline"));
+    (parsedTabs.length > 0 ? parsedTabs[parsedTabs.length - 1].token : overviewToken("pipeline"));
 
   // Bare /review (no tabs) → Overview selected. replace:true so back doesn't
   // bounce through the empty landing state.
@@ -188,7 +181,10 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   }, [setParams]);
 
   const intent = useMemo<OpenIntent>(
-    () => ({ thread: params.get("thread") ?? undefined, anchor: params.get("anchor") ?? undefined }),
+    () => ({
+      thread: params.get("thread") ?? undefined,
+      anchor: params.get("anchor") ?? undefined,
+    }),
     [params],
   );
 
@@ -290,7 +286,10 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
     [setParams],
   );
 
-  const closeTab = useCallback((token: string) => closeTokens((t) => t.token === token), [closeTokens]);
+  const closeTab = useCallback(
+    (token: string) => closeTokens((t) => t.token === token),
+    [closeTokens],
+  );
   const closeGroup = useCallback(
     (groupKey: string) => closeTokens((t) => t.groupKey === groupKey),
     [closeTokens],

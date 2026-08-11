@@ -1,6 +1,6 @@
 // Unit tests for the pure last-maintainer invariant that manageAllowlist
 // hard-blocks (removing/demoting the sole maintainer). No DB. Run with `bun test`.
-import { expect, test, describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { removesLastMaintainer } from "./review.js";
 
 describe("removesLastMaintainer", () => {

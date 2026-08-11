@@ -14,16 +14,18 @@
  * by callers that have the frontmatter (see content.ts / sidebar.ts).
  */
 export {
-  parseDocPath,
-  orderKeyFromPath,
-  slugFromBlogPath,
-  projectFromPath,
   bucketFromPath,
+  orderKeyFromPath,
+  parseDocPath,
+  projectFromPath,
+  slugFromBlogPath,
   slugFromPath,
 } from "../content-core/identity.mjs";
 
 /** All doc file paths discovered at build time (keys from import.meta.glob).
  * This file is one level deeper than src/, hence `../../../content`. */
 export const docPaths = Object.keys(
-  import.meta.glob("../../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}", { eager: true }),
+  import.meta.glob("../../../content/{delta,unitycatalog,open-lakehouse}/**/*.{md,mdx}", {
+    eager: true,
+  }),
 ).filter((p) => !p.endsWith("/README.md"));

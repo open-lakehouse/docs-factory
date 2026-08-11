@@ -10,11 +10,11 @@
 // it defaults to true. The editor workspace keeps every open tab mounted but
 // passes isActive only to the active tab, so an inactive tab paints nothing
 // global over the active one.
-import { type RefObject } from "react";
+import type { RefObject } from "react";
 import type { ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
+import HeadingCommentAffordance from "./HeadingCommentAffordance";
 import InlineReviewSurface from "./InlineReviewSurface";
 import SelectionLayer from "./SelectionLayer";
-import HeadingCommentAffordance from "./HeadingCommentAffordance";
 import SourceFileLauncher from "./SourceFileLauncher";
 
 export default function ReviewSurfaces({
@@ -33,7 +33,11 @@ export default function ReviewSurfaces({
 }) {
   return (
     <>
-      <InlineReviewSurface articleRef={articleRef} isActive={isActive} highlightKey={highlightKey} />
+      <InlineReviewSurface
+        articleRef={articleRef}
+        isActive={isActive}
+        highlightKey={highlightKey}
+      />
       <SelectionLayer articleRef={articleRef} isActive={isActive} />
       <HeadingCommentAffordance articleRef={articleRef} isActive={isActive} />
       <SourceFileLauncher contentRef={contentRef} articleRef={articleRef} isActive={isActive} />

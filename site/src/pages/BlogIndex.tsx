@@ -1,22 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import Shell from "../components/layout/Shell";
 import BlogTable from "../components/BlogTable";
+import Shell from "../components/layout/Shell";
 import TagList from "../components/TagList";
-import {
-  blogPosts,
-  blogsBySeriesFiltered,
-  blogTags,
-  readingTimeMinutes,
-} from "../content";
-import { filterByScope, useScope } from "../scope";
+import { blogPosts, blogsBySeriesFiltered, blogTags, readingTimeMinutes } from "../content";
 import { useContentVisibility } from "../lib/content-visibility";
+import { filterByScope, useScope } from "../scope";
 
-function BlogReadingTime({
-  articleRef,
-}: {
-  articleRef: React.RefObject<HTMLElement | null>;
-}) {
+function BlogReadingTime({ articleRef }: { articleRef: React.RefObject<HTMLElement | null> }) {
   const [minutes, setMinutes] = useState(1);
 
   useEffect(() => {
@@ -34,7 +25,12 @@ export default function BlogIndex() {
   const { scopeId } = useScope();
   const vis = useContentVisibility();
   const activeTags = [
-    ...new Set(searchParams.getAll("tag").map((t) => t.trim()).filter(Boolean)),
+    ...new Set(
+      searchParams
+        .getAll("tag")
+        .map((t) => t.trim())
+        .filter(Boolean),
+    ),
   ];
   // Scope narrows first (blog is the fifth axis), then topic tags (AND), then
   // viewer visibility (anonymous viewers see only published posts). Filtering
@@ -59,9 +55,7 @@ export default function BlogIndex() {
 
   const toggleTag = (slug: string) => {
     setTags(
-      activeTags.includes(slug)
-        ? activeTags.filter((t) => t !== slug)
-        : [...activeTags, slug],
+      activeTags.includes(slug) ? activeTags.filter((t) => t !== slug) : [...activeTags, slug],
     );
   };
 
@@ -71,8 +65,8 @@ export default function BlogIndex() {
         <div className="index-scroll-header">
           <h1>Blog</h1>
           <p className="muted">
-            Narrative drafts on the Open Lakehouse — architecture, governance, and building
-            on open formats.
+            Narrative drafts on the Open Lakehouse — architecture, governance, and building on open
+            formats.
           </p>
 
           {allTags.length > 0 && (
@@ -80,11 +74,7 @@ export default function BlogIndex() {
               <div className="blog-tags-heading">
                 <p className="blog-tags-label">Topics</p>
                 {activeTags.length > 0 && (
-                  <button
-                    type="button"
-                    className="blog-tags-clear"
-                    onClick={() => setTags([])}
-                  >
+                  <button type="button" className="blog-tags-clear" onClick={() => setTags([])}>
                     Clear all
                   </button>
                 )}

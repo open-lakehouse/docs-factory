@@ -20,10 +20,7 @@ import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb
 import { refFromParam, refToParam } from "../../../lib/content-ref";
 
 /** Which view of a page a tab shows. `rendered` is the default (no `#` suffix). */
-export type TabView =
-  | { kind: "rendered" }
-  | { kind: "md" }
-  | { kind: "script"; fetchUrl: string };
+export type TabView = { kind: "rendered" } | { kind: "md" } | { kind: "script"; fetchUrl: string };
 
 /** The `#…` suffix for a view, or "" for the rendered view (bare ref token). */
 export function viewToParam(view: TabView): string {

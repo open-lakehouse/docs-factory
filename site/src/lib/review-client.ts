@@ -2,11 +2,11 @@
 // (provided via TransportProvider in main.tsx); a raw client is exported for
 // non-hook call sites. VITE_API_URL is the Neon Function URL in prod and the
 // local dev-server (http://localhost:8787) in dev.
-import { createClient, type Client } from "@connectrpc/connect";
+import { type Client, createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb";
-import { DEV_PERSONA_HEADER, readDevPersona } from "./dev-persona";
 import { sessionToken } from "./auth-actions";
+import { DEV_PERSONA_HEADER, readDevPersona } from "./dev-persona";
 
 // Same-origin in prod: Vercel rewrites `/api/*` → the Neon Function (see
 // site/vercel.json), so the browser never makes a cross-origin request. Auth
@@ -45,7 +45,4 @@ export const transport = createConnectTransport({
   },
 });
 
-export const reviewClient: Client<typeof ReviewService> = createClient(
-  ReviewService,
-  transport,
-);
+export const reviewClient: Client<typeof ReviewService> = createClient(ReviewService, transport);

@@ -8,18 +8,13 @@ import {
   FilePlus2,
   FileText,
   Heading,
+  type LucideIcon,
   Minus,
   Move,
   Pencil,
   Plus,
-  type LucideIcon,
 } from "lucide-react";
-import {
-  CHANGE_CLASS,
-  CHANGE_LABEL,
-  type ChangeKind,
-  type DiffEntry,
-} from "../../lib/tree-diff";
+import { CHANGE_CLASS, CHANGE_LABEL, type ChangeKind, type DiffEntry } from "../../lib/tree-diff";
 
 type VisibleChangeKind = Exclude<ChangeKind, "modified-descendants">;
 
@@ -137,14 +132,13 @@ export default function StructuralDiff({
               <ul className="version-diff-list">
                 {groupEntries.map((entry) => {
                   const extras = rowProps?.(entry) ?? {};
-                  const label =
-                    entry.kind === "heading" ? entry.label : nodeDescription(entry);
-                  const context =
-                    extras.context ??
-                    (entry.kind === "snippet" ? entry.label : null);
+                  const label = entry.kind === "heading" ? entry.label : nodeDescription(entry);
+                  const context = extras.context ?? (entry.kind === "snippet" ? entry.label : null);
                   return (
                     <li key={entry.key} className="version-diff-row">
-                      <span className={`version-diff-node-icon change-${CHANGE_CLASS[entry.change]}`}>
+                      <span
+                        className={`version-diff-node-icon change-${CHANGE_CLASS[entry.change]}`}
+                      >
                         <NodeIcon kind={entry.kind} change={entry.change} />
                       </span>
                       <span className="version-diff-copy">

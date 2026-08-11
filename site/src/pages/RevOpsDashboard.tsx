@@ -2,10 +2,7 @@
 // under Review → Overview in the workspace; keep this path as a redirect so old
 // bookmarks and the classic dashboard's "Blog pipeline" link still land there.
 import { Navigate } from "react-router-dom";
-import {
-  overviewTabsParam,
-  overviewToken,
-} from "../components/review/workspace/overview-token";
+import { overviewTabsParam, overviewToken } from "../components/review/workspace/overview-token";
 
 export default function RevOpsDashboard() {
   const search = new URLSearchParams({

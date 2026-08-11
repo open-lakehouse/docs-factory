@@ -5,8 +5,8 @@
 // and curated external references for hover cards and filtered navigation.
 import yaml from "js-yaml";
 import tagsRaw from "../../blogs/tags.yml?raw";
-import { resolveRef } from "./model-refs";
 import type { EntityCardData, ExternalRef } from "./components/EntityCard";
+import { resolveRef } from "./model-refs";
 
 export interface TagEntry {
   slug: string;

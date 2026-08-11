@@ -31,10 +31,7 @@ const SEP = " — ";
 
 /** Prepend "Step N — " to a heading node's inline children. */
 function numberHeading(heading, n) {
-  heading.children = [
-    { type: "text", value: `Step ${n}${SEP}` },
-    ...(heading.children ?? []),
-  ];
+  heading.children = [{ type: "text", value: `Step ${n}${SEP}` }, ...(heading.children ?? [])];
 }
 
 export default function remarkJourneyMd() {

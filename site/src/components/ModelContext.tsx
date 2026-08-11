@@ -6,19 +6,15 @@
 // PROSE is the surrounding doc page; this component contributes only the model
 // context that used to live on the standalone /explain/<id> route.
 
-import { Link } from "react-router-dom";
 import type { ElementModel } from "likec4/model";
-import MetaLinks from "./MetaLinks";
-import ExplainDiagram from "./ExplainDiagram";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Link } from "react-router-dom";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { backlinksFor } from "../backlinks";
 import { getExplainElement, kindLabel } from "../explain";
 import { explanationHref, hasExplanationPage } from "../explain-bindings";
-import { backlinksFor } from "../backlinks";
 import { bucketByDiataxis, DIATAXIS_LABELS, DIATAXIS_ORDER } from "../graph";
+import ExplainDiagram from "./ExplainDiagram";
+import MetaLinks from "./MetaLinks";
 
 // --- Neighbor helpers (SDK-derived, deterministic) --------------------------
 
@@ -55,15 +51,15 @@ function dedupe(els: ElementModel[]): ElementModel[] {
 }
 
 function incomingBy(el: ElementModel, kind: string): Neighbor[] {
-  return dedupe(
-    [...el.incoming()].filter((r) => r.kind === kind).map((r) => r.source),
-  ).map(toNeighbor);
+  return dedupe([...el.incoming()].filter((r) => r.kind === kind).map((r) => r.source)).map(
+    toNeighbor,
+  );
 }
 
 function outgoingBy(el: ElementModel, kind: string): Neighbor[] {
-  return dedupe(
-    [...el.outgoing()].filter((r) => r.kind === kind).map((r) => r.target),
-  ).map(toNeighbor);
+  return dedupe([...el.outgoing()].filter((r) => r.kind === kind).map((r) => r.target)).map(
+    toNeighbor,
+  );
 }
 
 interface ContextSection {
@@ -129,9 +125,7 @@ function ModelMeta({
             <tr>
               <th scope="row">Maturity</th>
               <td>
-                <span className={`maturity-badge maturity-${maturity}`}>
-                  {maturity}
-                </span>
+                <span className={`maturity-badge maturity-${maturity}`}>{maturity}</span>
               </td>
             </tr>
           )}
@@ -248,9 +242,7 @@ export default function ModelContext({
               <ul className="draft-list compact">
                 {buckets[key].map((page) => (
                   <li key={page.href}>
-                    <Link to={page.href}>
-                      {page.frontmatter.title ?? page.slug}
-                    </Link>
+                    <Link to={page.href}>{page.frontmatter.title ?? page.slug}</Link>
                   </li>
                 ))}
               </ul>
@@ -262,9 +254,7 @@ export default function ModelContext({
               <ul className="draft-list compact">
                 {blogBacklinks.map((page) => (
                   <li key={page.href}>
-                    <Link to={page.href}>
-                      {page.frontmatter.title ?? page.slug}
-                    </Link>
+                    <Link to={page.href}>{page.frontmatter.title ?? page.slug}</Link>
                   </li>
                 ))}
               </ul>

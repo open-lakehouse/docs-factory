@@ -4,10 +4,10 @@
 // (series → post, plus standalone). Each leaf carries the ContentRef the tab
 // system opens, plus frontmatter authoring status for the tree adornment.
 import { useMemo } from "react";
-import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { blogRef, docRef } from "../../../lib/content-ref";
 import { blogsBySeries, findDoc } from "../../../content";
-import { diataxisKeyOf, type DiataxisKey } from "../../../graph";
+import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
+import { type DiataxisKey, diataxisKeyOf } from "../../../graph";
+import { blogRef, docRef } from "../../../lib/content-ref";
 import { useVisibleDocNav } from "../../../sidebar";
 import { treeNodeId } from "./expansion-context";
 

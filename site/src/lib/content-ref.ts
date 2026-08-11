@@ -2,16 +2,17 @@
 // identity, and compute a heading's fingerprint the same way the version
 // manifest does (lowercased, whitespace-collapsed) so client-created comments
 // re-anchor consistently.
-import {
-  ContentArea,
-  type ContentRef,
-} from "../gen/docs_factory/review/v1/messages_pb";
+
 import { create } from "@bufbuild/protobuf";
-import { ContentRefSchema } from "../gen/docs_factory/review/v1/messages_pb";
 // normalizeText/fingerprint are canonical in content-core (shared with the
 // version manifest and server/src/anchor.ts). Import locally for use below AND
 // re-export so the browser comment client uses the exact same normalization.
-import { normalizeText, fingerprint } from "../content-core/normalize.mjs";
+import { fingerprint, normalizeText } from "../content-core/normalize.mjs";
+import {
+  ContentArea,
+  type ContentRef,
+  ContentRefSchema,
+} from "../gen/docs_factory/review/v1/messages_pb";
 
 export function blogRef(slug: string): ContentRef {
   return create(ContentRefSchema, { area: ContentArea.BLOGS, slug });
@@ -63,7 +64,7 @@ export function refFromParam(token: string): ContentRef | null {
   return null;
 }
 
-export { normalizeText, fingerprint };
+export { fingerprint, normalizeText };
 
 /**
  * Hash of a source line, matching content-core hashLineSync() / server anchor.ts
@@ -99,10 +100,7 @@ export interface CapturedSelector {
  * `start` is the quote's offset within the normalized section text (advisory).
  * Returns null if the selection is empty or lies outside the section.
  */
-export function captureSelector(
-  range: Range,
-  sectionEl: HTMLElement,
-): CapturedSelector | null {
+export function captureSelector(range: Range, sectionEl: HTMLElement): CapturedSelector | null {
   const quoteRaw = range.toString();
   if (!quoteRaw.trim()) return null;
 
@@ -115,7 +113,10 @@ export function captureSelector(
   const rawStart = pre.toString().length;
 
   const prefixRaw = sectionText.slice(Math.max(0, rawStart - CONTEXT), rawStart);
-  const suffixRaw = sectionText.slice(rawStart + quoteRaw.length, rawStart + quoteRaw.length + CONTEXT);
+  const suffixRaw = sectionText.slice(
+    rawStart + quoteRaw.length,
+    rawStart + quoteRaw.length + CONTEXT,
+  );
 
   const quote = normalizeText(quoteRaw);
   if (!quote) return null;
@@ -136,10 +137,7 @@ export function captureSelector(
  * only the `<h*>` misses body prose under it — QuoteHighlights, scroll jumps,
  * and document-order sorting all need this same root.
  */
-export function sectionRootForAnchor(
-  article: HTMLElement,
-  anchorSlug?: string,
-): HTMLElement {
+export function sectionRootForAnchor(article: HTMLElement, anchorSlug?: string): HTMLElement {
   if (!anchorSlug) return article;
   const heading = article.querySelector<HTMLElement>(`#${CSS.escape(anchorSlug)}`);
   return heading?.parentElement ?? article;

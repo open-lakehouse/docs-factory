@@ -2,12 +2,13 @@
 // activity; clicking a row opens that page with a deep-link to the thread.
 // Cards for content with an open review request to the viewer get a highlight
 // matching the left-tree UserCheck signal.
-import { useMemo } from "react";
+
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { UserCheck } from "lucide-react";
+import { useMemo } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { initials } from "../../../lib/initials";
 import type { RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
+import { initials } from "../../../lib/initials";
 import { useReviewInbox } from "../../../lib/review-inbox";
 import { refKey } from "../../../lib/review-queries";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
@@ -56,9 +57,7 @@ export default function LatestComments() {
             const c = rc.comment;
             const label = rc.contentTitle || rc.ref?.slug || "(untitled)";
             const author = c?.authorName || c?.authorLogin || "Someone";
-            const when = c?.createdAt
-              ? relativeTime(timestampDate(c.createdAt))
-              : "";
+            const when = c?.createdAt ? relativeTime(timestampDate(c.createdAt)) : "";
             const requested = Boolean(rc.ref && requestedRefs.has(refKey(rc.ref)));
             return (
               <li key={c?.id} className="review-dash-comment latest-comment-card">
@@ -69,21 +68,14 @@ export default function LatestComments() {
                 >
                   <Avatar className="size-8 latest-comment-avatar">
                     {c?.authorLogin && (
-                      <AvatarImage
-                        src={`https://github.com/${c.authorLogin}.png?size=64`}
-                        alt=""
-                      />
+                      <AvatarImage src={`https://github.com/${c.authorLogin}.png?size=64`} alt="" />
                     )}
-                    <AvatarFallback className="text-[0.65rem]">
-                      {initials(author)}
-                    </AvatarFallback>
+                    <AvatarFallback className="text-[0.65rem]">{initials(author)}</AvatarFallback>
                   </Avatar>
                   <span className="latest-comment-content">
                     <span className="latest-comment-meta">
                       <strong>{author}</strong>
-                      {c?.authorLogin && c.authorName && (
-                        <span>@{c.authorLogin}</span>
-                      )}
+                      {c?.authorLogin && c.authorName && <span>@{c.authorLogin}</span>}
                       {when && <time>{when}</time>}
                       {c?.editedAt && <span>edited</span>}
                     </span>
@@ -91,9 +83,7 @@ export default function LatestComments() {
                     <span className="latest-comment-location">
                       <strong>{label}</strong>
                       {rc.headingText && <span> / {rc.headingText}</span>}
-                      {rc.resolved && (
-                        <span className="review-dash-resolved">resolved</span>
-                      )}
+                      {rc.resolved && <span className="review-dash-resolved">resolved</span>}
                     </span>
                   </span>
                   {requested && (
@@ -101,10 +91,7 @@ export default function LatestComments() {
                     // prop as an SVG <title> child, so a native hover tooltip
                     // needs the attribute on a wrapping element. aria-label on the
                     // icon supplies the accessible name.
-                    <span
-                      className="latest-comment-requested"
-                      title="Review requested from you"
-                    >
+                    <span className="latest-comment-requested" title="Review requested from you">
                       <UserCheck
                         className="latest-comment-requested-icon"
                         aria-label="Review requested from you"

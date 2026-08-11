@@ -4,21 +4,21 @@
 // comments.ts / db-map.ts factor out row mapping.
 import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
-import {
-  ReviewRequestSchema,
-  ContentEventSchema,
-  ContentRefSchema,
-  ApprovalSchema,
-  Requirement,
-  RequestStatus,
-  EventKind,
-  ReviewState,
-  type ContentRef,
-  type ReviewRequest,
-  type ContentEvent,
-  type Approval,
-} from "./gen/docs_factory/review/v1/messages_pb.js";
 import { areaFromDb } from "./db-map.js";
+import {
+  type Approval,
+  ApprovalSchema,
+  type ContentEvent,
+  ContentEventSchema,
+  type ContentRef,
+  ContentRefSchema,
+  EventKind,
+  RequestStatus,
+  Requirement,
+  type ReviewRequest,
+  ReviewRequestSchema,
+  ReviewState,
+} from "./gen/docs_factory/review/v1/messages_pb.js";
 
 // --- Requirement <-> DB text ------------------------------------------------
 

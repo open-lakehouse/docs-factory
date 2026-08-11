@@ -1,29 +1,29 @@
-import { defineConfig, type Plugin } from "vite";
+import { createReadStream, readdirSync, statSync } from "node:fs";
 import path from "node:path";
-import { readdirSync, createReadStream, statSync } from "node:fs";
-import react from "@vitejs/plugin-react-swc";
-import tailwindcss from "@tailwindcss/vite";
-import { LikeC4VitePlugin } from "likec4/vite-plugin";
 import mdx from "@mdx-js/rollup";
-import remarkGfm from "remark-gfm";
+import rehypeShiki from "@shikijs/rehype";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react-swc";
+import { LikeC4VitePlugin } from "likec4/vite-plugin";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeSlug from "rehype-slug";
 import remarkDirective from "remark-directive";
 import remarkFrontmatter from "remark-frontmatter";
+import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import rehypeShiki from "@shikijs/rehype";
 import type { ShikiTransformer } from "shiki";
-import remarkResolveImages from "./src/plugins/remark-resolve-images.mjs";
-import remarkLikeC4Views from "./src/plugins/remark-likec4-views.mjs";
-import remarkCodeSnippets from "./src/plugins/remark-code-snippets.mjs";
-import remarkJourney from "./src/plugins/remark-journey.mjs";
-import remarkDirectiveProseGuard from "./src/plugins/remark-directive-prose-guard.mjs";
-import remarkCallouts from "./src/plugins/remark-callouts.mjs";
-import remarkTldr from "./src/plugins/remark-tldr.mjs";
-import remarkFenceMeta from "./src/plugins/remark-fence-meta.mjs";
-import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
-import remarkSourceLinks from "./src/plugins/remark-source-links.mjs";
+import { defineConfig, type Plugin } from "vite";
 import { docIdentity, hrefFromIdentity } from "./src/content-core/identity.mjs";
+import remarkCallouts from "./src/plugins/remark-callouts.mjs";
+import remarkCodeSnippets from "./src/plugins/remark-code-snippets.mjs";
+import remarkDirectiveProseGuard from "./src/plugins/remark-directive-prose-guard.mjs";
+import remarkFenceMeta from "./src/plugins/remark-fence-meta.mjs";
+import remarkJourney from "./src/plugins/remark-journey.mjs";
+import remarkLikeC4Views from "./src/plugins/remark-likec4-views.mjs";
+import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
+import remarkResolveImages from "./src/plugins/remark-resolve-images.mjs";
+import remarkSourceLinks from "./src/plugins/remark-source-links.mjs";
+import remarkTldr from "./src/plugins/remark-tldr.mjs";
 
 // Shiki rebuilds the <pre>/<code> subtree, so any data-* set upstream is lost.
 // remark-fence-meta preserves the fence meta as <code metastring="…">, which
@@ -127,8 +127,7 @@ function devCompanionFiles(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = (req.url ?? "").split("?")[0];
-        const isCompanion =
-          url.endsWith(".md") || url.endsWith(".py") || url === "/scripts.json";
+        const isCompanion = url.endsWith(".md") || url.endsWith(".py") || url === "/scripts.json";
         if (!isCompanion) return next();
 
         // Resolve within dist/ and guard against path traversal escaping it.

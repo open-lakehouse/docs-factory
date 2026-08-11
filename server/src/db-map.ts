@@ -1,14 +1,15 @@
 // Mapping helpers between proto enums/messages and the DB's text columns.
-import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+
 import { create } from "@bufbuild/protobuf";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import {
   ContentArea,
-  ContentVersionSchema,
-  MerkleNodeSchema,
   type ContentRef,
   type ContentVersion,
+  ContentVersionSchema,
   type MerkleNode,
+  MerkleNodeSchema,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
 
 /** proto ContentArea → the `area` text column ('blogs' | 'docs'). */

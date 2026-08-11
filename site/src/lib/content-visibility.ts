@@ -28,18 +28,19 @@
 //
 // Keying is by ContentRef (area + slug + project + bucket), the same identity
 // the review UI uses everywhere (see review-queries.sameRef / refKey).
-import { useMemo } from "react";
+
 import { useQuery } from "@connectrpc/connect-query";
-import { listDrafts } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useMemo } from "react";
+import type { ContentPage } from "../content";
 import {
-  ReviewState,
   type ContentRef,
   type DraftSummary,
+  ReviewState,
 } from "../gen/docs_factory/review/v1/messages_pb";
+import { listDrafts } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "./auth-context";
 import { blogRef, docRef } from "./content-ref";
 import { refKey } from "./review-queries";
-import type { ContentPage } from "../content";
 
 // The frontmatter status that gates publication, mirroring READY_STATUS in the
 // server (services/review.ts). A page is publicly visible only when its git

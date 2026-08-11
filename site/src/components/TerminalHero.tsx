@@ -2,20 +2,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { explanationHref } from "../explain-bindings";
 import {
+  type BootLine,
   bootLineDelay,
   buildBootSequence,
   kindTag,
   splitBootSequence,
-  type BootLine,
 } from "../lib/terminal-boot-sequence";
 
-function BootLineView({
-  line,
-  showCursor,
-}: {
-  line: BootLine;
-  showCursor: boolean;
-}) {
+function BootLineView({ line, showCursor }: { line: BootLine; showCursor: boolean }) {
   switch (line.type) {
     case "command":
       return (
@@ -58,8 +52,8 @@ function BootLineView({
     case "summary":
       return (
         <p className="terminal-hero-line terminal-hero-line--in terminal-hero-ok">
-          estate ready — {line.capabilities} capabilities, {line.specifications}{" "}
-          specifications, {line.implementations} implementations
+          estate ready — {line.capabilities} capabilities, {line.specifications} specifications,{" "}
+          {line.implementations} implementations
           {showCursor && <span className="terminal-hero-cursor" aria-hidden="true" />}
         </p>
       );
@@ -133,7 +127,9 @@ export default function TerminalHero() {
         <span className="cb-lang">zsh</span>
       </div>
       <div
-        className={phase === "end" ? "terminal-hero-body terminal-hero-body--end" : "terminal-hero-body"}
+        className={
+          phase === "end" ? "terminal-hero-body terminal-hero-body--end" : "terminal-hero-body"
+        }
         aria-live="polite"
       >
         {phase === "boot" ? (
@@ -150,9 +146,8 @@ export default function TerminalHero() {
           <div className="terminal-hero-end">
             {summary && summary.type === "summary" && (
               <p className="terminal-hero-line terminal-hero-ok">
-                estate ready — {summary.capabilities} capabilities,{" "}
-                {summary.specifications} specifications, {summary.implementations}{" "}
-                implementations
+                estate ready — {summary.capabilities} capabilities, {summary.specifications}{" "}
+                specifications, {summary.implementations} implementations
               </p>
             )}
             <p className="terminal-hero-line">

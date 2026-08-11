@@ -36,9 +36,7 @@ function defaultImportNode(name, base) {
         body: [
           {
             type: "ImportDeclaration",
-            specifiers: [
-              { type: "ImportDefaultSpecifier", local: { type: "Identifier", name } },
-            ],
+            specifiers: [{ type: "ImportDefaultSpecifier", local: { type: "Identifier", name } }],
             source: { type: "Literal", value: source, raw: `"${source}"` },
           },
         ],
@@ -78,9 +76,7 @@ function journeyStepNode(step) {
   return {
     type: "mdxJsxFlowElement",
     name: "JourneyStep",
-    attributes: step.label
-      ? [{ type: "mdxJsxAttribute", name: "step", value: step.label }]
-      : [],
+    attributes: step.label ? [{ type: "mdxJsxAttribute", name: "step", value: step.label }] : [],
     children: step.body,
   };
 }

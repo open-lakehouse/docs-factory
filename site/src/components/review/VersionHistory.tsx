@@ -4,20 +4,11 @@
 // added/removed/modified/moved groups. Read-only, allowlist-gated (enabled only
 // in review mode). The heavy machinery — the tree diff — is the shared client
 // util (lib/tree-diff.ts), the same algorithm the server runs for ProductChanges.
-import { useMemo, useState } from "react";
-import { useQuery } from "@connectrpc/connect-query";
+
 import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { useQuery } from "@connectrpc/connect-query";
 import { GitCompareArrows } from "lucide-react";
-import {
-  listVersions,
-  getVersionTree,
-} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import type { ContentRef, MerkleNode } from "../../gen/docs_factory/review/v1/messages_pb";
-import { useAuth } from "../../lib/auth-context";
-import { reviewDiff, type DiffEntry } from "../../lib/tree-diff";
-import { useScrollContainer } from "./scroll-container-context";
-import type { ScrollContainer } from "../../lib/scroll-to-context";
-import StructuralDiff from "./StructuralDiff";
+import { useMemo, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -25,6 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import type { ContentRef, MerkleNode } from "../../gen/docs_factory/review/v1/messages_pb";
+import {
+  getVersionTree,
+  listVersions,
+} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { useAuth } from "../../lib/auth-context";
+import type { ScrollContainer } from "../../lib/scroll-to-context";
+import { type DiffEntry, reviewDiff } from "../../lib/tree-diff";
+import StructuralDiff from "./StructuralDiff";
+import { useScrollContainer } from "./scroll-container-context";
 
 function shortSha(sha: string): string {
   return sha && sha !== "unknown" ? sha.slice(0, 8) : "—";
@@ -111,8 +112,7 @@ export default function VersionHistory({ contentRef }: { contentRef: ContentRef 
   );
   const beforeIndex = useMemo(() => indexTree(baselineTree?.tree), [baselineTree]);
   const afterIndex = useMemo(() => indexTree(targetTree?.tree), [targetTree]);
-  const treesLoading =
-    (!!target && isTargetLoading) || (!!baseline && isBaselineLoading);
+  const treesLoading = (!!target && isTargetLoading) || (!!baseline && isBaselineLoading);
   const selectedTarget = versions.find((version) => version.id === target);
   const selectedBaseline = versions.find((version) => version.id === baseline);
 
@@ -137,7 +137,8 @@ export default function VersionHistory({ contentRef }: { contentRef: ContentRef 
                 <SelectContent>
                   {versions.map((v) => (
                     <SelectItem key={v.id} value={v.id}>
-                      {shortSha(v.gitSha)} · {v.createdAt ? timestampDate(v.createdAt).toLocaleDateString() : ""}
+                      {shortSha(v.gitSha)} ·{" "}
+                      {v.createdAt ? timestampDate(v.createdAt).toLocaleDateString() : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -152,7 +153,8 @@ export default function VersionHistory({ contentRef }: { contentRef: ContentRef 
                 <SelectContent>
                   {versions.map((v) => (
                     <SelectItem key={v.id} value={v.id}>
-                      {shortSha(v.gitSha)} · {v.createdAt ? timestampDate(v.createdAt).toLocaleDateString() : ""}
+                      {shortSha(v.gitSha)} ·{" "}
+                      {v.createdAt ? timestampDate(v.createdAt).toLocaleDateString() : ""}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -176,12 +178,13 @@ export default function VersionHistory({ contentRef }: { contentRef: ContentRef 
                 const heading = nearestHeading(entry, beforeIndex, afterIndex);
                 const headingLabel = entry.kind === "heading" ? null : heading?.label;
                 return {
-                  context: [
-                    headingLabel ? `in ${headingLabel}` : null,
-                    entry.kind === "snippet" ? entry.label : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ") || null,
+                  context:
+                    [
+                      headingLabel ? `in ${headingLabel}` : null,
+                      entry.kind === "snippet" ? entry.label : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" · ") || null,
                   onNavigate:
                     entry.anchorSlug && entry.change !== "removed"
                       ? () => scrollToAnchor(entry.anchorSlug!, scrollContainer)

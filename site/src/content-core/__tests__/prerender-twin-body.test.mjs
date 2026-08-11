@@ -3,8 +3,8 @@
 // and strips the twin's leading frontmatter block, and returns null when no twin
 // exists yet (build-md-twins must run first). The end-to-end "flattened, not raw"
 // behavior is verified in the build; here we pin the read + strip contract.
-import { test, expect } from "bun:test";
-import { mkdirSync, writeFileSync, rmSync } from "node:fs";
+import { expect, test } from "bun:test";
+import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import { twinPathForHref } from "../../../scripts/build-md-twins.mjs";
 import { twinBody } from "../../../scripts/prerender-shells.mjs";
@@ -19,7 +19,17 @@ test("twinBody reads the twin at the canonical route and strips its frontmatter"
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(
     path,
-    ["---", "title: Fixture", "canonical: https://x.test/docs/testproj/how-to/twin-body-fixture", "---", "", "> **Warning**", ">", "> flattened body content", ""].join("\n"),
+    [
+      "---",
+      "title: Fixture",
+      "canonical: https://x.test/docs/testproj/how-to/twin-body-fixture",
+      "---",
+      "",
+      "> **Warning**",
+      ">",
+      "> flattened body content",
+      "",
+    ].join("\n"),
   );
   try {
     const body = twinBody(href);

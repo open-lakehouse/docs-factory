@@ -16,30 +16,28 @@
 // what's still missing. Concepts that DO have a page are already represented by
 // their content-page row (no duplicate). There is no /explain route: a concept's
 // canonical URL is its doc page.
-import { Link, useSearchParams } from "react-router-dom";
+
 import { BookOpen, FileText } from "lucide-react";
-import Shell from "../components/layout/Shell";
-import DiataxisIcon from "../components/DiataxisIcon";
-import SemanticChip from "../components/SemanticChip";
-import ContentTable, { type ContentRow } from "../components/ContentTable";
+import { Link, useSearchParams } from "react-router-dom";
 import AuthorBadge from "../components/AuthorBadge";
+import ContentTable, { type ContentRow } from "../components/ContentTable";
+import DiataxisIcon from "../components/DiataxisIcon";
+import Shell from "../components/layout/Shell";
+import SemanticChip from "../components/SemanticChip";
 import TagList from "../components/TagList";
+import type { ContentPage } from "../content";
 import { pages } from "../content";
-import {
-  bucketByDiataxis,
-  pagesByRefs,
-  referencedConcepts,
-  DIATAXIS_ORDER,
-  type DiataxisKey,
-} from "../graph";
 import { explainEntries, kindLabel } from "../explain";
 import { hasExplanationPage } from "../explain-bindings";
-import { elementInScope, filterByScope, scopeAccent, useScope } from "../scope";
 import {
-  useContentVisibility,
-  type ContentVisibility,
-} from "../lib/content-visibility";
-import type { ContentPage } from "../content";
+  bucketByDiataxis,
+  DIATAXIS_ORDER,
+  type DiataxisKey,
+  pagesByRefs,
+  referencedConcepts,
+} from "../graph";
+import { type ContentVisibility, useContentVisibility } from "../lib/content-visibility";
+import { elementInScope, filterByScope, scopeAccent, useScope } from "../scope";
 
 interface AxisMeta {
   key: DiataxisKey;
@@ -132,7 +130,11 @@ function docRow(page: ContentPage, vis: ContentVisibility): ContentRow {
     icon: <FileText className="blog-row-icon" aria-hidden="true" />,
     title: fm.title ?? page.slug,
     titleHref: page.href,
-    author: fm.author ? <AuthorBadge byline={fm.author} /> : <span className="author-badge-empty">—</span>,
+    author: fm.author ? (
+      <AuthorBadge byline={fm.author} />
+    ) : (
+      <span className="author-badge-empty">—</span>
+    ),
     date: fm.date,
     frontmatterStatus: status.frontmatter || page.project,
     reviewState: status.reviewState,
@@ -160,8 +162,8 @@ function coverageGapRows(scopeId: string): ContentRow[] {
         <div className="blog-detail">
           {e.summary && <p className="blog-detail-summary">{e.summary}</p>}
           <p className="muted">
-            {kindLabel(e.kind)} in the Open Lakehouse reference model — no
-            explanation page authored yet.
+            {kindLabel(e.kind)} in the Open Lakehouse reference model — no explanation page authored
+            yet.
           </p>
         </div>
       ),
@@ -212,7 +214,12 @@ export default function DocsIndex() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const activeRefs = [
-    ...new Set(searchParams.getAll("ref").map((r) => r.trim()).filter(Boolean)),
+    ...new Set(
+      searchParams
+        .getAll("ref")
+        .map((r) => r.trim())
+        .filter(Boolean),
+    ),
   ];
   const faceted = activeRefs.length > 0;
 
@@ -223,7 +230,10 @@ export default function DocsIndex() {
     setSearchParams(next, { replace: true });
   };
   const toggleRef = (id: string) =>
-    setFacet("ref", activeRefs.includes(id) ? activeRefs.filter((r) => r !== id) : [...activeRefs, id]);
+    setFacet(
+      "ref",
+      activeRefs.includes(id) ? activeRefs.filter((r) => r !== id) : [...activeRefs, id],
+    );
   const clearAll = () => {
     const next = new URLSearchParams(searchParams);
     next.delete("ref");
@@ -249,14 +259,10 @@ export default function DocsIndex() {
     const filtered = vis
       .filterVisible(pagesByRefs(bucketed[axis], activeRefs))
       .slice()
-      .sort((a, b) =>
-        (a.frontmatter.title ?? a.slug).localeCompare(b.frontmatter.title ?? b.slug),
-      );
+      .sort((a, b) => (a.frontmatter.title ?? a.slug).localeCompare(b.frontmatter.title ?? b.slug));
     rowsByAxis[axis] = [
       ...filtered.map((page) => docRow(page, vis)),
-      ...(vis.isAllowlisted && axis === "explanation" && !faceted
-        ? coverageGapRows(scopeId)
-        : []),
+      ...(vis.isAllowlisted && axis === "explanation" && !faceted ? coverageGapRows(scopeId) : []),
     ];
   }
 
@@ -269,9 +275,8 @@ export default function DocsIndex() {
         <div className="docs-index-header">
           <h1>Docs</h1>
           <p className="muted">
-            Everything under <code>content/</code>, organized by Diátaxis —
-            tutorials, how-to guides, reference, and explanation. Filter by
-            concept to narrow every section at once.
+            Everything under <code>content/</code>, organized by Diátaxis — tutorials, how-to
+            guides, reference, and explanation. Filter by concept to narrow every section at once.
           </p>
 
           <div className="docs-facets">

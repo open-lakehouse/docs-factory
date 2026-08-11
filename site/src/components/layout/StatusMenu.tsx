@@ -10,20 +10,20 @@
 // viewMode / reviewActive / previewAsAnon). Local dev impersonation stays in
 // DevPersonaSwitcher — orthogonal to this.
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuTrigger,
-  DropdownMenuLabel,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth, type ViewMode } from "../../lib/auth-context";
 import { canSignIn, signIn, signOut } from "../../lib/auth-actions";
+import { useAuth, type ViewMode } from "../../lib/auth-context";
 import { initials } from "../../lib/initials";
 
 export default function StatusMenu() {

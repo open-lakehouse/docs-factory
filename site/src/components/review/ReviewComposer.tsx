@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { Send } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { type KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
 interface ReviewComposerProps {
   value: string;
@@ -31,7 +31,14 @@ function InlineReviewComposer({
   autoFocus,
 }: Pick<
   ReviewComposerProps,
-  "value" | "onChange" | "onSubmit" | "placeholder" | "submitLabel" | "disabled" | "submitting" | "autoFocus"
+  | "value"
+  | "onChange"
+  | "onSubmit"
+  | "placeholder"
+  | "submitLabel"
+  | "disabled"
+  | "submitting"
+  | "autoFocus"
 >) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const singleLineHeightRef = useRef<number | null>(null);

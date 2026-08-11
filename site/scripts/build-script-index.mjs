@@ -43,7 +43,9 @@ export function runDocsnipScripts(root = repoRoot) {
     });
   } catch (err) {
     if (err?.code === "ENOENT") {
-      console.warn("build-script-index: `uv` not found — skipping the script index (run in the CI prebuild).");
+      console.warn(
+        "build-script-index: `uv` not found — skipping the script index (run in the CI prebuild).",
+      );
       return null;
     }
     throw err;
@@ -102,7 +104,10 @@ function main() {
   const scripts = payload.scripts.map(scriptEntry);
 
   mkdirSync(distDir, { recursive: true });
-  writeFileSync(resolve(distDir, "scripts.json"), `${JSON.stringify({ version: EXPECTED_VERSION, scripts }, null, 2)}\n`);
+  writeFileSync(
+    resolve(distDir, "scripts.json"),
+    `${JSON.stringify({ version: EXPECTED_VERSION, scripts }, null, 2)}\n`,
+  );
 
   // Copy each raw .py byte-identically to its served path under dist/.
   let copied = 0;
@@ -113,7 +118,9 @@ function main() {
     cpSync(resolve(repoRoot, s.gitPath), dest);
     copied++;
   }
-  console.log(`build-script-index: wrote scripts.json (${scripts.length}) + copied ${copied} .py into ${relative(siteRoot, distDir)}/.`);
+  console.log(
+    `build-script-index: wrote scripts.json (${scripts.length}) + copied ${copied} .py into ${relative(siteRoot, distDir)}/.`,
+  );
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

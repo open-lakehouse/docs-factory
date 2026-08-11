@@ -2,10 +2,11 @@
 // frontmatter authoring status). Compact chrome folds both axes into one
 // effective badge (see effective-status.tsx); detailed listings (pipeline,
 // ContentTable) still render this Review column beside the authoring status.
-import { ReviewState, Requirement, RequestStatus } from "../gen/docs_factory/review/v1/messages_pb";
-import { StatusBadge } from "../components/StatusBadge";
+
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { StatusBadge } from "../components/StatusBadge";
+import { RequestStatus, Requirement, ReviewState } from "../gen/docs_factory/review/v1/messages_pb";
 
 type BadgeVariant = "default" | "secondary" | "destructive" | "outline";
 
@@ -60,13 +61,7 @@ export function reviewStateDotClass(state: ReviewState | undefined): string {
 }
 
 /** Colored badge for a review state — shared by tables, dashboards, and ReviewControls. */
-export function ReviewStateBadge({
-  state,
-  className,
-}: {
-  state: ReviewState;
-  className?: string;
-}) {
+export function ReviewStateBadge({ state, className }: { state: ReviewState; className?: string }) {
   return (
     <StatusBadge
       variant={REVIEW_BADGE_VARIANT[state] ?? "secondary"}

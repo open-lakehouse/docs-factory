@@ -10,7 +10,7 @@
 // A server-to-server caller (no Origin header, e.g. RegisterVersion) is never
 // blocked, which is what regressed when this was a startup throw.
 // We drive it with AUTH_MODE=anon so selectProvider() needs no DB.
-import { expect, test, describe, afterEach } from "bun:test";
+import { afterEach, describe, expect, test } from "bun:test";
 import { createApp } from "./app.js";
 
 const saved = { ...process.env };

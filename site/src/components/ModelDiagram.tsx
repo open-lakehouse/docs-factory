@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import { ReactLikeC4 } from "likec4:react";
+import { useNavigate } from "react-router-dom";
 import { likec4model } from "../explain";
 import { explanationHref } from "../explain-bindings";
 

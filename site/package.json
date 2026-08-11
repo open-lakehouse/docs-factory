@@ -8,6 +8,7 @@
     "dev": "vite",
     "prebuild": "node scripts/build-version-manifest.mjs && node scripts/build-llmstxt.mjs",
     "build": "vite build",
+    "typecheck": "tsc --noEmit",
     "build:artifacts": "node scripts/build-artifacts.mjs",
     "build:vercel": "bun run build && bun run build:artifacts && node scripts/assemble-vercel-output.mjs && node scripts/gen-vercel-config.mjs",
     "prerender": "node scripts/prerender-shells.mjs",
@@ -48,6 +49,7 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.5",
     "@shikijs/rehype": "^4.3.1",
     "@tailwindcss/typography": "^0.5.20",
     "@types/js-yaml": "^4.0.9",

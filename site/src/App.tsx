@@ -1,13 +1,13 @@
 import { Route, Routes } from "react-router-dom";
-import Index from "./pages/Index";
-import DocsIndex from "./pages/DocsIndex";
-import DocPage from "./pages/DocPage";
+import AdminDashboard from "./pages/AdminDashboard";
 import BlogIndex from "./pages/BlogIndex";
 import BlogPost from "./pages/BlogPost";
+import DocPage from "./pages/DocPage";
+import DocsIndex from "./pages/DocsIndex";
+import Index from "./pages/Index";
 import ReviewDashboard from "./pages/ReviewDashboard";
 import ReviewWorkspace from "./pages/ReviewWorkspace";
 import RevOpsDashboard from "./pages/RevOpsDashboard";
-import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
   return (

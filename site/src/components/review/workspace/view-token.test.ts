@@ -2,7 +2,7 @@
 // round-tripping, back-compat (a bare ref token = the rendered view, so old
 // shared /review URLs keep working), and that a script's fetchUrl survives the
 // `#`/`,`/`.`/`/` that would otherwise collide with the token/param delimiters.
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import { ContentArea } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { blogRef, docRef } from "../../../lib/content-ref";
 import { parseTabToken, refTokenOf, tabTokenFor, viewToParam } from "./view-token";

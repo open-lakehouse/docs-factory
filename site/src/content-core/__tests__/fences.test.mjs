@@ -2,8 +2,8 @@
 // version manifest both go through resolveFence(), so these guard the one place
 // the dedent + line-range contract lives — the bug that let the DB store
 // un-dedented source while the reviewer saw dedented text.
-import { test, expect } from "bun:test";
-import { resolveFence, parseFenceMeta } from "../fences.mjs";
+import { expect, test } from "bun:test";
+import { parseFenceMeta, resolveFence } from "../fences.mjs";
 
 const INDENTED = [
   "def read(path):",
@@ -51,5 +51,5 @@ test("parseFenceMeta extracts file/start/end and ignores fences without file=", 
     start: "start:a",
     end: "end:a",
   });
-  expect(parseFenceMeta("python title=\"x.py\"")).toBeNull();
+  expect(parseFenceMeta('python title="x.py"')).toBeNull();
 });

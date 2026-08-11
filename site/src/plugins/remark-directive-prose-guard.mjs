@@ -30,7 +30,11 @@ function reconstruct(node) {
   if (keys.length) {
     const parts = keys.map((k) => {
       if (k === "id") return `#${attrs[k]}`;
-      if (k === "class") return attrs[k].split(/\s+/).map((c) => `.${c}`).join(" ");
+      if (k === "class")
+        return attrs[k]
+          .split(/\s+/)
+          .map((c) => `.${c}`)
+          .join(" ");
       return `${k}=${attrs[k]}`;
     });
     out += `{${parts.join(" ")}}`;

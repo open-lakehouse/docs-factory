@@ -2,12 +2,12 @@
 // viewers in rail display mode. Reads threads + selection from ReviewProvider.
 // Thread cards are ordered by document position (top→bottom), not creation time.
 // Section comments start from the heading gutter icon (or text/code selection).
-import { useEffect, useMemo, useState, type RefObject } from "react";
+import { type RefObject, useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../lib/auth-context";
 import { sortThreadsByDocumentOrder } from "../../lib/thread-document-order";
-import { useSelectionState } from "./selection-context";
-import { useReview } from "./review-context";
 import PendingComposer from "./PendingComposer";
+import { useReview } from "./review-context";
+import { useSelectionState } from "./selection-context";
 import ThreadCard from "./ThreadCard";
 
 interface Heading {
@@ -105,8 +105,7 @@ export default function CommentSidebar({
       )}
       {!hasAny && !pending && (
         <p className="review-empty">
-          No comments yet. Hover a section heading or select text or code to
-          start a thread.
+          No comments yet. Hover a section heading or select text or code to start a thread.
         </p>
       )}
       <div className="review-thread-list">{orderedThreads.map(renderCard)}</div>

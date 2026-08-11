@@ -1,19 +1,19 @@
 // Comment/thread mapping + assembly helpers used by the comment RPCs.
 import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+import { areaFromDb } from "./db-map.js";
 import {
-  CommentSchema,
-  ThreadSchema,
-  ContentRefSchema,
-  RecentCommentSchema,
-  TextSelectorSchema,
   CodeSelectorSchema,
   type Comment,
-  type Thread,
+  CommentSchema,
   type ContentRef,
+  ContentRefSchema,
   type RecentComment,
+  RecentCommentSchema,
+  TextSelectorSchema,
+  type Thread,
+  ThreadSchema,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
-import { areaFromDb } from "./db-map.js";
 
 /** A DB comment row (snake_case columns). */
 export interface CommentRow {

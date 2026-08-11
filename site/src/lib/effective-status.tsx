@@ -4,15 +4,12 @@
 // the review entry state rather than both "ready" and "needs review".
 //
 // Detailed listings (blog pipeline, ContentTable) still render both axes.
-import { ReviewState } from "../gen/docs_factory/review/v1/messages_pb";
-import { FrontmatterStatusBadge } from "../components/StatusBadge";
+
 import { cn } from "@/lib/utils";
+import { FrontmatterStatusBadge } from "../components/StatusBadge";
+import { ReviewState } from "../gen/docs_factory/review/v1/messages_pb";
 import { statusDotClass } from "./frontmatter-status";
-import {
-  REVIEW_STATE_LABEL,
-  ReviewStateBadge,
-  reviewStateDotClass,
-} from "./review-status";
+import { REVIEW_STATE_LABEL, ReviewStateBadge, reviewStateDotClass } from "./review-status";
 
 export type EffectiveStatus =
   | { kind: "authoring"; status: string }

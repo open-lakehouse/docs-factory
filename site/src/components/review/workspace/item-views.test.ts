@@ -3,9 +3,9 @@
 // scripts attach whenever a scripts.json entry's tutorialRoute matches the page's
 // route — INDEPENDENT of status (docsnip indexes scripts regardless of
 // frontmatter), so a draft tutorial still shows its scripts. Blog routes match too.
-import { test, expect } from "bun:test";
-import { blogRef, docRef } from "../../../lib/content-ref";
+import { expect, test } from "bun:test";
 import type { ContentPage } from "../../../content";
+import { blogRef, docRef } from "../../../lib/content-ref";
 import type { ScriptsIndex } from "../../../lib/scripts-index";
 import { viewsFor } from "./item-views";
 

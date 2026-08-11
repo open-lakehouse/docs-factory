@@ -1,5 +1,5 @@
-import SemanticChip from "./SemanticChip";
 import { getTag, tagCardData } from "../tags";
+import SemanticChip from "./SemanticChip";
 
 /**
  * A single blog topic tag: clickable pill with a rich hover card. In link mode

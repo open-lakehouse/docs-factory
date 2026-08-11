@@ -1,5 +1,5 @@
-import SemanticChip from "./SemanticChip";
 import { resolveRef } from "../model-refs";
+import SemanticChip from "./SemanticChip";
 
 /**
  * Small metadata header linking a content page to the model concepts it is

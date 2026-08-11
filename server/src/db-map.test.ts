@@ -1,11 +1,11 @@
 // Unit tests for db-map pure helpers. Run with `bun test`.
-import { expect, test, describe } from "bun:test";
+import { describe, expect, test } from "bun:test";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import {
   dateOnlyToUtcTimestamp,
+  type MerkleNodeJson,
   merkleNodeToJson,
   merkleNodeToProto,
-  type MerkleNodeJson,
 } from "./db-map.js";
 
 describe("merkle node proto <-> jsonb round-trip", () => {

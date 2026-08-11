@@ -9,12 +9,13 @@
 // The twin lives at `<canonical>.md` (refHref(ref) + ".md"), fetched at runtime.
 // It only exists for published pages; a 404 (or a non-markdown response) means
 // the page isn't published, which we surface as an empty state.
-import { useState } from "react";
+
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { cn } from "@/lib/utils";
+import { renderMarkdownToHtml } from "../../../content-core/render-markdown.mjs";
 import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { refHref } from "../../../lib/content-ref";
-import { renderMarkdownToHtml } from "../../../content-core/render-markdown.mjs";
-import { cn } from "@/lib/utils";
 
 async function fetchTwin(url: string): Promise<string> {
   const res = await fetch(url, { headers: { Accept: "text/markdown" } });
@@ -76,8 +77,10 @@ export default function MarkdownTwinView({ contentRef }: { contentRef: ContentRe
             No markdown twin — this page isn't published yet.
           </p>
         )}
-        {!isLoading && !error && data !== undefined && (
-          raw ? (
+        {!isLoading &&
+          !error &&
+          data !== undefined &&
+          (raw ? (
             <pre className="whitespace-pre-wrap break-words px-6 py-8 font-mono text-sm leading-relaxed">
               {data}
             </pre>
@@ -87,8 +90,7 @@ export default function MarkdownTwinView({ contentRef }: { contentRef: ContentRe
               // Safe: renderMarkdownToHtml runs mdast→hast with allowDangerousHtml:false.
               dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(data) }}
             />
-          )
-        )}
+          ))}
       </div>
     </div>
   );

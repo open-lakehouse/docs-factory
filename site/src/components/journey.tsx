@@ -34,7 +34,9 @@ export function JourneyStep({ step, index = 1, last = false, children }: Journey
 }
 
 export function Journey({ children }: { children: ReactNode }) {
-  const steps = Children.toArray(children).filter(isValidElement) as ReactElement<JourneyStepProps>[];
+  const steps = Children.toArray(children).filter(
+    isValidElement,
+  ) as ReactElement<JourneyStepProps>[];
   return (
     <ol className="jr">
       {steps.map((child, i) =>

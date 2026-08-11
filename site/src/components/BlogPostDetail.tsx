@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import TagList from "./TagList";
-import AuthorBadge from "./AuthorBadge";
 import type { ContentPage } from "../content";
+import AuthorBadge from "./AuthorBadge";
+import TagList from "./TagList";
 
 /** Expandable metadata panel for a blog post (summary + series/author/status/target/tags). */
 export default function BlogPostDetail({ post }: { post: ContentPage }) {
@@ -16,10 +16,7 @@ export default function BlogPostDetail({ post }: { post: ContentPage }) {
             <dd>
               <span className="blog-detail-series">{fm.series}</span>
               {fm.series_order != null && (
-                <span className="mono blog-detail-series-order">
-                  {" "}
-                  · part {fm.series_order}
-                </span>
+                <span className="mono blog-detail-series-order"> · part {fm.series_order}</span>
               )}
             </dd>
           </div>

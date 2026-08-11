@@ -19,10 +19,7 @@ function documentPosition(thread: Thread, article: HTMLElement): DocPos | null {
   if (!root) return null;
 
   if (root.selector?.quote) {
-    const range = locateSelector(
-      root.selector,
-      sectionRootForAnchor(article, root.anchorSlug),
-    );
+    const range = locateSelector(root.selector, sectionRootForAnchor(article, root.anchorSlug));
     if (range) return { node: range.startContainer, offset: range.startOffset };
   }
 

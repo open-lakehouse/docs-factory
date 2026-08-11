@@ -1,7 +1,8 @@
 // callout.tsx — tip / warning / note boxes via shadcn Alert + console accents.
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Info, Lightbulb, TriangleAlert, OctagonAlert } from "lucide-react";
+
+import { Info, Lightbulb, OctagonAlert, TriangleAlert } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type CalloutType = "tip" | "note" | "info" | "warning" | "caution" | "danger";
 

@@ -10,45 +10,46 @@
 // Rows expand (one at a time) to show the blog metadata header + event timeline.
 // Used by the Review workspace Overview tab (and the classic review dashboard on
 // narrow screens); the old standalone /review/revops page redirects into Overview.
-import { useEffect, useMemo, useState, type MouseEvent } from "react";
-import { Link } from "react-router-dom";
-import { useQuery, useMutation } from "@connectrpc/connect-query";
+
 import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
+import { useMutation, useQuery } from "@connectrpc/connect-query";
 import {
+  closestCenter,
   DndContext,
+  type DragEndEvent,
   KeyboardSensor,
   PointerSensor,
-  closestCenter,
-  type DragEndEvent,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import {
-  SortableContext,
   arrayMove,
+  SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { ChevronDown, ChevronRight, GripVertical } from "lucide-react";
-import {
-  listDrafts,
-  setPriority,
-  setTargetReleaseDate,
-} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
+import { type MouseEvent, useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { findBlog } from "../../content";
 import {
   ContentArea,
   type ContentRef,
   type DraftSummary,
 } from "../../gen/docs_factory/review/v1/messages_pb";
+import {
+  listDrafts,
+  setPriority,
+  setTargetReleaseDate,
+} from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
 import { refHref } from "../../lib/content-ref";
-import { ReviewStateBadge } from "../../lib/review-status";
 import { useReviewInvalidation } from "../../lib/review-queries";
-import { findBlog } from "../../content";
-import { cn } from "@/lib/utils";
-import { buttonVariants } from "@/components/ui/button";
+import { ReviewStateBadge } from "../../lib/review-status";
 import BlogPostDetail from "../BlogPostDetail";
 import { FrontmatterStatusBadge } from "../StatusBadge";
 import ContentEventTimeline from "./ContentEventTimeline";
@@ -78,13 +79,7 @@ type SortableRowProps = {
   onDateChange: (ref: ContentRef | undefined, value: string) => void;
 };
 
-function SortableRow({
-  draft: d,
-  busy,
-  isOpen,
-  onToggle,
-  onDateChange,
-}: SortableRowProps) {
+function SortableRow({ draft: d, busy, isOpen, onToggle, onDateChange }: SortableRowProps) {
   const id = rowId(d);
   const {
     attributes,
@@ -116,11 +111,7 @@ function SortableRow({
       <tr
         ref={setNodeRef}
         style={style}
-        className={cn(
-          "revops-row",
-          isOpen && "open",
-          isDragging && "revops-row-dragging",
-        )}
+        className={cn("revops-row", isOpen && "open", isDragging && "revops-row-dragging")}
         onClick={onRowClick}
         aria-expanded={isOpen}
       >
@@ -147,9 +138,7 @@ function SortableRow({
             <ChevronRight className="revops-chevron" aria-hidden="true" />
           )}
         </td>
-        <td className="revops-col-rank mono">
-          {d.priority != null ? d.priority : "—"}
-        </td>
+        <td className="revops-col-rank mono">{d.priority != null ? d.priority : "—"}</td>
         <td>
           {d.ref ? (
             <Link to={refHref(d.ref)} className="revops-title">
@@ -162,9 +151,7 @@ function SortableRow({
             <span className="revops-series">({post.frontmatter.series})</span>
           )}
         </td>
-        <td>
-          {d.frontmatterStatus && <FrontmatterStatusBadge status={d.frontmatterStatus} />}
-        </td>
+        <td>{d.frontmatterStatus && <FrontmatterStatusBadge status={d.frontmatterStatus} />}</td>
         <td>
           <ReviewStateBadge state={d.reviewState} />
         </td>
@@ -296,9 +283,9 @@ export default function BlogPipeline({
       {heading ? <h1>{heading}</h1> : null}
       {showIntro && (
         <p className="muted">
-          The blog backlog in priority order. Rank posts and set target release
-          dates — including early <code>idea</code> folders, so the pipeline
-          reflects what's coming before it's fully drafted.
+          The blog backlog in priority order. Rank posts and set target release dates — including
+          early <code>idea</code> folders, so the pipeline reflects what's coming before it's fully
+          drafted.
         </p>
       )}
 
@@ -336,9 +323,7 @@ export default function BlogPipeline({
                       draft={d}
                       busy={busy}
                       isOpen={openId === id}
-                      onToggle={() =>
-                        setOpenId((cur) => (cur === id ? null : id))
-                      }
+                      onToggle={() => setOpenId((cur) => (cur === id ? null : id))}
                       onDateChange={onDateChange}
                     />
                   );

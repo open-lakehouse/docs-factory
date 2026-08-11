@@ -1,12 +1,16 @@
 // Stable-key tree-diff tests: structural equality fast-out, precise change
 // classification (added/removed/modified/modified-descendants/moved), and the
 // unchangedSlugs set the re-anchoring fast path consumes.
-import { expect, test, describe } from "bun:test";
-import { compactDiff, diffTrees, reviewDiff, unchangedSlugs } from "./tree-diff.js";
+import { describe, expect, test } from "bun:test";
 import type { MerkleNodeJson } from "./db-map.js";
+import { compactDiff, diffTrees, reviewDiff, unchangedSlugs } from "./tree-diff.js";
 
 /** Build a heading node with a prose child, for compact fixtures. */
-function heading(key: string, subtreeHash: string, opts: { proseHash?: string; children?: MerkleNodeJson[] } = {}): MerkleNodeJson {
+function heading(
+  key: string,
+  subtreeHash: string,
+  opts: { proseHash?: string; children?: MerkleNodeJson[] } = {},
+): MerkleNodeJson {
   const prose: MerkleNodeJson = {
     key: `${key}#prose`,
     kind: "prose",

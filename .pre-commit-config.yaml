@@ -14,3 +14,17 @@ repos:
         language: system
         files: (^|/)bun\.lock$
         pass_filenames: true
+
+      # Format + apply Biome's safe fixes to changed JS/TS at commit time, so a
+      # PR never lands unformatted (CI's lint-js job runs `biome ci` as the
+      # blocking gate). Uses the site-pinned @biomejs/biome binary (identical
+      # version to CI); pre-commit passes the changed file paths and Biome
+      # auto-discovers each file's per-project biome.json. Requires `bun install`
+      # under site/ (the standard dev bootstrap; `just _site-deps`).
+      - id: biome-check
+        name: biome check (changed JS/TS)
+        entry: site/node_modules/.bin/biome check --write --no-errors-on-unmatched --files-ignore-unknown=true
+        language: system
+        files: \.(ts|tsx|js|jsx|mjs|cjs)$
+        exclude: (/src/gen/|/tree-diff\.ts$)
+        pass_filenames: true

@@ -5,7 +5,7 @@
 // is the NNN- order-prefix / folder-mode normalization: authors link against
 // the prefix-less logical slug and the on-disk file has a NNN- prefix, yet both
 // must resolve to the SAME /docs route.
-import { test, expect } from "bun:test";
+import { expect, test } from "bun:test";
 import remarkSourceLinks from "../remark-source-links.mjs";
 
 // The known-pages registry as vite.config.ts would build it for these fixtures.

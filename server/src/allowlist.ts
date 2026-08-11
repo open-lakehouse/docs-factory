@@ -1,8 +1,9 @@
 // Reviewer allowlist lookups. The allowlist is ours (reviewer_allowlist table),
 // keyed by the stable Neon Auth user id, independent of how identity is
 // established (Neon Auth in prod, mock locally).
-import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
+
 import type { Queryable } from "./db.js";
+import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 
 /** Map the allowlist `role` text column to the proto Role. */
 export function roleFromDb(role: string | null): Role {
@@ -32,10 +33,7 @@ export function hasAdminRole(role: string | null | undefined): boolean {
  * row cannot exist without a matching user_identity row). The lookup is an exact
  * user_id match, so a GitHub login rename never changes the resolved role.
  */
-export async function lookupRole(
-  sql: Queryable,
-  opts: { userId?: string | null },
-): Promise<Role> {
+export async function lookupRole(sql: Queryable, opts: { userId?: string | null }): Promise<Role> {
   const userId = opts.userId?.trim();
   if (!userId) return Role.ANONYMOUS;
   const rows = await sql<{ role: string }[]>`
@@ -63,10 +61,7 @@ export interface GrantViewer {
  * so an external contributor keeps view+comment on the content they approved.
  * Only `cancelled` revokes.
  */
-export function grantFromRequestRows(
-  viewer: GrantViewer,
-  rows: { status: string }[],
-): boolean {
+export function grantFromRequestRows(viewer: GrantViewer, rows: { status: string }[]): boolean {
   if (viewer.isAllowlisted) return true;
   if (!viewer.userId?.trim()) return false;
   return rows.some((r) => r.status !== "cancelled");

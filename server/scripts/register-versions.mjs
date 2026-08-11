@@ -31,8 +31,8 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-node";
-import { ReviewService } from "../src/gen/docs_factory/review/v1/review_service_pb.js";
 import { ContentArea } from "../src/gen/docs_factory/review/v1/messages_pb.js";
+import { ReviewService } from "../src/gen/docs_factory/review/v1/review_service_pb.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const manifestPath = resolve(here, "../../site/src/generated/content-versions.json");
@@ -135,6 +135,8 @@ for (const e of manifest) {
   });
   ok++;
   orphanTotal += res.orphanedThreadCount;
-  console.log(`registered ${e.area}/${e.slug} (v${res.version?.id}, ${(e.sections ?? []).length} sections, ${res.orphanedThreadCount} orphaned)`);
+  console.log(
+    `registered ${e.area}/${e.slug} (v${res.version?.id}, ${(e.sections ?? []).length} sections, ${res.orphanedThreadCount} orphaned)`,
+  );
 }
 console.log(`Done: ${ok}/${manifest.length} registered; ${orphanTotal} thread(s) orphaned.`);

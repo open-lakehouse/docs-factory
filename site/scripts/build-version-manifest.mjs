@@ -10,7 +10,7 @@
 //
 // Output: site/src/generated/content-versions.json (gitignored). Run via
 // `just version-manifest`, or implicitly via `just register-versions`.
-import { writeFileSync, mkdirSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildVersionManifest } from "../src/content-core/pipeline.mjs";

@@ -1,14 +1,14 @@
 // Inline review surface for prose comments: positions a portal below the
 // resolved text-quote range (or pending selection) when displayMode is inline.
 // Never mutates compiled MDX — uses fixed positioning from Range.getClientRects().
-import { useEffect, useState, type RefObject } from "react";
+import { type RefObject, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
 import { useAuth } from "../../lib/auth-context";
-import { useSelectionState } from "./selection-context";
-import { useReview } from "./review-context";
-import QuoteHighlights from "./QuoteHighlights";
+import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
 import PendingComposer from "./PendingComposer";
+import QuoteHighlights from "./QuoteHighlights";
+import { useReview } from "./review-context";
+import { useSelectionState } from "./selection-context";
 import ThreadConversation from "./ThreadConversation";
 
 function unionRect(range: Range): DOMRect | null {
@@ -88,9 +88,7 @@ export default function InlineReviewSurface({
     function update() {
       let range: Range | null = null;
       if (showSectionPending && pending?.kind === "section") {
-        const heading = article!.querySelector<HTMLElement>(
-          `#${CSS.escape(pending.anchorSlug)}`,
-        );
+        const heading = article!.querySelector<HTMLElement>(`#${CSS.escape(pending.anchorSlug)}`);
         if (!heading) {
           setPlacement(null);
           return;

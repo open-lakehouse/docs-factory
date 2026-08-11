@@ -8,12 +8,13 @@
 // There is no shadcn `command`/`combobox` in the design system (and `cmdk` isn't
 // a dependency), so this is a small hand-rolled combobox on the existing Input +
 // a filtered results dropdown, with keyboard nav. Single- or multi-select.
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+
 import { useQuery } from "@connectrpc/connect-query";
-import { searchUsers } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
-import { type UserSummary } from "../../gen/docs_factory/review/v1/messages_pb";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import type { UserSummary } from "../../gen/docs_factory/review/v1/messages_pb";
+import { searchUsers } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 
 /** Debounce a value by `ms`, so we don't fire a query on every keystroke. */
 function useDebounced<T>(value: T, ms: number): T {

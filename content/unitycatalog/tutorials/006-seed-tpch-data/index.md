@@ -30,8 +30,9 @@ our CI executes against a real server, so what you copy is what we test.
 
 :::note
 You'll need a running Unity Catalog server. The colocated `compose.yaml` starts
-one (`docker compose up -d`) with a managed-table root at `file:///tmp/uc-test`,
-matching the storage path this script writes to.
+one with `docker compose up -d`. Unity Catalog only records where an external
+table lives — it never reads the files itself — so the script writes the Delta
+tables to a local directory it owns (override with `TPCH_STORAGE_ROOT`).
 :::
 
 ::::journey
@@ -50,9 +51,9 @@ and each table comes straight back as an Arrow table.
 ### Write each table as Delta
 
 Point [`write_deltalake`](https://delta-io.github.io/delta-rs/) at a location
-under the managed root and hand it the Arrow table. That writes a real Delta
-table — transaction log and all — which Unity Catalog will govern in the next
-step.
+under our storage root and hand it the Arrow table. That writes a real Delta
+table — transaction log and all — and returns its `file://` URI, which we'll
+register with Unity Catalog in the next step.
 
 ```python file=./seed_tpch.py start=start:write-delta end=end:write-delta
 ```

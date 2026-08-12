@@ -28,15 +28,17 @@ Run it directly against a Unity Catalog server (see the colocated tutorial):
     UC_BASE_URL=http://host:8080/api/2.1/unity-catalog uv run seed_tpch.py
 
 Unity Catalog doesn't ingest rows — it *governs* tables that live in object
-storage. So we write each TPC-H table as a real Delta table under the server's
-managed root, then register it as an EXTERNAL Delta table. The whole file is one
-runnable program our CI executes against a real server, so what you copy is what
-we test.
+storage. So we write each TPC-H table as a real Delta table to a local directory
+we own, then register it as an EXTERNAL Delta table (UC records the location, it
+never touches the files). The whole file is one runnable program our CI executes
+against a real server, so what you copy is what we test.
 """
 
 import asyncio
 import json
 import os
+import tempfile
+from pathlib import Path
 
 import duckdb
 import pyarrow as pa
@@ -80,9 +82,19 @@ TPCH_TABLES = [
     "lineitem",
 ]
 
-# The server's managed-table root (see server.properties). We write each Delta
-# table under here so the UC container and the host agree on the path.
-STORAGE_ROOT = "file:///tmp/uc-test/tpch"
+
+def storage_root() -> Path:
+    """Where the Delta tables are written.
+
+    Unity Catalog only records an external table's location — it never reads or
+    writes the files itself — so this is a plain local directory *we* own. Honors
+    ``TPCH_STORAGE_ROOT`` (set it for a stable location); otherwise a fresh temp
+    directory, so the tutorial is safe to run anywhere without cleanup.
+    """
+    override = os.environ.get("TPCH_STORAGE_ROOT")
+    root = Path(override) if override else Path(tempfile.mkdtemp(prefix="tpch-"))
+    root.mkdir(parents=True, exist_ok=True)
+    return root
 
 
 def generate_tpch(sf: float) -> dict[str, pa.Table]:
@@ -96,13 +108,13 @@ def generate_tpch(sf: float) -> dict[str, pa.Table]:
     return tables
 
 
-def write_delta(name: str, arrow: pa.Table) -> str:
-    """Write one Arrow table to the managed root as a Delta table; return its path."""
+def write_delta(name: str, arrow: pa.Table, root: Path) -> str:
+    """Write one Arrow table as a Delta table under ``root``; return its file URI."""
     # --8<-- [start:write-delta]
-    location = f"{STORAGE_ROOT}/{name}"
+    location = root / name
     write_deltalake(location, arrow, mode="overwrite")
     # --8<-- [end:write-delta]
-    return location
+    return location.resolve().as_uri()  # file:///... — what we register with UC
 
 
 # The Arrow types DuckDB emits for TPC-H, mapped to the Unity Catalog column type
@@ -163,7 +175,10 @@ async def main(base_url: str = DEFAULT_URL, sf: float = 0.01) -> dict[str, objec
     it — running the whole flow to completion is this tutorial's test.
     """
     arrow_tables = generate_tpch(sf)
-    locations = {name: write_delta(name, arrow) for name, arrow in arrow_tables.items()}
+    root = storage_root()
+    locations = {
+        name: write_delta(name, arrow, root) for name, arrow in arrow_tables.items()
+    }
 
     # sf=0.01 -> "sf001"; a stable, filesystem-safe schema name per scale factor.
     schema_name = f"sf{int(sf * 100):03d}"

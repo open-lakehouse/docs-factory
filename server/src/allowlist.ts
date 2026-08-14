@@ -5,7 +5,6 @@
 import type { Queryable } from "./db.js";
 import { Role } from "./gen/docs_factory/review/v1/messages_pb.js";
 
-/** Map the allowlist `role` text column to the proto Role. */
 export function roleFromDb(role: string | null): Role {
   if (role === "maintainer") return Role.MAINTAINER;
   if (role === "reviewer") return Role.REVIEWER;

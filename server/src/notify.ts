@@ -9,7 +9,6 @@
 // upgrade that is gated behind REVIEW_SSE_ENABLED and safe to drop.
 import type { Sql } from "./db.js";
 
-/** The single Postgres NOTIFY channel for comment changes. */
 export const COMMENTS_CHANNEL = "review_comments";
 
 /** Whether the SSE endpoint is served. Off unless explicitly enabled, since a

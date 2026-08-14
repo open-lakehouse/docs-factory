@@ -1006,8 +1006,10 @@ body {
   transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
 }
 /* With a header bar, center the button within it (header ≈2.25rem, button
-   1.75rem → 0.25rem top) so it doesn't crowd the header's bottom border. */
-.prose .cb[data-has-filename] .cb-copy {
+   1.75rem → 0.25rem top) so it doesn't crowd the header's bottom border. A
+   collapsed block is just its header bar, so center the button there too. */
+.prose .cb[data-has-filename] .cb-copy,
+.prose .cb[data-collapsed="true"] .cb-copy {
   top: 0.25rem;
 }
 .prose .cb:hover .cb-copy,

@@ -14,7 +14,6 @@ import yaml
 
 from .frontmatter import STATUSES, Page, parse
 
-# Blogs use the same canonical vocabulary as content pages (idea/draft/ready).
 BLOG_STATUSES = STATUSES
 
 

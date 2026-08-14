@@ -3,8 +3,6 @@ import type { ContentPage } from "../content";
 import { relatedPages } from "../graph";
 import { useContentVisibility } from "../lib/content-visibility";
 
-// Diátaxis / area label for a related item, so readers see what *kind* of page
-// they'd be jumping to.
 function pageKind(page: ContentPage): string {
   if (page.area === "blogs") return "Blog";
   const d = page.frontmatter.diataxis;
@@ -23,15 +21,14 @@ function pageKind(page: ContentPage): string {
 }
 
 /**
- * "Related" block driven by the model graph: pages sharing a 1-hop model
- * neighborhood (see graph.relatedPages). Renders nothing when there are no
- * related pages, so it's safe to drop at the foot of any content page.
+ * "Related" block: pages sharing a 1-hop model neighborhood (see
+ * graph.relatedPages). Renders nothing when empty, so it's safe to drop at the
+ * foot of any content page.
  */
 export default function RelatedContent({ page }: { page: ContentPage }) {
   const vis = useContentVisibility();
-  // Respect viewer visibility: anonymous viewers must not see links to
-  // unpublished related pages. While listDrafts resolves, filterVisible returns
-  // the empty set for anon, so the block simply doesn't render until it's safe.
+  // Anonymous viewers must not see links to unpublished related pages;
+  // filterVisible returns empty for anon until listDrafts resolves.
   const related = vis.filterVisible(relatedPages(page));
   if (related.length === 0) return null;
 

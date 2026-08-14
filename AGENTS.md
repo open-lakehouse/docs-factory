@@ -82,6 +82,22 @@ research/         existing research reports (leave alone)
    LikeC4 diagrams) degrade to plain Markdown on GitHub; the preview upgrades them.
    See `blogs/CONVENTIONS.md` §5 and `site/README.md`.
 
+7. **A comment earns its place by stating the non-obvious.** Write the *why* — an
+   invariant, a subtle ordering/async/security constraint, a "why this and not the
+   obvious alternative", or a format hint (`// uuid`). Do **not** restate what the
+   code says, echo the function/component name in a docstring, or narrate what the
+   code doesn't do unless the not-doing is genuinely surprising. Use-case and
+   motivation prose belongs in the PR description, not inline. Example — after
+   always-rendering a copy button on collapsed code blocks, keep only the
+   code-relevant fact:
+
+   ```tsx
+   // ✗  a collapsed block often holds a file the reader is meant to copy into
+   //    their own project, so hiding the button behind expand-first is friction…
+   // ✓  `code` holds the full contents regardless of expand state.
+   <CodeCopyButton code={code} />
+   ```
+
 ## On each import, reflect on the conventions
 
 When new ideas, drafts, or source material land here, reflect on whether the

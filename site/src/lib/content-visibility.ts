@@ -96,12 +96,8 @@ export function useContentVisibility(): ContentVisibility {
     return map;
   }, [data]);
 
-  // The refs that are publicly visible: frontmatter "ready" AND published. This
-  // is the anonymous-visible set regardless of who fetched the rows — so it is
-  // correct both for a real anonymous caller (the server already filtered to
-  // these) and for an allowlisted caller previewing as anonymous (we filter the
-  // full set down here). Mirrors the server's `frontmatter_status = 'ready' AND
-  // published` clause in services/review.ts.
+  // The anonymous-visible set (frontmatter "ready" AND published), correct
+  // whoever fetched the rows — see the header note on previewAsAnon.
   const publishedRefs = useMemo(() => {
     const set = new Set<string>();
     for (const d of data?.drafts ?? []) {
@@ -116,9 +112,6 @@ export function useContentVisibility(): ContentVisibility {
     const summaryFor = (page: ContentPage) => byRef.get(refKey(pageRef(page)));
 
     const isVisible = (page: ContentPage) =>
-      // Allowlisted viewers see everything; anonymous viewers (and allowlisted
-      // viewers previewing as anonymous) see a page only when a published draft
-      // row exists for its ref.
       effectiveAllowlisted || publishedRefs.has(refKey(pageRef(page)));
 
     return {

@@ -107,11 +107,8 @@ export interface RecentCommentRow extends CommentRow {
   resolved: boolean;
 }
 
-/**
- * Map a recent-comment row into a RecentComment message. Pure — the SQL that
- * produces the row lives in the listRecentComments handler; this is the wire
- * mapping, kept here (and unit-tested) alongside commentFromRow.
- */
+/** The SQL that produces the row lives in the listRecentComments handler; this
+ *  is only the wire mapping, kept here (and unit-tested) alongside commentFromRow. */
 export function recentCommentFromRow(row: RecentCommentRow): RecentComment {
   const ref = create(ContentRefSchema, {
     area: areaFromDb(row.area),
@@ -130,13 +127,11 @@ export function recentCommentFromRow(row: RecentCommentRow): RecentComment {
 }
 
 /**
- * Assemble threads from a flat comment list + resolutions for one content ref.
- * Roots (parent_id null) become Thread.root. Replies form an N-level tree via
- * parent_id; `Thread.replies` stays a flat list on the wire but is emitted in
- * depth-first pre-order (a parent immediately precedes its subtree, siblings in
- * created_at order), and every reply Comment carries its parent_id so the client
- * can reconstruct the nesting and indentation. Returns non-orphaned and orphaned
- * threads separately.
+ * Roots (parent_id null) become Thread.root; replies form an N-level tree via
+ * parent_id. `Thread.replies` stays a flat list on the wire but is emitted in
+ * depth-first pre-order (parent immediately precedes its subtree, siblings in
+ * created_at order), and each reply carries its parent_id so the client can
+ * reconstruct nesting. Non-orphaned and orphaned threads are returned separately.
  */
 export function assembleThreads(
   ref: { area: string; slug: string; project?: string | null; bucket?: string | null },

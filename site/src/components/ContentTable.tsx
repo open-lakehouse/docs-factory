@@ -1,13 +1,11 @@
-// ContentTable — the expandable, filterable table shared by the blog index and
-// the four Diátaxis axis indexes. One row per content item (or grouped series);
-// clicking a row reveals a detail panel. The blog table was the original; this
-// generalizes its row primitive so every content axis renders identically.
+// The expandable table shared by the blog index and the four Diátaxis axis
+// indexes. One row per content item (or grouped series); clicking a row reveals
+// a detail panel.
 //
-// Status columns are viewer-dependent. Allowlisted reviewers see TWO columns —
-// the git frontmatter authoring status and the DB review lifecycle state (the
-// two orthogonal status axes) — so they can triage what still needs work.
-// Anonymous viewers see neither: their table is already narrowed to published
-// content, so a status column would be noise. Pass `showStatus` to toggle them.
+// Status columns are viewer-dependent (toggled by `showStatus`). Reviewers see
+// TWO columns — git frontmatter authoring status and DB review lifecycle state
+// (the two orthogonal status axes). Anonymous viewers see neither: their table
+// is already narrowed to published content.
 
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { type ReactNode, useState } from "react";
@@ -21,7 +19,7 @@ export interface ContentRow {
   id: string;
   icon: ReactNode;
   title: string;
-  /** When set, the title is a link (and won't toggle the row). */
+  /** When set, the title renders as a link. */
   titleHref?: string;
   /** Small count/label badge after the title (e.g. "3 posts"). */
   titleBadge?: string;

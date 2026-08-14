@@ -1,7 +1,6 @@
 # docs-factory task runner. Run `just` (or `just --list`) to see recipes.
 # Recipes mirror the "Common commands" in AGENTS.md.
 
-# Default: show the recipe list.
 default:
     @just --list
 

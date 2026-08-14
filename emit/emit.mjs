@@ -71,11 +71,9 @@ async function loadTarget(name) {
  */
 const COMMENT_RE = /^\s*<!--[\s\S]*-->\s*$/;
 
-/** Recursively drop HTML-comment nodes anywhere in the tree. mdast keeps a
- * `<!-- … -->` as an `html` node — a block comment as a top-level `html` node, an
- * inline comment as an `html` node inside a paragraph. Both are drafting
- * annotations that must not ship. Also trims a paragraph that becomes empty after
- * its trailing comment is removed. */
+/** Drop HTML-comment nodes anywhere in the tree. mdast keeps a `<!-- … -->` as an
+ * `html` node (top-level or inline inside a paragraph); both are drafting
+ * annotations that must not ship. */
 function stripComments(node) {
   if (!node.children) return;
   const hadComment = node.children.some((c) => c.type === "html" && COMMENT_RE.test(c.value));
@@ -251,7 +249,7 @@ function readSidecar(draftDir) {
 
 // --- core: emit one file ---------------------------------------------------
 
-/** Default architecture LikeC4 workspace, the source for `likec4=` view PNGs. */
+/** Source workspace for `likec4=` view PNGs. */
 export function defaultModelDir() {
   return join(REPO_ROOT, "architecture", "model");
 }
@@ -395,10 +393,7 @@ async function main() {
     webComponentPath: join(targetDistDir, "likec4-webcomponent.mjs"),
   });
 
-  // Existing delivery (if any) for this target — the create-vs-update hint. It
-  // lives in the post's sidecar `.emitted.json` (keyed by target), self-contained
-  // in blogs/<slug>/ so the mapping travels with the post (no global registry) and
-  // index.md stays pure. The delivery skill writes this key back after a create.
+  // Existing delivery for this target (if any) — the create-vs-update hint.
   const existing = readSidecar(draftDir)[targetName] ?? null;
 
   const outName = target.outputFile ?? `${slug}.md`;

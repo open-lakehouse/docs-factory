@@ -39,11 +39,8 @@ class DatasetSpec:
     tags: list[str] = field(default_factory=list)
 
 
-# The single canonical dataset for the initial scaffold. A small synthetic
-# "orders" table (license-clean, no external download) with two commits:
-#   v0 = initial load of `rows` orders
-#   v1 = mark a deterministic subset as returned (delete) + adjust amounts (update)
-# giving time-travel / CDF / deletion-vector examples real history to work with.
+# v0 = initial load; v1 = mark a deterministic subset returned (delete) + adjust
+# amounts (update), so time-travel / CDF / deletion-vector examples have history.
 ORDERS = DatasetSpec(
     name="orders",
     description=(

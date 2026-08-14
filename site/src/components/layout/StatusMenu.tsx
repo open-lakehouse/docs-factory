@@ -1,14 +1,12 @@
-// Top-bar login/status control. Shown for all viewers:
-//   - anonymous → a "Sign in" button (only when a hosted sign-in URL is
-//     configured; hidden until Neon Auth is provisioned — see lib/auth-actions).
-//   - authenticated → an avatar + login opening a menu with, for reviewers, a
-//     three-state view-mode selector and a link to the /review dashboard, plus
-//     Log out.
+// Top-bar login/status control:
+//   - anonymous → "Sign in" button, but only when a hosted sign-in URL is
+//     configured (hidden until Neon Auth is provisioned — see lib/auth-actions).
+//   - authenticated → avatar menu with Log out, plus (reviewers only) the
+//     view-mode selector and a /review dashboard link.
 //
-// The view-mode selector is the real, production-facing control that merges the
-// review-chrome opt-in with a "view as anonymous" preview (see auth-context:
-// viewMode / reviewActive / previewAsAnon). Local dev impersonation stays in
-// DevPersonaSwitcher — orthogonal to this.
+// The view-mode selector is production-facing (auth-context: viewMode /
+// reviewActive / previewAsAnon); local dev impersonation lives orthogonally in
+// DevPersonaSwitcher.
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -29,8 +27,8 @@ import { initials } from "../../lib/initials";
 export default function StatusMenu() {
   const { isLoading, isAuthenticated, isAllowlisted, viewer, viewMode, setViewMode } = useAuth();
 
-  // Neutral placeholder while the viewer resolves — avoids a flash of "Sign in"
-  // for an already-authenticated reviewer (matches DevPersonaSwitcher's "…").
+  // Neutral placeholder while the viewer resolves, avoiding a flash of "Sign in"
+  // for an already-authenticated reviewer.
   if (isLoading) {
     return <span className="status-menu-loading" aria-hidden />;
   }

@@ -1,8 +1,4 @@
-// code-block.tsx — sleek chrome around build-time Shiki <pre> output.
-// remark-fence-meta + @shikijs/rehype highlight fences at compile time;
-// MdxProvider maps `pre` here. Clean surface with a floating copy button in the
-// top-right; a slim header bar is rendered ONLY when the fence carries a
-// filename (title="…"), so headerless blocks keep their clean lines.
+// Chrome around build-time Shiki <pre> output; MdxProvider maps `pre` here.
 //
 // Review integration: Shiki runs at build time, so there's no runtime prop to
 // pass highlighted lines. Instead this component reads the page review context
@@ -37,7 +33,6 @@ interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
   children?: ReactNode;
 }
 
-/** Extract plain text from highlighted <pre><code> children for the clipboard. */
 function extractCode(children: ReactNode): string {
   const parts: string[] = [];
   const walk = (node: ReactNode) => {
@@ -249,10 +244,7 @@ export function Pre({
           {renderedChildren}
         </pre>
       )}
-      {/* Always render the copy button, even when collapsed: a collapsed block
-          often holds a file the reader is meant to copy into their own project,
-          so hiding the button behind expand-first is pure friction. `code` is
-          the full block contents regardless of expand state. */}
+      {/* `code` holds the full contents regardless of expand state. */}
       <CodeCopyButton code={code} />
     </div>
   );

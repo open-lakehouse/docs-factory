@@ -1,21 +1,12 @@
-// DocsIndex — the single Docs landing page. It replaces the four separate
-// Diátaxis axis pages (/tutorials, /how-to, /reference, /explanation) with one
-// route (/docs) that stacks ALL four content tables, each under its own
-// heading, and drives every table from ONE shared concept filter (the `?ref=`
-// chips) plus the active site scope.
+// The single Docs landing page (/docs): stacks all four Diátaxis content tables,
+// each under its own heading, driven by ONE shared concept filter (the `?ref=`
+// chips, AND semantics) plus the active site scope. The chips are estate
+// concepts — doc pages carry no free-text tags — from referencedConcepts (graph).
 //
-// The concept facet is the only vocabulary that spans docs uniformly:
-// effectiveRefIds() (graph.ts) unions each page's `references:` and `explains:`
-// ids (and, for blogs, tag→element). Doc pages carry no free-text topic tags,
-// so the chips here are estate concepts, and toggling one filters every axis
-// table at once (AND semantics across selected concepts).
-//
-// The `explanation` section additionally surfaces the LikeC4 estate concepts
-// that have NO explanation page yet as reviewer-only "No explanation yet"
-// coverage-gap rows — so the axis is the ground truth for what's explained AND
-// what's still missing. Concepts that DO have a page are already represented by
-// their content-page row (no duplicate). There is no /explain route: a concept's
-// canonical URL is its doc page.
+// The `explanation` section additionally surfaces estate concepts with NO
+// explanation page yet as reviewer-only "No explanation yet" coverage-gap rows;
+// concepts that DO have a page appear as their content-page row (no duplicate).
+// There is no /explain route: a concept's canonical URL is its doc page.
 
 import { BookOpen, FileText } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";

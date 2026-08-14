@@ -42,9 +42,7 @@ function authUrl(): string | undefined {
 }
 
 // One shared NeonAuth instance, created lazily so an unconfigured bundle
-// constructs nothing. `.adapter` is the Better Auth vanilla client
-// (signIn.social / signOut / getSession / useSession); `.getJWTToken()` reads
-// the signed JWT.
+// constructs nothing.
 let neonAuth: ReturnType<typeof makeNeonAuth> | undefined;
 function makeNeonAuth(url: string) {
   return createInternalNeonAuth(url, { adapter: BetterAuthVanillaAdapter() });
@@ -102,15 +100,7 @@ export function sessionResolved(): boolean {
   return store.get()?.isPending === false;
 }
 
-/**
- * The current Neon Auth JWT, or null when signed out / unconfigured. This is the
- * signed `set-auth-jwt` the server verifies via JWKS (server/src/auth/
- * neon-auth.ts) — sending it as a bearer authenticates the API request even
- * though the session cookie itself never reaches the Function's origin.
- *
- * We only cache a resolved (non-null) result so the transport isn't a network
- * call per RPC.
- */
+/** The current Neon Auth JWT, or null when signed out / unconfigured. */
 export async function sessionToken(): Promise<string | null> {
   if (cachedToken !== undefined) return cachedToken;
   return refreshSessionToken();
@@ -120,11 +110,8 @@ export async function sessionToken(): Promise<string | null> {
 export async function refreshSessionToken(): Promise<string | null> {
   const instance = neonAuthInstance();
   if (!instance) return null;
-  // getJWTToken() is the SDK's single accessor for the signed JWT; it returns
-  // the `set-auth-jwt` value the adapter injects onto the session (or null when
-  // there's no session yet). Any error / no session → null (request goes out
-  // anonymous), but we don't cache the null so a later call re-reads once the
-  // session exists.
+  // Any error / no session → null (request goes out anonymous); the null stays
+  // uncached (see cachedToken) so a later call re-reads once the session exists.
   const token = (await instance.getJWTToken().catch(() => null)) ?? null;
   if (token) cachedToken = token;
   return token;

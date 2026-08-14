@@ -249,7 +249,11 @@ export function Pre({
           {renderedChildren}
         </pre>
       )}
-      {expanded && <CodeCopyButton code={code} />}
+      {/* Always render the copy button, even when collapsed: a collapsed block
+          often holds a file the reader is meant to copy into their own project,
+          so hiding the button behind expand-first is pure friction. `code` is
+          the full block contents regardless of expand state. */}
+      <CodeCopyButton code={code} />
     </div>
   );
 }

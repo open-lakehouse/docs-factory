@@ -2,7 +2,6 @@ import { Check, Copy } from "lucide-react";
 import { useState } from "react";
 import { copyToClipboard } from "../lib/clipboard";
 
-/** Copy button for a build-time-highlighted code block. */
 export default function CodeCopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);
 

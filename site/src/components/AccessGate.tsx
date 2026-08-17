@@ -1,26 +1,21 @@
-// The site-wide access gate. For the initial release the whole site sits behind
-// a GitHub login and is restricted to allowlisted users; nothing renders until a
-// viewer is both authenticated AND allowlisted. It wraps <App/> inside all the
-// providers (see main.tsx) so it can read useAuth() and drive sign-in.
+// The site-wide access gate: the whole site sits behind GitHub login, and
+// nothing renders until a viewer is admitted. Wraps <App/> inside the providers
+// (see main.tsx) so it can read useAuth() and drive sign-in.
 //
 // Three blocked states, all distinguishable from the resolved Viewer:
 //   - !authenticated                 → "Sign in with GitHub"
-//   - authenticated && !allowlisted  → "Access pending / not authorized"
+//   - authenticated && !admitted     → "Access pending"
 //   - loading                        → neutral splash (avoid flashing the wall
 //                                       for an already-authenticated reviewer)
-// Only when authenticated && allowlisted do we render the gated app.
 //
-// The gate renders its own minimal chrome — NOT Shell, which assumes an admitted
-// viewer and pulls in the topnav/StatusMenu. In dev it also mounts the
-// DevPersonaSwitcher (relocated here from App) so the persona can be flipped from
-// the sign-in / pending screens, which is how you change identity locally.
+// Renders its own minimal chrome — NOT Shell, which assumes an admitted viewer
+// and pulls in the topnav/StatusMenu.
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { canSignIn, signIn, signOut } from "../lib/auth-actions";
 import { useAuth } from "../lib/auth-context";
 import DevPersonaSwitcher from "./DevPersonaSwitcher";
 
-/** A centered single-panel layout for the pre-admission screens. */
 function GateShell({ children }: { children: ReactNode }) {
   return (
     <>
@@ -38,20 +33,18 @@ function GateShell({ children }: { children: ReactNode }) {
 
 export default function AccessGate({ children }: { children: ReactNode }) {
   const { isLoading, isAuthenticated, isAllowlisted, hasScopedGrants } = useAuth();
-  // An external contributor (not allowlisted) is admitted when they hold a scoped
-  // content grant — a review invitation. They see only the content shared with
-  // them (server-enforced per item); every drafts/dashboard/admin surface stays
-  // gated on isAllowlisted, so admission here grants no site-wide access.
+  // A scoped grant (review invitation) admits a non-allowlisted contributor, but
+  // only to the shared content (server-enforced per item); drafts/dashboard/admin
+  // stay gated on isAllowlisted, so admission here grants no site-wide access.
   const admitted = isAllowlisted || hasScopedGrants;
 
-  // Neutral splash while the viewer resolves — mirrors StatusMenu's loading
-  // placeholder so an already-authenticated reviewer never sees the sign-in wall.
+  // Neutral splash while the viewer resolves, so an already-authenticated
+  // reviewer never sees the sign-in wall flash.
   if (isLoading) {
     return <div className="flex min-h-dvh items-center justify-center bg-background" aria-hidden />;
   }
 
-  // Admitted: render the real app. The dev switcher rides along (no-op in prod)
-  // so you can flip persona — e.g. back to anon — from inside the admitted app.
+  // Admitted: render the real app. The dev switcher rides along (no-op in prod).
   if (isAuthenticated && admitted) {
     return (
       <>

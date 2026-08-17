@@ -1,20 +1,14 @@
-// The site-admin roster (/admin). Site-admin-only (Neon Auth's admin role, set
-// via the Neon Console — the persistent, DB-drop-surviving anchor for admins).
-// Replaces the old direct-SQL-only workflow for managing who can review/maintain
-// the site:
-//   1. Allowlist — the current reviewer_allowlist with audit metadata; add,
-//      remove, or change a role in place.
-//   2. Registered users — everyone who has logged in via GitHub OAuth (from the
-//      auth provider), with their resolved role. People who logged in but never
-//      got a status show as "no status" and can be granted access in one click.
-//   3. Erase user — the right-to-erasure flow (tombstone footprint), behind a
-//      destructive-action confirmation.
+// The site-admin roster (/admin), for managing who can review/maintain the site:
+//   1. Allowlist — reviewer_allowlist with audit metadata; add/remove/change role.
+//   2. Registered users — everyone who has logged in via GitHub OAuth, with their
+//      resolved role; "no status" users can be granted access in one click.
+//   3. Erase user — right-to-erasure flow (tombstone footprint), behind a confirm.
 //
-// Gated on isSiteAdmin inside the page (mirrors ReviewDashboard's guard) so the
-// route stays SSR-renderable and hydration resolves access. A plain maintainer
-// does NOT reach this page. All writes go through the site-admin-only
-// ManageAllowlist / EraseUser RPCs; the server owns the last-maintainer
-// invariant, this UI only warns before firing it.
+// Site-admin-only (Neon Auth's admin role, set via the Neon Console — the
+// DB-drop-surviving anchor); a plain maintainer does NOT reach this page. Gated
+// on isSiteAdmin inside the page (mirrors ReviewDashboard) so the route stays
+// SSR-renderable. The server owns the last-maintainer invariant; this UI only
+// warns before firing it.
 
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { useMutation, useQuery } from "@connectrpc/connect-query";
@@ -54,10 +48,6 @@ function roleLabel(role: Role): string {
   return "No status";
 }
 
-// Role → shadcn Badge variant, so role chips share the design-token badge the
-// rest of the site uses (StatusBadge / review-status) rather than a bespoke
-// `admin-role` class set. Maintainer is the emphasized role, reviewer is
-// secondary, "no status" is a muted outline.
 const ROLE_VARIANT: Partial<Record<Role, "default" | "secondary" | "outline">> = {
   [Role.MAINTAINER]: "default",
   [Role.REVIEWER]: "secondary",

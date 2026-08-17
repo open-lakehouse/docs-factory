@@ -101,10 +101,9 @@ function ScriptViewBody({
     { ref: contentRef, path: entry.gitPath },
     { retry: false },
   );
-  // Derive from the auth-context comment gate (reviewActive OR a scoped grant),
-  // not reviewActive alone — so the name no longer shadows a different notion of
-  // canComment and an external contributor with a grant would get script comment
-  // affordances too. Still requires a registered source (fileHash) to anchor.
+  // Gate on the auth-context comment gate (reviewActive OR a scoped grant), so an
+  // external contributor can comment too, AND a registered source (fileHash) to
+  // anchor against.
   const canCommentScript = canCommentContent && Boolean(source?.fileHash);
 
   // One normalized source string drives BOTH the line list and highlighting, so

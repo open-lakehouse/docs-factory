@@ -216,11 +216,9 @@ export function ReviewProvider({
   const selectThread = useCallback(
     (id: string | null) => {
       setSelection((prev) => (id === null ? null : { id, nonce: (prev?.nonce ?? 0) + 1 }));
-      // Mark-read is a reviewer affordance (markThreadSeen is allowlist-gated
-      // server-side); skip it for an external contributor to avoid a denied RPC.
+      // markThreadSeen is allowlist-gated server-side; skip it for an external
+      // contributor to avoid a denied RPC.
       if (id === null || !reviewActive) return;
-      // Mark read on open; the mutation's onMutate owns the optimistic unread
-      // clear + rollback (see the markThreadSeen useMutation above).
       seen.mutate({ threadRootId: id });
     },
     [reviewActive, seen],

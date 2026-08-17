@@ -12,7 +12,6 @@ import {
   MerkleNodeSchema,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
 
-/** proto ContentArea → the `area` text column ('blogs' | 'docs'). */
 export function areaToDb(area: ContentArea): "blogs" | "docs" {
   switch (area) {
     case ContentArea.BLOGS:
@@ -24,7 +23,6 @@ export function areaToDb(area: ContentArea): "blogs" | "docs" {
   }
 }
 
-/** `area` text column → proto ContentArea. */
 export function areaFromDb(area: string): ContentArea {
   return area === "docs" ? ContentArea.DOCS : ContentArea.BLOGS;
 }
@@ -49,10 +47,7 @@ export interface ContentVersionRow {
   created_at: Date;
 }
 
-/**
- * The plain-object shape of a MerkleNode as stored in the merkle_tree jsonb.
- * The index signature keeps it assignable to postgres.js's JSONValue for writes.
- */
+/** The index signature keeps it assignable to postgres.js's JSONValue for writes. */
 export interface MerkleNodeJson {
   key: string;
   kind: string;
@@ -67,7 +62,6 @@ export interface MerkleNodeJson {
   [prop: string]: string | number | MerkleNodeJson[] | undefined;
 }
 
-/** Recursively build a proto MerkleNode from the stored jsonb plain object. */
 export function merkleNodeToProto(n: MerkleNodeJson): MerkleNode {
   return create(MerkleNodeSchema, {
     key: n.key,
@@ -83,7 +77,6 @@ export function merkleNodeToProto(n: MerkleNodeJson): MerkleNode {
   });
 }
 
-/** Recursively flatten a proto MerkleNode to the plain object stored as jsonb. */
 export function merkleNodeToJson(n: MerkleNode): MerkleNodeJson {
   return {
     key: n.key,
@@ -100,12 +93,10 @@ export function merkleNodeToJson(n: MerkleNode): MerkleNodeJson {
 }
 
 /**
- * Interpret a date-only column as UTC midnight and build a wire Timestamp.
- * postgres.js returns a `date` column as either 'YYYY-MM-DD' or a Date the
- * driver localized to local midnight; either way we take just the calendar
- * date and pin it to UTC midnight, so the value lands on the intended day
- * regardless of the server's timezone. Writers store the UTC calendar date
- * (see setTargetReleaseDate), so reads must interpret it as UTC to round-trip.
+ * postgres.js returns a `date` column as 'YYYY-MM-DD' or a Date localized to
+ * local midnight; take just the calendar date and pin it to UTC midnight so it
+ * lands on the intended day regardless of server timezone. Writers store the UTC
+ * calendar date (see setTargetReleaseDate), so reads must match to round-trip.
  */
 export function dateOnlyToUtcTimestamp(value: Date | string): Timestamp {
   const ymd = typeof value === "string" ? value.slice(0, 10) : value.toISOString().slice(0, 10);

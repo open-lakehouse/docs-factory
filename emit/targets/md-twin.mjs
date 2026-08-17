@@ -13,11 +13,8 @@
  * instead). Its shape:
  *   - `titleAsH1: false` — the twin route already carries the title; keep the body
  *     clean (the driver puts title in the twin's own frontmatter).
- *   - `unwrapProse: true` — reflow the authoring-time hard wraps (80-col line
- *     breaks) into clean single-line paragraphs. Hard wraps are an authoring
- *     artifact, not reader structure; keeping them (`unwrapProse: false`) also
- *     leaves adjacent blocks glued without their blank-line separators. A reflowed
- *     twin is what a human or agent actually wants to read.
+ *   - `unwrapProse: true` — reflow the authoring-time hard wraps into clean
+ *     single-line paragraphs (see remark-unwrap-prose.mjs).
  *   - `renderImage` points a likec4 view at `/assets/likec4/<viewId>.png` (the
  *     site-served copy the driver writes).
  *   - `frontmatter` emits a small agent-readable preamble; the driver post-injects
@@ -36,13 +33,10 @@ import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
 export const LIKEC4_ASSET_BASE = "/assets/likec4";
 
 /**
- * The mdast node left in the tree for a STANDALONE image. A likec4 view points at
- * the site-served PNG (`/assets/likec4/<viewId>.png`); any other image reduces to a
- * plain filename-only image. The image is wrapped in a `paragraph` (a block node):
- * the likec4-md plugin replaces the whole standalone-image *paragraph* with what
- * this returns, and remark-stringify only inserts blank-line separators between
- * BLOCK nodes — returning a bare inline `image` here glues the following block
- * (e.g. the next heading) onto it, so wrap it in a paragraph.
+ * The mdast node left for a STANDALONE image: a likec4 view points at the
+ * site-served PNG, any other image at its bare filename. Wrapped in a `paragraph`
+ * because remark-stringify only blank-line-separates BLOCK nodes — a bare inline
+ * `image` would glue the following block onto it.
  */
 export function renderImage(entry) {
   const url = entry.likec4 ? `${LIKEC4_ASSET_BASE}/${entry.likec4}.png` : entry.filename;

@@ -20,7 +20,7 @@
 #     unitycatalog/unitycatalog:v0.5.0
 services:
   unitycatalog:
-    image: unitycatalog/unitycatalog:v0.5.0
+    image: unitycatalog/unitycatalog:v0.6.0-SNAPSHOT
     ports:
       - "8080:8080"   # REST API (web UI on :3000 omitted — unused by these examples)
     volumes:

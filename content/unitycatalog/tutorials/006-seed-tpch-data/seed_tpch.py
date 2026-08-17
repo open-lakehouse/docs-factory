@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #   "unitycatalog-client>=0.5",
-#   "duckdb>=1.1",
+#   "duckdb>=1.5.4",
 #   "deltalake>=0.20",
 #   "pyarrow>=14",
 # ]
@@ -12,27 +12,7 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # ///
-"""Seed the classic TPC-H dataset into Unity Catalog as governed Delta tables.
-
-The `orders` sample table is enough for a single-table walkthrough, but real
-features — joins, governed access, lineage, federation — only get interesting
-against data that looks like a business. TPC-H is the standard eight-table model
-(customer, orders, lineitem, part, supplier, partsupp, nation, region), and this
-script builds it end to end so later tutorials and blogs have a meaningful base:
-
-    generate (DuckDB)  ->  write Delta (deltalake)  ->  register (Unity Catalog)
-
-Run it directly against a Unity Catalog server (see the colocated tutorial):
-
-    uv run seed_tpch.py                          # talks to http://localhost:8080
-    UC_BASE_URL=http://host:8080/api/2.1/unity-catalog uv run seed_tpch.py
-
-Unity Catalog doesn't ingest rows — it *governs* tables that live in object
-storage. So we write each TPC-H table as a real Delta table to a local directory
-we own, then register it as an EXTERNAL Delta table (UC records the location, it
-never touches the files). The whole file is one runnable program our CI executes
-against a real server, so what you copy is what we test.
-"""
+"""Seed the classic TPC-H dataset into Unity Catalog as governed Delta tables."""
 
 import asyncio
 import json
@@ -65,12 +45,8 @@ from unitycatalog.client.models import (
 
 # --8<-- [end:imports]
 
-# The SDK's default host already includes the /api/2.1/unity-catalog prefix.
 DEFAULT_URL = "http://localhost:8080/api/2.1/unity-catalog"
 
-# The eight tables the TPC-H schema is made of, small (region/nation) to large
-# (lineitem). Their row counts scale with `sf` except region (5) and nation (25),
-# which are fixed by the spec — a handy scale-invariant sanity check.
 TPCH_TABLES = [
     "region",
     "nation",
@@ -86,9 +62,7 @@ TPCH_TABLES = [
 def storage_root() -> Path:
     """Where the Delta tables are written.
 
-    Unity Catalog only records an external table's location — it never reads or
-    writes the files itself — so this is a plain local directory *we* own. Honors
-    ``TPCH_STORAGE_ROOT`` (set it for a stable location); otherwise a fresh temp
+    Honors ``TPCH_STORAGE_ROOT`` (set it for a stable location); otherwise a fresh temp
     directory, so the tutorial is safe to run anywhere without cleanup.
     """
     override = os.environ.get("TPCH_STORAGE_ROOT")
@@ -246,10 +220,6 @@ async def _delete_tpch_catalog(catalogs: CatalogsApi) -> None:
 
 
 if __name__ == "__main__":
-    # Running the script IS the test. region (5 rows) and nation (25 rows) are
-    # fixed by the TPC-H spec regardless of scale factor, so these asserts —
-    # outside the rendered regions, so readers never see them — turn a silent
-    # regression into a non-zero exit the harness catches.
     summary = asyncio.run(main(os.environ.get("UC_BASE_URL", DEFAULT_URL)))
     assert len(summary["tables"]) == 8, summary
     assert summary["tables"] == sorted(TPCH_TABLES), summary

@@ -22,12 +22,6 @@ is three steps, once per table:
 
 > **generate** (DuckDB) → **write Delta** (deltalake) → **register** (Unity Catalog)
 
-Unity Catalog doesn't ingest rows — it *governs* tables that live in object
-storage. So we generate the data, write each table as a real Delta table under
-the server's managed root, and then register it as an external Delta table Unity
-Catalog knows about. Every step below pulls its code from a single runnable file
-our CI executes against a real server, so what you copy is what we test.
-
 :::note
 You'll need a running Unity Catalog server. The colocated `compose.yaml` starts
 one with `docker compose up -d`. Unity Catalog only records where an external
@@ -37,12 +31,11 @@ tables to a local directory it owns (override with `TPCH_STORAGE_ROOT`).
 
 ::::journey
 
-### Generate TPC-H with DuckDB
+### Generate TPC-H
 
 [DuckDB](https://duckdb.org/docs/stable/core_extensions/tpch) ships a `tpch`
-extension that generates the benchmark data in-process — no external tool to
-install, no files to download. `dbgen(sf = ...)` builds every table at the given
-**scale factor** (`0.01` here keeps it small and fast; bump it for more data),
+extension that generates the benchmark data in-process. `dbgen(sf = ...)` builds every
+table at the given **scale factor** (`0.01` here keeps it small and fast; bump it for more data),
 and each table comes straight back as an Arrow table.
 
 ```python file=./seed_tpch.py start=start:generate end=end:generate
@@ -52,8 +45,7 @@ and each table comes straight back as an Arrow table.
 
 Point [`write_deltalake`](https://delta-io.github.io/delta-rs/) at a location
 under our storage root and hand it the Arrow table. That writes a real Delta
-table — transaction log and all — and returns its `file://` URI, which we'll
-register with Unity Catalog in the next step.
+table — transaction log and all — and returns its `file://` URI.
 
 ```python file=./seed_tpch.py start=start:write-delta end=end:write-delta
 ```
@@ -61,9 +53,8 @@ register with Unity Catalog in the next step.
 ### Register the tables in Unity Catalog
 
 Connect with the async SDK, then create the `tpch` catalog and a schema named for
-the scale factor. For each Delta table we wrote, register an **external** table:
-Unity Catalog stores its schema and storage location while the rows stay in
-Delta. The column list is derived from each table's Arrow schema.
+the scale factor. For each Delta table we wrote, register an **external** table.
+The column list is derived from each table's Arrow schema.
 
 ```python file=./seed_tpch.py start=start:register end=end:register
 ```
@@ -90,7 +81,6 @@ You now have a governed, eight-table TPC-H dataset in Unity Catalog — a
 foundation for feature-focused tutorials that need real relationships and
 history, for example:
 
-- **Joins across governed tables** — `orders` ⋈ `lineitem` ⋈ `customer`.
 - **Time travel** — build on [Explore a Delta table's history](../../../delta/tutorials/explore-table-history/index.md)
   against `lineitem`.
 - **Access control and lineage** — grant scoped access to a subset of the schema.

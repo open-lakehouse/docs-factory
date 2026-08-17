@@ -1,0 +1,51 @@
+# --8<-- [start:source]
+version: 1.1
+comment: 'Orders KPIs for sales analysis'
+source: samples.tpch.orders
+# --8<-- [end:source]
+
+# --8<-- [start:enrich]
+joins:
+  - name: customer
+    source: samples.tpch.customer
+    'on': source.o_custkey = customer.c_custkey
+    rely:
+      at_most_one_match: true
+
+filter: source.o_orderdate > '1990-01-01'
+# --8<-- [end:enrich]
+
+# --8<-- [start:fields]
+fields:
+  - name: Order Month
+    expr: DATE_TRUNC('MONTH', source.o_orderdate)
+    comment: 'Month of order'
+
+  - name: Order Status
+    expr: |-
+      CASE
+        WHEN source.o_orderstatus = 'O' THEN 'Open'
+        WHEN source.o_orderstatus = 'P' THEN 'Processing'
+        WHEN source.o_orderstatus = 'F' THEN 'Fulfilled'
+      END
+    comment: 'Status of order'
+
+  - name: Market Segment
+    expr: customer.c_mktsegment
+    comment: 'Customer market segment'
+# --8<-- [end:fields]
+
+# --8<-- [start:measures]
+measures:
+  - name: Order Count
+    expr: COUNT(1)
+    comment: 'Total number of orders'
+
+  - name: Total Revenue
+    expr: SUM(source.o_totalprice)
+    comment: 'Sum of all order prices'
+
+  - name: Total Revenue per Customer
+    expr: SUM(source.o_totalprice) / COUNT(DISTINCT source.o_custkey)
+    comment: 'Average revenue per unique customer'
+# --8<-- [end:measures]

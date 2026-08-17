@@ -2,7 +2,7 @@ name: unity-catalog-tpch
 
 services:
   unitycatalog:
-    image: unitycatalog/unitycatalog:v0.5.0
+    image: unitycatalog/unitycatalog:0.6.0-SNAPSHOT
     hostname: unitycatalog
     ports:
       - "8080:8080"

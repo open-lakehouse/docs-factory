@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Docs-factory Python workspace — tooling and the deterministic seeder for the open lakehouse content pipeline"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "unitycatalog-client>=0.5.1",
+]
 
 [tool.uv.workspace]
 members = ["tools/docsnip", "seed/python"]

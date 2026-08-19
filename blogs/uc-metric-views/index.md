@@ -1,5 +1,5 @@
 ---
-title: Fighting entropy with Metric-Views
+title: Fighting entropy with metric views
 slug: uc-metric-views
 status: draft
 tags: [unity-catalog, apache-spark, lakehouse]
@@ -12,6 +12,8 @@ target: unitycatalog
 :::tldr
 - Metric Views as part of your semantic layer allow you to centrally
   define and govern metrics and KPIs for your business.
+- Metric views allow providing agent metadata tailored for consumption
+  by agents.
 - Unity Catalog 0.6 comes with supports
 
 :::
@@ -27,31 +29,25 @@ the quality of a design.
 In simple terms entropy is a measure for the disorder or uncertainly in a 
 system. So how does this relate to data platforms, and more importantly, 
 what do metric views have to do with that? Coming back to the litmus test,
-if you are not able to answer simple questions about your system such as:
-- which component is responsible for ... 
-- where do we define ...
-- who owns ...
-
-If you need to cosult your layered architecture diagrams, sift through
-loads of documentation etc. to answer these questions chances are you are
-dealing with a high entropy system. In fact several widely adopted principles
-such as [KISS], [DRY], [OOP], [SoC], and alike can ultimately be framed
-as striving at a low entropy state.
-
-For your data platform a test might be, if you ask a number of consumers
-of your platform something like: "What were our last quarter earnings?".
+try asking a number of consumers of your platform something like: 
+"What were our last quarter earnings?".
 
 If only some people can give you an answer, or you get a bunch of different answers
-there almost certainly is an unhealthy amount of uncertainlty in your systems. 
-While this 
+there almost certainly is an unhealthy amount of uncertainlty and/or disorder in your systems.
+
+And while we may be glossing over some of the finder pomits of thermodynamic
+vs. Shannon entropy a bit, I feel that context rot and context management are prime examples
+of the effects of entropy on a system and the need to keep it in check.
+
+
 
 ## What are metric views?
 
-Metric views create a semantic layer for your data, transforming tables and views into
+Metric views are part of the semantic layer for your data, transforming tables and views into
 standardized business metrics. They define what to measure, how to aggregate it, and how to
-segment it. As a result, every user across the organization reports the same value for the
-same KPI, which eliminates inconsistent reporting and enables flexible analysis across any
-fields (also called dimensions).
+segment it. As a result, every user, human and agent, across the organization reports the
+same value for the same KPI, which eliminates inconsistent reporting and enables flexible
+analysis across any fields (also called dimensions).
 
 The core components you define are sources, joins, filters, fields, and measures.
 
@@ -69,7 +65,8 @@ However all of this is a bit abstract, so let's put it into practice.
 
 Since metric views require some tabular assets as a foundation,
 we first need some interesting data. For the remainder of this tutorial,
-we assume that you created TCP-H tables per the [tcp-h tutorial](../../content/unitycatalog/tutorials/006-seed-tpch-data/index.md).
+we assume that you created TCP-H tables per the
+[tcp-h tutorial](../../content/unitycatalog/tutorials/006-seed-tpch-data/index.md).
 
 With that data in place, let's create our first metric view.
 
@@ -118,7 +115,7 @@ Copy the full definition of the metric view from below into a local file `metric
 
 We now register the metric view as a securable in Unity Catalog.
 
-```python file=./metric-view.yaml
+```python file=./create_metric_view.py start=start:create-metric-view end=end:create-metric-view
 ```
 
 ### Query the metric view
@@ -138,7 +135,7 @@ ORDER BY `Order Month`;
 
 ::::
 
-### OSI interoperability
+## OSI interoperability
 
 [KISS]: https://en.wikipedia.org/wiki/KISS_principle
 [DRY]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself

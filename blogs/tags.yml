@@ -68,5 +68,6 @@ wasm:
   description: "WebAssembly builds of engines/clients (browser & edge)"
 ui-components:
   description: "Reusable/headless front-end component distribution"
-
+apache-spark:
+  description: "Apache Spark Query Engine"
 # add new tags above this line

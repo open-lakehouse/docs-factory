@@ -154,9 +154,6 @@ async def main(base_url: str = DEFAULT_URL, sf: float = 0.01) -> dict[str, objec
         name: write_delta(name, arrow, root) for name, arrow in arrow_tables.items()
     }
 
-    # sf=0.01 -> "sf001"; a stable, filesystem-safe schema name per scale factor.
-    schema_name = f"sf{int(sf * 100):03d}"
-
     # --8<-- [start:connect]
     config = Configuration(host=base_url)
     async with ApiClient(config) as api:
@@ -170,9 +167,9 @@ async def main(base_url: str = DEFAULT_URL, sf: float = 0.01) -> dict[str, objec
 
         # --8<-- [start:register]
         await catalogs.create_catalog(
-            CreateCatalog(name="tpch", comment="TPC-H benchmark dataset")
+            CreateCatalog(name="samples", comment="TPC-H dataset")
         )
-        await schemas.create_schema(CreateSchema(name=schema_name, catalog_name="tpch"))
+        await schemas.create_schema(CreateSchema(name="tpch", catalog_name="samples"))
 
         # Register each Delta table we wrote as an EXTERNAL table Unity Catalog
         # governs — UC stores the schema and location, the data stays in Delta.
@@ -180,21 +177,21 @@ async def main(base_url: str = DEFAULT_URL, sf: float = 0.01) -> dict[str, objec
             await tables.create_table(
                 CreateTable(
                     name=name,
-                    catalog_name="tpch",
-                    schema_name=schema_name,
+                    catalog_name="samples",
+                    schema_name="tpch",
                     table_type=TableType.EXTERNAL,
                     data_source_format=DataSourceFormat.DELTA,
                     storage_location=locations[name],
                     columns=arrow_to_columns(arrow.schema),
                 )
             )
-            print(f"registered tpch.{schema_name}.{name}")
+            print(f"registered samples.tpch.{name}")
         # --8<-- [end:register]
 
         # --8<-- [start:verify]
-        listed = await tables.list_tables(catalog_name="tpch", schema_name=schema_name)
+        listed = await tables.list_tables(catalog_name="samples", schema_name="tpch")
         registered = sorted(t.name for t in listed.tables or [])
-        print(f"{len(registered)} tables in tpch.{schema_name}: {registered}")
+        print(f"{len(registered)} tables in samples.tpch: {registered}")
 
         # Read a table straight back from Delta to prove the data is really there.
         lineitem_rows = DeltaTable(locations["lineitem"]).to_pyarrow_table().num_rows
@@ -202,7 +199,7 @@ async def main(base_url: str = DEFAULT_URL, sf: float = 0.01) -> dict[str, objec
         # --8<-- [end:verify]
 
     return {
-        "schema": f"tpch.{schema_name}",
+        "schema": "samples.tpch",
         "tables": registered,
         "region_rows": arrow_tables["region"].num_rows,
         "nation_rows": arrow_tables["nation"].num_rows,
@@ -214,7 +211,7 @@ async def _delete_tpch_catalog(catalogs: CatalogsApi) -> None:
     """Best-effort teardown so the flow can re-run against an existing server."""
     try:
         # force=True cascades through the schemas/tables a prior run left behind.
-        await catalogs.delete_catalog(name="tpch", force=True)
+        await catalogs.delete_catalog(name="samples", force=True)
     except NotFoundException:
         pass
 

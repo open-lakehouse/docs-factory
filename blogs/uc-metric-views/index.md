@@ -1,7 +1,7 @@
 ---
 title: Fighting entropy with metric views
 slug: uc-metric-views
-status: draft
+status: ready
 tags: [unity-catalog, apache-spark, lakehouse]
 series:
 series_order:
@@ -12,7 +12,7 @@ target: unitycatalog
 :::tldr
 - Metric Views as part of your semantic layer allow you to centrally
   define and govern metrics and KPIs for your business.
-- Metric views are specifically designed to also be cunsumed by agents.
+- Metric views are specifically designed to also be consumed by agents.
 - You can test metric views today using Unity Catalog `0.6` with Apache Spark `4.3`.
 :::
 
@@ -32,10 +32,6 @@ try asking a number of consumers of your platform something like:
 
 If only some people can give you an answer, or you get a bunch of different answers
 there almost certainly is an unhealthy amount of uncertainlty and/or disorder in your systems.
-
-And while we may be glossing over some of the finer points of thermodynamic
-vs. Shannon entropy a bit, I feel that context rot and context management are prime examples
-of the effects of entropy on a system and the need to keep it in check.
 
 So without further ado, let's find out how metric views help making sense of your data estate.
 
@@ -59,11 +55,20 @@ The core components you define are sources, joins, filters, fields, and measures
 
 ### Providing Agent Metadata
 
+And while we may be glossing over some of the finer points of thermodynamic
+vs. Shannon entropy a bit, when talking about agents, the entropy analogy goes from 
+from a metaphor, so something could directly see if we were to write down the formula for
+the next output tokens probability. As such, context rot and context management are prime
+examples of the effects of entropy on a system and the need to keep it in check.
+
+Metric views, especially when enriched with agent metadata can significantly reduce the
+context an LLM/Agent requires to reason about your question, which directly translates to the
+desired grounding effects we aim for in context management.
 Agent metadata includes display names, format specifications, and synonyms that provide additional context.
 This in turn grounds your agents' and natural language tools' exploration in facts, rather that it having
 to research or guess as to how to interpret the users questions.
 
-We'll be diving deeper into what specifically fields are in the context of metriv views,
+We'll be diving deeper into what specifically fields are in the context of metric views,
 but for now let's examine a full definition of a field including some agent metadata.
 
 ```yaml
@@ -135,7 +140,7 @@ by joining it with data from another table and maybe applying some filters.
 ```
 
 As you can see, joins are defined as an array so you can accommodate complex
-scenarios, like warehouses build on [star or snowflake schemas](https://docs.databricks.com/aws/en/uc-semantics/metric-views/joins).
+scenarios, like warehouses built on [star or snowflake schemas](https://docs.databricks.com/aws/en/uc-semantics/metric-views/joins).
 
 ### Define relevant fields
 
@@ -170,7 +175,7 @@ We now register the metric view as a securable in Unity Catalog.
 
 ### Query the metric view
 
-We can now query the 
+We can now query the metric view, using the latest (py)spark version
 
 ```sql
 SELECT
@@ -183,11 +188,17 @@ GROUP BY ALL
 ORDER BY `Order Month`;
 ```
 
+The `MEASURE` function is soecific to metric views and will compute the selected
+measure/KPI based on its definition.
+
 ::::
 
-## OSI interoperability
+## What we learned
 
-[KISS]: https://en.wikipedia.org/wiki/KISS_principle
-[DRY]: https://en.wikipedia.org/wiki/Don%27t_repeat_yourself
-[OOP]: https://en.wikipedia.org/wiki/Object-oriented_programming
-[SoC]: https://en.wikipedia.org/wiki/Separation_of_concerns
+As we have seen, defining key metrics in a way that you can centrally track and govern
+can have a tremendous effect on in reducing friction (yet another great energy dissipation/entropy
+analogy :D) across your orgnaization and within your agent sessions.
+As an aside, the process of writing the metric view definitions themselves can be a great catalyst
+for internal alignment on what your actual KPIs should be.
+
+And you can get started today using the latest Unity Catalog 0.6 release.

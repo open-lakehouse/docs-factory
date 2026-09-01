@@ -7,7 +7,10 @@
 // come from BOTH tutorial pages (content/) and blog posts (blogs/) — docsnip
 // discovers both. There is ONE parser: this shells out to `docsnip scripts --json`
 // (scriptmeta.py) rather than re-implementing PEP 723 in JS. The served .py is
-// byte-identical to the committed source; gen-vercel-config serves it noindex +
+// the committed source with the `--8<--` section markers stripped (see
+// stripSectionMarkers) — those markers are authoring scaffolding for `file=`
+// snippet fences, noise to someone who fetches the whole script; the result is
+// still a runnable PEP 723 script. gen-vercel-config serves it noindex +
 // text/x-python.
 //
 // Run order (CI prebuild, where uv is available): before build-md-twins (which
@@ -15,7 +18,7 @@
 // build-site-llmstxt (which lists scripts.json). First JS→docsnip shell-out in the
 // build; a non-zero exit fails the build.
 import { execFileSync } from "node:child_process";
-import { cpSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -57,6 +60,37 @@ export function runDocsnipScripts(root = repoRoot) {
     );
   }
   return payload;
+}
+
+// A pymdownx/mkdocs snippet marker line, e.g. `# --8<-- [start:attach]` or
+// `# --8<-- [end:attach]`. These are whole-line Python comments that delimit the
+// regions `file=… start=… end=…` fences inline (see fences.mjs / snippetcheck.py).
+// Anchored to a full line so we never clip a `--8<--` that appears inside a string.
+const SECTION_MARKER_LINE_RE = /^\s*#\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
+
+/**
+ * Strip `--8<--` section-marker comment lines from a served script (pure, for
+ * testing), then tidy the whitespace those lines leave behind: runs of ≥2 blank
+ * lines collapse to one, and leading/trailing blank lines are trimmed. The result
+ * ends with exactly one trailing newline. The markers are authoring scaffolding
+ * (they carve out `file=` snippet regions); a reader who fetches the whole script
+ * should get clean, runnable source without them. The git source keeps its markers
+ * — only this served copy drops them.
+ */
+export function stripSectionMarkers(text) {
+  const lines = text.replace(/\r\n/g, "\n").split("\n");
+  const out = [];
+  for (const line of lines) {
+    if (SECTION_MARKER_LINE_RE.test(line)) continue;
+    // Collapse consecutive blanks (also drops a leading blank left by a marker).
+    if (line.trim() === "" && (out.length === 0 || out[out.length - 1].trim() === "")) {
+      continue;
+    }
+    out.push(line);
+  }
+  // Trim a trailing blank line, then re-append exactly one newline.
+  while (out.length && out[out.length - 1].trim() === "") out.pop();
+  return `${out.join("\n")}\n`;
 }
 
 /**
@@ -109,13 +143,15 @@ function main() {
     `${JSON.stringify({ version: EXPECTED_VERSION, scripts }, null, 2)}\n`,
   );
 
-  // Copy each raw .py byte-identically to its served path under dist/.
+  // Copy each .py to its served path under dist/, with `--8<--` section markers
+  // stripped (still a runnable PEP 723 script; the git source keeps its markers).
   let copied = 0;
   for (const s of scripts) {
     if (!s.fetchUrl) continue;
     const dest = resolve(distDir, s.fetchUrl.replace(/^\//, ""));
     mkdirSync(dirname(dest), { recursive: true });
-    cpSync(resolve(repoRoot, s.gitPath), dest);
+    const raw = readFileSync(resolve(repoRoot, s.gitPath), "utf8");
+    writeFileSync(dest, stripSectionMarkers(raw));
     copied++;
   }
   console.log(

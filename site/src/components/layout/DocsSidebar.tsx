@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils";
-import { useVisibleDocNav } from "../../sidebar";
+import { useScope } from "../../scope";
+import { useScopedDocNav } from "../../sidebar";
 import { useSidebar } from "./Shell";
 
 interface DocsSidebarProps {
@@ -15,10 +16,13 @@ interface DocsSidebarProps {
 export default function DocsSidebar({ activeProject, activeBucket, activeSlug }: DocsSidebarProps) {
   const location = useLocation();
   const { mobileOpen, setMobileOpen } = useSidebar();
-  // Viewer-aware nav: anonymous viewers see only published docs; while the
-  // drafts list resolves the nav is empty, so show a placeholder instead of an
-  // empty rail (matches the overview surfaces' loading handling).
-  const { nav, isLoading } = useVisibleDocNav();
+  const { scopeId } = useScope();
+  // Viewer- AND scope-aware nav: anonymous viewers see only published docs, and
+  // the active scope narrows the rail to that topic's project(s). The doc being
+  // read is pinned via `activeProject` so it never drops out under a mismatched
+  // `?scope=`. While the drafts list resolves the nav is empty, so show a
+  // placeholder instead of an empty rail (matches the overview surfaces).
+  const { nav, isLoading } = useScopedDocNav(scopeId, activeProject);
   // Track explicit open/closed choices; absent keys fall back to "open when
   // this is the active project/bucket" so the current page stays reachable.
   const [projectOpen, setProjectOpen] = useState<Record<string, boolean>>({});

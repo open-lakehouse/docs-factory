@@ -30,6 +30,7 @@ import {
   slugFromPath,
 } from "./lib/content-source";
 import { type ContentVisibility, useContentVisibility } from "./lib/content-visibility";
+import { getScope, isRealScope } from "./scope";
 
 export interface DocNavItem {
   project: string;
@@ -55,7 +56,7 @@ interface MdxModule {
 
 const DEFAULT_BUCKET_ORDER = ["explanation", "tutorials", "how-to", "reference"];
 
-const PROJECT_LABELS: Record<string, string> = {
+export const PROJECT_LABELS: Record<string, string> = {
   delta: "Delta Lake",
   unitycatalog: "Unity Catalog",
   "open-lakehouse": "Open Lakehouse",
@@ -220,6 +221,40 @@ export function useVisibleDocNav(): { nav: DocNavGroup[]; isLoading: boolean } {
   const vis = useContentVisibility();
   const nav = useMemo(() => filterDocNav(docNav, vis), [vis]);
   return { nav, isLoading: vis.isLoading };
+}
+
+/**
+ * `docNav` narrowed to the active site scope: only nav groups whose project
+ * belongs to the scope survive (`open-lakehouse`/unknown → all groups). This is
+ * a project-keyed filter — a `DocNavGroup` is keyed by `project`, not a
+ * `ContentPage`, so the richer model-ref predicate (`inScope`) doesn't apply
+ * here; there is exactly one project per scope today. `keepProject` pins a
+ * group in place even when it's out of scope, so the doc a reader is currently
+ * on never drops out of its own sidebar under a mismatched `?scope=`.
+ */
+export function filterDocNavByScope(
+  groups: DocNavGroup[],
+  scopeId: string | null | undefined,
+  keepProject?: string,
+): DocNavGroup[] {
+  if (!isRealScope(scopeId)) return groups;
+  const scope = getScope(scopeId);
+  if (!scope) return groups;
+  return groups.filter((g) => scope.projects.includes(g.project) || g.project === keepProject);
+}
+
+/** Viewer- AND scope-aware `docNav`, composed on top of `useVisibleDocNav` so
+ * the visibility rule stays single-sourced. */
+export function useScopedDocNav(
+  scopeId: string,
+  keepProject?: string,
+): { nav: DocNavGroup[]; isLoading: boolean } {
+  const { nav, isLoading } = useVisibleDocNav();
+  const scoped = useMemo(
+    () => filterDocNavByScope(nav, scopeId, keepProject),
+    [nav, scopeId, keepProject],
+  );
+  return { nav: scoped, isLoading };
 }
 
 /** Viewer-aware prev/next: neighbors are computed over the visible sequence, so

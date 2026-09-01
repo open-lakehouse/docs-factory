@@ -30,6 +30,8 @@ export interface Scope {
   anchorIds: string[];
   /** Optional per-project accent (Shell `data-accent`). */
   accent?: "delta" | "unitycatalog";
+  /** One-line topic blurb shown as the per-scope index hero subtitle. */
+  tagline?: string;
 }
 
 /** Scope registry. Adding a project is a config-only change. */
@@ -40,6 +42,7 @@ export const SCOPES: Scope[] = [
     projects: ["delta"],
     anchorIds: ["deltaSpec"],
     accent: "delta",
+    tagline: "Open table format — ACID transactions, time travel, schema enforcement.",
   },
   {
     id: "unitycatalog",
@@ -47,6 +50,7 @@ export const SCOPES: Scope[] = [
     projects: ["unitycatalog"],
     anchorIds: ["ucSpec"],
     accent: "unitycatalog",
+    tagline: "Open lakehouse catalog — unified governance across engines.",
   },
 ];
 

@@ -28,7 +28,8 @@ import {
   referencedConcepts,
 } from "../graph";
 import { type ContentVisibility, useContentVisibility } from "../lib/content-visibility";
-import { elementInScope, filterByScope, scopeAccent, useScope } from "../scope";
+import { elementInScope, filterByScope, isRealScope, scopeAccent, useScope } from "../scope";
+import ScopeIndex from "./ScopeIndex";
 
 interface AxisMeta {
   key: DiataxisKey;
@@ -199,7 +200,13 @@ function AxisSection({
   );
 }
 
-export default function DocsIndex() {
+/**
+ * `/docs` for the "all" scope (`open-lakehouse`): every project's content
+ * stacked as the four Diátaxis axis tables under one shared concept filter.
+ * When a real scope is active, `DocsIndex` renders `<ScopeIndex>` instead (a
+ * per-topic overview), so this body only ever runs unscoped-or-facet-filtered.
+ */
+function DocsTables() {
   const { scopeId } = useScope();
   const vis = useContentVisibility();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -321,4 +328,16 @@ export default function DocsIndex() {
       </div>
     </Shell>
   );
+}
+
+/**
+ * `/docs` entry: a thin switch on the active scope. A real scope (delta /
+ * unitycatalog) lands on that topic's index overview; `open-lakehouse` (the
+ * implicit "all") keeps the full stacked axis tables. Splitting the two bodies
+ * keeps React's hook order valid in each (no early return past the table hooks).
+ */
+export default function DocsIndex() {
+  const { scopeId } = useScope();
+  if (isRealScope(scopeId)) return <ScopeIndex scopeId={scopeId} />;
+  return <DocsTables />;
 }

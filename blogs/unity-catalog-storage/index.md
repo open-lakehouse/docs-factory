@@ -2,22 +2,10 @@
 title: Unity Catalog storage — credentials, external locations, and managed storage
 slug: unity-catalog-storage
 status: draft
-tags: [unity-catalog, governance, lakehouse, devrel]
+tags: [unity-catalog, governance, lakehouse]
 author: Robert Pack
 target: unitycatalog
 ---
-
-<!--
-Imported from Google Doc "Unity Catalog Concepts", tab "Storage" (t.0), 2026-07-03,
-then reframed and corrected per author direction and the doc's reviewer comments:
-- "managing storage / managed storage" wordplay retitled (Alex Jiang, TD Das: SEO);
-- "Agents need agency" reframed to avoid the AI-agent collision (Alex Jiang);
-- managed-vs-external distinction sharpened (Alex Jiang);
-- "try this at home" commands corrected against the OSS unitycatalog v0.5.0 ref
-  (CLI flags, docker path, dependency versions) — see brief.md §9.
-Runnable snippets should be re-verified against v0.5.0 and extracted to snippets/
-before publish. See brief.md for the full source-verification log.
--->
 
 # Unity Catalog storage: credentials, external locations, and managed storage
 

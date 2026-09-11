@@ -5,6 +5,7 @@ description = "Docs-factory Python workspace — tooling and the deterministic s
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "marimo>=0.24.0",
     "unitycatalog-client>=0.5.1",
 ]
 

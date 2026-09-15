@@ -29,14 +29,20 @@ import asyncio
 
 # --8<-- [start:uc-credential-provider]
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING
 
-from obstore.store import S3Credential, S3Store
+from obstore.store import S3Store
 from unitycatalog.client import ApiClient, Configuration
 from unitycatalog.client.api import TemporaryCredentialsApi, VolumesApi
 from unitycatalog.client.models import (
     GenerateTemporaryVolumeCredential,
     VolumeOperation,
 )
+
+if TYPE_CHECKING:
+    # S3Credential is a TypedDict exported only for type-checking; at runtime the
+    # provider just returns a plain dict with these keys.
+    from obstore.store import S3Credential
 
 
 class VolumeCredentialProvider:

@@ -77,7 +77,7 @@ export interface ContentVisibility {
 }
 
 export function useContentVisibility(): ContentVisibility {
-  const { isAllowlisted, previewAsAnon, isLoading: authLoading } = useAuth();
+  const { isAllowlisted, previewAsAnon, apiOffline, isLoading: authLoading } = useAuth();
   // An allowlisted viewer previewing as anonymous is treated as non-allowlisted
   // for VISIBILITY purposes — content narrows to the published set, status
   // columns disappear — even though the API still returned their full data.
@@ -86,7 +86,7 @@ export function useContentVisibility(): ContentVisibility {
   // exactly the published set and allowlisted viewers get everything. Fetch it
   // for all viewers — anon needs it to know WHAT is visible; reviewers need it
   // for the review-state column.
-  const { data, isLoading: draftsLoading } = useQuery(listDrafts, {});
+  const { data, isLoading: draftsLoading } = useQuery(listDrafts, {}, { enabled: !apiOffline });
 
   const byRef = useMemo(() => {
     const map = new Map<string, DraftSummary>();

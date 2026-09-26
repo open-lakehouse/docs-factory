@@ -14,19 +14,38 @@ import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { canSignIn, signIn, signOut } from "../lib/auth-actions";
 import { useAuth } from "../lib/auth-context";
-import DevPersonaSwitcher from "./DevPersonaSwitcher";
+import { SIGN_IN_PERSONAS, useDevPersona } from "../lib/dev-persona";
 
 function GateShell({ children }: { children: ReactNode }) {
   return (
-    <>
-      <div className="flex min-h-dvh items-center justify-center bg-background px-4 text-foreground">
-        <div className="w-full max-w-sm space-y-6 text-center">
-          <div className="font-mono text-sm text-muted-foreground">~/open-lakehouse</div>
-          {children}
-        </div>
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4 text-foreground">
+      <div className="w-full max-w-sm space-y-6 text-center">
+        <div className="font-mono text-sm text-muted-foreground">~/open-lakehouse</div>
+        {children}
       </div>
-      {/* Dev-only; no-op in prod. Lets you flip persona from the gate screens. */}
-      <DevPersonaSwitcher />
+    </div>
+  );
+}
+
+// The dev stand-in for GitHub sign-in: pick a mock persona (see dev-persona.ts).
+function DevSignIn() {
+  const [, switchPersona] = useDevPersona();
+  return (
+    <>
+      <p className="text-sm text-muted-foreground">Local dev — sign in as a mock persona.</p>
+      <div className="flex justify-center gap-2">
+        {SIGN_IN_PERSONAS.map((p) => (
+          <Button
+            key={p}
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => switchPersona(p)}
+          >
+            {p}
+          </Button>
+        ))}
+      </div>
     </>
   );
 }
@@ -44,14 +63,8 @@ export default function AccessGate({ children }: { children: ReactNode }) {
     return <div className="flex min-h-dvh items-center justify-center bg-background" aria-hidden />;
   }
 
-  // Admitted: render the real app. The dev switcher rides along (no-op in prod).
   if (isAuthenticated && admitted) {
-    return (
-      <>
-        {children}
-        <DevPersonaSwitcher />
-      </>
-    );
+    return <>{children}</>;
   }
 
   // Authenticated but neither allowlisted nor holding a scoped grant: known
@@ -75,7 +88,9 @@ export default function AccessGate({ children }: { children: ReactNode }) {
   return (
     <GateShell>
       <h1 className="text-lg font-semibold">Sign in required</h1>
-      {canSignIn() ? (
+      {import.meta.env.DEV ? (
+        <DevSignIn />
+      ) : canSignIn() ? (
         <>
           <p className="text-sm text-muted-foreground">
             This preview is private. Sign in with GitHub to continue.

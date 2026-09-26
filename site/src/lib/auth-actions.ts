@@ -30,11 +30,12 @@
 // (the documented accessor) rather than reaching into `getSession().session.token`
 // so we don't depend on that injection as an undocumented implementation detail.
 //
-// Locally, sign-in is unnecessary — the dev persona switcher (x-dev-persona)
-// stands in for a real login, so these are effectively no-ops in dev.
+// Locally, sign-in is unnecessary — the dev persona (x-dev-persona, picked in
+// the StatusMenu / AccessGate) stands in for a real login; signOut drops it.
 
 import { BetterAuthVanillaAdapter } from "@neondatabase/neon-js";
 import { createInternalNeonAuth } from "@neondatabase/neon-js/auth";
+import { setDevPersona } from "./dev-persona";
 
 /** The Neon Auth URL (full, incl. path), or undefined until provisioned. */
 function authUrl(): string | undefined {
@@ -134,6 +135,12 @@ export async function signIn(): Promise<void> {
  * session to clear, so we just reload.
  */
 export async function signOut(): Promise<void> {
+  if (import.meta.env.DEV) {
+    // The dev "session" is the mock persona the transport sends (dev-persona.ts).
+    setDevPersona("anon");
+    window.location.reload();
+    return;
+  }
   const c = authClient();
   if (c) await c.signOut();
   cachedToken = undefined;

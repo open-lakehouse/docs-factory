@@ -109,7 +109,8 @@ existing entry from `blogs/tags.yml`; only add a new tag in the same change.
 
 ```bash
 uv sync --all-packages                 # install every workspace package
-just preview                           # Vite preview at :4321 (docs + blogs)
+just preview                           # Vite preview at :4321 (docs + blogs); offline mode without the API
+just dev                               # full local stack: Postgres + review API (mock auth) + preview
 just emit <slug> <target>              # emit a blog draft (target: unitycatalog | delta)
 uv run pytest                          # docsnip tests + colocated tutorial scripts
 cd site && bun test src/content-core   # content-core parsing-contract drift tests

@@ -14,6 +14,23 @@ just preview-build        # static build into site/dist/
 cd site && bun run check  # likec4 validate over architecture/model
 ```
 
+## Local dev: two modes
+
+The site sits behind a login gate, resolved by the review API (`../server`).
+Locally there is no GitHub OAuth, so pick one of two modes:
+
+| Command | What you get |
+|---|---|
+| `just preview` | **Offline**: no Docker, DB, or server. If nothing answers on `:8787`, you are admitted as a synthetic `local-author` maintainer and every page is visible. The top bar shows **API offline**; review mode and "view as anonymous" are disabled. |
+| `just dev` | **Full stack**: Postgres + the review API (`AUTH_MODE=mock`) + versions registered + the preview. Falls back to offline when Docker isn't running. |
+
+In the full stack, the persona is a mock login: the transport sends it as
+`x-dev-persona`. Switch it from the avatar menu's **Dev** section (reviewer /
+maintainer / admin; the default is maintainer). **Log out** drops to anonymous,
+and the sign-in screen offers the personas again. The same menu holds the
+rail/inline review display toggle. All of this is `import.meta.env.DEV`-only
+and stripped from prod builds.
+
 ## What it does — and does NOT — touch
 
 - **Reads content in place.** Nothing is copied; `import.meta.glob` loads files

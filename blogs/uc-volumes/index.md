@@ -51,7 +51,26 @@ the temporary credential APIs and of course the UC Delta API and IRC protocol im
 we have battle-tested abstractions to negotiate access to volumes.
 
 As we see, using storage credentials, external (or managed) locations, and a path, we have defined
-a Volume sbstraction. While this already solves a lot of the aforementioned discoverability and
+a Volume sbstraction. So what does it look like to actually read and write bytes through one?
+
+### Credential vending in practice
+
+The temporary credential API hands a client short-lived, scoped credentials for a specific volume
+and operation, rather than a long-lived storage key. That maps cleanly onto
+[obstore](https://developmentseed.org/obstore/), a fast object-store client whose *credential
+provider* hook lets us plug UC straight into the request path. obstore calls the provider whenever
+it needs credentials and caches them until they expire, so all we have to supply is a callable that
+asks UC for a fresh set.
+
+```python file=./credential_vending.py start=start:uc-credential-provider end=end:uc-credential-provider
+```
+
+Because UC returns an expiry with every response, obstore transparently re-vends credentials as they
+age out — access stays governed by the catalog for the lifetime of the store, and no durable secret
+ever touches the client. The same provider works unchanged whether the volume is `MANAGED` or points
+at an external location.
+
+While this already solves a lot of the aforementioned discoverability and
 governance issues we identitifed, it is worthwhile to take a step back and step into the shoes
 of someone designing and building an on-prem data platform. What key experiences does this person
 want to offer their users?

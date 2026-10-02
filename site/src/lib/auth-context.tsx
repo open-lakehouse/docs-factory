@@ -15,9 +15,11 @@
 // `reviewActive` (the single gate the comment chrome short-circuits on) and
 // `previewAsAnon` (which content-visibility reads to force the anonymous subset).
 
+import { create } from "@bufbuild/protobuf";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { useQuery } from "@connectrpc/connect-query";
 import { createContext, type ReactNode, useContext, useEffect, useState } from "react";
-import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb";
+import { Role, type Viewer, ViewerSchema } from "../gen/docs_factory/review/v1/messages_pb";
 import { getViewer } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { sessionResolved, subscribeSession } from "./auth-actions";
 import {
@@ -37,6 +39,12 @@ export type ViewMode = "normal" | "review" | "anon-preview";
 export interface AuthState {
   viewer?: Viewer;
   isLoading: boolean;
+  /**
+   * DEV only: the review API is unreachable (`just preview` without `just dev`).
+   * The viewer is then a synthetic local maintainer so content stays browsable;
+   * review chrome and anon preview are off because both need the API.
+   */
+  apiOffline: boolean;
   isAuthenticated: boolean;
   isAllowlisted: boolean;
   isMaintainer: boolean;
@@ -86,6 +94,7 @@ export interface AuthState {
 
 const AuthContext = createContext<AuthState>({
   isLoading: true,
+  apiOffline: false,
   isAuthenticated: false,
   isAllowlisted: false,
   isMaintainer: false,
@@ -98,6 +107,19 @@ const AuthContext = createContext<AuthState>({
   previewAsAnon: false,
 });
 
+// Client-only stand-in so an author can preview content with no backend. It
+// never reaches the server, and every use sits behind import.meta.env.DEV so
+// Vite strips it from prod bundles — it cannot admit anyone to a deployed site.
+const OFFLINE_VIEWER = import.meta.env.DEV
+  ? create(ViewerSchema, {
+      authenticated: true,
+      login: "local-author",
+      name: "Local author",
+      role: Role.MAINTAINER,
+      isAllowlisted: true,
+    })
+  : undefined;
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   // Gate the viewer query on the Neon Auth session being RESOLVED. The API
   // authenticates via a bearer read from the session store (see auth-actions);
@@ -108,10 +130,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState<boolean>(sessionResolved);
   useEffect(() => subscribeSession(() => setReady(sessionResolved())), []);
 
-  const { data, isLoading } = useQuery(getViewer, {}, { enabled: ready });
+  // No retries in dev: a stopped API should fall back to offline immediately,
+  // not after TanStack's retry backoff.
+  const { data, isLoading, error } = useQuery(
+    getViewer,
+    {},
+    { enabled: ready, retry: import.meta.env.DEV ? false : undefined },
+  );
+  const apiOffline =
+    import.meta.env.DEV && error != null && ConnectError.from(error).code === Code.Unavailable;
   // Until the session resolves the query is disabled (isLoading may be false),
   // so treat "not yet ready" as loading for consumers/AccessGate.
-  const viewer = data?.viewer;
+  const viewer = apiOffline ? OFFLINE_VIEWER : data?.viewer;
 
   // Two persisted flags behind the single derived `viewMode`. Kept in sync within
   // the tab (StatusMenu writes) and across tabs via their shared CustomEvents,
@@ -143,19 +173,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Derive the mode; non-allowlisted viewers are always "normal". anon-preview
   // takes precedence over review if both flags somehow linger (defensive; the
   // setter keeps them exclusive).
-  const viewMode: ViewMode = !isAllowlisted
-    ? "normal"
-    : anonPreview
-      ? "anon-preview"
-      : reviewModeOn
-        ? "review"
-        : "normal";
+  const viewMode: ViewMode =
+    !isAllowlisted || apiOffline
+      ? "normal"
+      : anonPreview
+        ? "anon-preview"
+        : reviewModeOn
+          ? "review"
+          : "normal";
 
   const state: AuthState = {
     viewer,
     // Loading until the session store has resolved AND the (then-enabled) viewer
     // query has returned, so gates don't flash "signed out" during hydration.
     isLoading: !ready || isLoading,
+    apiOffline,
     isAuthenticated: viewer?.authenticated ?? false,
     isAllowlisted,
     isMaintainer: viewer?.role === Role.MAINTAINER,

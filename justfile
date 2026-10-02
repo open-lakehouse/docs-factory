@@ -6,8 +6,38 @@ default:
 
 # --- Preview site (Vite + React + MDX, local only) -------------------------
 
+# Full local stack in one command: Postgres (migrated + seeded), the review API
+# (AUTH_MODE=mock) with content versions registered, and the preview at :4321.
+# Ctrl-C stops the API too. Without Docker it falls back to `just preview`
+# (offline mode: content only, no review features).
+dev: _site-deps _server-deps
+    #!/usr/bin/env bash
+    set -euo pipefail
+    [ -f server/.env ] || { cp server/.env.example server/.env; echo "Created server/.env from .env.example"; }
+    if ! docker info >/dev/null 2>&1; then
+        echo "Docker is not running — starting the site only (offline mode, no review API)."
+        exec just preview
+    fi
+    just db-up db-migrate db-seed
+    # Job control puts the API in its own process group, so the EXIT trap can
+    # stop bun and its --watch child together. mock is forced: an older
+    # server/.env may still say anon, under which the gated site admits nobody.
+    set -m
+    (cd server && set -a && . ./.env && set +a && AUTH_MODE=mock exec bun run dev) &
+    api=$!
+    trap 'kill -- -"$api" 2>/dev/null || true' EXIT
+    for _ in $(seq 60); do
+        curl -sf http://localhost:8787/healthz >/dev/null && break
+        kill -0 "$api" 2>/dev/null || { echo "review API exited during startup" >&2; exit 1; }
+        sleep 0.5
+    done
+    curl -sf http://localhost:8787/healthz >/dev/null || { echo "review API not healthy after 30s" >&2; exit 1; }
+    API_URL=http://localhost:8787 just register-versions
+    cd site && bun run dev
+
 # Start the unified local preview at http://localhost:4321 (installs deps first run).
-# Renders both content/ (Diátaxis docs) and blogs/ (narrative drafts).
+# Renders both content/ (Diátaxis docs) and blogs/ (narrative drafts). Without a
+# running review API (`just dev`) the site opens in offline mode as a local author.
 preview: _site-deps
     cd site && bun run dev
 
@@ -95,10 +125,10 @@ db-seed: _server-deps
     cd server && set -a && [ -f .env ] && . ./.env; set +a; node scripts/seed.mjs
 
 # Run the review backend locally (same Hono+Connect app the Neon Function runs).
-# Defaults AUTH_MODE=anon (Phase 1); Phase 2 adds mock impersonation. Reads
-# server/.env if present. See server/README.md.
+# Defaults AUTH_MODE=mock (x-dev-persona impersonation; under anon the login-gated
+# site admits nobody). Reads server/.env if present. See server/README.md.
 server-dev: _server-deps
-    cd server && set -a && [ -f .env ] && . ./.env; set +a; AUTH_MODE="${AUTH_MODE:-anon}" bun run dev
+    cd server && set -a && [ -f .env ] && . ./.env; set +a; AUTH_MODE="${AUTH_MODE:-mock}" bun run dev
 
 _server-deps:
     #!/usr/bin/env bash

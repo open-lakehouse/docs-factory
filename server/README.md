@@ -21,22 +21,29 @@ React SPA calls it with `@connectrpc/connect-web` + `@connectrpc/connect-query`.
 | `src/dev-server.ts` | local Node entrypoint |
 | `src/connect-hono.ts` | mounts a Connect router onto Hono as fetch routes |
 | `src/services/review.ts` | `ReviewService` implementation |
-| `src/auth/provider.ts` | pluggable auth (anon now; Neon Auth + mock in Phase 2) |
+| `src/auth/provider.ts` | pluggable auth: Neon Auth (prod), mock (local), anon |
 | `src/db.ts` | Neon Postgres client from `DATABASE_URL` |
 | `src/gen/` | generated proto types (run `just buf-gen`) |
 | `db/migrations/` | SQL migrations |
 
 ## Local dev
 
+From the repo root, `just dev` runs the whole stack: Postgres (migrated +
+seeded), this API under `AUTH_MODE=mock` with content versions registered, and
+the site preview. Ctrl-C stops everything. To run the API on its own:
+
 ```bash
-just server-dev            # AUTH_MODE=anon (Phase 1), http://localhost:8787
-# smoke test:
+just db-up && just db-migrate && just db-seed
+just server-dev            # AUTH_MODE=mock by default, http://localhost:8787
+# smoke test (x-dev-persona: anon | reviewer | maintainer | admin[:<login>]):
 curl -s -X POST localhost:8787/docs_factory.review.v1.ReviewService/GetViewer \
-  -H 'Content-Type: application/json' -H 'Connect-Protocol-Version: 1' -d '{}'
+  -H 'Content-Type: application/json' -H 'Connect-Protocol-Version: 1' \
+  -H 'x-dev-persona: maintainer' -d '{}'
 ```
 
 `GetViewer` needs no database. Anything touching Postgres needs `DATABASE_URL`
-pointed at a local Postgres or a Neon branch, and `db/migrations/` applied.
+(or the `PG*` parts in `server/.env`) pointed at a local Postgres or a Neon
+branch, with `db/migrations/` applied.
 
 ## Content version registry (deploy-per-push)
 
@@ -51,12 +58,16 @@ The review layer keys comments to a content version. On each deploy:
    replaces the version's section rows, and re-anchors open comment threads.
 
 PR CI only checks that the manifest builds successfully; the `register-versions`
-call runs in the deploy pipeline, where the API and `BUILD_SECRET` exist. Locally: `just db-up && just db-migrate && just server-dev`,
-then in another shell `API_URL=http://localhost:8787 BUILD_SECRET=… just register-versions`.
+call runs in the deploy pipeline. Locally `just dev` registers versions for you.
+By hand, run `API_URL=http://localhost:8787 just register-versions` against a
+running `server-dev`. RegisterVersion is dev-open when no OIDC pin is set (see
+`src/auth/github-oidc.ts`).
 
 ## Auth modes (`AUTH_MODE`)
 
-- `anon` — everyone anonymous (Phase 0 default).
-- `mock` — local impersonation via an `x-dev-persona` header (Phase 2).
-- `neon` — Neon Auth + GitHub OAuth (prod, Phase 2). The mock provider is never
+- `mock` — local impersonation via an `x-dev-persona` header, which the site's
+  dev persona menu sends. The local default; refused under `NODE_ENV=production`.
+- `neon` — Neon Auth + GitHub OAuth (prod). The mock provider is never
   selectable under `neon`.
+- `anon` — everyone anonymous. The server's fallback when `AUTH_MODE` is unset;
+  locally the login-gated site admits nobody under it.

@@ -2,7 +2,7 @@
 // (provided via TransportProvider in main.tsx); a raw client is exported for
 // non-hook call sites. VITE_API_URL is the Neon Function URL in prod and the
 // local dev-server (http://localhost:8787) in dev.
-import { type Client, createClient } from "@connectrpc/connect";
+import { type Client, Code, ConnectError, createClient } from "@connectrpc/connect";
 import { createConnectTransport } from "@connectrpc/connect-web";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb";
 import { sessionToken } from "./auth-actions";
@@ -41,7 +41,17 @@ export const transport = createConnectTransport({
     }
     // credentials:"include" is retained so any same-origin cookie still rides
     // along, but the bearer header is what actually authenticates the API.
-    return fetch(input, { ...init, headers, credentials: "include" });
+    try {
+      return await fetch(input, { ...init, headers, credentials: "include" });
+    } catch (e) {
+      // fetch rejects with a TypeError only when no response arrived at all.
+      // connect-web would surface that as Code.Unknown; map it to Unavailable so
+      // AuthProvider can tell "API not running" apart from a real server error.
+      if (e instanceof TypeError) {
+        throw new ConnectError("review API unreachable", Code.Unavailable);
+      }
+      throw e;
+    }
   },
 });
 

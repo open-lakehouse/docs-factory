@@ -100,4 +100,4 @@ pass `force=True`.
 ## Next steps
 
 - [Run a PostgreSQL-backed server](../postgres-server.md) — persist catalog data across restarts.
-- [Manage catalogs](../how-to/manage-catalogs.md) — the task-focused how-to reference.
+- [Create and manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md) — the task-focused how-to.

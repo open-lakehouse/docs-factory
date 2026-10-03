@@ -44,8 +44,8 @@ nav:
         items:
           - section: Catalogs and schemas
             items:
-              - planned: H01
-                title: Create and manage catalogs and schemas
+              - page: how-to/manage-catalogs-and-schemas
+                id: H01
           - section: Tables and views
             items:
               - planned: H02

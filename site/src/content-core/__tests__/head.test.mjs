@@ -106,3 +106,18 @@ test("pageHead assembles a canonical, a .md twin alternate, and og/twitter tags"
   expect(head.og.find(([p]) => p === "og:url")[1]).toBe(head.canonical);
   expect(head.title).toBe("Read a table — Open Lakehouse");
 });
+
+test("pageHead honors a target site's hrefFor + siteName", () => {
+  const identity = { area: "docs", project: "unitycatalog", bucket: "how-to", slug: "duckdb" };
+  const head = pageHead({
+    identity,
+    meta: { title: "Use DuckDB", summary: "Read UC tables from DuckDB." },
+    origin: "https://docs.example.test",
+    hrefFor: (id) => `/${id.bucket}/${id.slug}`,
+    siteName: "Unity Catalog",
+  });
+  expect(head.canonical).toBe("https://docs.example.test/how-to/duckdb");
+  expect(head.twin).toBe("https://docs.example.test/how-to/duckdb.md");
+  expect(head.title).toBe("Use DuckDB — Unity Catalog");
+  expect(head.og).toContainEqual(["og:site_name", "Unity Catalog"]);
+});

@@ -28,7 +28,7 @@ const INDEX_ROUTES = ["/", "/docs", "/blog"];
 
 /** A page's <lastmod>: git commit date (preferred), else mtime. A legacy
  *  frontmatter `date` is still honored when present. Returns an ISO date string. */
-function lastmod(absPath, meta) {
+export function lastmod(absPath, meta) {
   if (typeof meta.date === "string" && ISO_DATE.test(meta.date)) return meta.date.slice(0, 10);
   try {
     const out = execFileSync("git", ["log", "-1", "--format=%cI", "--", absPath], {
@@ -49,23 +49,29 @@ function lastmod(absPath, meta) {
 /**
  * Build the sitemap URL list (pure, for testing). Each entry is `{ loc, lastmod }`
  * for a canonical HTML route. `pages` is `[{ absPath, meta }]`; the index routes
- * are prepended. Non-public pages and pages with no route are dropped.
+ * are prepended. Non-public pages and pages with no route are dropped. An emitted
+ * target site passes its own `hrefFor` / `indexRoutes` / `isIncluded` (e.g. to
+ * keep drafts in a local preview).
  */
-export function sitemapUrls(pages, origin = siteOrigin()) {
-  const urls = INDEX_ROUTES.map((href) => ({
+export function sitemapUrls(
+  pages,
+  origin = siteOrigin(),
+  { hrefFor = hrefFromIdentity, indexRoutes = INDEX_ROUTES, isIncluded = isPublic } = {},
+) {
+  const urls = indexRoutes.map((href) => ({
     loc: href === "/" ? origin : `${origin}${href}`,
     lastmod: null,
   }));
   for (const { absPath, meta } of pages) {
-    if (!isPublic(meta)) continue;
-    const loc = canonicalUrl(docIdentity(absPath, meta), origin);
+    if (!isIncluded(meta)) continue;
+    const loc = canonicalUrl(docIdentity(absPath, meta), origin, hrefFor);
     if (!loc) continue;
     urls.push({ loc, lastmod: lastmod(absPath, meta) });
   }
   return urls;
 }
 
-function renderSitemap(urls) {
+export function renderSitemap(urls) {
   const lines = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
@@ -81,7 +87,7 @@ function renderSitemap(urls) {
   return lines.join("\n");
 }
 
-function renderRobots(origin) {
+export function renderRobots(origin) {
   return [
     "User-agent: *",
     "Allow: /",

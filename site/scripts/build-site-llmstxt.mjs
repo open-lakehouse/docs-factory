@@ -39,19 +39,29 @@ const SECTION_TITLE = {
   explanation: "Explanation",
 };
 
-/** A page record with its resolved identity/routes, or null if not public/routable. */
-function toEntry(absPath, meta, body, origin) {
-  if (!isPublic(meta)) return null;
+/**
+ * A page record with its resolved identity/routes, or null if not public/routable.
+ * An emitted target site passes its own `hrefFor` / `isIncluded`.
+ */
+export function toEntry(
+  absPath,
+  meta,
+  body,
+  origin,
+  { hrefFor = hrefFromIdentity, isIncluded = isPublic } = {},
+) {
+  if (!isIncluded(meta)) return null;
   const identity = docIdentity(absPath, meta);
-  const href = hrefFromIdentity(identity);
+  const href = hrefFor(identity);
   if (!href) return null;
   return {
     identity,
     href,
-    canonical: canonicalUrl(identity, origin),
-    twin: twinUrl(identity, origin),
+    canonical: canonicalUrl(identity, origin, hrefFor),
+    twin: twinUrl(identity, origin, hrefFor),
     title: meta.title ?? href,
     description: meta.summary ?? metaDescription(meta, body),
+    diataxis: meta.diataxis,
   };
 }
 
@@ -119,10 +129,7 @@ function main() {
   ]) {
     const { meta, body } = splitFrontmatter(readFileSync(absPath, "utf8"));
     const e = toEntry(absPath, meta, body, origin);
-    if (e) {
-      e.diataxis = meta.diataxis;
-      entries.push(e);
-    }
+    if (e) entries.push(e);
   }
 
   mkdirSync(distDir, { recursive: true });

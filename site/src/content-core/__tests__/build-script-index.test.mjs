@@ -139,3 +139,9 @@ test("stripSectionMarkers does not clip a --8<-- inside a string literal", () =>
   // The marker regex is anchored to a full comment line, so this code line stays.
   expect(stripSectionMarkers(src)).toContain('sep = "# --8<-- [start:x]"');
 });
+
+test("scriptEntry serves under a target site's hrefFor", () => {
+  const e = scriptEntry(DOCSNIP_ENTRY, { hrefFor: (id) => `/${id.bucket}/${id.slug}` });
+  expect(e.tutorialRoute).toBe("/how-to/read-a-delta-table");
+  expect(e.fetchUrl).toBe("/how-to/read-a-delta-table/snippets/read_delta_table.py");
+});

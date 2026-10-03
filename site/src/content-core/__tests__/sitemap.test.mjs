@@ -43,3 +43,16 @@ test("lastmod uses the frontmatter date when it is ISO", () => {
   const entry = urls.find((u) => u.loc.endsWith("read-a-delta-table"));
   expect(entry.lastmod).toBe("2026-01-02");
 });
+
+test("sitemap takes a target site's hrefFor, index routes, and inclusion gate", () => {
+  const urls = sitemapUrls([READY_DOC, DRAFT_DOC], ORIGIN, {
+    hrefFor: (id) => `/${id.bucket}/${id.slug}`,
+    indexRoutes: ["/"],
+    isIncluded: () => true,
+  });
+  expect(urls.map((u) => u.loc)).toEqual([
+    ORIGIN,
+    `${ORIGIN}/how-to/read-a-delta-table`,
+    `${ORIGIN}/how-to/wip`,
+  ]);
+});

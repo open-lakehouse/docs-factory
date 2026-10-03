@@ -21,6 +21,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { hrefFromIdentity } from "../src/content-core/identity.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
@@ -94,20 +95,21 @@ export function stripSectionMarkers(text) {
 }
 
 /** The owning page route + served path for a repo-relative content/blog file. */
-function servedPaths(path, slug) {
+function servedPaths(path, slug, hrefFor) {
   const parts = path.split("/");
-  let tutorialRoute = null;
-  let rest = null;
+  let identity;
+  let rest;
   if (parts[0] === "blogs") {
     // blogs, <slug>, ...rest, file
+    identity = { area: "blogs", slug };
     rest = parts.slice(2).join("/");
-    tutorialRoute = slug ? `/blog/${slug}` : null;
   } else {
     // content, project, bucket, orderedSlug, ...rest, file
     const [, project, bucket] = parts;
+    identity = { area: "docs", project, bucket, slug };
     rest = parts.slice(4).join("/");
-    tutorialRoute = project && bucket && slug ? `/docs/${project}/${bucket}/${slug}` : null;
   }
+  const tutorialRoute = slug ? hrefFor(identity) : null;
   const fetchUrl = tutorialRoute ? `${tutorialRoute}/${rest}` : null;
   return { tutorialRoute, fetchUrl };
 }
@@ -126,15 +128,18 @@ function servedPaths(path, slug) {
  * the verified `.sh` the page quotes instead of itself. It keeps the harness's
  * compose contract (the stack the script talks to) but not its Python deps, which
  * are the harness's own.
+ *
+ * `hrefFor` maps an identity to its page route; an emitted target site passes
+ * its own URL scheme.
  */
-export function scriptEntry(entry) {
+export function scriptEntry(entry, { hrefFor = hrefFromIdentity } = {}) {
   const slug = entry.tutorial_slug;
   const shell = Boolean(entry.verifies);
   const gitPath = shell ? entry.verifies : entry.path;
   return {
     kind: shell ? "shell" : "python",
     gitPath,
-    ...servedPaths(gitPath, slug),
+    ...servedPaths(gitPath, slug, hrefFor),
     tutorialSlug: slug,
     requiresPython: shell ? null : entry.requires_python,
     dependencies: shell ? [] : entry.dependencies,
@@ -147,7 +152,7 @@ export function scriptEntry(entry) {
 function main() {
   const payload = runDocsnipScripts();
   if (payload === null) return; // uv unavailable — skip (CI prebuild produces it)
-  const scripts = payload.scripts.map(scriptEntry);
+  const scripts = payload.scripts.map((e) => scriptEntry(e));
 
   mkdirSync(distDir, { recursive: true });
   writeFileSync(

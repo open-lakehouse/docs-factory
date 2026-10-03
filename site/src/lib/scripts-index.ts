@@ -1,5 +1,5 @@
 // The build emits `dist/scripts.json` (agentic-docs Phase 3): the index of
-// runnable PEP-723 scripts served alongside tutorial pages. The review
+// runnable scripts served alongside tutorial pages. The review
 // workspace loads it so an item's tab group can include one view per script.
 //
 // It's a static artifact fetched once and cached forever (staleTime: Infinity).
@@ -10,9 +10,11 @@ import { useQuery } from "@tanstack/react-query";
 
 /** One script entry, mirroring `scriptEntry()` in scripts/build-script-index.mjs. */
 export interface ScriptEntry {
+  /** `shell` = a `.sh` the page quotes, verified by a PEP 723 harness. */
+  kind: "python" | "shell";
   /** Repo-relative path — the key GetSourceFile resolves against for comments. */
   gitPath: string;
-  /** Served URL of the raw .py, e.g. /docs/delta/tutorials/<slug>/snippets/x.py. */
+  /** Served URL of the raw script, e.g. /docs/delta/tutorials/<slug>/snippets/x.py. */
   fetchUrl: string;
   /** Canonical route of the owning tutorial page, matches refHref(ref). */
   tutorialRoute: string;

@@ -11,6 +11,7 @@ const DOCSNIP_ENTRY = {
   compose: null,
   services: [],
   base_url_env: null,
+  verifies: null,
   tutorial_slug: "read-a-delta-table",
 };
 
@@ -29,6 +30,33 @@ test("scriptEntry carries the PEP 723 runtime contract through", () => {
   expect(e.requiresPython).toBe(">=3.11");
   expect(e.dependencies).toEqual(["deltalake>=0.20", "docs-factory-seed"]);
   expect(e.gitPath).toBe(DOCSNIP_ENTRY.path);
+});
+
+test("scriptEntry marks a plain PEP 723 script as python", () => {
+  expect(scriptEntry(DOCSNIP_ENTRY).kind).toBe("python");
+});
+
+test("scriptEntry publishes the .sh a harness verifies, not the harness", () => {
+  const snippets = "content/unitycatalog/tutorials/001-getting-started/snippets";
+  const e = scriptEntry({
+    path: `${snippets}/first_catalog_cli.py`,
+    requires_python: ">=3.11",
+    dependencies: ["docsnip"],
+    compose: "../compose.yaml",
+    services: ["unitycatalog"],
+    base_url_env: "UC_BASE_URL",
+    verifies: `${snippets}/first_catalog.sh`,
+    tutorial_slug: "getting-started",
+  });
+  expect(e.kind).toBe("shell");
+  expect(e.gitPath).toBe(`${snippets}/first_catalog.sh`);
+  expect(e.fetchUrl).toBe("/docs/unitycatalog/tutorials/getting-started/snippets/first_catalog.sh");
+  expect(e.tutorialRoute).toBe("/docs/unitycatalog/tutorials/getting-started");
+  // The harness's own Python deps aren't the shell script's; its stack is.
+  expect(e.requiresPython).toBeNull();
+  expect(e.dependencies).toEqual([]);
+  expect(e.compose).toBe("../compose.yaml");
+  expect(e.services).toEqual(["unitycatalog"]);
 });
 
 test("scriptEntry handles a script directly in the tutorial dir (no snippets/)", () => {

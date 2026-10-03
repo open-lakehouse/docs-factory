@@ -109,7 +109,7 @@ function buildKnownHrefs(): Set<string> {
 const knownHrefs = buildKnownHrefs();
 
 // Dev-only static serving for build-emitted companion files. `.md` twins,
-// served `.py` scripts, and scripts.json are written to dist/ by build:artifacts
+// served `.py`/`.sh` scripts, and scripts.json are written to dist/ by build:artifacts
 // (never to public/), so `vite dev` would 404 them and the review workspace's
 // Markdown/script tabs couldn't load. In production Vercel serves these from the
 // prebuilt dist/ directly (with the same content-types); this middleware mirrors
@@ -120,6 +120,7 @@ function devCompanionFiles(): Plugin {
   const TYPES: Record<string, string> = {
     ".md": "text/markdown; charset=utf-8",
     ".py": "text/x-python; charset=utf-8",
+    ".sh": "text/x-shellscript; charset=utf-8",
     ".json": "application/json; charset=utf-8",
   };
   return {
@@ -128,7 +129,11 @@ function devCompanionFiles(): Plugin {
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = (req.url ?? "").split("?")[0];
-        const isCompanion = url.endsWith(".md") || url.endsWith(".py") || url === "/scripts.json";
+        const isCompanion =
+          url.endsWith(".md") ||
+          url.endsWith(".py") ||
+          url.endsWith(".sh") ||
+          url === "/scripts.json";
         if (!isCompanion) return next();
 
         // Resolve within dist/ and guard against path traversal escaping it.

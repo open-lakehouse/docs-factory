@@ -9,6 +9,7 @@
 # compose = "../compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# verifies = "catalogs.sh"
 # ///
 """Run catalogs.sh task by task and check what each command changed."""
 

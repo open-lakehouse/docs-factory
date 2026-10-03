@@ -67,21 +67,29 @@ export function injectCanonical(output, canonical) {
 
 /**
  * Render the "Runnable examples" section body for a tutorial from its scripts
- * (Phase 3, pure for testing). Each script → its same-origin fetch URL, PEP 723
- * runtime contract (deps `uv run` resolves, compose services needed), and the
- * "CI-verified; the script *is* the test" note. Empty string if no scripts.
+ * (Phase 3, pure for testing). Each script → its same-origin fetch URL, how to run
+ * it, and its runtime contract (deps `uv run` resolves, compose services needed).
+ * A `shell` entry is a `.sh` the page quotes; a PEP 723 harness verifies it in CI.
+ * Empty string if no scripts.
  */
 export function runnableExamplesSection(scripts) {
   if (!scripts || scripts.length === 0) return "";
   const lines = ["## Runnable examples", ""];
-  lines.push(
-    "These are git-committed, CI-verified PEP 723 scripts — the script *is* the test.",
-    "Fetch the raw source same-origin and run it with `uv run <file>` (uv builds an",
-    "ephemeral environment from the inline dependency metadata; no venv or pip).",
-    "",
-  );
+  lines.push("These are git-committed, CI-verified scripts. Fetch the raw source same-origin.", "");
   for (const s of scripts) {
-    lines.push(`- [\`${s.fetchUrl.split("/").pop()}\`](${s.fetchUrl})`);
+    const file = s.fetchUrl.split("/").pop();
+    lines.push(`- [\`${file}\`](${s.fetchUrl})`);
+    if (s.kind === "shell") {
+      lines.push(
+        `  - run with \`bash ${file}\` from the compose file's folder after \`docker compose up -d\`;`,
+        "    it runs every step in order, including clean-up",
+      );
+    } else {
+      lines.push(
+        `  - run with \`uv run ${file}\`: uv builds an ephemeral environment from the`,
+        "    inline PEP 723 metadata, and the script *is* the test",
+      );
+    }
     if (s.requiresPython) lines.push(`  - requires Python \`${s.requiresPython}\``);
     if (s.dependencies?.length)
       lines.push(`  - dependencies: ${s.dependencies.map((d) => `\`${d}\``).join(", ")}`);

@@ -1,5 +1,5 @@
-// Emit dist/scripts.json + copy the raw runnable .py scripts into dist/ (Phase 3
-// of the agentic-docs plan).
+// Emit dist/scripts.json + copy the raw runnable scripts into dist/ (Phase 3 of
+// the agentic-docs plan): PEP 723 .py scripts, plus the .sh a harness verifies.
 //
 // From a page's .md twin (and /llms.txt, and the future MCP), an agent gets a
 // machine-readable pointer to each git-committed, CI-verified PEP 723 script plus
@@ -28,7 +28,7 @@ const repoRoot = resolve(siteRoot, "..");
 const distDir = resolve(siteRoot, "dist");
 
 // The docsnip JSON contract version this script understands (asserted below).
-const EXPECTED_VERSION = 1;
+const EXPECTED_VERSION = 2;
 
 /** Run `docsnip scripts --json` and return the parsed, version-checked payload,
  *  or null if `uv` isn't available in this environment. The script index is an
@@ -93,19 +93,9 @@ export function stripSectionMarkers(text) {
   return `${out.join("\n")}\n`;
 }
 
-/**
- * Map one docsnip script entry to a served index entry (pure, for testing).
- * `entry.path` is repo-relative POSIX. Two layouts, matching the routes the site
- * serves (so `tutorialRoute` equals the owning page's refHref):
- *   - docs:  `content/<project>/<bucket>/<NNN-slug>/[snippets/]<file>.py`
- *            → `/docs/<project>/<bucket>/<slug>` (docsnip strips the `NNN-` prefix)
- *   - blogs: `blogs/<slug>/[snippets/]<file>.py`
- *            → `/blog/<slug>`
- * The fetch URL serves the file under that route, preserving any subpath + name.
- */
-export function scriptEntry(entry) {
-  const parts = entry.path.split("/");
-  const slug = entry.tutorial_slug;
+/** The owning page route + served path for a repo-relative content/blog file. */
+function servedPaths(path, slug) {
+  const parts = path.split("/");
   let tutorialRoute = null;
   let rest = null;
   if (parts[0] === "blogs") {
@@ -119,13 +109,35 @@ export function scriptEntry(entry) {
     tutorialRoute = project && bucket && slug ? `/docs/${project}/${bucket}/${slug}` : null;
   }
   const fetchUrl = tutorialRoute ? `${tutorialRoute}/${rest}` : null;
+  return { tutorialRoute, fetchUrl };
+}
+
+/**
+ * Map one docsnip script entry to a served index entry (pure, for testing).
+ * `entry.path` is repo-relative POSIX. Two layouts, matching the routes the site
+ * serves (so `tutorialRoute` equals the owning page's refHref):
+ *   - docs:  `content/<project>/<bucket>/<NNN-slug>/[snippets/]<file>.py`
+ *            → `/docs/<project>/<bucket>/<slug>` (docsnip strips the `NNN-` prefix)
+ *   - blogs: `blogs/<slug>/[snippets/]<file>.py`
+ *            → `/blog/<slug>`
+ * The fetch URL serves the file under that route, preserving any subpath + name.
+ *
+ * A harness entry (`verifies` set, e.g. `foo_cli.py` driving `foo.sh`) publishes
+ * the verified `.sh` the page quotes instead of itself. It keeps the harness's
+ * compose contract (the stack the script talks to) but not its Python deps, which
+ * are the harness's own.
+ */
+export function scriptEntry(entry) {
+  const slug = entry.tutorial_slug;
+  const shell = Boolean(entry.verifies);
+  const gitPath = shell ? entry.verifies : entry.path;
   return {
-    gitPath: entry.path,
-    fetchUrl,
-    tutorialRoute,
+    kind: shell ? "shell" : "python",
+    gitPath,
+    ...servedPaths(gitPath, slug),
     tutorialSlug: slug,
-    requiresPython: entry.requires_python,
-    dependencies: entry.dependencies,
+    requiresPython: shell ? null : entry.requires_python,
+    dependencies: shell ? [] : entry.dependencies,
     compose: entry.compose,
     services: entry.services,
     baseUrlEnv: entry.base_url_env,
@@ -143,8 +155,8 @@ function main() {
     `${JSON.stringify({ version: EXPECTED_VERSION, scripts }, null, 2)}\n`,
   );
 
-  // Copy each .py to its served path under dist/, with `--8<--` section markers
-  // stripped (still a runnable PEP 723 script; the git source keeps its markers).
+  // Copy each script to its served path under dist/, with `--8<--` section markers
+  // stripped (still runnable; the git source keeps its markers).
   let copied = 0;
   for (const s of scripts) {
     if (!s.fetchUrl) continue;
@@ -155,7 +167,7 @@ function main() {
     copied++;
   }
   console.log(
-    `build-script-index: wrote scripts.json (${scripts.length}) + copied ${copied} .py into ${relative(siteRoot, distDir)}/.`,
+    `build-script-index: wrote scripts.json (${scripts.length}) + copied ${copied} script(s) into ${relative(siteRoot, distDir)}/.`,
   );
 }
 

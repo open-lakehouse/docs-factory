@@ -49,6 +49,7 @@ def test_every_entry_has_required_keys(capsys) -> None:
         "compose",
         "services",
         "base_url_env",
+        "verifies",
         "tutorial_slug",
     }
     for entry in payload["scripts"]:
@@ -67,6 +68,19 @@ def test_json_matches_discover(capsys) -> None:
         m.path.resolve().relative_to(root).as_posix() for m in discovered
     )
     assert json_paths == disc_paths
+
+
+def test_shell_harness_reports_the_script_it_verifies(capsys) -> None:
+    payload = _payload(capsys)
+    by_path = {e["path"]: e for e in payload["scripts"]}
+    tutorials = "content/unitycatalog/tutorials"
+    snippets = f"{tutorials}/001-getting-started/snippets"
+    assert by_path[f"{snippets}/first_catalog_cli.py"]["verifies"] == (
+        f"{snippets}/first_catalog.sh"
+    )
+    # A plain PEP 723 script is itself the runnable example.
+    python = f"{tutorials}/005-first-python-function/snippets/first_function.py"
+    assert by_path[python]["verifies"] is None
 
 
 def test_tutorial_slug_strips_order_prefix(tmp_path) -> None:

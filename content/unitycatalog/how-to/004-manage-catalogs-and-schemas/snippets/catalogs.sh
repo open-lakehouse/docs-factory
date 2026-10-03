@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# CLI equivalents of catalogs.py. Each region is one task on the page; the
-# catalogs_cli.py driver runs them in order and checks the server state.
+# Create, inspect, update, and delete a catalog and a schema with the uc CLI.
+#
+# The CLI equivalents of catalogs.py, one region per task on the page.
+# catalogs_cli.py runs them in order and checks the server state.
 
 # --8<-- [start:setup]
 uc() { docker compose exec -T unitycatalog bin/uc "$@"; }

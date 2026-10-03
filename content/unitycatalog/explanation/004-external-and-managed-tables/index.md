@@ -15,8 +15,8 @@ status: draft
 Unity Catalog knows two kinds of table. They differ in two things: who owns
 the files, and who decides which version of the table is the current one. This
 page explains both kinds, what the server does for a catalog-managed
-[Delta](model:deltaSpec) table, and why the difference matters to every engine
-that touches the table. It describes the open source server at version 0.6.0.
+[Delta](model:deltaSpec) table, and which engines can use each kind. It
+describes the open source server at version 0.6.0.
 
 ## Two questions decide the kind
 

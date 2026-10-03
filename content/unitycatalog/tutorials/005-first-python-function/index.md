@@ -10,9 +10,9 @@ status: draft
 
 In this tutorial you turn an ordinary Python function into a catalog object.
 You register it under a three-part name, see what Unity Catalog stores about
-it, call it by that name, and remove it again. Registered functions are how
-applications and AI agents share vetted logic. Once the function is in the
-catalog, anyone with access can discover and call it without copying your code.
+it, call it by that name, and remove it again. Once a function is in the
+catalog, applications and AI agents with access can find and call it by name,
+without copying your code.
 
 You need Docker and [uv](https://docs.astral.sh/uv/). It takes about ten
 minutes.

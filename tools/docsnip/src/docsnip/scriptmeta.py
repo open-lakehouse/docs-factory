@@ -32,6 +32,12 @@ _BLOCK_RE = r"(?m)^# /// (?P<type>[a-zA-Z0-9-]+)$\s(?P<content>(^#(| .*)$\s)+)^#
 # The namespaced table our tooling owns inside a script's PEP 723 metadata.
 TOOL_TABLE = "docs-factory"
 
+# A script importing docsnip.shellregions is a harness driving a shell snippet.
+_SHELL_HARNESS_RE = re.compile(
+    r"^\s*(?:from\s+docsnip\.shellregions\s+import|import\s+docsnip\.shellregions)\b",
+    re.MULTILINE,
+)
+
 
 class ScriptMetaError(Exception):
     """Raised when a script's inline metadata is malformed or contradictory."""
@@ -198,7 +204,9 @@ def check(content_root: Path) -> list[str]:
 
     Asserts each script parses, that every declared ``compose`` file exists on
     disk, and that a ``verifies`` target exists and is quoted by some page fence
-    (otherwise the published example would be a file no reader sees). Malformed
+    (otherwise the published example would be a file no reader sees). A script
+    that drives a shell snippet through ``docsnip.shellregions`` must declare
+    ``verifies``, or the site publishes the harness instead of the script. Malformed
     metadata is turned into an error string rather than a raised exception so it
     aggregates with the rest of ``docsnip check``.
     """
@@ -222,6 +230,11 @@ def check(content_root: Path) -> list[str]:
             )
         verified = meta.verifies_path()
         if verified is None:
+            if _SHELL_HARNESS_RE.search(path.read_text()):
+                errors.append(
+                    f"{path}: drives a shell snippet via docsnip.shellregions but "
+                    '[tool.docs-factory] has no verifies = "<name>.sh"'
+                )
             continue
         if not verified.is_file():
             errors.append(

@@ -125,6 +125,7 @@ whose `setup` region defines the shell alias. A PEP 723 driver beside it
 time with `docsnip.shellregions.run` and asserts on server state in between.
 The driver names its script with `verifies = "<name>.sh"` in that table, so the
 site publishes the `.sh` readers see as the runnable example, not the driver.
+`docsnip check` fails a `docsnip.shellregions` driver that leaves it out.
 Pages whose server must see your files bind-mount `UC_DOCS_ROOT` (default
 `/tmp/uc-docs`) at the same path in the container; see
 `unitycatalog/how-to/005-register-external-table/compose.yaml`.

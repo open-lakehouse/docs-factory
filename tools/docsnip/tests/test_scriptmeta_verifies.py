@@ -82,3 +82,12 @@ def test_check_rejects_a_non_shell_target(tmp_path) -> None:
     harness.write_text(_HARNESS.format(verifies='# verifies = "steps.sql"\n'))
     (errors,) = check(tmp_path)
     assert "verifies must name a .sh script: steps.sql" in errors
+
+
+def test_check_requires_verifies_on_a_shell_harness(tmp_path) -> None:
+    _, harness = _page(tmp_path, fence=True)
+    harness.write_text(
+        _HARNESS.format(verifies="") + "from docsnip.shellregions import run\n"
+    )
+    (errors,) = check(tmp_path)
+    assert "drives a shell snippet via docsnip.shellregions" in errors

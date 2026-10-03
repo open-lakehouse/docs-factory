@@ -32,6 +32,7 @@ const DEFAULT_LOCKS = [
   "server/bun.lock",
   "architecture/bun.lock",
   "emit/bun.lock",
+  "sites/unitycatalog-docs/bun.lock",
 ];
 
 // Group 1 is the entry head: ["<name>@<version>", . Group 2 is the proxied

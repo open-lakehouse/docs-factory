@@ -140,6 +140,21 @@ another upgrades to components, over one shared `resolve` core. A new target is 
 `references/<name>-target.md` runbook in the `/blog-emit` skill; the core stays
 untouched.
 
+## Docs-site emission (`docs/`)
+
+`docs/emit-docs.mjs` (`just emit-docs <site>`) is a second driver over the same
+`emitOne` core. It renders a whole project (`content/<project>/`) into a static
+site shell under `../sites/<site>/`. Each page goes through `emitOne` twice: the
+`docs-site` target (authored Markdown, directives kept, snippets inlined) and
+`md-twin`. The driver then adds navigation, head metadata, llms.txt, the
+sitemap, scripts, and the vendored preview plugins.
+
+It renders everything in memory, writes only files whose bytes changed, and
+prints a page-level change report against the target's `.docs-emit.json`. The
+site config (`docs/sites/<site>.mjs`) holds the project and the URL scheme.
+Design: [`docs/design/docs-site-emission.md`](../docs/design/docs-site-emission.md).
+Tests: `bun test docs`.
+
 ## Prerequisites
 
 - Bun (matches `preview/`). Deps installed via `bun install`.

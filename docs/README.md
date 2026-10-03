@@ -28,6 +28,7 @@ docs/
   decisions/    factory-scoped ADRs (own sequence; see decisions/README.md)
   design/       factory-scoped design & feasibility docs
     authorization-model.md           Cedar PDP for the review server (living study)
+    docs-site-emission.md            emitting a project's docs into a static site (sites/)
     information-system.md            how the site consumes the estate model
     interactive-docs-site.md         islands / roadmap / auth platform study
     multi-domain-single-deployment.md one deployment, three doc domains

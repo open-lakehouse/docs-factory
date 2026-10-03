@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import OnThisPage from "../components/layout/OnThisPage";
 import Pager from "../components/layout/Pager";
 import Shell from "../components/layout/Shell";
+import PageActions from "../components/PageActions";
 import MdxComponents from "../mdx-components";
 import { type PageMeta, useContent } from "../site";
 
@@ -27,11 +28,14 @@ export default function DocPage({ page }: { page: PageMeta }) {
   return (
     <Shell aside={<OnThisPage headings={page.headings} />}>
       <article className="prose">
-        <p className="eyebrow">
-          {[...page.section, DIATAXIS_LABEL[page.diataxis] ?? page.diataxis]
-            .filter(Boolean)
-            .join(" · ")}
-        </p>
+        <div className="page-head">
+          <p className="eyebrow">
+            {[...page.section, DIATAXIS_LABEL[page.diataxis] ?? page.diataxis]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+          <PageActions page={page} />
+        </div>
         <h1>{page.title}</h1>
         {page.summary && <p className="lead">{page.summary}</p>}
         <MdxComponents>{Content ? <Content /> : null}</MdxComponents>

@@ -1,5 +1,5 @@
 // Chrome around build-time Shiki <pre> output; mdx-components maps `pre` here.
-import { ChevronRight, FileCode } from "lucide-react";
+import { ChevronRight, ExternalLink, FileCode } from "lucide-react";
 import { Children, isValidElement, type ReactNode, useState } from "react";
 import CodeCopyButton from "./CodeCopyButton";
 
@@ -7,6 +7,8 @@ interface PreProps extends React.HTMLAttributes<HTMLPreElement> {
   "data-filename"?: string;
   "data-lang"?: string;
   "data-collapse"?: string;
+  /** Served URL of the published script this block quotes. */
+  "data-script"?: string;
   children?: ReactNode;
 }
 
@@ -28,6 +30,7 @@ export function Pre({
   "data-filename": filename = "",
   "data-lang": lang = "text",
   "data-collapse": collapseAttr,
+  "data-script": script,
   className,
   ...props
 }: PreProps) {
@@ -59,6 +62,12 @@ export function Pre({
           <div className="cb-head">
             <FileCode className="cb-file-icon" aria-hidden="true" />
             <span className="cb-file">{filename}</span>
+            {script && (
+              <a className="cb-script" href={script} title="Open the whole runnable script">
+                Full script
+                <ExternalLink aria-hidden="true" />
+              </a>
+            )}
           </div>
         )
       )}

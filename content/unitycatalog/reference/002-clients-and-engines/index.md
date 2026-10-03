@@ -6,6 +6,8 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - duckdb
+  - polars
+  - deltaRs
 status: draft
 ---
 
@@ -22,7 +24,7 @@ API, its abilities, and the versions that go with server **0.6.0**.
 | Manage catalog objects from a JVM application | Java client | Upstream [Java client docs](https://github.com/unitycatalog/unitycatalog/tree/v0.6.0/clients/java) |
 | Query and write tables with SQL or DataFrames | Apache Spark with the Unity Catalog connector | [Configure Spark to use Unity Catalog](../../how-to/configure-spark/index.md), then [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md) |
 | Create and query views and metric views | Spark 4.2 with the connector | Upstream [metric views guide](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/usage/metric-views.md) |
-| Query tables from a laptop or notebook | DuckDB or Daft | [Read and write Unity Catalog tables from DuckDB](../../how-to/duckdb/index.md), or Daft's documentation |
+| Query tables from a laptop or notebook | DuckDB, or Polars, Daft, or pandas | [Read and write Unity Catalog tables from DuckDB](../../how-to/duckdb/index.md), or [Query Unity Catalog tables from Python DataFrame libraries](../../how-to/python-dataframes/index.md) |
 | Read tables from an Iceberg engine such as Trino | Iceberg REST API, with UniForm tables | Upstream [UniForm guide](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/usage/tables/uniform.md) |
 | Register and load ML models | MLflow, with Unity Catalog as the registry | Upstream [models guide](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/usage/models.md) |
 | Give an AI agent catalog functions as tools | `unitycatalog-ai` and a framework integration | Upstream [AI quickstart](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/ai/quickstart.md) |
@@ -55,7 +57,9 @@ These manage catalog metadata. They read and write data files only where noted.
 | Apache Spark 4.0 | UC REST and Delta API, via the connector | Same as Spark 4.1 | `io.unitycatalog:unitycatalog-spark_4.0_2.13:0.6.0` with `io.delta:delta-spark_4.0_2.13:4.3.1` | Upstream |
 | Apache Spark 4.2 | UC REST, via the connector | Create and query views and metric views over non-Delta sources | `io.unitycatalog:unitycatalog-spark_4.2_2.13:0.6.0`. No `delta-spark` for Spark 4.2 is available, so no Delta tables. | Upstream |
 | DuckDB | UC REST and Delta API, via the `unity_catalog` extension | Read Delta tables and append to managed ones. No `CREATE TABLE`, `UPDATE`, `DELETE`, or `DROP TABLE`. | `duckdb==1.5.4` with `unity_catalog` from `core_nightly` (build `3ab8508`) | Tested here |
-| Daft | UC REST, via `daft[unity]` | Read Delta tables | Per Daft's docs | Provider |
+| Polars | UC REST, via `pl.Catalog` (unstable API) | List, read, and append to external Delta tables, with vended credentials. No managed tables. | `polars==1.44.2` | Tested here |
+| Daft | UC REST, via `daft[unity]` | List and read external Delta tables on local storage. Appends to local tables fail; S3 not tested here. No managed tables. | `daft[unity]==0.7.25` with `tenacity` | Tested here |
+| pandas, through `deltalake` | UC REST, via `uc://` table names | Read and append to external Delta tables on cloud storage, with vended credentials. No managed tables. | `deltalake==1.6.6`, `pandas==2.3.3` | Tested here |
 | Trino, and other Iceberg REST clients | Iceberg REST, read only | Read Delta tables that have UniForm Iceberg metadata | Trino's `iceberg` connector with `iceberg.catalog.type=rest` | Upstream |
 
 The upstream DuckDB guide at 0.6.0 still installs an older `uc_catalog`
@@ -64,8 +68,32 @@ DuckDB 1.5.4 can't read `DECIMAL` columns, so
 [the DuckDB how-to](../../how-to/duckdb/index.md) installs the nightly build.
 
 A managed table accepts only clients that go through the catalog. Path-based
-Delta libraries such as delta-rs refuse to load one; see
+Delta libraries such as [delta-rs](model:deltaRs) refuse to load one, and so do
+Polars, Daft, and pandas, which read through it; see
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
+
+## Table operations by engine
+
+Each ✓ links to the page whose CI test runs that operation against a 0.6.0
+server. ✗ means the operation failed with the tested versions: DuckDB's
+failures are asserted in CI, and the managed-table failures for Polars, Daft,
+and pandas come from a verification run with the error each page quotes. "—"
+means these docs don't test it.
+
+| Operation | Spark 4.1 | DuckDB | Polars | Daft | pandas |
+| --- | --- | --- | --- | --- | --- |
+| List tables | — | [✓](../../how-to/duckdb/index.md#list-tables) | [✓](../../how-to/python-dataframes/index.md#list-tables) | [✓](../../how-to/python-dataframes/index.md#list-tables) | ✗ |
+| Read an external table | — | [✓](../../how-to/register-external-table/index.md#read-the-data) | [✓](../../how-to/register-external-table/index.md#read-the-data) | [✓](../../how-to/register-external-table/index.md#read-the-data) | [✓](../../how-to/python-dataframes/index.md#read-a-table) |
+| Read with vended S3 credentials | — | — | [✓](../../how-to/python-dataframes/index.md#read-a-table) | — | [✓](../../how-to/python-dataframes/index.md#read-a-table) |
+| Append to an external table | — | — | [✓](../../how-to/python-dataframes/index.md#append-rows) | ✗ on local storage | [✓](../../how-to/python-dataframes/index.md#append-rows) |
+| Create a managed table | [✓](../../tutorials/managed-delta-table/index.md) | ✗ | — | — | — |
+| Read or append to a managed table | [✓](../../tutorials/managed-delta-table/index.md) | [✓](../../how-to/duckdb/index.md) | ✗ | ✗ | ✗ |
+| Update, delete, or drop a managed table | [✓](../../tutorials/managed-delta-table/index.md) | ✗ | — | — | — |
+
+pandas lists tables only through the
+[Python client](../../tutorials/python-client/index.md). For each library's
+errors, see
+[What these libraries can't do yet](../../how-to/python-dataframes/index.md#what-these-libraries-cant-do-yet).
 
 ## ML and AI libraries
 

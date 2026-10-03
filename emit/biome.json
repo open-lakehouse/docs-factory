@@ -3,6 +3,6 @@
   "root": false,
   "extends": "//",
   "files": {
-    "includes": ["*.mjs", "lib/**"]
+    "includes": ["*.mjs", "lib/**", "docs/**"]
   }
 }

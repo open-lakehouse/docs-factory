@@ -49,13 +49,17 @@ class DocsFactoryMeta:
     reads it, so the same code a reader runs is what the test exercises.
     ``env`` is extra environment the harness sets for the run, e.g. the
     ``AWS_ENDPOINT_URL`` that points host-side clients at ``envs/aws-sim``
-    while the snippet code stays endpoint-free.
+    while the snippet code stays endpoint-free. ``verifies`` (relative to the
+    script's directory) marks the script as a test harness for a non-Python
+    snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh``: the
+    published runnable example is that file, not the harness.
     """
 
     compose: str | None = None
     services: list[str] = dataclasses.field(default_factory=list)
     base_url_env: str | None = None
     env: dict[str, str] = dataclasses.field(default_factory=dict)
+    verifies: str | None = None
 
     @property
     def needs_services(self) -> bool:
@@ -76,6 +80,12 @@ class ScriptMeta:
         if self.docs_factory.compose is None:
             return None
         return (self.path.parent / self.docs_factory.compose).resolve()
+
+    def verifies_path(self) -> Path | None:
+        """Absolute path to the snippet this harness verifies, if any."""
+        if self.docs_factory.verifies is None:
+            return None
+        return (self.path.parent / self.docs_factory.verifies).resolve()
 
 
 def _read_block(text: str) -> dict | None:
@@ -113,6 +123,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
     services = tool.get("services", []) or []
     base_url_env = tool.get("base-url-env")
     env = tool.get("env", {}) or {}
+    verifies = tool.get("verifies")
 
     if compose is not None and not isinstance(compose, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].compose must be a string")
@@ -128,6 +139,8 @@ def parse_script(path: Path) -> ScriptMeta | None:
         raise ScriptMetaError(
             f"{path}: [tool.docs-factory].env must be a table of strings"
         )
+    if verifies is not None and not isinstance(verifies, str):
+        raise ScriptMetaError(f"{path}: [tool.docs-factory].verifies must be a string")
 
     return ScriptMeta(
         path=path,
@@ -138,6 +151,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
             services=list(services),
             base_url_env=base_url_env,
             env=dict(env),
+            verifies=verifies,
         ),
     )
 
@@ -167,14 +181,29 @@ def discover(content_root: Path) -> list[ScriptMeta]:
     return scripts
 
 
+def _fence_sources(content_root: Path) -> set[Path]:
+    """Every file a content page's ``file=`` fence references, resolved."""
+    from .frontmatter import iter_content_files
+    from .snippetcheck import iter_fences
+
+    return {
+        (md_path.parent / fence.file).resolve()
+        for md_path in iter_content_files(content_root)
+        for fence in iter_fences(md_path)
+    }
+
+
 def check(content_root: Path) -> list[str]:
     """Validate discovered tutorial scripts; return a list of human-readable errors.
 
-    Asserts each script parses and that every declared ``compose`` file exists
-    on disk. Malformed metadata is turned into an error string rather than a
-    raised exception so it aggregates with the rest of ``docsnip check``.
+    Asserts each script parses, that every declared ``compose`` file exists on
+    disk, and that a ``verifies`` target exists and is quoted by some page fence
+    (otherwise the published example would be a file no reader sees). Malformed
+    metadata is turned into an error string rather than a raised exception so it
+    aggregates with the rest of ``docsnip check``.
     """
     errors: list[str] = []
+    fence_sources: set[Path] | None = None
     for path in sorted(content_root.rglob("*.py")):
         if not has_script_block(path):
             continue
@@ -190,5 +219,28 @@ def check(content_root: Path) -> list[str]:
             errors.append(
                 f"{path}: [tool.docs-factory].compose points at a missing file: "
                 f"{meta.docs_factory.compose}"
+            )
+        verified = meta.verifies_path()
+        if verified is None:
+            continue
+        if not verified.is_file():
+            errors.append(
+                f"{path}: [tool.docs-factory].verifies points at a missing file: "
+                f"{meta.docs_factory.verifies}"
+            )
+            continue
+        if verified.suffix != ".sh":
+            # The published runnable example's run instructions are shell-specific.
+            errors.append(
+                f"{path}: [tool.docs-factory].verifies must name a .sh script: "
+                f"{meta.docs_factory.verifies}"
+            )
+            continue
+        if fence_sources is None:
+            fence_sources = _fence_sources(content_root)
+        if verified not in fence_sources:
+            errors.append(
+                f"{path}: [tool.docs-factory].verifies target is not referenced by "
+                f"any page's file= fence: {meta.docs_factory.verifies}"
             )
     return errors

@@ -25,15 +25,19 @@ export function siteOrigin(env = process.env) {
   return raw.replace(/\/+$/, "");
 }
 
-/** Absolute canonical URL for a logical identity, or null if it has no route. */
-export function canonicalUrl(identity, origin = siteOrigin()) {
-  const href = hrefFromIdentity(identity);
+/**
+ * Absolute canonical URL for a logical identity, or null if it has no route.
+ * `hrefFor` maps identity → route; an emitted target site (emit/docs) passes its
+ * own URL scheme, everything else gets this site's routes.
+ */
+export function canonicalUrl(identity, origin = siteOrigin(), hrefFor = hrefFromIdentity) {
+  const href = hrefFor(identity);
   return href ? `${origin}${href}` : null;
 }
 
 /** The `.md` twin URL for a page (its canonical route + `.md`), or null. */
-export function twinUrl(identity, origin = siteOrigin()) {
-  const url = canonicalUrl(identity, origin);
+export function twinUrl(identity, origin = siteOrigin(), hrefFor = hrefFromIdentity) {
+  const url = canonicalUrl(identity, origin, hrefFor);
   return url ? `${url}.md` : null;
 }
 
@@ -96,24 +100,31 @@ function stripInlineMarkdown(s) {
 
 const PAGE_TITLE_SUFFIX = "Open Lakehouse";
 
-/** The `<title>` text for a page: `<page title> — Open Lakehouse` (home: just the suffix). */
-export function pageTitle(meta, identity) {
+/** The `<title>` text for a page: `<page title> — <site>` (home: just the site name). */
+export function pageTitle(meta, identity, siteName = PAGE_TITLE_SUFFIX) {
   const t = typeof meta.title === "string" && meta.title.trim() ? meta.title.trim() : null;
-  if (!t) return PAGE_TITLE_SUFFIX;
-  return `${t} — ${PAGE_TITLE_SUFFIX}`;
+  if (!t) return siteName;
+  return `${t} — ${siteName}`;
 }
 
 /**
  * OpenGraph tags as `[property, content]` pairs. `image` (absolute URL) is
  * optional — Phase 2 supplies a LikeC4 PNG for pages that explain a concept.
  */
-export function ogTags({ title, description, url, type = "article", image } = {}) {
+export function ogTags({
+  title,
+  description,
+  url,
+  type = "article",
+  image,
+  siteName = PAGE_TITLE_SUFFIX,
+} = {}) {
   const tags = [
     ["og:title", title],
     ["og:description", description],
     ["og:url", url],
     ["og:type", type],
-    ["og:site_name", PAGE_TITLE_SUFFIX],
+    ["og:site_name", siteName],
   ];
   if (image) tags.push(["og:image", image]);
   return tags.filter(([, v]) => v != null && v !== "");
@@ -137,19 +148,26 @@ export function twitterTags({ title, description, image } = {}) {
  *   - blog post       → BlogPosting
  * Callers stringify and wrap in `<script type="application/ld+json">`.
  */
-export function jsonLd({ identity, meta, url, description, origin = siteOrigin() }) {
+export function jsonLd({
+  identity,
+  meta,
+  url,
+  description,
+  origin = siteOrigin(),
+  siteName = PAGE_TITLE_SUFFIX,
+}) {
   if (!identity || identity.area === "site") {
     return {
       "@context": "https://schema.org",
       "@graph": [
         {
           "@type": "WebSite",
-          name: PAGE_TITLE_SUFFIX,
+          name: siteName,
           url: origin,
         },
         {
           "@type": "Organization",
-          name: PAGE_TITLE_SUFFIX,
+          name: siteName,
           url: origin,
         },
       ],
@@ -205,9 +223,17 @@ function prune(obj) {
  * renders these into tags; keeping assembly here means the twin/sitemap
  * generators (later phases) reuse the exact same title/description/canonical.
  */
-export function pageHead({ identity, meta, body = "", origin = siteOrigin(), type }) {
-  const url = canonicalUrl(identity, origin);
-  const title = pageTitle(meta, identity);
+export function pageHead({
+  identity,
+  meta,
+  body = "",
+  origin = siteOrigin(),
+  type,
+  hrefFor = hrefFromIdentity,
+  siteName = PAGE_TITLE_SUFFIX,
+}) {
+  const url = canonicalUrl(identity, origin, hrefFor);
+  const title = pageTitle(meta, identity, siteName);
   const description = metaDescription(meta, body);
   const ogType =
     type ||
@@ -216,9 +242,9 @@ export function pageHead({ identity, meta, body = "", origin = siteOrigin(), typ
     title,
     description,
     canonical: url,
-    twin: twinUrl(identity, origin),
-    og: ogTags({ title, description, url, type: ogType }),
+    twin: twinUrl(identity, origin, hrefFor),
+    og: ogTags({ title, description, url, type: ogType, siteName }),
     twitter: twitterTags({ title, description }),
-    jsonLd: jsonLd({ identity, meta, url, description, origin }),
+    jsonLd: jsonLd({ identity, meta, url, description, origin, siteName }),
   };
 }

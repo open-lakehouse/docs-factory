@@ -23,7 +23,8 @@ lakehouse we document. The dividing line is `architecture/adr/ADR-0002`.
 ```
 content/          Diátaxis-organized Markdown + colocated, tested snippets/ per page (tutorials / how-to / reference / explanation)
 blogs/            narrative blog drafts (index.md + assets/ + snippets/ per post) + STORYLINE
-emit/             deterministic blog draft → downstream target render (unitycatalog.io / delta.io MDX)
+emit/             deterministic renders: blog draft → unitycatalog.io / delta.io MDX; project docs → sites/ (emit/docs)
+sites/            static docs-site shells the emitter renders into (sites/unitycatalog-docs); emitted content gitignored
 seed/             docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
 envs/             reusable compose fragments for test stacks (aws-sim: fake AWS S3/STS for UC)
 tools/docsnip/    content validation tooling (frontmatter validate, snippet check)
@@ -113,6 +114,8 @@ uv sync --all-packages                 # install every workspace package
 just preview                           # Vite preview at :4321 (docs + blogs); offline mode without the API
 just dev                               # full local stack: Postgres + review API (mock auth) + preview
 just emit <slug> <target>              # emit a blog draft (target: unitycatalog | delta)
+just emit-docs <site> [--drafts]       # emit a project's docs into sites/<site>/ (writes only changes)
+just uc-docs                           # emit UC docs (with drafts), build + preview the static site at :4322
 uv run pytest                          # docsnip tests + colocated tutorial scripts
 cd site && bun test src/content-core   # content-core parsing-contract drift tests
 uv run docsnip check                   # frontmatter + snippets

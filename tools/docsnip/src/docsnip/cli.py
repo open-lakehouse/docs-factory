@@ -37,7 +37,7 @@ from .snippetcheck import check_blogs, check_content
 
 # The docsnip scripts --json output is a build contract consumed by the site's
 # build-script-index.mjs; bump when the shape changes so the JS side can assert it.
-SCRIPTS_JSON_VERSION = 1
+SCRIPTS_JSON_VERSION = 2
 
 
 def _repo_root() -> Path:
@@ -186,7 +186,8 @@ def cmd_scripts(p, as_json: bool = True) -> int:
     Wraps scriptmeta.discover() — the one authoritative parser — so the site build
     (build-script-index.mjs) never re-implements PEP 723 parsing in JS. Output is a
     versioned object: ``{"version": N, "scripts": [{path, requires_python,
-    dependencies, compose, services, base_url_env, tutorial_slug}]}``. ``path`` is
+    dependencies, compose, services, base_url_env, verifies, tutorial_slug}]}``.
+    ``path`` and ``verifies`` (the snippet a harness tests, or null) are
     repo-relative POSIX.
     """
     content_root = p["content"]
@@ -198,6 +199,7 @@ def cmd_scripts(p, as_json: bool = True) -> int:
     scripts = []
     for root, slug_fn in ((content_root, _tutorial_slug), (blogs_root, _blog_slug)):
         for meta in discover_scripts(root):
+            verified = meta.verifies_path()
             scripts.append(
                 {
                     "path": meta.path.resolve()
@@ -208,6 +210,11 @@ def cmd_scripts(p, as_json: bool = True) -> int:
                     "compose": meta.docs_factory.compose,
                     "services": meta.docs_factory.services,
                     "base_url_env": meta.docs_factory.base_url_env,
+                    "verifies": (
+                        verified.relative_to(repo_root.resolve()).as_posix()
+                        if verified
+                        else None
+                    ),
                     "tutorial_slug": slug_fn(meta.path, root),
                 }
             )

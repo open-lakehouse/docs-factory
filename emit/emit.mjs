@@ -205,7 +205,7 @@ function regenerateLikeC4(modelDir, outDir, hasLikeC4Refs) {
  *
  * Returns `outFile` on success, else null (draft has no likec4= refs).
  */
-function generateLikeC4WebComponent(modelDir, outFile, hasLikeC4Refs) {
+export function generateLikeC4WebComponent(modelDir, outFile, hasLikeC4Refs) {
   if (!hasLikeC4Refs) return null;
   if (!existsSync(modelDir)) return null;
   mkdirSync(dirname(outFile), { recursive: true });
@@ -272,6 +272,12 @@ export function defaultModelDir() {
  *                                  images against (default: dirname(inputPath)).
  * @param {string} [o.webComponentPath] where to write the LikeC4 web-component
  *                                  bundle (only for targets with `likec4WebComponent`).
+ * @param {boolean} [o.likec4Exported] `likec4OutDir` already holds this run's
+ *                                  export (a multi-page caller exports once).
+ * @param {Array} [o.plugins]      extra `[plugin, options]` remark transforms, run
+ *                                  right after snippet inlining and before the
+ *                                  target's constructs (e.g. the docs-site emitter's
+ *                                  link rewriting).
  * @returns {Promise<{output:string, frontmatter:object, manifest:Array, likec4Dir:(string|null), webComponentPath:(string|null)}>}
  */
 export async function emitOne({
@@ -281,12 +287,17 @@ export async function emitOne({
   likec4OutDir,
   assetsDir,
   webComponentPath: webComponentOut,
+  likec4Exported = false,
+  plugins = [],
 }) {
   if (!existsSync(inputPath)) throw new Error(`source not found: ${inputPath}`);
   const input = readFileSync(inputPath, "utf8");
   const imageDir = assetsDir ?? dirname(inputPath);
   const hasLikeC4Refs = /\blikec4=\S+/.test(input);
-  const likec4Dir = regenerateLikeC4(modelDir, likec4OutDir, hasLikeC4Refs);
+  const likec4Dir =
+    likec4Exported && hasLikeC4Refs
+      ? likec4OutDir
+      : regenerateLikeC4(modelDir, likec4OutDir, hasLikeC4Refs);
 
   const capture = {};
   const manifest = [];
@@ -314,6 +325,7 @@ export async function emitOne({
       frontmatter: target.frontmatter,
     }) // strip draft fm + comments, opt. title → # H1, opt. emit target frontmatter
     .use(remarkCodeSnippets); // inline file=/start=/end= (real code from snippets/)
+  for (const [plugin, options] of plugins) processor = processor.use(plugin, options);
 
   // TL;DR, then callouts, then tabs, then journey (so a callout/tldr/tab nested in a
   // step is already rendered), then code-caption, then likec4 — mirroring the preview's

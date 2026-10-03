@@ -94,6 +94,7 @@ test("runnableExamplesSection lists fetch URL + PEP 723 contract; empty when no 
   expect(runnableExamplesSection([])).toBe("");
   const md = runnableExamplesSection([
     {
+      kind: "python",
       fetchUrl: "/docs/uc/tutorials/getting-started/snippets/catalog_flow.py",
       requiresPython: ">=3.11",
       dependencies: ["unitycatalog-client>=0.5"],
@@ -110,4 +111,24 @@ test("runnableExamplesSection lists fetch URL + PEP 723 contract; empty when no 
   expect(md).toContain("`unitycatalog-client>=0.5`");
   expect(md).toContain("needs Docker Compose `compose.yaml`");
   expect(md).toContain("services: `unitycatalog`");
+});
+
+test("runnableExamplesSection tells readers to run a shell example with bash", () => {
+  const md = runnableExamplesSection([
+    {
+      kind: "shell",
+      fetchUrl: "/docs/uc/tutorials/getting-started/snippets/first_catalog.sh",
+      requiresPython: null,
+      dependencies: [],
+      compose: "../compose.yaml",
+      services: ["unitycatalog"],
+    },
+  ]);
+  expect(md).toContain(
+    "[`first_catalog.sh`](/docs/uc/tutorials/getting-started/snippets/first_catalog.sh)",
+  );
+  expect(md).toContain("run with `bash first_catalog.sh`");
+  expect(md).not.toContain("uv run");
+  expect(md).not.toContain("requires Python");
+  expect(md).toContain("needs Docker Compose `../compose.yaml` (services: `unitycatalog`)");
 });

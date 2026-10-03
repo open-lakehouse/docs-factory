@@ -59,3 +59,13 @@ Thumbs.db
 .vscode/
 *.swp
 .isaac/
+
+# Static target-site shells (sites/<name>/): the docs-factory emitter owns these
+# paths and rewrites them on every emit; only the shell itself is committed.
+sites/*/src/content/
+sites/*/src/generated/
+sites/*/src/vendor/
+sites/*/public/
+sites/*/.docs-emit.json
+sites/*/dist/
+sites/*/.ssr/

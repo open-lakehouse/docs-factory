@@ -35,10 +35,18 @@
  * stay inert (rather than resolving to the pre-override slug). This is rare and
  * acceptable under the warn-and-inert policy.
  *
- * @param {{ knownHrefs?: Set<string> }} [opts]
+ * @param {{
+ *   knownHrefs?: Set<string>,
+ *   hrefFor?: (identity: object) => string | null,
+ *   onUnresolved?: (info: { url: string, mdPath: string, candidate: string | null }) => void,
+ * }} [opts]
  *   knownHrefs — the set of published in-app hrefs (built in vite.config.ts from
  *   the same globs content.ts uses). A resolved candidate must be in this set to
  *   be rewritten; otherwise the link is left inert.
+ *   hrefFor — identity → route; an emitted target site (emit/docs) passes its own
+ *   URL scheme. Defaults to this site's routes.
+ *   onUnresolved — replaces the default warning, e.g. so the emitter can fail on
+ *   a link to a page it isn't publishing.
  */
 import { dirname, resolve } from "node:path";
 
@@ -60,6 +68,14 @@ function isExternalOrAbsolute(url) {
 
 export default function remarkSourceLinks(opts = {}) {
   const knownHrefs = opts.knownHrefs ?? null;
+  const hrefFor = opts.hrefFor ?? hrefFromIdentity;
+  const onUnresolved =
+    opts.onUnresolved ??
+    (({ url, mdPath, candidate }) =>
+      console.warn(
+        `remark-source-links: unresolved ${url} in ${mdPath}` +
+          (candidate ? ` → ${candidate} (not a published page)` : ""),
+      ));
 
   return (tree, file) => {
     const mdPath = file?.history?.[0] ?? file?.path;
@@ -85,17 +101,14 @@ export default function remarkSourceLinks(opts = {}) {
       if (!MD_PATH_RE.test(pathPart)) return; // not a .md/.mdx target
 
       const absTarget = resolve(mdDir, pathPart);
-      const candidate = hrefFromIdentity(docIdentity(absTarget));
+      const candidate = hrefFor(docIdentity(absTarget));
       if (candidate && (!knownHrefs || knownHrefs.has(candidate))) {
         node.url = candidate + fragment;
         return;
       }
 
-      // Unresolvable — leave inert, warn once.
-      console.warn(
-        `remark-source-links: unresolved ${url} in ${mdPath}` +
-          (candidate ? ` → ${candidate} (not a published page)` : ""),
-      );
+      // Unresolvable — leave inert.
+      onUnresolved({ url, mdPath, candidate });
     };
 
     walk(tree);

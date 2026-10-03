@@ -1,5 +1,5 @@
-// The runnable-script view: a PEP-723 Python script served alongside a tutorial
-// (agentic-docs Phase 3). Reviewers can comment on any line, reusing the exact
+// The runnable-script view: a PEP-723 Python script (or a harness-verified shell
+// script) served alongside a tutorial (agentic-docs Phase 3). Reviewers can comment on any line, reusing the exact
 // code-selection path SourceFilePane uses — a `code` pending selection under the
 // page's ReviewProvider, so a script thread lands in the same right-pane sidebar
 // as in-doc code comments, grouped by the script's repo path.
@@ -110,7 +110,7 @@ function ScriptViewBody({
   // line numbers, comment affordances, and highlighted tokens stay aligned.
   const code = (raw ?? "").replace(/\n$/, "");
   const lines = code.split("\n");
-  const shikiLines = useShikiLines(code);
+  const shikiLines = useShikiLines(code, entry.kind === "shell" ? "bash" : "python");
   // Only trust the highlight when it splits into exactly the same line count;
   // otherwise fall back to plain text rather than misalign rows.
   const highlighted = shikiLines && shikiLines.length === lines.length ? shikiLines : null;
@@ -228,7 +228,7 @@ function ContractHeader({ entry }: { entry: ScriptEntry }) {
  * <li>-per-line structure). Returns null until highlighting resolves, so callers
  * fall back to plain text meanwhile.
  */
-function useShikiLines(code: string): string[] | null {
+function useShikiLines(code: string, lang: "python" | "bash"): string[] | null {
   const [lines, setLines] = useState<string[] | null>(null);
   useEffect(() => {
     let alive = true;
@@ -240,7 +240,7 @@ function useShikiLines(code: string): string[] | null {
       try {
         const { codeToHtml } = await import("shiki");
         const html = await codeToHtml(code, {
-          lang: "python",
+          lang,
           themes: {
             light: "github-light",
             dark: "github-dark-dimmed",
@@ -259,6 +259,6 @@ function useShikiLines(code: string): string[] | null {
     return () => {
       alive = false;
     };
-  }, [code]);
+  }, [code, lang]);
   return lines;
 }

@@ -23,6 +23,13 @@ AI baseline: Latest official AI release tag found was `ai-v0.4.0`, published
 > `planned:` slots. See `content/README.md` § "Curated navigation". The existing
 > drafts were re-homed per section 7, with new paths noted in that table.
 
+> **Update 2026-10-04: emission targets a new static site, not MkDocs.**
+> `just emit-docs unitycatalog-docs` renders `content/unitycatalog/` into the
+> static site shell at `sites/unitycatalog-docs/`. That site keeps the factory's
+> rendering and agent surfaces. Section 11's emitter requirements are answered,
+> or explicitly deferred, in
+> [`docs-site-emission.md`](./docs-site-emission.md).
+
 ## 1. Recommendation
 
 Organize the reader experience around **Use Unity Catalog** and **Operate Unity
@@ -708,8 +715,10 @@ conventions update, not an excuse to restructure existing user work now.
 
 ### Requirements for extending the emitter later
 
-Do not extend `emit/` as part of this scope proposal. Capture these requirements
-for its design:
+Superseded by [`docs-site-emission.md`](./docs-site-emission.md), which emits to
+a dedicated static site rather than MkDocs. The list is kept as the checklist
+that design answers. Do not extend `emit/` as part of this scope proposal.
+Capture these requirements for its design:
 
 - Docs emission is project/version/inventory-oriented, not just blog-slug
   delivery. Preserve canonical source, frontmatter, relative assets, links and

@@ -1,5 +1,5 @@
-// Emit dist/scripts.json + copy the raw runnable .py scripts into dist/ (Phase 3
-// of the agentic-docs plan).
+// Emit dist/scripts.json + copy the raw runnable scripts into dist/ (Phase 3 of
+// the agentic-docs plan): PEP 723 .py scripts, plus the .sh a harness verifies.
 //
 // From a page's .md twin (and /llms.txt, and the future MCP), an agent gets a
 // machine-readable pointer to each git-committed, CI-verified PEP 723 script plus
@@ -21,6 +21,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { hrefFromIdentity } from "../src/content-core/identity.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
@@ -28,7 +29,7 @@ const repoRoot = resolve(siteRoot, "..");
 const distDir = resolve(siteRoot, "dist");
 
 // The docsnip JSON contract version this script understands (asserted below).
-const EXPECTED_VERSION = 1;
+const EXPECTED_VERSION = 2;
 
 /** Run `docsnip scripts --json` and return the parsed, version-checked payload,
  *  or null if `uv` isn't available in this environment. The script index is an
@@ -93,6 +94,26 @@ export function stripSectionMarkers(text) {
   return `${out.join("\n")}\n`;
 }
 
+/** The owning page route + served path for a repo-relative content/blog file. */
+function servedPaths(path, slug, hrefFor) {
+  const parts = path.split("/");
+  let identity;
+  let rest;
+  if (parts[0] === "blogs") {
+    // blogs, <slug>, ...rest, file
+    identity = { area: "blogs", slug };
+    rest = parts.slice(2).join("/");
+  } else {
+    // content, project, bucket, orderedSlug, ...rest, file
+    const [, project, bucket] = parts;
+    identity = { area: "docs", project, bucket, slug };
+    rest = parts.slice(4).join("/");
+  }
+  const tutorialRoute = slug ? hrefFor(identity) : null;
+  const fetchUrl = tutorialRoute ? `${tutorialRoute}/${rest}` : null;
+  return { tutorialRoute, fetchUrl };
+}
+
 /**
  * Map one docsnip script entry to a served index entry (pure, for testing).
  * `entry.path` is repo-relative POSIX. Two layouts, matching the routes the site
@@ -102,30 +123,26 @@ export function stripSectionMarkers(text) {
  *   - blogs: `blogs/<slug>/[snippets/]<file>.py`
  *            → `/blog/<slug>`
  * The fetch URL serves the file under that route, preserving any subpath + name.
+ *
+ * A harness entry (`verifies` set, e.g. `foo_cli.py` driving `foo.sh`) publishes
+ * the verified `.sh` the page quotes instead of itself. It keeps the harness's
+ * compose contract (the stack the script talks to) but not its Python deps, which
+ * are the harness's own.
+ *
+ * `hrefFor` maps an identity to its page route; an emitted target site passes
+ * its own URL scheme.
  */
-export function scriptEntry(entry) {
-  const parts = entry.path.split("/");
+export function scriptEntry(entry, { hrefFor = hrefFromIdentity } = {}) {
   const slug = entry.tutorial_slug;
-  let tutorialRoute = null;
-  let rest = null;
-  if (parts[0] === "blogs") {
-    // blogs, <slug>, ...rest, file
-    rest = parts.slice(2).join("/");
-    tutorialRoute = slug ? `/blog/${slug}` : null;
-  } else {
-    // content, project, bucket, orderedSlug, ...rest, file
-    const [, project, bucket] = parts;
-    rest = parts.slice(4).join("/");
-    tutorialRoute = project && bucket && slug ? `/docs/${project}/${bucket}/${slug}` : null;
-  }
-  const fetchUrl = tutorialRoute ? `${tutorialRoute}/${rest}` : null;
+  const shell = Boolean(entry.verifies);
+  const gitPath = shell ? entry.verifies : entry.path;
   return {
-    gitPath: entry.path,
-    fetchUrl,
-    tutorialRoute,
+    kind: shell ? "shell" : "python",
+    gitPath,
+    ...servedPaths(gitPath, slug, hrefFor),
     tutorialSlug: slug,
-    requiresPython: entry.requires_python,
-    dependencies: entry.dependencies,
+    requiresPython: shell ? null : entry.requires_python,
+    dependencies: shell ? [] : entry.dependencies,
     compose: entry.compose,
     services: entry.services,
     baseUrlEnv: entry.base_url_env,
@@ -135,7 +152,7 @@ export function scriptEntry(entry) {
 function main() {
   const payload = runDocsnipScripts();
   if (payload === null) return; // uv unavailable — skip (CI prebuild produces it)
-  const scripts = payload.scripts.map(scriptEntry);
+  const scripts = payload.scripts.map((e) => scriptEntry(e));
 
   mkdirSync(distDir, { recursive: true });
   writeFileSync(
@@ -143,8 +160,8 @@ function main() {
     `${JSON.stringify({ version: EXPECTED_VERSION, scripts }, null, 2)}\n`,
   );
 
-  // Copy each .py to its served path under dist/, with `--8<--` section markers
-  // stripped (still a runnable PEP 723 script; the git source keeps its markers).
+  // Copy each script to its served path under dist/, with `--8<--` section markers
+  // stripped (still runnable; the git source keeps its markers).
   let copied = 0;
   for (const s of scripts) {
     if (!s.fetchUrl) continue;
@@ -155,7 +172,7 @@ function main() {
     copied++;
   }
   console.log(
-    `build-script-index: wrote scripts.json (${scripts.length}) + copied ${copied} .py into ${relative(siteRoot, distDir)}/.`,
+    `build-script-index: wrote scripts.json (${scripts.length}) + copied ${copied} script(s) into ${relative(siteRoot, distDir)}/.`,
   );
 }
 

@@ -18,7 +18,8 @@ import { normalizeText } from "./normalize.mjs";
  * Extract headings from a markdown body.
  *
  * Each heading carries: `id` (rehype-slug id), `text`, `level`, `order`,
- * `fingerprint` (normalized text), `bodyText` (normalized plain text of the
+ * `fingerprint` (normalized text), `offset` (the heading's character offset in
+ * `body`), `bodyText` (normalized plain text of the
  * section body up to the next same-or-shallower heading — INCLUDES descendant
  * subsections' prose), `directBodyText` (the prose directly under this heading,
  * BEFORE its first child heading — the heading's own content), and `charLen`.
@@ -71,6 +72,7 @@ export function extractHeadings(body) {
       level: node.depth,
       order: ordinal++,
       fingerprint: normalizeText(text),
+      offset: node.position.start.offset,
       bodyText,
       directBodyText,
       charLen: bodyText.length,

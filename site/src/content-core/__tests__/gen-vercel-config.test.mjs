@@ -42,6 +42,13 @@ test(".py rule sets noindex + text/x-python and continues", () => {
   expect(py.continue).toBe(true);
 });
 
+test(".sh rule sets noindex + text/x-shellscript and continues", () => {
+  const sh = routes.find((r) => r.src === "/(.*)\\.sh");
+  expect(sh.headers["X-Robots-Tag"]).toBe("noindex");
+  expect(sh.headers["Content-Type"]).toBe("text/x-shellscript; charset=utf-8");
+  expect(sh.continue).toBe(true);
+});
+
 test("Accept: text/markdown negotiation rewrites doc/blog routes to their .md twin", () => {
   const neg = routes.find((r) => r.dest === "/$1.md");
   expect(neg.src).toBe("/((?!.*\\.md$)(?:docs/.*|blog/.*))");
@@ -75,7 +82,7 @@ test("companion-file misses 404 AFTER filesystem and BEFORE the SPA catch-all", 
   // companion URL's key, permanently poisoning the review workspace's twin fetch.
   const fsIdx = routes.findIndex((r) => r.handle === "filesystem");
   const catchAll = routes.findIndex((r) => r.src === "/.*");
-  const mdPy404 = routes.findIndex((r) => r.src === "/(.*)\\.(md|py)" && r.status === 404);
+  const mdPy404 = routes.findIndex((r) => r.src === "/(.*)\\.(md|py|sh)" && r.status === 404);
   const jsonMiss404 = routes.findIndex((r) => r.src === "/scripts\\.json" && r.status === 404);
 
   for (const idx of [mdPy404, jsonMiss404]) {

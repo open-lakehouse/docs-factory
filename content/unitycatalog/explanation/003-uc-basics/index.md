@@ -61,10 +61,10 @@ never need to know where the files are.
 
 | Object | What it describes |
 | --- | --- |
-| **Table** | Tabular data with a column schema and a format, such as Delta or Parquet. Its *table type* says who manages it: `EXTERNAL` or `MANAGED`. SQL views (`VIEW`) and metric views (`METRIC_VIEW`) are stored as table types too, with a definition instead of a storage location. |
-| **Volume** | A directory of non-tabular files, either `EXTERNAL` or `MANAGED`. |
-| **Function** | A registered routine with typed parameters and a body. The catalog stores the definition, and the caller's environment runs it. |
-| **Registered model** | A named ML model with numbered *model versions*. Each version has its own storage location for its artifacts. |
+| Table | Tabular data with a column schema and a format, such as Delta or Parquet. Its *table type* says who manages it: `EXTERNAL` or `MANAGED`. SQL views (`VIEW`) and metric views (`METRIC_VIEW`) are stored as table types too, with a definition instead of a storage location. |
+| Volume | A directory of non-tabular files, either `EXTERNAL` or `MANAGED`. |
+| Function | A registered routine with typed parameters and a body. The catalog stores the definition, and the caller's environment runs it. |
+| Registered model | A named ML model with numbered *model versions*. Each version has its own storage location for its artifacts. |
 
 The API's `TableType` enum also lists `STREAMING_TABLE` and
 `MATERIALIZED_VIEW`. An enum value is not the same as a supported workflow, so

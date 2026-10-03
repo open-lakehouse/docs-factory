@@ -191,7 +191,7 @@ The command exits non-zero, with the message
 `Cannot delete catalog with schemas. Use force=true to force deletion.`
 :::
 
-Delete the contents first, working inward to outward:
+Delete the contents first, starting with the innermost objects:
 
 :::tab[Python SDK]
 ```python file=./snippets/catalogs.py start=start:delete-inward end=end:delete-inward

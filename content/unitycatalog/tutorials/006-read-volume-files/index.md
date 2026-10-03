@@ -101,10 +101,11 @@ want to do with it:
 ```python file=./snippets/volume_files.py start=start:credentials end=end:credentials
 ```
 
-This request is where governance happens. With authorization enabled, the
+This is the request the catalog can refuse. With authorization enabled, the
 server answers only if you may use the catalog and schema (`USE CATALOG`,
-`USE SCHEMA`) and read the volume (`READ VOLUME`), or own them. On S3, ADLS, or GCS the answer holds short-lived keys that work only
-for this volume's location, plus their expiry. That process is called
+`USE SCHEMA`) and read the volume (`READ VOLUME`), or own them. On S3, ADLS,
+or GCS the answer holds short-lived keys that work only for this volume's
+location, plus their expiry. That process is called
 [credential vending](../../explanation/credential-vending/index.md). Local files
 need no keys, so here the answer carries only the location and both values
 print as `None`.
@@ -173,8 +174,8 @@ docker compose down
 You gave a folder of files a governed name. Then, as a reader that knew only the
 name, you asked Unity Catalog where the files are and for permission to read
 them. Finally, you read them directly from storage. The catalog never served a
-byte of the files, and that's how volumes work at any scale: metadata and access
-decisions come from the catalog, and data comes straight from storage.
+byte of the files. It handed out the location and the permission, and the data
+came straight from storage.
 
 ## Next steps
 

@@ -95,48 +95,55 @@ const areaEnum = (area) => (area === "docs" ? ContentArea.DOCS : ContentArea.BLO
 
 let ok = 0;
 let orphanTotal = 0;
-for (const e of manifest) {
-  const res = await client.registerVersion({
-    ref: { area: areaEnum(e.area), slug: e.slug, project: e.project, bucket: e.bucket },
-    contentHash: e.contentHash,
-    gitSha: e.gitSha,
-    title: e.title,
-    frontmatterStatus: e.frontmatterStatus,
-    rootHash: e.rootHash ?? "",
-    topics: e.topics ?? [],
-    tree: e.tree,
-    // Sections now carry their Merkle hashes (node/subtree/parent/depth) computed
-    // by content-core alongside the heading anchor fields.
-    sections: (e.sections ?? []).map((s) => ({
-      anchorSlug: s.anchorSlug,
-      fingerprint: s.fingerprint,
-      headingText: s.headingText,
-      level: s.headingLevel,
-      ordinal: s.ordinal,
-      text: s.plainText ?? "",
-      charLen: s.charLen ?? 0,
-      nodeHash: s.nodeHash ?? "",
-      subtreeHash: s.subtreeHash ?? "",
-      parentAnchorSlug: s.parentAnchorSlug ?? "",
-      depthPath: s.depthPath ?? "",
-    })),
-    snippets: (e.snippets ?? []).map((s) => ({
-      path: s.path,
-      region: s.region,
-      startLine: s.startLine,
-      endLine: s.endLine,
-      fileHash: s.fileHash,
-    })),
-    sourceFiles: (e.sources ?? []).map((f) => ({
-      path: f.path,
-      text: f.text,
-      fileHash: f.fileHash,
-    })),
-  });
-  ok++;
-  orphanTotal += res.orphanedThreadCount;
-  console.log(
-    `registered ${e.area}/${e.slug} (v${res.version?.id}, ${(e.sections ?? []).length} sections, ${res.orphanedThreadCount} orphaned)`,
-  );
+let registering;
+try {
+  for (const e of manifest) {
+    registering = `${e.area}/${e.slug}`;
+    const res = await client.registerVersion({
+      ref: { area: areaEnum(e.area), slug: e.slug, project: e.project, bucket: e.bucket },
+      contentHash: e.contentHash,
+      gitSha: e.gitSha,
+      title: e.title,
+      frontmatterStatus: e.frontmatterStatus,
+      rootHash: e.rootHash ?? "",
+      topics: e.topics ?? [],
+      tree: e.tree,
+      // Sections now carry their Merkle hashes (node/subtree/parent/depth) computed
+      // by content-core alongside the heading anchor fields.
+      sections: (e.sections ?? []).map((s) => ({
+        anchorSlug: s.anchorSlug,
+        fingerprint: s.fingerprint,
+        headingText: s.headingText,
+        level: s.headingLevel,
+        ordinal: s.ordinal,
+        text: s.plainText ?? "",
+        charLen: s.charLen ?? 0,
+        nodeHash: s.nodeHash ?? "",
+        subtreeHash: s.subtreeHash ?? "",
+        parentAnchorSlug: s.parentAnchorSlug ?? "",
+        depthPath: s.depthPath ?? "",
+      })),
+      snippets: (e.snippets ?? []).map((s) => ({
+        path: s.path,
+        region: s.region,
+        startLine: s.startLine,
+        endLine: s.endLine,
+        fileHash: s.fileHash,
+      })),
+      sourceFiles: (e.sources ?? []).map((f) => ({
+        path: f.path,
+        text: f.text,
+        fileHash: f.fileHash,
+      })),
+    });
+    ok++;
+    orphanTotal += res.orphanedThreadCount;
+    console.log(
+      `registered ${e.area}/${e.slug} (v${res.version?.id}, ${(e.sections ?? []).length} sections, ${res.orphanedThreadCount} orphaned)`,
+    );
+  }
+} catch (err) {
+  console.error(`Failed to register ${registering}; ${ok}/${manifest.length} entries completed.`);
+  throw err;
 }
 console.log(`Done: ${ok}/${manifest.length} registered; ${orphanTotal} thread(s) orphaned.`);

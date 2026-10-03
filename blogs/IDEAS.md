@@ -1,12 +1,5 @@
 # Blog ideas
 
-Raw, un-fleshed ideas. Park anything here; no commitment. This file stays the home
-for raw parking. An idea graduates to its own `blogs/<slug>/` folder once you can
-write its one-line thesis and name its audience — either as an early `status: idea`
-folder (worth ranking/reviewing before it's fully fleshed) or straight to a brief at
-`status: draft` — see [`CONVENTIONS.md`](./CONVENTIONS.md) §1–2. When it graduates,
-check it off and note the slug.
-
 Entry format: a **title**, a one-line thesis, and optional inline tags —
 `repos:` (local code the post draws on), `audience:`, `src:` (existing draft or
 source material). **Homing rule:** this repo is the canonical home for blog
@@ -28,12 +21,6 @@ referenced by a pinned ref (never copied). See [`CONVENTIONS.md`](./CONVENTIONS.
   `repos:` delta-kernel-rs, delta-rs · `audience:` Rust engineers who use
   delta-rs but haven't looked inside the kernel
 
-- [ ] **Delta vs Iceberg: ecosystem fragmentation** — where the two table-format
-  ecosystems actually diverge, and where they're converging.
-  `src:` docs-factory/research/table-formats/report.md (+ companion JSON
-  matrices) · note: re-anchor load-bearing claims on public sources before
-  publishing (the report's single-source claims are mostly vendor docs)
-
 - [x] **Trestle golden path: proto → dual-protocol server** — annotate a few proto
   messages, run one tool, get a Databricks-deployable Rust app whose REST + Connect
   APIs run on one port over one business core, with typed clients and a React app
@@ -44,10 +31,6 @@ referenced by a pinned ref (never copied). See [`CONVENTIONS.md`](./CONVENTIONS.
   `src:` blogs/trestle-golden-path/source/ (narratives moved here — canonical),
   reference-architecture/Caspers.md · `repos:` trestle (public, Apache-2.0;
   `olai-trestle` on crates.io; code verified against `examples/golden-path-app`)
-
-- [ ] **Tracing OpenClaw with MLflow** — from black box to observability.
-  `src:` openlakehouse-io src/content/posts/agentic/openclaw-tracing/index.mdx
-  (already published — candidate to expand and/or cross-post here)
 
 - [ ] **A blog quality judge** — automating high-quality-blog review (relates to
   our own §10 review pass).

@@ -1789,24 +1789,24 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       async registerVersion(req: RegisterVersionRequest, ctx) {
         await assertRegisterAuthorized(ctx.requestHeader);
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
-        const area = areaToDb(req.ref.area);
-        const { slug, project, bucket } = req.ref;
-        const sql = db();
-
-        // The prior latest version (before this upsert) — its Merkle tree drives
-        // the re-anchoring fast path. Version timeline entries (document added /
-        // content revised) are DERIVED from content_version rows in the UI, not
-        // written as content_event rows.
-        const [prior] = await sql<
-          { id: string; root_hash: string | null; merkle_tree: MerkleNodeJson | null }[]
-        >`
+        const ref = req.ref;
+        const area = areaToDb(ref.area);
+        const { slug, project, bucket } = ref;
+        return db().begin(async (sql) => {
+          // The prior latest version (before this upsert) — its Merkle tree drives
+          // the re-anchoring fast path. Version timeline entries (document added /
+          // content revised) are DERIVED from content_version rows in the UI, not
+          // written as content_event rows.
+          const [prior] = await sql<
+            { id: string; root_hash: string | null; merkle_tree: MerkleNodeJson | null }[]
+          >`
           select id, root_hash, merkle_tree from content_version
           where area = ${area} and slug = ${slug}
           order by created_at desc limit 1
         `;
 
-        const treeJson = req.tree ? merkleNodeToJson(req.tree) : null;
-        const [row] = await sql<ContentVersionRow[]>`
+          const treeJson = req.tree ? merkleNodeToJson(req.tree) : null;
+          const [row] = await sql<ContentVersionRow[]>`
           insert into content_version
             (area, slug, project, bucket, content_hash, git_sha, title, frontmatter_status,
              root_hash, merkle_tree, topics)
@@ -1824,9 +1824,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           returning *
         `;
 
-        await sql`delete from content_section where version_id = ${row.id}`;
-        if (req.sections.length > 0) {
-          await sql`
+          // Comments reference these IDs; an unchanged version must not replace them.
+          if (req.sections.length > 0) {
+            await sql`
             insert into content_section
               ${sql(
                 req.sections.map((s) => ({
@@ -1844,14 +1844,36 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                   depth_path: s.depthPath || null,
                 })),
               )}
+            on conflict (version_id, anchor_slug) do update
+              set fingerprint = excluded.fingerprint,
+                  heading_text = excluded.heading_text,
+                  heading_level = excluded.heading_level,
+                  ordinal = excluded.ordinal,
+                  plain_text = excluded.plain_text,
+                  char_len = excluded.char_len,
+                  node_hash = excluded.node_hash,
+                  subtree_hash = excluded.subtree_hash,
+                  parent_anchor_slug = excluded.parent_anchor_slug,
+                  depth_path = excluded.depth_path
           `;
-        }
+          }
+          const obsolete = await sql<{ id: string }[]>`
+          select id from content_section
+          where version_id = ${row.id}
+            and not (anchor_slug = any(${req.sections.map((s) => s.anchorSlug)}::text[]))
+        `;
+          if (obsolete.length > 0) {
+            const ids = obsolete.map((s) => s.id);
+            // Keep feedback and authored-version provenance when an anchor disappears.
+            await sql`update comment set section_id = null where section_id in ${sql(ids)}`;
+            await sql`delete from content_section where id in ${sql(ids)}`;
+          }
 
-        // Replace the version's resolved snippet refs + source files (used to
-        // re-anchor code comments and to back the full-source review pane).
-        await sql`delete from content_snippet where version_id = ${row.id}`;
-        if (req.snippets.length > 0) {
-          await sql`
+          // Replace the version's resolved snippet refs + source files (used to
+          // re-anchor code comments and to back the full-source review pane).
+          await sql`delete from content_snippet where version_id = ${row.id}`;
+          if (req.snippets.length > 0) {
+            await sql`
             insert into content_snippet
               ${sql(
                 req.snippets.map((s) => ({
@@ -1864,10 +1886,10 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 })),
               )}
           `;
-        }
-        await sql`delete from content_source where version_id = ${row.id}`;
-        if (req.sourceFiles.length > 0) {
-          await sql`
+          }
+          await sql`delete from content_source where version_id = ${row.id}`;
+          if (req.sourceFiles.length > 0) {
+            await sql`
             insert into content_source
               ${sql(
                 req.sourceFiles.map((f) => ({
@@ -1878,46 +1900,47 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 })),
               )}
           `;
-        }
+          }
 
-        // Sections whose subtree is provably unchanged vs. the prior version:
-        // their threads are kept as-is, skipping the fuzzy re-anchor scan. The
-        // hash check is a fast path only — the tiers in reanchorThreads remain
-        // the correctness fallback, so a hash bug degrades to today's behavior.
-        const unchanged = unchangedSlugs(prior?.merkle_tree ?? null, treeJson);
+          // Sections whose subtree is provably unchanged vs. the prior version:
+          // their threads are kept as-is, skipping the fuzzy re-anchor scan. The
+          // hash check is a fast path only — the tiers in reanchorThreads remain
+          // the correctness fallback, so a hash bug degrades to today's behavior.
+          const unchanged = unchangedSlugs(prior?.merkle_tree ?? null, treeJson);
 
-        // Re-anchor open threads against the new version. Prose threads match by
-        // quote/fingerprint against the section set; code threads match by
-        // region/line-hash against the snippet set. Both retain unmatched
-        // threads as orphaned (never deleted).
-        const orphanedProse = await reanchorThreads(
-          sql,
-          area,
-          slug,
-          req.sections.map((s) => ({
-            anchorSlug: s.anchorSlug,
-            fingerprint: s.fingerprint,
-            text: s.text,
-          })),
-          unchanged,
-        );
-        const orphanedCode = await reanchorCodeThreads(
-          sql,
-          area,
-          slug,
-          req.snippets.map((s) => ({
-            path: s.path,
-            region: s.region,
-            startLine: s.startLine,
-            endLine: s.endLine,
-            fileHash: s.fileHash,
-          })),
-          req.sourceFiles.map((f) => ({ path: f.path, text: f.text, fileHash: f.fileHash })),
-        );
+          // Re-anchor open threads against the new version. Prose threads match by
+          // quote/fingerprint against the section set; code threads match by
+          // region/line-hash against the snippet set. Both retain unmatched
+          // threads as orphaned (never deleted).
+          const orphanedProse = await reanchorThreads(
+            sql,
+            area,
+            slug,
+            req.sections.map((s) => ({
+              anchorSlug: s.anchorSlug,
+              fingerprint: s.fingerprint,
+              text: s.text,
+            })),
+            unchanged,
+          );
+          const orphanedCode = await reanchorCodeThreads(
+            sql,
+            area,
+            slug,
+            req.snippets.map((s) => ({
+              path: s.path,
+              region: s.region,
+              startLine: s.startLine,
+              endLine: s.endLine,
+              fileHash: s.fileHash,
+            })),
+            req.sourceFiles.map((f) => ({ path: f.path, text: f.text, fileHash: f.fileHash })),
+          );
 
-        return create(RegisterVersionResponseSchema, {
-          version: contentVersionFromRow(row, req.ref),
-          orphanedThreadCount: orphanedProse + orphanedCode,
+          return create(RegisterVersionResponseSchema, {
+            version: contentVersionFromRow(row, ref),
+            orphanedThreadCount: orphanedProse + orphanedCode,
+          });
         });
       },
 

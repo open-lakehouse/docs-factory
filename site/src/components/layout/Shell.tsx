@@ -2,7 +2,7 @@ import { useQuery } from "@connectrpc/connect-query";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { createContext, type ReactNode, useContext, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,7 @@ import {
 import { listReviewRequests } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
 import { scopeAccent, useScope, withScope } from "../../scope";
+import { useManifestEntryDoc } from "../../sidebar";
 import StatusMenu from "./StatusMenu";
 import TopbarPath from "./TopbarPath";
 
@@ -147,6 +148,9 @@ export default function Shell({
   const [mobileOpen, setMobileOpen] = useState(false);
   const { scopeId } = useScope();
   const { reviewActive } = useAuth();
+  const { pathname } = useLocation();
+  // Under a curated scope, Docs opens the manifest's first page rather than the overview.
+  const docsEntry = useManifestEntryDoc(scopeId);
   // Explicit accent wins; otherwise the active scope drives it site-wide.
   const effectiveAccent = accent ?? scopeAccent(scopeId);
 
@@ -178,8 +182,13 @@ export default function Shell({
             {NAV_AXES.map(({ to, label }) => (
               <NavLink
                 key={to}
-                to={withScope(to, scopeId)}
-                className={({ isActive }) => (isActive ? "active" : undefined)}
+                to={withScope(to === "/docs" ? (docsEntry?.href ?? to) : to, scopeId)}
+                // A doc-page target would only match itself; keep Docs lit across /docs/*.
+                className={({ isActive }) =>
+                  isActive || (to === "/docs" && pathname.startsWith("/docs"))
+                    ? "active"
+                    : undefined
+                }
               >
                 {label}
               </NavLink>

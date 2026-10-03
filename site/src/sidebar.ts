@@ -413,6 +413,16 @@ export function useManifestNav(
   );
 }
 
+/** First visible primary page of the scope's manifest (its "Start here" entry),
+ * or undefined when the scope has no manifest or nothing is visible yet. */
+export function useManifestEntryDoc(scopeId: string | null | undefined): DocNavItem | undefined {
+  const manifest = useManifestNav(scopeId);
+  return useMemo(() => {
+    const first = manifest ? primaryPlacements(manifest.tree)[0] : undefined;
+    return first ? (first.node as NavPageNode).item : undefined;
+  }, [manifest]);
+}
+
 /** Where a doc sits in a manifest tree: its primary placement's section trail
  * and the pages sharing that section. */
 export function navPlacement(

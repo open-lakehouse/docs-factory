@@ -87,8 +87,8 @@ nav:
             items:
               - page: how-to/configure-spark
                 id: H17
-              - planned: H18
-                title: Read and write supported UC tables from DuckDB
+              - page: how-to/duckdb
+                id: H18
               - planned: H19
                 title: Read UniForm tables from Trino through Iceberg REST
               - planned: H20

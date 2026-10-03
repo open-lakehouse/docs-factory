@@ -49,6 +49,7 @@ def test_every_entry_has_required_keys(capsys) -> None:
         "compose",
         "services",
         "base_url_env",
+        "env",
         "verifies",
         "tutorial_slug",
     }

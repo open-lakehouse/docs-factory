@@ -1,6 +1,6 @@
 /**
- * Build docs navigation purely from the content tree — no per-project metadata
- * file. Nav order is encoded two ways, both derivable at build time:
+ * Build docs navigation from the content tree. Nav order is encoded two ways,
+ * both derivable at build time:
  *   - Bucket order (Explanation → Tutorials → How-to → Reference) is fixed by
  *     `DEFAULT_BUCKET_ORDER`; the buckets themselves are the on-disk folders,
  *     which map 1:1 to the Diátaxis sections.
@@ -12,6 +12,11 @@
  * Project and section display labels are closed sets, so they live as the
  * `PROJECT_LABELS` / `BUCKET_LABELS` constants below rather than in content.
  *
+ * A project may also ship a curated `content/<project>/nav.yml` (resolved by
+ * content-core/nav.mjs). It only re-arranges links to the same docs, and it
+ * applies when that project's scope is active; the unscoped view keeps the
+ * Diátaxis grouping above as the full content index.
+ *
  * The nav structure (`docNav`, `docSequence`, and the derived neighbor/first-doc
  * lookups) is a build-time constant listing EVERY doc, drafts included. That's
  * the right source for allowlisted viewers, but anonymous viewers must see only
@@ -21,8 +26,10 @@
  * structure here and expose viewer-aware hooks that filter it at render time:
  * `useVisibleDocNav`, `useDocNeighbors`, `useFirstVisibleDocForProject`.
  */
+import yaml from "js-yaml";
 import { useMemo } from "react";
 import { findDoc } from "./content";
+import { primaryPlacements, resolveNav } from "./content-core/nav.mjs";
 import {
   bucketFromPath,
   orderKeyFromPath,
@@ -258,22 +265,29 @@ export function useScopedDocNav(
 }
 
 /** Viewer-aware prev/next: neighbors are computed over the visible sequence, so
- * anonymous viewers never page into an unpublished doc. */
-export function useDocNeighbors(href: string): {
+ * anonymous viewers never page into an unpublished doc. Under a manifest scope
+ * the sequence is the manifest's primary placements, in nav order. */
+export function useDocNeighbors(
+  href: string,
+  scopeId?: string,
+): {
   prev?: DocNavItem;
   next?: DocNavItem;
   isLoading: boolean;
 } {
   const { nav, isLoading } = useVisibleDocNav();
+  const manifest = useManifestNav(scopeId);
   const neighbors = useMemo(() => {
-    const sequence = nav.flatMap((g) => g.buckets.flatMap((b) => b.items));
+    const sequence = manifest
+      ? primaryPlacements(manifest.tree).map((p) => (p.node as NavPageNode).item)
+      : nav.flatMap((g) => g.buckets.flatMap((b) => b.items));
     const idx = sequence.findIndex((item) => item.href === href);
     if (idx < 0) return {};
     return {
       prev: idx > 0 ? sequence[idx - 1] : undefined,
       next: idx < sequence.length - 1 ? sequence[idx + 1] : undefined,
     };
-  }, [nav, href]);
+  }, [nav, manifest, href]);
   return { ...neighbors, isLoading };
 }
 
@@ -283,4 +297,145 @@ export function useFirstVisibleDocForProject(project: string): DocNavItem | unde
   const { nav } = useVisibleDocNav();
   const group = nav.find((g) => g.project === project);
   return group?.buckets[0]?.items[0];
+}
+
+// ── Curated manifests (content/<project>/nav.yml) ─────────────────────────
+
+export interface NavSectionNode {
+  kind: "section";
+  label: string;
+  children: NavNode[];
+}
+export interface NavPageNode {
+  kind: "page";
+  item: DocNavItem;
+  /** Backlog id from the UC documentation plan, when the manifest gives one. */
+  id?: string;
+  /** First occurrence of this page; breadcrumbs and prev/next follow it. */
+  primary: boolean;
+}
+export interface NavPlannedNode {
+  kind: "planned";
+  id: string;
+  title: string;
+}
+export type NavNode = NavSectionNode | NavPageNode | NavPlannedNode;
+
+interface ResolvedEntry {
+  kind: "section" | "page" | "planned";
+  label?: string;
+  children?: ResolvedEntry[];
+  bucket?: string;
+  slug?: string;
+  id?: string;
+  title?: string;
+  primary?: boolean;
+}
+
+const navManifests = import.meta.glob<string>("../../content/*/nav.yml", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+});
+
+function toNavNodes(project: string, entries: ResolvedEntry[]): NavNode[] {
+  return entries.map((e): NavNode => {
+    if (e.kind === "section") {
+      return {
+        kind: "section",
+        label: e.label ?? "",
+        children: toNavNodes(project, e.children ?? []),
+      };
+    }
+    if (e.kind === "planned") return { kind: "planned", id: e.id ?? "", title: e.title ?? "" };
+    const bucket = e.bucket ?? "";
+    const slug = e.slug ?? "";
+    return {
+      kind: "page",
+      item: {
+        project,
+        bucket,
+        slug,
+        label: e.label ?? slug,
+        href: `/docs/${project}/${bucket}/${slug}`,
+      },
+      ...(e.id ? { id: e.id } : {}),
+      primary: e.primary ?? false,
+    };
+  });
+}
+
+/** Resolved manifest tree per project that ships a nav.yml. */
+export const projectNav: Record<string, NavNode[]> = Object.fromEntries(
+  Object.entries(navManifests).map(([path, raw]) => {
+    const project = path.split("/").at(-2) ?? "";
+    const docs = discoveredDocs
+      .filter((d) => d.project === project && d.slug.toLowerCase() !== "readme")
+      .map((d) => ({ bucket: d.bucket, slug: d.slug, title: d.title }));
+    const { tree, errors } = resolveNav(yaml.load(raw), docs);
+    // check-nav.mjs fails the build on these; at runtime we can only surface them.
+    for (const e of errors) console.error(`content/${project}/nav.yml: ${e}`);
+    return [project, toNavNodes(project, tree as ResolvedEntry[])];
+  }),
+);
+
+/** The project whose manifest drives navigation under `scopeId`, if any. */
+export function manifestProjectForScope(scopeId: string | null | undefined): string | undefined {
+  if (!isRealScope(scopeId)) return undefined;
+  const projects = getScope(scopeId)?.projects ?? [];
+  return projects.length === 1 && projectNav[projects[0]] ? projects[0] : undefined;
+}
+
+/** A manifest tree narrowed to this viewer: hidden docs drop out, planned entries
+ * are reviewer-only, and sections left empty are pruned. */
+export function filterNavTree(nodes: NavNode[], vis: ContentVisibility): NavNode[] {
+  return nodes.flatMap((node): NavNode[] => {
+    if (node.kind === "planned") return vis.isAllowlisted ? [node] : [];
+    if (node.kind === "page") return navItemVisible(node.item, vis) ? [node] : [];
+    const children = filterNavTree(node.children, vis);
+    return children.length > 0 ? [{ ...node, children }] : [];
+  });
+}
+
+/** Viewer-filtered manifest tree for the active scope, or null when the scope
+ * has no manifest (callers fall back to the Diátaxis `docNav`). */
+export function useManifestNav(
+  scopeId: string | null | undefined,
+): { project: string; tree: NavNode[]; isLoading: boolean } | null {
+  const vis = useContentVisibility();
+  const project = manifestProjectForScope(scopeId);
+  return useMemo(
+    () =>
+      project
+        ? { project, tree: filterNavTree(projectNav[project], vis), isLoading: vis.isLoading }
+        : null,
+    [project, vis],
+  );
+}
+
+/** Where a doc sits in a manifest tree: its primary placement's section trail
+ * and the pages sharing that section. */
+export function navPlacement(
+  tree: NavNode[],
+  href: string,
+): { trail: string[]; siblings: DocNavItem[] } | undefined {
+  const visit = (
+    nodes: NavNode[],
+    trail: string[],
+  ): { trail: string[]; siblings: DocNavItem[] } | undefined => {
+    for (const node of nodes) {
+      if (node.kind === "page" && node.primary && node.item.href === href) {
+        const siblings = nodes
+          .filter((n): n is NavPageNode => n.kind === "page")
+          .map((n) => n.item);
+        return { trail, siblings };
+      }
+      if (node.kind === "section") {
+        const found = visit(node.children, [...trail, node.label]);
+        if (found) return found;
+      }
+    }
+    return undefined;
+  };
+  return visit(tree, []);
 }

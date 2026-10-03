@@ -200,6 +200,8 @@ function AxisSection({
   );
 }
 
+export const TYPES_VIEW = "types";
+
 /**
  * `/docs` for the "all" scope (`open-lakehouse`): every project's content
  * stacked as the four Diátaxis axis tables under one shared concept filter.
@@ -333,11 +335,16 @@ function DocsTables() {
 /**
  * `/docs` entry: a thin switch on the active scope. A real scope (delta /
  * unitycatalog) lands on that topic's index overview; `open-lakehouse` (the
- * implicit "all") keeps the full stacked axis tables. Splitting the two bodies
+ * implicit "all") keeps the full stacked axis tables. `?view=types` shows the
+ * scope-filtered tables instead, so the Diátaxis index stays reachable from a
+ * curated landing. Splitting the two bodies
  * keeps React's hook order valid in each (no early return past the table hooks).
  */
 export default function DocsIndex() {
   const { scopeId } = useScope();
-  if (isRealScope(scopeId)) return <ScopeIndex scopeId={scopeId} />;
+  const [searchParams] = useSearchParams();
+  if (isRealScope(scopeId) && searchParams.get("view") !== TYPES_VIEW) {
+    return <ScopeIndex scopeId={scopeId} />;
+  }
   return <DocsTables />;
 }

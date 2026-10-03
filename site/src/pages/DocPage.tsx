@@ -18,13 +18,15 @@ import { effectiveRefIds } from "../graph";
 import { docRef } from "../lib/content-ref";
 import { useContentVisibility } from "../lib/content-visibility";
 import MdxProvider from "../MdxProvider";
+import { useScope, withScope } from "../scope";
 import { useDocNeighbors } from "../sidebar";
 
 export default function DocPage() {
   const { project = "", bucket = "", slug = "" } = useParams();
   const page = findDoc(project, bucket, slug);
   const vis = useContentVisibility();
-  const neighbors = useDocNeighbors(page?.href ?? "");
+  const { scopeId } = useScope();
+  const neighbors = useDocNeighbors(page?.href ?? "", scopeId);
   const articleRef = useRef<HTMLElement>(null);
   // Held in state (not just a ref) so ScrollContainerProvider re-renders when
   // the article scroll pane mounts — ThreadCard / TOC jumps need that element.
@@ -123,12 +125,18 @@ export default function DocPage() {
                   <Pager
                     prev={
                       neighbors.prev
-                        ? { label: neighbors.prev.label, href: neighbors.prev.href }
+                        ? {
+                            label: neighbors.prev.label,
+                            href: withScope(neighbors.prev.href, scopeId),
+                          }
                         : undefined
                     }
                     next={
                       neighbors.next
-                        ? { label: neighbors.next.label, href: neighbors.next.href }
+                        ? {
+                            label: neighbors.next.label,
+                            href: withScope(neighbors.next.href, scopeId),
+                          }
                         : undefined
                     }
                   />

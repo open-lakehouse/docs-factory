@@ -1,7 +1,7 @@
 /**
  * remark-directive-prose-guard — undo remark-directive's false positives in
  * prose, keeping ONLY the container (`:::name`) directives this repo actually
- * uses (today: `:::journey`).
+ * uses (`::::journey`, `:::tab`, and the callouts).
  *
  * remark-directive parses three syntaxes: container (`:::name`), leaf
  * (`::name`), and *text* (`:name`). The text form is the problem: ordinary prose

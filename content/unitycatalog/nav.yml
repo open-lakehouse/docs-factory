@@ -86,8 +86,8 @@ nav:
                 title: Manage model versions and load a model with MLflow
           - section: Clients and query engines
             items:
-              - planned: H17
-                title: Configure Spark to use Unity Catalog
+              - page: how-to/configure-spark
+                id: H17
               - planned: H18
                 title: Read and write supported UC tables from DuckDB
               - planned: H19

@@ -5,7 +5,7 @@ diataxis: explanation
 project: unitycatalog
 references:
   - unityCatalogOSS
-  - lakehouse.schema
+  - lakehouse.namespace
   - lakehouse.table
   - lakehouse.volume
   - lakehouse.registeredFunction

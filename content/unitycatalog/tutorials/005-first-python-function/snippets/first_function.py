@@ -6,6 +6,11 @@
 # compose = "../compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# # The sandbox forks this process, then caps the child's address space at
+# # EXECUTOR_MAX_MEMORY_LIMIT MB (default 100). Linux enforces it (macOS doesn't),
+# # and the inherited address space already exceeds 100 MB, so the child can't
+# # allocate and the call times out. 1024 still failed in an arm64 repro.
+# env = { EXECUTOR_MAX_MEMORY_LIMIT = "4096" }
 # ///
 """Register a Python function in Unity Catalog, inspect it, run it, and remove it.
 

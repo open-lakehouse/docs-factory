@@ -35,6 +35,29 @@ There is no `_meta.yaml`. Nav order comes entirely from the tree:
 To reorder, renumber the prefixes in that folder; to insert, pick an unused
 number (or renumber neighbors). Nothing else needs editing.
 
+## Curated navigation (`<project>/nav.yml`)
+
+A project may add a `nav.yml`, its equivalent of an MkDocs `nav:`. When that
+project's scope is active (`~/unitycatalog`), the sidebar, the `/docs` landing,
+breadcrumbs, and prev/next follow the manifest. The unscoped view keeps the
+Diátaxis grouping above as the full content index.
+
+- **Canonical content versus navigation.** Each page has exactly one Diátaxis
+  home (its folder and URL). `nav.yml` links to it by `page: <bucket>/<slug>`,
+  using the URL tail with the prefix stripped, and may link it from several
+  sections. Changing the nav never moves prose or changes URLs. A page's first
+  occurrence is its primary placement, which breadcrumbs and prev/next follow.
+- **Entries** are `section:` + `items:` (at most 3 levels deep),
+  `page:` (optional `id:` backlog id and `label:` override), or `planned:` +
+  `title:`. A planned entry is a backlog slot with no page yet. Only reviewers
+  see it, and it is never a placeholder `.md` file.
+- **Every page must be listed.** `site/scripts/check-nav.mjs` (run at prebuild,
+  in `just check`, and in CI) fails on unknown pages, orphans, duplicate ids,
+  empty sections, and over-deep nesting.
+
+Adding a page to a project with a `nav.yml` therefore means also adding it to
+the manifest.
+
 Code in how-to guides is **not** inlined — it is referenced from tested example
 files in `examples/` via [`remark-code-snippets`](https://github.com/jknoxville/remark-code-snippets)
 fences, so what the site shows is always what CI runs. See the repo `AGENTS.md`.

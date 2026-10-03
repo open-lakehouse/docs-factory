@@ -11,13 +11,13 @@ nav:
       - page: explanation/what-is-unity-catalog
         id: E01
         label: What is Unity Catalog OSS?
-      - planned: R01
-        title: Features, scope, and limitations
+      - page: reference/features-and-limitations
+        id: R01
       - page: tutorials/getting-started
         id: T01
         label: Create your first catalog
-      - planned: R10
-        title: Choose a client or engine
+      - page: reference/clients-and-engines
+        id: R10
 
   - section: Use Unity Catalog
     items:
@@ -28,10 +28,10 @@ nav:
             id: T02
           - planned: T03
             title: Create and update a catalog-managed Delta table
-          - planned: T04
-            title: Read files from a governed volume in Python
-          - planned: T05
-            title: Register and execute your first Python function
+          - page: tutorials/read-volume-files
+            id: T04
+          - page: tutorials/first-python-function
+            id: T05
           - planned: T06
             title: Build an agent tool from a catalog function
           - page: tutorials/manage-models-mlflow
@@ -200,6 +200,8 @@ nav:
 
   - section: Reference
     items:
+      - page: reference/features-and-limitations
+      - page: reference/clients-and-engines
       - planned: R02
         title: Resource model, identifiers, types, and table/view kinds
       - planned: R03

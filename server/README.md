@@ -53,15 +53,32 @@ The review layer keys comments to a content version. On each deploy:
    (gitignored; generated automatically by `just register-versions`). sha256 of
    each draft/doc body + its section anchors; heading ids match the rendered DOM
    exactly — same `github-slugger` as rehype-slug).
-2. `just register-versions` (with `API_URL` + `BUILD_SECRET`) calls
+2. `just register-versions` (with `API_URL`; GitHub Actions authenticates via OIDC) calls
    `RegisterVersion` per entry: idempotent upsert on `(area, slug, content_hash)`,
-   replaces the version's section rows, and re-anchors open comment threads.
+   upserts sections without changing their IDs, refreshes snippets and sources,
+   and re-anchors open comment threads. Each entry commits atomically. Removed
+   sections detach comment references without deleting feedback or its authored
+   version provenance.
 
-PR CI only checks that the manifest builds successfully; the `register-versions`
-call runs in the deploy pipeline. Locally `just dev` registers versions for you.
+PR CI builds the manifest and tests registration against disposable Postgres;
+registration against the live review API runs in the deploy pipeline.
+Locally `just dev` registers versions for you.
 By hand, run `API_URL=http://localhost:8787 just register-versions` against a
 running `server-dev`. RegisterVersion is dev-open when no OIDC pin is set (see
 `src/auth/github-oidc.ts`).
+
+## Tests
+
+`bun test` runs the unit tests. To include the registration regression tests,
+set `REVIEW_TEST_DATABASE_URL` to a **dedicated PostgreSQL 18 test database**:
+
+```bash
+REVIEW_TEST_DATABASE_URL='<test-database-url>' bun test
+```
+
+The registration suite applies the migrations and cleans up its test content.
+It never falls back to `DATABASE_URL`. CI runs both suites against a disposable
+PostgreSQL service.
 
 ## Auth modes (`AUTH_MODE`)
 

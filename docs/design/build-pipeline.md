@@ -142,17 +142,20 @@ Vite copies into `dist/`); `just version-manifest` / `register-versions` /
 `content-versions.json` is a build artifact (gitignored), not committed.
 `server/scripts/register-versions.mjs` sends each entry to the `RegisterVersion`
 RPC, which upserts a `content_version` (keyed on `(area, slug, content_hash)` —
-idempotent; a frontmatter-only edit doesn't churn it), replaces its sections and
-snippets, and **re-anchors** open comment threads (a 5-tier prose match + a
+idempotent; a frontmatter-only edit doesn't churn it), upserts its sections by
+`(version_id, anchor_slug)` while preserving their IDs, refreshes snippets and
+sources, and **re-anchors** open comment threads (a 5-tier prose match + a
 line-hash code match in `server/src/anchor.ts`; unmatched threads are marked
 orphaned, never deleted). Because content-core makes the manifest's sections,
 snippet ranges, and identity match the rendered DOM, re-anchoring lands where the
-reviewer expects.
+reviewer expects. Each entry is registered in one transaction, including
+re-anchoring, so a failed write leaves no partial version or refresh. If a section
+is removed from an existing version, its comment references are detached before
+deletion; the feedback and authored-version provenance are retained.
 
-The interactive site and its review DB are **not yet released**, so the DB is
-disposable: any output change (the two bug fixes both intentionally change output)
-is handled by nuking and re-registering (`just db-reset` → `just register-versions`),
-with no migration or byte-identical-output constraint.
+The deployed review DB contains live feedback. Re-registration must preserve
+comment references and be safe to retry; `just db-reset` is only for disposable
+local development databases, never a production registration repair.
 
 ## 8. Drift tests replace the "mirror in X" comments
 

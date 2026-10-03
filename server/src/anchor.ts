@@ -21,7 +21,7 @@
 // A comment is a thread root when parent_id is null. Orphaned roots are never
 // deleted and stay resolvable.
 import { createHash } from "node:crypto";
-import type { Sql } from "./db.js";
+import type { Queryable } from "./db.js";
 
 // normalize()/hashLine() are the SAME contract as content-core's normalizeText
 // (site/src/content-core/normalize.mjs) / hashLineSync (site/src/content-core/
@@ -92,7 +92,7 @@ export function findQuote(text: string, quote: string, threshold = 0.8): number 
  * are skipped here — they go through reanchorCodeThreads.
  */
 export async function reanchorThreads(
-  sql: Sql,
+  sql: Queryable,
   area: string,
   slug: string,
   sections: NewSection[],
@@ -206,7 +206,7 @@ export interface NewSource {
  * the orphaned count.
  */
 export async function reanchorCodeThreads(
-  sql: Sql,
+  sql: Queryable,
   area: string,
   slug: string,
   snippets: NewSnippet[],
@@ -272,7 +272,7 @@ export async function reanchorCodeThreads(
 }
 
 /** Un-orphan a prose root and refresh its quote start offset. */
-async function refreshStart(sql: Sql, root: { id: string }, start: number): Promise<void> {
+async function refreshStart(sql: Queryable, root: { id: string }, start: number): Promise<void> {
   await sql`
     update comment
     set orphaned = false, selector_start = ${start}
@@ -282,7 +282,7 @@ async function refreshStart(sql: Sql, root: { id: string }, start: number): Prom
 
 /** Relink a prose root to a new anchor slug, optionally setting the quote start. */
 async function relink(
-  sql: Sql,
+  sql: Queryable,
   id: string,
   anchorSlug: string,
   start: number | null,

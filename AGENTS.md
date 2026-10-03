@@ -25,6 +25,7 @@ content/          Diátaxis-organized Markdown + colocated, tested snippets/ per
 blogs/            narrative blog drafts (index.md + assets/ + snippets/ per post) + STORYLINE
 emit/             deterministic blog draft → downstream target render (unitycatalog.io / delta.io MDX)
 seed/             docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
+envs/             reusable compose fragments for test stacks (aws-sim: fake AWS S3/STS for UC)
 tools/docsnip/    content validation tooling (frontmatter validate, snippet check)
 site/             throwaway Vite + React + MDX preview (docs + blogs); site/src/content-core is the shared parsing authority; build emits per-project llms.txt into site/public/
 architecture/     LAKEHOUSE FACT: LikeC4 model + design docs + ADRs + estate facts (estate.yml, glossary)
@@ -132,6 +133,9 @@ just arch-dev                          # LikeC4 architecture model at :5173
 3. Reference it from `index.md` with a fence
    (`file=./snippets/<name>.py start=... end=...`), then `uv run docsnip check`.
    `content/conftest.py` runs the script in the default test lane.
+4. For S3 storage, `include:` [`envs/aws-sim`](envs/aws-sim/README.md) in the
+   page's compose and keep endpoints out of the snippet: set them in
+   `[tool.docs-factory] env = { AWS_ENDPOINT_URL = "http://localhost:9000", AWS_ALLOW_HTTP = "true" }`.
 
 ## Blog workflow
 

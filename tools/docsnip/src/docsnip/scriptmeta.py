@@ -47,11 +47,15 @@ class DocsFactoryMeta:
     the compose services to wait on. ``base_url_env`` is the environment
     variable the harness sets to the started server's base URL — the script
     reads it, so the same code a reader runs is what the test exercises.
+    ``env`` is extra environment the harness sets for the run, e.g. the
+    ``AWS_ENDPOINT_URL`` that points host-side clients at ``envs/aws-sim``
+    while the snippet code stays endpoint-free.
     """
 
     compose: str | None = None
     services: list[str] = dataclasses.field(default_factory=list)
     base_url_env: str | None = None
+    env: dict[str, str] = dataclasses.field(default_factory=dict)
 
     @property
     def needs_services(self) -> bool:
@@ -108,6 +112,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
     compose = tool.get("compose")
     services = tool.get("services", []) or []
     base_url_env = tool.get("base-url-env")
+    env = tool.get("env", {}) or {}
 
     if compose is not None and not isinstance(compose, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].compose must be a string")
@@ -119,6 +124,10 @@ def parse_script(path: Path) -> ScriptMeta | None:
         raise ScriptMetaError(
             f"{path}: [tool.docs-factory].base-url-env must be a string"
         )
+    if not isinstance(env, dict) or not all(isinstance(v, str) for v in env.values()):
+        raise ScriptMetaError(
+            f"{path}: [tool.docs-factory].env must be a table of strings"
+        )
 
     return ScriptMeta(
         path=path,
@@ -128,6 +137,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
             compose=compose,
             services=list(services),
             base_url_env=base_url_env,
+            env=dict(env),
         ),
     )
 

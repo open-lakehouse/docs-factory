@@ -1,0 +1,409 @@
+#!/usr/bin/env bun
+/**
+ * emit-docs — render one project's documentation into a static target site
+ * (sites/<name>/), deterministically and in full, then sync only what changed.
+ *
+ *   bun docs/emit-docs.mjs --site unitycatalog-docs [--out <dir>] [--drafts]
+ *                          [--dry-run] [--report <file.md|file.json>]
+ *
+ * One run:
+ *   1. inventory content/<project>/ and select pages (`status: ready`, or
+ *      `ready` + `draft` with --drafts);
+ *   2. project content/<project>/nav.yml onto the selection;
+ *   3. render every page twice through the shared emitter core (emitOne): the
+ *      site page (docs-site target) and its `.md` twin (md-twin target);
+ *   4. add images, LikeC4 PNGs + web component, runnable scripts, the vendored
+ *      remark plugins, site.json / heads.json, llms.txt, llms-full.txt,
+ *      sitemap.xml, robots.txt;
+ *   5. diff against the target's previous .docs-emit.json, write only changed
+ *      files, delete stale ones, and print a page-level change report.
+ *
+ * Everything is built in memory first, so a failure leaves the target untouched.
+ * A cross-page link this emit can't resolve (a page it doesn't publish, another
+ * project, a typo) fails a publish emit. With --drafts it only warns, since a
+ * preview routinely links to unfinished pages; either way the link is unwrapped
+ * to its label rather than shipped as a 404.
+ */
+import { execFileSync } from "node:child_process";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, join, relative, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+import { parse as parseYaml } from "yaml";
+import { injectCanonical, runnableExamplesSection } from "../../site/scripts/build-md-twins.mjs";
+import {
+  runDocsnipScripts,
+  scriptEntry,
+  stripSectionMarkers,
+} from "../../site/scripts/build-script-index.mjs";
+import {
+  renderLlmsFull,
+  renderLlmsIndex,
+  toEntry,
+} from "../../site/scripts/build-site-llmstxt.mjs";
+import { renderRobots, renderSitemap, sitemapUrls } from "../../site/scripts/build-sitemap.mjs";
+import { isPublic, splitFrontmatter } from "../../site/src/content-core/frontmatter.mjs";
+import { canonicalUrl, pageHead } from "../../site/src/content-core/head.mjs";
+import { docIdentity } from "../../site/src/content-core/identity.mjs";
+import { resolveNav } from "../../site/src/content-core/nav.mjs";
+import { entryFor, gitSha } from "../../site/src/content-core/pipeline.mjs";
+import { extractHeadings } from "../../site/src/content-core/slug.mjs";
+import { walkContent } from "../../site/src/content-core/walk.mjs";
+import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
+import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
+import remarkModelLinksText from "../plugins/remark-model-links-text.mjs";
+import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
+import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
+import { docsSiteTarget } from "../targets/docs-site.mjs";
+import mdTwin from "../targets/md-twin.mjs";
+import { projectNav } from "./nav.mjs";
+import { renderedSections } from "./sections.mjs";
+import {
+  applySync,
+  diffPages,
+  diskHasher,
+  MANIFEST_FILE,
+  planSync,
+  renderReport,
+} from "./sync.mjs";
+
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const PLUGIN_DIR = join(REPO_ROOT, "site", "src", "plugins");
+
+// The preview plugins the target renders directives with. Copied verbatim so a
+// page renders the same in both; the shell's vite.config.ts loads them by name.
+const VENDORED_PLUGINS = [
+  "remark-directive-prose-guard.mjs",
+  "remark-tldr.mjs",
+  "remark-callouts.mjs",
+  "remark-tabs.mjs",
+  "remark-journey.mjs",
+  "remark-fence-meta.mjs",
+  "remark-likec4-views.mjs",
+  "lib/mdx-helpers.mjs",
+];
+
+const EMIT_STATUSES = new Set(["draft", "ready"]);
+
+function parseArgs(argv) {
+  const out = { drafts: false, dryRun: false };
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i];
+    if (a === "--site") out.site = argv[++i];
+    else if (a === "--out") out.out = argv[++i];
+    else if (a === "--report") out.report = argv[++i];
+    else if (a === "--drafts") out.drafts = true;
+    else if (a === "--dry-run") out.dryRun = true;
+    else throw new Error(`unknown argument: ${a}`);
+  }
+  if (!out.site) {
+    throw new Error(
+      "usage: bun docs/emit-docs.mjs --site <name> [--out <dir>] [--drafts] [--dry-run] [--report <file>]",
+    );
+  }
+  return out;
+}
+
+function sourceState() {
+  let dirty = false;
+  try {
+    dirty =
+      execFileSync("git", ["status", "--porcelain", "--", "content", "architecture/model"], {
+        cwd: REPO_ROOT,
+        encoding: "utf8",
+      }).trim() !== "";
+  } catch {
+    // Not a git checkout: report it as clean rather than guessing.
+  }
+  return { commit: gitSha(REPO_ROOT), dirty };
+}
+
+/** Collects every cross-page link this emit can't resolve (once per page + url). */
+function linkErrors() {
+  const errors = new Set();
+  return {
+    errors,
+    onUnresolved: ({ url, mdPath }) =>
+      errors.add(`${relative(REPO_ROOT, mdPath)}: ${url} is not a page this emit publishes`),
+  };
+}
+
+export async function emitDocs({ site, drafts = false }) {
+  const isIncluded = drafts ? (meta) => EMIT_STATUSES.has(meta.status) : isPublic;
+  const { hrefFor, origin } = site;
+  const contentDir = join(REPO_ROOT, "content", site.project);
+  const files = new Map();
+  const tmp = mkdtempSync(join(tmpdir(), "emit-docs-"));
+  const likec4OutDir = join(tmp, "likec4");
+
+  try {
+    // 1. Inventory.
+    const all = walkContent(contentDir).map((absPath) => {
+      const { meta, body } = splitFrontmatter(readFileSync(absPath, "utf8"));
+      return { absPath, meta, body, identity: docIdentity(absPath, meta) };
+    });
+    const selected = all.filter((p) => isIncluded(p.meta));
+    const routes = new Set(selected.map((p) => hrefFor(p.identity)));
+
+    // 2. Navigation. Validated against every page so an orphan still fails here.
+    const navPath = join(contentDir, "nav.yml");
+    const { tree, errors: navErrors } = resolveNav(
+      parseYaml(readFileSync(navPath, "utf8")),
+      all.map((p) => ({ ...p.identity, title: p.meta.title ?? p.identity.slug })),
+    );
+    if (navErrors.length)
+      throw new Error(`${relative(REPO_ROOT, navPath)}:\n  ${navErrors.join("\n  ")}`);
+    const routeFor = (bucket, slug) =>
+      hrefFor({ area: "docs", project: site.project, bucket, slug });
+    const { nav, order } = projectNav(tree, {
+      isSelected: (bucket, slug) => routes.has(routeFor(bucket, slug)),
+      routeFor,
+    });
+    const byRoute = new Map(selected.map((p) => [hrefFor(p.identity), p]));
+    const ordered = order.map(({ route, section }) => ({ ...byRoute.get(route), route, section }));
+
+    // Runnable scripts first: twins list the ones their page owns.
+    const indexed = runDocsnipScripts(REPO_ROOT);
+    if (!indexed) console.warn("emit-docs: uv not found, so no runnable scripts are published");
+    const scripts = (indexed?.scripts ?? [])
+      .map((e) => scriptEntry(e, { hrefFor }))
+      .filter((s) => s.fetchUrl && routes.has(s.tutorialRoute));
+    for (const s of scripts) {
+      files.set(
+        `public${s.fetchUrl}`,
+        stripSectionMarkers(readFileSync(join(REPO_ROOT, s.gitPath), "utf8")),
+      );
+    }
+    files.set("public/scripts.json", `${JSON.stringify({ version: 2, scripts }, null, 2)}\n`);
+
+    // 3. Pages.
+    const links = linkErrors();
+    const linkPlugins = [
+      [remarkSourceLinks, { hrefFor, knownHrefs: routes, onUnresolved: links.onUnresolved }],
+      [remarkUnwrapDeadLinks],
+      [remarkModelLinksText],
+    ];
+    const pages = [];
+    const manifestPages = {};
+    let hasLikeC4 = false;
+    let likec4Exported = false;
+    for (const page of ordered) {
+      const { absPath, identity, route } = page;
+      const assetBase = `/assets/${identity.bucket}/${identity.slug}`;
+      // The model export covers every view, so the first page that needs it pays once.
+      const common = {
+        inputPath: absPath,
+        likec4OutDir,
+        assetsDir: dirname(absPath),
+        likec4Exported,
+      };
+
+      const rendered = await emitOne({
+        ...common,
+        target: docsSiteTarget({ assetBase }),
+        plugins: [...linkPlugins, [remarkStripSourceMeta]],
+      });
+      likec4Exported ||= rendered.likec4Dir !== null;
+      common.likec4Exported = likec4Exported;
+      const file = `${identity.bucket}/${identity.slug}.md`;
+      files.set(`src/content/${file}`, rendered.output);
+
+      for (const image of rendered.manifest) {
+        if (!image.localPath) continue;
+        const url = image.likec4
+          ? `/assets/likec4/${image.likec4}.png`
+          : `${assetBase}/${image.filename}`;
+        files.set(`public${url}`, readFileSync(image.localPath));
+        hasLikeC4 ||= Boolean(image.likec4);
+      }
+
+      const twinTarget = {
+        ...mdTwin,
+        renderImage: (entry) =>
+          entry.likec4
+            ? mdTwin.renderImage(entry)
+            : {
+                type: "paragraph",
+                children: [
+                  {
+                    type: "image",
+                    url: `${assetBase}/${entry.filename}`,
+                    alt: entry.altText,
+                    title: null,
+                  },
+                ],
+              },
+      };
+      const twin = await emitOne({ ...common, target: twinTarget, plugins: linkPlugins });
+      const examples = runnableExamplesSection(scripts.filter((s) => s.tutorialRoute === route));
+      const twinBody = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
+      files.set(
+        `public${route}.md`,
+        examples ? `${twinBody.replace(/\s*$/, "\n")}\n${examples}` : twinBody,
+      );
+
+      const renderedBody = splitFrontmatter(rendered.output).body;
+      const pageHeadings = extractHeadings(renderedBody).map(({ id, text, level }) => ({
+        id,
+        text,
+        level,
+      }));
+      pages.push({
+        route,
+        file,
+        title: page.meta.title ?? identity.slug,
+        summary: typeof page.meta.summary === "string" ? page.meta.summary : null,
+        diataxis: page.meta.diataxis ?? identity.bucket,
+        section: page.section,
+        headings: pageHeadings,
+        twin: `${route}.md`,
+      });
+
+      const version = entryFor(absPath, REPO_ROOT);
+      manifestPages[`${identity.project}/${identity.bucket}/${identity.slug}`] = {
+        src: relative(REPO_ROOT, absPath),
+        route,
+        title: page.meta.title ?? identity.slug,
+        contentHash: version.contentHash,
+        rootHash: version.rootHash,
+        sections: renderedSections(renderedBody),
+        outputs: [`src/content/${file}`, `public${route}.md`],
+      };
+    }
+    if (links.errors.size) {
+      const list = [...links.errors].join("\n  ");
+      if (!drafts) throw new Error(`unresolved links:\n  ${list}`);
+      console.warn(`emit-docs: unresolved links (unwrapped to text):\n  ${list}`);
+    }
+
+    pages.forEach((p, i) => {
+      const link = (q) => (q ? { route: q.route, title: q.title } : null);
+      p.prev = link(pages[i - 1]);
+      p.next = link(pages[i + 1]);
+    });
+
+    if (hasLikeC4) {
+      const bundle = join(tmp, "likec4-webcomponent.mjs");
+      generateLikeC4WebComponent(defaultModelDir(), bundle, true);
+      files.set("public/likec4/likec4-webcomponent.mjs", readFileSync(bundle));
+    }
+
+    for (const name of VENDORED_PLUGINS) {
+      files.set(`src/vendor/plugins/${name}`, readFileSync(join(PLUGIN_DIR, name)));
+    }
+
+    // 4. Site data + GEO surfaces.
+    files.set(
+      "src/generated/site.json",
+      `${JSON.stringify({ title: site.title, tagline: site.tagline, nav, pages }, null, 2)}\n`,
+    );
+    const heads = {
+      "/": {
+        ...pageHead({
+          identity: { area: "site" },
+          meta: { summary: site.tagline },
+          origin,
+          hrefFor,
+          siteName: site.title,
+          type: "website",
+        }),
+        twin: null,
+      },
+    };
+    for (const p of ordered) {
+      heads[p.route] = pageHead({
+        identity: p.identity,
+        meta: p.meta,
+        body: p.body,
+        origin,
+        hrefFor,
+        siteName: site.title,
+      });
+    }
+    files.set("src/generated/heads.json", `${JSON.stringify(heads, null, 2)}\n`);
+
+    const entries = ordered
+      .map((p) => toEntry(p.absPath, p.meta, p.body, origin, { hrefFor, isIncluded }))
+      .filter(Boolean);
+    files.set(
+      "public/llms.txt",
+      renderLlmsIndex(entries, {
+        title: `${site.title} documentation`,
+        summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`.`,
+      }),
+    );
+    files.set(
+      "public/llms-full.txt",
+      renderLlmsFull(entries, (href) => {
+        const twin = files.get(`public${href}.md`);
+        return twin ? splitFrontmatter(String(twin)).body.trim() : "";
+      }),
+    );
+    files.set(
+      "public/sitemap.xml",
+      renderSitemap(sitemapUrls(ordered, origin, { hrefFor, indexRoutes: ["/"], isIncluded })),
+    );
+    files.set("public/robots.txt", renderRobots(origin));
+
+    return { files, manifestPages };
+  } finally {
+    rmSync(tmp, { recursive: true, force: true });
+  }
+}
+
+function readManifest(outDir) {
+  const path = join(outDir, MANIFEST_FILE);
+  if (!existsSync(path)) return null;
+  try {
+    return JSON.parse(readFileSync(path, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const site = (await import(`./sites/${args.site}.mjs`)).default;
+  const outDir = resolve(args.out ?? join(REPO_ROOT, "sites", site.name));
+  if (!existsSync(join(outDir, "package.json"))) {
+    throw new Error(`${outDir} has no package.json; point --out at a site shell`);
+  }
+
+  const { files, manifestPages } = await emitDocs({ site, drafts: args.drafts });
+  const previous = readManifest(outDir);
+  const plan = planSync(files, previous, diskHasher(outDir));
+  const source = sourceState();
+  const manifest = {
+    schema: 1,
+    site: site.name,
+    source,
+    drafts: args.drafts,
+    pages: manifestPages,
+    files: plan.hashes,
+  };
+  const diff = diffPages(previous, manifest);
+  const report = renderReport({ site: site.name, source, diff, plan });
+  console.log(report);
+
+  if (args.report) {
+    const body = args.report.endsWith(".json")
+      ? `${JSON.stringify({ source, diff, write: plan.write, remove: plan.remove }, null, 2)}\n`
+      : report;
+    writeFileSync(args.report, body);
+  }
+  if (args.dryRun) return;
+
+  applySync(outDir, files, plan);
+  const manifestPath = join(outDir, MANIFEST_FILE);
+  const manifestText = `${JSON.stringify(manifest, null, 2)}\n`;
+  if (!existsSync(manifestPath) || readFileSync(manifestPath, "utf8") !== manifestText) {
+    writeFileSync(manifestPath, manifestText);
+  }
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((err) => {
+    console.error(`emit-docs: ${err.message}`);
+    process.exitCode = 1;
+  });
+}

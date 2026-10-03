@@ -62,6 +62,19 @@ _site-deps:
 emit slug target: _emit-deps
     cd emit && bun emit.mjs --slug {{slug}} --target {{target}}
 
+# --- Emit a project's docs into a static target site ------------------------
+
+# emit/docs/sites/<site>.mjs names the project and URL scheme. Flags: --drafts
+# (include draft pages, for a local preview), --dry-run, --report <file.md|.json>,
+# --out <dir>. Writes only changed files and prints a page-level change report.
+# Render content/<project>/ into the static site shell sites/<site>/.
+emit-docs site *flags: _emit-deps _site-deps
+    cd emit && bun docs/emit-docs.mjs --site {{site}} {{flags}}
+
+# Emit the UC docs (drafts included), build the static site, preview on :4322.
+uc-docs: (emit-docs "unitycatalog-docs" "--drafts")
+    cd sites/unitycatalog-docs && bun install && bun run build && bun run preview
+
 _emit-deps:
     #!/usr/bin/env bash
     set -euo pipefail

@@ -102,6 +102,9 @@ jobs:
           cd site && bun install --frozen-lockfile && bun test src/content-core
       - name: Validate nav.yml manifests
         run: cd site && node scripts/check-nav.mjs
+      # The docs-site emitter's sync/diff, nav projection, and page rendering.
+      - name: docs-site emitter tests
+        run: cd emit && bun test docs
 
   preview-build:
     runs-on: ubuntu-latest

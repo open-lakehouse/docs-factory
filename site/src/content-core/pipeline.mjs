@@ -130,7 +130,7 @@ function collectBlocks(body, mdPath, repoRoot) {
 }
 
 /** Build one manifest entry from a file path + repo root. */
-function entryFor(path, repoRoot) {
+export function entryFor(path, repoRoot) {
   const raw = readFileSync(path, "utf8");
   const { meta, body } = splitFrontmatter(raw);
   const id = docIdentity(path, meta);

@@ -16,8 +16,8 @@ three Python DataFrame libraries: Polars, Daft, and pandas. Each one looks up a
 table by name, asks the server for temporary storage credentials, and then reads
 or writes the [Delta](model:deltaSpec) files directly in storage.
 
-All three read Delta through [delta-rs](model:deltaRs), a path-based Delta library. That's why
-they work with **external tables only**. For catalog-managed tables, use
+All three read Delta through [delta-rs](model:deltaRs), a path-based Delta
+library, so they work only with external tables. For catalog-managed tables, use
 [Spark](../configure-spark/index.md) or [DuckDB](../duckdb/index.md); see
 [What these libraries can't do yet](#what-these-libraries-cant-do-yet).
 

@@ -20,9 +20,8 @@ Foundation, and these docs describe its server as of release 0.6.0.
 > It helps teams and organizations discover, secure, govern, and share trusted data
 > and AI across clouds and platforms from a single control plane.
 
-If you have worked with catalogs before, you have probably read a description
-like the one above. It is accurate, but it is easier to understand by starting
-from the smallest job a catalog has.
+That description is accurate, but abstract. It's easier to start from the
+smallest job a catalog has.
 
 ## What a catalog does
 

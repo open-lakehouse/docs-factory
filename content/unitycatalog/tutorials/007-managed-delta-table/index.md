@@ -206,7 +206,7 @@ docker compose down
 
 ## What you did
 
-You created a table without choosing where it lives, changed it four times, and
+You created a table without choosing where it lives, changed it three times, and
 read it as it was two versions ago, all with ordinary Spark SQL. Unity Catalog
 chose the location, handed Spark credentials for it, and approved each new
 version. Any other engine that speaks the same protocol sees exactly those

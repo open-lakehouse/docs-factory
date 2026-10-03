@@ -48,8 +48,8 @@ nav:
                 id: H01
           - section: Tables and views
             items:
-              - planned: H02
-                title: Register an existing external table
+              - page: how-to/register-external-table
+                id: H02
               - planned: H03
                 title: Read and write catalog-managed Delta tables
               - planned: H04

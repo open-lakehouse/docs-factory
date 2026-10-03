@@ -2010,6 +2010,26 @@ body {
   border-left-color: var(--accent);
   background: transparent;
 }
+/* nav.yml backlog slot: reviewer-only, not a link. */
+.sidebar-link.planned {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  color: var(--muted-foreground);
+  opacity: 0.7;
+  font-style: italic;
+  cursor: default;
+}
+.sidebar-link.planned:hover { color: var(--muted-foreground); border-left-color: transparent; }
+.sidebar-planned-id {
+  flex: none;
+  font-size: 0.62rem;
+  font-style: normal;
+  letter-spacing: 0.04em;
+}
+/* Nested manifest sections sit inside a parent's link rail. */
+.sidebar-links .sidebar-bucket { margin: 0 0 0.25rem 0.55rem; }
 
 /* --- On this page TOC --- */
 .toc {

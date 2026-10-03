@@ -156,9 +156,10 @@ test:
 test-services:
     uv run --group test-services pytest -m "needs_docker or needs_uc_server"
 
-# Validate frontmatter and snippets (CI gate).
-check:
+# Validate frontmatter, snippets, and nav.yml manifests (CI gate).
+check: _site-deps
     uv run docsnip check
+    cd site && node scripts/check-nav.mjs
 
 # Regenerate per-project llms.txt into site/public/ (also runs at site prebuild).
 llmstxt: _site-deps

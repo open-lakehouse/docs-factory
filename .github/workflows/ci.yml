@@ -100,6 +100,8 @@ jobs:
         run: |
           cd emit && bun install --frozen-lockfile && cd ..
           cd site && bun install --frozen-lockfile && bun test src/content-core
+      - name: Validate nav.yml manifests
+        run: cd site && node scripts/check-nav.mjs
 
   preview-build:
     runs-on: ubuntu-latest

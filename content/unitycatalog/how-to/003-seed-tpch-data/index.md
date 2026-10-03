@@ -1,7 +1,7 @@
 ---
 title: Seed TPC-H data into Unity Catalog
 summary: Generate the classic eight-table TPC-H dataset with DuckDB, write it as Delta, and register it in Unity Catalog as a foundation for richer tutorials.
-diataxis: tutorial
+diataxis: how-to
 project: unitycatalog
 references:
   - unityCatalogOSS

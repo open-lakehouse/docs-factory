@@ -115,7 +115,7 @@ However all of this is a bit abstract, so let's put it into practice.
 Since metric views require some tabular assets as a foundation,
 we first need some interesting data. For the remainder of this tutorial,
 we assume that you created TCP-H tables per the
-[tcp-h tutorial](../../content/unitycatalog/tutorials/006-seed-tpch-data/index.md).
+[tcp-h tutorial](../../content/unitycatalog/how-to/003-seed-tpch-data/index.md).
 
 With that data in place, let's create our first metric view.
 

@@ -13,6 +13,16 @@ Server baseline: `v0.6.0`, published 2026-08-20, commit
 AI baseline: Latest official AI release tag found was `ai-v0.4.0`, published
 2026-04-24. AI packages have an independent release cycle.
 
+> **Update 2026-10-03: the docs experience is built in the factory site.**
+> We now build the section 5 navigation inside this repository's site, and
+> emission to the upstream MkDocs site is deferred (section 11 still describes
+> what it would need). The navigation-metadata decision is resolved: each
+> project may ship a validated `content/<project>/nav.yml` that references
+> canonical pages by `<bucket>/<slug>`. The site renders it whenever that
+> project's scope is active. Backlog ids from section 6 appear as reviewer-only
+> `planned:` slots. See `content/README.md` § "Curated navigation". The existing
+> drafts were re-homed per section 7, with new paths noted in that table.
+
 ## 1. Recommendation
 
 Organize the reader experience around **Use Unity Catalog** and **Operate Unity
@@ -276,9 +286,8 @@ slugs with frontmatter overrides or redirects.
 
 Do not create `content/unitycatalog/operators/` or `usage/` alongside Diataxis
 buckets, or nest them in a way that changes the current parser's assumptions.
-The preview currently supports only the fixed bucket sidebar. Audience/topic
-navigation will require a separately reviewed renderer change; the plan does
-not assume it already exists.
+Audience/topic navigation is a `nav.yml` projection over these buckets; see the
+2026-10-03 update.
 
 Prefer a small validated navigation manifest that references canonical content
 IDs and supports multiple links to one article. Audience/topic fields in
@@ -447,12 +456,12 @@ These are authoring inputs, not finished pages. Preserve in-progress user edits.
 | `tutorials/001-getting-started/` | Rework: currently pins 0.5.0, uses inline shell code, and mostly proves startup despite the summary promising resource creation. | T01; move runnable steps into tested colocated snippets. |
 | `tutorials/002-python-client/` | Retain the useful flow; rebaseline pins, auth assumptions, snippet location and test coverage. | T11; R08 supplies shared endpoint/auth details. |
 | `tutorials/003-write-and-read-delta/` | Split the multi-client intention into two single-engine tutorials and task-oriented engine guides. | T02/T03, H17-H20. |
-| `tutorials/004-table-storage-formats/` | Reclassify the task/reference portions; only keep a tutorial if it has a clear learning outcome. | H08, R02/R10. |
+| `tutorials/004-table-storage-formats/` → `how-to/001-table-storage-formats/` | Reclassify the task/reference portions; only keep a tutorial if it has a clear learning outcome. | H08, R02/R10. |
 | `tutorials/004-manage-models-mlflow.md` | Expand into a tested lifecycle and separate ongoing tasks. | T07, H15, E08. |
-| `tutorials/005-configure-backend-db/` | Split selection rationale from procedure and learning. | E10, T10, H25/H26, R07. |
-| `tutorials/006-seed-tpch-data/` | Keep as an optional data-preparation how-to/advanced fixture, not core onboarding. | Supporting article for T08 and advanced examples; preserve the tested seeder. |
+| `tutorials/005-configure-backend-db/` → `how-to/002-configure-backend-db/` | Split selection rationale from procedure and learning. | E10, T10, H25/H26, R07. |
+| `tutorials/006-seed-tpch-data/` → `how-to/003-seed-tpch-data/` | Keep as an optional data-preparation how-to/advanced fixture, not core onboarding. | Supporting article for T08 and advanced examples; preserve the tested seeder. |
 | `tutorials/100-marimo-remote-storage/` | Defer until an upstream-compatible storage client is verified; an estate-only bridge belongs in open-lakehouse scope. | Optional follow-on to J04, not P0. |
-| `how-to/001-uc-basics/` | Reclassify conceptual material. Recheck bucket-root assumptions rather than treating every external location as a whole bucket. | E03, R02/R05. |
+| `how-to/001-uc-basics/` → `explanation/003-uc-basics/` | Reclassify conceptual material. Recheck bucket-root assumptions rather than treating every external location as a whole bucket. | E03, R02/R05. |
 | `how-to/101-envoy-authentication/` | Defer the specialized Envoy recipe. First document supported UC auth and generic protected exposure. | H32/H37; optional later recipe if principal forwarding is validated. |
 | `explanation/001-what-is-unity-catalog.md` | Retain motivation; make OSS boundaries concrete and remove unsupported blanket claims. | E01. |
 | `explanation/002-credential-vending/` | Expand from the outline into a trust-boundary explanation. | E05. |
@@ -599,7 +608,7 @@ verification gates rather than reasons to postpone the entire rewrite:
 | IdP fixtures | Local controlled IdP for CI; Google as a verified human-login recipe. | Security reviewer confirms mapping and token behavior. |
 | AI framework | Standalone OSS function client first, one framework next. | AI package maintainer confirms releases and supported APIs. |
 | Integration ownership | First-party guides only for tested paths; provider-owned directory otherwise. | Named reviewer for each engine/framework. |
-| Navigation metadata | Canonical Diataxis source; explicit small navigation projection. | Separate factory design/implementation review. |
+| Navigation metadata | Canonical Diataxis source; explicit small navigation projection. | Resolved 2026-10-03: per-project `nav.yml`. |
 
 ## 10. Authoring and verification contract
 

@@ -3,7 +3,14 @@ import { useLocation, useParams } from "react-router-dom";
 import type { BreadcrumbItemData, BreadcrumbSibling } from "../components/layout/Breadcrumbs";
 import { blogPosts, findBlog, findDoc } from "../content";
 import { withScope } from "../scope";
-import { type DocNavGroup, docNav, useVisibleDocNav } from "../sidebar";
+import {
+  type DocNavGroup,
+  docNav,
+  type NavNode,
+  navPlacement,
+  useManifestNav,
+  useVisibleDocNav,
+} from "../sidebar";
 
 /**
  * Top-level site areas — the first path segment after the `~/<scope>` root.
@@ -59,6 +66,7 @@ export function resolveRouteBreadcrumbs(
   params: Record<string, string | undefined>,
   scopeParam: string | null = null,
   nav: DocNavGroup[] = docNav,
+  manifest: { project: string; tree: NavNode[] } | null = null,
 ): BreadcrumbItemData[] {
   let items: BreadcrumbItemData[] = [];
 
@@ -109,8 +117,26 @@ export function resolveRouteBreadcrumbs(
     const pageSiblings =
       activeBucket?.items.map((it) => ({ label: it.label, href: it.href })) ?? [];
 
+    // Under a manifest scope the trail is the page's primary placement
+    // (`docs › Use Unity Catalog › How-to guides › <page>`), not its bucket.
+    const placement =
+      page && manifest?.project === project ? navPlacement(manifest.tree, page.href) : undefined;
+
     if (!page) {
       items = [{ label: "docs", href: docsHref }, { label: project }, { label: slug }];
+    } else if (placement) {
+      items = [
+        { label: "docs", href: "/docs" },
+        ...placement.trail.map((label) => ({ label })),
+        {
+          label: slug,
+          siblings: placement.siblings.map((it) => ({
+            label: it.label,
+            href: withScope(it.href, scopeParam),
+          })),
+          activeHref: withScope(page.href, scopeParam),
+        },
+      ];
     } else {
       items = [
         { label: "docs", href: docsHref },
@@ -138,8 +164,9 @@ export function useRouteBreadcrumbs(): BreadcrumbItemData[] {
   // Viewer-filtered nav so the breadcrumb sibling dropdowns match the sidebar:
   // anonymous viewers see only published docs as project/page siblings.
   const { nav } = useVisibleDocNav();
+  const manifest = useManifestNav(scopeParam);
   return useMemo(
-    () => resolveRouteBreadcrumbs(pathname, params, scopeParam, nav),
-    [pathname, params, scopeParam, nav],
+    () => resolveRouteBreadcrumbs(pathname, params, scopeParam, nav, manifest),
+    [pathname, params, scopeParam, nav, manifest],
   );
 }

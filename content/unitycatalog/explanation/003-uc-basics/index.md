@@ -1,7 +1,7 @@
 ---
 title: Unity Catalog Securables
 summary: Describe the basic sturctutre and asset hierarchy design of unity catalog.
-diataxis: how-to
+diataxis: explanation
 project: unitycatalog
 status: idea
 ---

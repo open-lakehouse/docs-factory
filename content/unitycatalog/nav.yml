@@ -1,0 +1,226 @@
+# Curated reader navigation for the unitycatalog scope (the MkDocs `nav:`
+# equivalent). Pages keep one canonical Diátaxis home and URL; this file only
+# arranges links to them. Contract: content/README.md § "Curated navigation".
+#
+# `id:` / `planned:` values are backlog ids from
+# docs/design/unitycatalog-documentation-plan.md §6. Planned slots render for
+# reviewers only. List P0/P1 slots here; P2 and later stay in the plan.
+nav:
+  - section: Start here
+    items:
+      - page: explanation/what-is-unity-catalog
+        id: E01
+        label: What is Unity Catalog OSS?
+      - planned: R01
+        title: Features, scope, and limitations
+      - page: tutorials/getting-started
+        id: T01
+        label: Create your first catalog
+      - planned: R10
+        title: Choose a client or engine
+
+  - section: Use Unity Catalog
+    items:
+      - section: Tutorials
+        items:
+          # To be split into T02 (external) and T03 (managed).
+          - page: tutorials/write-and-read-delta
+            id: T02
+          - planned: T03
+            title: Create and update a catalog-managed Delta table
+          - planned: T04
+            title: Read files from a governed volume in Python
+          - planned: T05
+            title: Register and execute your first Python function
+          - planned: T06
+            title: Build an agent tool from a catalog function
+          - page: tutorials/manage-models-mlflow
+            id: T07
+          - planned: T08
+            title: Define and query your first metric view
+          - page: tutorials/python-client
+            id: T11
+      - section: How-to guides
+        items:
+          - section: Catalogs and schemas
+            items:
+              - planned: H01
+                title: Create and manage catalogs and schemas
+          - section: Tables and views
+            items:
+              - planned: H02
+                title: Register an existing external table
+              - planned: H03
+                title: Read and write catalog-managed Delta tables
+              - planned: H04
+                title: Change table schemas and properties safely
+              - planned: H05
+                title: Replace a table or overwrite partitions
+              - planned: H06
+                title: Create and query SQL views
+              - planned: H07
+                title: Create and maintain metric-view definitions
+              - page: how-to/table-storage-formats
+                id: H08
+          - section: Files and volumes
+            items:
+              - planned: H09
+                title: Create and manage external and managed volumes
+              - planned: H10
+                title: Access volume files and model artifacts with vended credentials
+              # Deferred follow-on to J04 until a compatible storage client is verified.
+              - page: tutorials/marimo-remote-storage
+          - section: Functions and AI
+            items:
+              - planned: H11
+                title: Register, replace, and remove Python functions
+              - planned: H12
+                title: Execute functions in applications and notebooks
+              - planned: H13
+                title: Use catalog functions as LangChain tools
+              - planned: H14
+                title: Use catalog functions with OpenAI-compatible tool calling
+          - section: Models and MLflow
+            items:
+              - planned: H15
+                title: Manage model versions and load a model with MLflow
+          - section: Clients and query engines
+            items:
+              - planned: H17
+                title: Configure Spark to use Unity Catalog
+              - planned: H18
+                title: Read and write supported UC tables from DuckDB
+              - planned: H19
+                title: Read UniForm tables from Trino through Iceberg REST
+              - planned: H20
+                title: Read UC data with Daft
+              - page: tutorials/python-client
+          - section: Sample data
+            items:
+              - page: how-to/seed-tpch-data
+
+  - section: Operate Unity Catalog
+    items:
+      - section: Tutorials
+        items:
+          - planned: T09
+            title: Give two users different access to a catalog
+          - planned: T10
+            title: Keep catalog metadata across restarts with PostgreSQL
+      - section: How-to guides
+        items:
+          - section: Deploy and persist
+            items:
+              - planned: H22
+                title: Deploy a persistent UC server with containers
+              - planned: H23
+                title: Run a released Java distribution or build from source
+              - planned: H24
+                title: Deploy Unity Catalog on Kubernetes with Helm
+              # Primary home for H25; selection rationale moves to E10 when written.
+              - page: how-to/configure-backend-db
+                id: H25
+          - section: Configure storage
+            items:
+              - planned: H27
+                title: Configure AWS storage credentials and external locations
+              - planned: H28
+                title: Set managed storage for catalogs and schemas
+              - planned: H29
+                title: Migrate legacy storage configuration
+              - planned: H30
+                title: Configure ADLS credential vending
+              - planned: H31
+                title: Configure GCS credential vending
+          - section: Identity and access
+            items:
+              - planned: H32
+                title: Enable authentication with an external identity provider
+              - planned: H33
+                title: Configure browser and CLI login
+              - planned: H34
+                title: Provision users and manage ownership
+              - planned: H35
+                title: Authenticate automated jobs with OAuth
+              - planned: H36
+                title: Grant and revoke least-privilege access
+              - planned: H37
+                title: Expose UC securely and protect bootstrap material
+              # Deferred specialised recipe; follows H32/H37.
+              - page: how-to/envoy-authentication
+          - section: Back up, upgrade, and observe
+            items:
+              - planned: H38
+                title: Back up and restore a catalog deployment
+              - planned: H39
+                title: Upgrade an existing deployment to 0.6
+              - planned: H40
+                title: Observe server health and diagnose operational failures
+          - section: Troubleshoot
+            items:
+              - planned: H41
+                title: Troubleshoot authentication and permission failures
+              - planned: H42
+                title: Troubleshoot storage access and credential vending
+              - planned: H43
+                title: Troubleshoot connector and managed-commit failures
+
+  - section: Build integrations
+    items:
+      - planned: H16
+        title: Use the Java client in an application
+      - page: tutorials/python-client
+      - planned: H44
+        title: Implement a Delta API client lifecycle
+      - planned: H45
+        title: Reuse UC cloud credentials in a Hadoop-based engine
+
+  - section: Concepts
+    items:
+      - page: explanation/what-is-unity-catalog
+        label: What is Unity Catalog OSS?
+      - planned: E02
+        title: How the server, clients, and storage work together
+      - page: explanation/uc-basics
+        id: E03
+      - planned: E04
+        title: External tables and catalog-managed Delta tables
+      - page: explanation/credential-vending
+        id: E05
+      - planned: E06
+        title: Authentication, principals, ownership, and privileges
+      - planned: E07
+        title: Where catalog functions execute
+      - planned: E08
+        title: How Unity Catalog and MLflow divide responsibilities
+      - planned: E09
+        title: SQL views and metric views as catalog objects
+      - planned: E10
+        title: Persistence, failure, and recovery boundaries
+
+  - section: Reference
+    items:
+      - planned: R02
+        title: Resource model, identifiers, types, and table/view kinds
+      - planned: R03
+        title: "Asset API reference: catalogs, schemas, tables, volumes, functions, models"
+      - planned: R04
+        title: Storage and credential API reference
+      - planned: R05
+        title: Users, ownership, and privileges
+      - planned: R06
+        title: Server and storage configuration
+      - planned: R07
+        title: Deployment, database, and Helm settings
+      - planned: R08
+        title: Authentication and REST conventions
+      - planned: R09
+        title: Delta API protocol and endpoint reference
+      - planned: R11
+        title: Python/Java client and AI package reference
+      - planned: R12
+        title: CLI command reference
+      - planned: R13
+        title: SQL-view and metric-view compatibility reference
+      - planned: R14
+        title: Release notes and migration index

@@ -70,7 +70,10 @@ export function toEntry(
  * by Diátaxis quadrant (from their identity/meta); blogs go under a Blog section.
  * Each line links the canonical route and its `.md` twin.
  */
-export function renderLlmsIndex(entries, { title = SITE_TITLE, summary = SITE_SUMMARY } = {}) {
+export function renderLlmsIndex(
+  entries,
+  { title = SITE_TITLE, summary = SITE_SUMMARY, origin = "" } = {},
+) {
   const lines = [`# ${title}`, "", `> ${summary}`, ""];
   const bySection = Object.fromEntries(DIATAXIS.map((k) => [k, []]));
   const blog = [];
@@ -91,8 +94,8 @@ export function renderLlmsIndex(entries, { title = SITE_TITLE, summary = SITE_SU
   lines.push(
     "## Resources",
     "",
-    `- [Full-text corpus](/llms-full.txt): every page's Markdown twin concatenated.`,
-    `- [Runnable scripts index](/scripts.json): CI-verified PEP 723 tutorial scripts + their runtime contracts.`,
+    `- [Full-text corpus](${origin}/llms-full.txt): every page's Markdown twin concatenated.`,
+    `- [Runnable scripts index](${origin}/scripts.json): CI-verified PEP 723 tutorial scripts + their runtime contracts.`,
     "",
   );
 

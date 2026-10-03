@@ -64,3 +64,9 @@ test("llms-full.txt concatenates twin bodies under route headers, skipping empti
   // The page with no twin body is skipped, not emitted with an empty section.
   expect(out).not.toContain("/docs/delta/x/missing");
 });
+
+test("llms.txt resources resolve against the origin a target site passes", () => {
+  const out = renderLlmsIndex([], { origin: "https://x.test" });
+  expect(out).toContain("(https://x.test/llms-full.txt)");
+  expect(out).toContain("(https://x.test/scripts.json)");
+});

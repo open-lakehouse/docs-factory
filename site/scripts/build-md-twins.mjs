@@ -52,17 +52,87 @@ export function twinPathForHref(href) {
  * prepend one carrying just the canonical.
  */
 export function injectCanonical(output, canonical) {
-  if (!canonical) return output;
-  const line = `canonical: ${canonical}`;
+  return canonical ? injectFrontmatter(output, `canonical: ${canonical}`) : output;
+}
+
+/** Append YAML `lines` to the twin's leading frontmatter block, or prepend a block
+ *  holding just them when the twin has none. */
+export function injectFrontmatter(output, lines) {
   if (output.startsWith("---\n")) {
     const end = output.indexOf("\n---", 4);
     if (end !== -1) {
       const head = output.slice(0, end);
       const rest = output.slice(end);
-      return `${head}\n${line}${rest}`;
+      return `${head}\n${lines}${rest}`;
     }
   }
-  return `---\n${line}\n---\n\n${output}`;
+  return `---\n${lines}\n---\n\n${output}`;
+}
+
+/** The command that runs a published script from the folder it was saved into. */
+export function companionRun(s) {
+  const file = s.fetchUrl.split("/").pop();
+  if (s.kind === "shell") return `bash ${file}`;
+  const env = Object.entries(s.env ?? {}).map(([k, v]) => `${k}=${v} `);
+  return `${env.join("")}uv run ${file}`;
+}
+
+/**
+ * The twin's `companions:` frontmatter (pure, for testing): one entry per script
+ * the page owns, with absolute URLs so a copied twin still resolves. Values are
+ * JSON-quoted, which YAML reads as double-quoted scalars. Empty string if none.
+ */
+export function companionsFrontmatter(scripts, origin = "") {
+  if (!scripts?.length) return "";
+  const q = JSON.stringify;
+  const lines = ["companions:"];
+  for (const s of scripts) {
+    lines.push(`  - url: ${q(`${origin}${s.fetchUrl}`)}`, `    kind: ${s.kind}`);
+    if (s.summary) lines.push(`    purpose: ${q(s.summary)}`);
+    lines.push(`    run: ${q(companionRun(s))}`);
+    if (s.requiresPython) lines.push(`    requires-python: ${q(s.requiresPython)}`);
+    if (s.services?.length) lines.push(`    services: [${s.services.map(q).join(", ")}]`);
+  }
+  return lines.join("\n");
+}
+
+/**
+ * The "Companion files" section a docs-site twin opens with (pure, for testing):
+ * each script's link, purpose, run command, and the stack it needs. It goes first
+ * so an agent reading top-down learns a tested script exists before the prose
+ * quoting it. Empty string if no scripts.
+ */
+export function companionsSection(scripts, origin = "") {
+  if (!scripts?.length) return "";
+  const lines = [
+    "## Companion files",
+    "",
+    "CI-tested scripts that run this page's examples end to end.",
+    "",
+  ];
+  for (const s of scripts) {
+    const file = s.fetchUrl.split("/").pop();
+    const lang = s.kind === "shell" ? "Shell" : "Python";
+    lines.push(
+      `- [\`${file}\`](${origin}${s.fetchUrl}) (${lang})${s.summary ? `: ${s.summary}` : ""}`,
+    );
+    // A shell script reaches the server through `docker compose exec`.
+    const where = s.kind === "shell" && s.compose ? " from the folder holding `compose.yaml`" : "";
+    lines.push(`  - run: \`${companionRun(s)}\`${where}`);
+    if (s.compose) {
+      const svc = s.services?.length ? ` (${s.services.map((x) => `\`${x}\``).join(", ")})` : "";
+      lines.push(`  - needs: \`docker compose up -d\` with the page's \`compose.yaml\`${svc}`);
+    }
+  }
+  lines.push("");
+  return lines.join("\n");
+}
+
+/** Insert `section` right after the twin's frontmatter block. */
+export function prependSection(output, section) {
+  if (!section) return output;
+  const { 1: head = "", 2: body } = /^(---\n[\s\S]*?\n---\n)?\s*([\s\S]*)$/.exec(output);
+  return `${head}${head ? "\n" : ""}${section}\n${body}`;
 }
 
 /**

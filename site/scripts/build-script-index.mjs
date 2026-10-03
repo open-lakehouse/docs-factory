@@ -7,9 +7,9 @@
 // come from BOTH tutorial pages (content/) and blog posts (blogs/) — docsnip
 // discovers both. There is ONE parser: this shells out to `docsnip scripts --json`
 // (scriptmeta.py) rather than re-implementing PEP 723 in JS. The served .py is
-// the committed source with the `--8<--` section markers stripped (see
-// stripSectionMarkers) — those markers are authoring scaffolding for `file=`
-// snippet fences, noise to someone who fetches the whole script; the result is
+// the committed source without the `--8<--` section markers or the factory-only
+// PEP 723 tables (see publishScript): authoring scaffolding that is noise, or
+// breaks `uv run`, for someone who fetches the whole script. The result is
 // still a runnable PEP 723 script. gen-vercel-config serves it noindex +
 // text/x-python.
 //
@@ -94,6 +94,61 @@ export function stripSectionMarkers(text) {
   return `${out.join("\n")}\n`;
 }
 
+// PEP 723 tables only the factory reads: the test harness contract and local-path
+// package sources. Neither resolves outside this repo; uv ignores the first and
+// fails on the second.
+const FACTORY_TABLE_RE = /^\[tool\.(?:docs-factory|uv\.sources)\]$/;
+
+/**
+ * The served copy of a script (pure, for testing): `stripSectionMarkers`, plus the
+ * factory-only tables removed from its `# /// script` block. `requires-python` and
+ * `dependencies` stay, so `uv run` still builds the environment.
+ */
+export function publishScript(text) {
+  const lines = stripSectionMarkers(text).split("\n");
+  const out = [];
+  let inBlock = false;
+  let dropping = false;
+  for (const line of lines) {
+    if (!inBlock) {
+      inBlock = line === "# /// script";
+      out.push(line);
+      continue;
+    }
+    if (line === "# ///") {
+      while (out.at(-1) === "#") out.pop();
+      inBlock = false;
+      dropping = false;
+      out.push(line);
+      continue;
+    }
+    const toml = line.replace(/^# ?/, "");
+    if (toml.startsWith("[")) dropping = FACTORY_TABLE_RE.test(toml.trim());
+    if (dropping || (line === "#" && out.at(-1) === "#")) continue;
+    out.push(line);
+  }
+  return out.join("\n");
+}
+
+/**
+ * A script's one-line purpose (pure, for testing): the first line of a Python
+ * module docstring, or the first comment paragraph after a shell shebang. Null
+ * when the script has neither.
+ */
+export function scriptSummary(text, kind) {
+  if (kind === "shell") {
+    const para = [];
+    for (const line of text.split("\n").slice(text.startsWith("#!") ? 1 : 0)) {
+      const m = /^#(?: (.*))?$/.exec(line);
+      if (!m || m[1] === undefined || line.includes("--8<--")) break;
+      para.push(m[1].trim());
+    }
+    return para.join(" ") || null;
+  }
+  const doc = /^(?:#.*\n|\s*\n)*[rRuU]?("""|''')\s*([^\n]*)/.exec(text);
+  return doc?.[2].replace(/("""|''').*$/, "").trim() || null;
+}
+
 /** The owning page route + served path for a repo-relative content/blog file. */
 function servedPaths(path, slug, hrefFor) {
   const parts = path.split("/");
@@ -146,13 +201,20 @@ export function scriptEntry(entry, { hrefFor = hrefFromIdentity } = {}) {
     compose: entry.compose,
     services: entry.services,
     baseUrlEnv: entry.base_url_env,
+    env: shell ? {} : (entry.env ?? {}),
   };
 }
 
 function main() {
   const payload = runDocsnipScripts();
   if (payload === null) return; // uv unavailable — skip (CI prebuild produces it)
-  const scripts = payload.scripts.map((e) => scriptEntry(e));
+  const scripts = payload.scripts.map((e) => {
+    const s = scriptEntry(e);
+    return {
+      ...s,
+      summary: scriptSummary(readFileSync(resolve(repoRoot, s.gitPath), "utf8"), s.kind),
+    };
+  });
 
   mkdirSync(distDir, { recursive: true });
   writeFileSync(
@@ -160,15 +222,15 @@ function main() {
     `${JSON.stringify({ version: EXPECTED_VERSION, scripts }, null, 2)}\n`,
   );
 
-  // Copy each script to its served path under dist/, with `--8<--` section markers
-  // stripped (still runnable; the git source keeps its markers).
+  // Copy each script to its served path under dist/ as publishScript() shapes it
+  // (still runnable; the git source keeps its markers and factory tables).
   let copied = 0;
   for (const s of scripts) {
     if (!s.fetchUrl) continue;
     const dest = resolve(distDir, s.fetchUrl.replace(/^\//, ""));
     mkdirSync(dirname(dest), { recursive: true });
     const raw = readFileSync(resolve(repoRoot, s.gitPath), "utf8");
-    writeFileSync(dest, stripSectionMarkers(raw));
+    writeFileSync(dest, publishScript(raw));
     copied++;
   }
   console.log(

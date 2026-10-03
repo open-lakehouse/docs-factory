@@ -16,5 +16,6 @@
 
 export * from "./fences.mjs";
 export * from "./identity.mjs";
+export * from "./nav.mjs";
 export * from "./normalize.mjs";
 export * from "./slug.mjs";

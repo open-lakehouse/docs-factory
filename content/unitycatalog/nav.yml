@@ -30,8 +30,8 @@ nav:
             title: Create and update a catalog-managed Delta table
           - planned: T04
             title: Read files from a governed volume in Python
-          - planned: T05
-            title: Register and execute your first Python function
+          - page: tutorials/first-python-function
+            id: T05
           - planned: T06
             title: Build an agent tool from a catalog function
           - page: tutorials/manage-models-mlflow

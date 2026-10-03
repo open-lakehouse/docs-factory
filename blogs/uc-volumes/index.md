@@ -2,7 +2,7 @@
 title: Unity Catalog Volumes for the Agentic Lakehouse
 slug: uc-volumes
 status: ready
-tags: [unity-catalog, lakehouse, agentic]
+tags: [unity-catalog, lakehouse, agents]
 author: Robert Pack
 target: unitycatalog
 ---

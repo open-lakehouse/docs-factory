@@ -1,0 +1,90 @@
+# Impersonates the AWS endpoints Unity Catalog and its clients call.
+# :443 terminates TLS for *.amazonaws.com (compose network aliases point those
+# names here); :9000 is plain HTTP for host-side clients using AWS_ENDPOINT_URL.
+# Host headers pass through unchanged: they are part of the SigV4 signature.
+admin:
+  address:
+    socket_address: { address: 0.0.0.0, port_value: 9901 }
+
+static_resources:
+  listeners:
+    - name: aws_tls
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 443 }
+      filter_chains:
+        - transport_socket:
+            name: envoy.transport_sockets.tls
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+              common_tls_context:
+                tls_certificates:
+                  - certificate_chain: { filename: /certs/leaf.pem }
+                    private_key: { filename: /certs/leaf-key.pem }
+          filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: aws_tls
+                access_log: &access_log
+                  - name: envoy.access_loggers.stdout
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+                      log_format:
+                        text_format_source:
+                          inline_string: "%REQ(:AUTHORITY)% %REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% -> %UPSTREAM_CLUSTER% %RESPONSE_CODE%\n"
+                http_filters: &http_filters
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                route_config:
+                  virtual_hosts:
+                    - name: sts
+                      domains:
+                        - sts.amazonaws.com
+                        - sts.amazonaws.com:443
+                        - sts.us-east-1.amazonaws.com
+                        - sts.us-east-1.amazonaws.com:443
+                      routes:
+                        - match: { prefix: / }
+                          route: { cluster: sts_shim }
+                    - name: s3
+                      domains: ["*"]
+                      routes: &s3_routes
+                        - match: { prefix: / }
+                          route: { cluster: rustfs, timeout: 0s }
+    - name: aws_plain
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 9000 }
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                stat_prefix: aws_plain
+                access_log: *access_log
+                http_filters: *http_filters
+                route_config:
+                  virtual_hosts:
+                    - name: s3
+                      domains: ["*"]
+                      routes: *s3_routes
+
+  clusters:
+    - name: rustfs
+      type: STRICT_DNS
+      load_assignment:
+        cluster_name: rustfs
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address: { address: rustfs, port_value: 9000 }
+    - name: sts_shim
+      type: STRICT_DNS
+      load_assignment:
+        cluster_name: sts_shim
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address: { address: sts-shim, port_value: 8080 }

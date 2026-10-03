@@ -1,0 +1,93 @@
+# Pretend-AWS for local Unity Catalog stacks: pull in with `include:`.
+#
+# Containers on the project network resolve the AWS S3/STS hostnames to Envoy
+# (network aliases), which terminates TLS with a local CA and forwards S3 to
+# RustFS and STS to a policy-rewriting shim in front of RustFS. The UC server
+# keeps its real-AWS config; only its JVM truststore changes (see README.md).
+
+x-aws-sim-root: &root
+  RUSTFS_ACCESS_KEY: aws-sim-root
+  RUSTFS_SECRET_KEY: aws-sim-root-secret
+
+services:
+  aws-sim-certs:
+    image: eclipse-temurin:17-jdk
+    entrypoint: ["bash", "/certs.sh"]
+    volumes:
+      - ./certs.sh:/certs.sh:ro
+      - aws-sim-certs:/certs
+
+  rustfs:
+    image: rustfs/rustfs:1.0.1
+    environment:
+      <<: *root
+      RUSTFS_VOLUMES: /data
+      RUSTFS_ADDRESS: ":9000"
+      # Lets RustFS parse virtual-hosted requests (<bucket>.s3.<region>...).
+      RUSTFS_SERVER_DOMAINS: s3.us-east-1.amazonaws.com,s3.amazonaws.com
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -o /dev/null http://localhost:9000/ || exit 1"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  rustfs-init:
+    image: amazon/aws-cli:latest
+    depends_on:
+      rustfs: { condition: service_healthy }
+    environment:
+      AWS_ACCESS_KEY_ID: aws-sim-root
+      AWS_SECRET_ACCESS_KEY: aws-sim-root-secret
+      AWS_REGION: us-east-1
+    entrypoint: ["sh", "-c"]
+    command:
+      - aws --endpoint-url http://rustfs:9000 s3 mb s3://uc-docs || aws --endpoint-url http://rustfs:9000 s3 ls s3://uc-docs
+
+  sts-shim:
+    image: python:3.13-alpine
+    command: ["python", "/sts_shim.py"]
+    environment:
+      STS_UPSTREAM: http://rustfs:9000
+      STS_ACCESS_KEY: aws-sim-root
+      STS_SECRET_KEY: aws-sim-root-secret
+      AWS_REGION: us-east-1
+    volumes:
+      - ./sts-shim/sts_shim.py:/sts_shim.py:ro
+    depends_on:
+      rustfs: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/')"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  envoy:
+    image: envoyproxy/envoy:v1.38-latest
+    command: ["envoy", "-c", "/etc/envoy/envoy.yaml", "--log-level", "warn"]
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml:ro
+      - aws-sim-certs:/certs:ro
+    depends_on:
+      aws-sim-certs: { condition: service_completed_successfully }
+      rustfs: { condition: service_healthy }
+      sts-shim: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/9901 && printf 'GET /ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q LIVE <&3"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    networks:
+      default:
+        # Docker DNS has no wildcards: each virtual-hosted bucket needs its own alias.
+        aliases:
+          - sts.amazonaws.com
+          - sts.us-east-1.amazonaws.com
+          - s3.amazonaws.com
+          - s3.us-east-1.amazonaws.com
+          - uc-docs.s3.amazonaws.com
+          - uc-docs.s3.us-east-1.amazonaws.com
+
+volumes:
+  aws-sim-certs:

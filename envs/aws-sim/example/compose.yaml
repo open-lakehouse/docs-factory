@@ -1,0 +1,31 @@
+# Smoke stack: an unmodified Unity Catalog server whose S3/STS calls land on aws-sim.
+name: aws-sim-example
+
+include:
+  - ../compose.yaml
+
+services:
+  unitycatalog:
+    image: unitycatalog/unitycatalog:v0.6.0
+    ports:
+      - "${UC_PORT:-8080}:8080"
+    environment:
+      # The only aws-sim-specific setting: trust the local CA Envoy presents.
+      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/certs/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit
+    volumes:
+      - type: bind
+        source: ./server.properties
+        target: /home/unitycatalog/etc/conf/server.properties
+        read_only: true
+      - aws-sim-certs:/certs:ro
+    depends_on:
+      envoy: { condition: service_healthy }
+      rustfs-init: { condition: service_completed_successfully }
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "wget -q -O /dev/null http://localhost:8080/api/2.1/unity-catalog/catalogs || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s

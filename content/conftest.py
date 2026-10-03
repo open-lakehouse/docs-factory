@@ -72,7 +72,7 @@ class TutorialScriptItem(pytest.Item):
             self.add_marker(pytest.mark.needs_uc_server)
 
     def runtest(self):
-        env = dict(os.environ)
+        env = {**os.environ, **self.script_meta.docs_factory.env}
         base_url = _start_services(self.script_meta)
         try:
             if base_url is not None and self.script_meta.docs_factory.base_url_env:

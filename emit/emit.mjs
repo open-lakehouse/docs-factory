@@ -315,11 +315,12 @@ export async function emitOne({
     }) // strip draft fm + comments, opt. title → # H1, opt. emit target frontmatter
     .use(remarkCodeSnippets); // inline file=/start=/end= (real code from snippets/)
 
-  // TL;DR, then callouts, then journey (so a callout/tldr nested in a step is
-  // already rendered), then code-caption, then likec4 — mirroring the preview's
+  // TL;DR, then callouts, then tabs, then journey (so a callout/tldr/tab nested in a
+  // step is already rendered), then code-caption, then likec4 — mirroring the preview's
   // plugin order. A target that doesn't declare a construct simply skips it.
   if (constructs.tldr) processor = processor.use(constructs.tldr, { componentImportBase });
   if (constructs.callouts) processor = processor.use(constructs.callouts, { componentImportBase });
+  if (constructs.tabs) processor = processor.use(constructs.tabs);
   if (constructs.journey) processor = processor.use(constructs.journey, { componentImportBase });
   if (constructs.codeCaption) processor = processor.use(constructs.codeCaption);
   if (constructs.likec4)

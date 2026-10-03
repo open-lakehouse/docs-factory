@@ -62,6 +62,71 @@ Code in how-to guides is **not** inlined — it is referenced from tested exampl
 files in `examples/` via [`remark-code-snippets`](https://github.com/jknoxville/remark-code-snippets)
 fences, so what the site shows is always what CI runs. See the repo `AGENTS.md`.
 
+## Interface tabs (`:::tab`)
+
+When one task can be done through several interfaces (Python SDK, CLI, REST),
+show each in a tab instead of repeating the section. Adjacent `:::tab[Label]`
+containers form one tab group; any other node between two tabs starts a new
+group. There is no wrapper directive.
+
+````markdown
+:::tab[Python SDK]
+```python file=./snippets/catalogs.py start=start:create-catalog end=end:create-catalog
+```
+:::
+
+:::tab[CLI]
+```bash file=./snippets/catalogs.sh start=start:create-catalog end=end:create-catalog
+```
+:::
+````
+
+- Groups sync by label. Choosing "CLI" switches every group on the page that has
+  a "CLI" tab, and the site remembers the choice. Use the same labels, in the
+  same order, throughout a page.
+- A callout inside a tab needs one more colon on the tab: `::::tab[CLI]` around
+  `:::note`.
+- Inside a `::::journey`, don't put `###` headings in a tab; the journey splits
+  steps on them.
+- The `.md` twins keep every panel, each led by its bold label. Tabs are
+  docs-only for now; the blog emit targets don't render them.
+
+## How-to page anatomy
+
+The Unity Catalog how-to guides follow the shape of the managed Databricks
+documentation, rewritten for what the open source server actually does.
+[`unitycatalog/how-to/004-manage-catalogs-and-schemas/`](unitycatalog/how-to/004-manage-catalogs-and-schemas/index.md)
+is the reference example.
+
+1. **Intro.** One or two sentences: "This page shows how to …", what the object
+   is, and a link to the explanation that covers the concepts.
+2. **Requirements.** Server version, client versions, and the local setup. Inline
+   the page's `compose.yaml` and `server.properties` with `file=` fences so the
+   reader can copy them. Then a tab group that sets up each interface.
+3. **One `##` section per task**, named with an imperative ("Create a catalog",
+   "Delete a volume"). Each has a sentence of context, a tab group with one
+   snippet per interface, and any constraints the server enforces.
+4. **Required privileges** at the end of each task, taken from the release's
+   authorization source. Close the page with one line naming that source and
+   saying it applies only with authorization enabled.
+5. **Callouts for consequences:** `:::warning` for surprising replacement or data
+   loss, `:::danger` for irreversible cascades, `:::note` for verified quirks
+   (including upstream bugs, pinned by an assert so CI flags the page when they're
+   fixed).
+6. **Next steps:** two or three links to the next task or concept.
+
+Keep Databricks-only concepts (workspaces, Catalog Explorer, SQL warehouses,
+`/Volumes` paths) out of the task text. Mention them only to mark a boundary.
+
+**Every displayed command is tested.** Python snippets are PEP 723 scripts as
+described below. A CLI tab's commands live in a region-marked `snippets/*.sh`
+whose `setup` region defines the shell alias. A PEP 723 driver beside it
+(`snippets/*_cli.py`, same `[tool.docs-factory]` compose) runs one region at a
+time with `docsnip.shellregions.run` and asserts on server state in between.
+Pages whose server must see your files bind-mount `UC_DOCS_ROOT` (default
+`/tmp/uc-docs`) at the same path in the container; see
+`unitycatalog/how-to/005-register-external-table/compose.yaml`.
+
 ## Tutorials: colocated, self-testing folder mode
 
 A how-to references shared `examples/` code across engines. A *tutorial* is one

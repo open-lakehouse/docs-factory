@@ -44,12 +44,12 @@ nav:
         items:
           - section: Catalogs and schemas
             items:
-              - planned: H01
-                title: Create and manage catalogs and schemas
+              - page: how-to/manage-catalogs-and-schemas
+                id: H01
           - section: Tables and views
             items:
-              - planned: H02
-                title: Register an existing external table
+              - page: how-to/register-external-table
+                id: H02
               - planned: H03
                 title: Read and write catalog-managed Delta tables
               - planned: H04
@@ -64,8 +64,8 @@ nav:
                 id: H08
           - section: Files and volumes
             items:
-              - planned: H09
-                title: Create and manage external and managed volumes
+              - page: how-to/manage-volumes
+                id: H09
               - planned: H10
                 title: Access volume files and model artifacts with vended credentials
               # Deferred follow-on to J04 until a compatible storage client is verified.

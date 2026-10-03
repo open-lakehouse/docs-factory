@@ -182,8 +182,8 @@ nav:
         title: How the server, clients, and storage work together
       - page: explanation/uc-basics
         id: E03
-      - planned: E04
-        title: External tables and catalog-managed Delta tables
+      - page: explanation/external-and-managed-tables
+        id: E04
       - page: explanation/credential-vending
         id: E05
       - planned: E06

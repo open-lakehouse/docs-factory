@@ -1,9 +1,8 @@
-name: unity-catalog
+name: uc-docs-first-catalog
 
 services:
   unitycatalog:
-    image: unitycatalog/unitycatalog:v0.5.0
-    hostname: unitycatalog
+    image: unitycatalog/unitycatalog:v0.6.0
     ports:
       - "8080:8080"
     volumes:
@@ -11,9 +10,6 @@ services:
         source: ./server.properties
         target: /home/unitycatalog/etc/conf/server.properties
         read_only: true
-      - type: bind
-        source: /tmp/uc-test
-        target: /tmp/uc-test
     healthcheck:
       test:
         - CMD-SHELL

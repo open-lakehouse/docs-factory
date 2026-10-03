@@ -28,8 +28,8 @@ nav:
             id: T02
           - planned: T03
             title: Create and update a catalog-managed Delta table
-          - planned: T04
-            title: Read files from a governed volume in Python
+          - page: tutorials/read-volume-files
+            id: T04
           - page: tutorials/first-python-function
             id: T05
           - planned: T06

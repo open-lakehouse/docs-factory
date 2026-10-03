@@ -298,6 +298,10 @@ bullets. Copy this to start a post.
     - It runs locally today against OSS Unity Catalog 0.5.
     :::
     ````
+  - **Interface tabs are docs-only.** `:::tab[Label]` groups (see
+    [`content/README.md`](../content/README.md)) render in the factory site and
+    the `.md` twins, but the blog emit targets don't support them yet. Don't use
+    them in posts.
   - *Python — inline deps, run with `uv`.* Declare dependencies inside the `.py` in
     a [PEP 723](https://peps.python.org/pep-0723/) `# /// script … # ///` block so a
     reader copies the file and runs `uv run <file>.py` with no venv or `pip` — `uv`

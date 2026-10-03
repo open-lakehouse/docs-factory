@@ -1,0 +1,32 @@
+name: uc-docs-managed-storage-s3
+
+# aws-sim answers the real S3 and STS hostnames on the compose network, so the
+# server runs its AWS code path unmodified. See envs/aws-sim/README.md.
+include:
+  - ../../../../envs/aws-sim/compose.yaml
+
+services:
+  unitycatalog:
+    image: unitycatalog/unitycatalog:v0.6.0
+    ports:
+      - "8080:8080"
+    environment:
+      # Trust the local CA that Envoy presents for the AWS hostnames.
+      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/certs/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit
+    volumes:
+      - type: bind
+        source: ./server.properties
+        target: /home/unitycatalog/etc/conf/server.properties
+        read_only: true
+      - aws-sim-certs:/certs:ro
+    depends_on:
+      envoy: { condition: service_healthy }
+      rustfs-init: { condition: service_completed_successfully }
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - "wget -q -O /dev/null http://localhost:8080/api/2.1/unity-catalog/catalogs || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s

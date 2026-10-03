@@ -121,10 +121,10 @@ nav:
                 id: H25
           - section: Configure storage
             items:
-              - planned: H27
-                title: Configure AWS storage credentials and external locations
-              - planned: H28
-                title: Set managed storage for catalogs and schemas
+              - page: how-to/configure-aws-storage
+                id: H27
+              - page: how-to/managed-storage-s3
+                id: H28
               - planned: H29
                 title: Migrate legacy storage configuration
               - planned: H30

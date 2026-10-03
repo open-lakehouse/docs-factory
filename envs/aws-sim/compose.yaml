@@ -11,7 +11,8 @@ x-aws-sim-root: &root
 
 services:
   aws-sim-certs:
-    image: eclipse-temurin:17-jdk
+    # Noble, not the floating tag: its Ubuntu 26.04 rebuild segfaults on 6.8 VM kernels.
+    image: eclipse-temurin:17-jdk-noble
     entrypoint: ["bash", "/certs.sh"]
     volumes:
       - ./certs.sh:/certs.sh:ro

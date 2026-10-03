@@ -1,4 +1,5 @@
 import { type RefObject, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useScrollContainer } from "../review/scroll-container-context";
 
 export interface TocHeading {
@@ -15,7 +16,11 @@ export default function OnThisPage({ articleRef }: OnThisPageProps) {
   const [headings, setHeadings] = useState<TocHeading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
   const scrollContainer = useScrollContainer();
+  const { pathname } = useLocation();
 
+  // The page route stays mounted across doc/post navigations and `articleRef`
+  // is stable, so `pathname` is what signals the article content changed.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname is the rescan trigger
   useEffect(() => {
     const article = articleRef.current;
     if (!article) return;
@@ -30,7 +35,7 @@ export default function OnThisPage({ articleRef }: OnThisPageProps) {
     });
     setHeadings(found);
     setActiveId(found[0]?.id ?? "");
-  }, [articleRef]);
+  }, [articleRef, pathname]);
 
   useEffect(() => {
     if (headings.length === 0) return;

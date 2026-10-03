@@ -20,9 +20,9 @@ API, its abilities, and the versions that go with server **0.6.0**.
 | Explore or administer the catalog from a shell | `uc` CLI | [Create your first catalog](../../tutorials/getting-started/index.md) |
 | Manage catalog objects from Python code | Python client (`unitycatalog-client`) | [Use the Python client](../../tutorials/python-client/index.md) |
 | Manage catalog objects from a JVM application | Java client | Upstream [Java client docs](https://github.com/unitycatalog/unitycatalog/tree/v0.6.0/clients/java) |
-| Query and write tables with SQL or DataFrames | Apache Spark with the Unity Catalog connector | Upstream [Spark integration guide](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/integrations/unity-catalog-spark.md) |
+| Query and write tables with SQL or DataFrames | Apache Spark with the Unity Catalog connector | [Configure Spark to use Unity Catalog](../../how-to/configure-spark/index.md), then [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md) |
 | Create and query views and metric views | Spark 4.2 with the connector | Upstream [metric views guide](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/usage/metric-views.md) |
-| Query tables from a laptop or notebook | DuckDB or Daft | The provider's documentation (see below) |
+| Query tables from a laptop or notebook | DuckDB or Daft | [Read and write Unity Catalog tables from DuckDB](../../how-to/duckdb/index.md), or Daft's documentation |
 | Read tables from an Iceberg engine such as Trino | Iceberg REST API, with UniForm tables | Upstream [UniForm guide](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/usage/tables/uniform.md) |
 | Register and load ML models | MLflow, with Unity Catalog as the registry | Upstream [models guide](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/usage/models.md) |
 | Give an AI agent catalog functions as tools | `unitycatalog-ai` and a framework integration | Upstream [AI quickstart](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/ai/quickstart.md) |
@@ -51,15 +51,21 @@ These manage catalog metadata. They read and write data files only where noted.
 
 | Engine | API | Tables | Version tuple | Label |
 | --- | --- | --- | --- | --- |
-| Apache Spark 4.0, 4.1 | UC REST and Delta API, via the connector | Read and write external and managed Delta tables; DDL; read views | `io.unitycatalog:unitycatalog-spark_4.0_2.13:0.6.0` or `…_4.1_2.13:0.6.0`, with `io.delta:delta-spark_4.x_2.13:4.3.1` | Upstream |
+| Apache Spark 4.1 | UC REST and Delta API, via the connector | Create, write, update, delete from, time-travel, and drop managed Delta tables. External tables and reading views are upstream-documented, not tested here yet. | PySpark 4.1.0 with `io.unitycatalog:unitycatalog-spark_4.1_2.13:0.6.0` and `io.delta:delta-spark_4.1_2.13:4.3.1` | Tested here |
+| Apache Spark 4.0 | UC REST and Delta API, via the connector | Same as Spark 4.1 | `io.unitycatalog:unitycatalog-spark_4.0_2.13:0.6.0` with `io.delta:delta-spark_4.0_2.13:4.3.1` | Upstream |
 | Apache Spark 4.2 | UC REST, via the connector | Create and query views and metric views over non-Delta sources | `io.unitycatalog:unitycatalog-spark_4.2_2.13:0.6.0`. No `delta-spark` for Spark 4.2 is available, so no Delta tables. | Upstream |
-| DuckDB | UC REST, via the `unity_catalog` extension | Read Delta tables; writes per the provider | Per DuckDB's extension docs | Provider |
+| DuckDB | UC REST and Delta API, via the `unity_catalog` extension | Read Delta tables and append to managed ones. No `CREATE TABLE`, `UPDATE`, `DELETE`, or `DROP TABLE`. | `duckdb==1.5.4` with `unity_catalog` from `core_nightly` (build `3ab8508`) | Tested here |
 | Daft | UC REST, via `daft[unity]` | Read Delta tables | Per Daft's docs | Provider |
 | Trino, and other Iceberg REST clients | Iceberg REST, read only | Read Delta tables that have UniForm Iceberg metadata | Trino's `iceberg` connector with `iceberg.catalog.type=rest` | Upstream |
 
 The upstream DuckDB guide at 0.6.0 still installs an older `uc_catalog`
-extension from the nightly channel. DuckDB's current extension is
-`unity_catalog`; follow DuckDB's documentation instead.
+extension. DuckDB's current extension is `unity_catalog`. Its stable build for
+DuckDB 1.5.4 can't read `DECIMAL` columns, so
+[the DuckDB how-to](../../how-to/duckdb/index.md) installs the nightly build.
+
+A managed table accepts only clients that go through the catalog. Path-based
+Delta libraries such as delta-rs refuse to load one; see
+[External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
 
 ## ML and AI libraries
 

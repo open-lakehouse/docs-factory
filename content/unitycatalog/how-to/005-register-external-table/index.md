@@ -16,9 +16,10 @@ that records a table's name, columns, format, and storage location. The data
 stays where it is, owned by whatever process writes it. Unity Catalog never
 moves or rewrites the files.
 
-To let Unity Catalog allocate storage and coordinate writes, use a managed
-table instead. For the difference, see
-[Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
+To let Unity Catalog allocate storage and coordinate writes, use a
+[managed table](../../tutorials/managed-delta-table/index.md) instead. For the
+difference, see
+[External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
 
 ## Requirements
 

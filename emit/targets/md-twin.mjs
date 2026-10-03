@@ -26,6 +26,7 @@ import remarkCalloutsMd from "../plugins/remark-callouts-md.mjs";
 import remarkCodeCaption from "../plugins/remark-code-caption.mjs";
 import remarkJourneyMd from "../plugins/remark-journey-md.mjs";
 import remarkLikeC4Md from "../plugins/remark-likec4-md.mjs";
+import remarkTabsMd from "../plugins/remark-tabs-md.mjs";
 import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
 
 /** Where the twin driver serves the regenerated LikeC4 PNGs from. Kept here so the
@@ -79,6 +80,7 @@ const mdTwin = {
   constructs: {
     tldr: remarkTldrMd, // :::tldr → **TL;DR** blockquote
     callouts: remarkCalloutsMd, // :::tip/:::warning/… → bold-led blockquote
+    tabs: remarkTabsMd, // :::tab[Label] → every panel in order, led by **Label**
     journey: remarkJourneyMd, // ::::journey → numbered ### Step N — … headings
     codeCaption: remarkCodeCaption, // title="x.py" → bold caption line, clean fence
     likec4: remarkLikeC4Md, // likec4= image → site-served PNG + manifest

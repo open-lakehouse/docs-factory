@@ -373,7 +373,7 @@ architecture to fit an article.
 | H17 | Configure Spark to use Unity Catalog | P0 / J03, J09 | Spark/Scala/connector/Delta coordinates, catalog naming, filesystem dependencies, token/OAuth options, renewal/scoped-cache defaults. |
 | H18 | Read and write supported UC tables from DuckDB | P1 / J09 | Current extension install/name, secrets/attach, platform support, tested OSS read/write operations; label unverified managed-commit support explicitly. |
 | H19 | Read UniForm tables from Trino through Iceberg REST | P1 / J09 | Correct protocol, warehouse/catalog mapping, materialized Iceberg metadata, credential handling, endpoint privilege limits; read scope only unless separately proven. |
-| H20 | Read UC data with Daft | P1 / J09 | Current provider API/dependencies, discovery, supported formats and storage credentials, query result; no assumed managed-write support. |
+| H20 | Query UC tables from Python DataFrame libraries (Polars, Daft, pandas) | P1 / J09 | Current provider APIs/dependencies, discovery, vended storage credentials, read and append results per library; managed tables and other per-library gaps stated with their errors. |
 | H21 | Find and evaluate ecosystem integrations | P2 / J09 | Directory of maintained provider docs for SpiceAI, CelerData, PuppyGraph, XTable and others; protocol, ownership, support label, last verification. No untested recipe collection. |
 
 SQL operations such as MERGE, time travel, streaming, vacuum, clustering, and

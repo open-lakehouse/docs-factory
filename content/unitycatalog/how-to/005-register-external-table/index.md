@@ -31,7 +31,9 @@ difference, see
   path on your machine and in the server container. A `file://` location then
   means the same files to both.
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
-  0.6.0 and `deltalake`. For the CLI examples, Docker.
+  0.6.0 and `deltalake`. For the CLI examples, Docker. To read the table from
+  another engine, `polars==1.44.2`, `daft[unity]==0.7.25` with `tenacity`, or
+  `duckdb==1.5.4`.
 
 ```yaml file=./compose.yaml title="compose.yaml"
 ```
@@ -154,6 +156,29 @@ the files at `storage_location` with a Delta reader.
 
 `table read` runs inside the server container, so it reads the files at the
 container's view of `storage_location`.
+:::
+
+:::tab[Polars]
+```python file=./snippets/read_engines.py start=start:polars end=end:polars
+```
+
+Polars looks up the table by name and reads its location. See
+[Query Unity Catalog tables from Python DataFrame libraries](../python-dataframes/index.md).
+:::
+
+:::tab[Daft]
+```python file=./snippets/read_engines.py start=start:daft end=end:daft
+```
+
+See
+[Query Unity Catalog tables from Python DataFrame libraries](../python-dataframes/index.md).
+:::
+
+:::tab[DuckDB]
+```python file=./snippets/read_engines.py start=start:duckdb end=end:duckdb
+```
+
+See [Read and write Unity Catalog tables from DuckDB](../duckdb/index.md).
 :::
 
 On cloud storage, the reader also needs credentials. A client with the right

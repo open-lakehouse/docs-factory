@@ -9,6 +9,10 @@
  * site-served PNG. The raw `content/**` / `blogs/*` source is NEVER served — only
  * this twin. See docs/design/agentic-docs.md (Phase 1a).
  *
+ * The docs-site emitter adds to this per page: absolute URLs, a `companions:`
+ * frontmatter list, and a leading "Companion files" section (see
+ * docs/design/docs-site-emission.md, "Agent surfaces").
+ *
  * This is the one FLATTENING target (unitycatalog/delta upgrade to MDX components
  * instead). Its shape:
  *   - `titleAsH1: false` — the twin route already carries the title; keep the body

@@ -66,7 +66,7 @@ governance_roles:
 # --- Logical layer: governed asset kinds (securables) ---------------------
 # The subject axis (ADR-0005). "securable" is UC's term; `asset` is neutral.
 asset_kinds:
-  schema:     { element: lakehouse.schema,             doc: design/asset-kinds.md }
+  schema:     { element: lakehouse.namespace,             doc: design/asset-kinds.md }
   table:      { element: lakehouse.table,              doc: design/asset-kinds.md }
   volume:     { element: lakehouse.volume,             doc: design/asset-kinds.md }
   function:   { element: lakehouse.registeredFunction, doc: design/asset-kinds.md }

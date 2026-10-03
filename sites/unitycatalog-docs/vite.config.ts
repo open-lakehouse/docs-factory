@@ -45,6 +45,7 @@ const [
 // fence meta so this transformer can restore the attributes <Pre> reads.
 const TITLE_RE = /\btitle="([^"]*)"/;
 const COLLAPSE_RE = /(?:^|\s)collapse(?=\s|$)/;
+const SCRIPT_RE = /\bscript="([^"]*)"/;
 const codeChromeTransformer: ShikiTransformer = {
   name: "unitycatalog-docs:code-chrome",
   pre(node) {
@@ -53,6 +54,8 @@ const codeChromeTransformer: ShikiTransformer = {
     if (title) node.properties["data-filename"] = title;
     if (this.options.lang) node.properties["data-lang"] = this.options.lang;
     if (COLLAPSE_RE.test(raw)) node.properties["data-collapse"] = "true";
+    const script = SCRIPT_RE.exec(raw)?.[1];
+    if (script) node.properties["data-script"] = script;
   },
 };
 

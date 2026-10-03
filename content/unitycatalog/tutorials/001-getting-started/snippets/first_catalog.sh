@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# The tutorial's commands, one region per step. first_catalog_cli.py runs them
-# in order and checks the server state after each one.
+# Create a catalog, schema, and table with the uc CLI, write and read rows, then clean up.
+#
+# first_catalog_cli.py runs one region per step in order and checks the server
+# state after each one.
 
 # --8<-- [start:setup]
 uc() { docker compose exec -T unitycatalog bin/uc "$@"; }

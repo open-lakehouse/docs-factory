@@ -9,7 +9,11 @@ import mdTwin, {
   renderImage,
 } from "../../../../emit/targets/md-twin.mjs";
 import {
+  companionsFrontmatter,
+  companionsSection,
   injectCanonical,
+  injectFrontmatter,
+  prependSection,
   runnableExamplesSection,
   scaffoldSections,
   twinPathForHref,
@@ -131,4 +135,58 @@ test("runnableExamplesSection tells readers to run a shell example with bash", (
   expect(md).not.toContain("uv run");
   expect(md).not.toContain("requires Python");
   expect(md).toContain("needs Docker Compose `../compose.yaml` (services: `unitycatalog`)");
+});
+
+const COMPANIONS = [
+  {
+    kind: "python",
+    fetchUrl: "/how-to/aws/snippets/aws_storage.py",
+    summary: "Register an S3 credential.",
+    requiresPython: ">=3.11",
+    compose: "../compose.yaml",
+    services: ["unitycatalog"],
+    env: { AWS_ENDPOINT_URL: "http://localhost:9000" },
+  },
+  {
+    kind: "shell",
+    fetchUrl: "/how-to/aws/snippets/aws_storage.sh",
+    summary: null,
+    requiresPython: null,
+    compose: "../compose.yaml",
+    services: ["unitycatalog"],
+    env: {},
+  },
+];
+
+test("companionsFrontmatter lists each script with an absolute URL and run command", () => {
+  expect(companionsFrontmatter([], "https://x.test")).toBe("");
+  const yaml = companionsFrontmatter(COMPANIONS, "https://x.test");
+  expect(yaml).toContain('  - url: "https://x.test/how-to/aws/snippets/aws_storage.py"');
+  expect(yaml).toContain('    purpose: "Register an S3 credential."');
+  expect(yaml).toContain('    run: "AWS_ENDPOINT_URL=http://localhost:9000 uv run aws_storage.py"');
+  expect(yaml).toContain('    run: "bash aws_storage.sh"');
+  expect(yaml).toContain('    services: ["unitycatalog"]');
+});
+
+test("companionsSection gives link, purpose, run command, and the stack", () => {
+  expect(companionsSection([])).toBe("");
+  const md = companionsSection(COMPANIONS, "https://x.test");
+  expect(md).toStartWith("## Companion files\n");
+  expect(md).toContain(
+    "- [`aws_storage.py`](https://x.test/how-to/aws/snippets/aws_storage.py) (Python): Register an S3 credential.",
+  );
+  expect(md).toContain(
+    "- [`aws_storage.sh`](https://x.test/how-to/aws/snippets/aws_storage.sh) (Shell)\n",
+  );
+  expect(md).toContain("run: `bash aws_storage.sh` from the folder holding `compose.yaml`");
+  expect(md).toContain(
+    "needs: `docker compose up -d` with the page's `compose.yaml` (`unitycatalog`)",
+  );
+});
+
+test("injectFrontmatter + prependSection put companions ahead of the body", () => {
+  const twin = "---\ntitle: T\n---\n\nBody\n";
+  const out = prependSection(injectFrontmatter(twin, "companions: []"), "## Companion files\n");
+  expect(out).toBe("---\ntitle: T\ncompanions: []\n---\n\n## Companion files\n\nBody\n");
+  expect(prependSection("Body\n", "## S\n")).toBe("## S\n\nBody\n");
 });

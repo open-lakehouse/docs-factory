@@ -186,7 +186,7 @@ def cmd_scripts(p, as_json: bool = True) -> int:
     Wraps scriptmeta.discover() — the one authoritative parser — so the site build
     (build-script-index.mjs) never re-implements PEP 723 parsing in JS. Output is a
     versioned object: ``{"version": N, "scripts": [{path, requires_python,
-    dependencies, compose, services, base_url_env, verifies, tutorial_slug}]}``.
+    dependencies, compose, services, base_url_env, env, verifies, tutorial_slug}]}``.
     ``path`` and ``verifies`` (the snippet a harness tests, or null) are
     repo-relative POSIX.
     """
@@ -210,6 +210,7 @@ def cmd_scripts(p, as_json: bool = True) -> int:
                     "compose": meta.docs_factory.compose,
                     "services": meta.docs_factory.services,
                     "base_url_env": meta.docs_factory.base_url_env,
+                    "env": meta.docs_factory.env,
                     "verifies": (
                         verified.relative_to(repo_root.resolve()).as_posix()
                         if verified

@@ -15,6 +15,14 @@ export interface PageLink {
   title: string;
 }
 
+export interface PageScript {
+  /** Served path of the runnable file. */
+  url: string;
+  file: string;
+  kind: "python" | "shell";
+  summary: string | null;
+}
+
 export interface PageMeta {
   route: string;
   /** Path under src/content/, e.g. `how-to/duckdb.md`. */
@@ -29,6 +37,7 @@ export interface PageMeta {
   next: PageLink | null;
   /** The page's Markdown twin (route + `.md`). */
   twin: string;
+  scripts: PageScript[];
 }
 
 export type NavItem =

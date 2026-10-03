@@ -30,11 +30,18 @@ import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parse as parseYaml } from "yaml";
-import { injectCanonical, runnableExamplesSection } from "../../site/scripts/build-md-twins.mjs";
 import {
+  companionsFrontmatter,
+  companionsSection,
+  injectCanonical,
+  injectFrontmatter,
+  prependSection,
+} from "../../site/scripts/build-md-twins.mjs";
+import {
+  publishScript,
   runDocsnipScripts,
   scriptEntry,
-  stripSectionMarkers,
+  scriptSummary,
 } from "../../site/scripts/build-script-index.mjs";
 import {
   renderLlmsFull,
@@ -51,11 +58,13 @@ import { extractHeadings } from "../../site/src/content-core/slug.mjs";
 import { walkContent } from "../../site/src/content-core/walk.mjs";
 import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
 import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
+import remarkAbsoluteLinks from "../plugins/remark-absolute-links.mjs";
 import remarkModelLinksText from "../plugins/remark-model-links-text.mjs";
+import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget } from "../targets/docs-site.mjs";
-import mdTwin from "../targets/md-twin.mjs";
+import mdTwin, { LIKEC4_ASSET_BASE } from "../targets/md-twin.mjs";
 import { projectNav } from "./nav.mjs";
 import { renderedSections } from "./sections.mjs";
 import {
@@ -167,14 +176,14 @@ export async function emitDocs({ site, drafts = false }) {
     if (!indexed) console.warn("emit-docs: uv not found, so no runnable scripts are published");
     const scripts = (indexed?.scripts ?? [])
       .map((e) => scriptEntry(e, { hrefFor }))
-      .filter((s) => s.fetchUrl && routes.has(s.tutorialRoute));
-    for (const s of scripts) {
-      files.set(
-        `public${s.fetchUrl}`,
-        stripSectionMarkers(readFileSync(join(REPO_ROOT, s.gitPath), "utf8")),
-      );
-    }
+      .filter((s) => s.fetchUrl && routes.has(s.tutorialRoute))
+      .map((s) => {
+        const source = readFileSync(join(REPO_ROOT, s.gitPath), "utf8");
+        files.set(`public${s.fetchUrl}`, publishScript(source));
+        return { ...s, summary: scriptSummary(source, s.kind) };
+      });
     files.set("public/scripts.json", `${JSON.stringify({ version: 2, scripts }, null, 2)}\n`);
+    const scriptUrls = new Map(scripts.map((s) => [s.gitPath, s.fetchUrl]));
 
     // 3. Pages.
     const links = linkErrors();
@@ -201,7 +210,11 @@ export async function emitDocs({ site, drafts = false }) {
       const rendered = await emitOne({
         ...common,
         target: docsSiteTarget({ assetBase }),
-        plugins: [...linkPlugins, [remarkStripSourceMeta]],
+        plugins: [
+          ...linkPlugins,
+          [remarkScriptLinks, { scripts: scriptUrls }],
+          [remarkStripSourceMeta],
+        ],
       });
       likec4Exported ||= rendered.likec4Dir !== null;
       common.likec4Exported = likec4Exported;
@@ -217,30 +230,37 @@ export async function emitDocs({ site, drafts = false }) {
         hasLikeC4 ||= Boolean(image.likec4);
       }
 
+      // Twin URLs are absolute: the twin is read away from the site.
       const twinTarget = {
         ...mdTwin,
-        renderImage: (entry) =>
-          entry.likec4
-            ? mdTwin.renderImage(entry)
-            : {
-                type: "paragraph",
-                children: [
-                  {
-                    type: "image",
-                    url: `${assetBase}/${entry.filename}`,
-                    alt: entry.altText,
-                    title: null,
-                  },
-                ],
-              },
+        renderImage: (entry) => ({
+          type: "paragraph",
+          children: [
+            {
+              type: "image",
+              url: entry.likec4
+                ? `${origin}${LIKEC4_ASSET_BASE}/${entry.likec4}.png`
+                : `${origin}${assetBase}/${entry.filename}`,
+              alt: entry.altText,
+              title: null,
+            },
+          ],
+        }),
       };
-      const twin = await emitOne({ ...common, target: twinTarget, plugins: linkPlugins });
-      const examples = runnableExamplesSection(scripts.filter((s) => s.tutorialRoute === route));
-      const twinBody = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
-      files.set(
-        `public${route}.md`,
-        examples ? `${twinBody.replace(/\s*$/, "\n")}\n${examples}` : twinBody,
-      );
+      const twin = await emitOne({
+        ...common,
+        target: twinTarget,
+        plugins: [...linkPlugins, [remarkAbsoluteLinks, { origin }]],
+      });
+      const owned = scripts.filter((s) => s.tutorialRoute === route);
+      let twinOut = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
+      if (owned.length) {
+        twinOut = prependSection(
+          injectFrontmatter(twinOut, companionsFrontmatter(owned, origin)),
+          companionsSection(owned, origin),
+        );
+      }
+      files.set(`public${route}.md`, twinOut);
 
       const renderedBody = splitFrontmatter(rendered.output).body;
       const pageHeadings = extractHeadings(renderedBody).map(({ id, text, level }) => ({
@@ -257,6 +277,12 @@ export async function emitDocs({ site, drafts = false }) {
         section: page.section,
         headings: pageHeadings,
         twin: `${route}.md`,
+        scripts: owned.map((s) => ({
+          url: s.fetchUrl,
+          file: s.fetchUrl.split("/").pop(),
+          kind: s.kind,
+          summary: s.summary,
+        })),
       });
 
       const version = entryFor(absPath, REPO_ROOT);
@@ -330,6 +356,7 @@ export async function emitDocs({ site, drafts = false }) {
       renderLlmsIndex(entries, {
         title: `${site.title} documentation`,
         summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`.`,
+        origin,
       }),
     );
     files.set(

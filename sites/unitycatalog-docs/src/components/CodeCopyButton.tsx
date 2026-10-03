@@ -1,15 +1,6 @@
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
-
-async function copyToClipboard(text: string): Promise<boolean> {
-  if (!text || typeof navigator === "undefined" || !navigator.clipboard) return false;
-  try {
-    await navigator.clipboard.writeText(text);
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { copyToClipboard } from "../lib/clipboard";
 
 export default function CodeCopyButton({ code }: { code: string }) {
   const [copied, setCopied] = useState(false);

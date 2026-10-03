@@ -2,7 +2,12 @@
 // from a docsnip script entry's repo-relative path + tutorial_slug. Exercises the
 // pure scriptEntry().
 import { expect, test } from "bun:test";
-import { scriptEntry, stripSectionMarkers } from "../../../scripts/build-script-index.mjs";
+import {
+  publishScript,
+  scriptEntry,
+  scriptSummary,
+  stripSectionMarkers,
+} from "../../../scripts/build-script-index.mjs";
 
 const DOCSNIP_ENTRY = {
   path: "content/delta/how-to/001-read-a-delta-table/snippets/read_delta_table.py",
@@ -144,4 +149,65 @@ test("scriptEntry serves under a target site's hrefFor", () => {
   const e = scriptEntry(DOCSNIP_ENTRY, { hrefFor: (id) => `/${id.bucket}/${id.slug}` });
   expect(e.tutorialRoute).toBe("/how-to/read-a-delta-table");
   expect(e.fetchUrl).toBe("/how-to/read-a-delta-table/snippets/read_delta_table.py");
+});
+
+test("scriptEntry carries a python script's env, but not a harness's onto its .sh", () => {
+  const env = { AWS_ENDPOINT_URL: "http://localhost:9000" };
+  expect(scriptEntry({ ...DOCSNIP_ENTRY, env }).env).toEqual(env);
+  const sh = scriptEntry({
+    ...DOCSNIP_ENTRY,
+    env,
+    verifies: "content/delta/how-to/001-read-a-delta-table/snippets/read.sh",
+  });
+  expect(sh.env).toEqual({});
+});
+
+test("publishScript drops factory-only PEP 723 tables and keeps the runtime ones", () => {
+  const src = [
+    "# /// script",
+    '# requires-python = ">=3.11"',
+    '# dependencies = ["docs-factory-seed", "deltalake"]',
+    "#",
+    "# [tool.uv.sources]",
+    '# docs-factory-seed = { path = "../../../../seed" }',
+    "#",
+    "# [tool.docs-factory]",
+    '# compose = "../compose.yaml"',
+    "# ///",
+    '"""Read a table."""',
+    "# --8<-- [start:read]",
+    "print(1)",
+    "# --8<-- [end:read]",
+    "",
+  ].join("\n");
+  expect(publishScript(src)).toBe(
+    [
+      "# /// script",
+      '# requires-python = ">=3.11"',
+      '# dependencies = ["docs-factory-seed", "deltalake"]',
+      "# ///",
+      '"""Read a table."""',
+      "print(1)",
+      "",
+    ].join("\n"),
+  );
+});
+
+test("publishScript keeps a [tool.*] table the factory doesn't own", () => {
+  const src = "# /// script\n# dependencies = []\n#\n# [tool.ruff]\n# line-length = 99\n# ///\n";
+  expect(publishScript(src)).toBe(src);
+});
+
+test("scriptSummary reads a python docstring's first line, after the PEP 723 block", () => {
+  const src = '# /// script\n# dependencies = []\n# ///\n"""Read a table.\n\nMore.\n"""\n';
+  expect(scriptSummary(src, "python")).toBe("Read a table.");
+  expect(scriptSummary('"""One line."""\n', "python")).toBe("One line.");
+  expect(scriptSummary("import os\n", "python")).toBeNull();
+});
+
+test("scriptSummary reads a shell script's first comment paragraph", () => {
+  const src =
+    "#!/usr/bin/env bash\n# Create a catalog\n# with the CLI.\n#\n# Harness notes.\n\nuc catalog list\n";
+  expect(scriptSummary(src, "shell")).toBe("Create a catalog with the CLI.");
+  expect(scriptSummary("#!/usr/bin/env bash\n# --8<-- [start:a]\n", "shell")).toBeNull();
 });

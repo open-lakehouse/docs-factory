@@ -137,9 +137,12 @@ def cmd_snippetcheck(p) -> int:
     # declared compose file exists, alongside the snippet-fence checks.
     errors.extend(check_scripts(p["content"]))
     try:
-        errors.extend(environments.check(p["root"], discover_scripts(p["content"])))
+        scripts = discover_scripts(p["content"])
     except ScriptMetaError:
-        pass  # already reported by check_scripts
+        scripts = None  # already reported by check_scripts
+    if scripts is not None:
+        errors.extend(environments.check(p["root"], scripts))
+        errors.extend(environments.check_pages(p["root"], p["content"], scripts))
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} snippet error(s)", file=sys.stderr)

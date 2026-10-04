@@ -14,15 +14,19 @@ it, call it by that name, and remove it again. Once a function is in the
 catalog, applications and AI agents with access can find and call it by name,
 without copying your code.
 
-You need Docker and [uv](https://docs.astral.sh/uv/). It takes about ten
-minutes.
+It takes about ten minutes.
+
+:::prerequisites
+- [uv](https://docs.astral.sh/uv/), which installs the Python packages for the
+  session.
+:::
 
 ::::journey
 
 ### Open a Python session
 
-Start the [local server](../../how-to/run-local-server/index.md) if it isn't
-already running from an earlier tutorial. Then create an empty folder and, in
+Start the environment under **Prerequisites** if it isn't already running
+from an earlier tutorial. Then create an empty folder and, in
 it, open a Python session with `unitycatalog-ai`, the client library for
 catalog functions:
 

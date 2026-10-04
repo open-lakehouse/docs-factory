@@ -9,11 +9,16 @@ same key names a file in the repo and in the published environment bundle.
 from __future__ import annotations
 
 import dataclasses
+import re
 from pathlib import Path
 
 import yaml
 
 REGISTRY = Path("envs") / "environments.yml"
+
+# Mirrors DECLARED_RE in site/src/content-core/environment.mjs.
+_BOX_RE = re.compile(r"^:{3,}prerequisites\b(?:\{([^}\n]*)\})?", re.MULTILINE)
+_DECLARED_RE = re.compile(r'\benvironment="([^"]+)"')
 
 
 @dataclasses.dataclass(frozen=True)
@@ -82,4 +87,38 @@ def check(repo_root: Path, scripts) -> list[str]:
                 f"{meta.path}: [tool.docs-factory].compose {meta.docs_factory.compose} "
                 f"has no entry in {REGISTRY}"
             )
+    return errors
+
+
+def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
+    """Prerequisites errors: a page whose scripts need a stack must hold exactly
+    one ``:::prerequisites`` (the emitter puts the start commands there), and a
+    declared ``environment="…"`` must be a registry key."""
+    from .frontmatter import iter_content_files
+
+    try:
+        envs = load(repo_root)
+    except (OSError, ValueError, yaml.YAMLError):
+        return []  # reported by check()
+    errors: list[str] = []
+    for md in iter_content_files(content_root):
+        boxes = list(_BOX_RE.finditer(md.read_text()))
+        needs = md.name == "index.md" and any(
+            m.compose_path() is not None and md.parent in m.path.parents
+            for m in scripts
+        )
+        if len(boxes) > 1:
+            errors.append(f"{md}: more than one :::prerequisites")
+        elif needs and not boxes:
+            errors.append(
+                f"{md}: its scripts need a local environment, so the page needs a "
+                ":::prerequisites box for the emitter to put the start commands in"
+            )
+        for box in boxes:
+            declared = _DECLARED_RE.search(box.group(1) or "")
+            if declared and declared.group(1) not in envs:
+                errors.append(
+                    f"{md}: :::prerequisites environment {declared.group(1)} "
+                    f"has no entry in {REGISTRY}"
+                )
     return errors

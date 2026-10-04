@@ -26,8 +26,7 @@ Volumes come in two types:
 For how volumes fit into the namespace, see
 [Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
 
-## Requirements
-
+:::prerequisites
 - A Unity Catalog 0.6.0 server. The examples use the
   [local server](../run-local-server/index.md) and keep volume files under its
   [shared folder](../run-local-server/index.md#share-a-folder-with-the-server),
@@ -35,6 +34,9 @@ For how volumes fit into the namespace, see
 - For managed volumes, a storage root on the schema or its catalog.
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
   0.6.0.
+:::
+
+## Set up the client
 
 Set up the client for your interface:
 

@@ -21,8 +21,7 @@ All three work with external Delta tables, through
 [Spark](../configure-spark/index.md) or [DuckDB](../duckdb/index.md), which
 commit through the server.
 
-## Requirements
-
+:::prerequisites
 - A Unity Catalog server, version 0.6.0, with an external Delta table. This
   page uses `retail.sales.orders`; to register your own, see
   [Register an existing external table](../register-external-table/index.md).
@@ -40,10 +39,9 @@ commit through the server.
   [external location](../configure-aws-storage/index.md) that covers the
   table's path, so that the server can vend credentials for it.
 
-To follow along, start the
-[local server with simulated S3](../run-local-server/index.md#start-the-server-with-simulated-s3)
-and set its `AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP` variables. On real AWS,
-leave them unset.
+The local server below simulates S3. On real AWS, leave its
+`AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP` variables unset.
+:::
 
 The Polars and pandas examples use a table on S3, and the Daft examples a table
 on local storage, which is what each library is tested with here; see

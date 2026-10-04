@@ -55,3 +55,27 @@ def test_registry_key_without_file_is_an_error(tmp_path) -> None:
     assert environments.check(root, []) == [
         "envs/environments.yml: uc/gone.yaml names a missing compose file"
     ]
+
+
+def _page(root: Path, body: str) -> Path:
+    page = root / "content" / "p" / "how-to" / "x" / "index.md"
+    page.write_text(f"---\ntitle: X\n---\n\n{body}")
+    return page
+
+
+def test_page_with_env_scripts_needs_a_prerequisites_box(tmp_path) -> None:
+    root = _repo(tmp_path, "environments:\n  uc/compose.yaml: { title: UC }\n")
+    meta = parse_script(_script(root, "../../../../../envs/uc/compose.yaml"))
+    _page(root, "## Steps\n")
+    errors = environments.check_pages(root, root / "content", [meta])
+    assert len(errors) == 1 and "needs a :::prerequisites box" in errors[0]
+    _page(root, ":::prerequisites\n- Python.\n:::\n")
+    assert environments.check_pages(root, root / "content", [meta]) == []
+
+
+def test_declared_environment_must_be_registered(tmp_path) -> None:
+    root = _repo(tmp_path, "environments:\n  uc/compose.yaml: { title: UC }\n")
+    (root / "content" / "p" / "how-to" / "x").mkdir(parents=True)
+    _page(root, ':::prerequisites{environment="uc/nope.yaml"}\n:::\n')
+    errors = environments.check_pages(root, root / "content", [])
+    assert len(errors) == 1 and "uc/nope.yaml has no entry" in errors[0]

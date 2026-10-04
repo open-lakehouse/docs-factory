@@ -15,8 +15,7 @@ appends rows to them, including catalog-managed Delta tables. DuckDB's
 `delta` extension reads and writes the [Delta](model:deltaSpec) files. Appends
 to a catalog-managed table go through the server, like a Spark write.
 
-## Requirements
-
+:::prerequisites
 - A Unity Catalog server, version 0.6.0, with at least one Delta table. Create
   one with Spark, as in
   [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md),
@@ -28,6 +27,7 @@ to a catalog-managed table go through the server, like a Spark write.
 - Table files that DuckDB can reach. On the
   [local server](../run-local-server/index.md), tables live under its
   [shared folder](../run-local-server/index.md#share-a-folder-with-the-server).
+:::
 
 ## Install the extensions
 

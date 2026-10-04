@@ -16,16 +16,22 @@ it with plain Spark SQL, change some rows, look back at an earlier version,
 and finally drop it. Along the way you see what makes a managed table different
 from a folder of Delta files.
 
-You need Docker, Java 17, and [uv](https://docs.astral.sh/uv/). The first run
-downloads Spark's Unity Catalog and Delta jars from Maven. Allow about fifteen
-minutes.
+Allow about fifteen minutes.
+
+:::prerequisites
+- Java 17.
+- [uv](https://docs.astral.sh/uv/), which installs the Python packages for the
+  session.
+- Maven access the first time: Spark downloads its Unity Catalog and Delta jars
+  from Maven.
+:::
 
 ::::journey
 
 ### Open a Python session
 
-Start the [local server](../../how-to/run-local-server/index.md) if it isn't
-already running from an earlier tutorial. Spark on your machine writes the
+Start the environment under **Prerequisites** if it isn't already running
+from an earlier tutorial. Spark on your machine writes the
 table's files under the server's
 [shared folder](../../how-to/run-local-server/index.md#share-a-folder-with-the-server),
 `UC_DOCS_ROOT`. The server needs to see them too, because it deletes them when

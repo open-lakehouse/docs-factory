@@ -17,15 +17,19 @@ connect, create a catalog, a schema, and a table, see how the client reports
 an object that doesn't exist, and clean up. Applications, notebooks, and
 scripts use the same calls to manage catalog objects.
 
-You need Docker and [uv](https://docs.astral.sh/uv/). It takes about ten
-minutes.
+It takes about ten minutes.
+
+:::prerequisites
+- [uv](https://docs.astral.sh/uv/), which installs the Python packages for the
+  session.
+:::
 
 ::::journey
 
 ### Open a Python session
 
-Start the [local server](../../how-to/run-local-server/index.md) if it isn't
-already running from an earlier tutorial. Then open a Python session with the
+Start the environment under **Prerequisites** if it isn't already running
+from an earlier tutorial. Then open a Python session with the
 client installed:
 
 ```bash

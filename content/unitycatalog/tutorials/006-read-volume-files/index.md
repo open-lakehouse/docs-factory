@@ -15,15 +15,19 @@ only the volume's name. On the way you see the three steps every volume reader
 takes: look up where the files live, ask the catalog for access, and open them
 with a storage library.
 
-You need Docker and [uv](https://docs.astral.sh/uv/). It takes about ten
-minutes.
+It takes about ten minutes.
+
+:::prerequisites
+- [uv](https://docs.astral.sh/uv/), which installs the Python packages for the
+  session.
+:::
 
 ::::journey
 
 ### Open a Python session
 
-Start the [local server](../../how-to/run-local-server/index.md) if it isn't
-already running from an earlier tutorial. Then open a Python session with the
+Start the environment under **Prerequisites** if it isn't already running
+from an earlier tutorial. Then open a Python session with the
 Unity Catalog client and [obstore](https://developmentseed.org/obstore/), a
 Python library for object storage and local files:
 

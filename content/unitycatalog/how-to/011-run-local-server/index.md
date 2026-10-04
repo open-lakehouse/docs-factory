@@ -121,7 +121,8 @@ docker compose down
 The server keeps its metadata in the container, so stopping it also discards
 every catalog you created and restores the samples. Files you wrote under
 `UC_DOCS_ROOT` stay on your machine. To keep metadata across restarts, a server
-stores it in an external database instead.
+stores it in an external database instead; see
+[Configure PostgreSQL as the metadata database](../configure-backend-db/index.md).
 
 :::warning
 This configuration has authorization disabled: anyone who can reach port 8080

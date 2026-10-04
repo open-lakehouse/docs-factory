@@ -1,6 +1,6 @@
 // pageEnvironment: a page's scripts → the one stack they need and its commands.
 import { expect, test } from "bun:test";
-import { pageEnvironment, portList } from "../environment.mjs";
+import { declaredEnvironment, pageEnvironment, portList } from "../environment.mjs";
 
 const REGISTRY = {
   "unitycatalog/compose.yaml": { title: "UC", ports: [8080], clientEnv: {} },
@@ -14,7 +14,6 @@ const OPTS = {
   registry: REGISTRY,
   bundle: "uc-docs-env",
   bundleUrl: "https://d.io/env/uc-docs-env.tar.gz",
-  guideHref: "/how-to/run-local-server",
   origin: "https://d.io",
 };
 const py = (environment, fetchUrl = "/how-to/x/snippets/x.py") => ({
@@ -67,4 +66,16 @@ test("portList reads as prose", () => {
   expect(portList([8080])).toBe("8080");
   expect(portList([8080, 9000])).toBe("8080 and 9000");
   expect(portList([1, 2, 3])).toBe("1, 2, and 3");
+});
+
+test("a page can declare its environment without owning scripts", () => {
+  const body =
+    'Intro.\n\n:::prerequisites{environment="unitycatalog/compose.aws.yaml"}\n- x\n:::\n';
+  const declared = declaredEnvironment(body);
+  expect(declared).toBe("unitycatalog/compose.aws.yaml");
+  expect(pageEnvironment([], { ...OPTS, declared }).title).toBe("UC with S3");
+  expect(() => pageEnvironment([py("unitycatalog/compose.yaml")], { ...OPTS, declared })).toThrow(
+    "more than one environment",
+  );
+  expect(declaredEnvironment(":::prerequisites\n:::\n")).toBeNull();
 });

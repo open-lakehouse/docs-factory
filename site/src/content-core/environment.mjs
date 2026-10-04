@@ -35,15 +35,30 @@ export function stopCommand(key) {
   return `docker compose ${composeParts(key).flag}down`;
 }
 
+// `:::prerequisites{environment="unitycatalog/compose.yaml"}`
+const DECLARED_RE = /^:{3,}prerequisites\{[^}\n]*\benvironment="([^"]+)"/m;
+
+/** The environment a page body declares on its `:::prerequisites`, if any. */
+export function declaredEnvironment(body) {
+  return DECLARED_RE.exec(body)?.[1] ?? null;
+}
+
 /**
  * The environment a page's owned scripts need, or null if none needs one.
  * `registry` maps keys to `{ title, ports, clientEnv }`. A page whose scripts
  * name two different stacks throws: one page, one "Start the environment".
+ * `declared` (declaredEnvironment) is for a page with no scripts of its own
+ * that still walks the reader through a stack; scripts must agree with it.
  * `runUrl` is set when the page owns exactly one Python script, which a
  * reader can `uv run` straight from its URL.
  */
-export function pageEnvironment(scripts, { registry, bundle, bundleUrl, guideHref, origin = "" }) {
-  const keys = [...new Set(scripts.map((s) => s.environment).filter(Boolean))].sort();
+export function pageEnvironment(
+  scripts,
+  { registry, bundle, bundleUrl, origin = "", declared = null },
+) {
+  const keys = [
+    ...new Set([declared, ...scripts.map((s) => s.environment)].filter(Boolean)),
+  ].sort();
   if (keys.length === 0) return null;
   if (keys.length > 1) {
     throw new Error(`scripts need more than one environment (${keys.join(", ")})`);
@@ -58,7 +73,6 @@ export function pageEnvironment(scripts, { registry, bundle, bundleUrl, guideHre
     ports: env.ports ?? [],
     clientEnv: env.clientEnv ?? {},
     bundleUrl,
-    guideHref,
     commands: startCommands(key, env, { bundle, bundleUrl }),
     stop: stopCommand(key),
     dir: `${bundle}/${composeParts(key).dir}`,

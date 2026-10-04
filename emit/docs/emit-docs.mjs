@@ -46,7 +46,7 @@ import {
   scriptEntry,
   scriptSummary,
 } from "../../site/scripts/build-script-index.mjs";
-import { pageEnvironment } from "../../site/src/content-core/environment.mjs";
+import { declaredEnvironment, pageEnvironment } from "../../site/src/content-core/environment.mjs";
 import { isPublic, splitFrontmatter } from "../../site/src/content-core/frontmatter.mjs";
 import { canonicalUrl, pageHead } from "../../site/src/content-core/head.mjs";
 import { docIdentity } from "../../site/src/content-core/identity.mjs";
@@ -253,6 +253,7 @@ export async function emitDocs({ site, drafts = false }) {
             bundle: site.env.bundle,
             bundleUrl: envBundle.bundleUrl,
             origin,
+            declared: declaredEnvironment(page.body),
           });
       } catch (err) {
         throw new Error(`${relative(REPO_ROOT, absPath)}: ${err.message}`);

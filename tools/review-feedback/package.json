@@ -8,8 +8,8 @@
     "review-feedback": "./src/cli.ts"
   },
   "scripts": {
-    "cli": "bun run src/cli.ts",
-    "mcp": "bun run src/mcp.ts",
+    "cli": "bun --use-system-ca run src/cli.ts",
+    "mcp": "bun --use-system-ca run src/mcp.ts",
     "typecheck": "tsc --noEmit",
     "test": "bun test"
   },

@@ -157,7 +157,7 @@ _server-deps:
 # see docs/design/agent-feedback.md. First run: `just feedback login --url <site>`.
 # Read and answer review threads from the terminal (`just feedback list`).
 feedback *args: _feedback-deps
-    bun run tools/review-feedback/src/cli.ts {{args}}
+    bun --use-system-ca run tools/review-feedback/src/cli.ts {{args}}
 
 # The CLI/MCP import content-core from site/, so they need site deps too.
 _feedback-deps: _site-deps

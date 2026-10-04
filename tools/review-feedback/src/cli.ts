@@ -4,7 +4,8 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseArgs } from "node:util";
-import { describeError, reviewClient } from "./client.js";
+import { Code, ConnectError } from "@connectrpc/connect";
+import { describeError, type ReviewClient, reviewClient } from "./client.js";
 import {
   ConfigError,
   configPath,
@@ -94,10 +95,26 @@ async function login() {
     if (!next.url) throw new ConfigError("pass --url <review site> the first time");
     token = await browserLogin(next.url, (s) => process.stderr.write(`${s}\n`));
   }
-  const res = await reviewClient(resolveConfig({ ...next, token }, {}, {})).getViewer({});
-  if (!res.viewer?.authenticated) throw new ConfigError("the token was not accepted");
+  // Save before verifying: a browser login has already minted the token, and a
+  // network/TLS failure on the check below mustn't throw it away.
   writeStoredConfig({ ...next, token });
-  print(`Logged in as @${res.viewer.login}. Saved to ${configPath()}.`);
+  let viewer: Awaited<ReturnType<ReviewClient["getViewer"]>>["viewer"];
+  try {
+    ({ viewer } = await reviewClient(resolveConfig({ ...next, token }, {}, {})).getViewer({}));
+  } catch (e) {
+    if (ConnectError.from(e).code === Code.Unauthenticated) {
+      writeStoredConfig(stored);
+      throw new ConfigError("the review API rejected the token");
+    }
+    throw new ConfigError(
+      `token saved to ${configPath()}, but checking it failed: ${describeError(e)}`,
+    );
+  }
+  if (!viewer?.authenticated) {
+    writeStoredConfig(stored);
+    throw new ConfigError("the review API rejected the token");
+  }
+  print(`Logged in as @${viewer.login}. Saved to ${configPath()}.`);
 }
 
 /** Write one markdown file per page under `out`, for agents that read files. */

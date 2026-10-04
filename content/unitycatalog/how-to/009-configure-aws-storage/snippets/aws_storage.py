@@ -6,7 +6,6 @@
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
-# env = { AWS_ENDPOINT_URL = "http://localhost:9000", AWS_ALLOW_HTTP = "true" }
 # ///
 """Register an S3 storage credential and external location, and check vending.
 

@@ -151,15 +151,22 @@ test("scriptEntry serves under a target site's hrefFor", () => {
   expect(e.fetchUrl).toBe("/how-to/read-a-delta-table/snippets/read_delta_table.py");
 });
 
-test("scriptEntry carries a python script's env, but not a harness's onto its .sh", () => {
-  const env = { AWS_ENDPOINT_URL: "http://localhost:9000" };
-  expect(scriptEntry({ ...DOCSNIP_ENTRY, env }).env).toEqual(env);
-  const sh = scriptEntry({
+test("scriptEntry carries the registry's client env, never the harness-only env", () => {
+  const clientEnv = { AWS_ENDPOINT_URL: "http://localhost:9000" };
+  const entry = {
     ...DOCSNIP_ENTRY,
-    env,
+    environment: "unitycatalog/compose.aws.yaml",
+    client_env: clientEnv,
+    env: { EXECUTOR_MAX_MEMORY_LIMIT: "4096" },
+  };
+  expect(scriptEntry(entry).env).toEqual(clientEnv);
+  expect(scriptEntry(entry).environment).toBe("unitycatalog/compose.aws.yaml");
+  // A harness's .sh talks to the same stack, so it needs the same variables.
+  const sh = scriptEntry({
+    ...entry,
     verifies: "content/delta/how-to/001-read-a-delta-table/snippets/read.sh",
   });
-  expect(sh.env).toEqual({});
+  expect(sh.env).toEqual(clientEnv);
 });
 
 test("publishScript drops factory-only PEP 723 tables and keeps the runtime ones", () => {

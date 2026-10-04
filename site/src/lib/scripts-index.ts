@@ -22,6 +22,8 @@ export interface ScriptEntry {
   requiresPython: string | null;
   dependencies: string[] | null;
   compose: string | null;
+  /** `envs/environments.yml` key of the stack the script needs. */
+  environment: string | null;
   services: string[] | null;
   baseUrlEnv: string | null;
 }

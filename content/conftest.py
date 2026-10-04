@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -29,12 +30,15 @@ if TYPE_CHECKING:
 
 # tools/docsnip is a workspace package; its scriptmeta reader is the single
 # source of truth for discovering + parsing a script's inline metadata.
+from docsnip.environments import client_env
 from docsnip.scriptmeta import ScriptMeta, parse_script
 
 # Exit codes a process reports when killed by a native abort/segfault signal
 # (128 + signal number): SIGABRT (134) and SIGSEGV (139). subprocess also
 # reports killed-by-signal as a negative return code; both are handled below.
 _NATIVE_ABORT_CODES = frozenset({134, 139})
+
+_REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
 def pytest_collect_file(parent, file_path):
@@ -72,7 +76,13 @@ class TutorialScriptItem(pytest.Item):
             self.add_marker(pytest.mark.needs_uc_server)
 
     def runtest(self):
-        env = {**os.environ, **self.script_meta.docs_factory.env}
+        # The registry's client-env is what the page tells a reader to export;
+        # the script's own env holds harness-only extras on top of it.
+        env = {
+            **os.environ,
+            **client_env(self.script_meta.compose_path(), _REPO_ROOT),
+            **self.script_meta.docs_factory.env,
+        }
         base_url = _start_services(self.script_meta)
         try:
             if base_url is not None and self.script_meta.docs_factory.base_url_env:

@@ -10,7 +10,6 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
-# env = { AWS_ENDPOINT_URL = "http://localhost:9000", AWS_ALLOW_HTTP = "true" }
 # ///
 """List, read, and append to a Unity Catalog table on S3 from Polars.
 

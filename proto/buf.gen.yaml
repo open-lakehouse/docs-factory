@@ -1,8 +1,10 @@
-# Codegen for the review API. Emits TypeScript for two consumers:
+# Codegen for the review API. Emits TypeScript for three consumers:
 #   - the React client (site/src/gen): message types + Connect clients +
 #     connect-query hooks (TanStack Query integration).
 #   - the Neon Function backend (server/src/gen): message types + Connect
 #     service definitions to implement against.
+#   - the review-feedback agent CLI/MCP (tools/review-feedback/src/gen):
+#     message types + service descriptors for a Connect client.
 #
 # Run via `just buf-gen` (which shells `buf generate` from proto/).
 # Uses remote plugins so no local protoc toolchain is required.
@@ -24,6 +26,11 @@ plugins:
       - import_extension=js
   - remote: buf.build/bufbuild/es:v2.13.0
     out: ../server/src/gen
+    opt:
+      - target=ts
+      - import_extension=js
+  - remote: buf.build/bufbuild/es:v2.13.0
+    out: ../tools/review-feedback/src/gen
     opt:
       - target=ts
       - import_extension=js

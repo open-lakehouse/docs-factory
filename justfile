@@ -151,6 +151,23 @@ _server-deps:
         (cd server && bun install)
     fi
 
+# --- Agent access to review feedback (tools/review-feedback) ---------------
+
+# Agents use the same core through the review-feedback MCP server (.mcp.json);
+# see docs/design/agent-feedback.md. First run: `just feedback login --url <site>`.
+# Read and answer review threads from the terminal (`just feedback list`).
+feedback *args: _feedback-deps
+    bun run tools/review-feedback/src/cli.ts {{args}}
+
+# The CLI/MCP import content-core from site/, so they need site deps too.
+_feedback-deps: _site-deps
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ ! -d tools/review-feedback/node_modules ]; then
+        echo "Installing review-feedback dependencies…"
+        (cd tools/review-feedback && bun install)
+    fi
+
 # --- Content & tooling ------------------------------------------------------
 
 # Install every uv workspace package.
@@ -204,27 +221,31 @@ lint:
 
 # Lint + format-check every JS/TS project with Biome (each project's biome.json
 # extends the root // config). Read-only; mirrors what CI's `biome ci` gates.
-lint-js: _site-deps _server-deps _emit-deps
+lint-js: _site-deps _server-deps _emit-deps _feedback-deps
     cd site && bunx biome check
     cd server && bunx biome check
     cd emit && bunx biome check
+    cd tools/review-feedback && bunx biome check
 
 # Apply Biome's safe fixes (formatting + safe lint autofixes) across all JS/TS.
-format-js: _site-deps _server-deps _emit-deps
+format-js: _site-deps _server-deps _emit-deps _feedback-deps
     cd site && bunx biome check --write
     cd server && bunx biome check --write
     cd emit && bunx biome check --write
+    cd tools/review-feedback && bunx biome check --write
 
 # CI-form gate: lint + format-check, non-zero exit on any error (never writes).
-format-check: _site-deps _server-deps _emit-deps
+format-check: _site-deps _server-deps _emit-deps _feedback-deps
     cd site && bunx biome ci
     cd server && bunx biome ci
     cd emit && bunx biome ci
+    cd tools/review-feedback && bunx biome ci
 
-# Typecheck the two TypeScript projects (site + server) with tsc --noEmit.
-typecheck-js: _site-deps _server-deps
+# Typecheck the TypeScript projects (site, server, review-feedback) with tsc --noEmit.
+typecheck-js: _site-deps _server-deps _feedback-deps
     cd site && bun run typecheck
     cd server && bun run typecheck
+    cd tools/review-feedback && bun run typecheck
 
 # Everything CI gates for JS/TS: Biome (lint+format) + tsc typecheck.
 check-js: format-check typecheck-js

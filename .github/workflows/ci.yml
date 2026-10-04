@@ -138,9 +138,10 @@ jobs:
       - name: Verify generated code is up to date
         run: |
           cd proto && buf generate
-          if ! git diff --quiet -- ../site/src/gen ../server/src/gen; then
+          gen="../site/src/gen ../server/src/gen ../tools/review-feedback/src/gen"
+          if ! git diff --quiet -- $gen; then
             echo "::error::Generated code is stale. Run 'just buf-gen' and commit the result."
-            git diff --stat -- ../site/src/gen ../server/src/gen
+            git diff --stat -- $gen
             exit 1
           fi
       - name: Typecheck server
@@ -149,6 +150,11 @@ jobs:
         run: |
           cd site && bun install --frozen-lockfile
           node scripts/build-version-manifest.mjs
+      # Imports content-core from site/, so it runs after the site install above.
+      - name: Typecheck + test review-feedback (agent CLI/MCP)
+        run: |
+          cd tools/review-feedback && bun install --frozen-lockfile
+          bun run typecheck && bun test
 
   architecture:
     runs-on: ubuntu-latest
@@ -179,3 +185,5 @@ jobs:
         run: cd server && bun install --frozen-lockfile && bunx biome ci
       - name: Biome check (emit)
         run: cd emit && bun install --frozen-lockfile && bunx biome ci
+      - name: Biome check (review-feedback)
+        run: cd tools/review-feedback && bun install --frozen-lockfile && bunx biome ci

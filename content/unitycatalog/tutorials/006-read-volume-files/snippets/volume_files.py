@@ -11,8 +11,13 @@
 
 The regions are what a reader types into `python -m asyncio`, step by step.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/volume_files.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run volume_files.py
 """
 
 import asyncio

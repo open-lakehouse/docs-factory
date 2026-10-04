@@ -7,12 +7,9 @@
 # ///
 """Query a Delta table as of an earlier version (time travel), with deltalake.
 
-The seed call stays *inside* the shown region: the example reads a *pre-existing*
-multi-version table, so a reader must be able to bootstrap that history to run
-the snippet. ``seed_dataset`` is that one-liner — the same code path CI runs.
-
-Running this file to completion is its test (content/conftest.py runs it via
-`uv run`): the asserts below fail the build if time travel ever regresses.
+``seed_dataset`` writes a sample table with several versions, so there is
+history to travel through. The asserts at the end check each read, so a run
+that finishes means the example works.
 """
 
 

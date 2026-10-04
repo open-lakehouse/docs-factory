@@ -7,14 +7,10 @@
 # ///
 """Explore a Delta table's version history end to end, with the deltalake package.
 
-A multi-step *journey* example: one runnable, tested file whose named regions
-render as ordered steps on the docs page (open -> inspect history -> time-travel
--> compare). Seeding and the ``main`` wrapper live outside the regions so the
-file runs in CI, while each region stays a self-contained, copy/paste-runnable
-snippet (each imports what it needs).
-
-Running this file to completion is its test (content/conftest.py runs it via
-`uv run`): the asserts below fail the build if the numbers ever drift.
+The steps match the tutorial: open the table, inspect its history, read an
+earlier version, and compare. Each step imports what it needs, so you can paste
+it on its own. The asserts at the end check the result, so a run that finishes
+means the example works.
 """
 
 from docs_factory_seed import seed_dataset

@@ -9,8 +9,13 @@
 # ///
 """Give a catalog and a schema S3 storage roots and see where managed data lands.
 
-docker compose -f compose.aws.yaml up -d --wait   # from envs/unitycatalog
-AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true uv run snippets/managed_storage.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose -f compose.aws.yaml up -d --wait
+
+Then run this script:
+
+    AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true uv run managed_storage.py
 """
 
 import asyncio

@@ -14,8 +14,13 @@
 # ///
 """List and read a Unity Catalog table on local storage from Daft.
 
-docker compose -f compose.aws.yaml up -d --wait   # from envs/unitycatalog
-uv run snippets/daft_tables.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose -f compose.aws.yaml up -d --wait
+
+Then run this script, with `_seed.py` from the same page beside it:
+
+    uv run daft_tables.py
 """
 
 import asyncio

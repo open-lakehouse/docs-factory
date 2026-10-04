@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Run the local server on PostgreSQL and check that its metadata survives.
 #
-# Every region except setup runs from envs/unitycatalog, like on the page;
-# backend_db_cli.py runs them in order and checks the server state.
+# Run it from uc-docs-env/unitycatalog: it starts the PostgreSQL variant of the
+# docs' local server itself, then runs every step in order.
 
 # --8<-- [start:setup]
 uc() { docker exec unitycatalog bin/uc "$@"; }

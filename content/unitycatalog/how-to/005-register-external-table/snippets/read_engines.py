@@ -16,8 +16,13 @@
 # ///
 """Read the registered external table by name from Polars, Daft, and DuckDB.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/read_engines.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run read_engines.py
 """
 
 import asyncio

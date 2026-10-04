@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Register an S3 storage credential and external location with the uc CLI, and check vending.
 #
-# The CLI equivalents of aws_storage.py; aws_storage_cli.py runs each region.
+# The CLI equivalents of aws_storage.py. With the docs' local server running, it runs
+# every step in order.
 
 # --8<-- [start:setup]
 uc() { docker exec unitycatalog bin/uc "$@"; }

@@ -9,8 +9,13 @@
 # ///
 """Create, inspect, update, and delete a catalog and a schema with the Python SDK.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/catalogs.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run catalogs.py
 """
 
 import asyncio

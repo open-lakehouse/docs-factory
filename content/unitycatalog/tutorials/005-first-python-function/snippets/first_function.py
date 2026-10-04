@@ -16,8 +16,13 @@
 
 The regions are what a reader types into `python -m asyncio`, step by step.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/first_function.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run first_function.py
 """
 
 import asyncio
@@ -117,7 +122,7 @@ async def main() -> None:
             raise AssertionError("an int for a DOUBLE parameter should be rejected")
 
         # unitycatalog-ai 0.4.0 replaces any falsy return value with a notice
-        # string; the page's :::note depends on it.
+        # string; the page's note depends on it.
         zero = await client.execute_function_async(
             "tools.pricing.order_total", parameters={"quantity": 0, "unit_price": 1.0}
         )

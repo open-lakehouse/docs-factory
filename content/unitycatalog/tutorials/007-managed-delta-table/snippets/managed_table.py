@@ -8,8 +8,13 @@
 # ///
 """Create a catalog-managed Delta table with Spark, change it, and drop it.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/managed_table.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run managed_table.py
 
 Needs Java 17 and Maven access on first run. Behind a Maven mirror, export
 PYSPARK_SUBMIT_ARGS="--repositories <mirror-url> pyspark-shell" first.

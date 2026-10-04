@@ -9,8 +9,13 @@
 # ///
 """Create, inspect, update, and delete external and managed volumes.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/volumes.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run volumes.py
 """
 
 import asyncio

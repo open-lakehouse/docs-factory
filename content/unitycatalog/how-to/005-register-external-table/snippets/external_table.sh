@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Register an existing Delta table in Unity Catalog with the uc CLI, read it back, and drop it.
 #
-# The CLI equivalents of external_table.py; external_table_cli.py runs each region.
+# The CLI equivalents of external_table.py. With the docs' local server running, it runs
+# every step in order.
 
 # --8<-- [start:setup]
 uc() { docker exec unitycatalog bin/uc "$@"; }

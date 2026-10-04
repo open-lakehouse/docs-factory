@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Give a catalog and a schema S3 storage roots with the uc CLI and see where managed data lands.
 #
-# The CLI equivalents of managed_storage.py; managed_storage_cli.py runs each region.
+# The CLI equivalents of managed_storage.py. With the docs' local server running, it runs
+# every step in order.
 
 # --8<-- [start:setup]
 uc() { docker exec unitycatalog bin/uc "$@"; }

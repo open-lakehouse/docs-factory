@@ -40,6 +40,22 @@ export interface PageMeta {
   scripts: PageScript[];
 }
 
+/** A REST API reference: the shell renders `specUrl` in the browser. */
+export interface ApiSpec {
+  route: string;
+  slug: string;
+  title: string;
+  summary: string;
+  /** The git ref the spec is pinned to, e.g. `v0.6.0`. */
+  ref: string;
+  specUrl: string;
+  sourceUrl: string;
+  /** Overrides the spec's own `servers` in the code samples. */
+  serverUrl: string | null;
+  /** The one API the section opens on. */
+  default: boolean;
+}
+
 export type NavItem =
   | { kind: "page"; route: string; label: string }
   | { kind: "section"; label: string; items: NavItem[] };
@@ -49,15 +65,33 @@ export interface SiteData {
   tagline: string;
   nav: NavItem[];
   pages: PageMeta[];
+  apis: ApiSpec[];
+  /** The API section's own route; it shows the default API. */
+  apiIndex: string | null;
 }
 
-const EMPTY: SiteData = { title: "Unity Catalog", tagline: "", nav: [], pages: [] };
+const EMPTY: SiteData = {
+  title: "Unity Catalog",
+  tagline: "",
+  nav: [],
+  pages: [],
+  apis: [],
+  apiIndex: null,
+};
 
 const data = import.meta.glob<SiteData>("./generated/site.json", {
   eager: true,
   import: "default",
 });
 export const site: SiteData = data["./generated/site.json"] ?? EMPTY;
+
+export const defaultApi: ApiSpec | undefined = site.apis.find((a) => a.default) ?? site.apis[0];
+
+/** The API a route shows: its own, or the default for the section route. */
+export function apiFor(pathname: string): ApiSpec | undefined {
+  if (pathname === site.apiIndex) return defaultApi;
+  return site.apis.find((a) => a.route === pathname);
+}
 
 // One chunk per page. Prerender and first hydration load the route's module up
 // front (preloadRoute), so the synchronous render below always finds it there;

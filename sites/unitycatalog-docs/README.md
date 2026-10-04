@@ -13,7 +13,7 @@ paths and overwrites them on every run. Don't edit them by hand:
 | Path | Contents |
 | --- | --- |
 | `src/content/<bucket>/<slug>.md` | Pages: portable Markdown with snippets inlined, links resolved to site routes, `:::` directives kept. |
-| `src/generated/site.json` | Navigation tree, page list (route, title, headings, prev/next). |
+| `src/generated/site.json` | Navigation tree, page list (route, title, headings, prev/next), REST API specs (route, pinned spec URL). |
 | `src/generated/heads.json` | Per-route `<head>`: title, description, canonical, OpenGraph, JSON-LD, `.md` twin link. |
 | `src/vendor/plugins/` | The factory preview's remark plugins, copied verbatim, so `:::` directives render the same way here. |
 | `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + runnable scripts, `search-index.json` (per-section text for the ⌘K palette), images, LikeC4 PNGs and web component. |
@@ -23,6 +23,11 @@ Everything else (layout, components, styles, the build) belongs to this site.
 
 The vendored plugins import their components from `@/components/{callout,tldr,content-tabs,journey,LikeC4View}`,
 so those module paths and export names are part of the contract with the emitter.
+
+REST API pages (`/reference/api/<slug>`) render the spec at `specUrl` with
+Scalar, client-side and lazily loaded: `src/pages/ApiPage.tsx` and
+`src/components/ApiReference.tsx`, themed onto the site tokens in
+`src/components/api-reference.css`.
 
 ## Commands
 

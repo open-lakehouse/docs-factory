@@ -132,9 +132,10 @@ export function toEntry(
 /**
  * Render /llms.txt (pure, for testing). `entries` are toEntry() records. Docs group
  * by Diátaxis quadrant (from their identity/meta); blogs go under a Blog section.
- * Each line links the canonical route and its `.md` twin.
+ * Each line links the canonical route and its `.md` twin. `apis` (api.mjs
+ * apiEntries) link their OpenAPI spec instead of a twin.
  */
-export function renderLlmsIndex(entries, { title, summary, origin = "" }) {
+export function renderLlmsIndex(entries, { title, summary, origin = "", apis = [] }) {
   const lines = [`# ${title}`, "", `> ${summary}`, ""];
   const bySection = Object.fromEntries(DIATAXIS.map((k) => [k, []]));
   const blog = [];
@@ -150,6 +151,16 @@ export function renderLlmsIndex(entries, { title, summary, origin = "" }) {
     lines.push(`## ${SECTION_TITLE[section]}`, "", ...bySection[section].sort(), "");
   }
   if (blog.length) lines.push("## Blog", "", ...blog.sort(), "");
+  if (apis.length) {
+    lines.push(
+      "## API reference",
+      "",
+      ...apis.map(
+        (a) => `- [${a.title}](${origin}${a.route}) ([OpenAPI](${a.specUrl})): ${a.summary}`,
+      ),
+      "",
+    );
+  }
 
   // Resources (Phase 2 adds concepts.json here).
   lines.push(

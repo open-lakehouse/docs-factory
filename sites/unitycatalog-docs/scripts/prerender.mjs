@@ -33,6 +33,10 @@ function renderHeadTags(head) {
     head.twin
       ? `<link rel="alternate" type="text/markdown" href="${esc(head.twin)}" title="Markdown" />`
       : "",
+    ...(head.alternates ?? []).map(
+      (a) =>
+        `<link rel="alternate" type="${esc(a.type)}" href="${esc(a.href)}" title="${esc(a.title)}" />`,
+    ),
     ...(head.og ?? []).map(([p, c]) => `<meta property="${esc(p)}" content="${esc(c)}" />`),
     ...(head.twitter ?? []).map(([n, c]) => `<meta name="${esc(n)}" content="${esc(c)}" />`),
     head.jsonLd ? `<script type="application/ld+json">${jsonLdScript(head.jsonLd)}</script>` : "",

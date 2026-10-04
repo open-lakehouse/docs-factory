@@ -14,7 +14,8 @@
  *      site page (docs-site target) and its `.md` twin (md-twin target);
  *   4. add images, LikeC4 PNGs + web component, runnable scripts, the vendored
  *      remark plugins, site.json / heads.json, llms.txt, llms-full.txt,
- *      sitemap.xml, robots.txt, and the palette's search-index.json;
+ *      sitemap.xml, robots.txt, and the palette's search-index.json, plus a
+ *      route per REST API reference the site declares (api.mjs);
  *   5. diff against the target's previous .docs-emit.json, write only changed
  *      files, delete stale ones, and print a page-level change report.
  *
@@ -59,6 +60,7 @@ import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget } from "../targets/docs-site.mjs";
 import mdTwin, { LIKEC4_ASSET_BASE } from "../targets/md-twin.mjs";
+import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
   renderLlmsFull,
   renderLlmsIndex,
@@ -171,6 +173,9 @@ export async function emitDocs({ site, drafts = false }) {
       isSelected: (bucket, slug) => routes.has(routeFor(bucket, slug)),
       routeFor,
     });
+    // The shell's topbar links these, not the sidebar.
+    const apis = apiEntries(site);
+    const apiIndex = apis.length ? apiIndexRoute(site) : null;
     const byRoute = new Map(selected.map((p) => [hrefFor(p.identity), p]));
     const ordered = order.map(({ route, section }) => ({ ...byRoute.get(route), route, section }));
 
@@ -327,7 +332,7 @@ export async function emitDocs({ site, drafts = false }) {
     // 4. Site data + GEO surfaces.
     files.set(
       "src/generated/site.json",
-      `${JSON.stringify({ title: site.title, tagline: site.tagline, nav, pages }, null, 2)}\n`,
+      `${JSON.stringify({ title: site.title, tagline: site.tagline, nav, pages, apis, apiIndex }, null, 2)}\n`,
     );
     const heads = {
       "/": {
@@ -352,6 +357,32 @@ export async function emitDocs({ site, drafts = false }) {
         siteName: site.title,
       });
     }
+    for (const a of apis) {
+      heads[a.route] = {
+        ...pageHead({
+          identity: { area: "api", slug: a.slug },
+          meta: { title: a.title, summary: a.summary },
+          origin,
+          hrefFor,
+          siteName: site.title,
+        }),
+        twin: null,
+        alternates: [{ type: "application/yaml", href: a.specUrl, title: "OpenAPI" }],
+      };
+      search.push({
+        id: a.route,
+        route: a.route,
+        anchor: null,
+        page: a.title,
+        heading: null,
+        section: ["API reference"],
+        text: `${a.summary} OpenAPI REST endpoints.`,
+      });
+    }
+    // The section route shows the default API, so it shares that API's head
+    // (canonical included) and stays out of the sitemap.
+    const defaultApi = apis.find((a) => a.default);
+    if (apiIndex && defaultApi) heads[apiIndex] = heads[defaultApi.route];
     // public/, not src/generated/: the palette fetches it on first open instead
     // of every page bundling it.
     files.set("public/search-index.json", `${JSON.stringify({ version: 1, records: search })}\n`);
@@ -366,6 +397,7 @@ export async function emitDocs({ site, drafts = false }) {
         title: `${site.title} documentation`,
         summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`.`,
         origin,
+        apis,
       }),
     );
     files.set(
@@ -377,7 +409,13 @@ export async function emitDocs({ site, drafts = false }) {
     );
     files.set(
       "public/sitemap.xml",
-      renderSitemap(sitemapUrls(ordered, origin, { hrefFor, isIncluded })),
+      renderSitemap(
+        sitemapUrls(ordered, origin, {
+          hrefFor,
+          isIncluded,
+          indexRoutes: ["/", ...apis.map((a) => a.route)],
+        }),
+      ),
     );
     files.set("public/robots.txt", renderRobots(origin));
 

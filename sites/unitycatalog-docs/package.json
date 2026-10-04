@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
+    "@scalar/api-reference-react": "0.9.74",
     "lucide-react": "^1.23.0",
     "minisearch": "^7.2.0",
     "react": "^19.0.0",

@@ -185,7 +185,8 @@ function servedPaths(path, slug, hrefFor) {
  *
  * `environment` is the compose's `envs/environments.yml` key and `env` that
  * entry's client variables: what a reader exports, never the harness-only
- * `[tool.docs-factory] env`.
+ * `[tool.docs-factory] env`. `helpers` are the sibling modules a Python script
+ * imports, served beside it.
  *
  * `hrefFor` maps an identity to its page route; an emitted target site passes
  * its own URL scheme.
@@ -206,6 +207,12 @@ export function scriptEntry(entry, { hrefFor = hrefFromIdentity } = {}) {
     services: entry.services,
     baseUrlEnv: entry.base_url_env,
     env: entry.client_env ?? {},
+    helpers: shell
+      ? []
+      : (entry.helpers ?? []).map((path) => ({
+          gitPath: path,
+          fetchUrl: servedPaths(path, slug, hrefFor).fetchUrl,
+        })),
   };
 }
 

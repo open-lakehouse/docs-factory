@@ -19,7 +19,7 @@ import re
 import sys
 from pathlib import Path
 
-from . import environments
+from . import environments, published
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -143,6 +143,10 @@ def cmd_snippetcheck(p) -> int:
     if scripts is not None:
         errors.extend(environments.check(p["root"], scripts))
         errors.extend(environments.check_pages(p["root"], p["content"], scripts))
+        served_errors, warnings = published.check(scripts)
+        errors.extend(served_errors)
+        for warning in warnings:
+            print(f"warning: {warning}", file=sys.stderr)
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} snippet error(s)", file=sys.stderr)
@@ -199,7 +203,8 @@ def cmd_scripts(p, as_json: bool = True) -> int:
     verifies, tutorial_slug}]}``. ``path`` and ``verifies`` (the snippet a harness
     tests, or null) are repo-relative POSIX. ``environment`` is the compose's
     ``envs/environments.yml`` key (or null) and ``client_env`` that entry's
-    reader-facing variables; ``env`` stays harness-only.
+    reader-facing variables; ``env`` stays harness-only. ``helpers`` are the
+    sibling modules a script imports, which the site serves beside it.
     """
     content_root = p["content"]
     blogs_root = p["blogs"]
@@ -233,6 +238,10 @@ def cmd_scripts(p, as_json: bool = True) -> int:
                         if verified
                         else None
                     ),
+                    "helpers": [
+                        h.relative_to(repo_root.resolve()).as_posix()
+                        for h in published.helpers(meta.path.resolve())
+                    ],
                     "tutorial_slug": slug_fn(meta.path, root),
                 }
             )

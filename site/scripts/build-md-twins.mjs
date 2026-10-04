@@ -70,14 +70,16 @@ export function injectFrontmatter(output, lines) {
 
 /**
  * The command that runs a published script: a Python script straight from its
- * URL (uv fetches it), a shell script from the folder it was saved into.
- * `env` is the stack's client env, so the command works in a fresh terminal.
+ * URL (uv fetches it), a shell script, or one that imports a helper module,
+ * from the folder it was saved into. `env` is the stack's client env, so the
+ * command works in a fresh terminal.
  */
 export function companionRun(s, origin = "") {
   const file = s.fetchUrl.split("/").pop();
   if (s.kind === "shell") return `bash ${file}`;
   const env = Object.entries(s.env ?? {}).map(([k, v]) => `${k}=${v} `);
-  return `${env.join("")}uv run ${origin}${s.fetchUrl}`;
+  const target = s.helpers?.length ? file : `${origin}${s.fetchUrl}`;
+  return `${env.join("")}uv run ${target}`;
 }
 
 /**
@@ -93,6 +95,8 @@ export function companionsFrontmatter(scripts, origin = "") {
     lines.push(`  - url: ${q(`${origin}${s.fetchUrl}`)}`, `    kind: ${s.kind}`);
     if (s.summary) lines.push(`    purpose: ${q(s.summary)}`);
     lines.push(`    run: ${q(companionRun(s, origin))}`);
+    if (s.helpers?.length)
+      lines.push(`    helpers: [${s.helpers.map((h) => q(`${origin}${h.fetchUrl}`)).join(", ")}]`);
     if (s.requiresPython) lines.push(`    requires-python: ${q(s.requiresPython)}`);
     if (s.services?.length) lines.push(`    services: [${s.services.map(q).join(", ")}]`);
   }
@@ -147,6 +151,12 @@ export function companionsSection(scripts, origin = "", environment = null) {
     // A shell script reaches the server through `docker compose exec`.
     const where = s.kind === "shell" && environment ? ` from \`${environment.dir}\`` : "";
     lines.push(`  - run: \`${companionRun(s, origin)}\`${where}`);
+    for (const h of s.helpers ?? []) {
+      const name = h.fetchUrl.split("/").pop();
+      lines.push(
+        `  - save [\`${name}\`](${origin}${h.fetchUrl}) beside it first; the script imports it`,
+      );
+    }
   }
   lines.push("");
   return lines.join("\n");

@@ -194,6 +194,12 @@ export async function emitDocs({ site, drafts = false }) {
       .map((s) => {
         const source = readFileSync(join(REPO_ROOT, s.gitPath), "utf8");
         files.set(`public${s.fetchUrl}`, publishScript(source));
+        for (const h of s.helpers) {
+          files.set(
+            `public${h.fetchUrl}`,
+            publishScript(readFileSync(join(REPO_ROOT, h.gitPath), "utf8")),
+          );
+        }
         return { ...s, summary: scriptSummary(source, s.kind) };
       });
     files.set("public/scripts.json", `${JSON.stringify({ version: 2, scripts }, null, 2)}\n`);
@@ -346,12 +352,20 @@ export async function emitDocs({ site, drafts = false }) {
           bundle: `/env/${site.env.bundle}.tar.gz`,
           commands: environment.commands,
         },
-        scripts: owned.map((s) => ({
-          url: s.fetchUrl,
-          file: s.fetchUrl.split("/").pop(),
-          kind: s.kind,
-          summary: s.summary,
-        })),
+        scripts: [
+          ...owned.map((s) => ({
+            url: s.fetchUrl,
+            file: s.fetchUrl.split("/").pop(),
+            kind: s.kind,
+            summary: s.summary,
+          })),
+          ...[...new Set(owned.flatMap((s) => s.helpers.map((h) => h.fetchUrl)))].map((url) => ({
+            url,
+            file: url.split("/").pop(),
+            kind: "python",
+            summary: "Imported by the scripts above; save it beside them.",
+          })),
+        ],
       });
 
       const version = entryFor(absPath, REPO_ROOT);

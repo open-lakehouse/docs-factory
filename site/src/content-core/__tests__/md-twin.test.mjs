@@ -204,6 +204,22 @@ test("companionsSection gives link, purpose, run command, and the stack", () => 
   expect(md).not.toContain("compose.yaml`");
 });
 
+test("a script that imports a helper runs from its folder, with the helper beside it", () => {
+  const s = {
+    kind: "python",
+    fetchUrl: "/how-to/df/snippets/pandas_tables.py",
+    summary: null,
+    env: {},
+    helpers: [{ fetchUrl: "/how-to/df/snippets/_seed.py" }],
+  };
+  const yaml = companionsFrontmatter([s], "https://x.test");
+  expect(yaml).toContain('    run: "uv run pandas_tables.py"');
+  expect(yaml).toContain('    helpers: ["https://x.test/how-to/df/snippets/_seed.py"]');
+  expect(companionsSection([s], "https://x.test")).toContain(
+    "  - save [`_seed.py`](https://x.test/how-to/df/snippets/_seed.py) beside it first",
+  );
+});
+
 test("injectFrontmatter + prependSection put companions ahead of the body", () => {
   const twin = "---\ntitle: T\n---\n\nBody\n";
   const out = prependSection(injectFrontmatter(twin, "companions: []"), "## Companion files\n");

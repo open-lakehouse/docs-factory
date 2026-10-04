@@ -169,6 +169,22 @@ test("scriptEntry carries the registry's client env, never the harness-only env"
   expect(sh.env).toEqual(clientEnv);
 });
 
+test("scriptEntry serves a script's helper modules beside it", () => {
+  const snippets = "content/unitycatalog/how-to/009-python-dataframes/snippets";
+  const e = scriptEntry(
+    {
+      ...DOCSNIP_ENTRY,
+      path: `${snippets}/pandas_tables.py`,
+      helpers: [`${snippets}/_seed.py`],
+      tutorial_slug: "python-dataframes",
+    },
+    { hrefFor: (id) => `/${id.bucket}/${id.slug}` },
+  );
+  expect(e.helpers).toEqual([
+    { gitPath: `${snippets}/_seed.py`, fetchUrl: "/how-to/python-dataframes/snippets/_seed.py" },
+  ]);
+});
+
 test("publishScript drops factory-only PEP 723 tables and keeps the runtime ones", () => {
   const src = [
     "# /// script",

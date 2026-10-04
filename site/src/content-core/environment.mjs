@@ -49,8 +49,8 @@ export function declaredEnvironment(body) {
  * name two different stacks throws: one page, one "Start the environment".
  * `declared` (declaredEnvironment) is for a page with no scripts of its own
  * that still walks the reader through a stack; scripts must agree with it.
- * `runUrl` is set when the page owns exactly one Python script, which a
- * reader can `uv run` straight from its URL.
+ * `runUrl` is set when the page owns exactly one Python script and it
+ * imports no helper module, so a reader can `uv run` it straight from its URL.
  */
 export function pageEnvironment(
   scripts,
@@ -76,7 +76,8 @@ export function pageEnvironment(
     commands: startCommands(key, env, { bundle, bundleUrl }),
     stop: stopCommand(key),
     dir: `${bundle}/${composeParts(key).dir}`,
-    runUrl: python.length === 1 ? `${origin}${python[0].fetchUrl}` : null,
+    runUrl:
+      python.length === 1 && !python[0].helpers?.length ? `${origin}${python[0].fetchUrl}` : null,
   };
 }
 

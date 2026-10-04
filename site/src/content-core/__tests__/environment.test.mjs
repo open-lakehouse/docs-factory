@@ -56,6 +56,11 @@ test("two Python scripts leave no single run URL", () => {
   expect(env.runUrl).toBeNull();
 });
 
+test("a script that imports a helper gets no run URL", () => {
+  const script = { ...py("unitycatalog/compose.yaml"), helpers: [{ fetchUrl: "/x/_seed.py" }] };
+  expect(pageEnvironment([script], OPTS).runUrl).toBeNull();
+});
+
 test("scripts needing two stacks are an error", () => {
   expect(() =>
     pageEnvironment([py("unitycatalog/compose.yaml"), py("unitycatalog/compose.aws.yaml")], OPTS),

@@ -2,7 +2,9 @@
 // canonical route AND its .md twin. /llms-full.txt concatenates twin bodies under
 // route headers. Exercises the pure renderLlmsIndex()/renderLlmsFull().
 import { expect, test } from "bun:test";
-import { renderLlmsFull, renderLlmsIndex } from "../../../scripts/build-site-llmstxt.mjs";
+import { renderLlmsFull, renderLlmsIndex } from "../discovery.mjs";
+
+const SITE = { title: "Test docs", summary: "Test summary." };
 
 function docEntry(slug, diataxis) {
   return {
@@ -32,25 +34,24 @@ function blogEntry(slug) {
 }
 
 test("llms.txt has Diátaxis sections + a Blog section", () => {
-  const out = renderLlmsIndex([
-    docEntry("read", "how-to"),
-    docEntry("concepts", "explanation"),
-    blogEntry("hello"),
-  ]);
-  expect(out).toContain("# Open Lakehouse documentation");
+  const out = renderLlmsIndex(
+    [docEntry("read", "how-to"), docEntry("concepts", "explanation"), blogEntry("hello")],
+    SITE,
+  );
+  expect(out).toContain("# Test docs");
   expect(out).toContain("## How-to guides");
   expect(out).toContain("## Explanation");
   expect(out).toContain("## Blog");
 });
 
 test("each llms.txt entry links both the canonical route and its .md twin", () => {
-  const out = renderLlmsIndex([docEntry("read", "how-to")]);
+  const out = renderLlmsIndex([docEntry("read", "how-to")], SITE);
   expect(out).toContain("(https://x.test/docs/delta/x/read)");
   expect(out).toContain("([md](https://x.test/docs/delta/x/read.md))");
 });
 
 test("llms.txt lists the full-text corpus + runnable scripts resources", () => {
-  const out = renderLlmsIndex([]);
+  const out = renderLlmsIndex([], SITE);
   expect(out).toContain("/llms-full.txt");
   expect(out).toContain("/scripts.json");
 });
@@ -65,8 +66,8 @@ test("llms-full.txt concatenates twin bodies under route headers, skipping empti
   expect(out).not.toContain("/docs/delta/x/missing");
 });
 
-test("llms.txt resources resolve against the origin a target site passes", () => {
-  const out = renderLlmsIndex([], { origin: "https://x.test" });
+test("llms.txt resources resolve against the origin a site passes", () => {
+  const out = renderLlmsIndex([], { ...SITE, origin: "https://x.test" });
   expect(out).toContain("(https://x.test/llms-full.txt)");
   expect(out).toContain("(https://x.test/scripts.json)");
 });

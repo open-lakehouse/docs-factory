@@ -43,12 +43,6 @@ import {
   scriptEntry,
   scriptSummary,
 } from "../../site/scripts/build-script-index.mjs";
-import {
-  renderLlmsFull,
-  renderLlmsIndex,
-  toEntry,
-} from "../../site/scripts/build-site-llmstxt.mjs";
-import { renderRobots, renderSitemap, sitemapUrls } from "../../site/scripts/build-sitemap.mjs";
 import { isPublic, splitFrontmatter } from "../../site/src/content-core/frontmatter.mjs";
 import { canonicalUrl, pageHead } from "../../site/src/content-core/head.mjs";
 import { docIdentity } from "../../site/src/content-core/identity.mjs";
@@ -65,6 +59,14 @@ import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget } from "../targets/docs-site.mjs";
 import mdTwin, { LIKEC4_ASSET_BASE } from "../targets/md-twin.mjs";
+import {
+  renderLlmsFull,
+  renderLlmsIndex,
+  renderRobots,
+  renderSitemap,
+  sitemapUrls,
+  toEntry,
+} from "./discovery.mjs";
 import { projectNav } from "./nav.mjs";
 import { renderedSections } from "./sections.mjs";
 import {
@@ -368,7 +370,7 @@ export async function emitDocs({ site, drafts = false }) {
     );
     files.set(
       "public/sitemap.xml",
-      renderSitemap(sitemapUrls(ordered, origin, { hrefFor, indexRoutes: ["/"], isIncluded })),
+      renderSitemap(sitemapUrls(ordered, origin, { hrefFor, isIncluded })),
     );
     files.set("public/robots.txt", renderRobots(origin));
 

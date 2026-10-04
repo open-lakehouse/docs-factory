@@ -195,10 +195,6 @@ check: _site-deps
     uv run docsnip check
     cd site && node scripts/check-nav.mjs
 
-# Regenerate per-project llms.txt into site/public/ (also runs at site prebuild).
-llmstxt: _site-deps
-    cd site && node scripts/build-llmstxt.mjs
-
 # Lint + type-check the Python workspace.
 lint:
     uv run ruff check .

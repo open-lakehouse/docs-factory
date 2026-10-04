@@ -132,10 +132,9 @@ harness in JS would be high-blast-radius for no correctness gain; the two
 runtimes are instead tied together by `content/vocab.json` and the
 cross-language drift tests (§8).
 
-Invocation points: `site/package.json`'s `prebuild` runs the manifest **and**
-the llms.txt generator (`site/scripts/build-llmstxt.mjs` → `site/public/`, which
-Vite copies into `dist/`); `just version-manifest` / `register-versions` /
-`llmstxt` / `check` behave as before.
+Invocation points: `site/package.json`'s `prebuild` runs the manifest;
+`just version-manifest` / `register-versions` / `check` behave as before. The
+docs-site emitter (`emit/docs`) produces each emitted site's `llms.txt`.
 
 ## 7. The review-DB contract
 
@@ -210,6 +209,6 @@ the two frontmatter splitters, among others).
   ever needs it (today all consumers reach it by relative import, as `emit/`
   already does).
 - ~~Whether to eventually move `*.llms.txt` generation into the JS pipeline~~ —
-  done: it is a site prebuild step (`site/scripts/build-llmstxt.mjs`) reusing
+  done: the docs-site emitter (`emit/docs/discovery.mjs`) writes it, reusing
   `content-core` identity, so the published-URL logic exists once. docsnip is now
   purely the content-contract validator.

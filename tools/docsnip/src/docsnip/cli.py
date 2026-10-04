@@ -5,10 +5,10 @@ Subcommands:
   snippetcheck  — verify every snippet fence resolves to a unique source region
   check         — validate + snippetcheck (CI entry)
 
-llms.txt generation lives on the SITE side now (site/scripts/build-llmstxt.mjs,
-a build-time step), so it re-uses content-core for content discovery, identity,
-and URL derivation instead of re-implementing them in Python. docsnip is the
-content-contract validator; it no longer emits artifacts.
+llms.txt generation lives in the docs-site emitter (emit/docs), which re-uses
+content-core for content discovery, identity, and URL derivation instead of
+re-implementing them in Python. docsnip is the content-contract validator; it no
+longer emits artifacts.
 """
 
 from __future__ import annotations

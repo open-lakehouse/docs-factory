@@ -4,8 +4,8 @@
  * Phase 0 of the agentic-docs plan: the site is a client-rendered SPA whose
  * `index.html` ships an empty shell, so crawlers and non-JS agents see no
  * per-page title/description/canonical/structured-data today. These builders
- * turn a page's `{identity, meta, body}` into the tags a prerender step
- * (prerender-shells.mjs) injects into a per-route static HTML shell.
+ * turn a page's `{identity, meta, body}` into the tags an emitted docs site
+ * (emit/docs) writes into each route's static HTML.
  *
  * Everything here is derived from the CANONICAL identity (via hrefFromIdentity)
  * so the URLs match the routes the site serves and the llms.txt/twin generators
@@ -219,9 +219,9 @@ function prune(obj) {
 }
 
 /**
- * The full set of head inputs for a page, assembled once. prerender-shells.mjs
+ * The full set of head inputs for a page, assembled once. The docs-site emitter
  * renders these into tags; keeping assembly here means the twin/sitemap
- * generators (later phases) reuse the exact same title/description/canonical.
+ * generators reuse the exact same title/description/canonical.
  */
 export function pageHead({
   identity,

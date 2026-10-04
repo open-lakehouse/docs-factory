@@ -31,7 +31,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildRedirectRoutes } from "./build-redirects.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const siteRoot = resolve(here, "..");
@@ -46,19 +45,14 @@ const stripHost = (v) => v.replace(/^https?:\/\//, "").replace(/\/+$/, "");
  *   1. `/api/(.*)` proxies RPCs to the Function, stripping the `/api` prefix (the
  *      Hono app mounts Connect at root). MUST precede filesystem so POSTs aren't
  *      swallowed by the SPA fallback.
- *   2. 308 redirects for renamed pages (Phase 1g) — before filesystem so they beat
- *      the SPA catch-all.
- *   3. `.md` / `.py` / `.sh` header rules (Phase 1c / 3.4): noindex + Content-Type, with
+ *   2. `.md` / `.py` / `.sh` header rules: noindex + Content-Type, with
  *      `continue: true` so the filesystem handler still serves the actual file.
- *   4. `Accept: text/markdown` negotiation (Phase 1b): rewrite a doc/blog HTML
- *      route to its `.md` twin. `Vary: Accept` on those routes so caches don't
- *      serve markdown to an HTML client.
- *   5. `handle: filesystem` serves the built static assets (incl. the .md twins,
- *      .py/.sh scripts, sitemap, llms.txt, …).
- *   6. A companion-file miss guard: any `.md`/`.py`/`.sh`/`scripts.json` request the
+ *   3. `handle: filesystem` serves the built static assets (incl. the .md twins
+ *      and .py/.sh scripts the review workspace fetches).
+ *   4. A companion-file miss guard: any `.md`/`.py`/`.sh`/`scripts.json` request the
  *      filesystem DIDN'T resolve returns a real 404 — it must NOT reach the SPA
  *      catch-all below. Without this, a miss falls through to `/index.html`, and
- *      because the step-3 header rule already stamped `Content-Type: text/markdown`
+ *      because the step-2 header rule already stamped `Content-Type: text/markdown`
  *      with `continue: true`, the edge caches that HTML app-shell body UNDER the
  *      `.md` cache key, labeled as markdown. The review workspace's twin fetch then
  *      gets a 200/304 whose body is `<!doctype html>…<div id="root">` and shows the
@@ -66,68 +60,29 @@ const stripHost = (v) => v.replace(/^https?:\/\//, "").replace(/\/+$/, "");
  *      sticky and revalidates to 304). 404ing the miss keeps a companion URL either
  *      a real file or a real 404 — never a mislabeled SPA shell. Must precede the
  *      catch-all.
- *   7. Catch-all → index.html (client-side routing).
+ *   5. Catch-all → index.html (client-side routing).
  */
-export function buildRoutes({ fnHost, redirectRoutes = [] }) {
+export function buildRoutes({ fnHost }) {
   return [
     { src: "/api/(.*)", dest: `https://${fnHost}/$1` },
 
-    ...redirectRoutes, // { src, dest, status: 308 }
-
-    // .md twins: noindex + text/markdown; continue → filesystem serves the file.
     {
       src: "/(.*)\\.md",
-      headers: {
-        "X-Robots-Tag": "noindex",
-        "Content-Type": "text/markdown; charset=utf-8",
-        Vary: "Accept",
-      },
+      headers: { "X-Robots-Tag": "noindex", "Content-Type": "text/markdown; charset=utf-8" },
       continue: true,
     },
-    // Raw runnable .py scripts: noindex + text/x-python (Phase 3).
     {
       src: "/(.*)\\.py",
-      headers: {
-        "X-Robots-Tag": "noindex",
-        "Content-Type": "text/x-python; charset=utf-8",
-      },
+      headers: { "X-Robots-Tag": "noindex", "Content-Type": "text/x-python; charset=utf-8" },
       continue: true,
     },
-    // Harness-verified shell scripts (build-script-index serves the quoted .sh).
     {
       src: "/(.*)\\.sh",
-      headers: {
-        "X-Robots-Tag": "noindex",
-        "Content-Type": "text/x-shellscript; charset=utf-8",
-      },
+      headers: { "X-Robots-Tag": "noindex", "Content-Type": "text/x-shellscript; charset=utf-8" },
       continue: true,
     },
-    // Transparent content negotiation: an agent sending `Accept: text/markdown`
-    // for a BARE doc/blog HTML route gets the .md twin. (Least-proven Build Output
-    // API feature; the explicit .md URLs advertised in rel=alternate + llms.txt are
-    // the fallback if this proves flaky — drop just this rule then.)
-    //
-    // The `(?!.*\\.md$)` negative lookahead is load-bearing: this rule must NOT
-    // match a path that ALREADY ends in `.md`. The review workspace's twin fetch
-    // requests the `.md` URL directly AND sends `Accept: text/markdown`; without the
-    // guard this rule rewrites `/blog/slug.md` → `/blog/slug.md.md`, which doesn't
-    // exist → the miss guard below 404s it (pre-#102 it fell through to the SPA
-    // shell, i.e. the original "No markdown twin" symptom). Only bare routes like
-    // `/blog/slug` should be negotiated up to their twin.
-    {
-      src: "/((?!.*\\.md$)(?:docs/.*|blog/.*))",
-      has: [{ type: "header", key: "accept", value: "(.*text/markdown.*)" }],
-      dest: "/$1.md",
-    },
-    { src: "/(docs/.*|blog/.*)", headers: { Vary: "Accept" }, continue: true },
 
     { handle: "filesystem" },
-    // Companion-file miss guard (see header §6). A `.md`/`.py`/`.sh`/`scripts.json` that
-    // the filesystem didn't serve is a genuine 404 — never the SPA shell. This
-    // stops the app-shell HTML from being cached under a companion URL's key (and
-    // mislabeled text/markdown by the step-3 header rule with continue:true), which
-    // otherwise makes the review workspace's twin fetch see a 200/304 HTML body and
-    // render the "no twin" empty state permanently.
     { src: "/(.*)\\.(md|py|sh)", status: 404 },
     { src: "/scripts\\.json", status: 404 },
     { src: "/.*", dest: "/index.html" },
@@ -146,7 +101,7 @@ function main() {
   const fnHost = stripHost(functionHost);
   const config = {
     version: 3,
-    routes: buildRoutes({ fnHost, redirectRoutes: buildRedirectRoutes() }),
+    routes: buildRoutes({ fnHost }),
   };
 
   // Serialize + self-validate (JSON.stringify can't produce invalid JSON, but keep

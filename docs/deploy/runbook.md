@@ -388,8 +388,8 @@ PR, prod on push to `main`). Verify end to end:
    pulls its env, migrates it, deploys the branch Function, and deploys a Vercel
    preview whose `/api` points at that Function.
 2. On the preview URL: unauthenticated → sign-in wall; allowlisted GitHub user →
-   admitted; non-allowlisted → "access pending"; toggle **View as anonymous** →
-   only published content shows.
+   admitted; non-allowlisted → "access pending"; a user invited to review one
+   item sees only that item in the workspace tree.
 3. Close the PR → the integration removes the preview's Neon branch (the workflow
    no longer runs a cleanup job).
 
@@ -417,9 +417,8 @@ PR, prod on push to `main`). Verify end to end:
 |---|---|
 | Login gate (3 screens) | `site/src/components/AccessGate.tsx` |
 | Sign-in/out seam | `site/src/lib/auth-actions.ts` |
-| View-mode state | `site/src/lib/auth-context.tsx`, `site/src/lib/view-mode.ts` |
-| Anonymous-preview filtering | `site/src/lib/content-visibility.ts` |
-| View-mode selector UI | `site/src/components/layout/StatusMenu.tsx` |
+| Viewer capabilities (`reviewActive` / `canComment`) | `site/src/lib/auth-context.tsx` |
+| Invitee content narrowing | `site/src/lib/content-visibility.ts` |
 | Prod auth provider | `server/src/auth/neon-auth.ts`, `server/src/allowlist.ts` |
 | Migrations | `server/scripts/migrate.mjs`, `server/db/migrations/` |
 | Vercel rewrite generator | `site/scripts/gen-vercel-config.mjs`, `site/scripts/assemble-vercel-output.mjs` |

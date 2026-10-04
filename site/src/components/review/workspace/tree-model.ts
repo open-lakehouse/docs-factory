@@ -1,14 +1,15 @@
-// Build the review workspace's left-nav tree from the same build-time content
-// the site already knows about — no RPC. Docs come from the viewer-aware doc nav
-// (`useVisibleDocNav`, project → bucket → page); blogs from `blogsBySeries()`
-// (series → post, plus standalone). Each leaf carries the ContentRef the tab
+// Build the review workspace's left-nav tree from the build-time content. Docs
+// come from `docNav` (project → bucket → page); blogs from `blogsBySeries()`
+// (series → post, plus standalone). Leaves the viewer may not open are pruned,
+// along with any branch they leave empty. Each leaf carries the ContentRef the tab
 // system opens, plus frontmatter authoring status for the tree adornment.
 import { useMemo } from "react";
 import { blogsBySeries, findDoc } from "../../../content";
+import { docNav } from "../../../doc-nav";
 import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { type DiataxisKey, diataxisKeyOf } from "../../../graph";
 import { blogRef, docRef } from "../../../lib/content-ref";
-import { useVisibleDocNav } from "../../../sidebar";
+import { useContentVisibility } from "../../../lib/content-visibility";
 import { treeNodeId } from "./expansion-context";
 
 /** A selectable leaf: the page a tab opens. */
@@ -33,16 +34,24 @@ export interface TreeBranch {
 
 export type TreeNode = TreeBranch | TreeLeaf;
 
+/** Drop leaves `keep` rejects, then any branch left with no children. */
+function prune(nodes: TreeNode[], keep: (leaf: TreeLeaf) => boolean): TreeNode[] {
+  return nodes.flatMap((node): TreeNode[] => {
+    if (node.kind === "leaf") return keep(node) ? [node] : [];
+    const children = prune(node.children, keep);
+    return children.length > 0 ? [{ ...node, children }] : [];
+  });
+}
+
 /**
- * The full workspace tree, viewer-narrowed (anonymous viewers can't reach the
- * workspace, but the doc nav is filtered anyway). `isLoading` mirrors the doc
- * visibility resolution so the tree can show a spinner rather than a flash.
+ * The workspace tree, narrowed to what this viewer may open. `isLoading` mirrors
+ * the visibility resolution so the tree can show a spinner rather than a flash.
  */
 export function useReviewTree(): { tree: TreeNode[]; isLoading: boolean } {
-  const { nav, isLoading } = useVisibleDocNav();
+  const { isVisible, isLoading } = useContentVisibility();
 
   const tree = useMemo<TreeNode[]>(() => {
-    const docBranches: TreeNode[] = nav.map((group) => ({
+    const docBranches: TreeNode[] = docNav.map((group) => ({
       kind: "branch",
       id: treeNodeId.project(group.project),
       label: group.projectLabel,
@@ -96,8 +105,8 @@ export function useReviewTree(): { tree: TreeNode[]; isLoading: boolean } {
       children: blogChildren,
     };
 
-    return [...docBranches, blogBranch];
-  }, [nav]);
+    return prune([...docBranches, blogBranch], (leaf) => isVisible(leaf.ref));
+  }, [isVisible]);
 
   return { tree, isLoading };
 }

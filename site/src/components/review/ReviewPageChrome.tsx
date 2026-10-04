@@ -1,5 +1,5 @@
-// Shared page metadata + review controls. The review workspace keeps this
-// visible for page context; regular content pages show it only in review mode.
+// Page metadata + review controls above a rendered workspace tab. Invited
+// contributors get the metadata only; the review controls are reviewer-only.
 // The last-updated day opens a compact Merkle version history on hover.
 
 import { type Timestamp, timestampDate } from "@bufbuild/protobuf/wkt";
@@ -28,7 +28,6 @@ import ReviewControls from "./ReviewControls";
 interface ReviewPageChromeProps {
   contentRef: ContentRef;
   page: ContentPage;
-  alwaysVisible?: boolean;
 }
 
 /** Format a protobuf Timestamp as YYYY-MM-DD (UTC calendar day). */
@@ -137,11 +136,7 @@ function LastUpdatedWithHistory({
   );
 }
 
-export default function ReviewPageChrome({
-  contentRef,
-  page,
-  alwaysVisible = false,
-}: ReviewPageChromeProps) {
+export default function ReviewPageChrome({ contentRef, page }: ReviewPageChromeProps) {
   const { reviewActive, isAllowlisted } = useAuth();
   const fm = page.frontmatter;
   const isBlog = contentRef.area === ContentArea.BLOGS;
@@ -149,8 +144,6 @@ export default function ReviewPageChrome({
   const summary = data?.drafts.find((d) => d.ref && sameRef(d.ref, contentRef));
   const lastUpdated = dayLabel(summary?.latestVersion?.createdAt);
   const targetRelease = dayLabel(summary?.targetReleaseDate);
-
-  if (!reviewActive && !alwaysVisible) return null;
 
   return (
     <div className="review-page-chrome" aria-label="Page metadata and review">

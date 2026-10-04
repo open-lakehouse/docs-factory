@@ -3,13 +3,13 @@
 # dependencies = ["unitycatalog-client==0.6.0", "deltalake==1.6.6", "pyarrow>=18"]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # ///
 """Register an existing Delta table in Unity Catalog, read it back, and drop it.
 
-docker compose up -d        # from the page folder
+docker compose up -d --wait   # from envs/unitycatalog
 uv run snippets/external_table.py
 """
 

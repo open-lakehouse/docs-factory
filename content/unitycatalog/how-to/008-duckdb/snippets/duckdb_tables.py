@@ -3,12 +3,12 @@
 # dependencies = ["duckdb==1.5.4", "pyspark==4.1.0", "unitycatalog-client==0.6.0"]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # ///
 """Read and append to a Unity Catalog managed Delta table from DuckDB.
 
-docker compose up -d --wait        # from the page folder
+docker compose up -d --wait   # from envs/unitycatalog
 uv run snippets/duckdb_tables.py
 
 DuckDB can't create Unity Catalog tables, so the script first creates one with

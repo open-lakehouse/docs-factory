@@ -1,0 +1,28 @@
+# The local server from compose.yaml, plus aws-sim: a stand-in for Amazon S3
+# and STS that answers the real AWS hostnames, so the server runs its real AWS
+# code path. Start it from this folder with
+# `docker compose -f compose.aws.yaml up -d --wait`.
+name: uc-docs
+
+include:
+  - ../aws-sim/compose.yaml
+
+services:
+  init-storage:
+    extends: { file: compose.yaml, service: init-storage }
+
+  unitycatalog:
+    extends: { file: compose.yaml, service: unitycatalog }
+    environment:
+      # Trust the local CA that Envoy presents for the AWS hostnames.
+      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/certs/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit
+    volumes:
+      - type: bind
+        source: ./server.aws.properties
+        target: /home/unitycatalog/etc/conf/server.properties
+        read_only: true
+      - aws-sim-certs:/certs:ro
+    depends_on:
+      init-storage: { condition: service_completed_successfully }
+      envoy: { condition: service_healthy }
+      rustfs-init: { condition: service_completed_successfully }

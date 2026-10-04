@@ -1,9 +1,7 @@
-name: uc-docs-python-dataframes
-
-# aws-sim answers the AWS S3 and STS names locally, so the server vends
-# credentials exactly as it would on AWS; see envs/aws-sim/README.md.
-include:
-  - ../../../../envs/aws-sim/compose.yaml
+# A local, single-user Unity Catalog 0.6.0 server for the unitycatalog docs.
+# Start it from this folder with `docker compose up -d --wait`. For pages that
+# need S3, use compose.aws.yaml instead; see README.md.
+name: uc-docs
 
 # UC_DOCS_ROOT is bind-mounted at the same path inside the container, so a
 # file:// location means the same directory to the server and to your client.
@@ -24,24 +22,19 @@ services:
 
   unitycatalog:
     image: unitycatalog/unitycatalog:v0.6.0
+    # A fixed name lets `docker exec unitycatalog bin/uc` work from any folder.
+    container_name: unitycatalog
+    depends_on:
+      init-storage:
+        condition: service_completed_successfully
     ports:
       - "8080:8080"
-    environment:
-      JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/certs/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit
     volumes:
       - type: bind
         source: ./server.properties
         target: /home/unitycatalog/etc/conf/server.properties
         read_only: true
-      - aws-sim-certs:/certs:ro
       - *docs-root
-    depends_on:
-      init-storage:
-        condition: service_completed_successfully
-      envoy:
-        condition: service_healthy
-      rustfs-init:
-        condition: service_completed_successfully
     healthcheck:
       test:
         - CMD-SHELL

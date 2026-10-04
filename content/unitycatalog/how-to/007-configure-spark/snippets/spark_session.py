@@ -3,12 +3,12 @@
 # dependencies = ["pyspark==4.1.0"]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # ///
 """Connect Spark to Unity Catalog and list what the catalog holds.
 
-docker compose up -d --wait        # from the page folder
+docker compose up -d --wait   # from envs/unitycatalog
 uv run snippets/spark_session.py
 
 Needs Java 17 and Maven access on first run. Behind a Maven mirror, export

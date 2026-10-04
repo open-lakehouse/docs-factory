@@ -3,13 +3,13 @@
 # dependencies = ["unitycatalog-client==0.6.0"]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # ///
 """Create, inspect, update, and delete external and managed volumes.
 
-docker compose up -d        # from the page folder
+docker compose up -d --wait   # from envs/unitycatalog
 uv run snippets/volumes.py
 """
 

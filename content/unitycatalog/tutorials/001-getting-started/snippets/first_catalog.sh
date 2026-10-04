@@ -5,7 +5,7 @@
 # state after each one.
 
 # --8<-- [start:setup]
-uc() { docker compose exec -T unitycatalog bin/uc "$@"; }
+uc() { docker exec unitycatalog bin/uc "$@"; }
 # --8<-- [end:setup]
 
 # --8<-- [start:browse]

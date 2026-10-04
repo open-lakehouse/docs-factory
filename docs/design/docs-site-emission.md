@@ -21,7 +21,7 @@ from docs-factory, so it can move to another repo unchanged.
 | Emitter-owned path (gitignored here) | Contents |
 | --- | --- |
 | `src/content/<bucket>/<slug>.md` | Page Markdown with snippets inlined, links mapped to site routes, and `:::` directives kept. |
-| `src/generated/site.json` | Navigation tree and page list (route, title, section trail, headings, prev/next, the page's scripts). |
+| `src/generated/site.json` | Navigation tree, page list (route, title, section trail, headings, prev/next, the page's scripts), and the REST API references (`apis`). |
 | `src/generated/heads.json` | Per-route `<head>` from `content-core/head.mjs` `pageHead()`. |
 | `src/vendor/plugins/` | Verbatim copies of the preview's directive plugins (`site/src/plugins/`). |
 | `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + scripts, images, LikeC4 PNGs and web component. |
@@ -54,6 +54,31 @@ The shell exposes these on the page itself. A **Copy page** split button next to
 the title copies the twin. Its menu also offers View as Markdown and Copy/Download
 for each script. A code block quoted from a published script gets a **Full
 script** link, from the `script="…"` fence meta the emitter adds.
+
+## REST API references
+
+A site config can declare OpenAPI specs (`api: { repo, ref, default, specs }` in
+`emit/docs/sites/<site>.mjs`). Each gets a route (`/reference/api/<slug>` for UC)
+that the shell renders with [Scalar](https://github.com/scalar/scalar) from the
+spec's `raw.githubusercontent.com` URL at the pinned `ref`. A spec can pin its
+own `repo`/`ref` (UC's Iceberg page uses the upstream Apache Iceberg spec at the
+version UC builds against) and a `serverUrl` when its `servers` don't point at
+UC. The section route (`/reference/api`) shows the `default` API and shares its
+head and canonical. The emitter never
+fetches a spec. It publishes where each one lives: the route's head (with an
+`application/yaml` alternate link), a `⌘K` record, a sitemap entry, and an
+`llms.txt` line linking the YAML, since agents read OpenAPI directly. The specs
+stay out of the docs sidebar. The shell's topbar switches sections (Docs | API
+tabs and a `/ docs ▾` breadcrumb menu) and, on an API page, APIs (a second
+`/ catalog ▾` breadcrumb level); an API page renders without the docs sidebar,
+since Scalar has its own. Endpoint pages and endpoint search stay
+inside Scalar. They aren't emitted as twins or search records.
+
+Scalar renders client-side only, so the prerendered HTML carries the title,
+summary, and spec links, and the explorer mounts after hydration in its own lazy
+chunk. It is a reference, not a client: the request client and "Test Request"
+are off (a docs site isn't next to a server), so code samples are the way to
+call an endpoint. Telemetry, agent chat, and MCP are off too.
 
 ## Why pages stay Markdown
 

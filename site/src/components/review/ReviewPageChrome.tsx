@@ -22,6 +22,7 @@ import { EffectiveStatusBadge } from "../../lib/effective-status";
 import { sameRef } from "../../lib/review-queries";
 import AuthorBadge from "../AuthorBadge";
 import { FrontmatterStatusBadge } from "../StatusBadge";
+import RatingControl from "./RatingControl";
 import RequestReviewControl from "./RequestReviewControl";
 import ReviewControls from "./ReviewControls";
 
@@ -176,6 +177,7 @@ export default function ReviewPageChrome({ contentRef, page }: ReviewPageChromeP
 
       {reviewActive && (
         <div className="review-page-chrome-actions">
+          <RatingControl contentRef={contentRef} />
           <RequestReviewControl contentRef={contentRef}>
             <ReviewControls
               contentRef={contentRef}

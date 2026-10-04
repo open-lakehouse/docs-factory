@@ -113,6 +113,30 @@ export const recordApproval = ReviewService.method.recordApproval;
 export const dismissApproval = ReviewService.method.dismissApproval;
 
 /**
+ * Record the current viewer's quality rating (allowlist-gated). Re-rating the
+ * same version edits in place; rating a newer version supersedes the prior
+ * rating (kept for history). Ratings never affect review state.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.RecordRating
+ */
+export const recordRating = ReviewService.method.recordRating;
+
+/**
+ * Withdraw the current viewer's active rating (marks it superseded).
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.WithdrawRating
+ */
+export const withdrawRating = ReviewService.method.withdrawRating;
+
+/**
+ * List ratings (allowlist-gated), newest first. The export surface for
+ * mining rated content versions.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListRatings
+ */
+export const listRatings = ReviewService.method.listRatings;
+
+/**
  * RevOps pipeline: set a content item's ordered priority (allowlist-gated).
  * Absent priority clears the rank. Returns the refreshed summary row.
  *

@@ -13,6 +13,7 @@ import {
   listComments,
   listContentEvents,
   listDrafts,
+  listRatings,
   listRegisteredUsers,
   listReviewRequests,
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
@@ -98,6 +99,19 @@ export function useReviewInvalidation() {
     [queryClient, transport],
   );
 
+  // Every listRatings query (per-ref and export-wide).
+  const invalidateRatings = useCallback(
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: createConnectQueryKey({
+          schema: listRatings,
+          transport,
+          cardinality: "finite",
+        }),
+      }),
+    [queryClient, transport],
+  );
+
   // Admin roster: the maintainer allowlist and the registered-users discovery
   // list. A ManageAllowlist add/remove/edit invalidates both — the allowlist
   // roster changes, and a granted registered user's resolved role flips.
@@ -131,6 +145,7 @@ export function useReviewInvalidation() {
     invalidateDrafts,
     invalidateReviewRequests,
     invalidateContentEvents,
+    invalidateRatings,
     invalidateAllowlist,
     invalidateRegisteredUsers,
     queryClient,

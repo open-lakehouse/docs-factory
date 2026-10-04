@@ -29,6 +29,7 @@ import {
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../lib/auth-context";
 import { refHref } from "../lib/content-ref";
+import { ratingLabel } from "../lib/rating";
 import { ReviewRequestBadge, ReviewStateBadge } from "../lib/review-status";
 
 const READY = "ready";
@@ -51,6 +52,22 @@ const PENDING_STATES = new Set<ReviewState>([
 
 function draftLabel(d: DraftSummary): string {
   return d.title || d.ref?.slug || "(untitled)";
+}
+
+function RatingChip({ draft: d }: { draft: DraftSummary }) {
+  const label = ratingLabel(d.ratingSummary);
+  if (!label) return null;
+  const s = d.ratingSummary;
+  const exemplars = [
+    s?.goodCount ? `${s.goodCount} good example` : "",
+    s?.badCount ? `${s.badCount} bad example` : "",
+  ].filter(Boolean);
+  return (
+    <span className="review-dash-count" title={exemplars.join(", ") || undefined}>
+      {label}
+      {exemplars.length > 0 && " · exemplar"}
+    </span>
+  );
 }
 
 function requestTargetLabel(r: ReviewRequest): string {
@@ -140,6 +157,7 @@ export default function ReviewDashboard() {
                   )}
                   <span className="review-dash-meta">
                     <ReviewStateBadge state={d.reviewState} />
+                    <RatingChip draft={d} />
                     {d.openCommentCount > 0 && (
                       <span className="review-dash-count">
                         {d.openCommentCount} open{" "}
@@ -213,6 +231,7 @@ export default function ReviewDashboard() {
                   )}
                   <span className="review-dash-meta">
                     <ReviewStateBadge state={d.reviewState} />
+                    <RatingChip draft={d} />
                     <span className="review-dash-count">
                       frontmatter: {d.frontmatterStatus || "draft"}
                     </span>

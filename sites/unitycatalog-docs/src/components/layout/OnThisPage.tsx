@@ -1,33 +1,53 @@
 import { useEffect, useState } from "react";
 import type { Heading } from "../../site";
 
-/** The id of the last heading scrolled past the top band, tracked client-side only. */
+/** The id of the last heading scrolled up under the topbar, tracked client-side only. */
 function useActiveHeading(ids: string[]): string | null {
   const [active, setActive] = useState<string | null>(null);
   // A string key, so a fresh array of the same ids doesn't re-subscribe every render.
   const key = ids.join("\n");
   useEffect(() => {
-    const els = key
-      .split("\n")
-      .map((id) => document.getElementById(id))
-      .filter((el) => el !== null);
-    if (els.length === 0) return;
-    const visible = new Set<Element>();
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) visible.add(e.target);
-          else visible.delete(e.target);
-        }
-        // Topmost heading inside the band wins; with none in view, keep the last one.
-        const first = els.find((el) => visible.has(el));
-        if (first) setActive(first.id);
-      },
-      // A band across the top third: a heading activates once it scrolls up under the topbar.
-      { rootMargin: "-64px 0px -66% 0px" },
-    );
-    for (const el of els) observer.observe(el);
-    return () => observer.disconnect();
+    const list = key ? key.split("\n") : [];
+    if (list.length === 0) return;
+    // Where an anchor jump lands a heading (scroll-padding-top), plus slack for rounding,
+    // so the heading a TOC link jumps to is the one that lights up.
+    const root = document.documentElement;
+    const threshold = (Number.parseFloat(getComputedStyle(root).scrollPaddingTop) || 0) + 8;
+
+    const compute = () => {
+      // Looked up per pass: after a client navigation the page's content mounts later.
+      const els = list.map((id) => document.getElementById(id)).filter((el) => el !== null);
+      let current: string | null = null;
+      for (const el of els) {
+        if (el.getBoundingClientRect().top > threshold) break;
+        current = el.id;
+      }
+      // Trailing sections shorter than the viewport can never reach the threshold.
+      const atBottom = window.innerHeight + window.scrollY >= root.scrollHeight - 2;
+      if (atBottom && current !== null) current = els[els.length - 1].id;
+      setActive(current);
+    };
+
+    let frame = 0;
+    const schedule = () => {
+      if (!frame)
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          compute();
+        });
+    };
+    window.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    // Content loading, tabs, and expanding code blocks move headings without scrolling.
+    const resize = new ResizeObserver(schedule);
+    resize.observe(document.body);
+    compute();
+    return () => {
+      window.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      resize.disconnect();
+      cancelAnimationFrame(frame);
+    };
   }, [key]);
   return active;
 }

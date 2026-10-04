@@ -23,8 +23,7 @@ export default function NotFound() {
           <span className="console-err">error:</span> no such page
         </pre>
         <p>
-          <Link to="/">Back to the docs home</Link>, or start from the{" "}
-          <a href="/llms.txt">llms.txt</a> index.
+          <Link to="/">Back to the docs home</Link>.
         </p>
       </article>
     </Shell>

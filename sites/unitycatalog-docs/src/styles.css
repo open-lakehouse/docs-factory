@@ -141,6 +141,7 @@ a { color: var(--accent); }
   font-size: 0.875rem;
   letter-spacing: -0.01em;
   text-decoration: none;
+  white-space: nowrap;
 }
 .brand-mark { width: 1.2rem; height: 1.2rem; flex: none; transition: transform 0.4s ease; }
 .brand:hover .brand-mark { transform: rotate(60deg); }
@@ -617,6 +618,29 @@ kbd {
 .pa-script > button { flex: 1; min-width: 0; }
 .page-actions .pa-menu .pa-download { align-self: center; padding: 0.45rem; }
 
+/* Theme picker: the Copy page menu panel, narrowed to three radio items. */
+.theme-menu { position: relative; display: inline-flex; }
+.theme-menu .icon-button[aria-expanded="true"] { color: var(--foreground); background: var(--surface); }
+.theme-menu .pa-menu { width: 9rem; }
+.theme-menu [role="menuitemradio"] {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--foreground);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+}
+.theme-menu [role="menuitemradio"]:hover,
+.theme-menu [role="menuitemradio"]:focus-visible { background: var(--surface); outline: none; }
+.theme-menu [role="menuitemradio"] svg { width: 0.85rem; height: 0.85rem; flex: none; color: var(--subtle); }
+.theme-menu [role="menuitemradio"] .theme-check { margin-left: auto; color: var(--foreground); }
+
 .pager {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -659,7 +683,6 @@ kbd {
 .prose h1, .prose h2, .prose h3, .prose h4 {
   color: var(--heading);
   line-height: 1.25;
-  scroll-margin-top: var(--anchor-offset);
 }
 .prose h1 { font-size: 2.125rem; font-weight: 600; letter-spacing: -0.03em; margin: 0 0 0.75rem; }
 .prose h2 {
@@ -918,7 +941,7 @@ kbd {
   left: calc(var(--jr-bubble) / 2);
   border-left: 1px dashed var(--border);
 }
-.prose .jr-step[data-last]::before { display: none; }
+.prose .jr-step[data-last]::before { bottom: 0; }
 /* The component renders 1, 2, …; a counter shows them zero-padded instead. */
 .prose .jr-bubble {
   position: absolute;
@@ -1016,10 +1039,13 @@ kbd {
   }
   .shell[data-nav-open] .sidebar { transform: none; box-shadow: var(--shadow); }
   .main { padding-top: 1.5rem; }
-  .topbar-links .chip, .brand-path { display: none; }
+  .brand-path { display: none; }
   .search-trigger { width: 1.85rem; justify-content: center; padding: 0; border-color: transparent; background: transparent; }
   .search-trigger-label, .search-trigger kbd, .cmdk-footer { display: none; }
   .cmdk { padding-top: 0.75rem; }
   .page-head { flex-wrap: wrap; }
-  .statusbar-links a:not(:first-child) { display: none; }
+}
+/* Phone widths can't fit every social mark beside the brand; GitHub stays. */
+@media (max-width: 480px) {
+  .topbar-links .social ~ .social { display: none; }
 }

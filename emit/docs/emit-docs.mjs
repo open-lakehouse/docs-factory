@@ -14,7 +14,7 @@
  *      site page (docs-site target) and its `.md` twin (md-twin target);
  *   4. add images, LikeC4 PNGs + web component, runnable scripts, the vendored
  *      remark plugins, site.json / heads.json, llms.txt, llms-full.txt,
- *      sitemap.xml, robots.txt;
+ *      sitemap.xml, robots.txt, and the palette's search-index.json;
  *   5. diff against the target's previous .docs-emit.json, write only changed
  *      files, delete stale ones, and print a page-level change report.
  *
@@ -68,6 +68,7 @@ import {
   toEntry,
 } from "./discovery.mjs";
 import { projectNav } from "./nav.mjs";
+import { searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
 import {
   applySync,
@@ -195,6 +196,7 @@ export async function emitDocs({ site, drafts = false }) {
       [remarkModelLinksText],
     ];
     const pages = [];
+    const search = [];
     const manifestPages = {};
     let hasLikeC4 = false;
     let likec4Exported = false;
@@ -270,10 +272,12 @@ export async function emitDocs({ site, drafts = false }) {
         text,
         level,
       }));
+      const title = page.meta.title ?? identity.slug;
+      search.push(...searchRecords({ route, title, section: page.section }, renderedBody));
       pages.push({
         route,
         file,
-        title: page.meta.title ?? identity.slug,
+        title,
         summary: typeof page.meta.summary === "string" ? page.meta.summary : null,
         diataxis: page.meta.diataxis ?? identity.bucket,
         section: page.section,
@@ -291,7 +295,7 @@ export async function emitDocs({ site, drafts = false }) {
       manifestPages[`${identity.project}/${identity.bucket}/${identity.slug}`] = {
         src: relative(REPO_ROOT, absPath),
         route,
-        title: page.meta.title ?? identity.slug,
+        title,
         contentHash: version.contentHash,
         rootHash: version.rootHash,
         sections: renderedSections(renderedBody),
@@ -348,6 +352,9 @@ export async function emitDocs({ site, drafts = false }) {
         siteName: site.title,
       });
     }
+    // public/, not src/generated/: the palette fetches it on first open instead
+    // of every page bundling it.
+    files.set("public/search-index.json", `${JSON.stringify({ version: 1, records: search })}\n`);
     files.set("src/generated/heads.json", `${JSON.stringify(heads, null, 2)}\n`);
 
     const entries = ordered

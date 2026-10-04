@@ -16,7 +16,7 @@ paths and overwrites them on every run. Don't edit them by hand:
 | `src/generated/site.json` | Navigation tree, page list (route, title, headings, prev/next). |
 | `src/generated/heads.json` | Per-route `<head>`: title, description, canonical, OpenGraph, JSON-LD, `.md` twin link. |
 | `src/vendor/plugins/` | The factory preview's remark plugins, copied verbatim, so `:::` directives render the same way here. |
-| `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + runnable scripts, images, LikeC4 PNGs and web component. |
+| `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + runnable scripts, `search-index.json` (per-section text for the ⌘K palette), images, LikeC4 PNGs and web component. |
 | `.docs-emit.json` | Emit manifest: per-page source hashes and per-file output hashes. The next emit diffs against it to write only what changed. |
 
 Everything else (layout, components, styles, the build) belongs to this site.

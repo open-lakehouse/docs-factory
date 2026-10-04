@@ -168,6 +168,137 @@ a { color: var(--accent); }
 .icon-button svg { width: 1rem; height: 1rem; }
 .nav-toggle { display: none; }
 
+/* --- Search trigger + command palette --- */
+kbd {
+  display: inline-flex;
+  align-items: center;
+  min-width: 1.25rem;
+  height: 1.15rem;
+  padding: 0 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1;
+  color: var(--muted-foreground);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+.search-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: 15rem;
+  height: 1.85rem;
+  padding: 0 0.35rem 0 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--subtle);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: color 0.12s, border-color 0.12s;
+}
+.search-trigger:hover { color: var(--muted-foreground); border-color: var(--subtle); }
+.search-trigger svg { width: 0.9rem; height: 0.9rem; flex: none; }
+.search-trigger-label { flex: 1; text-align: left; }
+
+/* The dialog fills the viewport so a press outside the panel lands on it. */
+.cmdk {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 12vh 1rem 1rem;
+  background: transparent;
+  border: 0;
+}
+.cmdk::backdrop { background: rgb(1 4 9 / 0.45); backdrop-filter: blur(2px); }
+.cmdk-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(40rem, 100%);
+  max-height: min(34rem, 76vh);
+  margin: 0 auto;
+  overflow: hidden;
+  color: var(--foreground);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.cmdk-input {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0 0.85rem;
+  border-bottom: 1px solid var(--border);
+}
+.cmdk-input > svg { width: 1rem; height: 1rem; flex: none; color: var(--accent); }
+.cmdk-input input {
+  flex: 1;
+  min-width: 0;
+  height: 3rem;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--foreground);
+  caret-color: var(--accent-fill);
+  background: transparent;
+  border: 0;
+  outline: none;
+}
+.cmdk-input input::placeholder { color: var(--subtle); }
+.cmdk-list { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 0.35rem; }
+.cmdk-group + .cmdk-group { margin-top: 0.35rem; }
+.cmdk-group-label {
+  padding: 0.45rem 0.6rem 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--subtle);
+  text-transform: lowercase;
+}
+.cmdk-group-page { text-transform: none; color: var(--muted-foreground); font-weight: 500; }
+.cmdk-crumb + .cmdk-group-page::before,
+.cmdk-crumb + .cmdk-crumb::before { content: "/"; margin: 0 0.35rem; color: var(--subtle); }
+.cmdk-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.5rem 0.6rem;
+  border-left: 2px solid transparent;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.cmdk-option[aria-selected="true"] { background: var(--surface); border-left-color: var(--accent-fill); }
+.cmdk-option > svg { width: 0.9rem; height: 0.9rem; flex: none; margin-top: 0.15rem; color: var(--subtle); }
+.cmdk-option[aria-selected="true"] > svg { color: var(--accent); }
+.cmdk-option-body { display: grid; gap: 0.15rem; flex: 1; min-width: 0; }
+.cmdk-option-label { font-size: 0.875rem; font-weight: 500; color: var(--heading); }
+.cmdk-option-detail { font-size: 0.78rem; line-height: 1.45; color: var(--muted-foreground); }
+.cmdk-option-detail .cmdk-crumb { font-family: var(--font-mono); font-size: 0.7rem; }
+.cmdk-option mark {
+  color: inherit;
+  background: color-mix(in srgb, var(--accent-fill) 32%, transparent);
+  border-radius: 2px;
+}
+.cmdk-enter { width: 0.85rem; height: 0.85rem; flex: none; margin-top: 0.2rem; color: var(--subtle); }
+.cmdk-status { margin: 0; padding: 1.25rem 0.6rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--muted-foreground); text-align: center; }
+.cmdk-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--subtle);
+  background: var(--panel);
+  border-top: 1px solid var(--border);
+}
+.cmdk-footer span { display: inline-flex; align-items: center; gap: 0.25rem; }
+
 .layout {
   display: grid;
   grid-template-columns: 16.5rem minmax(0, 1fr);
@@ -886,6 +1017,9 @@ a { color: var(--accent); }
   .shell[data-nav-open] .sidebar { transform: none; box-shadow: var(--shadow); }
   .main { padding-top: 1.5rem; }
   .topbar-links .chip, .brand-path { display: none; }
+  .search-trigger { width: 1.85rem; justify-content: center; padding: 0; border-color: transparent; background: transparent; }
+  .search-trigger-label, .search-trigger kbd, .cmdk-footer { display: none; }
+  .cmdk { padding-top: 0.75rem; }
   .page-head { flex-wrap: wrap; }
   .statusbar-links a:not(:first-child) { display: none; }
 }

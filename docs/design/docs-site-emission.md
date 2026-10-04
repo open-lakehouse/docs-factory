@@ -64,7 +64,9 @@ page in its authored shape. The emitter vendors those plugins into the shell,
 and the shell runs them at build time.
 
 This gives us:
-- **One renderer.** A page renders the same in the preview and on the site.
+- **One renderer.** A page has the same structure in the preview and on the site:
+  the same plugins emit the same class contract (`.cb`, `.callout`, `.jr`,
+  `.tabs-*`). Each side styles that contract with its own theme.
 - **Readable PRs.** A PR into the target repo diffs as a docs change rather than as JSX.
 - **Convention 6 holds** (richness is a property of the renderer).
 

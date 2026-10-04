@@ -7,7 +7,7 @@ export default function Pager({ prev, next }: { prev: PageLink | null; next: Pag
     <nav className="pager" aria-label="Pagination">
       {prev ? (
         <Link to={prev.route} className="pager-link" data-dir="prev">
-          <span className="pager-label">Previous</span>
+          <span className="pager-label">← prev</span>
           <span className="pager-title">{prev.title}</span>
         </Link>
       ) : (
@@ -15,7 +15,7 @@ export default function Pager({ prev, next }: { prev: PageLink | null; next: Pag
       )}
       {next && (
         <Link to={next.route} className="pager-link" data-dir="next">
-          <span className="pager-label">Next</span>
+          <span className="pager-label">next →</span>
           <span className="pager-title">{next.title}</span>
         </Link>
       )}

@@ -58,10 +58,10 @@ async function render(target, environment = ENV) {
   }
 }
 
-test("docs-site: authored bullets, then the derived bullet and environment", async () => {
+test("docs-site: the derived bullet, the authored ones, then the environment", async () => {
   const out = await render(docsSiteTarget({ assetBase: "/assets/how-to/s3" }));
   expect(out).toContain(
-    "::::prerequisites\n- Python 3.11 or later.\n- Docker with Compose v2, with ports 8080 and 9000 free.",
+    "::::prerequisites\n- For the local environment, Docker with Compose v2 and ports 8080 and 9000 free.\n- Python 3.11 or later.",
   );
   expect(out).toContain(":::environment[UC with S3]");
   expect(out).toContain(

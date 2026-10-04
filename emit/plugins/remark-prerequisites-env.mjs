@@ -1,6 +1,6 @@
 /**
  * remark-prerequisites-env — fill a page's `:::prerequisites` box with what its
- * scripts need: a "Docker with Compose v2, ports … free" bullet after the
+ * scripts need: a "Docker with Compose v2, ports … free" bullet ahead of the
  * authored ones, and a nested `:::environment[Title]` holding the commands that
  * download and start the stack (content-core pageEnvironment). Both targets run
  * it, so the site box and the .md twin say the same thing.
@@ -17,12 +17,12 @@ const paragraph = (...children) => ({ type: "paragraph", children });
 
 function dockerItem(ports) {
   const free = ports.length
-    ? `, with port${ports.length > 1 ? "s" : ""} ${portList(ports)} free`
+    ? ` and port${ports.length > 1 ? "s" : ""} ${portList(ports)} free`
     : "";
   return {
     type: "listItem",
     spread: false,
-    children: [paragraph(text(`Docker with Compose v2${free}.`))],
+    children: [paragraph(text(`For the local environment, Docker with Compose v2${free}.`))],
   };
 }
 
@@ -63,7 +63,7 @@ export default function remarkPrerequisitesEnv({ environment, guide = null }) {
     );
     if (!box) return;
     const list = box.children.find((n) => n.type === "list" && !n.ordered);
-    if (list) list.children.push(dockerItem(environment.ports));
+    if (list) list.children.unshift(dockerItem(environment.ports));
     else
       box.children.push({
         type: "list",

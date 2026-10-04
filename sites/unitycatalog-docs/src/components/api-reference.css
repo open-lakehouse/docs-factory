@@ -1,0 +1,52 @@
+/* Scalar's own variables sit in `@layer scalar-base`, so these unlayered rules
+   win without !important. Mapping onto the site's tokens (which already switch on
+   :root.dark) covers both modes at once; Scalar re-declares its variables on its
+   mode-class elements, hence those selectors too. */
+.api-reference,
+.api-reference .light-mode,
+.api-reference .dark-mode,
+.api-reference .scalar-app {
+  --scalar-custom-header-height: var(--topbar-height);
+
+  --scalar-font: var(--font-sans);
+  --scalar-font-code: var(--font-mono);
+  --scalar-radius: var(--radius-sm);
+  --scalar-radius-lg: var(--radius);
+  --scalar-radius-xl: var(--radius);
+
+  --scalar-background-1: var(--background);
+  --scalar-background-2: var(--panel);
+  --scalar-background-3: var(--surface);
+  --scalar-background-accent: color-mix(in srgb, var(--accent-fill) 12%, transparent);
+  --scalar-color-1: var(--foreground);
+  --scalar-color-2: var(--muted-foreground);
+  --scalar-color-3: var(--subtle);
+  --scalar-color-accent: var(--accent);
+  --scalar-border-color: var(--border);
+  --scalar-link-color: var(--accent);
+  --scalar-shadow-2: var(--shadow);
+
+  --scalar-button-1: var(--accent-fill);
+  --scalar-button-1-hover: color-mix(in srgb, var(--accent-fill) 85%, var(--foreground));
+  --scalar-button-1-color: var(--accent-fg);
+
+  --scalar-sidebar-background-1: var(--panel);
+  --scalar-sidebar-color-1: var(--foreground);
+  --scalar-sidebar-color-2: var(--muted-foreground);
+  --scalar-sidebar-border-color: var(--border);
+  --scalar-sidebar-item-hover-background: var(--surface);
+  --scalar-sidebar-item-active-background: var(--surface);
+  --scalar-sidebar-color-active: var(--foreground);
+  --scalar-sidebar-search-background: var(--background);
+}
+
+/* Scalar focuses a section programmatically on hash navigation; the ring is
+   for keyboard focus, not for that. */
+.api-reference [tabindex="-1"]:focus { outline: none; }
+
+/* Scalar's sticky sidebar lives inside main, so it must end where the
+   always-visible status bar begins. `--full-height` is set inline by Scalar's
+   resize observer, so override the derived height instead. */
+.api-reference .scalar-api-reference {
+  --refs-sidebar-height: calc(100dvh - var(--topbar-height) - var(--statusbar-height));
+}

@@ -3,17 +3,8 @@
 // consumer of the review backend. Components read { viewer, isAllowlisted,
 // isMaintainer, isLoading } to gate review affordances.
 //
-// It also owns the allowlisted viewer's "view mode": a single three-state enum
-// derived from two persisted flags —
-//   - "review"       → Site review mode (comment chrome on), see lib/review-mode.
-//   - "anon-preview" → View as anonymous: chrome off AND content narrowed to the
-//                      published-only set, so a reviewer can validate what an
-//                      anonymous visitor sees (see lib/view-mode).
-//   - "normal"       → neither (all drafts visible, no chrome).
-// The two flags are mutually exclusive by construction (setViewMode writes both
-// so only one holds at a time). Two derived booleans expose the mode to consumers:
-// `reviewActive` (the single gate the comment chrome short-circuits on) and
-// `previewAsAnon` (which content-visibility reads to force the anonymous subset).
+// `reviewActive` is the gate the reviewer-only chrome checks (review controls,
+// timelines, read-state); `canComment` additionally admits invited contributors.
 
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError } from "@connectrpc/connect";
@@ -22,19 +13,6 @@ import { createContext, type ReactNode, useContext, useEffect, useState } from "
 import { Role, type Viewer, ViewerSchema } from "../gen/docs_factory/review/v1/messages_pb";
 import { getViewer } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { sessionResolved, subscribeSession } from "./auth-actions";
-import {
-  setReviewMode as persistReviewMode,
-  REVIEW_MODE_EVENT,
-  readReviewMode,
-} from "./review-mode";
-import {
-  setAnonPreview as persistAnonPreview,
-  readAnonPreview,
-  VIEW_MODE_EVENT,
-} from "./view-mode";
-
-/** The allowlisted viewer's current view mode (normal browsing by default). */
-export type ViewMode = "normal" | "review" | "anon-preview";
 
 export interface AuthState {
   viewer?: Viewer;
@@ -42,7 +20,7 @@ export interface AuthState {
   /**
    * DEV only: the review API is unreachable (`just preview` without `just dev`).
    * The viewer is then a synthetic local maintainer so content stays browsable;
-   * review chrome and anon preview are off because both need the API.
+   * review chrome is off because it needs the API.
    */
   apiOffline: boolean;
   isAuthenticated: boolean;
@@ -62,17 +40,7 @@ export interface AuthState {
    * this flag only drives client admission + comment chrome on the shared item.
    */
   hasScopedGrants: boolean;
-  /**
-   * The allowlisted viewer's view mode. Always "normal" for non-allowlisted
-   * viewers (who never reach the site anyway — see AccessGate).
-   */
-  viewMode: ViewMode;
-  /** Set the view mode (persists both underlying flags coherently + broadcasts). */
-  setViewMode: (mode: ViewMode) => void;
-  /**
-   * The single gate the review chrome checks: view mode is "review". False for
-   * anonymous viewers, for reviewers browsing normally, and in anon-preview.
-   */
+  /** Allowlisted with the API reachable: the reviewer-only chrome is on. */
   reviewActive: boolean;
   /**
    * The gate the per-page COMMENT surfaces check (thread rail, selection layer,
@@ -84,12 +52,6 @@ export interface AuthState {
    * so this can be viewer-scoped without knowing the current contentRef.
    */
   canComment: boolean;
-  /**
-   * True when an allowlisted viewer is previewing the site as an anonymous
-   * visitor would see it. content-visibility reads this to narrow the visible
-   * set to the published-only subset (a purely client-side preview).
-   */
-  previewAsAnon: boolean;
 }
 
 const AuthContext = createContext<AuthState>({
@@ -100,11 +62,8 @@ const AuthContext = createContext<AuthState>({
   isMaintainer: false,
   isSiteAdmin: false,
   hasScopedGrants: false,
-  viewMode: "normal",
-  setViewMode: () => {},
   reviewActive: false,
   canComment: false,
-  previewAsAnon: false,
 });
 
 // Client-only stand-in so an author can preview content with no backend. It
@@ -143,44 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // so treat "not yet ready" as loading for consumers/AccessGate.
   const viewer = apiOffline ? OFFLINE_VIEWER : data?.viewer;
 
-  // Two persisted flags behind the single derived `viewMode`. Kept in sync within
-  // the tab (StatusMenu writes) and across tabs via their shared CustomEvents,
-  // mirroring how review-context subscribes to REVIEW_DISPLAY_MODE_EVENT.
-  const [reviewModeOn, setReviewModeState] = useState<boolean>(readReviewMode);
-  const [anonPreview, setAnonPreviewState] = useState<boolean>(readAnonPreview);
-  useEffect(() => {
-    const onReview = (e: Event) => setReviewModeState(Boolean((e as CustomEvent<boolean>).detail));
-    const onAnon = (e: Event) => setAnonPreviewState(Boolean((e as CustomEvent<boolean>).detail));
-    window.addEventListener(REVIEW_MODE_EVENT, onReview);
-    window.addEventListener(VIEW_MODE_EVENT, onAnon);
-    return () => {
-      window.removeEventListener(REVIEW_MODE_EVENT, onReview);
-      window.removeEventListener(VIEW_MODE_EVENT, onAnon);
-    };
-  }, []);
-
-  // Selecting a mode writes both flags so they never both hold at once.
-  const setViewMode = (mode: ViewMode) => {
-    const review = mode === "review";
-    const anon = mode === "anon-preview";
-    setReviewModeState(review);
-    setAnonPreviewState(anon);
-    persistReviewMode(review);
-    persistAnonPreview(anon);
-  };
-
   const isAllowlisted = viewer?.isAllowlisted ?? false;
-  // Derive the mode; non-allowlisted viewers are always "normal". anon-preview
-  // takes precedence over review if both flags somehow linger (defensive; the
-  // setter keeps them exclusive).
-  const viewMode: ViewMode =
-    !isAllowlisted || apiOffline
-      ? "normal"
-      : anonPreview
-        ? "anon-preview"
-        : reviewModeOn
-          ? "review"
-          : "normal";
+  const reviewActive = isAllowlisted && !apiOffline;
 
   const state: AuthState = {
     viewer,
@@ -193,14 +116,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isMaintainer: viewer?.role === Role.MAINTAINER,
     isSiteAdmin: viewer?.isSiteAdmin ?? false,
     hasScopedGrants: viewer?.hasScopedGrants ?? false,
-    viewMode,
-    setViewMode,
-    reviewActive: viewMode === "review",
-    // An external contributor (scoped grant, not allowlisted) comments in "normal"
-    // mode — there is no review-mode toggle for them — so canComment is true
-    // whenever review chrome is active OR they hold a grant.
-    canComment: viewMode === "review" || (viewer?.hasScopedGrants ?? false),
-    previewAsAnon: viewMode === "anon-preview",
+    reviewActive,
+    canComment: reviewActive || (viewer?.hasScopedGrants ?? false),
   };
   return <AuthContext.Provider value={state}>{children}</AuthContext.Provider>;
 }

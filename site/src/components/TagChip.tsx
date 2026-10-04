@@ -1,30 +1,17 @@
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { getTag, tagCardData } from "../tags";
-import SemanticChip from "./SemanticChip";
+import EntityCard from "./EntityCard";
 
-/**
- * A single blog topic tag: clickable pill with a rich hover card. In link mode
- * it navigates to the filtered blog index; when `onToggle` is set it becomes a
- * pressable filter facet reflecting `active`.
- */
-export default function TagChip({
-  slug,
-  active,
-  onToggle,
-}: {
-  slug: string;
-  active?: boolean;
-  onToggle?: (slug: string) => void;
-}) {
-  const tag = getTag(slug);
-  const href = `/blog?tag=${encodeURIComponent(slug)}`;
-
+/** A single blog topic tag: a pill revealing the tag's EntityCard on hover. */
+export default function TagChip({ slug }: { slug: string }) {
+  const pill = <span className="tag">{slug}</span>;
+  if (!getTag(slug).known) return pill;
   return (
-    <SemanticChip
-      label={slug}
-      href={onToggle ? undefined : href}
-      active={active}
-      onToggle={onToggle ? () => onToggle(slug) : undefined}
-      card={tag.known ? tagCardData(slug) : null}
-    />
+    <HoverCard openDelay={120} closeDelay={80}>
+      <HoverCardTrigger asChild>{pill}</HoverCardTrigger>
+      <HoverCardContent align="start" className="entity-hovercard">
+        <EntityCard data={tagCardData(slug)} />
+      </HoverCardContent>
+    </HoverCard>
   );
 }

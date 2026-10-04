@@ -1,6 +1,8 @@
 // content.ts — discover builder-agnostic sources and expose them to the app.
 import type { ComponentType } from "react";
 import { registerExplanation } from "./explain-bindings";
+import type { ContentRef } from "./gen/docs_factory/review/v1/messages_pb";
+import { blogRef, docRef } from "./lib/content-ref";
 import { parseDocPath, slugFromBlogPath } from "./lib/content-source";
 
 export interface Frontmatter {
@@ -139,72 +141,9 @@ export function blogsBySeries(): { series: BlogSeriesGroup[]; standalone: Conten
   return { series, standalone };
 }
 
-export function blogTags(): string[] {
-  const tags = new Set<string>();
-  for (const post of blogPosts) {
-    for (const tag of post.frontmatter.tags ?? []) tags.add(tag);
-  }
-  return [...tags].sort();
-}
-
-export function blogsByTag(tag: string): ContentPage[] {
-  const slug = tag.trim();
-  if (!slug) return blogPosts;
-  return blogPosts.filter((post) => (post.frontmatter.tags ?? []).includes(slug));
-}
-
-/** Posts carrying ALL of the given tags (AND semantics). Empty = all posts. */
-export function blogsByTags(tags: string[]): ContentPage[] {
-  const slugs = tags.map((t) => t.trim()).filter(Boolean);
-  if (slugs.length === 0) return blogPosts;
-  return blogPosts.filter((post) => {
-    const postTags = post.frontmatter.tags ?? [];
-    return slugs.every((slug) => postTags.includes(slug));
-  });
-}
-
-export function blogsBySeriesFiltered(posts: ContentPage[]): {
-  series: BlogSeriesGroup[];
-  standalone: ContentPage[];
-} {
-  const seriesMap = new Map<string, ContentPage[]>();
-  const standalone: ContentPage[] = [];
-
-  for (const post of posts) {
-    const series = post.frontmatter.series;
-    if (series) {
-      const list = seriesMap.get(series) ?? [];
-      list.push(post);
-      seriesMap.set(series, list);
-    } else {
-      standalone.push(post);
-    }
-  }
-
-  const series: BlogSeriesGroup[] = [...seriesMap.entries()]
-    .map(([name, grouped]) => ({
-      series: name,
-      posts: [...grouped].sort(
-        (a, b) =>
-          (a.frontmatter.series_order ?? 0) - (b.frontmatter.series_order ?? 0) ||
-          a.slug.localeCompare(b.slug),
-      ),
-    }))
-    .sort((a, b) => a.series.localeCompare(b.series));
-
-  return { series, standalone };
-}
-
-export function blogNeighbors(slug: string): { prev?: ContentPage; next?: ContentPage } {
-  const idx = blogPosts.findIndex((p) => p.slug === slug);
-  if (idx < 0) return {};
-  return {
-    prev: idx < blogPosts.length - 1 ? blogPosts[idx + 1] : undefined,
-    next: idx > 0 ? blogPosts[idx - 1] : undefined,
-  };
-}
-
-export function readingTimeMinutes(text: string): number {
-  const words = text.trim().split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.ceil(words / 200));
+/** The ContentRef identity for a build-time page (blog vs doc). */
+export function pageRef(page: ContentPage): ContentRef {
+  return page.area === "blogs"
+    ? blogRef(page.slug)
+    : docRef(page.project ?? "", page.bucket ?? "", page.slug);
 }

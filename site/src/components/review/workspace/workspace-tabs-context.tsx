@@ -3,13 +3,14 @@
 // the query string so a workspace layout is shareable and back/forward-navigable:
 //
 //   /review?tabs=docs:slug:project:bucket,docs:slug:project:bucket#md,…&active=<token>&thread=<id>&anchor=<slug>
-//   /review?tabs=overview#pipeline,overview#product,overview#comments&active=overview#pipeline
+//   /review?tabs=overview#pipeline,overview#product,overview#comments,overview#coverage&active=overview#pipeline
 //
 // Opening a sidebar ITEM opens a GROUP of tabs — for content, the rendered page
 // plus companion views (`.md` twin, each runnable script); for Overview, the
-// blog pipeline + ProductChanges + latest-comments panels. Every content tab token is
-// `refToParam(ref)` optionally suffixed with `#<view>`; Overview tokens use the
-// synthetic group key `overview`. Tabs sharing a groupKey belong to one item.
+// blog pipeline + ProductChanges + latest-comments + coverage-gap panels. Every
+// content tab token is `refToParam(ref)` optionally suffixed with `#<view>`;
+// Overview tokens use the synthetic group key `overview`. Tabs sharing a
+// groupKey belong to one item.
 // The rendered content view has no suffix, so old shared links (bare ref tokens)
 // still parse.
 //
@@ -36,7 +37,8 @@ import {
 import { useSearchParams } from "react-router-dom";
 import { type ContentPage, findBlog, findDoc } from "../../../content";
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { useScriptsIndex } from "../../../lib/scripts-index";
+import { useAuth } from "../../../lib/auth-context";
+import { type ScriptsIndex, useScriptsIndex } from "../../../lib/scripts-index";
 import { viewsFor } from "./item-views";
 import {
   OVERVIEW_VIEWS,
@@ -139,6 +141,11 @@ function defaultOverviewTabs(): OpenTab[] {
   }));
 }
 
+/** Every view token of one item, rendered view first (the group openTab opens). */
+export function itemGroupTokens(ref: ContentRef, scriptsIndex: ScriptsIndex): string[] {
+  return viewsFor(ref, pageFor(ref), scriptsIndex).map((v) => tabTokenFor(ref, v));
+}
+
 export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   const [params, setParams] = useSearchParams();
   // Preloaded once for the workspace so openTab can compute an item's views
@@ -147,11 +154,16 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   const scriptsRef = useRef(scriptsIndex);
   scriptsRef.current = scriptsIndex;
 
+  // Overview is reviewer-only; an invited contributor lands on an empty pane.
+  const { isAllowlisted } = useAuth();
   const rawTabs = params.get("tabs");
-  const parsedTabs = useMemo(() => parseTabs(rawTabs), [rawTabs]);
+  const parsedTabs = useMemo(
+    () => parseTabs(rawTabs).filter((t) => isAllowlisted || t.kind === "content"),
+    [rawTabs, isAllowlisted],
+  );
   // Soft-default Overview on first paint when the URL has no tabs yet (the
   // effect below writes that into the query string with replace).
-  const tabs = parsedTabs.length > 0 ? parsedTabs : defaultOverviewTabs();
+  const tabs = parsedTabs.length > 0 ? parsedTabs : isAllowlisted ? defaultOverviewTabs() : [];
   const activeParam = params.get("active");
   // Normalize bare `overview` → `overview#pipeline` so active matches parsed tabs.
   const normalizedActive = useMemo(() => {
@@ -163,11 +175,16 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   // When soft-defaulting Overview, land on pipeline (first Overview view).
   const activeToken =
     (normalizedActive && tabs.some((t) => t.token === normalizedActive) && normalizedActive) ||
-    (parsedTabs.length > 0 ? parsedTabs[parsedTabs.length - 1].token : overviewToken("pipeline"));
+    (parsedTabs.length > 0
+      ? parsedTabs[parsedTabs.length - 1].token
+      : isAllowlisted
+        ? overviewToken("pipeline")
+        : null);
 
   // Bare /review (no tabs) → Overview selected. replace:true so back doesn't
   // bounce through the empty landing state.
   useEffect(() => {
+    if (!isAllowlisted) return;
     setParams(
       (prev) => {
         if (prev.get("tabs")) return prev;
@@ -178,7 +195,7 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
       },
       { replace: true },
     );
-  }, [setParams]);
+  }, [setParams, isAllowlisted]);
 
   const intent = useMemo<OpenIntent>(
     () => ({
@@ -198,8 +215,7 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   const openTab = useCallback(
     (ref: ContentRef, next?: OpenIntent) => {
       const group = tabTokenFor(ref, { kind: "rendered" });
-      const views = viewsFor(ref, pageFor(ref), scriptsRef.current);
-      const groupTokens = views.map((v) => tabTokenFor(ref, v));
+      const groupTokens = itemGroupTokens(ref, scriptsRef.current);
       setParams(
         (prev) => {
           const p = new URLSearchParams(prev);
@@ -222,8 +238,7 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
     (ref: ContentRef, view: TabView, next?: OpenIntent) => {
       const token = tabTokenFor(ref, view);
       const group = tabTokenFor(ref, { kind: "rendered" });
-      const views = viewsFor(ref, pageFor(ref), scriptsRef.current);
-      const groupTokens = views.map((v) => tabTokenFor(ref, v));
+      const groupTokens = itemGroupTokens(ref, scriptsRef.current);
       setParams(
         (prev) => {
           const p = new URLSearchParams(prev);

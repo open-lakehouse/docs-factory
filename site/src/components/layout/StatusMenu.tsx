@@ -2,13 +2,8 @@
 //   - anonymous → "Sign in" button, but only when a hosted sign-in URL is
 //     configured (hidden until Neon Auth is provisioned — see lib/auth-actions).
 //     In dev it is a "sign in as…" persona menu instead (the mock login).
-//   - authenticated → avatar menu with Log out, plus (reviewers only) the
-//     view-mode selector and a /review dashboard link. In dev it also carries a
+//   - authenticated → avatar menu with Log out. In dev it also carries a
 //     persona switcher and the review display (rail/inline) toggle.
-//
-// The view-mode selector is production-facing (auth-context: viewMode /
-// reviewActive / previewAsAnon); the dev persona is orthogonal to it.
-import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +18,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { canSignIn, signIn, signOut } from "../../lib/auth-actions";
-import { useAuth, type ViewMode } from "../../lib/auth-context";
+import { useAuth } from "../../lib/auth-context";
 import { type DevPersona, SIGN_IN_PERSONAS, useDevPersona } from "../../lib/dev-persona";
 import { initials } from "../../lib/initials";
 import { type ReviewDisplayMode, useReviewDisplayMode } from "../../lib/review-display-mode";
@@ -97,8 +92,7 @@ function DevMenuSection({ apiOffline }: { apiOffline: boolean }) {
 }
 
 export default function StatusMenu() {
-  const { isLoading, isAuthenticated, isAllowlisted, apiOffline, viewer, viewMode, setViewMode } =
-    useAuth();
+  const { isLoading, isAuthenticated, apiOffline, viewer } = useAuth();
 
   // Neutral placeholder while the viewer resolves, avoiding a flash of "Sign in"
   // for an already-authenticated reviewer.
@@ -141,42 +135,6 @@ export default function StatusMenu() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="min-w-48">
           <DropdownMenuLabel className="truncate">{displayName}</DropdownMenuLabel>
-          {isAllowlisted && (
-            <>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                View mode
-              </DropdownMenuLabel>
-              <DropdownMenuRadioGroup
-                value={viewMode}
-                onValueChange={(v) => setViewMode(v as ViewMode)}
-              >
-                {/* Keep the menu open on select so the state change is visible. */}
-                <DropdownMenuRadioItem value="normal" onSelect={(e) => e.preventDefault()}>
-                  Normal
-                </DropdownMenuRadioItem>
-                {/* Both need the review API (comments / published set). */}
-                <DropdownMenuRadioItem
-                  value="review"
-                  disabled={apiOffline}
-                  onSelect={(e) => e.preventDefault()}
-                >
-                  Review
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem
-                  value="anon-preview"
-                  disabled={apiOffline}
-                  onSelect={(e) => e.preventDefault()}
-                >
-                  View as anonymous
-                </DropdownMenuRadioItem>
-              </DropdownMenuRadioGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link to="/review">Review dashboard</Link>
-              </DropdownMenuItem>
-            </>
-          )}
           {import.meta.env.DEV && <DevMenuSection apiOffline={apiOffline} />}
           {/* Offline there is no session to end — the local author is synthetic. */}
           {!apiOffline && (

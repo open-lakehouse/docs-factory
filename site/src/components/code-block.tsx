@@ -3,8 +3,8 @@
 // Review integration: Shiki runs at build time, so there's no runtime prop to
 // pass highlighted lines. Instead this component reads the page review context
 // and tags its OWN line spans (<span class="line">) for any commented source
-// lines — reusing the native code surface rather than an overlay. In inline
-// review mode it also inserts a conversation row into the code grid after the
+// lines — reusing the native code surface rather than an overlay. In the inline
+// review display it also inserts a conversation row into the code grid after the
 // anchored line(s).
 
 import { ChevronRight } from "lucide-react";

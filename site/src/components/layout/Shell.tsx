@@ -1,8 +1,8 @@
 import { useQuery } from "@connectrpc/connect-query";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { createContext, type ReactNode, useContext, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import type { ReactNode } from "react";
+import { Link, NavLink } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,32 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { listReviewRequests } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
-import { scopeAccent, useScope, withScope } from "../../scope";
-import { useManifestEntryDoc } from "../../sidebar";
 import StatusMenu from "./StatusMenu";
-import TopbarPath from "./TopbarPath";
-
-/** Two top-level content areas: Docs (all four Diátaxis axes on one page) + blog. */
-const NAV_AXES: { to: string; label: string }[] = [
-  { to: "/docs", label: "Docs" },
-  { to: "/blog", label: "Blog" },
-];
-
-interface SidebarContextValue {
-  mobileOpen: boolean;
-  setMobileOpen: (open: boolean) => void;
-  toggleMobile: () => void;
-}
-
-const SidebarContext = createContext<SidebarContextValue | null>(null);
-
-export function useSidebar() {
-  const ctx = useContext(SidebarContext);
-  if (!ctx) {
-    throw new Error("useSidebar must be used within Shell");
-  }
-  return ctx;
-}
 
 // Reviewer-only top-nav entry linking to the /review workspace. Badges the
 // count of open review requests addressed to the current viewer (same signal
@@ -63,7 +38,7 @@ function ReviewNavItem() {
 // Site-admin-only top-nav entry linking to the admin roster (/admin): allowlist
 // management + registered-user discovery. Gated on isSiteAdmin (Neon Auth's
 // admin role, not reviewActive) so it's reachable whenever a site admin is
-// signed in, regardless of view mode. Hidden from plain maintainers.
+// signed in. Hidden from plain maintainers.
 function AdminNavItem() {
   const { isSiteAdmin } = useAuth();
   if (!isSiteAdmin) return null;
@@ -129,78 +104,24 @@ function ThemeToggle() {
   );
 }
 
-interface ShellProps {
-  children: ReactNode;
-  /** Show the mobile sidebar toggle (docs routes). */
-  showSidebarToggle?: boolean;
-  /** Wider layout without the default content max-width (landing, indexes). */
-  wide?: boolean;
-  /** Per-project accent: delta | unitycatalog */
-  accent?: "delta" | "unitycatalog";
-}
-
-export default function Shell({
-  children,
-  showSidebarToggle = false,
-  wide = false,
-  accent,
-}: ShellProps) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { scopeId } = useScope();
+export default function Shell({ children }: { children: ReactNode }) {
   const { reviewActive } = useAuth();
-  const { pathname } = useLocation();
-  // Under a curated scope, Docs opens the manifest's first page rather than the overview.
-  const docsEntry = useManifestEntryDoc(scopeId);
-  // Explicit accent wins; otherwise the active scope drives it site-wide.
-  const effectiveAccent = accent ?? scopeAccent(scopeId);
-
   return (
-    <SidebarContext.Provider
-      value={{
-        mobileOpen,
-        setMobileOpen,
-        toggleMobile: () => setMobileOpen((o) => !o),
-      }}
-    >
-      <div className="shell" data-accent={effectiveAccent} data-review-active={reviewActive}>
-        <header className="topbar">
-          {showSidebarToggle && (
-            <button
-              type="button"
-              className="sidebar-toggle"
-              onClick={() => setMobileOpen((o) => !o)}
-              aria-label="Toggle navigation"
-              aria-expanded={mobileOpen}
-            >
-              <span className="sidebar-toggle-bar" />
-              <span className="sidebar-toggle-bar" />
-              <span className="sidebar-toggle-bar" />
-            </button>
-          )}
-          <TopbarPath />
-          <nav className="topnav">
-            {NAV_AXES.map(({ to, label }) => (
-              <NavLink
-                key={to}
-                to={withScope(to === "/docs" ? (docsEntry?.href ?? to) : to, scopeId)}
-                // A doc-page target would only match itself; keep Docs lit across /docs/*.
-                className={({ isActive }) =>
-                  isActive || (to === "/docs" && pathname.startsWith("/docs"))
-                    ? "active"
-                    : undefined
-                }
-              >
-                {label}
-              </NavLink>
-            ))}
-            <ReviewNavItem />
-            <AdminNavItem />
-          </nav>
-          <ThemeToggle />
-          <StatusMenu />
-        </header>
-        <main className={wide ? "content content-wide" : "content"}>{children}</main>
-      </div>
-    </SidebarContext.Provider>
+    <div className="shell" data-review-active={reviewActive}>
+      <header className="topbar">
+        <nav className="topbar-crumbtrail" aria-label="Home">
+          <Link to="/review" className="brand">
+            ~/open-lakehouse
+          </Link>
+        </nav>
+        <nav className="topnav">
+          <ReviewNavItem />
+          <AdminNavItem />
+        </nav>
+        <ThemeToggle />
+        <StatusMenu />
+      </header>
+      <main className="content content-wide">{children}</main>
+    </div>
   );
 }

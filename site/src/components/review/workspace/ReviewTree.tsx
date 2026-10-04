@@ -200,7 +200,7 @@ function Node({
 export default function ReviewTree() {
   const { tree, isLoading } = useReviewTree();
   const { isAllowlisted } = useAuth();
-  const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
+  const { data } = useQuery(listDrafts, {});
   const { data: requestData } = useQuery(
     listReviewRequests,
     { mine: true, openOnly: true },
@@ -228,13 +228,15 @@ export default function ReviewTree() {
 
   return (
     <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto p-2" aria-label="Review">
-      <TreeRow
-        depth={0}
-        icon={<LayoutDashboard className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
-        label="Overview"
-        selected={overviewSelected}
-        onSelect={() => openOverview()}
-      />
+      {isAllowlisted && (
+        <TreeRow
+          depth={0}
+          icon={<LayoutDashboard className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+          label="Overview"
+          selected={overviewSelected}
+          onSelect={() => openOverview()}
+        />
+      )}
       <p className="mt-2 flex items-center gap-1.5 px-2 py-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
         <Files className="h-3.5 w-3.5 text-primary/80" aria-hidden="true" />
         Content

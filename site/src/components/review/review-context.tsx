@@ -89,19 +89,17 @@ export function ReviewProvider({
    * tabs don't each hit the API. Defaults to true for the single-page routes. */
   isActive?: boolean;
 }) {
-  // canComment folds in an external contributor's scoped grant (they comment in
-  // normal mode) on top of an allowlisted reviewer's active review mode. Keep
-  // reviewActive too: mark-thread-seen is a reviewer-only affordance.
+  // canComment folds an external contributor's scoped grant in on top of an
+  // allowlisted reviewer. Keep reviewActive too: mark-thread-seen is a
+  // reviewer-only affordance.
   const { canComment, reviewActive } = useAuth();
   // An inactive tab is only "live" enough to keep its cache warm; it neither
   // polls nor streams.
   const live = canComment && isActive;
   const { commentsKey, invalidateComments, queryClient } = useReviewInvalidation();
   // Poll so a reviewer sees other reviewers' comments arrive without a reload.
-  // Gated on `reviewActive` (allowlisted AND Site review mode on) — a reviewer
-  // browsing in regular mode has no comment chrome mounted, so there's nothing
-  // to keep live and no reason to fetch. TanStack pauses the interval while the
-  // tab is hidden and refetches on window focus, so background tabs don't hammer
+  // Only for commenters: nobody else has comment chrome mounted. TanStack pauses
+  // the interval while the tab is hidden and refetches on window focus, so background tabs don't hammer
   // the API. When SSE is enabled the interval drops to a slow backstop (SSE is
   // the primary path then); otherwise a modest interval keeps the rail live.
   const pollInterval = sseEnabled ? 60_000 : 15_000;

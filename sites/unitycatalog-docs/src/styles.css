@@ -637,8 +637,10 @@ kbd {
   font-weight: 500;
   color: var(--heading);
 }
-.tile svg { flex: none; color: var(--subtle); }
-.tile:hover svg { color: var(--accent); }
+.tile > svg { flex: none; color: var(--subtle); }
+.tile:hover > svg { color: var(--accent); }
+.tile-label { display: flex; align-items: center; gap: 0.6rem; }
+.tile-icons { display: flex; flex: none; gap: 0.3rem; color: var(--heading); }
 .tile-muted { color: var(--muted-foreground); font-weight: 400; }
 .kind-tile { display: flex; flex-direction: column; gap: 0.2rem; padding: 0.8rem 0.9rem; }
 .kind-tile strong { font-size: 0.9rem; font-weight: 600; color: var(--heading); }

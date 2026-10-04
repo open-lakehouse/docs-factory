@@ -1,6 +1,14 @@
 import { ArrowRight, Blocks, Database, type LucideIcon, Server } from "lucide-react";
+import type { ComponentType, SVGProps } from "react";
 import { Link } from "react-router-dom";
 import CodeCopyButton from "../components/CodeCopyButton";
+import {
+  DuckDBIcon,
+  PandasIcon,
+  PolarsIcon,
+  PythonIcon,
+  SparkIcon,
+} from "../components/EngineIcons";
 import Shell from "../components/layout/Shell";
 import { SOCIAL } from "../components/SocialIcons";
 import { UnityCatalogIcon } from "../components/UnityCatalogIcon";
@@ -73,11 +81,11 @@ const PATHS: { title: string; blurb: string; Icon: LucideIcon; links: Entry[] }[
   },
 ];
 
-const ENGINES: Entry[] = [
-  { route: "/how-to/configure-spark", label: "Apache Spark" },
-  { route: "/how-to/duckdb", label: "DuckDB" },
-  { route: "/how-to/python-dataframes", label: "Polars & pandas" },
-  { route: "/tutorials/python-client", label: "Python client" },
+const ENGINES: (Entry & { icons: ComponentType<SVGProps<SVGSVGElement>>[] })[] = [
+  { route: "/how-to/configure-spark", label: "Apache Spark", icons: [SparkIcon] },
+  { route: "/how-to/duckdb", label: "DuckDB", icons: [DuckDBIcon] },
+  { route: "/how-to/python-dataframes", label: "Polars & pandas", icons: [PolarsIcon, PandasIcon] },
+  { route: "/tutorials/python-client", label: "Python client", icons: [PythonIcon] },
 ];
 
 const KINDS: (Entry & { blurb: string })[] = [
@@ -103,7 +111,9 @@ const KINDS: (Entry & { blurb: string })[] = [
 export default function HomePage() {
   const [start] = resolve([{ route: "/tutorials/getting-started" }]);
   const [intro] = resolve([{ route: "/explanation/what-is-unity-catalog" }]);
-  const engines = resolve(ENGINES);
+  const engines = ENGINES.flatMap(({ icons, ...entry }) =>
+    resolve([entry]).map((e) => ({ ...e, icons })),
+  );
   const [allEngines] = resolve([{ route: "/reference/clients-and-engines" }]);
   const kinds = KINDS.filter((k) => routes.has(k.route));
   return (
@@ -199,7 +209,14 @@ export default function HomePage() {
           <div className="tile-grid">
             {engines.map((e) => (
               <Link key={e.route} to={e.route} className="tile">
-                {e.label}
+                <span className="tile-label">
+                  <span className="tile-icons">
+                    {e.icons.map((Icon) => (
+                      <Icon key={Icon.name} width={18} height={18} aria-hidden="true" />
+                    ))}
+                  </span>
+                  {e.label}
+                </span>
                 <ArrowRight size={14} aria-hidden="true" />
               </Link>
             ))}

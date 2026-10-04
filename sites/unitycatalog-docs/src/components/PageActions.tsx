@@ -1,6 +1,6 @@
-import { Check, ChevronDown, Copy, Download, FileCode, FileText } from "lucide-react";
+import { Check, ChevronDown, Container, Copy, Download, FileCode, FileText } from "lucide-react";
 import { useCallback, useRef, useState } from "react";
-import { copyFromUrl } from "../lib/clipboard";
+import { copyFromUrl, copyToClipboard } from "../lib/clipboard";
 import { useMenu } from "../lib/menu";
 import type { PageMeta } from "../site";
 
@@ -13,13 +13,20 @@ export default function PageActions({ page }: { page: PageMeta }) {
   const close = useCallback(() => setOpen(false), []);
   useMenu(open, close, root, toggle);
 
+  const flash = (ok: boolean) => {
+    if (!ok) return;
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
   const copy = async (url: string) => {
     setOpen(false);
-    if (await copyFromUrl(url)) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+    flash(await copyFromUrl(url));
   };
+  const copyText = async (text: string) => {
+    setOpen(false);
+    flash(await copyToClipboard(text));
+  };
+  const env = page.environment;
 
   const Icon = copied ? Check : Copy;
   return (
@@ -60,6 +67,30 @@ export default function PageActions({ page }: { page: PageMeta }) {
               <small>The page as plain text</small>
             </span>
           </a>
+          {env && (
+            <div className="pa-script" role="none">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => copyText(`${env.commands.join("\n")}\n`)}
+              >
+                <Container aria-hidden="true" />
+                <span>
+                  Copy environment setup
+                  <small>{env.title}</small>
+                </span>
+              </button>
+              <a
+                role="menuitem"
+                className="pa-download"
+                href={env.bundle}
+                download
+                aria-label="Download the environment"
+              >
+                <Download aria-hidden="true" />
+              </a>
+            </div>
+          )}
           {page.scripts.map((s) => (
             <div key={s.url} className="pa-script" role="none">
               <button type="button" role="menuitem" onClick={() => copy(s.url)}>

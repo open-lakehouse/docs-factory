@@ -133,9 +133,13 @@ export function toEntry(
  * Render /llms.txt (pure, for testing). `entries` are toEntry() records. Docs group
  * by Diátaxis quadrant (from their identity/meta); blogs go under a Blog section.
  * Each line links the canonical route and its `.md` twin. `apis` (api.mjs
- * apiEntries) link their OpenAPI spec instead of a twin.
+ * apiEntries) link their OpenAPI spec instead of a twin. `environments`
+ * (`{ bundleUrl, guide }`) adds the env bundle the runnable scripts need.
  */
-export function renderLlmsIndex(entries, { title, summary, origin = "", apis = [] }) {
+export function renderLlmsIndex(
+  entries,
+  { title, summary, origin = "", apis = [], environments = null },
+) {
   const lines = [`# ${title}`, "", `> ${summary}`, ""];
   const bySection = Object.fromEntries(DIATAXIS.map((k) => [k, []]));
   const blog = [];
@@ -168,8 +172,14 @@ export function renderLlmsIndex(entries, { title, summary, origin = "", apis = [
     "",
     `- [Full-text corpus](${origin}/llms-full.txt): every page's Markdown twin concatenated.`,
     `- [Runnable scripts index](${origin}/scripts.json): CI-verified PEP 723 tutorial scripts + their runtime contracts.`,
-    "",
   );
+  if (environments) {
+    const guide = environments.guide ? ` Setup guide: ${environments.guide}.` : "";
+    lines.push(
+      `- [Local environment](${origin}/env/environments.json): the Docker Compose stacks the scripts run against, with exact start/stop commands. Download them with \`curl -fsSL ${environments.bundleUrl} | tar -xz\`.${guide}`,
+    );
+  }
+  lines.push("");
 
   return `${lines.join("\n").replace(/\s+$/, "")}\n`;
 }

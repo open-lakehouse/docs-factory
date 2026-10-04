@@ -35,6 +35,7 @@ import { parse as parseYaml } from "yaml";
 import {
   companionsFrontmatter,
   companionsSection,
+  environmentFrontmatter,
   injectCanonical,
   injectFrontmatter,
   prependSection,
@@ -311,9 +312,13 @@ export async function emitDocs({ site, drafts = false }) {
       });
       let twinOut = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
       if (owned.length) {
+        const fm = [
+          companionsFrontmatter(owned, origin),
+          environmentFrontmatter(environment, `${origin}/env/environments.json`),
+        ].filter(Boolean);
         twinOut = prependSection(
-          injectFrontmatter(twinOut, companionsFrontmatter(owned, origin)),
-          companionsSection(owned, origin),
+          injectFrontmatter(twinOut, fm.join("\n")),
+          companionsSection(owned, origin, environment),
         );
       }
       files.set(`public${route}.md`, twinOut);
@@ -335,6 +340,11 @@ export async function emitDocs({ site, drafts = false }) {
         section: page.section,
         headings: pageHeadings,
         twin: `${route}.md`,
+        environment: environment && {
+          title: environment.title,
+          bundle: `/env/${site.env.bundle}.tar.gz`,
+          commands: environment.commands,
+        },
         scripts: owned.map((s) => ({
           url: s.fetchUrl,
           file: s.fetchUrl.split("/").pop(),
@@ -445,6 +455,10 @@ export async function emitDocs({ site, drafts = false }) {
         summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`.`,
         origin,
         apis,
+        environments: envBundle && {
+          bundleUrl: envBundle.bundleUrl,
+          guide: envBundle.guide && `${origin}${envBundle.guide.route}.md`,
+        },
       }),
     );
     files.set(

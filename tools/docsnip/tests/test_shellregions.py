@@ -43,3 +43,10 @@ def test_run_stops_at_the_first_failure(tmp_path):
     assert "unreachable" not in run(script, "fails", expect_failure=True)
     with pytest.raises(AssertionError):
         run(script, "fails")
+
+
+def test_run_honors_an_explicit_cwd(tmp_path):
+    elsewhere = tmp_path / "elsewhere"
+    elsewhere.mkdir()
+    out = run(_page(tmp_path, SCRIPT), "ok", cwd=elsewhere)
+    assert str(elsewhere.resolve()) in out

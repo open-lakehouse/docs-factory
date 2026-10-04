@@ -26,16 +26,19 @@ def regions(script: Path) -> dict[str, str]:
     return dict(_REGION_RE.findall(script.read_text()))
 
 
-def run(script: Path, name: str, *, expect_failure: bool = False) -> str:
+def run(
+    script: Path, name: str, *, expect_failure: bool = False, cwd: Path | None = None
+) -> str:
     """Run one region and return its combined output.
 
-    ``cwd`` is the script's grandparent, the page folder: snippets live in
-    ``<page>/snippets/``.
+    ``cwd`` defaults to the script's grandparent, the page folder: snippets live
+    in ``<page>/snippets/``. Pass the folder the page tells the reader to run
+    the region from when that differs, such as ``envs/unitycatalog``.
     """
     blocks = regions(script)
     proc = subprocess.run(
         ["bash", "-euo", "pipefail", "-c", blocks.get(SETUP, "") + blocks[name]],
-        cwd=script.parent.parent,
+        cwd=cwd or script.parent.parent,
         capture_output=True,
         text=True,
     )

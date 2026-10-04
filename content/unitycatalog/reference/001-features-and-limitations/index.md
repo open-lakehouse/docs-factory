@@ -79,7 +79,7 @@ Paths below are relative to the
 | Feature | Status | Details | Source |
 | --- | --- | --- | --- |
 | Container image | Implemented | `unitycatalog/unitycatalog:v0.6.0`; includes the `uc` CLI and sample catalogs. | `Dockerfile` |
-| Metadata database | Implemented | H2 by default (in the container, lost with it); PostgreSQL and MySQL through Hibernate settings. | `etc/conf/hibernate.properties`, `etc/db/*-example.yml`, `PostgresDeltaCommitsCRUDTest.java`, `MySQLDeltaCommitsCRUDTest.java` |
+| Metadata database | Implemented | H2 by default (in the container, lost with it); PostgreSQL and MySQL through Hibernate settings. The image bundles the PostgreSQL JDBC driver; see [Configure PostgreSQL](../../how-to/configure-backend-db/index.md). | `etc/conf/hibernate.properties`, `etc/db/*-example.yml`, `PostgresDeltaCommitsCRUDTest.java`, `MySQLDeltaCommitsCRUDTest.java` |
 | Web UI | Implemented | A separate React application. | `ui/` |
 | Helm chart | Implemented | Kubernetes chart. Its replica count is not a high-availability guarantee. | `helm/` |
 

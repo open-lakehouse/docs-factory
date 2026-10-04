@@ -1,0 +1,37 @@
+# The local server from compose.yaml, with its metadata in PostgreSQL instead
+# of the H2 file inside the container, so catalogs survive a recreated or
+# upgraded server container. Start it from this folder with
+# `docker compose -f compose.postgres.yaml up -d --wait`.
+name: uc-docs
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ucdb
+      POSTGRES_USER: uc
+      POSTGRES_PASSWORD: uc-local-only
+    volumes:
+      - uc-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uc -d ucdb"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  init-storage:
+    extends: { file: compose.yaml, service: init-storage }
+
+  unitycatalog:
+    extends: { file: compose.yaml, service: unitycatalog }
+    volumes:
+      - type: bind
+        source: ./hibernate.postgres.properties
+        target: /home/unitycatalog/etc/conf/hibernate.properties
+        read_only: true
+    depends_on:
+      init-storage: { condition: service_completed_successfully }
+      postgres: { condition: service_healthy }
+
+volumes:
+  uc-postgres:

@@ -5,10 +5,9 @@ import { loadIndex } from "../../lib/search";
 import { toggleTheme, useDarkMode } from "../../lib/theme";
 import { site } from "../../site";
 import CommandPalette from "../CommandPalette";
+import { GITHUB, SOCIAL } from "../SocialIcons";
 import { UnityCatalogIcon } from "../UnityCatalogIcon";
 import Sidebar from "./Sidebar";
-
-const GITHUB = "https://github.com/unitycatalog/unitycatalog";
 
 function ThemeToggle() {
   const Icon = useDarkMode() ? Sun : Moon;
@@ -94,9 +93,11 @@ export default function Shell({ children, aside }: { children: ReactNode; aside?
         </Link>
         <nav className="topbar-links">
           <SearchTrigger onOpen={openPalette} />
-          <a className="chip" href={GITHUB}>
-            github
-          </a>
+          {SOCIAL.map(({ label, href, Icon }) => (
+            <a key={label} className="icon-button social" href={href} aria-label={label} title={label}>
+              <Icon aria-hidden="true" />
+            </a>
+          ))}
           <ThemeToggle />
         </nav>
       </header>

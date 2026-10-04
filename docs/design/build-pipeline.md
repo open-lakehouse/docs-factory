@@ -156,6 +156,14 @@ The deployed review DB contains live feedback. Re-registration must preserve
 comment references and be safe to retry; `just db-reset` is only for disposable
 local development databases, never a production registration repair.
 
+**Content ratings** (`content_rating`, `RecordRating`/`ListRatings`) are manual
+quality feedback: a 1–5 score plus pros/cons, dimension strengths/weaknesses and
+an optional good/bad exemplar label. They live only in the DB and never change
+review state. A rating is bound to the `content_version` it judged. Re-rating
+the same version edits it in place, and rating a newer version supersedes the old
+row without deleting it, so every (version, judgement) pair stays recoverable
+for later mining. Aggregates count only each rater's active row.
+
 ## 8. Drift tests replace the "mirror in X" comments
 
 The contract is enforced by tests, in two runners:

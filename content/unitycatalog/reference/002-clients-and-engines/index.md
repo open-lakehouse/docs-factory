@@ -93,7 +93,7 @@ means these docs don't test it.
 pandas lists tables only through the
 [Python client](../../tutorials/python-client/index.md). For each library's
 errors, see
-[What these libraries can't do yet](../../how-to/python-dataframes/index.md#what-these-libraries-cant-do-yet).
+[Known issues in 0.6.0](../features-and-limitations/index.md#known-issues-in-060).
 
 ## ML and AI libraries
 

@@ -8,13 +8,13 @@
 # ]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
 # env = { AWS_ENDPOINT_URL = "http://localhost:9000", AWS_ALLOW_HTTP = "true" }
 # ///
 """Read and append to a Unity Catalog table on S3 from pandas, through deltalake.
 
-docker compose up -d --wait        # from the page folder
+docker compose -f compose.aws.yaml up -d --wait   # from envs/unitycatalog
 AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true uv run snippets/pandas_tables.py
 """
 

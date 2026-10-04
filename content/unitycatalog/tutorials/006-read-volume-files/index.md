@@ -20,46 +20,27 @@ minutes.
 
 ::::journey
 
-### Start the server
+### Open a Python session
 
-Create an empty folder and save these two files in it:
-
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
-
-Start Unity Catalog 0.6.0 and wait until it reports healthy:
+Start the [local server](../../how-to/run-local-server/index.md) if it isn't
+already running from an earlier tutorial. Then open a Python session with the
+Unity Catalog client and [obstore](https://developmentseed.org/obstore/), a
+Python library for object storage and local files:
 
 ```bash
-docker compose up -d --wait
+uv run --with unitycatalog-client==0.6.0 --with obstore==0.11.1 python -m asyncio
 ```
 
-Authorization is off, so the client needs no token. Use this configuration
-only on your own machine.
+`python -m asyncio` is a Python shell that accepts `await` at the top level,
+which the asynchronous client needs. Enter each of the following snippets in
+it, in order.
 
-### Create the script
-
-Create `volume_files.py` and start it with this header. `uv` reads it to
-install the Unity Catalog client and [obstore](https://developmentseed.org/obstore/),
-a Python library for object storage and local files:
-
-```python
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["unitycatalog-client==0.6.0", "obstore==0.11.1"]
-# ///
-```
-
-Add the imports and the server address:
+### Connect to the server
 
 ```python file=./snippets/volume_files.py start=start:connect end=end:connect
 ```
 
-The client is asynchronous. Every step from here on goes inside one
-`async def main()` function, within an
-`async with ApiClient(config) as api:` block.
+Authorization is off on the local server, so the client needs no token.
 
 ### Put some files in a folder
 
@@ -112,8 +93,7 @@ print as `None`.
 
 ### Open the volume's storage
 
-Write a small function that turns the answer into a storage client. Put it
-above `main()`:
+Define a small function that turns the answer into a storage client:
 
 ```python file=./snippets/volume_files.py start=start:open-store end=end:open-store
 ```
@@ -123,9 +103,17 @@ the location directly. Your reading code stays the same either way.
 
 ### Read the files
 
-Back in `main()`, list the volume's files and read each one:
+List the volume's files and read each one:
 
 ```python file=./snippets/volume_files.py start=start:read end=end:read
+```
+
+The output shows the three documents and their sizes:
+
+```text
+returns.md (50 bytes): Items can be returned within 30 days of delivery.
+shipping.md (38 bytes): Orders ship within two business days.
+warranty.md (39 bytes): Electronics carry a one-year warranty.
 ```
 
 ### Clean up
@@ -136,36 +124,8 @@ Delete the catalog, and with it the schema and the volume:
 ```
 
 Deleting an external volume removes only the catalog's record. The folder and
-its files stay where they are.
-
-### Run the script
-
-Close the script with an entry point, outside `main()`:
-
-```python
-asyncio.run(main())
-```
-
-Then run it:
-
-```bash
-uv run volume_files.py
-```
-
-The output ends with the three documents and their sizes:
-
-```text
-returns.md (50 bytes): Items can be returned within 30 days of delivery.
-shipping.md (38 bytes): Orders ship within two business days.
-warranty.md (39 bytes): Electronics carry a one-year warranty.
-['returns.md', 'shipping.md', 'warranty.md']
-```
-
-Stop the server when you are done:
-
-```bash
-docker compose down
-```
+its files stay where they are, so the last line lists all three. Leave the
+session with `Ctrl+D`.
 
 ::::
 

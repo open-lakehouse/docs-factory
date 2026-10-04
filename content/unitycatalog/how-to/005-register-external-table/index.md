@@ -9,9 +9,10 @@ references:
 status: draft
 ---
 
-This page shows how to register a [Delta](model:deltaSpec) table that already
-exists in storage as an *external table* in
-[Unity Catalog](model:unityCatalogOSS). An external table is a catalog entry
+Registering a [Delta](model:deltaSpec) table that already exists in storage as
+an *external table* gives it a governed name in
+[Unity Catalog](model:unityCatalogOSS), so that every engine can find it as
+`catalog.schema.table`. An external table is a catalog entry
 that records a table's name, columns, format, and storage location. The data
 stays where it is, owned by whatever process writes it. Unity Catalog never
 moves or rewrites the files.
@@ -26,28 +27,12 @@ difference, see
 - A Unity Catalog server, version 0.6.0, and a schema to register the table in.
   This page uses `retail.sales`; see
   [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
-- A Delta table at a location the server can reach. The local setup below
-  mounts one directory, `UC_DOCS_ROOT` (default `/tmp/uc-docs`), at the same
-  path on your machine and in the server container. A `file://` location then
-  means the same files to both.
+- A Delta table at a location the server can reach. On the
+  [local server](../run-local-server/index.md), that's a folder under
+  [`UC_DOCS_ROOT`](../run-local-server/index.md#share-a-folder-with-the-server).
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
-  0.6.0 and `deltalake`. For the CLI examples, Docker. To read the table from
-  another engine, `polars==1.44.2`, `daft[unity]==0.7.25` with `tenacity`, or
-  `duckdb==1.5.4`.
-
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
-
-:::tip
-The server container must see the same directory that your client sees. Docker
-Desktop shares `/tmp` by default, but Colima and some other VMs share only your
-home directory. On those, set `UC_DOCS_ROOT` to a path under your home directory
-before you run `docker compose up -d`, and keep it set while you run the
-examples.
-:::
+  0.6.0 and `deltalake`. To read the table from another engine,
+  `polars==1.44.2`, `daft[unity]==0.7.25` with `tenacity`, or `duckdb==1.5.4`.
 
 If you don't have a table at hand, write a small one:
 
@@ -187,9 +172,9 @@ privileges can ask the server for short-lived ones; see
 
 ## Change a registered table
 
-The Unity Catalog REST API in 0.6.0 has no update endpoint for tables. To change
-an external table's columns or comment, drop it and register it again. The data
-isn't affected.
+To change an external table's columns or comment, drop it and register it
+again. The data isn't affected. For Delta tables that Unity Catalog manages,
+engines change the schema and properties through Delta commits instead.
 
 ## Drop the table
 
@@ -211,10 +196,6 @@ tools.
 
 **Required privileges:** ownership of the table plus `USE_SCHEMA` and
 `USE_CATALOG`, or ownership of the schema (with `USE_CATALOG`) or the catalog.
-
-The privilege rules on this page come from the server's 0.6.0 table
-authorization expressions. They apply only when the server runs with
-authorization enabled.
 
 ## Next steps
 

@@ -1,6 +1,6 @@
 ---
 title: Create your first catalog
-summary: Run a local Unity Catalog server, browse its sample data, then create a catalog, a schema, and a table of your own with the CLI.
+summary: Start a local Unity Catalog 0.6.0 server, browse its sample data, then create a catalog, a schema, and a Delta table of your own with the uc CLI.
 diataxis: tutorial
 project: unitycatalog
 references:
@@ -20,29 +20,25 @@ server image, so there is nothing to install besides Docker.
 
 ### Start the server
 
-Create an empty folder and save these two files in it. `compose.yaml` runs
-Unity Catalog 0.6.0 and `server.properties` configures it:
-
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
-
-From that folder, start the server and wait until it reports healthy:
+Download the docs' environment and start Unity Catalog 0.6.0:
 
 ```bash
+curl -L https://github.com/open-lakehouse/docs-factory/archive/refs/heads/main.tar.gz \
+  | tar -xz --strip-components=1 docs-factory-main/envs
+cd envs/unitycatalog
 docker compose up -d --wait
 ```
 
 The server now listens on `http://localhost:8080`. Authorization is off, so
 every command succeeds without a token. That keeps this tutorial short, and it
 is also why this configuration must never serve anyone but you.
+[Run a local Unity Catalog server](../../how-to/run-local-server/index.md)
+describes the environment.
 
 ### Define a shortcut for the CLI
 
-The CLI lives inside the container. Run this in the same folder, in every
-terminal you use for this tutorial:
+The CLI lives inside the server's container. Define this shortcut in every
+terminal you use:
 
 ```bash file=./snippets/first_catalog.sh start=start:setup end=end:setup
 ```
@@ -120,18 +116,15 @@ Real applications write through an engine such as Spark or a Delta library.
 
 ### Clean up
 
-Delete your catalog together with everything in it, then stop the server:
+Delete your catalog together with everything in it:
 
 ```bash file=./snippets/first_catalog.sh start=start:clean-up end=end:clean-up
 ```
 
-```bash
-docker compose down
-```
-
-The server keeps its metadata inside the container, so `docker compose down`
-also resets the sample catalogs. A server you keep stores its metadata in an
-external database instead.
+Leave the server running for the next tutorial. When you're done,
+[stop it](../../how-to/run-local-server/index.md#stop-or-reset-the-server)
+with `docker compose down`. The server keeps its metadata inside the
+container, so stopping it also resets the sample catalogs.
 
 ::::
 

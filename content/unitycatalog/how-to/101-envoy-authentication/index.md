@@ -1,9 +1,6 @@
 ---
-title: Pluggable authnetication with Envoy Proxy
-summary: |
-  Envoy Proxy is a versatile reverse proxy that allows fine grained control
-  over the traffic in and out of your platform. Tight control over the network
-  allows harmonizing authen authnetication acrros all platform services.
+title: Authenticate requests with an Envoy proxy
+summary: Put Envoy in front of Unity Catalog to authenticate requests consistently across platform services.
 diataxis: how-to
 project: unitycatalog
 status: idea

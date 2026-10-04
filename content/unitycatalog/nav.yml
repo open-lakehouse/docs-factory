@@ -11,11 +11,10 @@ nav:
       - page: explanation/what-is-unity-catalog
         id: E01
         label: What is Unity Catalog OSS?
-      - page: reference/features-and-limitations
-        id: R01
       - page: tutorials/getting-started
         id: T01
         label: Create your first catalog
+      - page: how-to/run-local-server
       - page: reference/clients-and-engines
         id: R10
 
@@ -23,6 +22,8 @@ nav:
     items:
       - section: Tutorials
         items:
+          - page: tutorials/python-client
+            id: T11
           - planned: T02
             title: Register and query an existing Delta table with Spark
           - page: tutorials/managed-delta-table
@@ -37,8 +38,6 @@ nav:
             id: T07
           - planned: T08
             title: Define and query your first metric view
-          - page: tutorials/python-client
-            id: T11
       - section: How-to guides
         items:
           - section: Catalogs and schemas
@@ -93,7 +92,6 @@ nav:
                 title: Read UniForm tables from Trino through Iceberg REST
               - page: how-to/python-dataframes
                 id: H20
-              - page: tutorials/python-client
           - section: Sample data
             items:
               - page: how-to/seed-tpch-data
@@ -200,6 +198,7 @@ nav:
   - section: Reference
     items:
       - page: reference/features-and-limitations
+        id: R01
       - page: reference/clients-and-engines
       - planned: R02
         title: Resource model, identifiers, types, and table/view kinds

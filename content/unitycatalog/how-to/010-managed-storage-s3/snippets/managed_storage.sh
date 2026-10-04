@@ -4,7 +4,7 @@
 # The CLI equivalents of managed_storage.py; managed_storage_cli.py runs each region.
 
 # --8<-- [start:setup]
-uc() { docker compose exec -T unitycatalog bin/uc "$@"; }
+uc() { docker exec unitycatalog bin/uc "$@"; }
 # --8<-- [end:setup]
 
 # --8<-- [start:prep]

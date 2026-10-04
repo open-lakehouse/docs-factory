@@ -11,12 +11,12 @@
 # ]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # ///
 """Read the registered external table by name from Polars, Daft, and DuckDB.
 
-docker compose up -d        # from the page folder
+docker compose up -d --wait   # from envs/unitycatalog
 uv run snippets/read_engines.py
 """
 

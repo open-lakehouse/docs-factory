@@ -6,7 +6,7 @@
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "aws_storage.sh"
@@ -26,7 +26,7 @@ MASTER = "arn:aws:iam::123456789012:role/uc-master"
 
 
 def check_policies() -> None:
-    """The page's IAM documents must parse and agree with server.properties."""
+    """The page's IAM documents must parse and agree with both server configs."""
     trust = json.loads((HERE / "storage-role-trust.json").read_text())
     assert trust["Statement"][0]["Principal"]["AWS"] == MASTER
     assert "sts:ExternalId" in trust["Statement"][0]["Condition"]["StringEquals"]
@@ -40,8 +40,9 @@ def check_policies() -> None:
         for a in s["Action"]
     }
     assert {"s3:GetObject", "s3:PutObject", "s3:ListBucket"} <= actions, actions
-    for name in ("server.properties", "server.aws.properties"):
-        assert f"aws.masterRoleArn={MASTER}" in (HERE.parent / name).read_text()
+    local = HERE.parents[4] / "envs" / "unitycatalog" / "server.aws.properties"
+    for props in (local, HERE.parent / "server.aws.properties"):
+        assert f"aws.masterRoleArn={MASTER}" in props.read_text(), props
 
 
 if __name__ == "__main__":

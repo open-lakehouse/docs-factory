@@ -6,7 +6,7 @@
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "first_catalog.sh"
@@ -29,17 +29,7 @@ def _reset() -> None:
         run(SCRIPT, "clean-up")
     # A forced catalog delete keeps an external table's files.
     subprocess.run(
-        [
-            "docker",
-            "compose",
-            "exec",
-            "-T",
-            "unitycatalog",
-            "rm",
-            "-rf",
-            "/tmp/uc/orders",
-        ],
-        cwd=SCRIPT.parent.parent,
+        ["docker", "exec", "unitycatalog", "rm", "-rf", "/tmp/uc/orders"],
         check=True,
     )
 

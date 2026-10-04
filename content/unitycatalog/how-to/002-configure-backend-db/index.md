@@ -1,6 +1,6 @@
 ---
-title: Choosing a storage backend for Unity Catalog
-summary: Configure different databases where Unity Catalog stores its metadata.
+title: Configure PostgreSQL as the metadata database
+summary: Store Unity Catalog's metadata in PostgreSQL instead of the default in-container H2 database, so catalogs survive restarts.
 diataxis: how-to
 project: unitycatalog
 references:

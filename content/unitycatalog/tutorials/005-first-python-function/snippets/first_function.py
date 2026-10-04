@@ -3,7 +3,7 @@
 # dependencies = ["unitycatalog-ai==0.4.0"]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # # The sandbox forks this process, then caps the child's address space at
@@ -14,48 +14,33 @@
 # ///
 """Register a Python function in Unity Catalog, inspect it, run it, and remove it.
 
-docker compose up -d --wait        # from the page folder
+The regions are what a reader types into `python -m asyncio`, step by step.
+
+docker compose up -d --wait   # from envs/unitycatalog
 uv run snippets/first_function.py
 """
 
-# --8<-- [start:connect]
 import asyncio
+import os
 
-from unitycatalog.ai.core.client import UnitycatalogClient, UnitycatalogFunctionClient
-from unitycatalog.client import ApiClient, CatalogsApi, Configuration
-
-config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
-# --8<-- [end:connect]
-
-import os  # noqa: E402
-
-from unitycatalog.client.exceptions import NotFoundException  # noqa: E402
-
-
-# --8<-- [start:define]
-def order_total(quantity: int, unit_price: float, discount_pct: float = 0.0) -> float:
-    """
-    Calculate the total price of an order line after a percentage discount.
-
-    Args:
-        quantity: Number of units ordered.
-        unit_price: Price of one unit.
-        discount_pct: Discount in percent, from 0 to 100.
-
-    Returns:
-        The discounted total, rounded to two decimals.
-    """
-    return round(quantity * unit_price * (1 - discount_pct / 100), 2)
-
-
-# --8<-- [end:define]
+from unitycatalog.client.exceptions import NotFoundException
 
 
 async def main() -> None:
-    # --8<-- [start:open]
-    async with ApiClient(config) as api:
-        client = UnitycatalogFunctionClient(api_client=api)
-        # --8<-- [end:open]
+    # --8<-- [start:connect]
+    from unitycatalog.ai.core.client import (
+        UnitycatalogClient,
+        UnitycatalogFunctionClient,
+    )
+    from unitycatalog.client import ApiClient, CatalogsApi, Configuration
+
+    config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
+    api = ApiClient(config)
+    client = UnitycatalogFunctionClient(api_client=api)
+    # --8<-- [end:connect]
+    if url := os.environ.get("UC_BASE_URL"):
+        config.host = url
+    try:
         await _reset(api)
 
         # --8<-- [start:namespace]
@@ -65,6 +50,10 @@ async def main() -> None:
         )
         await uc.create_schema_async(name="pricing", catalog_name="tools")
         # --8<-- [end:namespace]
+
+        # --8<-- [start:import-function]
+        from pricing import order_total
+        # --8<-- [end:import-function]
 
         # --8<-- [start:register]
         info = await client.create_python_function_async(
@@ -143,10 +132,15 @@ async def main() -> None:
         # --8<-- [start:clean-up]
         await client.delete_function_async("tools.pricing.order_total")
         await CatalogsApi(api).delete_catalog(name="tools", force=True)
+        await api.close()
         # --8<-- [end:clean-up]
+    finally:
+        await api.close()
 
 
-async def _reset(api: ApiClient) -> None:
+async def _reset(api) -> None:
+    from unitycatalog.client import CatalogsApi
+
     try:
         await CatalogsApi(api).delete_catalog(name="tools", force=True)
     except NotFoundException:
@@ -154,6 +148,4 @@ async def _reset(api: ApiClient) -> None:
 
 
 if __name__ == "__main__":
-    if url := os.environ.get("UC_BASE_URL"):
-        config.host = url
     asyncio.run(main())

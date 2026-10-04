@@ -19,52 +19,54 @@ minutes.
 
 ::::journey
 
-### Start the server
+### Open a Python session
 
-Create an empty folder and save these two files in it:
-
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
-
-Start Unity Catalog 0.6.0 and wait until it reports healthy:
+Start the [local server](../../how-to/run-local-server/index.md) if it isn't
+already running from an earlier tutorial. Then create an empty folder and, in
+it, open a Python session with `unitycatalog-ai`, the client library for
+catalog functions:
 
 ```bash
-docker compose up -d --wait
+mkdir first-function && cd first-function
+uv run --with unitycatalog-ai==0.4.0 python -m asyncio
 ```
 
-Authorization is off, so the client needs no token. Use this configuration
-only on your own machine.
+`python -m asyncio` is a Python shell that accepts `await` at the top level,
+which the asynchronous client needs. Enter each of the following snippets in
+it, in order.
 
-### Create the script
-
-Create `first_function.py` in the same folder and start it with this header.
-`uv` reads it to install `unitycatalog-ai`, the client library for catalog
-functions:
-
-```python
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["unitycatalog-ai==0.4.0"]
-# ///
-```
-
-Then add the imports and the server address:
+### Connect to the server
 
 ```python file=./snippets/first_function.py start=start:connect end=end:connect
 ```
 
 `unitycatalog-ai` 0.4.0 depends on the 0.4 release of `unitycatalog-client`.
-It works with the 0.6.0 server for everything in this tutorial.
+It works with the 0.6.0 server for everything in this tutorial. Authorization
+is off on the local server, so the client needs no token.
+
+### Create a schema for functions
+
+Functions live in a schema like tables do. Create a catalog and a schema for
+them:
+
+```python file=./snippets/first_function.py start=start:namespace end=end:namespace
+```
 
 ### Write the function
 
-Add the function you are going to register:
+Save the function you are going to register as `pricing.py`, in the folder
+where the session runs:
 
-```python file=./snippets/first_function.py start=start:define end=end:define
+```python file=./snippets/pricing.py title="pricing.py"
 ```
+
+Then import it into the session:
+
+```python file=./snippets/first_function.py start=start:import-function end=end:import-function
+```
+
+The client reads the function's source code to register it, so define
+functions in a module like this one rather than typing them into the session.
 
 Every argument and the return value need a type hint, because the catalog
 stores the function's signature as SQL types: `int` becomes `LONG`, and
@@ -73,24 +75,9 @@ stores its first paragraph as the function's comment and each `Args:` entry as
 that parameter's comment. An AI agent later reads exactly these descriptions to
 decide when to call the function, so they are worth writing well.
 
-### Connect and create a schema
-
-The client is asynchronous, so the rest of the code goes into an `async def
-main()` function. Open a connection and create the function client:
-
-```python file=./snippets/first_function.py start=start:open end=end:open
-```
-
-Functions live in a schema like tables do. Inside the `async with` block,
-create a catalog and a schema for them. Every snippet from here on goes inside
-that block too:
-
-```python file=./snippets/first_function.py start=start:namespace end=end:namespace
-```
-
 ### Register the function
 
-Hand the function object to the client:
+Hand the imported function to the client:
 
 ```python file=./snippets/first_function.py start=start:register end=end:register
 ```
@@ -120,7 +107,7 @@ with the metadata needed to call it. It doesn't run the code.
 
 ### Run the function by name
 
-Add a call that executes the function through the catalog:
+Execute the function through the catalog:
 
 ```python file=./snippets/first_function.py start=start:execute end=end:execute
 ```
@@ -149,12 +136,6 @@ runs anything. `20` is an `int`, but `unit_price` is a `DOUBLE`:
 
 The call raises `ValueError` and doesn't run the function. Pass `20.0` instead.
 
-:::note
-In `unitycatalog-ai` 0.4.0, a result that Python treats as false, such as `0`,
-`0.0`, or an empty string, comes back as a message saying that no output was
-produced. Check `result.value` for that message when zero is a valid answer.
-:::
-
 ### List and clean up
 
 List the functions in the schema, then remove the function and the catalog:
@@ -165,33 +146,10 @@ List the functions in the schema, then remove the function and the catalog:
 ```python file=./snippets/first_function.py start=start:clean-up end=end:clean-up
 ```
 
-### Run the script
-
-Close the script with an entry point, outside `main()`:
-
-```python
-asyncio.run(main())
-```
-
-Then run it from the folder:
-
-```bash
-uv run first_function.py
-```
-
-You see the function's name, its stored description and body, `53.97`,
-`59.97`, the `ValueError` message, and the list with your one function.
-
-If a run stops partway, the function stays registered, and the next run fails
-with `Function tools.pricing.order_total already exists`. Delete the catalog
-with `CatalogsApi(api).delete_catalog(name="tools", force=True)`, or pass
-`replace=True` to `create_python_function_async` to overwrite the function.
-
-Stop the server when you are done:
-
-```bash
-docker compose down
-```
+To register the function again under the same name, pass `replace=True` to
+`create_python_function_async`; without it, registration fails with
+`Function tools.pricing.order_total already exists`. Leave the session with
+`Ctrl+D`.
 
 ::::
 

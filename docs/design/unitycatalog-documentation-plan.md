@@ -617,6 +617,41 @@ verification gates rather than reasons to postpone the entire rewrite:
 | Integration ownership | First-party guides only for tested paths; provider-owned directory otherwise. | Named reviewer for each engine/framework. |
 | Navigation metadata | Canonical Diataxis source; explicit small navigation projection. | Resolved 2026-10-03: per-project `nav.yml`. |
 
+### Status and next content after the 2026-10-04 review
+
+Written and CI-tested: E01, E03, E04; T01, T03, T04, T05, T11; H01, H02, H09,
+H17, H18, H20, H27, H28; R01, R10; the TPC-H seed how-to; and the shared local
+environment page (`how-to/run-local-server`, backed by `envs/unitycatalog/`).
+R03 is covered for now by the interactive OpenAPI pages on the docs site. The
+review consolidated per-page compose files into that shared environment,
+rewrote tutorials as task steps in an interactive session, and moved 0.6.0
+quirks into R01's "Known issues in 0.6.0".
+
+The learning path in `nav.yml` now runs E01 → T01 → local environment → R10,
+then T11 → T03 → T04 → T05. These gaps keep the initial version from being
+coherent, in priority order:
+
+1. **E05 Credential vending.** About ten pages link it (T04, H02, H09, H17,
+   H20, H27, E01, E03, E04, R10), and the emitted site unwraps those links to
+   text until it exists. It is the trust boundary behind every storage page.
+2. **H32 + H36, or T09.** Every how-to lists required privileges, but no page
+   shows how to enable authorization, map an identity, or grant and revoke.
+   T09 (two users, one permitted and one denied operation) covers the learning
+   path; H32/H36 cover the tasks.
+3. **T10/H25 PostgreSQL persistence.** The "Operate" section has no written
+   page. The local server loses its metadata on restart, which the
+   environment page has to keep warning about; T10 is the natural next step
+   from it.
+4. **T02 Register and query an existing Delta table with Spark.** The gap
+   between T01 (CLI) and T03 (managed tables). Alternatively, retire T02 and
+   point the path at H02 + H17, which already cover the steps.
+5. **H22 Deploy a persistent server with containers.** Together with H25,
+   H32, and H37, the minimum safe-operation story.
+
+Next tier: E02 (server, clients, and storage), T07/H15 MLflow (stub page in
+nav, status `idea`), H08 non-Delta formats (stub, linked from H02), H39
+upgrade to 0.6, H42 troubleshoot credential vending, and T08 metric views.
+
 ## 10. Authoring and verification contract
 
 Every article needs a concrete promise, prerequisites, outcome, support boundary,

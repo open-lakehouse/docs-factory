@@ -3,54 +3,30 @@
 # dependencies = ["unitycatalog-client==0.6.0", "obstore==0.11.1"]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # ///
 """Register a folder of files as a volume, then find and read it by name.
 
-docker compose up -d --wait        # from the page folder
+The regions are what a reader types into `python -m asyncio`, step by step.
+
+docker compose up -d --wait   # from envs/unitycatalog
 uv run snippets/volume_files.py
 """
 
-# --8<-- [start:connect]
 import asyncio
-from pathlib import Path
+import os
+import shutil
 
-import obstore
-from obstore.store import from_url
-from unitycatalog.client import (
-    ApiClient,
-    CatalogsApi,
-    Configuration,
-    CreateCatalog,
-    CreateSchema,
-    CreateVolumeRequestContent,
-    GenerateTemporaryVolumeCredential,
-    SchemasApi,
-    TemporaryCredentials,
-    TemporaryCredentialsApi,
-    VolumeOperation,
-    VolumesApi,
-    VolumeType,
-)
+from unitycatalog.client.exceptions import NotFoundException
 
-config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
-# --8<-- [end:connect]
-
-import os  # noqa: E402
-import shutil  # noqa: E402
-
-from unitycatalog.client.exceptions import NotFoundException  # noqa: E402
-
-POLICIES = {
-    "returns.md": "Items can be returned within 30 days of delivery.\n",
-    "shipping.md": "Orders ship within two business days.\n",
-    "warranty.md": "Electronics carry a one-year warranty.\n",
-}
-
-
+# isort: split
 # --8<-- [start:open-store]
+from obstore.store import from_url
+from unitycatalog.client import TemporaryCredentials
+
+
 def open_store(creds: TemporaryCredentials):
     """Open the volume's directory with the credentials Unity Catalog vended."""
     if creds.aws_temp_credentials:
@@ -66,9 +42,39 @@ def open_store(creds: TemporaryCredentials):
 
 # --8<-- [end:open-store]
 
+POLICIES = {
+    "returns.md": "Items can be returned within 30 days of delivery.\n",
+    "shipping.md": "Orders ship within two business days.\n",
+    "warranty.md": "Electronics carry a one-year warranty.\n",
+}
+
 
 async def main() -> None:
-    async with ApiClient(config) as api:
+    # --8<-- [start:connect]
+    from pathlib import Path
+
+    import obstore
+    from unitycatalog.client import (
+        ApiClient,
+        CatalogsApi,
+        Configuration,
+        CreateCatalog,
+        CreateSchema,
+        CreateVolumeRequestContent,
+        GenerateTemporaryVolumeCredential,
+        SchemasApi,
+        TemporaryCredentialsApi,
+        VolumeOperation,
+        VolumesApi,
+        VolumeType,
+    )
+
+    config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
+    api = ApiClient(config)
+    # --8<-- [end:connect]
+    if url := os.environ.get("UC_BASE_URL"):
+        config.host = url
+    try:
         await _reset(api)
 
         # --8<-- [start:write-files]
@@ -134,8 +140,11 @@ async def main() -> None:
         # --8<-- [start:clean-up]
         await CatalogsApi(api).delete_catalog(name="support", force=True)
         print(sorted(p.name for p in folder.iterdir()))  # the files are still there
+        await api.close()
         # --8<-- [end:clean-up]
         assert sorted(p.name for p in folder.iterdir()) == sorted(POLICIES)
+    finally:
+        await api.close()
 
     _check_s3_mapping()
     shutil.rmtree(folder.parent)
@@ -156,7 +165,9 @@ def _check_s3_mapping() -> None:
     assert store.prefix == "support/policies", store
 
 
-async def _reset(api: ApiClient) -> None:
+async def _reset(api) -> None:
+    from unitycatalog.client import CatalogsApi
+
     try:
         await CatalogsApi(api).delete_catalog(name="support", force=True)
     except NotFoundException:
@@ -164,6 +175,4 @@ async def _reset(api: ApiClient) -> None:
 
 
 if __name__ == "__main__":
-    if url := os.environ.get("UC_BASE_URL"):
-        config.host = url
     asyncio.run(main())

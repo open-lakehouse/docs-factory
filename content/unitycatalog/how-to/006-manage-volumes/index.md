@@ -9,11 +9,11 @@ references:
 status: draft
 ---
 
-This page shows how to create and manage volumes in
-[Unity Catalog](model:unityCatalogOSS). A volume governs a directory of files
+A [Unity Catalog](model:unityCatalogOSS) volume governs a directory of files
 that aren't a table: CSV drops, documents, images, model inputs. Like a table, a
 volume lives in a schema and has a three-level name, such as
-`retail.files.landing`.
+`retail.files.landing`. This guide creates, inspects, renames, and deletes
+volumes in Unity Catalog 0.6.0, and shows what each step does to their files.
 
 Volumes come in two types:
 
@@ -28,27 +28,13 @@ For how volumes fit into the namespace, see
 
 ## Requirements
 
-- A Unity Catalog server, version 0.6.0. The local setup below mounts one
-  directory, `UC_DOCS_ROOT` (default `/tmp/uc-docs`), at the same path on your
-  machine and in the server container. A `file://` location then means the same
-  files to both.
+- A Unity Catalog 0.6.0 server. The examples use the
+  [local server](../run-local-server/index.md) and keep volume files under its
+  [shared folder](../run-local-server/index.md#share-a-folder-with-the-server),
+  `UC_DOCS_ROOT`.
 - For managed volumes, a storage root on the schema or its catalog.
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
-  0.6.0. For the CLI examples, Docker.
-
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
-
-:::tip
-The server container must see the same directory that your client sees. Docker
-Desktop shares `/tmp` by default, but Colima and some other VMs share only your
-home directory. On those, set `UC_DOCS_ROOT` to a path under your home directory
-before you run `docker compose up -d`, and keep it set while you run the
-examples.
-:::
+  0.6.0.
 
 Set up the client for your interface:
 
@@ -136,12 +122,8 @@ external-location check.
 ```
 :::
 
-:::note
-In 0.6.0, getting a volume that doesn't exist returns HTTP 500 with error code
-`INTERNAL`, not 404. The Python SDK raises `ServiceException`, not
-`NotFoundException`. To check whether a volume exists, list the schema's
-volumes.
-:::
+To check whether a volume exists, list the schema's volumes; see
+[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060).
 
 **Required privileges:** `READ_VOLUME` or ownership on the volume, plus
 `USE_SCHEMA` and `USE_CATALOG`. Owners of the schema (with `USE_CATALOG`), the
@@ -222,10 +204,6 @@ check storage after deleting volumes that matter.
 **Required privileges:** ownership of the catalog; or ownership of the schema
 plus `USE_CATALOG`; or ownership of the volume plus `USE_CATALOG` and
 `USE_SCHEMA`.
-
-The privilege rules on this page come from the server's 0.6.0 authorization
-expressions (`VolumeService`). They apply only when the server runs with
-authorization enabled.
 
 ## Next steps
 

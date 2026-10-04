@@ -4,7 +4,7 @@
 # The CLI equivalents of volumes.py; volumes_cli.py runs each region.
 
 # --8<-- [start:setup]
-uc() { docker compose exec -T unitycatalog bin/uc "$@"; }
+uc() { docker exec unitycatalog bin/uc "$@"; }
 ROOT="${UC_DOCS_ROOT:-/tmp/uc-docs}"
 # --8<-- [end:setup]
 

@@ -10,8 +10,9 @@ references:
 status: draft
 ---
 
-This page shows how to give a [Unity Catalog](model:unityCatalogOSS) server
-governed access to Amazon S3. The server never hands out long-lived keys.
+A [Unity Catalog](model:unityCatalogOSS) server governs access to Amazon S3
+through storage credentials and external locations, and it never hands out
+long-lived keys.
 When an authorized client needs data, the server assumes an IAM role through
 AWS STS and returns credentials that expire after an hour and are scoped to the
 path the client asked for. For why this matters, see
@@ -37,23 +38,12 @@ policy that narrows access to the requested path and operation.
 - In AWS, permission to create IAM roles and policies, and to edit the bucket's
   policy if the bucket uses one.
 - For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.6.0
-  and, to check vended credentials, `obstore`. For the CLI examples, Docker and
-  `curl`.
+  and, to check vended credentials, `obstore`. For the CLI examples, `curl`.
 
-To try the steps without an AWS account, save the files below in one folder and
-run `docker compose up -d`. The stack includes
-[aws-sim](https://github.com/delta-io/docs-factory/tree/main/envs/aws-sim), a
-local S3 and STS that answers the real AWS hostnames, so the server runs its
-real AWS code path. aws-sim enforces the session policy on vended credentials,
-but it doesn't check trust policies or external IDs, so do the IAM steps for
-real on AWS. Point host-side clients at it with
-`AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true`.
-
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
+To try the steps without an AWS account, start the
+[local server with simulated S3](../run-local-server/index.md#start-the-server-with-simulated-s3).
+It runs the server's real AWS code path, but it doesn't check trust policies
+or external IDs, so do the IAM steps for real on AWS.
 
 Set up the client for your interface:
 
@@ -101,10 +91,8 @@ environment variable with the same name (for example `aws.region`), then from
 region chain, then the global STS endpoint.
 
 :::note
-Unity Catalog's own `docs/server/aws.md` spells these keys `aws.s3.masterRoleArn`,
-`aws.s3.accessKey`, and `aws.s3.secretKey`. In 0.6.0 the server reads only
-`aws.masterRoleArn`, `aws.accessKey`, `aws.secretKey`, and `aws.region`. It
-silently ignores the `aws.s3.` spellings.
+Use exactly these key names. The `aws.s3.masterRoleArn`-style spellings in the
+upstream `docs/server/aws.md` are silently ignored by the 0.6.0 server.
 :::
 
 ### Run outside AWS
@@ -136,10 +124,9 @@ everything your engines need. Engines such as Spark may also call
 `s3:GetBucketLocation`.
 
 :::note
-The 0.6.0 session policy contains no KMS actions, so vended credentials can't
-use objects encrypted with SSE-KMS, whatever the storage role allows. Use
-SSE-S3 for buckets that Unity Catalog 0.6.0 governs. Upstream added
-`kms:Decrypt` and `kms:GenerateDataKey*` to the session policy after 0.6.0
+Encrypt buckets that Unity Catalog 0.6.0 governs with SSE-S3. The 0.6.0 session
+policy has no KMS actions, so vended credentials can't use SSE-KMS objects.
+Releases after 0.6.0 add them
 ([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)).
 :::
 
@@ -249,12 +236,10 @@ volume.
 ```
 :::
 
-:::note
-In 0.6.0, `bin/uc credential create --help` and the other `credential` and
-`external_location` subcommand help pages crash with a `NullPointerException`.
-The commands themselves work. Their flags are `--name`, `--aws_iam_role_arn`,
-`--url`, `--credential_name`, `--comment`, `--new_name`, and `--force`.
-:::
+The CLI's `credential` and `external_location` commands take the flags
+`--name`, `--aws_iam_role_arn`, `--url`, `--credential_name`, `--comment`,
+`--new_name`, and `--force`. Their `--help` pages don't work in 0.6.0; see
+[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060).
 
 **Required privileges:** ownership of the metastore, or ownership of (or
 `CREATE EXTERNAL LOCATION` on) the credential. For an external location:
@@ -327,18 +312,12 @@ these checks. Deleting either object removes only the catalog entry. The data
 in S3 and the IAM roles stay.
 
 :::danger
-Don't force-delete a credential that an external location still uses. In 0.6.0
-the location is left pointing at the missing credential, and every list of
-external locations then fails with HTTP 500 `Credential not found`. To recover,
-force-delete the location by name: `bin/uc external_location delete --name lake --force true`.
+Always delete the location before its credential. Force-deleting a credential
+that a location still uses breaks every list of external locations; see
+[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060) to recover.
 :::
 
 **Required privileges:** ownership of the object or of the metastore.
-
-The privilege rules on this page come from the server's 0.6.0 authorization
-expressions (`CredentialService`, `ExternalLocationService`, and
-`TemporaryPathCredentialsService`). They apply only when the server runs with
-authorization enabled.
 
 ## Next steps
 

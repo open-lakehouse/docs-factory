@@ -1,6 +1,6 @@
 ---
-title: Working with different storage formats
-summary: Exploring the various storage formats supported in Unity Catalog
+title: Register non-Delta external tables
+summary: Register Parquet, CSV, JSON, Avro, ORC, and text data as external tables in Unity Catalog, and read them from an engine.
 diataxis: how-to
 project: unitycatalog
 references:

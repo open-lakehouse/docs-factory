@@ -9,12 +9,12 @@
 # ]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
 # ///
 """List and read a Unity Catalog table on local storage from Daft.
 
-docker compose up -d --wait        # from the page folder
+docker compose -f compose.aws.yaml up -d --wait   # from envs/unitycatalog
 uv run snippets/daft_tables.py
 """
 

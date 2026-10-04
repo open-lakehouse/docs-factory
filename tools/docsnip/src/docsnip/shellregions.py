@@ -29,8 +29,8 @@ def regions(script: Path) -> dict[str, str]:
 def run(script: Path, name: str, *, expect_failure: bool = False) -> str:
     """Run one region and return its combined output.
 
-    ``cwd`` is the script's grandparent: snippets live in ``<page>/snippets/``
-    and the page's ``compose.yaml`` sits in ``<page>/``.
+    ``cwd`` is the script's grandparent, the page folder: snippets live in
+    ``<page>/snippets/``.
     """
     blocks = regions(script)
     proc = subprocess.run(

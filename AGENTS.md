@@ -135,9 +135,21 @@ just arch-dev                          # LikeC4 architecture model at :5173
 3. Reference it from `index.md` with a fence
    (`file=./snippets/<name>.py start=... end=...`), then `uv run docsnip check`.
    `content/conftest.py` runs the script in the default test lane.
-4. For S3 storage, `include:` [`envs/aws-sim`](envs/aws-sim/README.md) in the
-   page's compose and keep endpoints out of the snippet: set them in
+4. Unity Catalog pages don't ship a compose file. Point the script's
+   `[tool.docs-factory] compose` at the shared
+   [`envs/unitycatalog`](envs/unitycatalog/README.md) server (`compose.yaml`, or
+   `compose.aws.yaml` for S3), and give the page one Requirements line linking
+   `how-to/run-local-server`. Keep S3 endpoints out of the snippet: set them in
    `[tool.docs-factory] env = { AWS_ENDPOINT_URL = "http://localhost:9000", AWS_ALLOW_HTTP = "true" }`.
+5. Steps are about the task, not the script. A tutorial opens an interactive
+   session once (`uv run --with <deps> python -m asyncio` for the async
+   clients) and each step's region is exactly what the reader enters. The
+   script's `main()`, entry point, and teardown stay outside the regions, and
+   no step says "create the script" or "run the script".
+6. Lead with what works. A page states one limitation inline only when it
+   blocks that page's task. Version quirks and their error strings go in R01's
+   "Known issues" section (`reference/features-and-limitations`), and pages
+   link there.
 
 ## Blog workflow
 

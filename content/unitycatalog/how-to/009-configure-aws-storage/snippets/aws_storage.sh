@@ -4,7 +4,7 @@
 # The CLI equivalents of aws_storage.py; aws_storage_cli.py runs each region.
 
 # --8<-- [start:setup]
-uc() { docker compose exec -T unitycatalog bin/uc "$@"; }
+uc() { docker exec unitycatalog bin/uc "$@"; }
 UC=http://localhost:8080/api/2.1/unity-catalog
 # --8<-- [end:setup]
 

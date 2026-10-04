@@ -10,11 +10,17 @@ import pyarrow as pa
 from deltalake import DeltaTable, write_deltalake
 from unitycatalog.client import (
     ApiClient,
+    AwsIamRoleRequest,
     CatalogsApi,
     Configuration,
     CreateCatalog,
+    CreateCredentialRequest,
+    CreateExternalLocation,
     CreateSchema,
     CreateTable,
+    CredentialPurpose,
+    CredentialsApi,
+    ExternalLocationsApi,
     SchemasApi,
     TablesApi,
 )
@@ -71,6 +77,8 @@ async def seed_orders(
     ]
     config = Configuration(host=f"{UC_URL}/api/2.1/unity-catalog")
     async with ApiClient(config) as api:
+        if location.startswith("s3://"):
+            await _ensure_external_location(api, location.rsplit("/", 1)[0])
         catalogs = CatalogsApi(api)
         try:
             await catalogs.delete_catalog(name="retail", force=True)
@@ -91,3 +99,28 @@ async def seed_orders(
                 columns=columns,
             )
         )
+
+
+async def _ensure_external_location(api: ApiClient, url: str) -> None:
+    """Let the server vend S3 credentials under `url`, as an admin sets it up on AWS."""
+    locations = ExternalLocationsApi(api)
+    credentials = CredentialsApi(api)
+    for loc in (await locations.list_external_locations()).external_locations or []:
+        if loc.name == "retail_data":
+            return
+    existing = (await credentials.list_credentials()).credentials or []
+    if "retail_storage" not in [c.name for c in existing]:
+        await credentials.create_credential(
+            CreateCredentialRequest(
+                name="retail_storage",
+                purpose=CredentialPurpose.STORAGE,
+                aws_iam_role=AwsIamRoleRequest(
+                    role_arn="arn:aws:iam::123456789012:role/uc-storage-retail"
+                ),
+            )
+        )
+    await locations.create_external_location(
+        CreateExternalLocation(
+            name="retail_data", url=url, credential_name="retail_storage"
+        )
+    )

@@ -344,6 +344,12 @@ message DraftSummary {
   // Convenience mirror of `review_state == NEEDS_REVIEW`, so the client need not
   // re-derive it.
   bool needs_review = 13;
+  // Aggregate over active (non-superseded) quality ratings. Ratings never
+  // affect review_state.
+  RatingSummary rating_summary = 14;
+  // The current viewer's active rating, if any. Compare its version_id with
+  // latest_version to tell whether the content changed since they rated.
+  optional Rating my_rating = 15;
 }
 
 // A registered user, keyed by the stable Neon Auth user id, with resolved
@@ -453,6 +459,56 @@ message Approval {
   // The content_version this approval was recorded against — provenance only.
   optional string version_id = 5;
   google.protobuf.Timestamp created_at = 6;
+}
+
+// A quality criterion a rating can mark as a strength or a weakness.
+enum QualityDimension {
+  QUALITY_DIMENSION_UNSPECIFIED = 0;
+  QUALITY_DIMENSION_ACCURACY = 1;
+  QUALITY_DIMENSION_CLARITY = 2;
+  QUALITY_DIMENSION_STRUCTURE = 3;
+  QUALITY_DIMENSION_COMPLETENESS = 4;
+  QUALITY_DIMENSION_RUNNABLE_CODE = 5;
+  QUALITY_DIMENSION_TONE = 6;
+}
+
+// Whether the rater nominates this version as a reference example of good or
+// bad content (for curating agent examples).
+enum Exemplar {
+  EXEMPLAR_UNSPECIFIED = 0;
+  EXEMPLAR_GOOD = 1;
+  EXEMPLAR_BAD = 2;
+}
+
+// One reviewer's quality rating of one content version. A reviewer has at most
+// one active rating per artifact; re-rating against a newer version supersedes
+// the old row (kept, `superseded` = true) so (version, judgement) pairs survive.
+message Rating {
+  string id = 1;
+  ContentRef ref = 2;
+  string rater_user_id = 3;
+  optional string rater_login = 4;
+  // The content_version judged, and its git sha — the snapshot to mine.
+  optional string version_id = 5;
+  optional string git_sha = 6;
+  // 1–5.
+  int32 score = 7;
+  optional string pros_md = 8;
+  optional string cons_md = 9;
+  repeated QualityDimension strengths = 10;
+  repeated QualityDimension weaknesses = 11;
+  Exemplar exemplar = 12;
+  google.protobuf.Timestamp created_at = 13;
+  google.protobuf.Timestamp updated_at = 14;
+  bool superseded = 15;
+}
+
+// Aggregate over an artifact's active ratings. `average` is 0 when count is 0.
+message RatingSummary {
+  int32 count = 1;
+  double average = 2;
+  int32 good_count = 3;
+  int32 bad_count = 4;
 }
 
 // One entry in an artifact's review timeline. `kind` is the event type; `actor`

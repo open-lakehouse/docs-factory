@@ -8,11 +8,12 @@
  * A spec may override the block's `repo`/`ref` (an upstream spec such as
  * Iceberg's) and set `serverUrl` when its own `servers` don't point at UC.
  * Exactly one entry is `default`: the block's `default` slug, else the first.
+ * `hint` falls back to `summary`.
  *
  * @param {{ api?: { repo: string, ref: string, default?: string, specs: object[] },
  *           hrefFor: (identity: object) => string | null }} site
  * @returns {{ route: string, slug: string, title: string, summary: string,
- *             ref: string, specUrl: string, sourceUrl: string,
+ *             hint: string, ref: string, specUrl: string, sourceUrl: string,
  *             serverUrl: string | null, default: boolean }[]}
  */
 export function apiEntries(site) {
@@ -33,6 +34,7 @@ export function apiEntries(site) {
       slug,
       title,
       summary,
+      hint: spec.hint ?? summary,
       ref,
       // raw.githubusercontent.com serves `access-control-allow-origin: *`, so
       // the browser can fetch it directly.

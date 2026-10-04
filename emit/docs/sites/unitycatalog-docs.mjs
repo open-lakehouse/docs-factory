@@ -14,7 +14,8 @@ export default {
   // Placeholder until the site has a home; canonical URLs and the sitemap use it.
   origin: (process.env.UC_DOCS_ORIGIN || "https://docs.unitycatalog.io").replace(/\/+$/, ""),
   // REST API references (emit/docs/api.mjs): the shell renders each spec in the
-  // browser from this pinned ref.
+  // browser from this pinned ref. `summary` feeds llms.txt, page meta, and
+  // search; `hint` is the few words the API switcher shows.
   api: {
     repo: "unitycatalog/unitycatalog",
     ref: "v0.6.0",
@@ -25,12 +26,14 @@ export default {
         title: "Unity Catalog REST API",
         summary:
           "Catalogs, schemas, tables, volumes, functions, registered models, temporary credentials, and permissions.",
+        hint: "Catalogs, tables, volumes, and more",
         file: "api/all.yaml",
       },
       {
         slug: "control",
         title: "Unity Control API",
         summary: "SCIM user management, token exchange, and logout on the Unity Catalog server.",
+        hint: "Users and tokens",
         file: "api/control.yaml",
       },
       {
@@ -38,6 +41,7 @@ export default {
         title: "UC Delta API",
         summary:
           "The Delta-native REST catalog for Delta clients: configuration, tables and commits, and temporary credentials.",
+        hint: "Delta-native REST catalog",
         file: "api/delta.yaml",
       },
       {
@@ -45,6 +49,7 @@ export default {
         title: "Iceberg REST Catalog API",
         summary:
           "The upstream Apache Iceberg REST Catalog spec. Unity Catalog serves a read-only subset at /api/2.1/unity-catalog/iceberg: config, namespaces, loading tables and views, and metrics reports.",
+        hint: "Read-only Iceberg REST subset",
         // UC 0.6.0 builds against Iceberg 1.11.0 (build.sbt `icebergVersion`).
         repo: "apache/iceberg",
         ref: "apache-iceberg-1.11.0",

@@ -22,6 +22,7 @@ test("apiEntries pins spec and source URLs to the configured ref", () => {
       slug: "core",
       title: "Core API",
       summary: "The core.",
+      hint: "The core.",
       ref: "v1.2.0",
       specUrl: "https://raw.githubusercontent.com/acme/widgets/v1.2.0/api/core.yaml",
       sourceUrl: "https://github.com/acme/widgets/blob/v1.2.0/api/core.yaml",

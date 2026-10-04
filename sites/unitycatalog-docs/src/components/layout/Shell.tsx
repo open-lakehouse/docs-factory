@@ -137,8 +137,7 @@ function Breadcrumbs() {
             key: a.route,
             to: a.route,
             label: a.title,
-            // The spec's own `info.version` (e.g. 0.1) isn't the release it documents.
-            hint: `${a.ref} · ${a.summary}`,
+            hint: a.hint,
             current: a === api,
           }))}
         />

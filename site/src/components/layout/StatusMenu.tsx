@@ -4,6 +4,8 @@
 //     In dev it is a "sign in as…" persona menu instead (the mock login).
 //   - authenticated → avatar menu with Log out. In dev it also carries a
 //     persona switcher and the review display (rail/inline) toggle.
+
+import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -140,6 +142,9 @@ export default function StatusMenu() {
           {!apiOffline && (
             <>
               <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/tokens">Agent tokens</Link>
+              </DropdownMenuItem>
               <DropdownMenuItem onSelect={signOut}>Log out</DropdownMenuItem>
             </>
           )}

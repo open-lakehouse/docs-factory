@@ -15,6 +15,8 @@ interface CommentBubbleProps {
   onReply?: () => void;
   /** Frozen git provenance — the commit sha this comment was authored against. */
   authoredGitSha?: string;
+  /** Written through a personal access token (an agent acting for the author). */
+  viaAgent?: boolean;
 }
 
 // A tombstoned/erased author has this login (see EraseUser). We drop the avatar
@@ -34,6 +36,7 @@ export default function CommentBubble({
   depth = 0,
   onReply,
   authoredGitSha,
+  viaAgent,
 }: CommentBubbleProps) {
   const indent = Math.min(depth, MAX_INDENT_LEVELS) * INDENT_STEP_REM;
   const attributed = login != null && login !== TOMBSTONE_LOGIN;
@@ -62,6 +65,11 @@ export default function CommentBubble({
         ) : (
           <span className="review-author">{displayName}</span>
         ))}
+      {viaAgent && (
+        <span className="review-via-agent" title="Posted by an agent using this author's token">
+          via agent
+        </span>
+      )}
       {body && <p className="review-body">{body}</p>}
       {(authoredGitSha || onReply) && (
         <div className={cn("review-comment-foot", !authoredGitSha && "reply-only")}>

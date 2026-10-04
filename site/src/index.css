@@ -2750,6 +2750,33 @@ a.review-author:hover span {
   font-size: 0.66rem;
   color: var(--muted);
 }
+.review-via-agent {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0 0.4rem;
+}
+
+/* Agent tokens (/tokens) + the CLI login consent card (/cli-auth). */
+.tokens-secret {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+.cli-auth-card {
+  max-width: 32rem;
+  margin: 3rem auto;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+}
+.cli-auth-card ul { margin: 0.75rem 0 1.25rem; padding-left: 1.2rem; font-size: 0.9rem; }
 .review-thread-actions {
   display: flex;
   flex-direction: column;

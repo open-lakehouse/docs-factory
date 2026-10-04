@@ -10,4 +10,6 @@ root="$(cd "$here/../.." && pwd)"
 # locate.ts imports content-core from site/, which resolves its deps there.
 [ -d "$root/site/node_modules" ] || (cd "$root/site" && bun install --frozen-lockfile) >&2
 [ -d "$here/node_modules" ] || (cd "$here" && bun install --frozen-lockfile) >&2
-exec bun run "$here/src/mcp.ts"
+# Trust the OS certificate store, not just Bun's bundled roots: behind a
+# TLS-inspecting proxy the API's chain ends in a locally installed root.
+exec bun --use-system-ca run "$here/src/mcp.ts"

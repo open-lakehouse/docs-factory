@@ -4,8 +4,8 @@
  * A twin is the RICH, reader-optimized markdown an agent (or a crawler, via the
  * Phase-0 <noscript> shell) fetches instead of our authoring-shaped source. The
  * emitter flattens every rich construct to portable markdown: `file=` snippets
- * inlined, `:::callout`/`:::tldr` → bold-led blockquotes, `::::journey` → numbered
- * `### Step N — …`, and `likec4=<viewId>` images → a plain `![](…)` pointing at the
+ * inlined, `:::callout`/`:::tldr`/`:::prerequisites` → bold-led blockquotes,
+ * `::::journey` → numbered `### Step N — …`, and `likec4=<viewId>` images → a plain `![](…)` pointing at the
  * site-served PNG. The raw `content/**` / `blogs/*` source is NEVER served — only
  * this twin. See docs/design/agentic-docs.md (Phase 1a).
  *
@@ -30,6 +30,7 @@ import remarkCalloutsMd from "../plugins/remark-callouts-md.mjs";
 import remarkCodeCaption from "../plugins/remark-code-caption.mjs";
 import remarkJourneyMd from "../plugins/remark-journey-md.mjs";
 import remarkLikeC4Md from "../plugins/remark-likec4-md.mjs";
+import remarkPrerequisitesMd from "../plugins/remark-prerequisites-md.mjs";
 import remarkTabsMd from "../plugins/remark-tabs-md.mjs";
 import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
 
@@ -82,6 +83,7 @@ const mdTwin = {
   unwrapProse: true, // reflow authoring hard-wraps to clean paragraphs (see above)
   frontmatter,
   constructs: {
+    prerequisites: remarkPrerequisitesMd, // :::prerequisites → **Prerequisites** blockquote
     tldr: remarkTldrMd, // :::tldr → **TL;DR** blockquote
     callouts: remarkCalloutsMd, // :::tip/:::warning/… → bold-led blockquote
     tabs: remarkTabsMd, // :::tab[Label] → every panel in order, led by **Label**

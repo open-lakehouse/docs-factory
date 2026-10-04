@@ -21,6 +21,7 @@ import remarkFenceMeta from "./src/plugins/remark-fence-meta.mjs";
 import remarkJourney from "./src/plugins/remark-journey.mjs";
 import remarkLikeC4Views from "./src/plugins/remark-likec4-views.mjs";
 import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
+import remarkPrerequisites from "./src/plugins/remark-prerequisites.mjs";
 import remarkResolveImages from "./src/plugins/remark-resolve-images.mjs";
 import remarkSourceLinks from "./src/plugins/remark-source-links.mjs";
 import remarkTabs from "./src/plugins/remark-tabs.mjs";
@@ -181,6 +182,7 @@ export default defineConfig({
           remarkFrontmatter,
           [remarkMdxFrontmatter, { name: "frontmatter" }],
           remarkCodeSnippets,
+          remarkPrerequisites,
           remarkTldr,
           remarkCallouts,
           remarkTabs,

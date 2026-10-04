@@ -23,6 +23,7 @@ const plugin = async (name: string) => (await import(path.join(vendor, name))).d
 
 const [
   remarkDirectiveProseGuard,
+  remarkPrerequisites,
   remarkTldr,
   remarkCallouts,
   remarkTabs,
@@ -32,6 +33,7 @@ const [
 ] = await Promise.all(
   [
     "remark-directive-prose-guard.mjs",
+    "remark-prerequisites.mjs",
     "remark-tldr.mjs",
     "remark-callouts.mjs",
     "remark-tabs.mjs",
@@ -76,6 +78,7 @@ export default defineConfig({
           remarkDirective,
           remarkDirectiveProseGuard,
           remarkFrontmatter,
+          remarkPrerequisites,
           remarkTldr,
           remarkCallouts,
           remarkTabs,

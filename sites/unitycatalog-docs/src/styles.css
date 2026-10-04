@@ -1035,6 +1035,21 @@ kbd {
 .prose .callout-body > :last-child { margin-bottom: 0; }
 .prose .callout-body p { margin: 0.4rem 0; }
 .prose .callout-body .cb { margin: 0.75rem 0; }
+/* Prerequisites take the site's accent; the emitter-derived part sits under a rule. */
+.prose .callout[data-type="prerequisites"] { --callout-accent: var(--foreground); }
+.prose .prereqs-env {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border-muted);
+}
+.prose .prereqs-env-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+.prose .prereqs-env-title svg { width: 0.9rem; height: 0.9rem; color: var(--muted-foreground); }
 
 /* --- Tabs (editor tab strip) --- */
 .prose .content-tabs { margin: 1.5rem 0; }

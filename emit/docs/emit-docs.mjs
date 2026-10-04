@@ -12,7 +12,8 @@
  *   2. project content/<project>/nav.yml onto the selection;
  *   3. render every page twice through the shared emitter core (emitOne): the
  *      site page (docs-site target) and its `.md` twin (md-twin target);
- *   4. add images, LikeC4 PNGs + web component, runnable scripts, the vendored
+ *   4. add images, LikeC4 PNGs + web component, runnable scripts, the env
+ *      bundle (env-bundle.mjs), the vendored
  *      remark plugins, site.json / heads.json, llms.txt, llms-full.txt,
  *      sitemap.xml, robots.txt, and the palette's search-index.json, plus a
  *      route per REST API reference the site declares (api.mjs);
@@ -69,6 +70,7 @@ import {
   sitemapUrls,
   toEntry,
 } from "./discovery.mjs";
+import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
 import { projectNav } from "./nav.mjs";
 import { searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
@@ -192,6 +194,25 @@ export async function emitDocs({ site, drafts = false }) {
       });
     files.set("public/scripts.json", `${JSON.stringify({ version: 2, scripts }, null, 2)}\n`);
     const scriptUrls = new Map(scripts.map((s) => [s.gitPath, s.fetchUrl]));
+
+    // The env bundle. Its guide link only resolves when this emit publishes the page.
+    const registry = loadRegistry(REPO_ROOT);
+    let envBundle = null;
+    if (site.env) {
+      const guideRoute = routeFor(site.env.guide.bucket, site.env.guide.slug);
+      envBundle = buildEnvBundle({
+        repoRoot: REPO_ROOT,
+        bundle: site.env.bundle,
+        dirs: site.env.dirs,
+        registry,
+        origin,
+        siteTitle: site.title,
+        guideUrl: routes.has(guideRoute) ? `${origin}${guideRoute}` : null,
+      });
+      envBundle.guideRoute = routes.has(guideRoute) ? guideRoute : null;
+      files.set(`public/env/${site.env.bundle}.tar.gz`, envBundle.archive);
+      files.set("public/env/environments.json", `${JSON.stringify(envBundle.index, null, 2)}\n`);
+    }
 
     // 3. Pages.
     const links = linkErrors();

@@ -48,8 +48,8 @@ export default {
         slug: "iceberg",
         title: "Iceberg REST Catalog API",
         summary:
-          "The upstream Apache Iceberg REST Catalog spec. Unity Catalog serves a read-only subset at /api/2.1/unity-catalog/iceberg: config, namespaces, loading tables and views, and metrics reports.",
-        hint: "Read-only Iceberg REST subset",
+          "The Apache Iceberg REST Catalog spec, which Unity Catalog implements at /api/2.1/unity-catalog/iceberg.",
+        hint: "Iceberg REST catalog",
         // UC 0.6.0 builds against Iceberg 1.11.0 (build.sbt `icebergVersion`).
         repo: "apache/iceberg",
         ref: "apache-iceberg-1.11.0",

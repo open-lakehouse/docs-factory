@@ -14,7 +14,7 @@ Unity Catalog OSS is an open source catalog server for data and AI assets. It
 keeps track of which tables, volumes, functions, and models exist, where their
 data lives, and who may use them. Query engines and applications ask it those
 questions over open REST APIs. The project is hosted by the LF AI & Data
-Foundation, and these docs describe its server as of release 0.6.0.
+Foundation.
 
 > Unity Catalog is a unified and open governance solution for data and AI assets.
 > It helps teams and organizations discover, secure, govern, and share trusted data

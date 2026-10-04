@@ -98,21 +98,25 @@ documentation, rewritten for what the open source server actually does.
 [`unitycatalog/how-to/004-manage-catalogs-and-schemas/`](unitycatalog/how-to/004-manage-catalogs-and-schemas/index.md)
 is the reference example.
 
-1. **Intro.** One or two sentences: "This page shows how to …", what the object
-   is, and a link to the explanation that covers the concepts.
-2. **Requirements.** Server version, client versions, and the local setup. Inline
-   the page's `compose.yaml` and `server.properties` with `file=` fences so the
-   reader can copy them. Then a tab group that sets up each interface.
+1. **Intro.** One or two sentences that state the answer: what the object is or
+   what the reader achieves, naming Unity Catalog and the version, so the
+   paragraph stands alone when an AI search engine quotes it. Don't open with
+   "This page shows how to". Link the explanation that covers the concepts.
+2. **Requirements.** Server version, client versions, and one line that links
+   the shared [local server](unitycatalog/how-to/011-run-local-server/index.md)
+   (or its AWS variant). Pages don't ship their own compose file. Then a tab
+   group that sets up each interface.
 3. **One `##` section per task**, named with an imperative ("Create a catalog",
    "Delete a volume"). Each has a sentence of context, a tab group with one
    snippet per interface, and any constraints the server enforces.
 4. **Required privileges** at the end of each task, taken from the release's
-   authorization source. Close the page with one line naming that source and
-   saying it applies only with authorization enabled.
+   authorization source.
 5. **Callouts for consequences:** `:::warning` for surprising replacement or data
-   loss, `:::danger` for irreversible cascades, `:::note` for verified quirks
-   (including upstream bugs, pinned by an assert so CI flags the page when they're
-   fixed).
+   loss, `:::danger` for irreversible cascades. Lead with what works: a verified
+   quirk or upstream bug goes in the "Known issues" table of
+   `unitycatalog/reference/001-features-and-limitations`, with its error string,
+   and the page links there. Keep the assert that pins it, so CI flags the
+   entry when it's fixed.
 6. **Next steps:** two or three links to the next task or concept.
 
 Keep Databricks-only concepts (workspaces, Catalog Explorer, SQL warehouses,
@@ -126,9 +130,13 @@ time with `docsnip.shellregions.run` and asserts on server state in between.
 The driver names its script with `verifies = "<name>.sh"` in that table, so the
 site publishes the `.sh` readers see as the runnable example, not the driver.
 `docsnip check` fails a `docsnip.shellregions` driver that leaves it out.
-Pages whose server must see your files bind-mount `UC_DOCS_ROOT` (default
-`/tmp/uc-docs`) at the same path in the container; see
-`unitycatalog/how-to/005-register-external-table/compose.yaml`.
+Every Unity Catalog page runs against the shared environment in
+[`envs/unitycatalog/`](../envs/unitycatalog/README.md): `compose.yaml` for the
+server, `compose.aws.yaml` for the server plus aws-sim. Scripts point their
+`[tool.docs-factory] compose` at one of the two. The server bind-mounts
+`UC_DOCS_ROOT` (default `/tmp/uc-docs`) at the same path in the container, for
+pages whose server must see your files. A page that needs a different server
+configuration is the exception: give it its own compose file and say why.
 
 ## Tutorials: colocated, self-testing folder mode
 
@@ -139,10 +147,9 @@ it teaches. There is **no separate test file** — running the script *is* the
 test (see below).
 
 ```
-content/unitycatalog/tutorials/python-client/
-  index.md              inlines its script via  file=./catalog_flow.py
-  catalog_flow.py       runnable, self-describing, self-testing script (PEP 723)
-  docker-compose.uc.yml the service the script declares it needs
+content/unitycatalog/tutorials/002-python-client/
+  index.md                    inlines regions via  file=./snippets/catalog_flow.py
+  snippets/catalog_flow.py    runnable, self-describing, self-testing script (PEP 723)
 ```
 
 The `file=` fences use the same `# --8<-- [start:region]/[end:region]` markers as
@@ -161,13 +168,13 @@ to run and test it inline, in a [PEP 723](https://peps.python.org/pep-0723/)
 # dependencies = ["unitycatalog-client>=0.5"]   # resolved by `uv run`
 #
 # [tool.docs-factory]                            # our runtime contract:
-# compose = "docker-compose.uc.yml"              #   compose file to start (rel. to script)
+# compose = "../../../../envs/unitycatalog/compose.yaml"  # compose to start (rel. to script)
 # services = ["unitycatalog"]                    #   service(s) to wait on
 # base-url-env = "UC_BASE_URL"                   #   env the harness sets to the server URL
 # ///
 ```
 
-A reader runs it with `uv run catalog_flow.py` — deps come from the header, no
+A reader can also run it whole with `uv run snippets/catalog_flow.py` — deps come from the header, no
 project sync. The PEP 723 `dependencies` and the `[tool.docs-factory]` table
 (parsed by `docsnip.scriptmeta`) are the **single source of truth** for the
 script's Python deps and its *runtime* prerequisites — do **not** duplicate them
@@ -177,9 +184,13 @@ harness reads `[tool.docs-factory]` to know which compose to start; omit the
 whole table if the script needs no services.
 
 Structure a script as a flat, top-to-bottom program with the flow in one
-`main(base_url)` function (`async def` for async SDKs) plus an
-`if __name__ == "__main__":` footer — so the same code reads linearly on the
-page and runs via `uv run`.
+`main()` function (`async def` for async SDKs) plus an
+`if __name__ == "__main__":` footer. Each region holds exactly what a reader
+enters in the interactive session the page opens (`python -m asyncio` accepts
+top-level `await`): open the client with `api = ApiClient(config)` inside a
+region rather than `async with`, and close it in a `finally` outside the
+regions. Steps describe the task; the page never asks the reader to create or
+run the script, which stays the hidden test.
 
 ### The script is the test
 

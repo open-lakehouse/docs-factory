@@ -14,8 +14,10 @@
  *
  * `docNav` lists EVERY doc, drafts included; the workspace narrows it per viewer
  * (see tree-model.ts). A project's curated `nav.yml` drives the emitted site's
- * navigation, not this tree.
+ * navigation; `projectNav` resolves the same manifests so the tree can mirror it.
  */
+import yaml from "js-yaml";
+import { resolveNav } from "./content-core/nav.mjs";
 import {
   bucketFromPath,
   orderKeyFromPath,
@@ -159,3 +161,31 @@ export function buildDocNav(): DocNavGroup[] {
 }
 
 export const docNav = buildDocNav();
+
+// ── Curated manifests (content/<project>/nav.yml) ─────────────────────────
+
+/** A resolved nav.yml entry (content-core/nav.mjs `resolveNav`). */
+export type NavNode =
+  | { kind: "section"; label: string; children: NavNode[] }
+  | { kind: "page"; bucket: string; slug: string; label: string; id?: string; primary: boolean }
+  | { kind: "planned"; id: string; title: string };
+
+const navManifests = import.meta.glob<string>("../../content/*/nav.yml", {
+  query: "?raw",
+  import: "default",
+  eager: true,
+});
+
+/** Resolved manifest tree per project that ships a nav.yml. */
+export const projectNav: Record<string, NavNode[]> = Object.fromEntries(
+  Object.entries(navManifests).map(([path, raw]) => {
+    const project = path.split("/").at(-2) ?? "";
+    const docs = discoveredDocs
+      .filter((d) => d.project === project && d.slug.toLowerCase() !== "readme")
+      .map((d) => ({ bucket: d.bucket, slug: d.slug, title: d.title }));
+    const { tree, errors } = resolveNav(yaml.load(raw), docs);
+    // check-nav.mjs fails the build on these; at runtime we can only surface them.
+    for (const e of errors) console.error(`content/${project}/nav.yml: ${e}`);
+    return [project, tree as NavNode[]];
+  }),
+);

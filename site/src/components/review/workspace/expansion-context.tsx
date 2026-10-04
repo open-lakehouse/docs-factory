@@ -9,6 +9,7 @@ import { createContext, type ReactNode, useCallback, useContext, useMemo, useSta
 export const treeNodeId = {
   project: (project: string) => `project:${project}`,
   bucket: (project: string, bucket: string) => `bucket:${project}/${bucket}`,
+  navSection: (project: string, trail: string[]) => `nav:${project}/${trail.join("/")}`,
   blogRoot: () => "blogs",
   series: (series: string) => `series:${series}`,
 };

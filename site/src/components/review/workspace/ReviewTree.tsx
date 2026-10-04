@@ -1,23 +1,26 @@
 // The workspace's left navigation: Overview (pipeline + product + comments)
 // above a file-explorer-style tree of all reviewable content. Branches
-// (project → bucket, blog series) expand/collapse; leaves open the page in a
-// middle-pane tab. Built from build-time content (tree-model.ts), expansion
+// (project → bucket or nav.yml section, blog series) expand/collapse; leaves
+// open the page in a middle-pane tab. Built from build-time content (tree-model.ts), expansion
 // persisted in sessionStorage (expansion-context.tsx). Leaf icons tint with
 // the effective status; branches show descendant counts by status immediately
 // after their label. A right-edge icon marks items requested from the viewer.
 
 import { useQuery } from "@connectrpc/connect-query";
 import {
+  CircleDashed,
   Files,
   FileText,
   FolderTree,
   Layers3,
   LayoutDashboard,
+  ListTree,
   Newspaper,
   UserCheck,
 } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
+import { projectNav } from "../../../doc-nav";
 import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import {
   listDrafts,
@@ -40,16 +43,56 @@ import DiataxisIcon from "../../DiataxisIcon";
 import { useExpansion } from "./expansion-context";
 import { isOverviewGroup } from "./overview-token";
 import { TreeRow } from "./TreeRow";
-import { type TreeNode, useReviewTree } from "./tree-model";
+import { type TreeMode, type TreeNode, useReviewTree } from "./tree-model";
 import { refTokenOf } from "./view-token";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
 
 type LeafStatus = { frontmatterStatus?: string; reviewState: ReviewState };
 
+const TREE_MODE_KEY = "docs.review.treeMode";
+const HAS_NAV = Object.keys(projectNav).length > 0;
+
+function loadTreeMode(): TreeMode {
+  try {
+    return window.localStorage.getItem(TREE_MODE_KEY) === "nav" ? "nav" : "files";
+  } catch {
+    return "files";
+  }
+}
+
+function TreeModeToggle({ mode, onChange }: { mode: TreeMode; onChange: (m: TreeMode) => void }) {
+  const options: { value: TreeMode; label: string; title: string }[] = [
+    { value: "files", label: "Files", title: "Group docs by Diátaxis folder" },
+    { value: "nav", label: "Site nav", title: "Order docs as the emitted site's nav.yml" },
+  ];
+  return (
+    <span className="ml-auto flex rounded border border-border normal-case tracking-normal">
+      {options.map((o) => (
+        <button
+          key={o.value}
+          type="button"
+          title={o.title}
+          aria-pressed={mode === o.value}
+          onClick={() => onChange(o.value)}
+          className={cn(
+            "px-1.5 py-0.5 text-[0.68rem]",
+            mode === o.value ? "bg-accent text-foreground" : "hover:text-foreground",
+          )}
+        >
+          {o.label}
+        </button>
+      ))}
+    </span>
+  );
+}
+
 function BranchIcon({ node }: { node: Extract<TreeNode, { kind: "branch" }> }) {
   const className = "h-3.5 w-3.5 shrink-0 text-muted-foreground";
   if (node.role === "axis" && node.axis) {
     return <DiataxisIcon axis={node.axis} className={className} />;
+  }
+  if (node.role === "section") {
+    return <ListTree className={className} aria-hidden="true" />;
   }
   if (node.role === "blog") {
     return <Newspaper className={className} aria-hidden="true" />;
@@ -75,6 +118,7 @@ function statusCountsInSubtree(
       bump(statusBucket(effectiveStatus(n.frontmatterStatus, reviewState)));
       return;
     }
+    if (n.kind === "planned") return;
     for (const child of n.children) walk(child);
   }
   walk(node);
@@ -120,6 +164,7 @@ function requestedInSubtree(node: TreeNode, requestedRefs: Set<string>): number 
   if (node.kind === "leaf") {
     return requestedRefs.has(refKey(node.ref)) ? 1 : 0;
   }
+  if (node.kind === "planned") return 0;
   return node.children.reduce(
     (total, child) => total + requestedInSubtree(child, requestedRefs),
     0,
@@ -135,6 +180,22 @@ function RequestedReviewIndicator({ count = 1 }: { count?: number }) {
   );
 }
 
+function nodeKey(node: TreeNode): string {
+  if (node.kind === "leaf") return refToParam(node.ref);
+  return node.kind === "planned" ? `planned:${node.id}` : node.id;
+}
+
+/** Siblings paired with unique keys: nav.yml may list a page twice in one section. */
+function keyed(nodes: TreeNode[]): [string, TreeNode][] {
+  const seen = new Map<string, number>();
+  return nodes.map((node) => {
+    const base = nodeKey(node);
+    const n = seen.get(base) ?? 0;
+    seen.set(base, n + 1);
+    return [n === 0 ? base : `${base}#${n}`, node];
+  });
+}
+
 function Node({
   node,
   depth,
@@ -148,6 +209,17 @@ function Node({
 }) {
   const { isOpen, toggle } = useExpansion();
   const { openTab, activeToken } = useWorkspaceTabs();
+
+  if (node.kind === "planned") {
+    return (
+      <TreeRow
+        depth={depth}
+        icon={<CircleDashed className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
+        label={`${node.id} · ${node.title}`}
+        muted
+      />
+    );
+  }
 
   if (node.kind === "leaf") {
     const token = refToParam(node.ref);
@@ -184,9 +256,9 @@ function Node({
         onToggle={() => toggle(node.id)}
       />
       {open &&
-        node.children.map((child, i) => (
+        keyed(node.children).map(([key, child]) => (
           <Node
-            key={child.kind === "leaf" ? refToParam(child.ref) : child.id + i}
+            key={key}
             node={child}
             depth={depth + 1}
             reviewByRef={reviewByRef}
@@ -198,7 +270,8 @@ function Node({
 }
 
 export default function ReviewTree() {
-  const { tree, isLoading } = useReviewTree();
+  const [mode, setMode] = useState<TreeMode>(loadTreeMode);
+  const { tree, isLoading } = useReviewTree(mode);
   const { isAllowlisted } = useAuth();
   const { data } = useQuery(listDrafts, {});
   const { data: requestData } = useQuery(
@@ -240,13 +313,26 @@ export default function ReviewTree() {
       <p className="mt-2 flex items-center gap-1.5 px-2 py-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">
         <Files className="h-3.5 w-3.5 text-primary/80" aria-hidden="true" />
         Content
+        {HAS_NAV && (
+          <TreeModeToggle
+            mode={mode}
+            onChange={(next) => {
+              setMode(next);
+              try {
+                window.localStorage.setItem(TREE_MODE_KEY, next);
+              } catch {
+                // storage may be unavailable (private mode etc.)
+              }
+            }}
+          />
+        )}
       </p>
       {isLoading ? (
         <p className="px-2 py-1.5 text-sm text-muted-foreground">Loading…</p>
       ) : (
-        tree.map((node) => (
+        keyed(tree).map(([key, node]) => (
           <Node
-            key={node.kind === "leaf" ? refToParam(node.ref) : node.id}
+            key={key}
             node={node}
             depth={0}
             reviewByRef={reviewByRef}

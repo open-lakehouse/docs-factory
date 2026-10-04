@@ -22,10 +22,12 @@ minutes.
 ### Open a Python session
 
 Start the [local server](../../how-to/run-local-server/index.md) if it isn't
-already running from an earlier tutorial. Then open a Python session with
-`unitycatalog-ai`, the client library for catalog functions:
+already running from an earlier tutorial. Then create an empty folder and, in
+it, open a Python session with `unitycatalog-ai`, the client library for
+catalog functions:
 
 ```bash
+mkdir first-function && cd first-function
 uv run --with unitycatalog-ai==0.4.0 python -m asyncio
 ```
 
@@ -52,10 +54,19 @@ them:
 
 ### Write the function
 
-Define the function you are going to register:
+Save the function you are going to register as `pricing.py`, in the folder
+where the session runs:
 
-```python file=./snippets/first_function.py start=start:define end=end:define
+```python file=./snippets/pricing.py title="pricing.py"
 ```
+
+Then import it into the session:
+
+```python file=./snippets/first_function.py start=start:import-function end=end:import-function
+```
+
+The client reads the function's source code to register it, so define
+functions in a module like this one rather than typing them into the session.
 
 Every argument and the return value need a type hint, because the catalog
 stores the function's signature as SQL types: `int` becomes `LONG`, and
@@ -66,7 +77,7 @@ decide when to call the function, so they are worth writing well.
 
 ### Register the function
 
-Hand the function object to the client:
+Hand the imported function to the client:
 
 ```python file=./snippets/first_function.py start=start:register end=end:register
 ```

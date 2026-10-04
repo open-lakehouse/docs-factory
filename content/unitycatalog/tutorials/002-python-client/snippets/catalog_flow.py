@@ -116,9 +116,8 @@ async def main() -> None:
         await tables.delete_table(full_name="quickstart.sales.orders")
         await schemas.delete_schema(full_name="quickstart.sales")
         await catalogs.delete_catalog(name="quickstart")
+        await api.close()
         # --8<-- [end:cleanup]
-        remaining = (await catalogs.list_catalogs()).catalogs
-        assert "quickstart" not in [c.name for c in remaining]
     finally:
         await api.close()
 

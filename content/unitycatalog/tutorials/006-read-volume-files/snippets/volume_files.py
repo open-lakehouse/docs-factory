@@ -140,6 +140,7 @@ async def main() -> None:
         # --8<-- [start:clean-up]
         await CatalogsApi(api).delete_catalog(name="support", force=True)
         print(sorted(p.name for p in folder.iterdir()))  # the files are still there
+        await api.close()
         # --8<-- [end:clean-up]
         assert sorted(p.name for p in folder.iterdir()) == sorted(POLICIES)
     finally:

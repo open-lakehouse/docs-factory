@@ -26,25 +26,6 @@ import os
 from unitycatalog.client.exceptions import NotFoundException
 
 
-# --8<-- [start:define]
-def order_total(quantity: int, unit_price: float, discount_pct: float = 0.0) -> float:
-    """
-    Calculate the total price of an order line after a percentage discount.
-
-    Args:
-        quantity: Number of units ordered.
-        unit_price: Price of one unit.
-        discount_pct: Discount in percent, from 0 to 100.
-
-    Returns:
-        The discounted total, rounded to two decimals.
-    """
-    return round(quantity * unit_price * (1 - discount_pct / 100), 2)
-
-
-# --8<-- [end:define]
-
-
 async def main() -> None:
     # --8<-- [start:connect]
     from unitycatalog.ai.core.client import (
@@ -69,6 +50,10 @@ async def main() -> None:
         )
         await uc.create_schema_async(name="pricing", catalog_name="tools")
         # --8<-- [end:namespace]
+
+        # --8<-- [start:import-function]
+        from pricing import order_total
+        # --8<-- [end:import-function]
 
         # --8<-- [start:register]
         info = await client.create_python_function_async(
@@ -147,6 +132,7 @@ async def main() -> None:
         # --8<-- [start:clean-up]
         await client.delete_function_async("tools.pricing.order_total")
         await CatalogsApi(api).delete_catalog(name="tools", force=True)
+        await api.close()
         # --8<-- [end:clean-up]
     finally:
         await api.close()

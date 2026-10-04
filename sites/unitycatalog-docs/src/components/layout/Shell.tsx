@@ -1,9 +1,11 @@
 import { Menu, Moon, Sun, X } from "lucide-react";
 import { type ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import logo from "../../../static/favicon.svg";
 import { site } from "../../site";
+import { UnityCatalogIcon } from "../UnityCatalogIcon";
 import Sidebar from "./Sidebar";
+
+const GITHUB = "https://github.com/unitycatalog/unitycatalog";
 
 function ThemeToggle() {
   // index.html sets the class before paint; read it only after mount so the
@@ -49,19 +51,36 @@ export default function Shell({ children, aside }: { children: ReactNode; aside?
           {navOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
         </button>
         <Link to="/" className="brand">
-          <img src={logo} alt="" width={22} height={22} />
-          <span>{site.title}</span>
+          <UnityCatalogIcon className="brand-mark" aria-hidden="true" />
+          <span>{site.title.toLowerCase()}</span>
+          <span className="brand-path">/ docs</span>
         </Link>
         <nav className="topbar-links">
-          <a href="/llms.txt">llms.txt</a>
-          <a href="https://github.com/unitycatalog/unitycatalog">GitHub</a>
+          <a className="chip" href="/llms.txt">
+            llms.txt
+          </a>
+          <a className="chip" href={GITHUB}>
+            github
+          </a>
           <ThemeToggle />
         </nav>
       </header>
-      <div className="layout">
+      <div className="layout" data-aside={aside ? "true" : undefined}>
         <Sidebar />
         <main className="main">{children}</main>
         {aside && <aside className="aside">{aside}</aside>}
+        <footer className="statusbar">
+          <span className="statusbar-item">
+            <span className="statusbar-dot" aria-hidden="true" />
+            unity catalog oss
+          </span>
+          <span className="statusbar-links">
+            <a href="/llms.txt">llms.txt</a>
+            <a href="/llms-full.txt">llms-full.txt</a>
+            <a href="/sitemap.xml">sitemap</a>
+            <a href={GITHUB}>github</a>
+          </span>
+        </footer>
       </div>
     </div>
   );

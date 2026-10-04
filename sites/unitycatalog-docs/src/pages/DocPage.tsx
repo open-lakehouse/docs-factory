@@ -8,10 +8,10 @@ import MdxComponents from "../mdx-components";
 import { type PageMeta, useContent } from "../site";
 
 const DIATAXIS_LABEL: Record<string, string> = {
-  tutorial: "Tutorial",
-  "how-to": "How-to guide",
-  reference: "Reference",
-  explanation: "Explanation",
+  tutorial: "tutorial",
+  "how-to": "how-to",
+  reference: "reference",
+  explanation: "explanation",
 };
 
 export default function DocPage({ page }: { page: PageMeta }) {
@@ -30,9 +30,14 @@ export default function DocPage({ page }: { page: PageMeta }) {
       <article className="prose">
         <div className="page-head">
           <p className="eyebrow">
-            {[...page.section, DIATAXIS_LABEL[page.diataxis] ?? page.diataxis]
-              .filter(Boolean)
-              .join(" · ")}
+            {page.section.filter(Boolean).map((s) => (
+              <span key={s} className="crumb">
+                {s}
+              </span>
+            ))}
+            <span className="kind" data-kind={page.diataxis}>
+              {DIATAXIS_LABEL[page.diataxis] ?? page.diataxis}
+            </span>
           </p>
           <PageActions page={page} />
         </div>
@@ -40,9 +45,6 @@ export default function DocPage({ page }: { page: PageMeta }) {
         {page.summary && <p className="lead">{page.summary}</p>}
         <MdxComponents>{Content ? <Content /> : null}</MdxComponents>
       </article>
-      <footer className="page-footer">
-        <a href={page.twin}>View as Markdown</a>
-      </footer>
       <Pager prev={page.prev} next={page.next} />
     </Shell>
   );

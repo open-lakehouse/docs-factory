@@ -659,7 +659,6 @@ kbd {
 .prose h1, .prose h2, .prose h3, .prose h4 {
   color: var(--heading);
   line-height: 1.25;
-  scroll-margin-top: var(--anchor-offset);
 }
 .prose h1 { font-size: 2.125rem; font-weight: 600; letter-spacing: -0.03em; margin: 0 0 0.75rem; }
 .prose h2 {

@@ -618,6 +618,29 @@ kbd {
 .pa-script > button { flex: 1; min-width: 0; }
 .page-actions .pa-menu .pa-download { align-self: center; padding: 0.45rem; }
 
+/* Theme picker: the Copy page menu panel, narrowed to three radio items. */
+.theme-menu { position: relative; display: inline-flex; }
+.theme-menu .icon-button[aria-expanded="true"] { color: var(--foreground); background: var(--surface); }
+.theme-menu .pa-menu { width: 9rem; }
+.theme-menu [role="menuitemradio"] {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.55rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--foreground);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-align: left;
+}
+.theme-menu [role="menuitemradio"]:hover,
+.theme-menu [role="menuitemradio"]:focus-visible { background: var(--surface); outline: none; }
+.theme-menu [role="menuitemradio"] svg { width: 0.85rem; height: 0.85rem; flex: none; color: var(--subtle); }
+.theme-menu [role="menuitemradio"] .theme-check { margin-left: auto; color: var(--foreground); }
+
 .pager {
   display: grid;
   grid-template-columns: 1fr 1fr;

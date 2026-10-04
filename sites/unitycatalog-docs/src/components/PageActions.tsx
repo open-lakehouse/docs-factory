@@ -1,6 +1,7 @@
 import { Check, ChevronDown, Copy, Download, FileCode, FileText } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { copyFromUrl } from "../lib/clipboard";
+import { useMenu } from "../lib/menu";
 import type { PageMeta } from "../site";
 
 export default function PageActions({ page }: { page: PageMeta }) {
@@ -9,24 +10,8 @@ export default function PageActions({ page }: { page: PageMeta }) {
   const root = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    const onPointer = (e: PointerEvent) => {
-      if (!root.current?.contains(e.target as Node)) setOpen(false);
-    };
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      setOpen(false);
-      toggle.current?.focus();
-    };
-    document.addEventListener("pointerdown", onPointer);
-    document.addEventListener("keydown", onKey);
-    root.current?.querySelector<HTMLElement>("[role=menuitem]")?.focus();
-    return () => {
-      document.removeEventListener("pointerdown", onPointer);
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
+  const close = useCallback(() => setOpen(false), []);
+  useMenu(open, close, root, toggle);
 
   const copy = async (url: string) => {
     setOpen(false);

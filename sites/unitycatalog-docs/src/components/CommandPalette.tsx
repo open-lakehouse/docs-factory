@@ -5,6 +5,7 @@ import {
   FileText,
   Hash,
   type LucideIcon,
+  Monitor,
   Moon,
   Search,
   Sun,
@@ -13,7 +14,7 @@ import { type ReactNode, useEffect, useId, useMemo, useRef, useState } from "rea
 import { useLocation, useNavigate } from "react-router-dom";
 import { copyFromUrl } from "../lib/clipboard";
 import { excerpt, loadIndex, type PageHits, searchDocs } from "../lib/search";
-import { toggleTheme, useDarkMode } from "../lib/theme";
+import { setTheme, toggleTheme, useDarkMode, useThemePreference } from "../lib/theme";
 import { site } from "../site";
 
 interface Option {
@@ -83,6 +84,7 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
   const navigate = useNavigate();
   const { pathname } = useLocation();
   const dark = useDarkMode();
+  const themePreference = useThemePreference();
   const listId = useId();
   const input = useRef<HTMLInputElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
@@ -157,6 +159,17 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
         onClose();
       },
     });
+    if (themePreference !== "system")
+      commands.push({
+        key: "theme-system",
+        icon: Monitor,
+        label: "Use system theme",
+        keywords: "theme system auto os light dark mode",
+        run: () => {
+          setTheme("system");
+          onClose();
+        },
+      });
 
     const pageOptions = (pages: typeof site.pages): Option[] =>
       pages.map((p) => ({
@@ -182,7 +195,7 @@ export default function CommandPalette({ onClose }: { onClose: () => void }) {
       if (byTitle.length) out.push({ label: "Pages", options: pageOptions(byTitle) });
     }
     return out;
-  }, [q, index, page, dark, copied, navigate, onClose]);
+  }, [q, index, page, dark, themePreference, copied, navigate, onClose]);
 
   const options = groups.flatMap((g) => g.options);
   const current = Math.min(active, options.length - 1);

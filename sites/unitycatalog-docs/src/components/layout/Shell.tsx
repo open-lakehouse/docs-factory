@@ -1,25 +1,66 @@
-import { Menu, Moon, Search, Sun, X } from "lucide-react";
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { Check, Menu, Monitor, Moon, Search, Sun, X } from "lucide-react";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useMenu } from "../../lib/menu";
 import { loadIndex } from "../../lib/search";
-import { toggleTheme, useDarkMode } from "../../lib/theme";
+import { setTheme, useThemePreference } from "../../lib/theme";
 import { site } from "../../site";
 import CommandPalette from "../CommandPalette";
 import { GITHUB, SOCIAL } from "../SocialIcons";
 import { UnityCatalogIcon } from "../UnityCatalogIcon";
 import Sidebar from "./Sidebar";
 
-function ThemeToggle() {
-  const Icon = useDarkMode() ? Sun : Moon;
+const THEMES = [
+  { value: "system", label: "System", Icon: Monitor },
+  { value: "light", label: "Light", Icon: Sun },
+  { value: "dark", label: "Dark", Icon: Moon },
+] as const;
+
+function ThemeMenu() {
+  const [open, setOpen] = useState(false);
+  const root = useRef<HTMLDivElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const close = useCallback(() => setOpen(false), []);
+  useMenu(open, close, root, toggle);
+  // Prerendered markup can't see the stored choice; it renders the default.
+  const preference = useThemePreference() ?? "system";
+  const current = THEMES.find((t) => t.value === preference) ?? THEMES[0];
   return (
-    <button
-      type="button"
-      className="icon-button"
-      onClick={toggleTheme}
-      aria-label="Toggle dark mode"
-    >
-      <Icon aria-hidden="true" />
-    </button>
+    <div className="theme-menu" ref={root}>
+      <button
+        type="button"
+        className="icon-button"
+        ref={toggle}
+        onClick={() => setOpen((o) => !o)}
+        aria-label={`Theme: ${current.label}`}
+        title={`Theme: ${current.label}`}
+        aria-haspopup="menu"
+        aria-expanded={open}
+      >
+        <current.Icon aria-hidden="true" />
+      </button>
+      {open && (
+        <div className="pa-menu" role="menu" aria-label="Theme">
+          {THEMES.map(({ value, label, Icon }) => (
+            <button
+              key={value}
+              type="button"
+              role="menuitemradio"
+              aria-checked={value === current.value}
+              onClick={() => {
+                setTheme(value);
+                close();
+                toggle.current?.focus();
+              }}
+            >
+              <Icon aria-hidden="true" />
+              {label}
+              {value === current.value && <Check className="theme-check" aria-hidden="true" />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -94,11 +135,17 @@ export default function Shell({ children, aside }: { children: ReactNode; aside?
         <nav className="topbar-links">
           <SearchTrigger onOpen={openPalette} />
           {SOCIAL.map(({ label, href, Icon }) => (
-            <a key={label} className="icon-button social" href={href} aria-label={label} title={label}>
+            <a
+              key={label}
+              className="icon-button social"
+              href={href}
+              aria-label={label}
+              title={label}
+            >
               <Icon aria-hidden="true" />
             </a>
           ))}
-          <ThemeToggle />
+          <ThemeMenu />
         </nav>
       </header>
       <div className="layout" data-aside={aside ? "true" : undefined}>

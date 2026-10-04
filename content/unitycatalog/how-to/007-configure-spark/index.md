@@ -9,30 +9,22 @@ references:
 status: draft
 ---
 
-This page shows how to connect [Apache Spark](model:deltaSpark) to a
-[Unity Catalog](model:unityCatalogOSS) server so that Spark SQL can name
-`catalog.schema.table` and read and write the tables it holds. The connector
+Apache Spark connects to a [Unity Catalog](model:unityCatalogOSS) server
+through the Unity Catalog Spark connector, so that Spark SQL can name
+`catalog.schema.table` and read and write the tables it holds. This guide picks
+matching versions, configures a SparkSession, and sets up authentication for
+Unity Catalog 0.6.0. The connector
 registers one Unity Catalog catalog as a Spark catalog. Delta Spark handles the
 table format, and from Delta 4.3.0 it reads and commits catalog-managed tables
 through the server's Delta API.
 
 ## Requirements
 
-- A Unity Catalog server, version 0.6.0. The local setup below runs one with
-  authorization disabled. It ships a sample catalog named `unity`.
+- A Unity Catalog 0.6.0 server. The examples use the
+  [local server](../run-local-server/index.md) and its sample catalog `unity`.
 - Java 17 and Python 3.11 or later with [uv](https://docs.astral.sh/uv/).
 - Maven access the first time a session starts: Spark downloads the connector
   and Delta jars and caches them under `~/.ivy2`.
-
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
-
-```bash
-docker compose up -d --wait
-```
 
 ## Choose matching versions
 

@@ -1,10 +1,7 @@
 ---
-title: Credential Vending
-summary: |
-  Credential vending is a fundamental building block for the Open Lakehouse.
-  A large portion of file based access patterns across table and volume access
-  can be brokered based predominantly on vended credentials.
+title: Credential vending
+summary: How Unity Catalog issues short-lived storage credentials scoped to one table, volume, or path, and why that makes the catalog the gatekeeper for data access.
 diataxis: explanation
 project: unitycatalog
-status: draft
+status: idea
 ---

@@ -1,6 +1,6 @@
 ---
 title: Query Unity Catalog tables from Python DataFrame libraries
-summary: Find, read, and append to external Delta tables in Unity Catalog from Polars, Daft, and pandas, with storage credentials vended by the server, plus what these libraries can't do yet.
+summary: Find, read, and append to external Delta tables in Unity Catalog from Polars, Daft, and pandas, with storage credentials vended by the server.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -11,15 +11,15 @@ references:
 status: draft
 ---
 
-This page shows how to use [Unity Catalog](model:unityCatalogOSS) tables from
-three Python DataFrame libraries: Polars, Daft, and pandas. Each one looks up a
-table by name, asks the server for temporary storage credentials, and then reads
-or writes the [Delta](model:deltaSpec) files directly in storage.
+Polars, Daft, and pandas can find [Unity Catalog](model:unityCatalogOSS)
+tables by name and read and append to them. Each library looks up the table,
+asks the server for temporary storage credentials, and then reads or writes the
+[Delta](model:deltaSpec) files directly in storage.
 
-All three read Delta through [delta-rs](model:deltaRs), a path-based Delta
-library, so they work only with external tables. For catalog-managed tables, use
-[Spark](../configure-spark/index.md) or [DuckDB](../duckdb/index.md); see
-[What these libraries can't do yet](#what-these-libraries-cant-do-yet).
+All three work with external Delta tables, through
+[delta-rs](model:deltaRs). For catalog-managed tables, use
+[Spark](../configure-spark/index.md) or [DuckDB](../duckdb/index.md), which
+commit through the server.
 
 ## Requirements
 
@@ -36,30 +36,18 @@ library, so they work only with external tables. For catalog-managed tables, use
 
   `daft[unity]` 0.7.25 doesn't declare its `tenacity` dependency, so install it
   yourself.
+- For tables on S3, an
+  [external location](../configure-aws-storage/index.md) that covers the
+  table's path, so that the server can vend credentials for it.
 
-The compose file below runs the server next to a local stand-in for Amazon S3
-and STS. The server vends S3 credentials for
-`s3://uc-docs` just as it would on AWS. It also mounts `UC_DOCS_ROOT` (default
-`/tmp/uc-docs`) at the same path on your machine and in the container, for
-tables on local storage.
+To follow along, start the
+[local server with simulated S3](../run-local-server/index.md#start-the-server-with-simulated-s3)
+and set its `AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP` variables. On real AWS,
+leave them unset.
 
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
-
-Your client reaches the simulated S3 at `localhost:9000` instead of AWS. Set
-two variables before you run the examples. On real AWS, leave them unset.
-
-```bash
-export AWS_ENDPOINT_URL=http://localhost:9000
-export AWS_ALLOW_HTTP=true
-```
-
-The Polars and pandas examples use a table on S3. The Daft examples use a table
-on local storage, because Daft's reads failed against the simulated S3; see
-[What these libraries can't do yet](#what-these-libraries-cant-do-yet).
+The Polars and pandas examples use a table on S3, and the Daft examples a table
+on local storage, which is what each library is tested with here; see
+[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060).
 
 ## Connect to the server
 
@@ -154,33 +142,21 @@ server, and then reads the Delta files with them. For how vending works, see
 
 The library requests read-write credentials, writes new Parquet files, and
 commits a new version to the table's Delta log. The server isn't involved in
-the commit, so it doesn't coordinate writers on an external table. Daft can't
-append to a table on local storage; see the next section.
+the commit, so it doesn't coordinate writers on an external table.
 
-## What these libraries can't do yet
+## Other table operations
 
-With the versions on this page and a 0.6.0 server:
-
-| Limitation | Affects | Result |
-| --- | --- | --- |
-| Catalog-managed tables | Polars, Daft, pandas | Reads and writes fail with `Max catalog version is required when loading a catalog-managed table`. See [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md). |
-| Append to a table on local storage | Daft | The server vends no credentials for `file://` paths, and Daft then fails with `io_config was not provided to write_deltalake`. |
-| Tables on S3 | Daft | Not tested here. Against the simulated S3, Daft received credentials but its reads failed with `Generic S3 error`. |
-| `uc://` tables on local storage | pandas | `deltalake` fails with `error decoding response body` on the credentials response. Look up `storage_location` with the Python client and read the path instead, as in [Register an existing external table](../register-external-table/index.md#read-the-data). |
-| Tables written by Polars | Daft | Polars writes strings as `Utf8View`, and Daft 0.7.25 fails with `Unsupported Arrow DataType: Utf8View`. |
-
-For other operations, such as creating or dropping tables, use the
-[Python client](../../tutorials/python-client/index.md) or Spark. For each
-engine's supported operations, see
-[Clients and engines](../../reference/clients-and-engines/index.md).
+Create and drop tables with the [Python client](../../tutorials/python-client/index.md)
+or Spark. [Clients and engines](../../reference/clients-and-engines/index.md#table-operations-by-engine)
+lists the operations each library supports with these versions, and
+[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060) lists the errors you see outside them.
 
 ## Required privileges
 
 With authorization enabled, reading needs `USE CATALOG` on the catalog,
 `USE SCHEMA` on the schema, and `SELECT` on the table. Appending also needs
-`MODIFY` on the table. Owners have all of these. Privilege names follow the
-0.6.0 server's authorization rules; see
-[Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
+`MODIFY` on the table. Owners have all of these. See
+[Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md#ownership-and-privileges).
 
 ## Next steps
 

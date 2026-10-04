@@ -9,31 +9,22 @@ references:
 status: draft
 ---
 
-This page shows how to create and manage catalogs and schemas in
-[Unity Catalog](model:unityCatalogOSS). A catalog is the top level of the
-three-level namespace. It contains schemas, and a schema contains tables,
+Catalogs and schemas organize every asset in
+[Unity Catalog](model:unityCatalogOSS). This guide creates, inspects, updates,
+renames, and deletes them in Unity Catalog 0.6.0, with the Python SDK or the
+`uc` CLI. A catalog is the top level of the three-level namespace. It contains schemas, and a schema contains tables,
 volumes, functions, and registered models. For how these objects relate, see
 [Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
 
 ## Requirements
 
-- A Unity Catalog server, version 0.6.0. To follow along locally, save the two
-  files below in one folder and run `docker compose up -d`. The server listens
-  on `http://localhost:8080` with authorization disabled, so every request
-  succeeds without a token.
+- A Unity Catalog 0.6.0 server. To follow along, start the
+  [local server](../run-local-server/index.md).
 - For the Python examples, Python 3.11 or later and the
   [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) package,
-  version 0.6.0. The SDK is asynchronous; run the snippets inside an `async`
-  function.
-- For the CLI examples, Docker. The `uc` CLI ships in the server image, so these
-  examples run it inside the container from the folder that holds
-  `compose.yaml`.
-
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
+  version 0.6.0. The SDK is asynchronous: run the snippets in an `async`
+  function, or interactively in `python -m asyncio`, which accepts top-level
+  `await`.
 
 Set up the client for your interface:
 
@@ -226,10 +217,6 @@ volumes lose only their metadata, and their files stay where they are.
 **Required privileges:** to delete a catalog, you need ownership of the catalog
 or the metastore. To delete a schema, you need ownership of the schema plus
 `USE_CATALOG`, or ownership of the catalog or metastore.
-
-The privilege rules on this page come from the server's 0.6.0 authorization
-expressions (`CatalogService`, `SchemaService`). They apply only when the
-server runs with authorization enabled.
 
 ## Next steps
 

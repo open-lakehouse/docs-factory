@@ -1,6 +1,6 @@
 ---
 title: Features, scope, and limitations
-summary: What the Unity Catalog OSS 0.6.0 server implements, per resource and API, and what it does not.
+summary: What the Unity Catalog OSS 0.6.0 server implements per resource and API, its known issues, and the features it doesn't include.
 diataxis: reference
 project: unitycatalog
 references:
@@ -8,8 +8,11 @@ references:
 status: draft
 ---
 
-This page lists what the open source Unity Catalog server implements in release
-**0.6.0**, and what it does not. Each row links to the source that establishes
+The open source Unity Catalog server implements catalogs, schemas, external
+and managed tables, views, volumes, functions, registered models, AWS storage
+credentials, credential vending, and token-based authorization. This reference
+lists what release **0.6.0** implements per resource and API, its known issues,
+and what it doesn't include. Each row links to the source that establishes
 it. For what the features mean, see
 [What is Unity Catalog OSS?](../../explanation/what-is-unity-catalog.md).
 
@@ -79,6 +82,39 @@ Paths below are relative to the
 | Metadata database | Implemented | H2 by default (in the container, lost with it); PostgreSQL and MySQL through Hibernate settings. | `etc/conf/hibernate.properties`, `etc/db/*-example.yml`, `PostgresDeltaCommitsCRUDTest.java`, `MySQLDeltaCommitsCRUDTest.java` |
 | Web UI | Implemented | A separate React application. | `ui/` |
 | Helm chart | Implemented | Kubernetes chart. Its replica count is not a high-availability guarantee. | `helm/` |
+
+## Known issues in 0.6.0
+
+Behavior verified against the 0.6.0 server and the client versions in
+[Choose a client or engine](../clients-and-engines/index.md). The pages that
+cover each task link here.
+
+### Server
+
+| Issue | What you see | Workaround |
+| --- | --- | --- |
+| Getting a volume that doesn't exist | HTTP 500 with error code `INTERNAL`, not 404. The Python SDK raises `ServiceException`, not `NotFoundException`. | List the schema's volumes to check whether one exists. |
+| Deleting managed tables and volumes | File deletion is best effort. If it fails, the server logs the error and still drops the catalog entry. | Check storage after dropping managed objects that matter. |
+| Storage roots outside an external location, with authorization disabled | The server accepts the root, then fails credential requests for its objects with `FAILED_PRECONDITION` (`S3 bucket configuration not found.`). With authorization enabled, creating the catalog or schema is denied. | Check each root against `external_location list` first. |
+| Force-deleting a storage credential that an external location uses | Every list of external locations fails with HTTP 500 `Credential not found`. | Force-delete the location by name: `uc external_location delete --name <name> --force true`. |
+| Changing an external location's URL | Tables, volumes, and storage roots under the old URL lose their credential; vending fails with `FAILED_PRECONDITION`. | Create the new location next to the old one and move the data first. |
+| SSE-KMS buckets | Vended S3 credentials can't read or write SSE-KMS objects; the session policy has no KMS actions. | Use SSE-S3. Fixed after 0.6.0 ([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)). |
+| Schema updates | Any principal with `USE CATALOG` and `USE SCHEMA` can update or rename a schema, not only its owner. | Grant those privileges with that in mind. |
+| CLI help for `credential` and `external_location` | `--help` crashes with a `NullPointerException`. The commands work. | See the flags in [Configure AWS storage credentials](../../how-to/configure-aws-storage/index.md#view-storage-credentials-and-external-locations). |
+
+### Clients and engines
+
+| Client | Issue | What you see |
+| --- | --- | --- |
+| Polars, Daft, pandas (`deltalake`) | Catalog-managed tables | `Max catalog version is required when loading a catalog-managed table`. Use Spark or DuckDB; see [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md). |
+| Daft 0.7.25 | Appending to a table on local storage | The server vends no credentials for `file://` paths, and Daft fails with `io_config was not provided to write_deltalake`. |
+| Daft 0.7.25 | Tables on S3 | Not verified: against simulated S3, reads failed with `Generic S3 error`. |
+| Daft 0.7.25 | Tables written by Polars | `Unsupported Arrow DataType: Utf8View`. |
+| pandas (`deltalake` 1.6.6) | `uc://` names for tables on local storage | `error decoding response body`. Read the table's `storage_location` path instead. |
+| DuckDB 1.5.4 | `CREATE TABLE`, `CREATE TABLE … AS SELECT`, `DROP TABLE` | `Not implemented Error`. |
+| DuckDB 1.5.4 | `UPDATE`, `DELETE` | `Binder Error: Can only update base table` (or `delete from`). |
+| DuckDB 1.5.4, stable `unity_catalog` | Tables with `DECIMAL` columns | `Invalid field found while parsing field: type_precision`. Install the extension from `core_nightly`. |
+| `unitycatalog-ai` 0.4.0 | Functions that return a falsy value, such as `0` or `""` | `result.value` holds a "no output was produced" message instead of the value. |
 
 ## Not in Unity Catalog OSS 0.6.0
 

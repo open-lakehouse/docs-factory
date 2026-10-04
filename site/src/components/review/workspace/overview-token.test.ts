@@ -16,8 +16,10 @@ test("overview tokens use the synthetic group key", () => {
   expect(overviewToken("pipeline")).toBe("overview#pipeline");
   expect(overviewToken("product")).toBe("overview#product");
   expect(overviewToken("comments")).toBe("overview#comments");
-  expect(OVERVIEW_VIEWS).toEqual(["pipeline", "product", "comments"]);
-  expect(overviewTabsParam()).toBe("overview#pipeline,overview#product,overview#comments");
+  expect(OVERVIEW_VIEWS).toEqual(["pipeline", "product", "comments", "coverage"]);
+  expect(overviewTabsParam()).toBe(
+    "overview#pipeline,overview#product,overview#comments,overview#coverage",
+  );
 });
 
 test("bare overview falls back to pipeline", () => {
@@ -25,6 +27,7 @@ test("bare overview falls back to pipeline", () => {
   expect(parseOverviewToken("overview#pipeline")).toBe("pipeline");
   expect(parseOverviewToken("overview#product")).toBe("product");
   expect(parseOverviewToken("overview#comments")).toBe("comments");
+  expect(parseOverviewToken("overview#coverage")).toBe("coverage");
   expect(parseOverviewToken("docs:foo:delta:tutorials")).toBeNull();
 });
 

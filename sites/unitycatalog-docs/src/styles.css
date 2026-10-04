@@ -676,16 +676,31 @@ kbd {
   color: var(--muted-foreground);
 }
 .page-head .eyebrow { margin: 0; }
-.crumb { text-transform: lowercase; }
-.crumb::after { content: "/"; margin-left: 0.4rem; color: var(--subtle); }
+.page-head .eyebrow { gap: 0.75rem; font-family: var(--font-sans); font-size: 0.825rem; }
+.trail { display: inline-flex; flex-wrap: wrap; align-items: center; }
+.crumb { display: inline-flex; align-items: center; }
+.crumb svg { margin: 0 0.2rem; color: var(--subtle); }
 .kind {
-  padding: 0.05rem 0.4rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  color: var(--foreground);
-  font-size: 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 1.4rem;
+  padding: 0 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent-fill) 10%, transparent);
+  color: var(--heading);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
 }
-.kind[data-kind="error"] { color: var(--err); border-color: color-mix(in srgb, var(--err) 45%, var(--border)); }
+.kind svg { color: var(--accent); }
+.kind[data-kind="error"] {
+  color: var(--err);
+  border-color: color-mix(in srgb, var(--err) 45%, var(--border));
+  background: transparent;
+  font-family: var(--font-mono);
+}
 .lead { font-size: 1.125rem; line-height: 1.6; color: var(--muted-foreground); }
 
 /* Copy page split button + menu. */

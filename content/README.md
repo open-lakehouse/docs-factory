@@ -19,7 +19,7 @@ There is no `_meta.yaml`. Nav order comes entirely from the tree:
 
 - **Section order** — the four folders above map 1:1 to the Diátaxis buckets and
   render in a fixed order (Explanation → Tutorials → How-to → Reference). Their
-  sidebar headings are constants in `site/src/sidebar.ts`, not content.
+  headings are constants in `site/src/doc-nav.ts`, not content.
 - **Order within a section** — the filename's numeric prefix. Name docs
   `001-first-server.md`, `002-python-client/`, `003-postgres-server.md`; the
   sidebar sorts by that prefix. Zero-pad to three digits so the lexicographic

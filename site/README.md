@@ -1,12 +1,18 @@
-# `site/` — unified local preview (docs + blogs)
+# `site/` — the review + admin app
 
-A **throwaway** Vite + React + MDX harness that reads builder-agnostic content in
-place and renders it with site-like styling, build-time Shiki code blocks, and
-interactive LikeC4 diagrams. One preview for both areas:
+A login-gated Vite + React + MDX app for reviewing content. It reads
+builder-agnostic content in place and renders it with build-time Shiki code
+blocks and interactive LikeC4 diagrams, inside the review workspace:
 
-- **`content/`** — Diátaxis docs (`/docs/:project/:bucket/:slug`)
-- **`blogs/`** — narrative drafts (`/blog/:slug`)
-- **`architecture/model/`** — estate LikeC4 model (`/explain/:elementId`)
+- **`/review`**: the 3-pane workspace (content tree, page tabs, comment rail).
+  Narrow screens get the dashboard until a page is opened.
+- **`/review/dashboard`**: pending work, latest comments, review requests.
+- **`/admin`**: allowlist and user roster (site admins only).
+
+It reads `content/` (Diátaxis docs), `blogs/` (narrative drafts), and the
+`architecture/model/` LikeC4 model. A page's content path (`/docs/:project/:bucket/:slug`,
+`/blog/:slug`) opens it in the workspace. The reader-facing sites are emitted
+separately (`just emit-docs`, see `sites/`).
 
 ```bash
 just preview              # http://localhost:4321
@@ -21,7 +27,7 @@ Locally there is no GitHub OAuth, so pick one of two modes:
 
 | Command | What you get |
 |---|---|
-| `just preview` | **Offline**: no Docker, DB, or server. If nothing answers on `:8787`, you are admitted as a synthetic `local-author` maintainer and every page is visible. The top bar shows **API offline**; review mode and "view as anonymous" are disabled. |
+| `just preview` | **Offline**: no Docker, DB, or server. If nothing answers on `:8787`, you are admitted as a synthetic `local-author` maintainer and every page is visible. The top bar shows **API offline**; the review chrome is off. |
 | `just dev` | **Full stack**: Postgres + the review API (`AUTH_MODE=mock`) + versions registered + the preview. Falls back to offline when Docker isn't running. |
 
 In the full stack, the persona is a mock login: the transport sends it as
@@ -37,13 +43,13 @@ and stripped from prod builds.
   from `../content/` and `../blogs/*/index.md`.
 - **Never edits source files.** Richness (interactive diagrams, callouts, tabs,
   journeys) is added by remark plugins here — never by putting JSX into the content.
-- **Is not wired into CI** (optional smoke: `bun run build` in CI). Produces no
-  committed artifact except the throwaway `dist/`.
+- **Produces no committed artifact.** The build writes `dist/`, plus the `.md`
+  twins and `scripts.json` the workspace's twin and script tabs fetch.
 
 ## UI stack
 
-- **shadcn/ui** (new-york) for behavior primitives: Dialog, Tabs, Breadcrumb,
-  DropdownMenu, Collapsible, Alert.
+- **shadcn/ui** (new-york) for behavior primitives: Dialog, Tabs, DropdownMenu,
+  HoverCard, Select, Alert.
 - **Console chrome** in `index.css` for code blocks, journeys, and the mangrove
   palette — design tokens bridge shadcn components onto the DevHub/Delta look.
 
@@ -85,7 +91,7 @@ A fence's meta string carries chrome hints the `<Pre>` component reads:
 
 The site uses a single `LikeC4VitePlugin` workspace: `../architecture/model`.
 That workspace serves virtual modules (`likec4:react`, `likec4:single-project`,
-...) used by both `/explain` and Markdown `likec4=<viewId>` embeds.
+...) used by Markdown `likec4=<viewId>` embeds and model-ref diagrams.
 
 Blog-specific diagrams live as dedicated views in
 `../architecture/model/blog-views.likec4`. This keeps the heavy LikeC4 runtime
@@ -94,7 +100,8 @@ purpose-built view with protocol-level participants.
 
 ## Adding a content area
 
-Register a new `import.meta.glob` in `src/content.ts` and a route in `src/App.tsx`.
-Docs nav order comes from each doc's **filename numeric prefix** (`001-…`, `002-…`;
-stripped from the URL) via `src/sidebar.ts` — there is no `_meta.yaml`. See
+Register a new `import.meta.glob` in `src/content.ts` and a branch in the
+workspace tree (`src/components/review/workspace/tree-model.ts`). Docs order in
+the tree comes from each doc's **filename numeric prefix** (`001-…`, `002-…`;
+stripped from the URL) via `src/doc-nav.ts` — there is no `_meta.yaml`. See
 [`../content/README.md`](../content/README.md).

@@ -51,10 +51,9 @@ flowchart LR
 ```
 
 The site reads `dist/model.json` live (via the `likec4:single-project` Vite plugin
-over `architecture/model`) to drive `ui`; the only generated content artifact is the
-per-project `*.llms.txt`, now emitted by the site build
-([`site/scripts/build-llmstxt.mjs`](../../site/scripts/build-llmstxt.mjs)) into
-`site/public/`. (The former `examples-manifest.json` — an engine/coverage
+over `architecture/model`) to drive `ui`; the generated reader artifacts (each
+emitted site's `llms.txt`, sitemap, and `.md` twins) come from the docs-site
+emitter ([`emit/docs`](../../emit/docs/)). (The former `examples-manifest.json` — an engine/coverage
 matrix nothing consumed — was removed; see [`build-pipeline.md`](./build-pipeline.md) §10.)
 
 ### 1.1 Tags gain optional structure (backward-compatible)
@@ -228,7 +227,7 @@ The same join makes the site and the domain legible to machines. Agents are
 first-class consumers — the estate is itself about agentic workloads.
 
 - **Model-aware `llms.txt` / `llms-full.txt`.** The generator
-  ([`build-llmstxt.mjs`](../../site/scripts/build-llmstxt.mjs)) organizes the index by
+  ([`emit/docs/discovery.mjs`](../../emit/docs/discovery.mjs)) organizes the index by
   capability/specification and carries element descriptions, external expert links,
   maturity tags, and typed cross-references — the "understand the domain at large"
   artifact and the published machine surface.

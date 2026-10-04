@@ -19,11 +19,13 @@ export default function DocPage({ page }: { page: PageMeta }) {
   const { hash } = useLocation();
 
   // Client-side navigation doesn't reset scroll; anchor links still should land.
-  // biome-ignore lint/correctness/useExhaustiveDependencies: re-run per page.
+  // A route's content can arrive after the first render, so its target heading
+  // may only exist once `Content` does.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-run per page, per in-page jump, and once content loads.
   useEffect(() => {
     if (hash) document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView();
     else window.scrollTo(0, 0);
-  }, [page.route]);
+  }, [page.route, hash, Content]);
 
   return (
     <Shell aside={<OnThisPage headings={page.headings} />}>

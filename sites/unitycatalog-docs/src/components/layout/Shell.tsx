@@ -1,42 +1,79 @@
-import { Menu, Moon, Sun, X } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { Menu, Moon, Search, Sun, X } from "lucide-react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { loadIndex } from "../../lib/search";
+import { toggleTheme, useDarkMode } from "../../lib/theme";
 import { site } from "../../site";
+import CommandPalette from "../CommandPalette";
 import { UnityCatalogIcon } from "../UnityCatalogIcon";
 import Sidebar from "./Sidebar";
 
 const GITHUB = "https://github.com/unitycatalog/unitycatalog";
 
 function ThemeToggle() {
-  // index.html sets the class before paint; read it only after mount so the
-  // prerendered markup and the first client render agree.
-  const [dark, setDark] = useState<boolean | null>(null);
-  useEffect(() => setDark(document.documentElement.classList.contains("dark")), []);
-
-  const toggle = () => {
-    const next = !document.documentElement.classList.contains("dark");
-    document.documentElement.classList.toggle("dark", next);
-    try {
-      localStorage.setItem("theme", next ? "dark" : "light");
-    } catch {
-      // Unpersisted is fine; the toggle still applies to this page.
-    }
-    setDark(next);
-  };
-
-  const Icon = dark ? Sun : Moon;
+  const Icon = useDarkMode() ? Sun : Moon;
   return (
-    <button type="button" className="icon-button" onClick={toggle} aria-label="Toggle dark mode">
+    <button
+      type="button"
+      className="icon-button"
+      onClick={toggleTheme}
+      aria-label="Toggle dark mode"
+    >
       <Icon aria-hidden="true" />
+    </button>
+  );
+}
+
+function isEditable(target: EventTarget | null) {
+  return (
+    target instanceof HTMLElement &&
+    (target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName))
+  );
+}
+
+function SearchTrigger({ onOpen }: { onOpen: () => void }) {
+  // The platform is only known in the browser; the prerender shows a neutral key.
+  const [mod, setMod] = useState<string | null>(null);
+  useEffect(() => setMod(/Mac|iPhone|iPad/.test(navigator.platform) ? "⌘" : "Ctrl"), []);
+  const prefetch = () => void loadIndex().catch(() => {});
+  return (
+    <button
+      type="button"
+      className="search-trigger"
+      onClick={onOpen}
+      onPointerEnter={prefetch}
+      onFocus={prefetch}
+      aria-label="Search documentation"
+      aria-keyshortcuts="Meta+K Control+K /"
+    >
+      <Search aria-hidden="true" />
+      <span className="search-trigger-label">Search docs…</span>
+      <kbd>{mod ? `${mod} K` : "K"}</kbd>
     </button>
   );
 }
 
 export default function Shell({ children, aside }: { children: ReactNode; aside?: ReactNode }) {
   const [navOpen, setNavOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const { pathname } = useLocation();
   // biome-ignore lint/correctness/useExhaustiveDependencies: close the drawer on navigation.
   useEffect(() => setNavOpen(false), [pathname]);
+
+  const openPalette = useCallback(() => setPaletteOpen(true), []);
+  const closePalette = useCallback(() => setPaletteOpen(false), []);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const modK = e.key.toLowerCase() === "k" && (e.metaKey || e.ctrlKey) && !e.altKey;
+      const slash = e.key === "/" && !e.metaKey && !e.ctrlKey && !isEditable(e.target);
+      if (!modK && !slash) return;
+      e.preventDefault();
+      // ⌘K toggles, like most palettes; `/` only opens.
+      setPaletteOpen((open) => (modK ? !open : true));
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, []);
 
   return (
     <div className="shell" data-nav-open={navOpen || undefined}>
@@ -56,6 +93,7 @@ export default function Shell({ children, aside }: { children: ReactNode; aside?
           <span className="brand-path">/ docs</span>
         </Link>
         <nav className="topbar-links">
+          <SearchTrigger onOpen={openPalette} />
           <a className="chip" href="/llms.txt">
             llms.txt
           </a>
@@ -82,6 +120,7 @@ export default function Shell({ children, aside }: { children: ReactNode; aside?
           </span>
         </footer>
       </div>
+      {paletteOpen && <CommandPalette onClose={closePalette} />}
     </div>
   );
 }

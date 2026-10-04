@@ -492,6 +492,11 @@ kbd {
 /* --- Home --- */
 .hero { max-width: 48rem; margin: 1rem 0 3rem; }
 .hero-mark { flex: none; width: 0.9em; height: 0.9em; }
+/* Brand colors from the unitycatalog.io glyph; the navy core would vanish on dark. */
+.hero-mark .uc-mark-core { fill: #163357; }
+.hero-mark .uc-mark-triangles { fill: #ffbc00; }
+.hero-mark .uc-mark-squares { fill: #f43ba6; }
+:root.dark .hero-mark .uc-mark-core { fill: var(--heading); }
 .hero h1 {
   display: flex;
   align-items: center;

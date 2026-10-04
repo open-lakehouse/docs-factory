@@ -119,8 +119,10 @@ export default function HomePage() {
   return (
     <Shell>
       <section className="hero">
-        <UnityCatalogIcon className="hero-mark" aria-hidden="true" />
-        <h1>{site.title}</h1>
+        <h1>
+          <UnityCatalogIcon className="hero-mark" aria-hidden="true" />
+          {site.title}
+        </h1>
         <p className="lead">
           The open catalog for your tables, volumes, functions, and models. Govern data once and
           query it from Spark, DuckDB, Python, and more.

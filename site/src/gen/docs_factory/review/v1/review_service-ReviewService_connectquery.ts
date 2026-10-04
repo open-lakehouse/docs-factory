@@ -253,3 +253,24 @@ export const getVersionTree = ReviewService.method.getVersionTree;
  * @generated from rpc docs_factory.review.v1.ReviewService.ProductChanges
  */
 export const productChanges = ReviewService.method.productChanges;
+
+/**
+ * Personal access tokens for agents (CLI / MCP). A token acts as its owner,
+ * narrowed to its scopes: `feedback:read` (list/read content + comments) and
+ * `feedback:reply` (replies only — never new threads, resolution, approvals,
+ * or any admin action). Managing tokens requires a browser session; a token
+ * can't mint, list, or revoke tokens.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.CreateApiToken
+ */
+export const createApiToken = ReviewService.method.createApiToken;
+
+/**
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListApiTokens
+ */
+export const listApiTokens = ReviewService.method.listApiTokens;
+
+/**
+ * @generated from rpc docs_factory.review.v1.ReviewService.RevokeApiToken
+ */
+export const revokeApiToken = ReviewService.method.revokeApiToken;

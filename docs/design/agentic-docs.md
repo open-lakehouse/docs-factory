@@ -397,6 +397,10 @@ noindex + `Content-Type` header rule for `.py` files.
 
 ## Phase 4 — Hosted MCP server at `/api/mcp` — dedicated Function
 
+> Review *feedback* for agents is a separate, checkout-local MCP; see
+> [agent-feedback.md](agent-feedback.md). Its tools could later join this server
+> for agents without a checkout.
+
 **Goal:** an MCP server so agents pull docs/concepts/examples as tools over
 Streamable HTTP, same-origin — **and** generate deployment topologies (Docker
 Compose / Envoy) from selected platform capabilities via a WASM-compiled `trestle`

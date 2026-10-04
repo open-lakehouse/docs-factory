@@ -24,6 +24,7 @@ import { lookupRole, roleFromDb } from "../allowlist.js";
 import { reanchorCodeThreads, reanchorThreads } from "../anchor.js";
 import {
   authInterceptor,
+  getTokenGrant,
   getViewer,
   requireAllowlisted,
   requireContentAccess,
@@ -138,6 +139,7 @@ import {
   reviewRequestFromRow,
 } from "../review-requests.js";
 import { type DiffEntry, reviewDiff, unchangedSlugs } from "../tree-diff.js";
+import { apiTokenHandlers } from "./api-tokens.js";
 
 // A page is shown to anonymous (non-allowlisted) viewers only when BOTH hold:
 // its git authoring intent is `ready` (frontmatter_status) AND the published
@@ -651,7 +653,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
                  c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
                  c.code_path, c.code_region, c.code_line, c.code_end_line,
-                 c.code_line_hash, c.code_file_hash,
+                 c.code_line_hash, c.code_file_hash, c.via_agent,
                  c.authored_version_id, cv.git_sha as authored_git_sha
           from comment c
           left join content_version cv on cv.id = c.authored_version_id
@@ -724,7 +726,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
                  c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
                  c.code_path, c.code_region, c.code_line, c.code_end_line,
-                 c.code_line_hash, c.code_file_hash,
+                 c.code_line_hash, c.code_file_hash, c.via_agent,
                  c.authored_version_id, cv.git_sha as authored_git_sha,
                  l.title as content_title,
                  sec.heading_text as heading_text,
@@ -806,7 +808,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             (area, slug, section_id, authored_version_id, anchor_slug, anchor_fingerprint, parent_id,
              author_user_id, author_login, author_name, body_md, orphaned,
              selector_quote, selector_prefix, selector_suffix, selector_start,
-             code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash)
+             code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
+             via_agent)
           values
             (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${latest?.id ?? null}, ${req.anchorSlug},
              ${req.anchorFingerprint}, ${parentId},
@@ -815,12 +818,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
              ${sel?.quote ?? null}, ${sel?.prefix ?? null}, ${sel?.suffix ?? null},
              ${sel ? sel.start : null},
              ${code?.path ?? null}, ${code?.region ?? null}, ${code ? code.line : null},
-             ${code ? code.endLine : null}, ${code?.lineHash ?? null}, ${code?.fileHash ?? null})
+             ${code ? code.endLine : null}, ${code?.lineHash ?? null}, ${code?.fileHash ?? null},
+             ${getTokenGrant(ctx) !== undefined})
           returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
                     author_login, author_name, body_md, created_at, edited_at, orphaned,
                     selector_quote, selector_prefix, selector_suffix, selector_start,
                     code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
-                    authored_version_id,
+                    via_agent, authored_version_id,
                     (select git_sha from content_version where id = comment.authored_version_id)
                       as authored_git_sha
         `;
@@ -2082,6 +2086,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           entries,
         });
       },
+
+      ...apiTokenHandlers,
     },
     { interceptors: [authInterceptor(auth)] },
   );
@@ -2095,7 +2101,7 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
            c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
            c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
            c.code_path, c.code_region, c.code_line, c.code_end_line,
-           c.code_line_hash, c.code_file_hash,
+           c.code_line_hash, c.code_file_hash, c.via_agent,
            c.authored_version_id, cv.git_sha as authored_git_sha
     from comment c
     left join content_version cv on cv.id = c.authored_version_id
@@ -2123,7 +2129,7 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
            d.author_login, d.author_name, d.body_md, d.created_at, d.edited_at, d.orphaned,
            d.selector_quote, d.selector_prefix, d.selector_suffix, d.selector_start,
            d.code_path, d.code_region, d.code_line, d.code_end_line,
-           d.code_line_hash, d.code_file_hash,
+           d.code_line_hash, d.code_file_hash, d.via_agent,
            d.authored_version_id, cv.git_sha as authored_git_sha
     from descendants d
     left join content_version cv on cv.id = d.authored_version_id

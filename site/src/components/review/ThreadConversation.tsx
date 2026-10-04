@@ -226,6 +226,7 @@ export default function ThreadConversation({
           name={thread.root.authorName}
           body={thread.root.bodyMd}
           authoredGitSha={thread.root.authoredGitSha}
+          viaAgent={thread.root.viaAgent}
         />
       )}
       {thread.replies.map((r) => {
@@ -239,6 +240,7 @@ export default function ThreadConversation({
               reply
               depth={depth}
               authoredGitSha={r.authoredGitSha}
+              viaAgent={r.viaAgent}
               onReply={() => {
                 setReplyingToId(r.id);
                 setText("");

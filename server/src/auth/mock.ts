@@ -10,8 +10,10 @@
 //   admin[:<login>]          → site admin, implies maintainer (default "dev-admin")
 // Missing/unrecognized header → anonymous.
 
+import { lookupRole } from "../allowlist.js";
 import { db } from "../db.js";
 import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
+import type { TokenOwner } from "./api-token.js";
 import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 
 export const DEV_PERSONA_HEADER = "x-dev-persona";
@@ -65,3 +67,22 @@ export const mockProvider: AuthProvider = {
     return anonymousViewer();
   },
 };
+
+/**
+ * The Viewer for a token minted under a mock persona. Personas carry their role
+ * in the request header, which a token request doesn't send, so a persona not
+ * on the allowlist is admitted as a reviewer: enough for the read + reply that
+ * tokens are limited to.
+ */
+export async function mockViewerForOwner(owner: TokenOwner) {
+  let role = Role.ANONYMOUS;
+  try {
+    role = await lookupRole(db(), { userId: owner.userId });
+  } catch {
+    // No DB → fall through to the reviewer default.
+  }
+  return viewer(owner.login, role === Role.ANONYMOUS ? Role.REVIEWER : role, {
+    userId: owner.userId,
+    name: owner.name,
+  });
+}

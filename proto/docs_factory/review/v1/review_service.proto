@@ -137,6 +137,15 @@ service ReviewService {
   // before `since`, returning the changed nodes + open-comment counts.
   // Allowlist-gated.
   rpc ProductChanges(ProductChangesRequest) returns (ProductChangesResponse);
+
+  // Personal access tokens for agents (CLI / MCP). A token acts as its owner,
+  // narrowed to its scopes: `feedback:read` (list/read content + comments) and
+  // `feedback:reply` (replies only — never new threads, resolution, approvals,
+  // or any admin action). Managing tokens requires a browser session; a token
+  // can't mint, list, or revoke tokens.
+  rpc CreateApiToken(CreateApiTokenRequest) returns (CreateApiTokenResponse);
+  rpc ListApiTokens(ListApiTokensRequest) returns (ListApiTokensResponse);
+  rpc RevokeApiToken(RevokeApiTokenRequest) returns (RevokeApiTokenResponse);
 }
 
 message GetViewerRequest {}
@@ -505,3 +514,27 @@ message ProductChangesResponse {
   // Only artifacts with at least one changed node (unchanged ones omitted).
   repeated ProductChangeEntry entries = 4;
 }
+
+message CreateApiTokenRequest {
+  // Human label, e.g. "laptop claude code".
+  string name = 1;
+  repeated string scopes = 2;
+  // Lifetime in days; server default 90, max 365.
+  optional int32 ttl_days = 3;
+}
+message CreateApiTokenResponse {
+  // The secret (`dfr_…`). Shown once; not retrievable later.
+  string token = 1;
+  ApiToken api_token = 2;
+}
+
+message ListApiTokensRequest {}
+message ListApiTokensResponse {
+  // The viewer's non-revoked tokens, newest first (expired ones included).
+  repeated ApiToken tokens = 1;
+}
+
+message RevokeApiTokenRequest {
+  string id = 1;
+}
+message RevokeApiTokenResponse {}

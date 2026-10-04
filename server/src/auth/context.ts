@@ -5,18 +5,54 @@ import { Code, ConnectError, createContextKey, type Interceptor } from "@connect
 import { hasContentGrant } from "../allowlist.js";
 import type { Queryable } from "../db.js";
 import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
-import { type AuthProvider, anonymousViewer } from "./provider.js";
+import { tokenMayCall } from "./api-token.js";
+import {
+  type Authentication,
+  type AuthProvider,
+  anonymousViewer,
+  type TokenGrant,
+} from "./provider.js";
 
 const kViewer = createContextKey<Viewer>(anonymousViewer(), { description: "review.viewer" });
+const kToken = createContextKey<TokenGrant | undefined>(undefined, {
+  description: "review.token",
+});
 
-/** Interceptor that resolves the viewer once per request from `auth`. */
+/**
+ * Interceptor that resolves the viewer once per request from `auth`. A request
+ * made with a personal access token is also checked against the token's scopes
+ * here, before any handler runs, so handlers need no token awareness beyond
+ * provenance (getTokenGrant).
+ */
 export function authInterceptor(auth: AuthProvider): Interceptor {
   return (next) => async (req) => {
     // `req.header` carries the incoming request headers in an interceptor.
-    const viewer = await auth.verify(req.header);
-    req.contextValues.set(kViewer, viewer);
+    const authn: Authentication = auth.authenticate
+      ? await auth.authenticate(req.header)
+      : { viewer: await auth.verify(req.header) };
+    if (authn.invalidToken) {
+      throw new ConnectError("invalid, expired, or revoked access token", Code.Unauthenticated);
+    }
+    if (authn.token) {
+      const message = req.stream ? undefined : req.message;
+      if (!tokenMayCall(req.method.name, message, authn.token.scopes)) {
+        throw new ConnectError(
+          `access tokens may not call ${req.method.name} with these scopes`,
+          Code.PermissionDenied,
+        );
+      }
+      req.contextValues.set(kToken, authn.token);
+    }
+    req.contextValues.set(kViewer, authn.viewer);
     return next(req);
   };
+}
+
+/** The personal access token this request used, if any. */
+export function getTokenGrant(ctx: {
+  values: { get: (k: typeof kToken) => TokenGrant | undefined };
+}): TokenGrant | undefined {
+  return ctx.values.get(kToken);
 }
 
 /** The resolved viewer for this request (anonymous if none). */

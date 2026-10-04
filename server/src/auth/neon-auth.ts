@@ -28,12 +28,12 @@
 import { createRemoteJWKSet, jwtVerify } from "jose";
 import { hasAdminRole, hasAnyContentGrant, lookupRole } from "../allowlist.js";
 import { db } from "../db.js";
-import { Role } from "../gen/docs_factory/review/v1/messages_pb.js";
+import { Role, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
 // GitHub @handle / verified-email resolution + persistence into user_identity.
 import { persistUserIdentity, readUserIdentity } from "./github-identity.js";
 import { type AuthProvider, anonymousViewer, viewer } from "./provider.js";
 
-interface NeonIdentity {
+export interface NeonIdentity {
   /** Stable Neon Auth user id — the key for authorship, allowlist + read-state. */
   userId: string;
   /**
@@ -251,6 +251,35 @@ export function elevateRoleForAdmin(role: Role, isSiteAdmin: boolean): Role {
   return isSiteAdmin && role !== Role.MAINTAINER ? Role.MAINTAINER : role;
 }
 
+/**
+ * Build the Viewer for an already-authenticated identity: allowlist role, admin
+ * elevation, and scoped grants. Shared by the JWT path and personal access
+ * tokens (api-token.ts), so a token is admitted exactly as its owner would be.
+ */
+export async function neonViewerForIdentity(identity: NeonIdentity): Promise<Viewer> {
+  // Role, admin flag, and the scoped-grant existence check all key on the
+  // same trusted user id and are independent, so resolve them in one parallel
+  // batch rather than adding a serial round-trip on the auth hot path (this
+  // runs for every authenticated request). The grant result is only consulted
+  // for a non-allowlisted viewer (allowlisted viewers are admitted regardless);
+  // computing it eagerly costs one already-in-flight query, not a fourth trip.
+  const [role, isSiteAdmin, anyGrant] = await Promise.all([
+    lookupRole(db(), { userId: identity.userId }),
+    readSiteAdmin(identity.userId),
+    hasAnyContentGrant(db(), identity.userId),
+  ]);
+  const effRole = elevateRoleForAdmin(role, isSiteAdmin);
+  const isAllowlisted = effRole === Role.REVIEWER || effRole === Role.MAINTAINER;
+  // A scoped content grant (a non-cancelled review_request addressed to them)
+  // lets the client AccessGate admit a non-allowlisted viewer to the shared
+  // content; allowlisted viewers are admitted regardless, so it never applies.
+  const hasScopedGrants = isAllowlisted ? false : anyGrant;
+  const ident = { userId: identity.userId, name: identity.name, isSiteAdmin, hasScopedGrants };
+  // Authenticated but neither allowlisted nor admin: known identity,
+  // published-only access plus any content shared with them.
+  return viewer(identity.login, effRole, ident);
+}
+
 export function createNeonAuthProvider(): AuthProvider {
   return {
     async verify(header) {
@@ -258,27 +287,7 @@ export function createNeonAuthProvider(): AuthProvider {
       if (!token) return anonymousViewer();
       const identity = await resolveIdentity(token);
       if (!identity) return anonymousViewer();
-      // Role, admin flag, and the scoped-grant existence check all key on the
-      // same trusted user id and are independent, so resolve them in one parallel
-      // batch rather than adding a serial round-trip on the auth hot path (this
-      // runs for every authenticated request). The grant result is only consulted
-      // for a non-allowlisted viewer (allowlisted viewers are admitted regardless);
-      // computing it eagerly costs one already-in-flight query, not a fourth trip.
-      const [role, isSiteAdmin, anyGrant] = await Promise.all([
-        lookupRole(db(), { userId: identity.userId }),
-        readSiteAdmin(identity.userId),
-        hasAnyContentGrant(db(), identity.userId),
-      ]);
-      const effRole = elevateRoleForAdmin(role, isSiteAdmin);
-      const isAllowlisted = effRole === Role.REVIEWER || effRole === Role.MAINTAINER;
-      // A scoped content grant (a non-cancelled review_request addressed to them)
-      // lets the client AccessGate admit a non-allowlisted viewer to the shared
-      // content; allowlisted viewers are admitted regardless, so it never applies.
-      const hasScopedGrants = isAllowlisted ? false : anyGrant;
-      const ident = { userId: identity.userId, name: identity.name, isSiteAdmin, hasScopedGrants };
-      // Authenticated but neither allowlisted nor admin: known identity,
-      // published-only access plus any content shared with them.
-      return viewer(identity.login, effRole, ident);
+      return neonViewerForIdentity(identity);
     },
   };
 }

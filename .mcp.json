@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "review-feedback": {
+      "type": "stdio",
+      "command": "bash",
+      "args": ["tools/review-feedback/scripts/mcp.sh"]
+    }
+  }
+}

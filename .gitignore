@@ -66,3 +66,6 @@ sites/*/public/
 sites/*/.docs-emit.json
 sites/*/dist/
 sites/*/.ssr/
+
+# review-feedback pull output (per-page snapshots of open review threads)
+.review/

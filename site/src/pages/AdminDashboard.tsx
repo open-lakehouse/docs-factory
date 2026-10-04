@@ -104,14 +104,14 @@ export default function AdminDashboard() {
   // (mirrors DocPage). A plain maintainer falls through to "not found" here.
   if (authLoading) {
     return (
-      <Shell wide>
+      <Shell>
         <p className="muted">Loading…</p>
       </Shell>
     );
   }
   if (!isSiteAdmin) {
     return (
-      <Shell wide>
+      <Shell>
         <p>
           Not found. <Link to="/">Back home.</Link>
         </p>
@@ -168,7 +168,7 @@ export default function AdminDashboard() {
   };
 
   return (
-    <Shell wide>
+    <Shell>
       <div className="admin-page">
         <h1>Admin</h1>
         <p className="review-dash-hint">

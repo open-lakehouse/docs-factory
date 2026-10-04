@@ -1,7 +1,7 @@
 // sitemap.xml lists canonical HTML routes only — ready pages present, drafts and
 // .md twins absent. Exercises the pure sitemapUrls() over synthetic page records.
 import { expect, test } from "bun:test";
-import { sitemapUrls } from "../../../scripts/build-sitemap.mjs";
+import { sitemapUrls } from "../discovery.mjs";
 
 const ORIGIN = "https://example.test";
 
@@ -25,12 +25,9 @@ test("sitemap excludes draft pages", () => {
   expect(urls.some((u) => u.loc.includes("/wip"))).toBe(false);
 });
 
-test("sitemap includes the synthetic index routes", () => {
+test("sitemap includes the site root by default", () => {
   const urls = sitemapUrls([], ORIGIN);
-  const locs = urls.map((u) => u.loc);
-  expect(locs).toContain(ORIGIN); // "/"
-  expect(locs).toContain(`${ORIGIN}/docs`);
-  expect(locs).toContain(`${ORIGIN}/blog`);
+  expect(urls.map((u) => u.loc)).toEqual([ORIGIN]);
 });
 
 test("sitemap never lists a .md twin URL", () => {
@@ -44,7 +41,7 @@ test("lastmod uses the frontmatter date when it is ISO", () => {
   expect(entry.lastmod).toBe("2026-01-02");
 });
 
-test("sitemap takes a target site's hrefFor, index routes, and inclusion gate", () => {
+test("sitemap takes a site's hrefFor, index routes, and inclusion gate", () => {
   const urls = sitemapUrls([READY_DOC, DRAFT_DOC], ORIGIN, {
     hrefFor: (id) => `/${id.bucket}/${id.slug}`,
     indexRoutes: ["/"],

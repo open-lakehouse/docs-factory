@@ -14,9 +14,8 @@
 // text/x-python.
 //
 // Run order (CI prebuild, where uv is available): before build-md-twins (which
-// enriches tutorial twins' "Runnable examples" from dist/scripts.json) and before
-// build-site-llmstxt (which lists scripts.json). First JS→docsnip shell-out in the
-// build; a non-zero exit fails the build.
+// enriches tutorial twins' "Runnable examples" from dist/scripts.json). First
+// JS→docsnip shell-out in the build; a non-zero exit fails the build.
 import { execFileSync } from "node:child_process";
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";

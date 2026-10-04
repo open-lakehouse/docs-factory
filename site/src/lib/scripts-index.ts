@@ -44,16 +44,20 @@ async function fetchScriptsIndex(): Promise<ScriptsIndex> {
 }
 
 /**
- * The runnable-script index, loaded once for the workspace. Returns an empty
- * index while loading or when the artifact is absent, so callers can treat the
- * result as authoritative without null-checking.
+ * The runnable-script index, loaded once for the workspace, plus whether it is
+ * still loading. The index is empty while loading or when the artifact is
+ * absent, so callers can treat it as authoritative without null-checking.
  */
-export function useScriptsIndex(): ScriptsIndex {
-  const { data } = useQuery({
+export function useScriptsIndexQuery(): { index: ScriptsIndex; isLoading: boolean } {
+  const { data, isLoading } = useQuery({
     queryKey: ["scripts-index"],
     queryFn: fetchScriptsIndex,
     staleTime: Infinity,
     gcTime: Infinity,
   });
-  return data ?? EMPTY;
+  return { index: data ?? EMPTY, isLoading };
+}
+
+export function useScriptsIndex(): ScriptsIndex {
+  return useScriptsIndexQuery().index;
 }

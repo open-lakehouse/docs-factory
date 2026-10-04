@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import type { ContentPage } from "../content";
+import { pageRef } from "../content";
 import { relatedPages } from "../graph";
 import { useContentVisibility } from "../lib/content-visibility";
 
@@ -26,10 +27,9 @@ function pageKind(page: ContentPage): string {
  * foot of any content page.
  */
 export default function RelatedContent({ page }: { page: ContentPage }) {
-  const vis = useContentVisibility();
-  // Anonymous viewers must not see links to unpublished related pages;
-  // filterVisible returns empty for anon until listDrafts resolves.
-  const related = vis.filterVisible(relatedPages(page));
+  const { isVisible } = useContentVisibility();
+  // An invitee only gets links to pages they can open.
+  const related = relatedPages(page).filter((r) => isVisible(pageRef(r)));
   if (related.length === 0) return null;
 
   return (

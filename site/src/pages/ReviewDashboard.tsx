@@ -85,14 +85,14 @@ export default function ReviewDashboard() {
   // (mirrors DocPage) so we don't flash "not found" at an allowlisted reviewer.
   if (authLoading) {
     return (
-      <Shell wide>
+      <Shell>
         <p className="muted">Loading…</p>
       </Shell>
     );
   }
   if (!isAllowlisted) {
     return (
-      <Shell wide>
+      <Shell>
         <p>
           Not found. <Link to="/">Back home.</Link>
         </p>
@@ -113,7 +113,7 @@ export default function ReviewDashboard() {
   const byMe = byMeData?.requests ?? [];
 
   return (
-    <Shell wide>
+    <Shell>
       <div className="review-dashboard">
         <h1>Review</h1>
         <p className="muted">

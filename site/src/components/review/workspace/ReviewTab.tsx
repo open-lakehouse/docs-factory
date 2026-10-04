@@ -207,7 +207,7 @@ function ReviewTabBody({
         )}
         hidden={!isActive}
       >
-        {page && <ReviewPageChrome contentRef={contentRef} page={page} alwaysVisible />}
+        {page && <ReviewPageChrome contentRef={contentRef} page={page} />}
         <div ref={setScrollPane} className="min-h-0 flex-1 overflow-y-auto">
           {page ? (
             <article className="prose mx-auto max-w-3xl px-6 py-8" ref={articleRef}>

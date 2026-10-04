@@ -4,6 +4,14 @@
 `:::tldr`, site llms.txt, sitemap/robots, RSS, `.md` content negotiation, 308s),
 and **Phase 3** (runnable-script linking) have **shipped**. Phases 2 (C4 model
 integration) and 4 (hosted MCP) are not yet built.
+
+> **Since 2026-10:** the factory app (`site/`) is a login-gated review/admin tool
+> and no longer serves readers. The reader-facing surfaces below now live in the
+> docs-site emitter (`emit/docs`, see [`docs-site-emission.md`](./docs-site-emission.md)):
+> twins, `llms.txt`, sitemap/robots. The factory app still builds `.md` twins and
+> `scripts.json`, but only for the workspace's twin and script tabs. Its
+> prerendered shells, RSS, content negotiation, and 308s were removed. References
+> to `site/scripts/*` below are historical.
 **Scope:** cross-cutting — `site/`, `emit/`, `content/`, `blogs/`, `architecture/`,
 `tools/docsnip/`, plus a new `mcp/` package.
 **Last updated:** 2026-07-30.

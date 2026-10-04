@@ -12,11 +12,10 @@
 // is exactly what `twinUrl()` advertises and the gen-vercel-config `.md` rules
 // serve.
 //
-// Run order: after `vite build`, before prerender-shells.mjs (whose <noscript>
-// body now renders from these twins) and before assemble-vercel-output.mjs. Needs
-// a headless Chromium for the LikeC4 PNG export (emitOne → regenerateLikeC4), so
+// Run order: after `vite build`, before assemble-vercel-output.mjs. Needs a
+// headless Chromium for the LikeC4 PNG export (emitOne → regenerateLikeC4), so
 // it runs in the CI prebuild stage. DB-free: gated on git-authoritative
-// `isPublic()` (status: ready), the same gate prerender-shells + llms.txt use.
+// `isPublic()` (status: ready).
 import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";

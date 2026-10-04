@@ -1,8 +1,7 @@
 // The version-history + structural-diff view for one artifact. Lists registered
 // content versions (most-recent first), lets a reviewer pick a baseline and a
 // target, fetches both Merkle trees, and renders the changed nodes with
-// added/removed/modified/moved groups. Read-only, allowlist-gated (enabled only
-// in review mode). The heavy machinery — the tree diff — is the shared client
+// added/removed/modified/moved groups. Read-only, allowlist-gated. The heavy machinery — the tree diff — is the shared client
 // util (lib/tree-diff.ts), the same algorithm the server runs for ProductChanges.
 
 import { timestampDate } from "@bufbuild/protobuf/wkt";

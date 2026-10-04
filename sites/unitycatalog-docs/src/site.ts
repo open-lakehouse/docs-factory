@@ -46,6 +46,8 @@ export interface ApiSpec {
   slug: string;
   title: string;
   summary: string;
+  /** A few words for the API switcher; `summary` is the full description. */
+  hint: string;
   /** The git ref the spec is pinned to, e.g. `v0.6.0`. */
   ref: string;
   specUrl: string;

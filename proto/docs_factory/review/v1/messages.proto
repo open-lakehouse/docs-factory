@@ -256,6 +256,9 @@ message Viewer {
   // for an external): per-item authorization on the server remains the source
   // of truth; this is only the client-side admission signal.
   bool has_scoped_grants = 8;
+  // True when the request authenticated with a personal access token rather
+  // than a browser session (an agent acting on the owner's behalf).
+  bool via_agent = 9;
 }
 
 // One comment. Thread roots have no `parent_id`. When the section a comment was
@@ -287,6 +290,9 @@ message Comment {
   // section anchor, they never move forward to a later version.
   optional string authored_version_id = 13;
   optional string authored_git_sha = 14;
+  // Written through a personal access token (an agent acting for the author),
+  // not the browser UI.
+  bool via_agent = 16;
 }
 
 // A thread root plus its replies and resolution state.
@@ -462,4 +468,19 @@ message ContentEvent {
   optional ReviewState to_state = 7;
   optional string reviewer_login = 8;
   google.protobuf.Timestamp created_at = 9;
+}
+
+// A personal access token's metadata. The secret itself is returned exactly
+// once, by CreateApiToken; the server keeps only its sha256.
+message ApiToken {
+  string id = 1;
+  string name = 2;
+  // e.g. "feedback:read", "feedback:reply".
+  repeated string scopes = 3;
+  // The first characters of the secret after `dfr_`, so a user can tell their
+  // tokens apart without the server holding the secret.
+  string prefix = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp expires_at = 6;
+  optional google.protobuf.Timestamp last_used_at = 7;
 }

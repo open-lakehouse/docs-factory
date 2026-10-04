@@ -13,6 +13,26 @@ export interface AuthProvider {
    * HandlerContext exposes, and are equally available on a fetch Request.
    */
   verify(header: Headers): Promise<Viewer>;
+  /**
+   * Like verify, plus the personal-access-token grant when the request used
+   * one. Present only on providers wrapped by withApiTokens (api-token.ts);
+   * authInterceptor uses it to enforce token scopes.
+   */
+  authenticate?(header: Headers): Promise<Authentication>;
+}
+
+/** A personal access token's identity + scopes, for per-RPC enforcement. */
+export interface TokenGrant {
+  tokenId: string;
+  scopes: string[];
+}
+
+export interface Authentication {
+  viewer: Viewer;
+  /** Set when the request authenticated with a personal access token. */
+  token?: TokenGrant;
+  /** A `dfr_` bearer was sent but is unknown, expired, or revoked. */
+  invalidToken?: boolean;
 }
 
 /** A logged-out viewer with no allowlist access. */
@@ -84,12 +104,16 @@ export async function selectProvider(): Promise<AuthProvider> {
       if (process.env.NODE_ENV === "production") {
         throw new Error("AUTH_MODE=mock is forbidden when NODE_ENV=production.");
       }
-      const { mockProvider } = await import("./mock.js");
-      return mockProvider;
+      const [{ mockProvider, mockViewerForOwner }, { withApiTokens }] = await Promise.all([
+        import("./mock.js"),
+        import("./api-token.js"),
+      ]);
+      return withApiTokens(mockProvider, mockViewerForOwner);
     }
     case "neon": {
-      const { createNeonAuthProvider } = await import("./neon-auth.js");
-      return createNeonAuthProvider();
+      const [{ createNeonAuthProvider, neonViewerForIdentity }, { withApiTokens }] =
+        await Promise.all([import("./neon-auth.js"), import("./api-token.js")]);
+      return withApiTokens(createNeonAuthProvider(), neonViewerForIdentity);
     }
     default:
       throw new Error(`unknown AUTH_MODE='${mode}' (expected neon | mock | anon).`);

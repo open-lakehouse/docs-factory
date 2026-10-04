@@ -47,6 +47,9 @@ export interface CommentRow {
   code_end_line: number | null;
   code_line_hash: string | null;
   code_file_hash: string | null;
+  // Written through a personal access token. Optional so queries that don't
+  // select it (e.g. re-anchoring) still type-check; absent reads as false.
+  via_agent?: boolean | null;
 }
 
 export interface ResolutionRow {
@@ -71,6 +74,7 @@ export function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
     orphaned: row.orphaned,
     authoredVersionId: row.authored_version_id ?? undefined,
     authoredGitSha: row.authored_git_sha ?? undefined,
+    viaAgent: row.via_agent ?? false,
     // At most one fine-grained selector; prose takes precedence if both were
     // somehow set (they never are — create writes exactly one branch).
     selector:

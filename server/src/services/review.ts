@@ -88,6 +88,8 @@ import {
   ListContentEventsResponseSchema,
   type ListDraftsRequest,
   ListDraftsResponseSchema,
+  type ListRatingsRequest,
+  ListRatingsResponseSchema,
   type ListRecentCommentsRequest,
   ListRecentCommentsResponseSchema,
   ListRegisteredUsersResponseSchema,
@@ -105,6 +107,8 @@ import {
   ProductChangesResponseSchema,
   type RecordApprovalRequest,
   RecordApprovalResponseSchema,
+  type RecordRatingRequest,
+  RecordRatingResponseSchema,
   type RegisterVersionRequest,
   RegisterVersionResponseSchema,
   type ReleaseContentRequest,
@@ -126,8 +130,18 @@ import {
   TransitionReviewResponseSchema,
   type UnresolveThreadRequest,
   UnresolveThreadResponseSchema,
+  type WithdrawRatingRequest,
+  WithdrawRatingResponseSchema,
 } from "../gen/docs_factory/review/v1/review_service_pb.js";
 import { notifyCommentsChanged } from "../notify.js";
+import {
+  type ContentRatingRow,
+  exemplarToDb,
+  type RatingAggregateRow,
+  ratingFromRow,
+  ratingSummaryFromRow,
+  validateRating,
+} from "../ratings.js";
 import {
   approvalFromRow,
   type ContentApprovalRow,
@@ -349,7 +363,10 @@ type DraftSummaryRow = {
   version_content_hash: string | null;
   version_git_sha: string | null;
   version_created_at: Date | null;
-};
+  // Active-rating aggregate, plus the viewer's own active rating (jsonb) when
+  // the query was given a viewer id.
+  my_rating: ContentRatingRow | null;
+} & RatingAggregateRow;
 
 function draftSummaryFromRow(r: DraftSummaryRow) {
   const target =
@@ -408,6 +425,8 @@ function draftSummaryFromRow(r: DraftSummaryRow) {
     approvals: approvalRows.map(approvalFromRow),
     pendingRequiredLogins,
     needsReview: derived.needsReview,
+    ratingSummary: ratingSummaryFromRow(r),
+    myRating: r.my_rating ? ratingFromRow(r.my_rating) : undefined,
     latestVersion:
       r.version_id == null
         ? undefined
@@ -438,7 +457,9 @@ function draftSummaryFromRow(r: DraftSummaryRow) {
 // Re-read one (area, slug)'s DraftSummary row after a RevOps mutation, so the
 // setters return the same shape ListDrafts produces (with the fresh priority /
 // target date joined in). Returns null if the ref has no known content at all.
-async function loadDraftSummary(sql: Sql, area: string, slug: string) {
+// `viewerUserId` selects the viewer's own rating; "" (never a bare NULL bind)
+// matches no one.
+async function loadDraftSummary(sql: Sql, area: string, slug: string, viewerUserId = "") {
   const [row] = await sql<DraftSummaryRow[]>`
     with latest as (
       select distinct on (area, slug) *
@@ -483,7 +504,29 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string) {
             'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
         from content_approval ca
         left join user_identity ui on ui.user_id = ca.approver_user_id
-        where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as approvals
+        where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as approvals,
+      (select count(*)::int from content_rating cr
+        where cr.area = ${area} and cr.slug = ${slug} and cr.superseded_at is null) as rating_count,
+      (select avg(cr.score) from content_rating cr
+        where cr.area = ${area} and cr.slug = ${slug} and cr.superseded_at is null) as rating_avg,
+      (select count(*)::int from content_rating cr
+        where cr.area = ${area} and cr.slug = ${slug} and cr.superseded_at is null
+          and cr.exemplar = 'good') as rating_good,
+      (select count(*)::int from content_rating cr
+        where cr.area = ${area} and cr.slug = ${slug} and cr.superseded_at is null
+          and cr.exemplar = 'bad') as rating_bad,
+      (select jsonb_build_object('id', cr.id, 'area', cr.area, 'slug', cr.slug,
+          'version_id', cr.version_id, 'git_sha', cv.git_sha,
+          'rater_user_id', cr.rater_user_id, 'rater_login', ui.github_login,
+          'score', cr.score, 'pros_md', cr.pros_md, 'cons_md', cr.cons_md,
+          'strengths', cr.strengths, 'weaknesses', cr.weaknesses, 'exemplar', cr.exemplar,
+          'superseded_at', cr.superseded_at, 'created_at', cr.created_at,
+          'updated_at', cr.updated_at)
+        from content_rating cr
+        left join content_version cv on cv.id = cr.version_id
+        left join user_identity ui on ui.user_id = cr.rater_user_id
+        where cr.area = ${area} and cr.slug = ${slug} and cr.superseded_at is null
+          and cr.rater_user_id = ${viewerUserId}) as my_rating
     from (select 1) one
     left join latest l on true
     left join content_revops rv on rv.area = ${area} and rv.slug = ${slug}
@@ -534,6 +577,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             select area, slug from comment
             union
             select area, slug from content_approval
+            union
+            select area, slug from content_rating
           )
           select k.area, k.slug, l.project, l.bucket, l.title, l.frontmatter_status,
             l.id as version_id, l.content_hash as version_content_hash,
@@ -571,7 +616,29 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                   'created_at', ca.created_at) order by ca.created_at), '[]'::jsonb)
               from content_approval ca
               left join user_identity ui on ui.user_id = ca.approver_user_id
-              where ca.area = k.area and ca.slug = k.slug and ca.dismissed_at is null) as approvals
+              where ca.area = k.area and ca.slug = k.slug and ca.dismissed_at is null) as approvals,
+            (select count(*)::int from content_rating cr
+              where cr.area = k.area and cr.slug = k.slug and cr.superseded_at is null) as rating_count,
+            (select avg(cr.score) from content_rating cr
+              where cr.area = k.area and cr.slug = k.slug and cr.superseded_at is null) as rating_avg,
+            (select count(*)::int from content_rating cr
+              where cr.area = k.area and cr.slug = k.slug and cr.superseded_at is null
+                and cr.exemplar = 'good') as rating_good,
+            (select count(*)::int from content_rating cr
+              where cr.area = k.area and cr.slug = k.slug and cr.superseded_at is null
+                and cr.exemplar = 'bad') as rating_bad,
+            (select jsonb_build_object('id', cr.id, 'area', cr.area, 'slug', cr.slug,
+                'version_id', cr.version_id, 'git_sha', cv.git_sha,
+                'rater_user_id', cr.rater_user_id, 'rater_login', ui.github_login,
+                'score', cr.score, 'pros_md', cr.pros_md, 'cons_md', cr.cons_md,
+                'strengths', cr.strengths, 'weaknesses', cr.weaknesses, 'exemplar', cr.exemplar,
+                'superseded_at', cr.superseded_at, 'created_at', cr.created_at,
+                'updated_at', cr.updated_at)
+              from content_rating cr
+              left join content_version cv on cv.id = cr.version_id
+              left join user_identity ui on ui.user_id = cr.rater_user_id
+              where cr.area = k.area and cr.slug = k.slug and cr.superseded_at is null
+                and cr.rater_user_id = ${grantUserId}) as my_rating
           from keys k
           left join latest l on l.area = k.area and l.slug = k.slug
           left join content_revops rv on rv.area = k.area and rv.slug = k.slug
@@ -1014,7 +1081,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             reviewer_user_id: userId,
           });
         });
-        const draft = await loadDraftSummary(sql, area, slug);
+        const draft = await loadDraftSummary(sql, area, slug, viewer.userId ?? "");
         return create(RecordApprovalResponseSchema, { draft: draft ?? undefined });
       },
 
@@ -1051,8 +1118,106 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             });
           }
         });
-        const draft = await loadDraftSummary(sql, area, slug);
+        const draft = await loadDraftSummary(sql, area, slug, viewer.userId ?? "");
         return create(DismissApprovalResponseSchema, { draft: draft ?? undefined });
+      },
+
+      async recordRating(req: RecordRatingRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        if (!viewer.userId) {
+          throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
+        }
+        const valid = validateRating(req);
+        if (!valid.ok) throw new ConnectError(valid.error, Code.InvalidArgument);
+        const v = valid.value;
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        const slug = req.ref.slug;
+        const userId = viewer.userId;
+        const versionId = await latestVersionId(sql, area, slug);
+
+        const id = await sql.begin(async (tx) => {
+          // Same version: edit in place. A different version: supersede the old
+          // row and insert a new one, so the earlier (version, score) pair stays.
+          // `is not distinct from` treats two unregistered (null) versions as equal.
+          const [edited] = await tx<{ id: string }[]>`
+            update content_rating set
+              score = ${v.score}, pros_md = ${v.pros_md}, cons_md = ${v.cons_md},
+              strengths = ${v.strengths}, weaknesses = ${v.weaknesses},
+              exemplar = ${v.exemplar}, updated_at = now()
+            where area = ${area} and slug = ${slug} and rater_user_id = ${userId}
+              and superseded_at is null and version_id is not distinct from ${versionId}
+            returning id
+          `;
+          if (edited) return edited.id;
+          await tx`
+            update content_rating set superseded_at = now()
+            where area = ${area} and slug = ${slug} and rater_user_id = ${userId}
+              and superseded_at is null
+          `;
+          const [inserted] = await tx<{ id: string }[]>`
+            insert into content_rating
+              (area, slug, version_id, rater_user_id, score, pros_md, cons_md,
+               strengths, weaknesses, exemplar)
+            values (${area}, ${slug}, ${versionId}, ${userId}, ${v.score}, ${v.pros_md},
+              ${v.cons_md}, ${v.strengths}, ${v.weaknesses}, ${v.exemplar})
+            returning id
+          `;
+          return inserted.id;
+        });
+        const [row] = await sql<ContentRatingRow[]>`
+          select cr.*, cv.git_sha, ui.github_login as rater_login
+          from content_rating cr
+          left join content_version cv on cv.id = cr.version_id
+          left join user_identity ui on ui.user_id = cr.rater_user_id
+          where cr.id = ${id}
+        `;
+        const draft = await loadDraftSummary(sql, area, slug, userId);
+        return create(RecordRatingResponseSchema, {
+          rating: ratingFromRow(row),
+          draft: draft ?? undefined,
+        });
+      },
+
+      async withdrawRating(req: WithdrawRatingRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        if (!viewer.userId) {
+          throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
+        }
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        const slug = req.ref.slug;
+        await sql`
+          update content_rating set superseded_at = now()
+          where area = ${area} and slug = ${slug} and rater_user_id = ${viewer.userId}
+            and superseded_at is null
+        `;
+        const draft = await loadDraftSummary(sql, area, slug, viewer.userId);
+        return create(WithdrawRatingResponseSchema, { draft: draft ?? undefined });
+      },
+
+      async listRatings(req: ListRatingsRequest, ctx) {
+        requireAllowlisted(ctx);
+        const sql = db();
+        // Every optional filter binds a plain string (never a bare NULL — see
+        // listDrafts), with "" meaning "no filter".
+        const area = req.ref ? areaToDb(req.ref.area) : req.area ? areaToDb(req.area) : "";
+        const slug = req.ref?.slug ?? "";
+        const exemplar = req.exemplar === undefined ? "" : (exemplarToDb(req.exemplar) ?? "");
+        const rows = await sql<ContentRatingRow[]>`
+          select cr.*, cv.git_sha, ui.github_login as rater_login
+          from content_rating cr
+          left join content_version cv on cv.id = cr.version_id
+          left join user_identity ui on ui.user_id = cr.rater_user_id
+          where (${area} = '' or cr.area = ${area})
+            and (${slug} = '' or cr.slug = ${slug})
+            and (${exemplar} = '' or cr.exemplar = ${exemplar})
+            and (${req.includeSuperseded} or cr.superseded_at is null)
+          order by cr.id desc
+        `;
+        return create(ListRatingsResponseSchema, { ratings: rows.map(ratingFromRow) });
       },
 
       async releaseContent(req: ReleaseContentRequest, ctx) {
@@ -1129,7 +1294,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 updated_by = ${viewer.login ?? "unknown"},
                 updated_at = now()
         `;
-        const draft = await loadDraftSummary(sql, area, req.ref.slug);
+        const draft = await loadDraftSummary(sql, area, req.ref.slug, viewer.userId ?? "");
         return create(SetPriorityResponseSchema, { draft: draft ?? undefined });
       },
 
@@ -1150,7 +1315,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                 updated_by = ${viewer.login ?? "unknown"},
                 updated_at = now()
         `;
-        const draft = await loadDraftSummary(sql, area, req.ref.slug);
+        const draft = await loadDraftSummary(sql, area, req.ref.slug, viewer.userId ?? "");
         return create(SetTargetReleaseDateResponseSchema, { draft: draft ?? undefined });
       },
 
@@ -1747,6 +1912,24 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           await sql`
             update content_approval set approver_user_id = ${TOMBSTONE}
             where approver_user_id = ${userId}
+          `;
+          // Ratings keep their score and tags (still useful signal) but lose the
+          // rater's prose. The tombstone is one shared identity, so an active row
+          // on an artifact that already has an active tombstone rating would
+          // collide on the active index — supersede just those first.
+          await sql`
+            update content_rating cr set superseded_at = now()
+            where cr.rater_user_id = ${userId} and cr.superseded_at is null
+              and exists (
+                select 1 from content_rating t
+                where t.area = cr.area and t.slug = cr.slug
+                  and t.rater_user_id = ${TOMBSTONE} and t.superseded_at is null
+              )
+          `;
+          await sql`
+            update content_rating set
+              rater_user_id = ${TOMBSTONE}, pros_md = null, cons_md = null
+            where rater_user_id = ${userId}
           `;
           // An OPEN review request can only ever be satisfied by that reviewer
           // approving. Once they're erased no one can satisfy it, so a required

@@ -1747,7 +1747,8 @@ button.tag {
   margin-bottom: 0.75rem;
   font-size: 0.85rem;
 }
-.request-review-field > span {
+.request-review-field > span,
+.request-review-field > label {
   color: var(--muted-foreground);
   font-size: 0.78rem;
 }
@@ -1755,6 +1756,74 @@ button.tag {
   color: var(--destructive);
   font-size: 0.8rem;
   margin: 0 0 0.5rem;
+}
+
+/* Content rating: chrome trigger, dialog, dashboard chip. */
+.rating-trigger-star.is-rated,
+.rating-star.is-on svg {
+  fill: var(--accent);
+  color: var(--accent);
+}
+.rating-stars {
+  border: 0;
+  padding: 0;
+  display: flex;
+  gap: 0.15rem;
+  margin-bottom: 0.75rem;
+}
+.rating-star {
+  padding: 0.15rem;
+  color: var(--muted-foreground);
+  border-radius: 4px;
+}
+.rating-star svg {
+  width: 1.4rem;
+  height: 1.4rem;
+}
+.rating-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+.rating-chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.1rem 0.55rem;
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+}
+.rating-chip.is-strength {
+  --rating-strength: #16a34a;
+  border-color: color-mix(in srgb, var(--rating-strength) 60%, transparent);
+  color: var(--rating-strength);
+}
+:root.dark .rating-chip.is-strength { --rating-strength: #22c55e; }
+.rating-chip.is-weakness {
+  border-color: color-mix(in srgb, var(--destructive) 60%, transparent);
+  color: var(--destructive);
+}
+.rating-stale {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  margin: 0 0 0.75rem;
+}
+.rating-others {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 0 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+}
+.rating-others p {
+  margin: 0.15rem 0 0;
+}
+.rating-other-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* User picker (reviewer/allowlist search). */

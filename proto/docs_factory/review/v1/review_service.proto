@@ -66,6 +66,16 @@ service ReviewService {
   // dismiss anyone's (via `approver_login`). Returns the refreshed summary.
   rpc DismissApproval(DismissApprovalRequest) returns (DismissApprovalResponse);
 
+  // Record the current viewer's quality rating (allowlist-gated). Re-rating the
+  // same version edits in place; rating a newer version supersedes the prior
+  // rating (kept for history). Ratings never affect review state.
+  rpc RecordRating(RecordRatingRequest) returns (RecordRatingResponse);
+  // Withdraw the current viewer's active rating (marks it superseded).
+  rpc WithdrawRating(WithdrawRatingRequest) returns (WithdrawRatingResponse);
+  // List ratings (allowlist-gated), newest first. The export surface for
+  // mining rated content versions.
+  rpc ListRatings(ListRatingsRequest) returns (ListRatingsResponse);
+
   // RevOps pipeline: set a content item's ordered priority (allowlist-gated).
   // Absent priority clears the rank. Returns the refreshed summary row.
   rpc SetPriority(SetPriorityRequest) returns (SetPriorityResponse);
@@ -277,6 +287,42 @@ message DismissApprovalRequest {
 }
 message DismissApprovalResponse {
   DraftSummary draft = 1;
+}
+
+message RecordRatingRequest {
+  ContentRef ref = 1;
+  // 1–5.
+  int32 score = 2;
+  optional string pros_md = 3;
+  optional string cons_md = 4;
+  // Must not overlap.
+  repeated QualityDimension strengths = 5;
+  repeated QualityDimension weaknesses = 6;
+  Exemplar exemplar = 7;
+}
+message RecordRatingResponse {
+  Rating rating = 1;
+  DraftSummary draft = 2;
+}
+
+message WithdrawRatingRequest {
+  ContentRef ref = 1;
+}
+message WithdrawRatingResponse {
+  DraftSummary draft = 1;
+}
+
+message ListRatingsRequest {
+  // Restrict to one artifact; otherwise all artifacts (optionally one area).
+  optional ContentRef ref = 1;
+  optional ContentArea area = 2;
+  // Include ratings superseded by a re-rate or withdrawn.
+  bool include_superseded = 3;
+  // Restrict to ratings nominating this exemplar label.
+  optional Exemplar exemplar = 4;
+}
+message ListRatingsResponse {
+  repeated Rating ratings = 1;
 }
 
 message SetPriorityRequest {

@@ -22,6 +22,7 @@ React SPA calls it with `@connectrpc/connect-web` + `@connectrpc/connect-query`.
 | `src/connect-hono.ts` | mounts a Connect router onto Hono as fetch routes |
 | `src/services/review.ts` | `ReviewService` implementation |
 | `src/auth/provider.ts` | pluggable auth: Neon Auth (prod), mock (local), anon |
+| `src/auth/api-token.ts` | personal access tokens for agents (scopes, owner resolution) |
 | `src/db.ts` | Neon Postgres client from `DATABASE_URL` |
 | `src/gen/` | generated proto types (run `just buf-gen`) |
 | `db/migrations/` | SQL migrations |
@@ -44,6 +45,22 @@ curl -s -X POST localhost:8787/docs_factory.review.v1.ReviewService/GetViewer \
 `GetViewer` needs no database. Anything touching Postgres needs `DATABASE_URL`
 (or the `PG*` parts in `server/.env`) pointed at a local Postgres or a Neon
 branch, with `db/migrations/` applied.
+
+## Personal access tokens (agents)
+
+Agents (the `review-feedback` CLI/MCP in `tools/review-feedback`) authenticate
+with `Authorization: Bearer dfr_…` instead of the browser JWT, in both `neon` and
+`mock` modes. A token acts as its owner, re-derived from the allowlist on every
+request, and is narrowed to its scopes in `authInterceptor`:
+
+- `feedback:read` covers the read RPCs.
+- `feedback:reply` covers `CreateComment` replies only.
+- Everything else, including resolve, approvals, release, admin, and token
+  management, is denied.
+
+Comments written with a token are stored `via_agent`. Tokens are managed in the
+site at `/tokens`, or through `review-feedback login`. See
+[docs/design/agent-feedback.md](../docs/design/agent-feedback.md).
 
 ## Content version registry (deploy-per-push)
 

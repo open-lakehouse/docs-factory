@@ -3,12 +3,12 @@
 # dependencies = ["pyspark==4.1.0", "unitycatalog-client==0.6.0"]
 #
 # [tool.docs-factory]
-# compose = "../compose.yaml"
+# compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # ///
 """Create a catalog-managed Delta table with Spark, change it, and drop it.
 
-docker compose up -d --wait        # from the page folder
+docker compose up -d --wait   # from envs/unitycatalog
 uv run snippets/managed_table.py
 
 Needs Java 17 and Maven access on first run. Behind a Maven mirror, export

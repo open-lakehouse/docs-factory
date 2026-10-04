@@ -22,41 +22,24 @@ minutes.
 
 ::::journey
 
-### Start the server
+### Open a Python session
 
-Create an empty folder and save these two files in it:
+Start the [local server](../../how-to/run-local-server/index.md) if it isn't
+already running from an earlier tutorial. Spark on your machine writes the
+table's files under the server's
+[shared folder](../../how-to/run-local-server/index.md#share-a-folder-with-the-server),
+`UC_DOCS_ROOT`. The server needs to see them too, because it deletes them when
+you drop the table.
 
-```yaml file=./compose.yaml title="compose.yaml"
-```
-
-```properties file=./server.properties title="server.properties"
-```
-
-Start Unity Catalog 0.6.0 and wait until it reports healthy:
+Open a Python session with PySpark and the Unity Catalog client, from a
+terminal where `UC_DOCS_ROOT` is set the same way as for the server:
 
 ```bash
-mkdir -p /tmp/uc-docs
-docker compose up -d --wait
+uv run --with pyspark==4.1.0 --with unitycatalog-client==0.6.0 python
 ```
 
-The compose file mounts `/tmp/uc-docs` at the same path inside the server's
-container. Spark on your machine writes the table's files there. The server
-needs to see them too, because it deletes them when you drop the table.
-Authorization is off, so use this configuration only on your own machine.
-
-### Create the script
-
-Create `managed_table.py` and start it with this header. `uv` reads it to
-install PySpark and the Unity Catalog Python client:
-
-```python
-# /// script
-# requires-python = ">=3.11"
-# dependencies = ["pyspark==4.1.0", "unitycatalog-client==0.6.0"]
-# ///
-```
-
-Add the imports:
+Enter each of the following snippets in it, in order, starting with the
+imports:
 
 ```python file=./snippets/managed_table.py start=start:imports end=end:imports
 ```
@@ -171,7 +154,8 @@ the update and the delete:
 
 ### Clean up
 
-Drop the table and the schema, and stop Spark:
+Drop the table and the schema, and stop Spark. Then leave the session with
+`Ctrl+D`:
 
 ```python file=./snippets/managed_table.py start=start:clean-up end=end:clean-up
 ```
@@ -182,25 +166,9 @@ Dropping a managed table deletes its files. This is the opposite of an
 stay where they are.
 :::
 
-### Run the script
-
-Run it:
-
-```bash
-uv run managed_table.py
-```
-
-To run it again, delete the `retail` catalog first:
-
-```bash
-docker compose exec unitycatalog bin/uc catalog delete --name retail --force true
-```
-
-Stop the server when you are done:
-
-```bash
-docker compose down
-```
+To run the tutorial again, delete the `retail` catalog first:
+`uc catalog delete --name retail --force true`, with the `uc` shortcut from
+[Create your first catalog](../getting-started/index.md#define-a-shortcut-for-the-cli).
 
 ::::
 

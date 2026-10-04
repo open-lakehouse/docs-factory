@@ -941,7 +941,7 @@ kbd {
   left: calc(var(--jr-bubble) / 2);
   border-left: 1px dashed var(--border);
 }
-.prose .jr-step[data-last]::before { display: none; }
+.prose .jr-step[data-last]::before { bottom: 0; }
 /* The component renders 1, 2, …; a counter shows them zero-padded instead. */
 .prose .jr-bubble {
   position: absolute;

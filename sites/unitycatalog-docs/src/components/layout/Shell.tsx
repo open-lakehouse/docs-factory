@@ -94,9 +94,6 @@ export default function Shell({ children, aside }: { children: ReactNode; aside?
         </Link>
         <nav className="topbar-links">
           <SearchTrigger onOpen={openPalette} />
-          <a className="chip" href="/llms.txt">
-            llms.txt
-          </a>
           <a className="chip" href={GITHUB}>
             github
           </a>
@@ -113,9 +110,6 @@ export default function Shell({ children, aside }: { children: ReactNode; aside?
             unity catalog oss
           </span>
           <span className="statusbar-links">
-            <a href="/llms.txt">llms.txt</a>
-            <a href="/llms-full.txt">llms-full.txt</a>
-            <a href="/sitemap.xml">sitemap</a>
             <a href={GITHUB}>github</a>
           </span>
         </footer>

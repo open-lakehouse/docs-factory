@@ -1,0 +1,209 @@
+# Curated reader navigation for the delta scope (the MkDocs `nav:`
+# equivalent). Pages keep one canonical Diátaxis home and URL; this file only
+# arranges links to them. Contract: content/README.md § "Curated navigation".
+#
+# `id:` / `planned:` values are backlog ids from
+# docs/design/delta-documentation-plan.md §6. Planned slots render for
+# reviewers only. List P0/P1 slots here; P2 and later stay in the plan.
+nav:
+  - section: Start here
+    items:
+      - page: explanation/what-is-delta-lake
+        id: E01
+      - planned: R01
+        title: Features and engine support
+      - page: tutorials/your-first-delta-table
+        id: T01
+        label: Create your first Delta table
+      - planned: R10
+        title: Choose an engine or client
+
+  - section: Use Delta tables
+    items:
+      - section: Tutorials
+        items:
+          - page: tutorials/your-first-delta-table
+          - page: tutorials/explore-table-history
+            id: T02
+          - planned: T03
+            title: Upsert changing data with MERGE
+          - planned: T04
+            title: Evolve a table's schema without breaking readers
+          - planned: T05
+            title: Keep a table fast with compaction, clustering, and vacuum
+          - planned: T06
+            title: Create your first Delta table with Spark SQL
+          - planned: T07
+            title: Stream changes between tables with Spark
+      - section: How-to guides
+        items:
+          - section: Read and query
+            items:
+              - page: how-to/read-a-delta-table
+                id: H01
+              - page: how-to/query-a-table-as-of-version
+                id: H02
+          - section: Create and write
+            items:
+              - planned: H03
+                title: Create a table with a schema, partitioning, and properties
+              - planned: H04
+                title: Append, overwrite, and selectively overwrite data
+              - planned: H05
+                title: Upsert and deduplicate with MERGE
+              - planned: H06
+                title: Update and delete rows
+              - planned: H07
+                title: Convert Parquet data to a Delta table
+              - planned: H08
+                title: Restore a table to an earlier version
+          - section: Schema and data quality
+            items:
+              - planned: H10
+                title: Evolve the schema on write
+              - planned: H11
+                title: Rename and drop columns with column mapping
+              - planned: H12
+                title: Widen column types
+              - planned: H13
+                title: Enforce CHECK and NOT NULL constraints
+              - planned: H14
+                title: Use generated, identity, and default columns
+          - section: History and changes
+            items:
+              - planned: H16
+                title: Read the change data feed
+              - planned: H17
+                title: Stream from and to Delta tables with Spark
+              - planned: H18
+                title: Inspect table history and audit operations
+          - section: Layout and maintenance
+            items:
+              - planned: H19
+                title: Choose and change liquid clustering keys
+              - planned: H20
+                title: Compact small files and Z-order
+              - planned: H21
+                title: Vacuum unreferenced files safely
+              - planned: H22
+                title: Manage checkpoints and log retention
+              - planned: H23
+                title: Enable and use deletion vectors
+          - section: Table features and protocol
+            items:
+              - planned: H24
+                title: Enable a table feature without breaking readers
+              - planned: H25
+                title: Drop a table feature
+
+  - section: Run in production
+    items:
+      - section: Tutorials
+        items:
+          - planned: T08
+            title: Read and write a Delta table on S3-compatible storage
+      - section: How-to guides
+        items:
+          - section: Storage and concurrent writers
+            items:
+              - planned: H27
+                title: Write safely to S3 from multiple writers
+              - planned: H28
+                title: Use S3-compatible object stores
+              - planned: H29
+                title: Configure Azure storage
+              - planned: H30
+                title: Configure Google Cloud Storage
+          - section: Catalogs
+            items:
+              - planned: H31
+                title: Address tables by path, metastore, or catalog
+          - section: Upgrade and migrate
+            items:
+              - planned: H33
+                title: Upgrade Delta Spark across major versions
+              - planned: H34
+                title: Upgrade the deltalake Python package
+          - section: Troubleshoot
+            items:
+              - planned: H35
+                title: Troubleshoot concurrent-write conflicts
+              - planned: H36
+                title: Troubleshoot unsupported-feature and protocol errors
+
+  - section: Engines and integrations
+    items:
+      - planned: H38
+        title: Configure Spark for Delta Lake
+      - planned: H40
+        title: Query Delta tables from DuckDB
+      - planned: H41
+        title: Read and write Delta tables with Polars
+      - planned: H42
+        title: Use Delta tables with pandas, Daft, and DataFusion
+      - planned: H43
+        title: Use the deltalake crate from Rust
+      - planned: H44
+        title: Read Delta tables from Trino
+      - planned: H47
+        title: Expose a Delta table to Iceberg readers with UniForm
+
+  - section: Build connectors
+    items:
+      - page: explanation/delta-kernel-architecture
+        id: E09
+      - planned: T09
+        title: Read your first table with Delta Kernel (Rust)
+      - planned: H50
+        title: Write and commit to a table with Delta Kernel
+      - planned: H51
+        title: Test a connector with the Delta Acceptance Tests
+
+  - section: Concepts
+    items:
+      - page: explanation/what-is-delta-lake
+      - planned: E02
+        title: The transaction log, checkpoints, and snapshots
+      - planned: E03
+        title: ACID transactions and optimistic concurrency
+      - planned: E04
+        title: Protocol versions and table features
+      - planned: E05
+        title: How data layout drives performance
+      - planned: E06
+        title: Copy-on-write, deletion vectors, and row tracking
+      - planned: E07
+        title: Schema evolution and column mapping
+      - planned: E08
+        title: Object-store guarantees and multi-writer safety
+      - planned: E10
+        title: Catalog-managed tables and catalog commits
+      - planned: E11
+        title: Delta, Iceberg, and UniForm
+      - planned: E12
+        title: Retention, time travel, and VACUUM
+
+  - section: Reference
+    items:
+      # R01 and R10 are listed under Start here; a planned id appears once, so
+      # repeat them here as `page:` entries once written.
+      - page: reference/table-features
+        id: R02
+      - planned: R03
+        title: Table properties
+      - planned: R04
+        title: Protocol specification index
+      - planned: R05
+        title: Spark SQL commands for Delta
+      - planned: R06
+        title: Spark configuration
+      - planned: R07
+        title: deltalake storage options
+      - planned: R08
+        title: Python, Rust, and Spark API references
+      - planned: R09
+        title: Concurrency conflict exceptions
+      - planned: R11
+        title: Releases and version compatibility
+      - planned: R12
+        title: Data types

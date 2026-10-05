@@ -28,9 +28,26 @@ archive, and start the default server. The archive unpacks into
 - `uc-docs-env/aws-sim` holds the simulated AWS services that the AWS variant
   includes.
 
-The server mounts its configuration from this folder. On Colima and other VMs
-that share only your home directory, download it to a folder under your home
-directory, or the server fails with a `not a directory` mount error.
+Pages that keep tables or volume files on local storage also share a folder
+with the server, `UC_DOCS_ROOT` (default `/tmp/uc-docs`). The server container
+mounts it at the same path as on your machine, so a `file://` location under it
+names the same files for the server and for your client.
+
+:::note
+Docker has to share both folders with the server, and each path has to resolve
+to the same folder on your machine and inside the container: the server reads
+its configuration from `uc-docs-env/unitycatalog` and its storage from
+`UC_DOCS_ROOT`. Docker Desktop shares `/tmp` and your home directory by
+default. Colima and some other VMs share only your home directory. There, keep
+`uc-docs-env/` under your home directory (otherwise the server fails with a
+`not a directory` mount error), and before you start the server, point
+`UC_DOCS_ROOT` at a folder there in every terminal you use:
+
+```bash
+export UC_DOCS_ROOT=$HOME/uc-docs
+mkdir -p "$UC_DOCS_ROOT"
+```
+:::
 
 ## Start the server
 
@@ -79,23 +96,6 @@ export AWS_ALLOW_HTTP=true
 aws-sim enforces the session policy that the server attaches to vended
 credentials. It doesn't check IAM trust policies or external IDs, so verify
 those on real AWS.
-
-## Share a folder with the server
-
-The server container mounts one directory, `UC_DOCS_ROOT` (default
-`/tmp/uc-docs`), at the same path as on your machine. A `file://` location
-under it then means the same files to the server and to your client. Pages
-that write tables or volume files on local storage use it.
-
-Docker Desktop shares `/tmp` with containers by default. Colima and some other
-VMs share only your home directory. On those, pick a folder under your home
-directory and set it before you start the server, in every terminal you use:
-
-```bash
-export UC_DOCS_ROOT=$HOME/uc-docs
-mkdir -p "$UC_DOCS_ROOT"
-docker compose up -d --wait
-```
 
 ## Run the `uc` CLI
 

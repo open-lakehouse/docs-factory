@@ -25,7 +25,7 @@ to a catalog-managed table go through the server, like a Spark write.
   SQL works in the DuckDB CLI.
 - Table files that DuckDB can reach. On the
   [local server](../run-local-server/index.md), tables live under its
-  [shared folder](../run-local-server/index.md#share-a-folder-with-the-server).
+  [shared folder](../run-local-server/index.md#download-the-environment).
 :::
 
 ## Install the extensions

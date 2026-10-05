@@ -27,7 +27,7 @@ difference, see
   [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
 - A Delta table at a location the server can reach. On the
   [local server](../run-local-server/index.md), that's a folder under
-  [`UC_DOCS_ROOT`](../run-local-server/index.md#share-a-folder-with-the-server).
+  [`UC_DOCS_ROOT`](../run-local-server/index.md#download-the-environment).
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
   0.6.0 and `deltalake`. To read the table from another engine,
   `polars==1.44.2`, `daft[unity]==0.7.25` with `tenacity`, or `duckdb==1.5.4`.

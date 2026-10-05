@@ -29,7 +29,7 @@ Allow about fifteen minutes.
 Start the environment under **Prerequisites** if it isn't already running
 from an earlier tutorial. Spark on your machine writes the
 table's files under the server's
-[shared folder](../../how-to/run-local-server/index.md#share-a-folder-with-the-server),
+[shared folder](../../how-to/run-local-server/index.md#download-the-environment),
 `UC_DOCS_ROOT`. The server needs to see them too, because it deletes them when
 you drop the table.
 

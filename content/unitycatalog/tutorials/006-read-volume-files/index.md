@@ -18,8 +18,7 @@ with a storage library.
 It takes about ten minutes.
 
 :::prerequisites
-- [uv](https://docs.astral.sh/uv/), which installs the Python packages for the
-  session.
+- [uv](https://docs.astral.sh/uv/).
 :::
 
 ::::journey

@@ -16,8 +16,7 @@ appends rows to them, including catalog-managed Delta tables. DuckDB's
 to a catalog-managed table go through the server, like a Spark write.
 
 :::prerequisites
-- A Unity Catalog server, version 0.6.0, with at least one Delta table. Create
-  one with Spark, as in
+- At least one Delta table in Unity Catalog. Create one with Spark, as in
   [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md),
   or register existing ones as in
   [Register an existing external table](../register-external-table/index.md).

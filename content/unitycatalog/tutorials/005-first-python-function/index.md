@@ -1,5 +1,5 @@
 ---
-title: Register and execute your first Python function
+title: Working with Python functions
 summary: Register a typed Python function in Unity Catalog, inspect what the catalog stores, run it through the catalog, and remove it.
 diataxis: tutorial
 project: unitycatalog
@@ -14,11 +14,8 @@ it, call it by that name, and remove it again. Once a function is in the
 catalog, applications and AI agents with access can find and call it by name,
 without copying your code.
 
-It takes about ten minutes.
-
 :::prerequisites
-- [uv](https://docs.astral.sh/uv/), which installs the Python packages for the
-  session.
+- [uv](https://docs.astral.sh/uv/).
 :::
 
 ::::journey

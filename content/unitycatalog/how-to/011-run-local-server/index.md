@@ -15,8 +15,6 @@ request needs a token. Start it once, and it serves every tutorial and how-to
 guide until you stop it.
 
 :::prerequisites{environment="unitycatalog/compose.yaml"}
-- `docker compose version` reports v2 or later. The AWS variant also uses
-  port 9000.
 :::
 
 ## Download the environment

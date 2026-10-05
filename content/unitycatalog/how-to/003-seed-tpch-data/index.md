@@ -23,11 +23,11 @@ registers it as an external table, three steps per table:
 :::prerequisites
 - A running Unity Catalog server.
 - Python 3.11 or later with [uv](https://docs.astral.sh/uv/).
+:::
 
 Unity Catalog only records where an external table lives and never reads the
 files itself, so the script writes the Delta tables to a local directory it
 owns (override with `TPCH_STORAGE_ROOT`).
-:::
 
 ::::journey
 

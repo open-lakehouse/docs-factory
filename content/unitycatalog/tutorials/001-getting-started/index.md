@@ -14,8 +14,6 @@ catalog, a schema inside it, and a Delta table you write to and read back. It
 takes about ten minutes.
 
 :::prerequisites
-- Nothing else to install: everything here runs through the `uc`
-  command-line tool, which is bundled in the server image.
 :::
 
 ::::journey

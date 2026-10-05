@@ -19,11 +19,7 @@ table format, and from Delta 4.3.0 it reads and commits catalog-managed tables
 through the server's Delta API.
 
 :::prerequisites
-- A Unity Catalog 0.6.0 server. The examples use the local server's sample
-  catalog `unity`.
 - Java 17 and Python 3.11 or later with [uv](https://docs.astral.sh/uv/).
-- Maven access the first time a session starts: Spark downloads the connector
-  and Delta jars and caches them under `~/.ivy2`.
 :::
 
 ## Choose matching versions

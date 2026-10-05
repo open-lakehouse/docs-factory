@@ -107,6 +107,7 @@ cover each task link here.
 | Client | Issue | What you see |
 | --- | --- | --- |
 | Polars, Daft, pandas (`deltalake`) | Catalog-managed tables | `Max catalog version is required when loading a catalog-managed table`. Use Spark or DuckDB; see [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md). |
+| Daft 0.7.25 | Installing `daft[unity]` | `ModuleNotFoundError: No module named 'tenacity'`: the extra doesn't declare it. Install `tenacity` alongside. |
 | Daft 0.7.25 | Appending to a table on local storage | The server vends no credentials for `file://` paths, and Daft fails with `io_config was not provided to write_deltalake`. |
 | Daft 0.7.25 | Tables on S3 | Not verified: against simulated S3, reads failed with `Generic S3 error`. |
 | Daft 0.7.25 | Tables written by Polars | `Unsupported Arrow DataType: Utf8View`. |

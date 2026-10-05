@@ -23,8 +23,7 @@ difference, see
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
 
 :::prerequisites
-- A Unity Catalog server, version 0.6.0, and a schema to register the table in.
-  This page uses `retail.sales`; see
+- A schema to register the table in. This page uses `retail.sales`; see
   [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
 - A Delta table at a location the server can reach. On the
   [local server](../run-local-server/index.md), that's a folder under

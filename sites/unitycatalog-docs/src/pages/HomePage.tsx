@@ -40,13 +40,13 @@ function resolve(entries: Entry[]): { route: string; label: string }[] {
   });
 }
 
-// Mirrors the getting-started tutorial's first steps.
-const QUICKSTART = [
-  "curl -L https://github.com/open-lakehouse/docs-factory/archive/refs/heads/main.tar.gz \\",
-  "  | tar -xz --strip-components=1 docs-factory-main/envs",
-  "cd envs/unitycatalog && docker compose up -d --wait",
-  "docker exec unitycatalog bin/uc catalog list",
-];
+// The getting-started tutorial's own environment commands, so the two can't
+// drift; a build that didn't publish that page drops the block.
+const START_ROUTE = "/tutorials/getting-started";
+const startEnv = site.pages.find((page) => page.route === START_ROUTE)?.environment;
+const QUICKSTART = startEnv
+  ? [...startEnv.commands, "docker exec unitycatalog bin/uc catalog list"]
+  : [];
 
 const PATHS: { title: string; blurb: string; Icon: LucideIcon; links: Entry[] }[] = [
   {
@@ -109,7 +109,7 @@ const KINDS: (Entry & { blurb: string })[] = [
 ];
 
 export default function HomePage() {
-  const [start] = resolve([{ route: "/tutorials/getting-started" }]);
+  const [start] = resolve([{ route: START_ROUTE }]);
   const [intro] = resolve([{ route: "/explanation/what-is-unity-catalog" }]);
   const engines = ENGINES.flatMap(({ icons, ...entry }) =>
     resolve([entry]).map((e) => ({ ...e, icons })),
@@ -141,41 +141,43 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="home-block" aria-labelledby="home-quickstart">
-        <h2 id="home-quickstart" className="home-heading">
-          Run it locally in a minute
-        </h2>
-        <p className="home-sub">
-          Needs only Docker. This starts a server on <code>localhost:8080</code> with two sample
-          catalogs and lists them.
-        </p>
-        <div className="terminal">
-          <div className="terminal-head">
-            <span className="terminal-dots" aria-hidden="true">
-              <i />
-              <i />
-              <i />
-            </span>
-            <span>~</span>
-          </div>
-          <pre className="terminal-body">
-            {QUICKSTART.map((line) => (
-              <span key={line} className="terminal-line">
-                {line.startsWith(" ") ? "  " : <span className="prompt">$ </span>}
-                {line.trimStart()}
-                {"\n"}
-              </span>
-            ))}
-          </pre>
-          <CodeCopyButton code={QUICKSTART.join("\n")} />
-        </div>
-        {start && (
-          <p className="home-next">
-            Next: <Link to={start.route}>{start.label}</Link> walks through these steps and builds a
-            table of your own.
+      {QUICKSTART.length > 0 && (
+        <section className="home-block" aria-labelledby="home-quickstart">
+          <h2 id="home-quickstart" className="home-heading">
+            Run it locally in a minute
+          </h2>
+          <p className="home-sub">
+            Needs only Docker. This starts a server on <code>localhost:8080</code> with two sample
+            catalogs and lists them.
           </p>
-        )}
-      </section>
+          <div className="terminal">
+            <div className="terminal-head">
+              <span className="terminal-dots" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
+              <span>~</span>
+            </div>
+            <pre className="terminal-body">
+              {QUICKSTART.map((line) => (
+                <span key={line} className="terminal-line">
+                  {line.startsWith(" ") ? "  " : <span className="prompt">$ </span>}
+                  {line.trimStart()}
+                  {"\n"}
+                </span>
+              ))}
+            </pre>
+            <CodeCopyButton code={QUICKSTART.join("\n")} />
+          </div>
+          {start && (
+            <p className="home-next">
+              Next: <Link to={start.route}>{start.label}</Link> walks through these steps and builds
+              a table of your own.
+            </p>
+          )}
+        </section>
+      )}
 
       <section className="home-block" aria-labelledby="home-paths">
         <h2 id="home-paths" className="home-heading">

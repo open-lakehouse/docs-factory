@@ -42,6 +42,23 @@ async def main():
     await client.create_table("t")
 `;
 
+const INTRO_PAGE = "content/unitycatalog/explanation/001-what-is/index.md";
+const INTRO_V1 = `---
+title: What is it?
+summary: A catalog server that tracks tables,
+  volumes, and who may use them.
+diataxis: explanation
+project: unitycatalog
+---
+
+It keeps track of which tables exist,
+and where their data lives.
+
+## Details
+
+More.
+`;
+
 let repo: string;
 let sha1: string;
 const git = (...args: string[]) =>
@@ -56,6 +73,7 @@ beforeAll(() => {
   git("init", "-q");
   write(PAGE, PAGE_V1);
   write(SNIPPET, SNIPPET_V1);
+  write(INTRO_PAGE, INTRO_V1);
   git("add", ".");
   git("-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--no-gpg-sign", "-m", "v1");
   sha1 = git("rev-parse", "HEAD");
@@ -123,6 +141,61 @@ describe("locate prose", () => {
     const loc = locate(repo, prose("gone", undefined, "gone"));
     expect(loc?.precision).toBe("file");
     expect(loc?.path).toBe(PAGE);
+  });
+});
+
+describe("locate prose before the first heading", () => {
+  const introRef = create(ContentRefSchema, {
+    area: ContentArea.DOCS,
+    project: "unitycatalog",
+    bucket: "explanation",
+    slug: "what-is",
+  });
+  const intro = (anchorSlug: string, quote?: string) =>
+    create(CommentSchema, {
+      id: "c3",
+      ref: introRef,
+      anchorSlug,
+      authoredGitSha: sha1,
+      selector: quote ? create(TextSelectorSchema, { quote }) : undefined,
+    });
+
+  test.each(["", "__preamble__"])("anchor %p finds a quote in the intro", (slug) => {
+    const loc = locate(repo, intro(slug, "track of which tables exist, and where"));
+    expect(loc?.precision).toBe("quote");
+    expect([loc?.startLine, loc?.endLine]).toEqual([9, 10]);
+    expect(loc?.note).toBeUndefined();
+  });
+
+  test("a quote in a rendered frontmatter field maps to its line", () => {
+    const loc = locate(repo, intro("", "What is it?"));
+    expect(loc?.precision).toBe("quote");
+    expect([loc?.startLine, loc?.endLine]).toEqual([2, 2]);
+    expect(loc?.note).toContain("frontmatter");
+  });
+
+  test("a quote from the summary into the body, joined without a space", () => {
+    const loc = locate(
+      repo,
+      intro(
+        "",
+        "A catalog server that tracks tables, volumes, and who may use them.It keeps track of which tables exist, and where their data lives.",
+      ),
+    );
+    expect(loc?.precision).toBe("quote");
+    expect([loc?.startLine, loc?.endLine]).toEqual([3, 10]);
+  });
+
+  test("a page-level comment covers the intro", () => {
+    const loc = locate(repo, intro(""));
+    expect(loc?.precision).toBe("section");
+    expect([loc?.startLine, loc?.endLine]).toEqual([9, 11]);
+  });
+
+  test("an edited intro quote degrades to the intro with a note", () => {
+    const loc = locate(repo, intro("__preamble__", "text that is no longer there"));
+    expect(loc?.precision).toBe("section");
+    expect(loc?.note).toContain("before the first heading");
   });
 });
 

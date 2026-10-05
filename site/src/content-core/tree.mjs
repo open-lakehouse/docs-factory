@@ -19,9 +19,9 @@
  */
 import { createHash } from "node:crypto";
 import { normalizeText } from "./normalize.mjs";
+import { PREAMBLE_KEY } from "./slug.mjs";
 
-/** Reserved key/slug for prose before the first heading (blog intros etc.). */
-export const PREAMBLE_KEY = "__preamble__";
+export { PREAMBLE_KEY };
 
 const NUL = "\0";
 function sha256(...parts) {

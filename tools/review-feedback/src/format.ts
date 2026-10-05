@@ -1,4 +1,5 @@
 // Compact markdown views of feedback threads, for agents and terminals alike.
+import { isPreambleAnchor } from "../../../site/src/content-core/slug.mjs";
 import type { FeedbackThread } from "./feedback.js";
 import type { Location } from "./locate.js";
 
@@ -22,7 +23,10 @@ function anchorLine(t: FeedbackThread): string {
     return `- anchor: code \`${code.path}\` lines ${code.line}-${code.endLine}${region}`;
   }
   const quote = t.anchor.quote ? ` › “${t.anchor.quote}”` : "";
-  return `- anchor: #${t.anchor.heading || "(page)"}${quote}`;
+  const section = isPreambleAnchor(t.anchor.heading)
+    ? "(before first heading)"
+    : `#${t.anchor.heading}`;
+  return `- anchor: ${section}${quote}`;
 }
 
 /** One thread, with its full conversation. */

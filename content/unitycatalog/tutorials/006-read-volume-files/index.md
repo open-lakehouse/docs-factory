@@ -1,5 +1,5 @@
 ---
-title: Read files from a governed volume in Python
+title: Working with volumes and files
 summary: Register a folder of documents as a Unity Catalog volume, then find it by name, ask the catalog for access, and read the files with obstore.
 diataxis: tutorial
 project: unitycatalog

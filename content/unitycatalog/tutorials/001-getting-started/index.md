@@ -10,8 +10,7 @@ status: draft
 
 In this tutorial you start a Unity Catalog server on your machine, look around
 the sample data it ships with, and then build your own corner of the catalog: a
-catalog, a schema inside it, and a Delta table you write to and read back. It
-takes about ten minutes.
+catalog, a schema inside it, and a Delta table you write to and read back.
 
 :::prerequisites
 :::

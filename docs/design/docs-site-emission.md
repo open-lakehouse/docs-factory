@@ -8,8 +8,8 @@ site ([`unitycatalog-documentation-plan.md`](./unitycatalog-documentation-plan.m
 §11). That would drop most of what the factory renders: callouts, tabs,
 journeys, LikeC4, code chrome, and the agent-facing surfaces (`.md` twins,
 `llms.txt`, JSON-LD, sitemap). So we emit into a **dedicated static docs site**
-instead. Its shell lives in this repo at `sites/<name>/` until it gets its own
-repository or replaces the upstream docs.
+instead. Its shell lives in this repo at `sites/<name>/`, and the emitted site
+is mirrored into a dedicated upstream repository (see [Delivery](#delivery)).
 
 ## The split: smart emitter, simple shell
 
@@ -162,6 +162,30 @@ tree hashes a `file=` snippet by its whole source file, so one edit would flag
 every section quoting that file. The rendered page has only the quoted regions
 inlined, so its hashes name exactly the section a reader sees change.
 
+## Delivery
+
+`.github/workflows/uc-docs-sync.yml` delivers the UC site on every push to
+main. Its upstream repo's root **is** the site, and docs-factory owns every
+file in it except `.git/`, `.github/`, and `LICENSE`:
+1. Seed upstream main's `.docs-emit.json`, so the change report diffs against
+   what is live.
+2. Run a publish emit (`ready` pages only, no DB), then `bun run build` as a
+   gate.
+3. Run `scripts/mirror-site.sh`, which does an `rsync --delete` of the shell
+   minus build output, then copies the `sites/<name>/upstream/` overlay (README,
+   `.gitignore`) onto the root.
+4. Force-push the result to `docs-factory/sync` and open or update one PR
+   whose body is the change report and the source commits since the last
+   merged sync.
+
+A diff confined to `.docs-emit.json` counts as no change, because the manifest
+records the source commit and so differs on every run. If upstream main
+already matches, an open sync PR is closed.
+
+Upstream deploys with Vercel's Git integration. The mirrored site builds with
+bun alone, because uv, Chromium, and `envs/` are needed only to emit, and
+`sites/<name>/vercel.json` pins the build and the clean-URL routing.
+
 ## Deferred
 
 - **Search:** Pagefind over the built `dist/`.
@@ -170,8 +194,6 @@ inlined, so its hashes name exactly the section a reader sees change.
 - **Shell CI:** a build job for the shell (it needs Chromium for the LikeC4 export).
 - **Gating:** DB `released` gating for publish emits.
 - **Versions:** versioned docs (per UC release).
-- **External delivery:** emitting into an external repo, which is `--out <dir>`
-  plus a PR whose body is the report.
 - **Support files:** files a script needs but the site doesn't serve, such as
   `compose.yaml`, `server.properties`, policy JSON, and imported helpers like
   `_seed.py`. Today the page inlines them, but the companion list doesn't include

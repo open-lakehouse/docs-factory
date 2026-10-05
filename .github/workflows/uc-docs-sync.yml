@@ -1,0 +1,194 @@
+# Deliver the Unity Catalog docs site to its upstream repo on every push to main.
+#
+# Emits the `ready` pages into sites/unitycatalog-docs/, builds the result so a
+# broken site never reaches upstream, mirrors the whole shell into the upstream
+# repo (whose root is the site), and keeps ONE rolling pull request on the
+# `docs-factory/sync` branch up to date. Upstream deploys with Vercel's Git
+# integration: the PR gets a preview, merging ships production. Nothing here
+# talks to Vercel. See docs/deploy/runbook.md "UC docs site".
+#
+# Inert until provisioned: the job skips while the UC_DOCS_UPSTREAM_REPO repo
+# variable is unset.
+
+name: Sync UC docs upstream
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - content/unitycatalog/**
+      - envs/**
+      - sites/unitycatalog-docs/**
+      - emit/**
+      - site/src/content-core/**
+      - site/src/plugins/**
+      - architecture/model/**
+      - scripts/mirror-site.sh
+      - .github/workflows/uc-docs-sync.yml
+  workflow_dispatch:
+
+# Each run rebuilds the whole site from main and force-pushes the sync branch,
+# so a newer run fully supersedes an older one.
+concurrency:
+  group: uc-docs-sync
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    if: vars.UC_DOCS_UPSTREAM_REPO != ''
+    runs-on: ubuntu-latest
+    # Holds the GitHub App credentials; branch-restricted to main.
+    environment: uc-docs-sync
+    env:
+      UPSTREAM_REPO: ${{ vars.UC_DOCS_UPSTREAM_REPO }}
+      SITE_DIR: sites/unitycatalog-docs
+      UPSTREAM_DIR: _upstream
+      SYNC_BRANCH: docs-factory/sync
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # The PR body lists the source commits since the last merged sync.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: ./.github/actions/bun-setup
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      - uses: ./.github/actions/pypi-public
+      # The emitter exports runnable scripts via `uv run docsnip scripts --json`.
+      - name: Sync Python env (docsnip)
+        run: uv sync --package docsnip
+      # Pages that embed a LikeC4 view export it to PNG through headless Chromium.
+      - name: Install Chromium for LikeC4 export
+        run: cd site && bun install --frozen-lockfile && bunx playwright install --with-deps chromium
+
+      - name: Split upstream repo
+        id: upstream
+        run: |
+          echo "owner=${UPSTREAM_REPO%%/*}" >> "$GITHUB_OUTPUT"
+          echo "name=${UPSTREAM_REPO#*/}" >> "$GITHUB_OUTPUT"
+
+      - name: Mint upstream token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ vars.UC_DOCS_APP_CLIENT_ID }}
+          private-key: ${{ secrets.UC_DOCS_APP_PRIVATE_KEY }}
+          owner: ${{ steps.upstream.outputs.owner }}
+          repositories: ${{ steps.upstream.outputs.name }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: ${{ vars.UC_DOCS_UPSTREAM_REPO }}
+          ref: main
+          path: ${{ env.UPSTREAM_DIR }}
+          token: ${{ steps.app-token.outputs.token }}
+          persist-credentials: false
+
+      # Seeding upstream main's manifest makes the change report describe what this
+      # sync changes relative to production rather than listing every page as new.
+      - name: Seed the live manifest
+        id: live
+        run: |
+          prev=""
+          if [ -f "$UPSTREAM_DIR/.docs-emit.json" ]; then
+            cp "$UPSTREAM_DIR/.docs-emit.json" "$SITE_DIR/.docs-emit.json"
+            prev=$(jq -r '.source.commit // ""' "$UPSTREAM_DIR/.docs-emit.json")
+          fi
+          echo "commit=$prev" >> "$GITHUB_OUTPUT"
+
+      - name: Emit ready pages
+        run: |
+          cd emit && bun install --frozen-lockfile
+          bun docs/emit-docs.mjs --site unitycatalog-docs --report "$RUNNER_TEMP/emit-report.md"
+
+      - name: Build gate
+        run: cd "$SITE_DIR" && bun install --frozen-lockfile && bun run build
+
+      - name: Mirror into upstream
+        id: mirror
+        run: |
+          set +e
+          scripts/mirror-site.sh "$SITE_DIR" "$UPSTREAM_DIR"
+          status=$?
+          set -e
+          case $status in
+            0) echo "changed=true" >> "$GITHUB_OUTPUT" ;;
+            3) echo "changed=false" >> "$GITHUB_OUTPUT"; echo "Upstream main already matches; nothing to sync." ;;
+            *) exit "$status" ;;
+          esac
+
+      - name: Write PR body
+        if: steps.mirror.outputs.changed == 'true'
+        env:
+          PREV_COMMIT: ${{ steps.live.outputs.commit }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          body="$RUNNER_TEMP/pr-body.md"
+          {
+            echo "Automated sync of the Unity Catalog docs from docs-factory@${GITHUB_SHA::12}."
+            echo "Edits made directly to this branch are overwritten by the next sync."
+            echo
+            # GitHub caps a PR body at 65536 characters; the commit list and footer
+            # need the headroom.
+            head -c 50000 "$RUNNER_TEMP/emit-report.md"
+            echo
+            if [ -n "$PREV_COMMIT" ] && git cat-file -e "$PREV_COMMIT^{commit}" 2>/dev/null; then
+              echo "### Source commits since the last merged sync"
+              echo
+              git log --no-merges --format="- \`%h\` %s" "$PREV_COMMIT..$GITHUB_SHA" -- \
+                content/unitycatalog envs sites/unitycatalog-docs emit site/src/content-core \
+                site/src/plugins architecture/model | head -n 100
+              echo
+            fi
+            echo "---"
+            echo "Generated by [uc-docs-sync]($RUN_URL)."
+          } > "$body"
+
+      - name: Push sync branch and open or update the PR
+        if: steps.mirror.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          cd "$UPSTREAM_DIR"
+          bot_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          git -c user.name="${APP_SLUG}[bot]" \
+              -c user.email="${bot_id}+${APP_SLUG}[bot]@users.noreply.github.com" \
+              commit -q -m "docs: sync from docs-factory@${GITHUB_SHA::12}"
+
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${UPSTREAM_REPO}.git"
+          # Skip the push when the open PR already carries this exact site; a push
+          # that only moves the manifest would just trigger another preview build.
+          if git fetch -q "$remote" "$SYNC_BRANCH" 2>/dev/null \
+            && git diff --quiet FETCH_HEAD HEAD -- . ':(exclude).docs-emit.json'; then
+            echo "The sync PR is already up to date."
+          else
+            git push -q --force "$remote" "HEAD:refs/heads/$SYNC_BRANCH"
+          fi
+
+          title="docs: sync from docs-factory"
+          pr=$(gh pr list --repo "$UPSTREAM_REPO" --head "$SYNC_BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --repo "$UPSTREAM_REPO" --body-file "$RUNNER_TEMP/pr-body.md"
+          else
+            gh pr create --repo "$UPSTREAM_REPO" --base main --head "$SYNC_BRANCH" \
+              --title "$title" --body-file "$RUNNER_TEMP/pr-body.md"
+          fi
+
+      # Main already matches docs-factory (e.g. a change landed and was reverted),
+      # so an open sync PR would only carry stale content.
+      - name: Close a stale sync PR
+        if: steps.mirror.outputs.changed == 'false'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          pr=$(gh pr list --repo "$UPSTREAM_REPO" --head "$SYNC_BRANCH" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then
+            gh pr close "$pr" --repo "$UPSTREAM_REPO" --delete-branch \
+              --comment "Upstream main already matches docs-factory@${GITHUB_SHA::12}."
+          fi

@@ -47,10 +47,13 @@ def test_every_entry_has_required_keys(capsys) -> None:
         "requires_python",
         "dependencies",
         "compose",
+        "environment",
+        "client_env",
         "services",
         "base_url_env",
         "env",
         "verifies",
+        "helpers",
         "tutorial_slug",
     }
     for entry in payload["scripts"]:
@@ -82,6 +85,26 @@ def test_shell_harness_reports_the_script_it_verifies(capsys) -> None:
     # A plain PEP 723 script is itself the runnable example.
     python = f"{tutorials}/005-first-python-function/snippets/first_function.py"
     assert by_path[python]["verifies"] is None
+
+
+def test_environment_and_client_env_come_from_the_registry(capsys) -> None:
+    by_path = {e["path"]: e for e in _payload(capsys)["scripts"]}
+    aws = by_path[
+        "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py"
+    ]
+    assert aws["environment"] == "unitycatalog/compose.aws.yaml"
+    assert aws["client_env"]["AWS_ENDPOINT_URL"] == "http://localhost:9000"
+    assert aws["env"] == {}
+
+
+def test_helpers_list_the_sibling_modules_a_script_imports(capsys) -> None:
+    by_path = {e["path"]: e for e in _payload(capsys)["scripts"]}
+    snippets = "content/unitycatalog/how-to/009-python-dataframes/snippets"
+    assert by_path[f"{snippets}/pandas_tables.py"]["helpers"] == [
+        f"{snippets}/_seed.py"
+    ]
+    volumes = "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py"
+    assert by_path[volumes]["helpers"] == []
 
 
 def test_tutorial_slug_strips_order_prefix(tmp_path) -> None:

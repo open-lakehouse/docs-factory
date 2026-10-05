@@ -17,13 +17,11 @@ lost with the container. To keep it in PostgreSQL, mount one
 includes the PostgreSQL JDBC driver, and the server creates its tables on first
 start.
 
-## Requirements
-
+:::prerequisites
 - Unity Catalog server 0.6.0. This page is tested against 0.6.0 with
   PostgreSQL 16.
 - A PostgreSQL database that the server can reach, and a role that owns it.
-- For the local example, Docker with Compose v2 and the docs'
-  [local server environment](../run-local-server/index.md).
+:::
 
 ## Create the database
 
@@ -75,7 +73,7 @@ unset.
 ## Try it on the local server
 
 The docs' local environment has a PostgreSQL variant. From the
-`envs/unitycatalog` folder, start it instead of the default server:
+`uc-docs-env/unitycatalog` folder, start it instead of the default server:
 
 ```bash file=./snippets/backend_db.sh start=start:start-server end=end:start-server
 ```

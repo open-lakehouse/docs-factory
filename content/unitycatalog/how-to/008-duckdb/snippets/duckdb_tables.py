@@ -8,8 +8,13 @@
 # ///
 """Read and append to a Unity Catalog managed Delta table from DuckDB.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/duckdb_tables.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run duckdb_tables.py
 
 DuckDB can't create Unity Catalog tables, so the script first creates one with
 Spark. That needs Java 17 and Maven access on first run. Behind a Maven mirror,

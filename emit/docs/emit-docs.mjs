@@ -12,7 +12,8 @@
  *   2. project content/<project>/nav.yml onto the selection;
  *   3. render every page twice through the shared emitter core (emitOne): the
  *      site page (docs-site target) and its `.md` twin (md-twin target);
- *   4. add images, LikeC4 PNGs + web component, runnable scripts, the vendored
+ *   4. add images, LikeC4 PNGs + web component, runnable scripts, the env
+ *      bundle (env-bundle.mjs), the vendored
  *      remark plugins, site.json / heads.json, llms.txt, llms-full.txt,
  *      sitemap.xml, robots.txt, and the palette's search-index.json, plus a
  *      route per REST API reference the site declares (api.mjs);
@@ -34,6 +35,7 @@ import { parse as parseYaml } from "yaml";
 import {
   companionsFrontmatter,
   companionsSection,
+  environmentFrontmatter,
   injectCanonical,
   injectFrontmatter,
   prependSection,
@@ -44,6 +46,7 @@ import {
   scriptEntry,
   scriptSummary,
 } from "../../site/scripts/build-script-index.mjs";
+import { declaredEnvironment, pageEnvironment } from "../../site/src/content-core/environment.mjs";
 import { isPublic, splitFrontmatter } from "../../site/src/content-core/frontmatter.mjs";
 import { canonicalUrl, pageHead } from "../../site/src/content-core/head.mjs";
 import { docIdentity } from "../../site/src/content-core/identity.mjs";
@@ -55,6 +58,7 @@ import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
 import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
 import remarkAbsoluteLinks from "../plugins/remark-absolute-links.mjs";
 import remarkModelLinksText from "../plugins/remark-model-links-text.mjs";
+import remarkPrerequisitesEnv from "../plugins/remark-prerequisites-env.mjs";
 import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
@@ -69,6 +73,7 @@ import {
   sitemapUrls,
   toEntry,
 } from "./discovery.mjs";
+import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
 import { projectNav } from "./nav.mjs";
 import { searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
@@ -88,6 +93,7 @@ const PLUGIN_DIR = join(REPO_ROOT, "site", "src", "plugins");
 // page renders the same in both; the shell's vite.config.ts loads them by name.
 const VENDORED_PLUGINS = [
   "remark-directive-prose-guard.mjs",
+  "remark-prerequisites.mjs",
   "remark-tldr.mjs",
   "remark-callouts.mjs",
   "remark-tabs.mjs",
@@ -188,10 +194,37 @@ export async function emitDocs({ site, drafts = false }) {
       .map((s) => {
         const source = readFileSync(join(REPO_ROOT, s.gitPath), "utf8");
         files.set(`public${s.fetchUrl}`, publishScript(source));
+        for (const h of s.helpers) {
+          files.set(
+            `public${h.fetchUrl}`,
+            publishScript(readFileSync(join(REPO_ROOT, h.gitPath), "utf8")),
+          );
+        }
         return { ...s, summary: scriptSummary(source, s.kind) };
       });
     files.set("public/scripts.json", `${JSON.stringify({ version: 2, scripts }, null, 2)}\n`);
     const scriptUrls = new Map(scripts.map((s) => [s.gitPath, s.fetchUrl]));
+
+    // The env bundle. Its guide link only resolves when this emit publishes the page.
+    const registry = loadRegistry(REPO_ROOT);
+    let envBundle = null;
+    if (site.env) {
+      const guideRoute = routeFor(site.env.guide.bucket, site.env.guide.slug);
+      envBundle = buildEnvBundle({
+        repoRoot: REPO_ROOT,
+        bundle: site.env.bundle,
+        dirs: site.env.dirs,
+        registry,
+        origin,
+        siteTitle: site.title,
+        guideUrl: routes.has(guideRoute) ? `${origin}${guideRoute}` : null,
+      });
+      envBundle.guide = routes.has(guideRoute)
+        ? { route: guideRoute, title: byRoute.get(guideRoute).meta.title }
+        : null;
+      files.set(`public/env/${site.env.bundle}.tar.gz`, envBundle.archive);
+      files.set("public/env/environments.json", `${JSON.stringify(envBundle.index, null, 2)}\n`);
+    }
 
     // 3. Pages.
     const links = linkErrors();
@@ -216,6 +249,24 @@ export async function emitDocs({ site, drafts = false }) {
         likec4Exported,
       };
 
+      const owned = scripts.filter((s) => s.tutorialRoute === route);
+      let environment = null;
+      try {
+        environment =
+          envBundle &&
+          pageEnvironment(owned, {
+            registry,
+            bundle: site.env.bundle,
+            bundleUrl: envBundle.bundleUrl,
+            origin,
+            declared: declaredEnvironment(page.body),
+          });
+      } catch (err) {
+        throw new Error(`${relative(REPO_ROOT, absPath)}: ${err.message}`);
+      }
+      const guide = envBundle?.guide?.route === route ? null : envBundle?.guide;
+      const guideAt = (base) => guide && { href: `${base}${guide.route}`, title: guide.title };
+
       const rendered = await emitOne({
         ...common,
         target: docsSiteTarget({ assetBase }),
@@ -223,6 +274,7 @@ export async function emitDocs({ site, drafts = false }) {
           ...linkPlugins,
           [remarkScriptLinks, { scripts: scriptUrls }],
           [remarkStripSourceMeta],
+          [remarkPrerequisitesEnv, { environment, guide: guideAt("") }],
         ],
       });
       likec4Exported ||= rendered.likec4Dir !== null;
@@ -259,14 +311,21 @@ export async function emitDocs({ site, drafts = false }) {
       const twin = await emitOne({
         ...common,
         target: twinTarget,
-        plugins: [...linkPlugins, [remarkAbsoluteLinks, { origin }]],
+        plugins: [
+          ...linkPlugins,
+          [remarkAbsoluteLinks, { origin }],
+          [remarkPrerequisitesEnv, { environment, guide: guideAt(origin) }],
+        ],
       });
-      const owned = scripts.filter((s) => s.tutorialRoute === route);
       let twinOut = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
       if (owned.length) {
+        const fm = [
+          companionsFrontmatter(owned, origin),
+          environmentFrontmatter(environment, `${origin}/env/environments.json`),
+        ].filter(Boolean);
         twinOut = prependSection(
-          injectFrontmatter(twinOut, companionsFrontmatter(owned, origin)),
-          companionsSection(owned, origin),
+          injectFrontmatter(twinOut, fm.join("\n")),
+          companionsSection(owned, origin, environment),
         );
       }
       files.set(`public${route}.md`, twinOut);
@@ -288,12 +347,25 @@ export async function emitDocs({ site, drafts = false }) {
         section: page.section,
         headings: pageHeadings,
         twin: `${route}.md`,
-        scripts: owned.map((s) => ({
-          url: s.fetchUrl,
-          file: s.fetchUrl.split("/").pop(),
-          kind: s.kind,
-          summary: s.summary,
-        })),
+        environment: environment && {
+          title: environment.title,
+          bundle: `/env/${site.env.bundle}.tar.gz`,
+          commands: environment.commands,
+        },
+        scripts: [
+          ...owned.map((s) => ({
+            url: s.fetchUrl,
+            file: s.fetchUrl.split("/").pop(),
+            kind: s.kind,
+            summary: s.summary,
+          })),
+          ...[...new Set(owned.flatMap((s) => s.helpers.map((h) => h.fetchUrl)))].map((url) => ({
+            url,
+            file: url.split("/").pop(),
+            kind: "python",
+            summary: "Imported by the scripts above; save it beside them.",
+          })),
+        ],
       });
 
       const version = entryFor(absPath, REPO_ROOT);
@@ -398,6 +470,10 @@ export async function emitDocs({ site, drafts = false }) {
         summary: `${site.tagline} Every page is available as Markdown at its route + \`.md\`.`,
         origin,
         apis,
+        environments: envBundle && {
+          bundleUrl: envBundle.bundleUrl,
+          guide: envBundle.guide && `${origin}${envBundle.guide.route}.md`,
+        },
       }),
     );
     files.set(

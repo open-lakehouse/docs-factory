@@ -1,7 +1,7 @@
-"""Shared setup for this page's scripts: a fresh `retail.sales.orders` external table.
+"""Shared setup for the DataFrame scripts: a fresh `retail.sales.orders` external table.
 
-Not a test on its own (no PEP 723 block); each script imports it, so their
-dependencies must cover `unitycatalog-client`, `deltalake`, and `pyarrow`.
+Each script imports this module, so save it beside the script you run. It uses
+`unitycatalog-client`, `deltalake`, and `pyarrow`, which every script declares.
 """
 
 import json

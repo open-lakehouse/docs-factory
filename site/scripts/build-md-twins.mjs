@@ -68,12 +68,18 @@ export function injectFrontmatter(output, lines) {
   return `---\n${lines}\n---\n\n${output}`;
 }
 
-/** The command that runs a published script from the folder it was saved into. */
-export function companionRun(s) {
+/**
+ * The command that runs a published script: a Python script straight from its
+ * URL (uv fetches it), a shell script, or one that imports a helper module,
+ * from the folder it was saved into. `env` is the stack's client env, so the
+ * command works in a fresh terminal.
+ */
+export function companionRun(s, origin = "") {
   const file = s.fetchUrl.split("/").pop();
   if (s.kind === "shell") return `bash ${file}`;
   const env = Object.entries(s.env ?? {}).map(([k, v]) => `${k}=${v} `);
-  return `${env.join("")}uv run ${file}`;
+  const target = s.helpers?.length ? file : `${origin}${s.fetchUrl}`;
+  return `${env.join("")}uv run ${target}`;
 }
 
 /**
@@ -88,7 +94,9 @@ export function companionsFrontmatter(scripts, origin = "") {
   for (const s of scripts) {
     lines.push(`  - url: ${q(`${origin}${s.fetchUrl}`)}`, `    kind: ${s.kind}`);
     if (s.summary) lines.push(`    purpose: ${q(s.summary)}`);
-    lines.push(`    run: ${q(companionRun(s))}`);
+    lines.push(`    run: ${q(companionRun(s, origin))}`);
+    if (s.helpers?.length)
+      lines.push(`    helpers: [${s.helpers.map((h) => q(`${origin}${h.fetchUrl}`)).join(", ")}]`);
     if (s.requiresPython) lines.push(`    requires-python: ${q(s.requiresPython)}`);
     if (s.services?.length) lines.push(`    services: [${s.services.map(q).join(", ")}]`);
   }
@@ -96,19 +104,44 @@ export function companionsFrontmatter(scripts, origin = "") {
 }
 
 /**
- * The "Companion files" section a docs-site twin opens with (pure, for testing):
- * each script's link, purpose, run command, and the stack it needs. It goes first
- * so an agent reading top-down learns a tested script exists before the prose
- * quoting it. Empty string if no scripts.
+ * The twin's `environment:` frontmatter (pure, for testing): the stack the
+ * page's scripts need (content-core pageEnvironment) with its exact start and
+ * stop commands, and `index`, the site's environments.json. Empty if none.
  */
-export function companionsSection(scripts, origin = "") {
+export function environmentFrontmatter(environment, index) {
+  if (!environment) return "";
+  const q = JSON.stringify;
+  return [
+    "environment:",
+    `  title: ${q(environment.title)}`,
+    `  dir: ${q(environment.dir)}`,
+    `  start: [${environment.commands.map(q).join(", ")}]`,
+    `  stop: ${q(environment.stop)}`,
+    ...(index ? [`  index: ${q(index)}`] : []),
+  ].join("\n");
+}
+
+/**
+ * The twin's leading "Companion files" section (pure, for testing): each script
+ * the page owns, its purpose, and the command that runs it, so an agent reading
+ * top-down knows a tested script exists before the body quotes it. `environment`
+ * is the stack they need; its commands are in the body's Prerequisites.
+ * Empty string if no scripts.
+ */
+export function companionsSection(scripts, origin = "", environment = null) {
   if (!scripts?.length) return "";
   const lines = [
     "## Companion files",
     "",
-    "CI-tested scripts that run this page's examples end to end.",
+    "CI-tested scripts that run this page's examples end to end. A script that exits 0 has passed its checks.",
     "",
   ];
+  if (environment) {
+    lines.push(
+      `They need ${environment.title} running: see **Prerequisites** below, or \`environment\` in this file's frontmatter.`,
+      "",
+    );
+  }
   for (const s of scripts) {
     const file = s.fetchUrl.split("/").pop();
     const lang = s.kind === "shell" ? "Shell" : "Python";
@@ -116,11 +149,13 @@ export function companionsSection(scripts, origin = "") {
       `- [\`${file}\`](${origin}${s.fetchUrl}) (${lang})${s.summary ? `: ${s.summary}` : ""}`,
     );
     // A shell script reaches the server through `docker compose exec`.
-    const where = s.kind === "shell" && s.compose ? " from the folder holding `compose.yaml`" : "";
-    lines.push(`  - run: \`${companionRun(s)}\`${where}`);
-    if (s.compose) {
-      const svc = s.services?.length ? ` (${s.services.map((x) => `\`${x}\``).join(", ")})` : "";
-      lines.push(`  - needs: \`docker compose up -d\` with the page's \`compose.yaml\`${svc}`);
+    const where = s.kind === "shell" && environment ? ` from \`${environment.dir}\`` : "";
+    lines.push(`  - run: \`${companionRun(s, origin)}\`${where}`);
+    for (const h of s.helpers ?? []) {
+      const name = h.fetchUrl.split("/").pop();
+      lines.push(
+        `  - save [\`${name}\`](${origin}${h.fetchUrl}) beside it first; the script imports it`,
+      );
     }
   }
   lines.push("");

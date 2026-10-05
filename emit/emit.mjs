@@ -327,9 +327,10 @@ export async function emitOne({
     .use(remarkCodeSnippets); // inline file=/start=/end= (real code from snippets/)
   for (const [plugin, options] of plugins) processor = processor.use(plugin, options);
 
-  // TL;DR, then callouts, then tabs, then journey (so a callout/tldr/tab nested in a
+  // Prerequisites, then TL;DR, then callouts, then tabs, then journey (so a callout/tldr/tab nested in a
   // step is already rendered), then code-caption, then likec4 — mirroring the preview's
   // plugin order. A target that doesn't declare a construct simply skips it.
+  if (constructs.prerequisites) processor = processor.use(constructs.prerequisites);
   if (constructs.tldr) processor = processor.use(constructs.tldr, { componentImportBase });
   if (constructs.callouts) processor = processor.use(constructs.callouts, { componentImportBase });
   if (constructs.tabs) processor = processor.use(constructs.tabs);

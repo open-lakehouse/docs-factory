@@ -14,24 +14,25 @@ listens on `http://localhost:8080`, with authorization disabled so that no
 request needs a token. Start it once, and it serves every tutorial and how-to
 guide until you stop it.
 
-## Requirements
-
-- Docker with Compose v2 (`docker compose version`).
-- Port 8080 free on your machine. The AWS variant also uses port 9000.
+:::prerequisites{environment="unitycatalog/compose.yaml"}
+- `docker compose version` reports v2 or later. The AWS variant also uses
+  port 9000.
+:::
 
 ## Download the environment
 
-Fetch the `envs` folder of the docs repository and change into the server's
-folder:
+The commands under **Prerequisites** download the docs' environment, a small
+archive, and start the default server. The archive unpacks into
+`uc-docs-env/`:
 
-```bash
-curl -L https://github.com/open-lakehouse/docs-factory/archive/refs/heads/main.tar.gz \
-  | tar -xz --strip-components=1 docs-factory-main/envs
-cd envs/unitycatalog
-```
+- `uc-docs-env/unitycatalog` holds the server's compose files and
+  configuration. Run every `docker compose` command on this page from here.
+- `uc-docs-env/aws-sim` holds the simulated AWS services that the AWS variant
+  includes.
 
-`envs/unitycatalog` holds the server's compose files and configuration.
-`envs/aws-sim` holds the simulated AWS services that the AWS variant includes.
+The server mounts its configuration from this folder. On Colima and other VMs
+that share only your home directory, download it to a folder under your home
+directory, or the server fails with a `not a directory` mount error.
 
 ## Start the server
 
@@ -111,8 +112,8 @@ Then `uc catalog list` lists the catalogs. The CLI connects to
 
 ## Stop or reset the server
 
-Stop the server from the `envs/unitycatalog` folder, with the same `-f` option
-you started it with:
+Stop the server from the `uc-docs-env/unitycatalog` folder, with the same `-f`
+option you started it with:
 
 ```bash
 docker compose down

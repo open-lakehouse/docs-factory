@@ -8,8 +8,13 @@
 # ///
 """Connect Spark to Unity Catalog and list what the catalog holds.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/spark_session.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run spark_session.py
 
 Needs Java 17 and Maven access on first run. Behind a Maven mirror, export
 PYSPARK_SUBMIT_ARGS="--repositories <mirror-url> pyspark-shell" first.

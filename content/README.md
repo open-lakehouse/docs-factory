@@ -102,10 +102,14 @@ is the reference example.
    what the reader achieves, naming Unity Catalog and the version, so the
    paragraph stands alone when an AI search engine quotes it. Don't open with
    "This page shows how to". Link the explanation that covers the concepts.
-2. **Requirements.** Server version, client versions, and one line that links
-   the shared [local server](unitycatalog/how-to/011-run-local-server/index.md)
-   (or its AWS variant). Pages don't ship their own compose file. Then a tab
-   group that sets up each interface.
+2. **Prerequisites.** A `:::prerequisites` box with the server version and
+   client versions. Pages don't ship their own compose file and don't describe
+   starting one: the emitter appends a Docker bullet and the commands that
+   download and start the page's stack (from its scripts' compose and
+   [`envs/environments.yml`](../envs/environments.yml)). A page without scripts
+   that still walks through a stack declares it:
+   `:::prerequisites{environment="unitycatalog/compose.aws.yaml"}`. Then a
+   `## Set up the client` section with a tab group per interface.
 3. **One `##` section per task**, named with an imperative ("Create a catalog",
    "Delete a volume"). Each has a sentence of context, a tab group with one
    snippet per interface, and any constraints the server enforces.
@@ -132,8 +136,12 @@ site publishes the `.sh` readers see as the runnable example, not the driver.
 `docsnip check` fails a `docsnip.shellregions` driver that leaves it out.
 Every Unity Catalog page runs against the shared environment in
 [`envs/unitycatalog/`](../envs/unitycatalog/README.md): `compose.yaml` for the
-server, `compose.aws.yaml` for the server plus aws-sim. Scripts point their
-`[tool.docs-factory] compose` at one of the two. The server bind-mounts
+server, `compose.aws.yaml` for the server plus aws-sim, `compose.postgres.yaml`
+for a PostgreSQL metastore. Scripts point their `[tool.docs-factory] compose`
+at one of them. Readers get the same files as `/env/uc-docs-env.tar.gz` from
+the emitted site, and the variables a host client needs for a stack
+(`AWS_ENDPOINT_URL` for aws-sim) come from its `client-env` in
+`envs/environments.yml`. The server bind-mounts
 `UC_DOCS_ROOT` (default `/tmp/uc-docs`) at the same path in the container, for
 pages whose server must see your files. A page that needs a different server
 configuration is the exception: give it its own compose file and say why.
@@ -174,8 +182,9 @@ to run and test it inline, in a [PEP 723](https://peps.python.org/pep-0723/)
 # ///
 ```
 
-A reader can also run it whole with `uv run snippets/catalog_flow.py` — deps come from the header, no
-project sync. The PEP 723 `dependencies` and the `[tool.docs-factory]` table
+A reader can also run it whole with `uv run <its URL on the site>`: deps come
+from the header, no project sync. The site serves the script as written,
+comments included, so its docstring speaks to that reader. The PEP 723 `dependencies` and the `[tool.docs-factory]` table
 (parsed by `docsnip.scriptmeta`) are the **single source of truth** for the
 script's Python deps and its *runtime* prerequisites — do **not** duplicate them
 in the page's frontmatter (`prerequisites.packages` / `.services` are not read by

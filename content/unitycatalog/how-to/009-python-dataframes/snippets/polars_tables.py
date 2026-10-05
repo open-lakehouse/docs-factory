@@ -10,12 +10,16 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
-# env = { AWS_ENDPOINT_URL = "http://localhost:9000", AWS_ALLOW_HTTP = "true" }
 # ///
 """List, read, and append to a Unity Catalog table on S3 from Polars.
 
-docker compose -f compose.aws.yaml up -d --wait   # from envs/unitycatalog
-AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true uv run snippets/polars_tables.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose -f compose.aws.yaml up -d --wait
+
+Then run this script, with `_seed.py` from the same page beside it:
+
+    AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true uv run polars_tables.py
 """
 
 import asyncio

@@ -11,6 +11,7 @@ import mdTwin, {
 import {
   companionsFrontmatter,
   companionsSection,
+  environmentFrontmatter,
   injectCanonical,
   injectFrontmatter,
   prependSection,
@@ -143,7 +144,6 @@ const COMPANIONS = [
     fetchUrl: "/how-to/aws/snippets/aws_storage.py",
     summary: "Register an S3 credential.",
     requiresPython: ">=3.11",
-    compose: "../compose.yaml",
     services: ["unitycatalog"],
     env: { AWS_ENDPOINT_URL: "http://localhost:9000" },
   },
@@ -152,25 +152,46 @@ const COMPANIONS = [
     fetchUrl: "/how-to/aws/snippets/aws_storage.sh",
     summary: null,
     requiresPython: null,
-    compose: "../compose.yaml",
     services: ["unitycatalog"],
-    env: {},
+    env: { AWS_ENDPOINT_URL: "http://localhost:9000" },
   },
 ];
+
+const ENVIRONMENT = {
+  title: "Unity Catalog 0.6.0 with simulated S3",
+  dir: "uc-docs-env/unitycatalog",
+  commands: [
+    "curl -fsSL https://x.test/env/uc-docs-env.tar.gz | tar -xz",
+    "cd uc-docs-env/unitycatalog",
+    "docker compose -f compose.aws.yaml up -d --wait",
+  ],
+  stop: "docker compose -f compose.aws.yaml down",
+};
 
 test("companionsFrontmatter lists each script with an absolute URL and run command", () => {
   expect(companionsFrontmatter([], "https://x.test")).toBe("");
   const yaml = companionsFrontmatter(COMPANIONS, "https://x.test");
   expect(yaml).toContain('  - url: "https://x.test/how-to/aws/snippets/aws_storage.py"');
   expect(yaml).toContain('    purpose: "Register an S3 credential."');
-  expect(yaml).toContain('    run: "AWS_ENDPOINT_URL=http://localhost:9000 uv run aws_storage.py"');
+  expect(yaml).toContain(
+    '    run: "AWS_ENDPOINT_URL=http://localhost:9000 uv run https://x.test/how-to/aws/snippets/aws_storage.py"',
+  );
   expect(yaml).toContain('    run: "bash aws_storage.sh"');
   expect(yaml).toContain('    services: ["unitycatalog"]');
 });
 
+test("environmentFrontmatter carries the exact start and stop commands", () => {
+  expect(environmentFrontmatter(null)).toBe("");
+  const yaml = environmentFrontmatter(ENVIRONMENT, "https://x.test/env/environments.json");
+  expect(yaml).toStartWith('environment:\n  title: "Unity Catalog 0.6.0 with simulated S3"');
+  expect(yaml).toContain('"docker compose -f compose.aws.yaml up -d --wait"]');
+  expect(yaml).toContain('  stop: "docker compose -f compose.aws.yaml down"');
+  expect(yaml).toContain('  index: "https://x.test/env/environments.json"');
+});
+
 test("companionsSection gives link, purpose, run command, and the stack", () => {
   expect(companionsSection([])).toBe("");
-  const md = companionsSection(COMPANIONS, "https://x.test");
+  const md = companionsSection(COMPANIONS, "https://x.test", ENVIRONMENT);
   expect(md).toStartWith("## Companion files\n");
   expect(md).toContain(
     "- [`aws_storage.py`](https://x.test/how-to/aws/snippets/aws_storage.py) (Python): Register an S3 credential.",
@@ -178,9 +199,24 @@ test("companionsSection gives link, purpose, run command, and the stack", () => 
   expect(md).toContain(
     "- [`aws_storage.sh`](https://x.test/how-to/aws/snippets/aws_storage.sh) (Shell)\n",
   );
-  expect(md).toContain("run: `bash aws_storage.sh` from the folder holding `compose.yaml`");
-  expect(md).toContain(
-    "needs: `docker compose up -d` with the page's `compose.yaml` (`unitycatalog`)",
+  expect(md).toContain("run: `bash aws_storage.sh` from `uc-docs-env/unitycatalog`");
+  expect(md).toContain("They need Unity Catalog 0.6.0 with simulated S3 running");
+  expect(md).not.toContain("compose.yaml`");
+});
+
+test("a script that imports a helper runs from its folder, with the helper beside it", () => {
+  const s = {
+    kind: "python",
+    fetchUrl: "/how-to/df/snippets/pandas_tables.py",
+    summary: null,
+    env: {},
+    helpers: [{ fetchUrl: "/how-to/df/snippets/_seed.py" }],
+  };
+  const yaml = companionsFrontmatter([s], "https://x.test");
+  expect(yaml).toContain('    run: "uv run pandas_tables.py"');
+  expect(yaml).toContain('    helpers: ["https://x.test/how-to/df/snippets/_seed.py"]');
+  expect(companionsSection([s], "https://x.test")).toContain(
+    "  - save [`_seed.py`](https://x.test/how-to/df/snippets/_seed.py) beside it first",
   );
 });
 

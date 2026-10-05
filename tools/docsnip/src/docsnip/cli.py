@@ -19,6 +19,7 @@ import re
 import sys
 from pathlib import Path
 
+from . import environments, published
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -31,13 +32,14 @@ from .frontmatter import (
     load_page_worthy_elements,
     validate,
 )
+from .scriptmeta import ScriptMetaError
 from .scriptmeta import check as check_scripts
 from .scriptmeta import discover as discover_scripts
 from .snippetcheck import check_blogs, check_content
 
 # The docsnip scripts --json output is a build contract consumed by the site's
 # build-script-index.mjs; bump when the shape changes so the JS side can assert it.
-SCRIPTS_JSON_VERSION = 2
+SCRIPTS_JSON_VERSION = 3
 
 
 def _repo_root() -> Path:
@@ -134,6 +136,17 @@ def cmd_snippetcheck(p) -> int:
     # [tool.docs-factory] runtime contract); validate the block parses and any
     # declared compose file exists, alongside the snippet-fence checks.
     errors.extend(check_scripts(p["content"]))
+    try:
+        scripts = discover_scripts(p["content"])
+    except ScriptMetaError:
+        scripts = None  # already reported by check_scripts
+    if scripts is not None:
+        errors.extend(environments.check(p["root"], scripts))
+        errors.extend(environments.check_pages(p["root"], p["content"], scripts))
+        served_errors, warnings = published.check(scripts)
+        errors.extend(served_errors)
+        for warning in warnings:
+            print(f"warning: {warning}", file=sys.stderr)
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} snippet error(s)", file=sys.stderr)
@@ -186,9 +199,12 @@ def cmd_scripts(p, as_json: bool = True) -> int:
     Wraps scriptmeta.discover() — the one authoritative parser — so the site build
     (build-script-index.mjs) never re-implements PEP 723 parsing in JS. Output is a
     versioned object: ``{"version": N, "scripts": [{path, requires_python,
-    dependencies, compose, services, base_url_env, env, verifies, tutorial_slug}]}``.
-    ``path`` and ``verifies`` (the snippet a harness tests, or null) are
-    repo-relative POSIX.
+    dependencies, compose, environment, client_env, services, base_url_env, env,
+    verifies, tutorial_slug}]}``. ``path`` and ``verifies`` (the snippet a harness
+    tests, or null) are repo-relative POSIX. ``environment`` is the compose's
+    ``envs/environments.yml`` key (or null) and ``client_env`` that entry's
+    reader-facing variables; ``env`` stays harness-only. ``helpers`` are the
+    sibling modules a script imports, which the site serves beside it.
     """
     content_root = p["content"]
     blogs_root = p["blogs"]
@@ -196,10 +212,14 @@ def cmd_scripts(p, as_json: bool = True) -> int:
     # Runnable scripts live beside BOTH tutorial pages (content/) and blog posts
     # (blogs/). Discover each root with its own slug derivation; the JS side
     # (scriptEntry) turns the repo-relative path into the served route.
+    registry = environments.load(repo_root)
     scripts = []
     for root, slug_fn in ((content_root, _tutorial_slug), (blogs_root, _blog_slug)):
         for meta in discover_scripts(root):
             verified = meta.verifies_path()
+            compose = meta.compose_path()
+            env_key = environments.key_for(compose, repo_root) if compose else None
+            registered = registry.get(env_key) if env_key else None
             scripts.append(
                 {
                     "path": meta.path.resolve()
@@ -208,6 +228,8 @@ def cmd_scripts(p, as_json: bool = True) -> int:
                     "requires_python": meta.requires_python,
                     "dependencies": meta.dependencies,
                     "compose": meta.docs_factory.compose,
+                    "environment": env_key,
+                    "client_env": registered.client_env if registered else {},
                     "services": meta.docs_factory.services,
                     "base_url_env": meta.docs_factory.base_url_env,
                     "env": meta.docs_factory.env,
@@ -216,6 +238,10 @@ def cmd_scripts(p, as_json: bool = True) -> int:
                         if verified
                         else None
                     ),
+                    "helpers": [
+                        h.relative_to(repo_root.resolve()).as_posix()
+                        for h in published.helpers(meta.path.resolve())
+                    ],
                     "tutorial_slug": slug_fn(meta.path, root),
                 }
             )

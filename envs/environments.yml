@@ -1,0 +1,24 @@
+# Reader-facing facts about each compose file under envs/, keyed by its path
+# relative to this folder. A script's [tool.docs-factory] compose must name one
+# of these. The docs emitter turns an entry into a page's "Start the
+# environment" commands, and content/conftest.py hands `client-env` to the
+# script it runs, so the variables a reader exports are the ones the test uses.
+#
+#   title       what the reader starts
+#   ports       host ports the stack binds; the prerequisites list them as free
+#   client-env  variables a client on the host needs to reach the stack
+environments:
+  unitycatalog/compose.yaml:
+    title: Unity Catalog 0.6.0
+    ports: [8080]
+
+  unitycatalog/compose.aws.yaml:
+    title: Unity Catalog 0.6.0 with simulated S3
+    ports: [8080, 9000]
+    client-env:
+      AWS_ENDPOINT_URL: http://localhost:9000
+      AWS_ALLOW_HTTP: "true"
+
+  unitycatalog/compose.postgres.yaml:
+    title: Unity Catalog 0.6.0 with PostgreSQL
+    ports: [8080]

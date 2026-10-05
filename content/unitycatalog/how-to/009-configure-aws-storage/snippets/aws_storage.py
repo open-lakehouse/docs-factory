@@ -6,12 +6,16 @@
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
-# env = { AWS_ENDPOINT_URL = "http://localhost:9000", AWS_ALLOW_HTTP = "true" }
 # ///
 """Register an S3 storage credential and external location, and check vending.
 
-docker compose -f compose.aws.yaml up -d --wait   # from envs/unitycatalog
-AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true uv run snippets/aws_storage.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose -f compose.aws.yaml up -d --wait
+
+Then run this script:
+
+    AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true uv run aws_storage.py
 """
 
 import asyncio

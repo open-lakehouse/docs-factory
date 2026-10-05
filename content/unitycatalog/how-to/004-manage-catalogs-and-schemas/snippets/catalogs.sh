@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Create, inspect, update, and delete a catalog and a schema with the uc CLI.
 #
-# The CLI equivalents of catalogs.py, one region per task on the page.
-# catalogs_cli.py runs them in order and checks the server state.
+# The CLI equivalents of catalogs.py. With the docs' local server running, it
+# runs every step in order.
 
 # --8<-- [start:setup]
 uc() { docker exec unitycatalog bin/uc "$@"; }

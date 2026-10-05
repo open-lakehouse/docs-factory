@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Create, inspect, update, and delete external and managed volumes with the uc CLI.
 #
-# The CLI equivalents of volumes.py; volumes_cli.py runs each region.
+# The CLI equivalents of volumes.py. With the docs' local server running, it runs
+# every step in order.
 
 # --8<-- [start:setup]
 uc() { docker exec unitycatalog bin/uc "$@"; }

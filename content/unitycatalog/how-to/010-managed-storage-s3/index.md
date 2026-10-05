@@ -20,8 +20,7 @@ location's storage credential is what the server uses to vend access to the
 managed data. For the difference between managed and external objects, see
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
 
-## Requirements
-
+:::prerequisites
 - Unity Catalog server 0.4.0 or later. This page is tested against 0.6.0. The
   `storage-root.tables` server property is deprecated in 0.6.0; use catalog and
   schema roots instead.
@@ -30,9 +29,9 @@ managed data. For the difference between managed and external objects, see
   [Configure AWS storage credentials and external locations](../configure-aws-storage/index.md).
 - For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.6.0
   and `obstore`.
+:::
 
-To try the steps locally, start the
-[local server with simulated S3](../run-local-server/index.md#start-the-server-with-simulated-s3).
+## Set up the client
 
 Set up the client for your interface:
 

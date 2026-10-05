@@ -14,8 +14,11 @@ All three use the compose project `uc-docs` and the container name `unitycatalog
 so `docker exec unitycatalog bin/uc …` works from any folder and the
 variants replace each other instead of running side by side.
 
-`compose.aws.yaml` includes `../aws-sim`, so readers download the whole
-`envs/` folder, not just this one.
+`compose.aws.yaml` includes `../aws-sim`, so readers get both folders: the
+docs site serves them as one archive, `/env/uc-docs-env.tar.gz`, with this
+folder at `uc-docs-env/unitycatalog`. READMEs stay out of the archive.
+[`../environments.yml`](../environments.yml) describes each compose file to
+readers: its title, host ports, and the variables a host client exports.
 
 ## Tests
 

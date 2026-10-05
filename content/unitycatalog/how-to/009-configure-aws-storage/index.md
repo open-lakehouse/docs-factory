@@ -32,18 +32,19 @@ finds the matching external location, assumes its credential's storage role
 as the master role with the credential's external ID, and attaches a session
 policy that narrows access to the requested path and operation.
 
-## Requirements
-
+:::prerequisites
 - Unity Catalog server 0.4.0 or later. This page is tested against 0.6.0.
 - In AWS, permission to create IAM roles and policies, and to edit the bucket's
   policy if the bucket uses one.
 - For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.6.0
   and, to check vended credentials, `obstore`. For the CLI examples, `curl`.
 
-To try the steps without an AWS account, start the
-[local server with simulated S3](../run-local-server/index.md#start-the-server-with-simulated-s3).
-It runs the server's real AWS code path, but it doesn't check trust policies
-or external IDs, so do the IAM steps for real on AWS.
+To try the steps without an AWS account, use the local server with simulated
+S3 below. It runs the server's real AWS code path, but it doesn't check trust
+policies or external IDs, so do the IAM steps for real on AWS.
+:::
+
+## Set up the client
 
 Set up the client for your interface:
 

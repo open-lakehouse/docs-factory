@@ -7,12 +7,8 @@
 # ///
 """Read a Delta table with the deltalake package.
 
-The region between the ``docs-read-delta-table`` markers is what the docs show;
-everything outside it (the seeding, the ``main`` wrapper) is here so the example
-is directly runnable and testable but stays out of the published snippet.
-
-Running this file to completion is its test (content/conftest.py runs it via
-`uv run`): the asserts below fail the build if the numbers ever drift.
+It first writes a small sample `orders` table, then reads it back. The asserts
+at the end check the result, so a run that finishes means the example works.
 """
 
 from docs_factory_seed import seed_dataset

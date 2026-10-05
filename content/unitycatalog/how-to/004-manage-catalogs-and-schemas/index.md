@@ -16,15 +16,16 @@ renames, and deletes them in Unity Catalog 0.6.0, with the Python SDK or the
 volumes, functions, and registered models. For how these objects relate, see
 [Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
 
-## Requirements
-
-- A Unity Catalog 0.6.0 server. To follow along, start the
-  [local server](../run-local-server/index.md).
+:::prerequisites
+- A Unity Catalog 0.6.0 server.
 - For the Python examples, Python 3.11 or later and the
   [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) package,
   version 0.6.0. The SDK is asynchronous: run the snippets in an `async`
   function, or interactively in `python -m asyncio`, which accepts top-level
   `await`.
+:::
+
+## Set up the client
 
 Set up the client for your interface:
 

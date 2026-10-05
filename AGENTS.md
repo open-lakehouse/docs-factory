@@ -93,6 +93,12 @@ research/         existing research reports (leave alone)
    always-rendering a copy button on collapsed code blocks, keep only the
    code-relevant fact:
 
+   Script comments and docstrings are the exception that proves the rule: the
+   docs sites serve every runnable script whole, so write them for the reader
+   who downloads it. Name `uc-docs-env/…` and the script's own file, never
+   repo paths or the `*_cli.py` verifier. Harness notes go in
+   `[tool.docs-factory]` or the verifier. `docsnip check` lints for this.
+
    ```tsx
    // ✗  a collapsed block often holds a file the reader is meant to copy into
    //    their own project, so hiding the button behind expand-first is friction…
@@ -138,9 +144,12 @@ just arch-dev                          # LikeC4 architecture model at :5173
 4. Unity Catalog pages don't ship a compose file. Point the script's
    `[tool.docs-factory] compose` at the shared
    [`envs/unitycatalog`](envs/unitycatalog/README.md) server (`compose.yaml`, or
-   `compose.aws.yaml` for S3), and give the page one Requirements line linking
-   `how-to/run-local-server`. Keep S3 endpoints out of the snippet: set them in
-   `[tool.docs-factory] env = { AWS_ENDPOINT_URL = "http://localhost:9000", AWS_ALLOW_HTTP = "true" }`.
+   `compose.aws.yaml` for S3); every compose file needs an entry in
+   [`envs/environments.yml`](envs/environments.yml). Open the page with a
+   `:::prerequisites` box holding only its own requirements: the emitter adds
+   the commands that download and start the stack. Keep S3 endpoints out of the
+   snippet: the registry's `client-env` sets them for the test and tells the
+   reader to export them. `[tool.docs-factory] env` is for harness-only knobs.
 5. Steps are about the task, not the script. A tutorial opens an interactive
    session once (`uv run --with <deps> python -m asyncio` for the async
    clients) and each step's region is exactly what the reader enters. The

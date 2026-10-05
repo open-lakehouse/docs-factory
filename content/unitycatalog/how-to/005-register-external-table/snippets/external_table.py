@@ -9,8 +9,13 @@
 # ///
 """Register an existing Delta table in Unity Catalog, read it back, and drop it.
 
-docker compose up -d --wait   # from envs/unitycatalog
-uv run snippets/external_table.py
+Start the docs' local server from `uc-docs-env/unitycatalog`:
+
+    docker compose up -d --wait
+
+Then run this script:
+
+    uv run external_table.py
 """
 
 import asyncio

@@ -24,7 +24,7 @@ from docs-factory, so it can move to another repo unchanged.
 | `src/generated/site.json` | Navigation tree, page list (route, title, section trail, headings, prev/next, the page's scripts), and the REST API references (`apis`). |
 | `src/generated/heads.json` | Per-route `<head>` from `content-core/head.mjs` `pageHead()`. |
 | `src/vendor/plugins/` | Verbatim copies of the preview's directive plugins (`site/src/plugins/`). |
-| `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + scripts, images, LikeC4 PNGs and web component. |
+| `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + scripts and their helpers, `env/` (the environment bundle and `environments.json`), images, LikeC4 PNGs and web component. |
 | `.docs-emit.json` | The emit manifest (below). |
 
 The shell owns everything else: layout, components, styles, and the prerender
@@ -39,21 +39,36 @@ Each page has companions an agent can use without the HTML:
   flattened, and every link and image is absolute against the site origin, because
   a twin is read away from the site (pasted into a chat, fetched by an agent). Its
   frontmatter carries `title`, `summary`, `canonical`, and, for a page that owns
-  scripts, `companions:` (URL, kind, purpose, run command, services). The body
-  opens with a `## Companion files` section that gives the same facts in prose,
-  so a reader going top-down learns a tested script exists before the text quotes it.
+  scripts, `companions:` (URL, kind, purpose, run command, services, helpers) and
+  `environment:` (the stack's title, folder, exact start and stop commands, and
+  the site's `environments.json`). The body opens with a `## Companion files`
+  section that gives the same facts in prose, so a reader going top-down learns
+  a tested script exists before the text quotes it.
 - **Scripts** at `<route>/snippets/<file>`: the CI-verified `.py`, or the `.sh` a
   harness verifies. The served copy drops `--8<--` markers and the factory-only
   PEP 723 tables (`[tool.docs-factory]`, `[tool.uv.sources]`) and keeps
   `requires-python` and `dependencies`, so `uv run` still works. A script's purpose
   is its docstring's first line (`.py`) or its first comment paragraph (`.sh`), so
-  write those for the reader.
+  write those for the reader. A sibling module the script imports (`_seed.py`) is
+  served beside it; such a script runs from a folder holding both, not by URL.
+  `docsnip check` fails a served file that mentions repo paths or the harness.
+- **The environment bundle** at `/env/<bundle>.tar.gz`: the `envs/` folders the
+  site declares (`env.dirs` in `emit/docs/sites/<site>.mjs`), re-rooted under one
+  folder so `include: ../aws-sim/…` still resolves, minus the factory READMEs,
+  plus a README generated from `envs/environments.yml`. The archive is
+  byte-identical across runs and machines, so planSync rewrites it only when envs
+  change. `/env/environments.json` lists each stack with its start and stop
+  commands. A page's `:::prerequisites` box gets the same commands for the stack
+  its scripts need (`content-core/environment.mjs` `pageEnvironment`), in both
+  the site page and the twin.
 - **`llms.txt`, `llms-full.txt`, `scripts.json`**, all with absolute URLs.
+  `llms.txt` links `environments.json` and the one-line bundle download.
 
 The shell exposes these on the page itself. A **Copy page** split button next to
 the title copies the twin. Its menu also offers View as Markdown and Copy/Download
-for each script. A code block quoted from a published script gets a **Full
-script** link, from the `script="…"` fence meta the emitter adds.
+for each script, and Copy environment setup plus a bundle download when the
+page's scripts need a stack. A code block quoted from a published script gets a
+**Full script** link, from the `script="…"` fence meta the emitter adds.
 
 ## REST API references
 

@@ -13,6 +13,13 @@ export default {
     "Documentation for Unity Catalog OSS: the open catalog for tables, volumes, functions, and models across engines.",
   // Placeholder until the site has a home; canonical URLs and the sitemap use it.
   origin: (process.env.UC_DOCS_ORIGIN || "https://docs.unitycatalog.io").replace(/\/+$/, ""),
+  // The envs/ folders a reader downloads as /env/<bundle>.tar.gz, and the page
+  // that explains them.
+  env: {
+    bundle: "uc-docs-env",
+    dirs: ["unitycatalog", "aws-sim"],
+    guide: { bucket: "how-to", slug: "run-local-server" },
+  },
   // REST API references (emit/docs/api.mjs): the shell renders each spec in the
   // browser from this pinned ref. `summary` feeds llms.txt, page meta, and
   // search; `hint` is the few words the API switcher shows.

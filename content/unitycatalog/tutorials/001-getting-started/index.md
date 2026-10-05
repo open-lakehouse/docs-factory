@@ -11,23 +11,19 @@ status: draft
 In this tutorial you start a Unity Catalog server on your machine, look around
 the sample data it ships with, and then build your own corner of the catalog: a
 catalog, a schema inside it, and a Delta table you write to and read back. It
-takes about ten minutes and needs only Docker.
+takes about ten minutes.
 
-Everything here runs through the `uc` command-line tool, which is bundled in the
-server image, so there is nothing to install besides Docker.
+:::prerequisites
+- Nothing else to install: everything here runs through the `uc`
+  command-line tool, which is bundled in the server image.
+:::
 
 ::::journey
 
 ### Start the server
 
-Download the docs' environment and start Unity Catalog 0.6.0:
-
-```bash
-curl -L https://github.com/open-lakehouse/docs-factory/archive/refs/heads/main.tar.gz \
-  | tar -xz --strip-components=1 docs-factory-main/envs
-cd envs/unitycatalog
-docker compose up -d --wait
-```
+Run the commands under **Prerequisites**. They download the docs'
+environment and start Unity Catalog 0.6.0.
 
 The server now listens on `http://localhost:8080`. Authorization is off, so
 every command succeeds without a token. That keeps this tutorial short, and it

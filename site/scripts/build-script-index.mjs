@@ -28,7 +28,7 @@ const repoRoot = resolve(siteRoot, "..");
 const distDir = resolve(siteRoot, "dist");
 
 // The docsnip JSON contract version this script understands (asserted below).
-const EXPECTED_VERSION = 2;
+const EXPECTED_VERSION = 3;
 
 /** Run `docsnip scripts --json` and return the parsed, version-checked payload,
  *  or null if `uv` isn't available in this environment. The script index is an
@@ -183,6 +183,11 @@ function servedPaths(path, slug, hrefFor) {
  * compose contract (the stack the script talks to) but not its Python deps, which
  * are the harness's own.
  *
+ * `environment` is the compose's `envs/environments.yml` key and `env` that
+ * entry's client variables: what a reader exports, never the harness-only
+ * `[tool.docs-factory] env`. `helpers` are the sibling modules a Python script
+ * imports, served beside it.
+ *
  * `hrefFor` maps an identity to its page route; an emitted target site passes
  * its own URL scheme.
  */
@@ -198,9 +203,16 @@ export function scriptEntry(entry, { hrefFor = hrefFromIdentity } = {}) {
     requiresPython: shell ? null : entry.requires_python,
     dependencies: shell ? [] : entry.dependencies,
     compose: entry.compose,
+    environment: entry.environment ?? null,
     services: entry.services,
     baseUrlEnv: entry.base_url_env,
-    env: shell ? {} : (entry.env ?? {}),
+    env: entry.client_env ?? {},
+    helpers: shell
+      ? []
+      : (entry.helpers ?? []).map((path) => ({
+          gitPath: path,
+          fetchUrl: servedPaths(path, slug, hrefFor).fetchUrl,
+        })),
   };
 }
 

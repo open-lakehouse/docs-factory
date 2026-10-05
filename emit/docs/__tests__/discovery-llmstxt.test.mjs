@@ -71,3 +71,18 @@ test("llms.txt resources resolve against the origin a site passes", () => {
   expect(out).toContain("(https://x.test/llms-full.txt)");
   expect(out).toContain("(https://x.test/scripts.json)");
 });
+
+test("llms.txt points agents at the env bundle when the site has one", () => {
+  const out = renderLlmsIndex([docEntry("read", "how-to")], {
+    ...SITE,
+    origin: "https://x.test",
+    environments: {
+      bundleUrl: "https://x.test/env/uc-docs-env.tar.gz",
+      guide: "https://x.test/how-to/run-local-server.md",
+    },
+  });
+  expect(out).toContain("- [Local environment](https://x.test/env/environments.json)");
+  expect(out).toContain("`curl -fsSL https://x.test/env/uc-docs-env.tar.gz | tar -xz`");
+  expect(out).toContain("Setup guide: https://x.test/how-to/run-local-server.md.");
+  expect(renderLlmsIndex([], SITE)).not.toContain("Local environment");
+});

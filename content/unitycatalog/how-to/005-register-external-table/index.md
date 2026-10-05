@@ -22,8 +22,7 @@ To let Unity Catalog allocate storage and coordinate writes, use a
 difference, see
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
 
-## Requirements
-
+:::prerequisites
 - A Unity Catalog server, version 0.6.0, and a schema to register the table in.
   This page uses `retail.sales`; see
   [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
@@ -33,6 +32,9 @@ difference, see
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
   0.6.0 and `deltalake`. To read the table from another engine,
   `polars==1.44.2`, `daft[unity]==0.7.25` with `tenacity`, or `duckdb==1.5.4`.
+:::
+
+## Set up the client
 
 If you don't have a table at hand, write a small one:
 

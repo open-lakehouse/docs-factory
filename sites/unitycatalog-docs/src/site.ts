@@ -23,6 +23,15 @@ export interface PageScript {
   summary: string | null;
 }
 
+/** The stack a page's scripts need, from envs/environments.yml. */
+export interface PageEnvironment {
+  title: string;
+  /** Served path of the env bundle (.tar.gz). */
+  bundle: string;
+  /** Download, start, and export lines, as the Prerequisites box shows them. */
+  commands: string[];
+}
+
 export interface PageMeta {
   route: string;
   /** Path under src/content/, e.g. `how-to/duckdb.md`. */
@@ -37,6 +46,7 @@ export interface PageMeta {
   next: PageLink | null;
   /** The page's Markdown twin (route + `.md`). */
   twin: string;
+  environment: PageEnvironment | null;
   scripts: PageScript[];
 }
 

@@ -18,9 +18,8 @@ includes the PostgreSQL JDBC driver, and the server creates its tables on first
 start.
 
 :::prerequisites
-- Unity Catalog server 0.6.0. This page is tested against 0.6.0 with
-  PostgreSQL 16.
 - A PostgreSQL database that the server can reach, and a role that owns it.
+  This page uses PostgreSQL 16.
 :::
 
 ## Create the database

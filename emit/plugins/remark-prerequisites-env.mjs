@@ -1,6 +1,6 @@
 /**
  * remark-prerequisites-env — fill a page's `:::prerequisites` box with what its
- * scripts need: a "Docker with Compose v2, ports … free" bullet ahead of the
+ * scripts need: a "Docker with Compose v2" bullet ahead of the
  * authored ones, and a nested `:::environment[Title]` holding the commands that
  * download and start the stack (content-core pageEnvironment). Both targets run
  * it, so the site box and the .md twin say the same thing.
@@ -9,20 +9,17 @@
  * `guide` is `{ href, title }` for the long-form setup page, or null when this
  * emit doesn't publish it.
  */
-import { portList } from "../../site/src/content-core/environment.mjs";
-
 const text = (value) => ({ type: "text", value });
 const code = (value) => ({ type: "inlineCode", value });
 const paragraph = (...children) => ({ type: "paragraph", children });
 
-function dockerItem(ports) {
-  const free = ports.length
-    ? ` and port${ports.length > 1 ? "s" : ""} ${portList(ports)} free`
-    : "";
+// The stack's ports are defaults a reader rarely has taken; the env bundle's
+// README lists them for the reader who does.
+function dockerItem() {
   return {
     type: "listItem",
     spread: false,
-    children: [paragraph(text(`For the local environment, Docker with Compose v2${free}.`))],
+    children: [paragraph(text("Docker with Compose v2, for the local environment."))],
   };
 }
 
@@ -63,13 +60,13 @@ export default function remarkPrerequisitesEnv({ environment, guide = null }) {
     );
     if (!box) return;
     const list = box.children.find((n) => n.type === "list" && !n.ordered);
-    if (list) list.children.unshift(dockerItem(environment.ports));
+    if (list) list.children.unshift(dockerItem());
     else
       box.children.push({
         type: "list",
         ordered: false,
         spread: false,
-        children: [dockerItem(environment.ports)],
+        children: [dockerItem()],
       });
     box.children.push(environmentNode(environment, guide));
   };

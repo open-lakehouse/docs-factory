@@ -19,11 +19,7 @@ from a folder of Delta files.
 Allow about fifteen minutes.
 
 :::prerequisites
-- Java 17.
-- [uv](https://docs.astral.sh/uv/), which installs the Python packages for the
-  session.
-- Maven access the first time: Spark downloads its Unity Catalog and Delta jars
-  from Maven.
+- Java 17 and [uv](https://docs.astral.sh/uv/).
 :::
 
 ::::journey

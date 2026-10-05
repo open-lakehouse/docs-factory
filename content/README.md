@@ -102,11 +102,14 @@ is the reference example.
    what the reader achieves, naming Unity Catalog and the version, so the
    paragraph stands alone when an AI search engine quotes it. Don't open with
    "This page shows how to". Link the explanation that covers the concepts.
-2. **Prerequisites.** A `:::prerequisites` box with the server version and
-   client versions. Pages don't ship their own compose file and don't describe
-   starting one: the emitter appends a Docker bullet and the commands that
-   download and start the page's stack (from its scripts' compose and
-   [`envs/environments.yml`](../envs/environments.yml)). A page without scripts
+2. **Prerequisites.** A `:::prerequisites` box with what the reader brings:
+   client versions, and data or configuration the page assumes. Pages don't
+   ship their own compose file and don't describe starting one: the emitter
+   appends a Docker bullet and the commands that download and start the page's
+   stack (from its scripts' compose and
+   [`envs/environments.yml`](../envs/environments.yml)), whose title carries
+   the server version. So don't list the server itself, free ports, or
+   downloads a tool makes on first run (Spark's Maven jars). A page without scripts
    that still walks through a stack declares it:
    `:::prerequisites{environment="unitycatalog/compose.aws.yaml"}`. Then a
    `## Set up the client` section with a tab group per interface.

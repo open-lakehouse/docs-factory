@@ -22,8 +22,7 @@ All three work with external Delta tables, through
 commit through the server.
 
 :::prerequisites
-- A Unity Catalog server, version 0.6.0, with an external Delta table. This
-  page uses `retail.sales.orders`; to register your own, see
+- An external Delta table in Unity Catalog. This page uses `retail.sales.orders`; to register your own, see
   [Register an existing external table](../register-external-table/index.md).
 - Python 3.11 or later, with one of:
 
@@ -32,20 +31,16 @@ commit through the server.
   | Polars | `polars==1.44.2` |
   | Daft | `daft[unity]==0.7.25` and `tenacity` |
   | pandas | `pandas==2.3.3` and `deltalake==1.6.6` |
-
-  `daft[unity]` 0.7.25 doesn't declare its `tenacity` dependency, so install it
-  yourself.
 - For tables on S3, an
   [external location](../configure-aws-storage/index.md) that covers the
   table's path, so that the server can vend credentials for it.
-
-The local server below simulates S3. On real AWS, leave its
-`AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP` variables unset.
 :::
 
 The Polars and pandas examples use a table on S3, and the Daft examples a table
 on local storage, which is what each library is tested with here; see
 [Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060).
+The local environment above simulates S3. On real AWS, leave its
+`AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP` variables unset.
 
 ## Connect to the server
 

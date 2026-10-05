@@ -27,10 +27,6 @@ For how volumes fit into the namespace, see
 [Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
 
 :::prerequisites
-- A Unity Catalog 0.6.0 server. The examples use the
-  [local server](../run-local-server/index.md) and keep volume files under its
-  [shared folder](../run-local-server/index.md#share-a-folder-with-the-server),
-  `UC_DOCS_ROOT`.
 - For managed volumes, a storage root on the schema or its catalog.
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
   0.6.0.

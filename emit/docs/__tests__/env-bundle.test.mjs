@@ -54,14 +54,13 @@ test("environments.json lists each stack's exact commands", () => {
   const aws = index.environments.find((e) => e.key === "unitycatalog/compose.aws.yaml");
   expect(aws.start).toEqual([
     "curl -fsSL https://docs.example.io/env/uc-docs-env.tar.gz | tar -xz",
-    "cd uc-docs-env/unitycatalog",
-    "docker compose -f compose.aws.yaml up -d --wait",
+    "cd uc-docs-env/unitycatalog && docker compose -f compose.aws.yaml up -d --wait",
     "export AWS_ENDPOINT_URL=http://localhost:9000",
     "export AWS_ALLOW_HTTP=true",
   ]);
   expect(aws.stop).toBe("docker compose -f compose.aws.yaml down");
   const base = index.environments.find((e) => e.key === "unitycatalog/compose.yaml");
-  expect(base.start[2]).toBe("docker compose up -d --wait");
+  expect(base.start[1]).toBe("cd uc-docs-env/unitycatalog && docker compose up -d --wait");
 });
 
 test("tarGz rejects a path ustar can't hold", () => {

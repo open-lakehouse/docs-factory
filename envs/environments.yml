@@ -5,7 +5,7 @@
 # script it runs, so the variables a reader exports are the ones the test uses.
 #
 #   title       what the reader starts
-#   ports       host ports the stack binds; the prerequisites list them as free
+#   ports       host ports the stack binds; the env bundle's README lists them
 #   client-env  variables a client on the host needs to reach the stack
 environments:
   unitycatalog/compose.yaml:

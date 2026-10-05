@@ -31,8 +31,7 @@ test("the default compose starts without -f", () => {
   const env = pageEnvironment([py("unitycatalog/compose.yaml")], OPTS);
   expect(env.commands).toEqual([
     "curl -fsSL https://d.io/env/uc-docs-env.tar.gz | tar -xz",
-    "cd uc-docs-env/unitycatalog",
-    "docker compose up -d --wait",
+    "cd uc-docs-env/unitycatalog && docker compose up -d --wait",
   ]);
   expect(env.stop).toBe("docker compose down");
   expect(env.runUrl).toBe("https://d.io/how-to/x/snippets/x.py");
@@ -41,8 +40,8 @@ test("the default compose starts without -f", () => {
 test("a variant passes -f and exports its client env", () => {
   const shell = { kind: "shell", environment: "unitycatalog/compose.aws.yaml" };
   const env = pageEnvironment([py("unitycatalog/compose.aws.yaml"), shell], OPTS);
-  expect(env.commands.slice(2)).toEqual([
-    "docker compose -f compose.aws.yaml up -d --wait",
+  expect(env.commands.slice(1)).toEqual([
+    "cd uc-docs-env/unitycatalog && docker compose -f compose.aws.yaml up -d --wait",
     "export AWS_ENDPOINT_URL=http://localhost:9000",
   ]);
   expect(env.ports).toEqual([8080, 9000]);

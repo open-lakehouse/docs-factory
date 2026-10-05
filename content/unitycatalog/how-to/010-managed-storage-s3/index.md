@@ -21,9 +21,6 @@ managed data. For the difference between managed and external objects, see
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
 
 :::prerequisites
-- Unity Catalog server 0.4.0 or later. This page is tested against 0.6.0. The
-  `storage-root.tables` server property is deprecated in 0.6.0; use catalog and
-  schema roots instead.
 - A server configured for AWS with a storage credential and an external
   location, as in
   [Configure AWS storage credentials and external locations](../configure-aws-storage/index.md).

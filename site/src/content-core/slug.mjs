@@ -14,6 +14,19 @@ import { fromMarkdown } from "mdast-util-from-markdown";
 import { toString as mdastToString } from "mdast-util-to-string";
 import { normalizeText } from "./normalize.mjs";
 
+/** Reserved key/slug for prose before the first heading (blog intros etc.). */
+export const PREAMBLE_KEY = "__preamble__";
+
+/**
+ * Whether a comment anchor points at the prose before the first heading. The
+ * review UI sends `""` for a selection above every heading; the server's
+ * re-anchoring relinks such a comment to the PREAMBLE_KEY section. Both mean
+ * the same place.
+ */
+export function isPreambleAnchor(slug) {
+  return !slug || slug === PREAMBLE_KEY;
+}
+
 /**
  * Extract headings from a markdown body.
  *

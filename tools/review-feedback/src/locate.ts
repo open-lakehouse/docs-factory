@@ -10,7 +10,7 @@ import { splitFrontmatter } from "../../../site/src/content-core/frontmatter.mjs
 import { hashLineSync } from "../../../site/src/content-core/hash.mjs";
 import { docIdentity } from "../../../site/src/content-core/identity.mjs";
 import { normalizeText } from "../../../site/src/content-core/normalize.mjs";
-import { extractHeadings } from "../../../site/src/content-core/slug.mjs";
+import { extractHeadings, isPreambleAnchor } from "../../../site/src/content-core/slug.mjs";
 import { walkContent } from "../../../site/src/content-core/walk.mjs";
 import {
   type Comment,
@@ -35,6 +35,8 @@ export interface Location {
 }
 
 const EXCERPT_MAX_LINES = 40;
+/** Frontmatter fields the site renders above the body, so a reader can quote them. */
+const RENDERED_FRONTMATTER = ["title", "summary", "description"];
 
 /** The fields of content-core's extractHeadings result used here. */
 interface Heading {
@@ -93,45 +95,136 @@ function proseOf(line: string): string {
     .replace(/[*_`~]/g, "");
 }
 
+/** A run of source lines (1-based, inclusive) and the prose a reader sees there. */
+interface Segment {
+  start: number;
+  end: number;
+  text: string;
+}
+
 /**
- * Find a normalized quote within source lines [from, to] (1-based, inclusive).
- * Prose is normalized line by line and joined, so a quote spanning a soft line
- * break still matches. Falls back to the quote's first 60 characters, which
- * survive an edit to the end of a long selection.
+ * Find a normalized quote across segments, in order. Prose is normalized per
+ * segment and joined, so a quote spanning a soft line break still matches.
+ * When the whole quote doesn't match, its first and last 60 characters often
+ * still do: an edit inside a long selection, or a selection across two rendered
+ * blocks whose text the DOM joins without a space, keeps both ends intact.
  */
+function matchQuote(
+  segments: Segment[],
+  quote: string,
+): { start: number; end: number } | undefined {
+  let joined = "";
+  const starts: number[] = [];
+  for (const seg of segments) {
+    starts.push(joined.length);
+    joined += `${normalizeText(seg.text)} `;
+  }
+  const segmentAt = (idx: number) => {
+    let i = starts.length - 1;
+    while (i > 0 && starts[i] > idx) i--;
+    return segments[i];
+  };
+  const q = normalizeText(quote);
+  if (q.length < 4) return undefined;
+  const at = joined.indexOf(q);
+  if (at >= 0) return { start: segmentAt(at).start, end: segmentAt(at + q.length - 1).end };
+
+  const head = q.slice(0, 60);
+  const h = joined.indexOf(head);
+  if (h < 0) return undefined;
+  const tail = q.slice(-60);
+  const t = joined.indexOf(tail, h);
+  // A tail far past where the quote could end is a different passage.
+  const end =
+    t >= 0 && t + tail.length - h <= 2 * q.length ? t + tail.length - 1 : h + head.length - 1;
+  return { start: segmentAt(h).start, end: segmentAt(end).end };
+}
+
+/** Find a normalized quote within source lines [from, to] (1-based, inclusive). */
 export function findQuote(
   lines: string[],
   from: number,
   to: number,
   quote: string,
 ): { start: number; end: number } | undefined {
-  let joined = "";
-  const starts: number[] = [];
-  for (let n = from; n <= to; n++) {
-    starts.push(joined.length);
-    joined += `${normalizeText(proseOf(lines[n - 1] ?? ""))} `;
+  const segments: Segment[] = [];
+  for (let n = from; n <= to; n++)
+    segments.push({ start: n, end: n, text: proseOf(lines[n - 1] ?? "") });
+  return matchQuote(segments, quote);
+}
+
+/**
+ * The rendered frontmatter fields as segments over their source lines. A field
+ * runs from its `key:` line to the line before the next top-level key.
+ */
+function frontmatterSegments(lines: string[], meta: Record<string, unknown>): Segment[] {
+  if (lines[0]?.trimEnd() !== "---") return [];
+  const close = lines.findIndex((l, i) => i > 0 && l.trimEnd() === "---") + 1;
+  if (close < 1) return [];
+  const keyLines: number[] = [];
+  for (let n = 2; n < close; n++) if (/^[A-Za-z_][\w-]*:/.test(lines[n - 1])) keyLines.push(n);
+  const segments: Segment[] = [];
+  for (const key of RENDERED_FRONTMATTER) {
+    const value = meta[key];
+    if (typeof value !== "string") continue;
+    const i = keyLines.findIndex((n) => lines[n - 1].startsWith(`${key}:`));
+    if (i < 0) continue;
+    const end = (keyLines[i + 1] ?? close) - 1;
+    segments.push({ start: keyLines[i], end: Math.max(keyLines[i], end), text: value });
   }
-  const lineAt = (idx: number) => {
-    let i = starts.length - 1;
-    while (i > 0 && starts[i] > idx) i--;
-    return from + i;
-  };
-  const q = normalizeText(quote);
-  for (const needle of [q, q.slice(0, 60)]) {
-    if (needle.length < 4) continue;
-    const at = joined.indexOf(needle);
-    if (at >= 0) return { start: lineAt(at), end: lineAt(at + needle.length - 1) };
-  }
-  return undefined;
+  return segments;
 }
 
 function locateProse(comment: Comment, path: string, raw: string): Omit<Location, "drifted"> {
   const lines = raw.split("\n");
-  const { body } = splitFrontmatter(raw);
+  const { meta, body } = splitFrontmatter(raw);
   const bodyOffset = raw.length - body.length;
   const lineOfOffset = (offset = 0) => raw.slice(0, bodyOffset + offset).split("\n").length;
-
+  const quote = comment.selector?.quote;
   const headings: Heading[] = extractHeadings(body);
+
+  if (isPreambleAnchor(comment.anchorSlug)) {
+    const bodyStart = lineOfOffset(0);
+    const end = headings.length ? lineOfOffset(headings[0].offset) - 1 : lines.length;
+    if (quote) {
+      const segments = frontmatterSegments(lines, meta);
+      for (let n = bodyStart; n <= end; n++) {
+        segments.push({ start: n, end: n, text: proseOf(lines[n - 1] ?? "") });
+      }
+      const hit = matchQuote(segments, quote);
+      if (hit) {
+        return {
+          path,
+          startLine: hit.start,
+          endLine: hit.end,
+          excerpt: excerptOf(lines, hit.start, hit.end),
+          precision: "quote",
+          note:
+            hit.start < bodyStart
+              ? "starts in the frontmatter, which the site renders above the page"
+              : undefined,
+        };
+      }
+    }
+    if (end < bodyStart) {
+      return {
+        path,
+        precision: "file",
+        note: quote ? "quoted text not found before the first heading" : undefined,
+      };
+    }
+    return {
+      path,
+      startLine: bodyStart,
+      endLine: end,
+      excerpt: excerptOf(lines, bodyStart, end),
+      precision: "section",
+      note: quote
+        ? "quoted text not found before the first heading; it has likely been edited"
+        : undefined,
+    };
+  }
+
   let idx = headings.findIndex((h) => h.id === comment.anchorSlug);
   // A renamed heading changes its id but keeps a recognizable fingerprint.
   if (idx < 0 && comment.anchorFingerprint) {
@@ -149,7 +242,6 @@ function locateProse(comment: Comment, path: string, raw: string): Omit<Location
   const sectionStart = lineOfOffset(h.offset);
   const sectionEnd = next ? lineOfOffset(next.offset) - 1 : lines.length;
 
-  const quote = comment.selector?.quote;
   if (quote) {
     const hit = findQuote(lines, sectionStart, sectionEnd, quote);
     if (hit) {

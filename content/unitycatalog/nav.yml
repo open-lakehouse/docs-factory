@@ -25,7 +25,7 @@ nav:
           - page: tutorials/python-client
             id: T11
           - planned: T02
-            title: Register and query an existing Delta table with Spark
+            title: Register an existing Delta table with Spark
           - page: tutorials/managed-delta-table
             id: T03
           - page: tutorials/read-volume-files
@@ -38,12 +38,16 @@ nav:
             id: T07
           - planned: T08
             title: Define and query your first metric view
-      - section: How-to guides
+
+      - section: Guides
         items:
-          - section: Catalogs and schemas
+          - section: Assets and securables
             items:
               - page: how-to/manage-catalogs-and-schemas
                 id: H01
+              - page: how-to/manage-volumes
+                id: H09
+
           - section: Tables and views
             items:
               - page: how-to/register-external-table
@@ -60,14 +64,14 @@ nav:
                 title: Create and maintain metric-view definitions
               - page: how-to/table-storage-formats
                 id: H08
+
           - section: Files and volumes
             items:
-              - page: how-to/manage-volumes
-                id: H09
               - planned: H10
                 title: Access volume files and model artifacts with vended credentials
               # Deferred follow-on to J04 until a compatible storage client is verified.
               - page: tutorials/marimo-remote-storage
+
           - section: Functions and AI
             items:
               - planned: H11

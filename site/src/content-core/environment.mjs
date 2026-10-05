@@ -17,16 +17,15 @@ export function exportLines(clientEnv = {}) {
 }
 
 /**
- * The reader's commands for one registry entry: download the bundle, change
- * into the stack's folder, start it, export its client env. `bundle` is the
+ * The reader's commands for one registry entry: download the bundle, start
+ * the stack from its folder, export its client env. `bundle` is the
  * archive's root folder, `bundleUrl` its absolute URL.
  */
 export function startCommands(key, env, { bundle, bundleUrl }) {
   const { dir, flag } = composeParts(key);
   return [
     `curl -fsSL ${bundleUrl} | tar -xz`,
-    `cd ${bundle}/${dir}`,
-    `docker compose ${flag}up -d --wait`,
+    `cd ${bundle}/${dir} && docker compose ${flag}up -d --wait`,
     ...exportLines(env.clientEnv),
   ];
 }

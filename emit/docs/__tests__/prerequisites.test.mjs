@@ -61,15 +61,14 @@ async function render(target, environment = ENV) {
 test("docs-site: the derived bullet, the authored ones, then the environment", async () => {
   const out = await render(docsSiteTarget({ assetBase: "/assets/how-to/s3" }));
   expect(out).toContain(
-    "::::prerequisites\n- For the local environment, Docker with Compose v2 and ports 8080 and 9000 free.\n- Python 3.11 or later.",
+    "::::prerequisites\n- Docker with Compose v2, for the local environment.\n- Python 3.11 or later.",
   );
   expect(out).toContain(":::environment[UC with S3]");
   expect(out).toContain(
     [
       "```bash",
       "curl -fsSL https://d.io/env/uc-docs-env.tar.gz | tar -xz",
-      "cd uc-docs-env/uc",
-      "docker compose -f compose.aws.yaml up -d --wait",
+      "cd uc-docs-env/uc && docker compose -f compose.aws.yaml up -d --wait",
       "export AWS_ALLOW_HTTP=true",
       "```",
     ].join("\n"),
@@ -83,7 +82,7 @@ test("md-twin: a **Prerequisites** blockquote with the same commands", async () 
   expect(out).not.toContain(":::");
   expect(out).toContain("> **Prerequisites**");
   expect(out).toContain("> **Start the environment: UC with S3**");
-  expect(out).toContain("> docker compose -f compose.aws.yaml up -d --wait");
+  expect(out).toContain("> cd uc-docs-env/uc && docker compose -f compose.aws.yaml up -d --wait");
 });
 
 test("a page whose scripts need no stack keeps the box as authored", async () => {

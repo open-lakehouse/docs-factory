@@ -9,7 +9,7 @@ references:
 status: draft
 ---
 
-A [Unity Catalog](model:unityCatalogOSS) 0.6.0 server stores catalogs,
+A [Unity Catalog](model:unityCatalogOSS) server stores catalogs,
 schemas, tables, volumes, functions, models, and credentials in a relational
 database. By default this is an H2 file inside the server, so the metadata is
 lost with the container. To keep it in PostgreSQL, mount one

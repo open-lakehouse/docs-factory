@@ -15,8 +15,8 @@ status: draft
 
 Everything [Unity Catalog](model:unityCatalogOSS) governs is a *securable
 object*: something with a name, an owner, and privileges that decide who can
-use it. This page describes the securable objects in the open source server as
-of 0.6.0, how they nest, and how they relate to the files they describe.
+use it. This page describes the securable objects in the open source server,
+how they nest, and how they relate to the files they describe.
 
 Securables fall into two groups:
 
@@ -76,7 +76,7 @@ These objects live directly under the metastore. They don't hold data. They
 control which storage the server can access, and on whose behalf.
 
 - A **storage credential** holds the cloud identity the server uses to reach
-  storage. In 0.6.0 the credential service implements AWS IAM roles. Azure and
+  storage. The credential service implements AWS IAM roles. Azure and
   Google Cloud access are configured on the server rather than as credential
   objects.
 - An **external location** pairs a storage path, such as
@@ -157,7 +157,7 @@ The how-to guides list the privileges each operation needs, for example
 and [Create and manage volumes](../../how-to/manage-volumes/index.md).
 
 :::note
-This page describes the open source server's 0.6.0 behavior, based on its API
+This page describes the open source server's behavior, based on its API
 definitions and authorization source. Databricks Unity Catalog adds securables
 and governance features, such as connections, shares, tags, row filters, and
 column masks, that the open source server doesn't implement.

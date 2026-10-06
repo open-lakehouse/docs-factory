@@ -1,6 +1,6 @@
 ---
 title: Features, scope, and limitations
-summary: What the Unity Catalog OSS 0.6.0 server implements per resource and API, its known issues, and the features it doesn't include.
+summary: What the Unity Catalog OSS server implements per resource and API, its known issues, and the features it doesn't include.
 diataxis: reference
 project: unitycatalog
 references:
@@ -22,7 +22,7 @@ Status values:
 - **Partial**: implemented with the restriction given in the row.
 - **Stored only**: the server accepts and stores the object, and an engine
   interprets it.
-- **Not implemented**: no API or behavior in the 0.6.0 server.
+- **Not implemented**: no API or behavior in the server.
 
 Paths below are relative to the
 [`v0.6.0` source tree](https://github.com/unitycatalog/unitycatalog/tree/v0.6.0).
@@ -83,24 +83,25 @@ Paths below are relative to the
 | Web UI | Implemented | A separate React application. | `ui/` |
 | Helm chart | Implemented | Kubernetes chart. Its replica count is not a high-availability guarantee. | `helm/` |
 
-## Known issues in 0.6.0
+## Known issues
 
-Behavior verified against the 0.6.0 server and the client versions in
-[Choose a client or engine](../clients-and-engines/index.md). The pages that
-cover each task link here.
+Behavior verified against the server and the client versions in
+[Choose a client or engine](../clients-and-engines/index.md). **Affects** lists
+the server releases an issue is verified in. The pages that cover each task
+link here.
 
 ### Server
 
-| Issue | What you see | Workaround |
-| --- | --- | --- |
-| Getting a volume that doesn't exist | HTTP 500 with error code `INTERNAL`, not 404. The Python SDK raises `ServiceException`, not `NotFoundException`. | List the schema's volumes to check whether one exists. |
-| Deleting managed tables and volumes | File deletion is best effort. If it fails, the server logs the error and still drops the catalog entry. | Check storage after dropping managed objects that matter. |
-| Storage roots outside an external location, with authorization disabled | The server accepts the root, then fails credential requests for its objects with `FAILED_PRECONDITION` (`S3 bucket configuration not found.`). With authorization enabled, creating the catalog or schema is denied. | Check each root against `external_location list` first. |
-| Force-deleting a storage credential that an external location uses | Every list of external locations fails with HTTP 500 `Credential not found`. | Force-delete the location by name: `uc external_location delete --name <name> --force true`. |
-| Changing an external location's URL | Tables, volumes, and storage roots under the old URL lose their credential; vending fails with `FAILED_PRECONDITION`. | Create the new location next to the old one and move the data first. |
-| SSE-KMS buckets | Vended S3 credentials can't read or write SSE-KMS objects; the session policy has no KMS actions. | Use SSE-S3. Fixed after 0.6.0 ([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)). |
-| Schema updates | Any principal with `USE CATALOG` and `USE SCHEMA` can update or rename a schema, not only its owner. | Grant those privileges with that in mind. |
-| CLI help for `credential` and `external_location` | `--help` crashes with a `NullPointerException`. The commands work. | See the flags in [Configure AWS storage credentials](../../how-to/configure-aws-storage/index.md#view-storage-credentials-and-external-locations). |
+| Issue | Affects | What you see | Workaround |
+| --- | --- | --- | --- |
+| Getting a volume that doesn't exist | 0.6.0 | HTTP 500 with error code `INTERNAL`, not 404. The Python SDK raises `ServiceException`, not `NotFoundException`. | List the schema's volumes to check whether one exists. |
+| Deleting managed tables and volumes | 0.6.0 | File deletion is best effort. If it fails, the server logs the error and still drops the catalog entry. | Check storage after dropping managed objects that matter. |
+| Storage roots outside an external location, with authorization disabled | 0.6.0 | The server accepts the root, then fails credential requests for its objects with `FAILED_PRECONDITION` (`S3 bucket configuration not found.`). With authorization enabled, creating the catalog or schema is denied. | Check each root against `external_location list` first. |
+| Force-deleting a storage credential that an external location uses | 0.6.0 | Every list of external locations fails with HTTP 500 `Credential not found`. | Force-delete the location by name: `uc external_location delete --name <name> --force true`. |
+| Changing an external location's URL | 0.6.0 | Tables, volumes, and storage roots under the old URL lose their credential; vending fails with `FAILED_PRECONDITION`. | Create the new location next to the old one and move the data first. |
+| SSE-KMS buckets | 0.6.0 | Vended S3 credentials can't read or write SSE-KMS objects; the session policy has no KMS actions. | Use SSE-S3. Fixed upstream in [#1774](https://github.com/unitycatalog/unitycatalog/pull/1774), not yet in a release. |
+| Schema updates | 0.6.0 | Any principal with `USE CATALOG` and `USE SCHEMA` can update or rename a schema, not only its owner. | Grant those privileges with that in mind. |
+| CLI help for `credential` and `external_location` | 0.6.0 | `--help` crashes with a `NullPointerException`. The commands work. | See the flags in [Configure AWS storage credentials](../../how-to/configure-aws-storage/index.md#view-storage-credentials-and-external-locations). |
 
 ### Clients and engines
 
@@ -117,9 +118,9 @@ cover each task link here.
 | DuckDB 1.5.4, stable `unity_catalog` | Tables with `DECIMAL` columns | `Invalid field found while parsing field: type_precision`. Install the extension from `core_nightly`. |
 | `unitycatalog-ai` 0.4.0 | Functions that return a falsy value, such as `0` or `""` | `result.value` holds a "no output was produced" message instead of the value. |
 
-## Not in Unity Catalog OSS 0.6.0
+## Not in Unity Catalog OSS
 
-The following have no API in the 0.6.0 server. Databricks Unity Catalog offers
+The following have no API in the server. Databricks Unity Catalog offers
 several of them, so guides written for Databricks don't apply here:
 
 - Lineage

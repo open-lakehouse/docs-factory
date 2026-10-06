@@ -1,6 +1,6 @@
 ---
 title: Create your first catalog
-summary: Start a local Unity Catalog 0.6.0 server, browse its sample data, then create a catalog, a schema, and a Delta table of your own with the uc CLI.
+summary: Start a local Unity Catalog server, browse its sample data, then create a catalog, a schema, and a Delta table of your own with the uc CLI.
 diataxis: tutorial
 project: unitycatalog
 references:
@@ -20,7 +20,7 @@ catalog, a schema inside it, and a Delta table you write to and read back.
 ### Start the server
 
 Run the commands under **Prerequisites**. They download the docs'
-environment and start Unity Catalog 0.6.0.
+environment and start the Unity Catalog server.
 
 The server now listens on `http://localhost:8080`. Authorization is off, so
 every command succeeds without a token. That keeps this tutorial short, and it

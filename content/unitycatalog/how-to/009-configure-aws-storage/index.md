@@ -92,7 +92,7 @@ region chain, then the global STS endpoint.
 
 :::note
 Use exactly these key names. The `aws.s3.masterRoleArn`-style spellings in the
-upstream `docs/server/aws.md` are silently ignored by the 0.6.0 server.
+upstream `docs/server/aws.md` are silently ignored by the server.
 :::
 
 ### Run outside AWS
@@ -124,10 +124,10 @@ everything your engines need. Engines such as Spark may also call
 `s3:GetBucketLocation`.
 
 :::note
-Encrypt buckets that Unity Catalog 0.6.0 governs with SSE-S3. The 0.6.0 session
-policy has no KMS actions, so vended credentials can't use SSE-KMS objects.
-Releases after 0.6.0 add them
-([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)).
+Encrypt buckets that Unity Catalog governs with SSE-S3. The session policy has
+no KMS actions, so vended credentials can't use SSE-KMS objects. The fix
+([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)) is merged
+upstream but not yet in a release.
 :::
 
 Then register the role with Unity Catalog:
@@ -238,8 +238,8 @@ volume.
 
 The CLI's `credential` and `external_location` commands take the flags
 `--name`, `--aws_iam_role_arn`, `--url`, `--credential_name`, `--comment`,
-`--new_name`, and `--force`. Their `--help` pages don't work in 0.6.0; see
-[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060).
+`--new_name`, and `--force`. Their `--help` pages crash; see
+[Known issues](../../reference/features-and-limitations/index.md#known-issues).
 
 **Required privileges:** ownership of the metastore, or ownership of (or
 `CREATE EXTERNAL LOCATION` on) the credential. For an external location:
@@ -279,7 +279,7 @@ Update an external location's comment, name, credential, or URL the same way:
 :::
 
 :::warning
-In 0.6.0 the server doesn't check what lives under a location before it accepts
+The server doesn't check what lives under a location before it accepts
 a new URL. Tables, volumes, and managed storage roots under the old URL lose
 their credential, and vending for them fails with `FAILED_PRECONDITION`. Before
 you change a URL, create the new location alongside the old one if the
@@ -314,7 +314,7 @@ in S3 and the IAM roles stay.
 :::danger
 Always delete the location before its credential. Force-deleting a credential
 that a location still uses breaks every list of external locations; see
-[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060) to recover.
+[Known issues](../../reference/features-and-limitations/index.md#known-issues) to recover.
 :::
 
 **Required privileges:** ownership of the object or of the metastore.

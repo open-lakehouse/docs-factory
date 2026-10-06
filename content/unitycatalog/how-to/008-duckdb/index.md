@@ -112,7 +112,7 @@ tables with Spark, as in
 [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md).
 [Clients and engines](../../reference/clients-and-engines/index.md#table-operations-by-engine)
 lists each engine's supported operations, and
-[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060)
+[Known issues](../../reference/features-and-limitations/index.md#known-issues)
 lists the errors DuckDB returns for the others.
 
 ## Required privileges

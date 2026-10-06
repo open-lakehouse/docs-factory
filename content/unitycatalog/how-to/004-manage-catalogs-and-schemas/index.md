@@ -11,15 +11,14 @@ status: draft
 
 Catalogs and schemas organize every asset in
 [Unity Catalog](model:unityCatalogOSS). This guide creates, inspects, updates,
-renames, and deletes them in Unity Catalog 0.6.0, with the Python SDK or the
+renames, and deletes them with the Python SDK or the
 `uc` CLI. A catalog is the top level of the three-level namespace. It contains schemas, and a schema contains tables,
 volumes, functions, and registered models. For how these objects relate, see
 [Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
 
 :::prerequisites
-- For the Python examples, Python 3.11 or later and the
-  [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) package,
-  version 0.6.0.
+- For the Python examples, Python 3.11 or later with
+  [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) 0.6.0.
 :::
 
 ## Set up the client
@@ -159,7 +158,7 @@ name changes from `retail.staging` to `retail.sales`.
 **Required privileges:** ownership of the schema or the metastore.
 
 :::caution
-In 0.6.0 the server also allows schema updates, renames included, for any
+The server also allows schema updates, renames included, for any
 principal with `USE_CATALOG` and `USE_SCHEMA`. Grant those privileges with that
 in mind.
 :::

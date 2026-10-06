@@ -72,7 +72,7 @@ prefix and the catalog's ID, and returns the result as `storage_location`:
 The root can be the external location's URL or any path below it. Several
 catalogs can share one root, since each gets its own ID-named directory.
 
-The root is fixed when the catalog is created. The update API in 0.6.0 has no
+The root is fixed when the catalog is created. The update API has no
 `storage_root` field. To move managed data, create a new catalog and copy it.
 
 **Required privileges:** ownership of the metastore or `CREATE CATALOG` on it,
@@ -158,7 +158,7 @@ Check each root against `external_location list` before you use it. With
 authorization enabled, the server rejects a root outside every external
 location. With authorization disabled, as on the local server, it accepts the
 root, and credential requests for its objects fail later; see
-[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060).
+[Known issues](../../reference/features-and-limitations/index.md#known-issues).
 :::
 
 ## Delete a catalog with managed storage

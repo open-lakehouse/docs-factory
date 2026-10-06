@@ -1,6 +1,6 @@
 ---
 title: Run a local Unity Catalog server
-summary: Download the docs' Docker Compose environment and start a single-user Unity Catalog 0.6.0 server on localhost:8080, optionally next to a local stand-in for Amazon S3.
+summary: Download the docs' Docker Compose environment and start a single-user Unity Catalog server on localhost:8080, optionally next to a local stand-in for Amazon S3.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -9,7 +9,7 @@ status: draft
 ---
 
 Every example in these docs runs against the same local
-[Unity Catalog](model:unityCatalogOSS) 0.6.0 server: one container that
+[Unity Catalog](model:unityCatalogOSS) server: one container that
 listens on `http://localhost:8080`, with authorization disabled so that no
 request needs a token. Start it once, and it serves every tutorial and how-to
 guide until you stop it.
@@ -38,8 +38,8 @@ directory, or the server fails with a `not a directory` mount error.
 docker compose up -d --wait
 ```
 
-The command returns once the server reports healthy. This starts Unity
-Catalog 0.6.0 with this configuration:
+The command returns once the server reports healthy. It runs
+with this configuration:
 
 ```yaml file=../../../../envs/unitycatalog/compose.yaml title="compose.yaml"
 ```

@@ -12,11 +12,10 @@ status: draft
 Apache Spark connects to a [Unity Catalog](model:unityCatalogOSS) server
 through the Unity Catalog Spark connector, so that Spark SQL can name
 `catalog.schema.table` and read and write the tables it holds. This guide picks
-matching versions, configures a SparkSession, and sets up authentication for
-Unity Catalog 0.6.0. The connector
-registers one Unity Catalog catalog as a Spark catalog. Delta Spark handles the
-table format, and from Delta 4.3.0 it reads and commits catalog-managed tables
-through the server's Delta API.
+matching versions, configures a SparkSession, and sets up authentication. The
+connector registers one Unity Catalog catalog as a Spark catalog. Delta Spark
+handles the table format, and from Delta 4.3.0 it reads and commits
+catalog-managed tables through the server's Delta API.
 
 :::prerequisites
 - Java 17 and Python 3.11 or later with [uv](https://docs.astral.sh/uv/).
@@ -113,7 +112,7 @@ Set them like the others, for example
 what each credential may access, see
 [Credential vending](../../explanation/credential-vending/index.md).
 
-Option names and defaults come from the 0.6.0 connector source,
+Option names and defaults come from the connector source,
 [`OptionsUtil.java`](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/connectors/spark/src/main/java/io/unitycatalog/spark/utils/OptionsUtil.java)
 and
 [`AuthConfigs.java`](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/clients/java/src/main/java/io/unitycatalog/client/auth/AuthConfigs.java).

@@ -30,7 +30,7 @@ from an earlier tutorial. Then open a Python session with the
 client installed:
 
 ```bash
-uv run --with unitycatalog-client>=0.6.0 python -m asyncio
+uv run --with unitycatalog-client==0.6.0 python -m asyncio
 ```
 
 `python -m asyncio` is a Python shell that accepts `await` at the top level.

@@ -13,7 +13,7 @@ A [Unity Catalog](model:unityCatalogOSS) volume governs a directory of files
 that aren't a table: CSV drops, documents, images, model inputs. Like a table, a
 volume lives in a schema and has a three-level name, such as
 `retail.files.landing`. This guide creates, inspects, renames, and deletes
-volumes in Unity Catalog 0.6.0, and shows what each step does to their files.
+volumes, and shows what each step does to their files.
 
 Volumes come in two types:
 
@@ -121,7 +121,7 @@ external-location check.
 :::
 
 To check whether a volume exists, list the schema's volumes; see
-[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060).
+[Known issues](../../reference/features-and-limitations/index.md#known-issues).
 
 **Required privileges:** `READ_VOLUME` or ownership on the volume, plus
 `USE_SCHEMA` and `USE_CATALOG`. Owners of the schema (with `USE_CATALOG`), the

@@ -42,7 +42,7 @@ it, in order.
 ```
 
 `unitycatalog-ai` 0.4.0 depends on the 0.4 release of `unitycatalog-client`.
-It works with the 0.6.0 server for everything in this tutorial. Authorization
+It works with the local server for everything in this tutorial. Authorization
 is off on the local server, so the client needs no token.
 
 ### Create a schema for functions

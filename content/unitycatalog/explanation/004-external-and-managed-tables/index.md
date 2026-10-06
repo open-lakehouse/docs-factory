@@ -15,8 +15,7 @@ status: draft
 Unity Catalog knows two kinds of table. They differ in two things: who owns
 the files, and who decides which version of the table is the current one. This
 page explains both kinds, what the server does for a catalog-managed
-[Delta](model:deltaSpec) table, and which engines can use each kind. It
-describes the open source server at version 0.6.0.
+[Delta](model:deltaSpec) table, and which engines can use each kind.
 
 ## Two questions decide the kind
 
@@ -34,7 +33,7 @@ the catalog plays no part. For a *catalog-managed* Delta table, the catalog
 decides. A writer proposes commit `N`, and it becomes the table's version `N`
 only once the server accepts it.
 
-In Unity Catalog 0.6.0 the two answers go together. Managed tables are always
+In Unity Catalog the two answers go together. Managed tables are always
 Delta, and a client that creates one through the Delta API, such as Spark with
 Delta 4.3 or later, makes it catalog-managed. External tables never are.
 
@@ -78,11 +77,11 @@ defines each step. Expand the diagram and step through it:
 The lifecycle has four parts.
 
 1. **Negotiate.** The client asks `GET /delta/v1/config` which endpoints and
-   which protocol version the server supports. Unity Catalog 0.6.0 answers with
-   twelve endpoints and protocol version `1.0`.
+   which protocol version the server supports. The server answers with the
+   endpoints it implements and protocol version `1.0`.
 2. **Stage.** To create a table, the client asks for a *staging table*. The
    server picks the location, issues a read-write credential for it, and states
-   the Delta protocol the table must use. A 0.6.0 server answers like this:
+   the Delta protocol the table must use. The server answers like this:
 
    ```json
    {
@@ -121,15 +120,15 @@ location, so no client needs standing access to the whole bucket. See
 ## What clients must support
 
 Because the protocol lives in the table, a client that doesn't speak it can't
-use the table at all, not even to read it. Unity Catalog 0.6.0 gives a
-path-based client nothing to work with: delta-rs 1.6.6, pointed at a managed
+use the table at all, not even to read it. Unity Catalog gives a path-based
+client nothing to work with: delta-rs 1.6.6, pointed at a managed
 table's location, stops with
 `Max catalog version is required when loading a catalog-managed table`. That
 refusal is deliberate. A client that only lists files could miss commits the
 catalog has accepted, or write a version the catalog never approved.
 
-So for a managed table, choose a client that goes through the catalog. At
-0.6.0 these include Spark with the Unity Catalog connector and Delta 4.3 or
+So for a managed table, choose a client that goes through the catalog. These
+include Spark with the Unity Catalog connector and Delta 4.3 or
 later, and DuckDB's `unity_catalog` extension for reads and appends. See
 [Clients and engines](../../reference/clients-and-engines/index.md) for the
 tested list.

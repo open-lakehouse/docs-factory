@@ -38,7 +38,7 @@ commit through the server.
 
 The Polars and pandas examples use a table on S3, and the Daft examples a table
 on local storage, which is what each library is tested with here; see
-[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060).
+[Known issues](../../reference/features-and-limitations/index.md#known-issues).
 The local environment above simulates S3. On real AWS, leave its
 `AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP` variables unset.
 
@@ -142,7 +142,7 @@ the commit, so it doesn't coordinate writers on an external table.
 Create and drop tables with the [Python client](../../tutorials/python-client/index.md)
 or Spark. [Clients and engines](../../reference/clients-and-engines/index.md#table-operations-by-engine)
 lists the operations each library supports with these versions, and
-[Known issues in 0.6.0](../../reference/features-and-limitations/index.md#known-issues-in-060) lists the errors you see outside them.
+[Known issues](../../reference/features-and-limitations/index.md#known-issues) lists the errors you see outside them.
 
 ## Required privileges
 

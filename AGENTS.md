@@ -158,7 +158,9 @@ just arch-dev                          # LikeC4 architecture model at :5173
 6. Lead with what works. A page states one limitation inline only when it
    blocks that page's task. Version quirks and their error strings go in R01's
    "Known issues" section (`reference/features-and-limitations`), and pages
-   link there.
+   link there. Pages don't restate the release: it lives in
+   `content/unitycatalog/release.yml` and the environment title, and
+   `just bump-uc` moves every pin (see `content/README.md` "Versions").
 
 ## Blog workflow
 

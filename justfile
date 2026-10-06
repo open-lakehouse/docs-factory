@@ -207,6 +207,10 @@ aws-sim-logs:
 aws-sim-down:
     cd envs/aws-sim/example && docker compose down -v
 
+# Move the UC docs to a new release: rewrite release.yml and every pin matching it.
+bump-uc VERSION:
+    uv run docsnip bump-uc {{VERSION}}
+
 # Validate frontmatter, snippets, and nav.yml manifests (CI gate).
 check: _site-deps
     uv run docsnip check

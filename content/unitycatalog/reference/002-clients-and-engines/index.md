@@ -1,6 +1,6 @@
 ---
 title: Choose a client or engine
-summary: Which tools connect to Unity Catalog OSS 0.6.0, through which API, what each can do, and how well that is verified.
+summary: Which tools connect to Unity Catalog OSS, through which API, what each can do, and how well that is verified.
 diataxis: reference
 project: unitycatalog
 references:
@@ -33,9 +33,9 @@ API, its abilities, and the versions that go with server **0.6.0**.
 
 Each tool in the tables below carries one label:
 
-- **Tested here**: a page on this site runs it against a 0.6.0 server in CI.
-- **Upstream**: the Unity Catalog project ships or documents it for 0.6.0. These
-  docs don't test it yet.
+- **Tested here**: a page on this site runs it against the server in CI.
+- **Upstream**: the Unity Catalog project ships or documents it for this
+  release. These docs don't test it yet.
 - **Provider**: another project owns the integration and its documentation.
   Check the provider's docs for versions and limits.
 
@@ -62,7 +62,7 @@ These manage catalog metadata. They read and write data files only where noted.
 | pandas, through `deltalake` | UC REST, via `uc://` table names | Read and append to external Delta tables on cloud storage, with vended credentials. No managed tables. | `deltalake==1.6.6`, `pandas==2.3.3` | Tested here |
 | Trino, and other Iceberg REST clients | Iceberg REST, read only | Read Delta tables that have UniForm Iceberg metadata | Trino's `iceberg` connector with `iceberg.catalog.type=rest` | Upstream |
 
-The upstream DuckDB guide at 0.6.0 still installs an older `uc_catalog`
+The upstream DuckDB guide still installs an older `uc_catalog`
 extension. DuckDB's current extension is `unity_catalog`. Its stable build for
 DuckDB 1.5.4 can't read `DECIMAL` columns, so
 [the DuckDB how-to](../../how-to/duckdb/index.md) installs the nightly build.
@@ -74,7 +74,7 @@ Polars, Daft, and pandas, which read through it; see
 
 ## Table operations by engine
 
-Each ✓ links to the page whose CI test runs that operation against a 0.6.0
+Each ✓ links to the page whose CI test runs that operation against the
 server. ✗ means the operation failed with the tested versions: DuckDB's
 failures are asserted in CI, and the managed-table failures for Polars, Daft,
 and pandas come from a verification run with the error each page quotes. "—"
@@ -93,7 +93,7 @@ means these docs don't test it.
 pandas lists tables only through the
 [Python client](../../tutorials/python-client/index.md). For each library's
 errors, see
-[Known issues in 0.6.0](../features-and-limitations/index.md#known-issues-in-060).
+[Known issues](../features-and-limitations/index.md#known-issues).
 
 ## ML and AI libraries
 
@@ -104,7 +104,7 @@ errors, see
 | `unitycatalog-langchain`, `unitycatalog-openai`, and others | `0.4.0` | Turn catalog functions into tools for one AI framework. Integrations also exist for Anthropic, AutoGen, CrewAI, DSPy, Gemini, LiteLLM, and LlamaIndex. | Upstream |
 
 The AI packages version independently of the server. Their 0.4.0 release is
-the one in the 0.6.0 source tree.
+the one in the server's source tree.
 
 ## For integration authors
 

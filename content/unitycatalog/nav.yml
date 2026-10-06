@@ -108,7 +108,8 @@ nav:
             title: Give two users different access to a catalog
           - planned: T10
             title: Keep catalog metadata across restarts with PostgreSQL
-      - section: How-to guides
+
+      - section: Guides
         items:
           - section: Deploy and persist
             items:
@@ -121,6 +122,7 @@ nav:
               # Primary home for H25; selection rationale moves to E10 when written.
               - page: how-to/configure-backend-db
                 id: H25
+
           - section: Configure storage
             items:
               - page: how-to/configure-aws-storage
@@ -133,6 +135,7 @@ nav:
                 title: Configure ADLS credential vending
               - planned: H31
                 title: Configure GCS credential vending
+
           - section: Identity and access
             items:
               - planned: H32

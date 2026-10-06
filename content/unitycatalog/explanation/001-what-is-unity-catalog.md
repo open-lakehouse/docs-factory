@@ -1,17 +1,17 @@
 ---
 title: What is Unity Catalog OSS?
-summary: Unity Catalog OSS is an open source catalog server that tracks tables, volumes, functions, and models, where their data lives, and who may use them, for any engine that speaks its open REST APIs.
+summary: The open catalog for all your Data and AI assets in the open lakehouse.
 diataxis: explanation
 project: unitycatalog
 explains: unityCatalogOSS
 references:
   - lakehouse.catalog
   - ucSpec
-status: draft
+status: ready
 ---
 
 Unity Catalog OSS is an open source catalog server for data and AI assets. It
-keeps track of which tables, volumes, functions, and models exist, where their
+keeps track of which tables, volumes, functions, and models, etc. exist, where their
 data lives, and who may use them. Query engines and applications ask it those
 questions over open REST APIs. The project is hosted by the LF AI & Data
 Foundation.
@@ -35,8 +35,8 @@ those questions has long been the job of the [catalog](model:lakehouse.catalog).
 
 In a traditional database the catalog is built in and you rarely notice it. The
 [lakehouse architecture] took that monolith apart: storage and compute became
-separate systems, and open table formats such as Delta Lake took over
-responsibilities like schema enforcement and ACID transactions. In early
+separate systems, and open table formats such as Delta Lake and Apache Iceberg (TM)
+took over responsibilities like schema enforcement and ACID transactions. In early
 lakehouses, which were mostly large analytical pipelines, the catalog almost
 disappeared. Looking up a table often meant passing a file path.
 
@@ -80,13 +80,12 @@ that run queries and store data:
 
 - **Engines run the queries.** Spark, DuckDB, Trino, Daft, and your own
   applications connect through the Unity Catalog REST API, the Delta API for
-  catalog-managed Delta tables, or the Iceberg REST API for reading Delta
-  tables with Iceberg metadata (UniForm).
+  catalog-managed Delta tables, or the Iceberg REST API for reading Iceberg tables
+  or Delta tables with Iceberg metadata (UniForm).
 - **Storage holds the data.** Table and volume files live in object storage or
   a file system, and the catalog records where. When an engine needs the files,
   the catalog can issue short-lived credentials scoped to that one table or
-  volume, a mechanism called
-  [credential vending](credential-vending/index.md).
+  volume, a mechanism called [credential vending](credential-vending/index.md).
 
 This split is the point of an open catalog. Any engine that speaks the APIs
 sees the same names, schemas, and permissions, and no engine has to own the

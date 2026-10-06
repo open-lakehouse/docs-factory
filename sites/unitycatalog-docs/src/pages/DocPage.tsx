@@ -17,7 +17,7 @@ import { type PageMeta, useContent } from "../site";
 
 const DIATAXIS: Record<string, { label: string; Icon: LucideIcon }> = {
   tutorial: { label: "Tutorial", Icon: GraduationCap },
-  "how-to": { label: "How-to guide", Icon: Wrench },
+  "how-to": { label: "Guide", Icon: Wrench },
   reference: { label: "Reference", Icon: BookOpen },
   explanation: { label: "Concept", Icon: Lightbulb },
 };

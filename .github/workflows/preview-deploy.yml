@@ -56,6 +56,7 @@ jobs:
     # VERCEL_BRANCH_URL, not a static var. See runbook §3.
     environment: preview
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
       NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}

@@ -29,6 +29,36 @@ function anchorLine(t: FeedbackThread): string {
   return `- anchor: ${section}${quote}`;
 }
 
+/** Prefix every line of `text` for a diff fence. */
+function diffSide(sign: "-" | "+", text: string): string[] {
+  return text.split("\n").map((l) => `${sign} ${l}`);
+}
+
+function suggestionLines(t: FeedbackThread): string[] {
+  const s = t.suggestion;
+  if (!s) return [];
+  const verb = s.replacement ? "replace" : "delete";
+  const out = [`- suggestion (${s.state}): ${verb} the anchored passage`];
+  if (s.match) {
+    const range =
+      s.match.startLine === s.match.endLine
+        ? `${s.match.startLine}`
+        : `${s.match.startLine}-${s.match.endLine}`;
+    const action = s.replacement ? "replace this text literally" : "remove this text";
+    out.push(`  - source match at line ${range}; ${action}:`);
+    out.push("", "```", s.match.source, "```");
+  } else {
+    out.push(
+      "  - no literal source match: the passage carries inline markup or moved; apply the " +
+        "wording and keep the source's formatting",
+    );
+  }
+  out.push("", "```diff", ...diffSide("-", s.original));
+  if (s.replacement) out.push(...diffSide("+", s.replacement));
+  out.push("```");
+  return out;
+}
+
 /** One thread, with its full conversation. */
 export function formatThread(t: FeedbackThread, opts: { excerpt?: boolean } = {}): string {
   const out = [
@@ -39,6 +69,7 @@ export function formatThread(t: FeedbackThread, opts: { excerpt?: boolean } = {}
     locationLine(t.location),
   ];
   if (t.authoredGitSha) out.push(`- written against: ${t.authoredGitSha.slice(0, 12)}`);
+  if (t.suggestion) out.push(...suggestionLines(t));
   if (opts.excerpt && t.location?.excerpt) {
     out.push("", "```", t.location.excerpt, "```");
   }
@@ -46,7 +77,8 @@ export function formatThread(t: FeedbackThread, opts: { excerpt?: boolean } = {}
   for (const c of t.comments) {
     const who = c.viaAgent ? `${c.author} via agent` : c.author;
     out.push(`> **${who}**${c.createdAt ? ` · ${c.createdAt.slice(0, 10)}` : ""}`);
-    for (const line of c.body.split("\n")) out.push(`> ${line}`);
+    const body = c.body || (c.id === t.id && t.suggestion ? "_(suggestion only)_" : "");
+    for (const line of body.split("\n")) out.push(`> ${line}`);
     out.push(">");
   }
   if (out[out.length - 1] === ">") out.pop();

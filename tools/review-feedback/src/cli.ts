@@ -19,6 +19,7 @@ import {
   getThread,
   type ListOptions,
   listFeedback,
+  markSuggestionApplied,
   reply,
   type StateFilter,
 } from "./feedback.js";
@@ -35,7 +36,7 @@ Usage:
                        [--state open|awaiting|unresolved|all] [--excerpt] [--json]
   review-feedback show <thread-id> [--json]
   review-feedback pull [--out .review] [list filters]
-  review-feedback reply <thread-id> (--body <md> | --file <path|->)
+  review-feedback reply <thread-id> (--body <md> | --file <path|->) [--applied]
 
 Config: flags, then DOCS_REVIEW_URL / DOCS_REVIEW_API_URL / DOCS_REVIEW_TOKEN,
 then ${configPath()} (written by login).`;
@@ -55,6 +56,7 @@ const { values: flags, positionals } = parseArgs({
     out: { type: "string" },
     body: { type: "string" },
     file: { type: "string" },
+    applied: { type: "boolean" },
     help: { type: "boolean", short: "h" },
   },
 });
@@ -165,8 +167,13 @@ async function main() {
       const c = connection();
       const t = await getThread(c, arg);
       if (!t) throw new ConfigError(`no thread ${arg} (or no access to it)`);
+      if (flags.applied && !t.suggestion) {
+        throw new ConfigError(`thread ${t.id} has no suggestion to mark applied`);
+      }
       const posted = await reply(c, t, body);
-      return print(`Replied on ${t.page} thread ${t.id} (comment ${posted?.id ?? "?"}).`);
+      if (flags.applied) await markSuggestionApplied(c, t.id);
+      const marked = flags.applied ? " and marked its suggestion applied" : "";
+      return print(`Replied on ${t.page} thread ${t.id} (comment ${posted?.id ?? "?"})${marked}.`);
     }
     default:
       throw new ConfigError(`unknown command "${cmd}"\n\n${USAGE}`);

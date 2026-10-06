@@ -12,7 +12,7 @@ import {
   ContentRefSchema,
   TextSelectorSchema,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
-import { findQuote, locate, sourcePathForRef } from "./locate.js";
+import { findQuote, locate, matchSuggestion, sourcePathForRef } from "./locate.js";
 
 const PAGE = "content/unitycatalog/how-to/002-create-tables/index.md";
 const SNIPPET = "content/unitycatalog/how-to/002-create-tables/snippets/create.py";
@@ -231,4 +231,42 @@ describe("locate code", () => {
 
 test("findQuote returns undefined for a too-short needle", () => {
   expect(findQuote(["abc"], 1, 1, "ab")).toBeUndefined();
+});
+
+describe("matchSuggestion", () => {
+  const raw = [
+    "Intro.",
+    "Run the following to create",
+    "a table in the catalog.",
+    "You need a **running** server.",
+    "    client = connect()",
+    '    await client.create_table("t")',
+  ].join("\n");
+
+  test("plain prose matches across a soft line break", () => {
+    expect(matchSuggestion(raw, { startLine: 2, endLine: 3 }, "create a table", false)).toEqual({
+      startLine: 2,
+      endLine: 3,
+      source: "create\na table",
+    });
+  });
+
+  test("prose through inline markup has no literal match", () => {
+    expect(
+      matchSuggestion(raw, { startLine: 4, endLine: 4 }, "You need a running server.", false),
+    ).toBeUndefined();
+  });
+
+  test("code matches dedented lines and returns them as in the source", () => {
+    const original = 'client = connect()\nawait client.create_table("t")';
+    expect(matchSuggestion(raw, { startLine: 5, endLine: 6 }, original, true)).toEqual({
+      startLine: 5,
+      endLine: 6,
+      source: '    client = connect()\n    await client.create_table("t")',
+    });
+  });
+
+  test("no location, no match", () => {
+    expect(matchSuggestion(raw, {}, "Intro.", false)).toBeUndefined();
+  });
 });

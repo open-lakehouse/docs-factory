@@ -302,6 +302,49 @@ function locateCode(comment: Comment, repoRoot: string): Omit<Location, "drifted
   };
 }
 
+/** Where a suggestion's original sits in the source, as the text to replace. */
+export interface SuggestionMatch {
+  startLine: number;
+  endLine: number;
+  /** The source text the suggestion's original corresponds to, verbatim. */
+  source: string;
+}
+
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Find a suggestion's `original` in the located lines of `raw`, so an agent
+ * can replace it literally. Rendered prose joins soft-wrapped source lines with
+ * a space, so whitespace runs match any whitespace; code compares trimmed lines
+ * because the rendered snippet is dedented. Undefined when the passage carries
+ * inline markup (or moved), which the agent must carry over by hand.
+ */
+export function matchSuggestion(
+  raw: string,
+  loc: Pick<Location, "startLine" | "endLine">,
+  original: string,
+  code: boolean,
+): SuggestionMatch | undefined {
+  if (loc.startLine === undefined || loc.endLine === undefined || !original.trim()) return;
+  const lines = raw.split("\n");
+  const from = loc.startLine;
+  if (code) {
+    const want = original.split("\n").map((l) => l.trim());
+    const got = lines.slice(from - 1, from - 1 + want.length);
+    if (got.length !== want.length || got.some((l, i) => l.trim() !== want[i])) return;
+    return { startLine: from, endLine: from + want.length - 1, source: got.join("\n") };
+  }
+  const window = lines.slice(from - 1, loc.endLine).join("\n");
+  const pattern = original.trim().split(/\s+/).map(escapeRegExp).join("\\s+");
+  const m = new RegExp(pattern).exec(window);
+  if (!m) return;
+  const before = window.slice(0, m.index).split("\n").length - 1;
+  const span = m[0].split("\n").length - 1;
+  return { startLine: from + before, endLine: from + before + span, source: m[0] };
+}
+
 /**
  * Locate a thread's root comment in the checkout at `repoRoot`. Returns
  * undefined when the content isn't in this checkout at all (wrong repo, or a

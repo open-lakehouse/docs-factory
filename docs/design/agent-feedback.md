@@ -15,7 +15,7 @@ reply once it has acted. Resolution stays with the reviewer.
 
 ```
 agent (Claude Code / Omnigent claude-native / Codex)
-  │  stdio MCP: list_feedback · get_thread · reply_to_thread
+  │  stdio MCP: list_feedback · get_thread · reply_to_thread (+ suggestion_applied)
   ▼
 tools/review-feedback  (runs from the checkout; same core as the CLI)
   │  Connect RPC, Authorization: Bearer dfr_…
@@ -46,6 +46,9 @@ sha256 is stored (`api_token`).
     versions).
   - `feedback:reply` covers `CreateComment` **only with a `parent_id`**. A token
     can't open new threads.
+  - `feedback:reply` also covers `SetSuggestionState` **only to mark a
+    suggestion applied**. An agent can report a change it landed but can't
+    dismiss or reopen one.
   - Everything else is denied: resolve, approvals, release, admin, and token
     management itself. New RPCs are denied until added deliberately.
 - **Provenance.** Comments written with a token are `via_agent`, and the UI shows a
@@ -95,6 +98,36 @@ server anchor with, so ids and hashes agree by construction.
    still matches, otherwise take the nearest line with that hash.
 4. Drift: `git diff --quiet <authored_git_sha> -- <path>`. When it reports a
    change, the agent is told to read around rather than trust the numbers.
+
+## Suggested edits
+
+A thread root with a prose or code selector can carry a `Suggestion`. It is the
+passage verbatim as the reviewer saw it (`original`) plus the `replacement`. An
+empty replacement proposes a deletion. It rides on the comment rather than
+being a separate object. The rationale is the root's `body_md`, which may be
+empty, and discussion happens in ordinary replies. Its lifecycle is a status
+only, independent of thread resolution:
+
+| State | Set by |
+|---|---|
+| `open` | creation, or a reviewer reopening it |
+| `applied` | a reviewer, an agent token, or `RegisterVersion` (`system`) |
+| `dismissed` | a reviewer |
+
+- **Original is rendered text, not Markdown.** For prose the reviewer edits what
+  they selected on the page. The site offers suggesting only within one block,
+  because the DOM joins text across blocks with no separator. `CreateComment`
+  rejects an original whose normalized form isn't the selector's quote, or, for
+  code, whose first line doesn't hash to `line_hash`.
+- **Mapping onto source** is the agent's job. `matchSuggestion` in `locate.ts`
+  finds the original literally in the located lines (whitespace-flexible for
+  soft-wrapped prose; trimmed lines for dedented code). It reports the source
+  text to replace. With no match, the passage has inline markup the agent
+  carries over.
+- **Closing the loop.** On `RegisterVersion`, an open prose suggestion whose
+  quote left its section is marked applied when the section reads like the edit
+  landed: the replacement next to the quote's prefix or suffix, or, for a
+  deletion, the two joined. Misses are left for a reviewer.
 
 ## Wiring
 

@@ -40,6 +40,21 @@ For each thread, `get_thread` gives the conversation plus a location:
   thread, and decide whether it still applies.
 - `file changed since comment`: line numbers may be stale. Read around them.
 
+A thread may carry a **suggestion**: the reviewer's exact wording for the
+anchored passage, shown as a `diff` block (`-` original, `+` replacement; no `+`
+side means delete the passage). Treat it as the preferred change:
+
+- With a `source match`, replace that source text with the replacement.
+- Without one, the passage has inline markup (emphasis, links, code spans) or
+  moved. Apply the new wording and keep the source's formatting.
+- Code suggestions are dedented. Re-indent them to match the source lines.
+- A suggestion that is `applied` or `dismissed` is settled. Read the replies for
+  anything still open.
+
+Apply a suggestion verbatim unless it would make the page wrong (a broken
+command, a false claim, a convention violation). Then answer instead and leave
+it open.
+
 Read the whole thread; later replies often refine or retract the first comment.
 Decide for each thread: change it, or answer without changing (the comment is
 mistaken, already handled, or out of scope). Don't silently skip a thread.
@@ -67,12 +82,14 @@ addressed in the body. Push and open a PR whose description lists each thread
 
 **Only after the PR exists**, call `reply_to_thread` once per handled thread:
 
-- Changed: one or two sentences on what changed, plus the PR link.
+- Changed: one or two sentences on what changed, plus the PR link. If the
+  thread's suggestion is what you applied, set `suggestion_applied: true`
+  (CLI: `--applied`) so it shows as applied.
 - Not changed: why, briefly and respectfully, so the reviewer can push back.
 
 Replies are posted as the token's owner and marked "via agent". Never resolve a
 thread; the tools can't, and resolution is the reviewer's call once they've seen
-the change.
+the change. The same goes for dismissing a suggestion.
 
 Finish with a short report: threads addressed, answered without change, and
 skipped (with reasons), plus the PR link.

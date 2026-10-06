@@ -40,6 +40,8 @@ import {
   type RecentCommentRow,
   type ResolutionRow,
   recentCommentFromRow,
+  SUGGESTION_STATE_TO_DB,
+  suggestionError,
 } from "../comments.js";
 import { db, type Queryable, type Sql } from "../db.js";
 import {
@@ -124,6 +126,8 @@ import {
   SearchUsersResponseSchema,
   type SetPriorityRequest,
   SetPriorityResponseSchema,
+  type SetSuggestionStateRequest,
+  SetSuggestionStateResponseSchema,
   type SetTargetReleaseDateRequest,
   SetTargetReleaseDateResponseSchema,
   type TransitionReviewRequest,
@@ -721,6 +725,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
                  c.code_path, c.code_region, c.code_line, c.code_end_line,
                  c.code_line_hash, c.code_file_hash, c.via_agent,
+                 c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
+                 c.suggestion_state_by, c.suggestion_state_at,
                  c.authored_version_id, cv.git_sha as authored_git_sha
           from comment c
           left join content_version cv on cv.id = c.authored_version_id
@@ -794,6 +800,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
                  c.code_path, c.code_region, c.code_line, c.code_end_line,
                  c.code_line_hash, c.code_file_hash, c.via_agent,
+                 c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
+                 c.suggestion_state_by, c.suggestion_state_at,
                  c.authored_version_id, cv.git_sha as authored_git_sha,
                  l.title as content_title,
                  sec.heading_text as heading_text,
@@ -818,9 +826,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       async createComment(req: CreateCommentRequest, ctx) {
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
-        if (!req.bodyMd.trim()) {
+        // A suggested edit speaks for itself; its rationale is optional.
+        if (!req.bodyMd.trim() && !req.suggestion) {
           throw new ConnectError("body_md is required", Code.InvalidArgument);
         }
+        const badSuggestion = suggestionError(req);
+        if (badSuggestion) throw new ConnectError(badSuggestion, Code.InvalidArgument);
         const sql = db();
         const area = areaToDb(req.ref.area);
         // An external contributor may comment on the content shared with them;
@@ -869,6 +880,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // a heading-level comment (the original behavior).
         const sel = req.selector;
         const code = req.codeSelector;
+        const sug = req.suggestion;
 
         const [row] = await sql<CommentRow[]>`
           insert into comment
@@ -876,7 +888,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
              author_user_id, author_login, author_name, body_md, orphaned,
              selector_quote, selector_prefix, selector_suffix, selector_start,
              code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
-             via_agent)
+             via_agent, suggestion_original, suggestion_replacement, suggestion_state)
           values
             (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${latest?.id ?? null}, ${req.anchorSlug},
              ${req.anchorFingerprint}, ${parentId},
@@ -886,12 +898,15 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
              ${sel ? sel.start : null},
              ${code?.path ?? null}, ${code?.region ?? null}, ${code ? code.line : null},
              ${code ? code.endLine : null}, ${code?.lineHash ?? null}, ${code?.fileHash ?? null},
-             ${getTokenGrant(ctx) !== undefined})
+             ${getTokenGrant(ctx) !== undefined}, ${sug?.original ?? null},
+             ${sug?.replacement ?? null}, ${sug ? "open" : null})
           returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
                     author_login, author_name, body_md, created_at, edited_at, orphaned,
                     selector_quote, selector_prefix, selector_suffix, selector_start,
                     code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
                     via_agent, authored_version_id,
+                    suggestion_original, suggestion_replacement, suggestion_state,
+                    suggestion_state_by, suggestion_state_at,
                     (select git_sha from content_version where id = comment.authored_version_id)
                       as authored_git_sha
         `;
@@ -934,6 +949,26 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           });
         }
         return create(UnresolveThreadResponseSchema, { thread });
+      },
+
+      async setSuggestionState(req: SetSuggestionStateRequest, ctx) {
+        // Token callers are narrowed to APPLIED by tokenMayCall before this runs.
+        const viewer = requireAllowlisted(ctx);
+        const state = SUGGESTION_STATE_TO_DB[req.state];
+        if (!state) throw new ConnectError("state is required", Code.InvalidArgument);
+        const sql = db();
+        const [row] = await sql<{ area: string; slug: string }[]>`
+          update comment
+          set suggestion_state = ${state},
+              suggestion_state_by = ${viewer.login ?? "unknown"},
+              suggestion_state_at = now()
+          where id = ${req.commentId} and parent_id is null and suggestion_state is not null
+          returning area, slug
+        `;
+        if (!row) throw new ConnectError("thread has no suggestion", Code.NotFound);
+        const thread = await loadThread(sql, req.commentId);
+        await notifyCommentsChanged(sql, row);
+        return create(SetSuggestionStateResponseSchema, { thread });
       },
 
       async markThreadSeen(req: MarkThreadSeenRequest, ctx) {
@@ -2279,16 +2314,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 /** Set a thread's resolution and return the reassembled Thread. */
 async function setResolved(threadRootId: string, resolved: boolean, by: string | null) {
   const sql = db();
-  const [root] = await sql<CommentRow[]>`
-    select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
-           c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
-           c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
-           c.code_path, c.code_region, c.code_line, c.code_end_line,
-           c.code_line_hash, c.code_file_hash, c.via_agent,
-           c.authored_version_id, cv.git_sha as authored_git_sha
-    from comment c
-    left join content_version cv on cv.id = c.authored_version_id
-    where c.id = ${threadRootId} and c.parent_id is null
+  const [root] = await sql<{ id: string }[]>`
+    select id from comment where id = ${threadRootId} and parent_id is null
   `;
   if (!root) throw new ConnectError("thread not found", Code.NotFound);
   await sql`
@@ -2299,6 +2326,25 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
           resolved_by = excluded.resolved_by,
           resolved_at = excluded.resolved_at
   `;
+  return loadThread(sql, threadRootId);
+}
+
+/** A thread root and its whole subtree, reassembled into one Thread. */
+async function loadThread(sql: Queryable, threadRootId: string) {
+  const [root] = await sql<CommentRow[]>`
+    select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
+           c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
+           c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
+           c.code_path, c.code_region, c.code_line, c.code_end_line,
+           c.code_line_hash, c.code_file_hash, c.via_agent,
+           c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
+           c.suggestion_state_by, c.suggestion_state_at,
+           c.authored_version_id, cv.git_sha as authored_git_sha
+    from comment c
+    left join content_version cv on cv.id = c.authored_version_id
+    where c.id = ${threadRootId} and c.parent_id is null
+  `;
+  if (!root) throw new ConnectError("thread not found", Code.NotFound);
   // The full descendant subtree (N levels), not just direct replies, so
   // assembleThreads can re-flatten the whole thread after a resolution change.
   const replies = await sql<CommentRow[]>`
@@ -2313,6 +2359,8 @@ async function setResolved(threadRootId: string, resolved: boolean, by: string |
            d.selector_quote, d.selector_prefix, d.selector_suffix, d.selector_start,
            d.code_path, d.code_region, d.code_line, d.code_end_line,
            d.code_line_hash, d.code_file_hash, d.via_agent,
+           d.suggestion_original, d.suggestion_replacement, d.suggestion_state,
+           d.suggestion_state_by, d.suggestion_state_at,
            d.authored_version_id, cv.git_sha as authored_git_sha
     from descendants d
     left join content_version cv on cv.id = d.authored_version_id

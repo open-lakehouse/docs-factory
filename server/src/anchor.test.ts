@@ -14,6 +14,7 @@ import {
   normalize,
   reanchorCodeThreads,
   reanchorThreads,
+  suggestionApplied,
 } from "./anchor.js";
 import type { Sql } from "./db.js";
 
@@ -53,6 +54,25 @@ describe("findQuote", () => {
     expect(
       findQuote(text, normalize("vends short-lived credentials tokens"), 0.6),
     ).toBeGreaterThanOrEqual(0);
+  });
+});
+
+describe("suggestionApplied", () => {
+  const ctx = { prefix: "the broker vends", suffix: "to the engine." };
+  test("detects a replacement framed by the quote's context", () => {
+    const text = normalize("The broker vends scoped credentials to the engine.");
+    expect(suggestionApplied(text, { ...ctx, replacement: "scoped credentials" })).toBe(true);
+  });
+  test("detects a deletion where the context now meets", () => {
+    const text = normalize("The broker vends to the engine.");
+    expect(suggestionApplied(text, { ...ctx, replacement: "" })).toBe(true);
+  });
+  test("ignores a replacement that appears without its context", () => {
+    const text = normalize("Elsewhere: scoped credentials. The broker issues tokens.");
+    expect(suggestionApplied(text, { ...ctx, replacement: "scoped credentials" })).toBe(false);
+  });
+  test("ignores a deletion with no context to join", () => {
+    expect(suggestionApplied("anything", { prefix: "", suffix: "", replacement: "" })).toBe(false);
   });
 });
 
@@ -130,6 +150,27 @@ describe("reanchorThreads (prose)", () => {
     expect(orphaned).toBe(0);
     expect(updates[0].sql).toContain("anchor_slug");
     expect(updates[0].values).toContain("credential-vending");
+  });
+
+  test("open suggestion whose edit landed → marked applied, still anchored", async () => {
+    const { sql, updates } = fakeSql([
+      {
+        id: "s1",
+        anchor_slug: "credential-vending",
+        anchor_fingerprint: "credential vending",
+        orphaned: false,
+        selector_quote: "short-lived tokens",
+        selector_prefix: "the broker vends",
+        selector_suffix: "to the engine.",
+        suggestion_replacement: "",
+        suggestion_state: "open",
+      },
+    ]);
+    const edited = [{ ...sections[0], text: "The broker vends to the engine." }, sections[1]];
+    const orphaned = await reanchorThreads(sql, "blogs", "x", edited);
+    expect(orphaned).toBe(0);
+    expect(updates).toHaveLength(1);
+    expect(updates[0].sql).toContain("suggestion_state = 'applied'");
   });
 
   test("tier 3: heading-level comment on a surviving slug → kept", async () => {

@@ -8,7 +8,13 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { describeError, type ReviewClient, reviewClient } from "./client.js";
 import { ConfigError, resolveConfig } from "./config.js";
-import { type FeedbackThread, getThread, listFeedback, reply } from "./feedback.js";
+import {
+  type FeedbackThread,
+  getThread,
+  listFeedback,
+  markSuggestionApplied,
+  reply,
+} from "./feedback.js";
 import { formatThread, formatThreads } from "./format.js";
 import type { ContentRef } from "./gen/docs_factory/review/v1/messages_pb.js";
 import { repoRoot } from "./repo.js";
@@ -107,19 +113,29 @@ server.registerTool(
       "Post a reply on a review thread as the token's owner. The reply is marked as written by " +
       "an agent. Reply only after the fix is pushed, and include the PR link or commit sha. " +
       "If you won't make the change, explain why. This never resolves the thread; the " +
-      "reviewer does that.",
+      "reviewer does that. When the thread carries a suggestion you applied, set " +
+      "`suggestion_applied` so the reviewer sees it marked applied.",
     inputSchema: {
       thread_id: z.string().describe("Thread id from list_feedback."),
       body: z.string().min(1).describe("Markdown reply."),
+      suggestion_applied: z
+        .boolean()
+        .optional()
+        .describe("Also mark the thread's suggested edit applied (default false)."),
     },
   },
-  ({ thread_id, body }) =>
+  ({ thread_id, body, suggestion_applied }) =>
     run(async () => {
       const c = client();
       const t = await getThread(c, thread_id, { page: pageOf.get(thread_id) });
       if (!t) return `No thread ${thread_id} (or no access to it).`;
+      if (suggestion_applied && !t.suggestion) {
+        return `Thread ${t.id} has no suggestion to mark applied; nothing posted.`;
+      }
       const posted = await reply(c, t, body);
-      return `Replied on ${t.page} thread ${t.id} (comment ${posted?.id ?? "?"}).`;
+      if (suggestion_applied) await markSuggestionApplied(c, t.id);
+      const marked = suggestion_applied ? " and marked its suggestion applied" : "";
+      return `Replied on ${t.page} thread ${t.id} (comment ${posted?.id ?? "?"})${marked}.`;
     }),
 );
 

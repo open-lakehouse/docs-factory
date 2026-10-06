@@ -61,6 +61,14 @@ export const resolveThread = ReviewService.method.resolveThread;
 export const unresolveThread = ReviewService.method.unresolveThread;
 
 /**
+ * Mark a thread root's suggestion applied, dismissed, or open again. A
+ * personal access token may only mark it applied.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.SetSuggestionState
+ */
+export const setSuggestionState = ReviewService.method.setSuggestionState;
+
+/**
  * Mark a thread read by the current viewer up to `seen_at` (defaults to now).
  * Clears the thread's unread indicator for that viewer.
  *

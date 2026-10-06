@@ -1,5 +1,7 @@
 // The core operations behind both the CLI and the MCP server: list review
 // threads as agent work items, look one up, and reply.
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 import type { ReviewClient } from "./client.js";
 import {
@@ -7,9 +9,10 @@ import {
   ContentArea,
   type ContentRef,
   type DraftSummary,
+  SuggestionState,
   type Thread,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
-import { type Location, locate } from "./locate.js";
+import { type Location, locate, matchSuggestion, type SuggestionMatch } from "./locate.js";
 
 /**
  * Where a thread stands from the agent's point of view.
@@ -29,6 +32,22 @@ export interface FeedbackComment {
   createdAt?: string;
   body: string;
 }
+
+export interface FeedbackSuggestion {
+  /** The passage verbatim as the reviewer saw it (rendered prose, or source lines). */
+  original: string;
+  /** Empty means delete the passage. */
+  replacement: string;
+  state: "open" | "applied" | "dismissed";
+  /** Where `original` sits in the checkout, when it maps literally. */
+  match?: SuggestionMatch;
+}
+
+const SUGGESTION_STATE: Partial<Record<SuggestionState, FeedbackSuggestion["state"]>> = {
+  [SuggestionState.OPEN]: "open",
+  [SuggestionState.APPLIED]: "applied",
+  [SuggestionState.DISMISSED]: "dismissed",
+};
 
 export interface FeedbackThread {
   /** The thread root's comment id; what reply/get take. */
@@ -50,6 +69,8 @@ export interface FeedbackThread {
   authoredGitSha?: string;
   comments: FeedbackComment[];
   location?: Location;
+  /** The reviewer's proposed wording for the anchored passage. */
+  suggestion?: FeedbackSuggestion;
 }
 
 export function pageKey(ref: ContentRef): string {
@@ -91,6 +112,7 @@ function toFeedback(
   const root = thread.root;
   if (!root) return undefined;
   const code = root.codeSelector;
+  const location = repoRoot ? locate(repoRoot, { ...root, ref: draft.ref }) : undefined;
   return {
     id: root.id,
     ref: draft.ref,
@@ -114,8 +136,26 @@ function toFeedback(
       createdAt: c.createdAt ? timestampDate(c.createdAt).toISOString() : undefined,
       body: c.bodyMd,
     })),
-    location: repoRoot ? locate(repoRoot, { ...root, ref: draft.ref }) : undefined,
+    location,
+    suggestion: root.suggestion && {
+      original: root.suggestion.original,
+      replacement: root.suggestion.replacement,
+      state: SUGGESTION_STATE[root.suggestion.state] ?? "open",
+      match: suggestionMatch(repoRoot, location, root.suggestion.original, Boolean(code?.path)),
+    },
   };
+}
+
+function suggestionMatch(
+  repoRoot: string | undefined,
+  loc: Location | undefined,
+  original: string,
+  code: boolean,
+): SuggestionMatch | undefined {
+  if (!repoRoot || !loc) return undefined;
+  const abs = join(repoRoot, loc.path);
+  if (!existsSync(abs)) return undefined;
+  return matchSuggestion(readFileSync(abs, "utf8"), loc, original, code);
 }
 
 export interface ListOptions {
@@ -189,6 +229,11 @@ export async function getThread(
     }
   }
   return undefined;
+}
+
+/** Mark a thread's suggestion applied: the agent landed the change. */
+export async function markSuggestionApplied(client: ReviewClient, threadId: string): Promise<void> {
+  await client.setSuggestionState({ commentId: threadId, state: SuggestionState.APPLIED });
 }
 
 /**

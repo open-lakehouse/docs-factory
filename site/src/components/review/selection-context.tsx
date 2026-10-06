@@ -6,13 +6,19 @@
 import { createContext, type ReactNode, useContext, useState } from "react";
 import type { CapturedSelector } from "../../lib/content-ref";
 
-/** A pending comment target the user picked by selecting text/code or a heading. */
+/**
+ * A pending comment target the user picked by selecting text/code or a heading.
+ * `original` is the passage a suggested edit would replace, verbatim: the
+ * selected prose as rendered, or the whole source lines of a code selection.
+ * Absent when the selection can't take a suggestion (it spans blocks).
+ */
 export type PendingAnchor =
   | {
       kind: "prose";
       anchorSlug: string;
       headingText: string;
       selector: CapturedSelector;
+      original?: string;
     }
   | {
       kind: "code";
@@ -26,6 +32,7 @@ export type PendingAnchor =
       anchorSlug: string;
       headingText: string;
       quote: string; // the selected code text, for display
+      original?: string;
     }
   | {
       kind: "section";

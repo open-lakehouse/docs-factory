@@ -25,11 +25,21 @@ const ALL_DECL =
   " text-decoration: underline dotted color-mix(in oklab, gold 70%, var(--border));" +
   " text-underline-offset: 2px;";
 const FOCUS_DECL = "background: color-mix(in oklab, gold 55%, transparent); color: inherit;";
+const SUGGEST_DECL =
+  "background: color-mix(in oklab, mediumseagreen 22%, transparent);" +
+  " color: inherit;" +
+  " text-decoration: underline wavy color-mix(in oklab, mediumseagreen 70%, var(--border));" +
+  " text-underline-offset: 2px;";
 
 /** Highlight-registry names for a given tab key (or the shared static names). */
-export function highlightNames(key?: string): { all: string; focus: string } {
-  if (!key) return { all: "review-quote", focus: "review-quote-focus" };
-  return { all: `review-quote-${key}`, focus: `review-quote-focus-${key}` };
+export function highlightNames(key?: string): { all: string; focus: string; suggest: string } {
+  if (!key)
+    return { all: "review-quote", focus: "review-quote-focus", suggest: "review-quote-suggest" };
+  return {
+    all: `review-quote-${key}`,
+    focus: `review-quote-focus-${key}`,
+    suggest: `review-quote-suggest-${key}`,
+  };
 }
 
 /**
@@ -48,10 +58,11 @@ export function ensureHighlightStyle(key?: string) {
     el.id = STYLE_EL_ID;
     document.head.appendChild(el);
   }
-  const { all, focus } = highlightNames(key);
+  const { all, focus, suggest } = highlightNames(key);
   el.appendChild(
     document.createTextNode(
-      `::highlight(${all}) { ${ALL_DECL} } ::highlight(${focus}) { ${FOCUS_DECL} }\n`,
+      `::highlight(${all}) { ${ALL_DECL} } ::highlight(${suggest}) { ${SUGGEST_DECL} }` +
+        ` ::highlight(${focus}) { ${FOCUS_DECL} }\n`,
     ),
   );
 }

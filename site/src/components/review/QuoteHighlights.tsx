@@ -10,7 +10,7 @@
 // prefix-disambiguated). If a quote no longer resolves, it's simply skipped
 // here — the thread still lives in the sidebar.
 import { type RefObject, useEffect } from "react";
-import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
+import { SuggestionState, type Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import { locateSelector, sectionRootForAnchor } from "../../lib/content-ref";
 import { ensureHighlightStyle, highlightNames } from "./highlight-style";
 
@@ -50,10 +50,15 @@ export default function QuoteHighlights({
 
     // Keyed tabs need a matching ::highlight() rule injected for their names.
     ensureHighlightStyle(highlightKey);
-    const { all: HIGHLIGHT_ALL, focus: HIGHLIGHT_FOCUS } = highlightNames(highlightKey);
+    const {
+      all: HIGHLIGHT_ALL,
+      focus: HIGHLIGHT_FOCUS,
+      suggest: HIGHLIGHT_SUGGEST,
+    } = highlightNames(highlightKey);
 
     const allRanges: Range[] = [];
     const focusRanges: Range[] = [];
+    const suggestRanges: Range[] = [];
     // id -> range, for click hit-testing back to the thread.
     const byThread: { id: string; range: Range }[] = [];
 
@@ -66,11 +71,15 @@ export default function QuoteHighlights({
       if (t.resolved && !focused) continue;
       if (t.root?.id) byThread.push({ id: t.root.id, range });
       if (focused) focusRanges.push(range);
+      else if (t.root?.suggestion?.state === SuggestionState.OPEN) suggestRanges.push(range);
       else allRanges.push(range);
     }
 
     if (allRanges.length === 0) CSS.highlights.delete(HIGHLIGHT_ALL);
     else CSS.highlights.set(HIGHLIGHT_ALL, new Highlight(...allRanges));
+
+    if (suggestRanges.length === 0) CSS.highlights.delete(HIGHLIGHT_SUGGEST);
+    else CSS.highlights.set(HIGHLIGHT_SUGGEST, new Highlight(...suggestRanges));
 
     if (focusRanges.length === 0) CSS.highlights.delete(HIGHLIGHT_FOCUS);
     else CSS.highlights.set(HIGHLIGHT_FOCUS, new Highlight(...focusRanges));
@@ -93,6 +102,7 @@ export default function QuoteHighlights({
       article.removeEventListener("click", onClick);
       CSS.highlights.delete(HIGHLIGHT_ALL);
       CSS.highlights.delete(HIGHLIGHT_FOCUS);
+      CSS.highlights.delete(HIGHLIGHT_SUGGEST);
     };
   }, [articleRef, threads, focusedThreadId, onSelectThread, highlightKey]);
 

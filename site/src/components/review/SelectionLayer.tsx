@@ -44,6 +44,14 @@ function enclosingCodeBlock(node: Node): HTMLElement | null {
   return null;
 }
 
+/** Blocks whose rendered text maps onto one run of source prose. */
+const SUGGESTABLE_BLOCK = "p, li, td, th, h1, h2, h3, h4, h5, h6, dt, dd, figcaption";
+
+function blockOf(node: Node): Element | null {
+  const el = node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
+  return el?.closest(SUGGESTABLE_BLOCK) ?? null;
+}
+
 /**
  * Geometry for the floating Comment button.
  *
@@ -124,7 +132,12 @@ export default function SelectionLayer({
           const before = pre.toString();
           const lineOffset = before ? before.split("\n").length - 1 : 0;
           const selLines = text.replace(/\n$/, "").split("\n");
-          const firstLine = selLines[0] ?? "";
+          // Whole lines, not the selection's partial first/last line: the hash
+          // must match a full source line to re-anchor, and a suggestion
+          // replaces lines.
+          const blockLines = (codeEl.textContent ?? "").split("\n");
+          const wholeLines = blockLines.slice(lineOffset, lineOffset + selLines.length);
+          const firstLine = wholeLines[0] ?? selLines[0] ?? "";
           const line = startLine + lineOffset;
           const endLine = line + selLines.length - 1;
           return {
@@ -138,11 +151,16 @@ export default function SelectionLayer({
             anchorSlug: heading.slug,
             headingText: heading.text,
             quote: text.trim(),
+            original: wholeLines.join("\n"),
           };
         };
       }
 
       const heading = enclosingHeading(range.startContainer, art);
+      // Across blocks, range.toString() joins them with no separator, so the
+      // passage can't be rewritten as one run of text.
+      const block = blockOf(range.startContainer);
+      const suggestable = block !== null && block === blockOf(range.endContainer);
       return async (): Promise<PendingAnchor | null> => {
         const selector = captureSelector(range, art);
         if (!selector) return null;
@@ -151,6 +169,7 @@ export default function SelectionLayer({
           anchorSlug: heading.slug,
           headingText: heading.text,
           selector,
+          original: suggestable ? text.trim() : undefined,
         };
       };
     }

@@ -2829,6 +2829,77 @@ a.review-author:hover span {
   padding: 0 0.4rem;
 }
 
+/* Suggested edits: the inline diff on a thread root, its state chip, and the
+   composer's suggest controls. */
+.review-suggestion {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.review-suggestion-label {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--muted-foreground);
+}
+.review-suggestion-diff {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.review-suggestion.code .review-suggestion-diff {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+}
+.review-suggestion-diff del {
+  background: color-mix(in oklab, crimson 16%, transparent);
+  text-decoration: line-through;
+}
+.review-suggestion-diff ins {
+  background: color-mix(in oklab, mediumseagreen 22%, transparent);
+  text-decoration: none;
+}
+.review-suggestion-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.review-suggestion-block.settled .review-suggestion-diff {
+  opacity: 0.7;
+}
+.review-suggestion-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+.review-suggestion-state {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0 0.4rem;
+  color: var(--muted-foreground);
+}
+.review-suggestion-state.applied {
+  color: mediumseagreen;
+  border-color: color-mix(in oklab, mediumseagreen 50%, var(--border));
+}
+.review-suggest-actions {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 0.4rem;
+}
+.review-suggest-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+}
+
 /* Agent tokens (/tokens) + the CLI login consent card (/cli-auth). */
 .tokens-secret {
   display: flex;
@@ -2976,6 +3047,14 @@ a.review-author:hover span {
   background: color-mix(in oklab, gold 30%, transparent);
   color: inherit;
   text-decoration: underline dotted color-mix(in oklab, gold 70%, var(--border));
+  text-underline-offset: 2px;
+}
+/* An open suggested edit: a distinct tint so proposed rewrites stand apart from
+   plain comments. Declared before -focus so a focused suggestion still turns gold. */
+::highlight(review-quote-suggest) {
+  background: color-mix(in oklab, mediumseagreen 22%, transparent);
+  color: inherit;
+  text-decoration: underline wavy color-mix(in oklab, mediumseagreen 70%, var(--border));
   text-underline-offset: 2px;
 }
 ::highlight(review-quote-focus) {

@@ -40,6 +40,10 @@ service ReviewService {
   rpc ResolveThread(ResolveThreadRequest) returns (ResolveThreadResponse);
   rpc UnresolveThread(UnresolveThreadRequest) returns (UnresolveThreadResponse);
 
+  // Mark a thread root's suggestion applied, dismissed, or open again. A
+  // personal access token may only mark it applied.
+  rpc SetSuggestionState(SetSuggestionStateRequest) returns (SetSuggestionStateResponse);
+
   // Mark a thread read by the current viewer up to `seen_at` (defaults to now).
   // Clears the thread's unread indicator for that viewer.
   rpc MarkThreadSeen(MarkThreadSeenRequest) returns (MarkThreadSeenResponse);
@@ -214,6 +218,10 @@ message CreateCommentRequest {
   // At most one fine-grained selector. Absent for a heading-level comment.
   optional TextSelector selector = 6;
   optional CodeSelector code_selector = 7;
+  // A suggested edit to the selected passage; thread roots with a selector
+  // only. The server reads `original` and `replacement` and starts it OPEN.
+  // `body_md` may be empty when a suggestion is attached.
+  optional Suggestion suggestion = 8;
 }
 message CreateCommentResponse {
   Comment comment = 1;
@@ -238,6 +246,15 @@ message ResolveThreadRequest {
   string thread_root_id = 1;
 }
 message ResolveThreadResponse {
+  Thread thread = 1;
+}
+
+message SetSuggestionStateRequest {
+  // The thread root carrying the suggestion.
+  string comment_id = 1;
+  SuggestionState state = 2;
+}
+message SetSuggestionStateResponse {
   Thread thread = 1;
 }
 

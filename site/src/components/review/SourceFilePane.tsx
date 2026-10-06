@@ -53,6 +53,7 @@ export default function SourceFilePane({
       anchorSlug,
       headingText,
       quote: lineText.trim(),
+      original: lineText,
     });
     setSelecting(false);
     onClose();

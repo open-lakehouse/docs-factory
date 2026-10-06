@@ -1,12 +1,13 @@
 import { useMutation } from "@connectrpc/connect-query";
-import { Check, Link2, RotateCcw, X } from "lucide-react";
+import { Check, Link2, RotateCcw, Undo2, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Thread } from "../../gen/docs_factory/review/v1/messages_pb";
+import { SuggestionState, type Thread } from "../../gen/docs_factory/review/v1/messages_pb";
 import {
   createComment,
   resolveThread,
+  setSuggestionState,
   unresolveThread,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { copyToClipboard } from "../../lib/clipboard";
@@ -14,6 +15,13 @@ import { refToParam } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import CommentBubble from "./CommentBubble";
 import ReviewComposer from "./ReviewComposer";
+import SuggestionDiff from "./SuggestionDiff";
+
+const SUGGESTION_STATE_LABEL: Partial<Record<SuggestionState, string>> = {
+  [SuggestionState.OPEN]: "open",
+  [SuggestionState.APPLIED]: "applied",
+  [SuggestionState.DISMISSED]: "dismissed",
+};
 
 interface ThreadConversationProps {
   thread: Thread;
@@ -56,6 +64,7 @@ export default function ThreadConversation({
   const createReply = useMutation(createComment, mutationOpts);
   const resolve = useMutation(resolveThread, mutationOpts);
   const unresolve = useMutation(unresolveThread, mutationOpts);
+  const setSuggestion = useMutation(setSuggestionState, mutationOpts);
   const [text, setText] = useState("");
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -126,6 +135,13 @@ export default function ThreadConversation({
     onChange();
   }
 
+  async function moveSuggestion(state: SuggestionState) {
+    const id = thread.root?.id;
+    if (!id) return;
+    await setSuggestion.mutateAsync({ commentId: id, state });
+    onChange();
+  }
+
   async function copyThreadLink(e: React.MouseEvent) {
     e.stopPropagation();
     const link = threadDeepLink(thread);
@@ -138,6 +154,66 @@ export default function ThreadConversation({
 
   const label = sectionLabel || (thread.root?.orphaned ? "Removed section" : "Section");
   const busy = resolve.isPending || unresolve.isPending;
+  const suggestion = thread.root?.suggestion;
+
+  function renderSuggestion(sug: NonNullable<typeof suggestion>) {
+    const open = sug.state === SuggestionState.OPEN;
+    const stateLabel = SUGGESTION_STATE_LABEL[sug.state];
+    return (
+      <div className={cn("review-suggestion-block", !open && "settled")}>
+        <SuggestionDiff
+          original={sug.original}
+          replacement={sug.replacement}
+          code={Boolean(thread.root?.codeSelector)}
+        />
+        <div className="review-suggestion-foot">
+          {stateLabel && (
+            <span
+              className={cn("review-suggestion-state", stateLabel)}
+              title={sug.stateByLogin ? `${stateLabel} by ${sug.stateByLogin}` : undefined}
+            >
+              {stateLabel}
+            </span>
+          )}
+          {open ? (
+            <>
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                disabled={setSuggestion.isPending}
+                onClick={() => void moveSuggestion(SuggestionState.APPLIED)}
+              >
+                <Check aria-hidden />
+                Mark applied
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                disabled={setSuggestion.isPending}
+                onClick={() => void moveSuggestion(SuggestionState.DISMISSED)}
+              >
+                <X aria-hidden />
+                Dismiss
+              </Button>
+            </>
+          ) : (
+            <Button
+              type="button"
+              variant="ghost"
+              size="xs"
+              disabled={setSuggestion.isPending}
+              onClick={() => void moveSuggestion(SuggestionState.OPEN)}
+            >
+              <Undo2 aria-hidden />
+              Reopen suggestion
+            </Button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // Inline surfaces (compact) sit directly under the highlighted prose/code, so
   // the section tag + quoted target would just repeat the surrounding context.
@@ -227,6 +303,7 @@ export default function ThreadConversation({
           body={thread.root.bodyMd}
           authoredGitSha={thread.root.authoredGitSha}
           viaAgent={thread.root.viaAgent}
+          suggestion={suggestion && renderSuggestion(suggestion)}
         />
       )}
       {thread.replies.map((r) => {

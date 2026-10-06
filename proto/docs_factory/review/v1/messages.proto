@@ -129,6 +129,32 @@ message CodeSelector {
   string file_hash = 6;
 }
 
+// Where a suggested edit stands. Independent of the thread's resolution: a
+// reviewer may resolve a thread whose suggestion was dismissed, or keep
+// discussing one that was applied.
+enum SuggestionState {
+  SUGGESTION_STATE_UNSPECIFIED = 0;
+  SUGGESTION_STATE_OPEN = 1;
+  // The change landed in the source. Set by a reviewer, by an agent token, or
+  // by the server when a registered version shows the replacement in place.
+  SUGGESTION_STATE_APPLIED = 2;
+  SUGGESTION_STATE_DISMISSED = 3;
+}
+
+// A proposed replacement for a thread root's anchored passage. For a prose
+// `selector`, `original` is the selected text verbatim as rendered (not
+// normalized, unlike TextSelector.quote); for a `code_selector` it is the
+// source lines line..end_line. An empty `replacement` proposes deleting the
+// passage.
+message Suggestion {
+  string original = 1;
+  string replacement = 2;
+  SuggestionState state = 3;
+  // Login of whoever last changed `state`; "system" for server detection.
+  optional string state_by_login = 4;
+  optional google.protobuf.Timestamp state_at = 5;
+}
+
 // A resolved `file=` code snippet reference within a content version. Registered
 // alongside sections so the server can re-anchor code comments (against the
 // file/region/line-hash) without repo access at review time. Many refs can share
@@ -293,6 +319,8 @@ message Comment {
   // Written through a personal access token (an agent acting for the author),
   // not the browser UI.
   bool via_agent = 16;
+  // A suggested edit to the anchored passage. Thread roots with a selector only.
+  optional Suggestion suggestion = 17;
 }
 
 // A thread root plus its replies and resolution state.

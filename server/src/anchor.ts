@@ -13,6 +13,10 @@
 //   4. fingerprint match (heading renamed but same normalized text) → relink.
 //   5. no match → mark the thread orphaned (retained, shown separately).
 //
+// An open suggestion whose quote misses its own section (tier 1) is marked
+// applied when that section now reads like the edit landed: the replacement
+// (or, for a deletion, the bare join) framed by the quote's own context.
+//
 // Code match precedence for a comment's (code_path, code_region, code_line_hash):
 //   1. region still present in the file's snippet set → keep.
 //   2. line-hash found in the file's current text → relink line/end_line.
@@ -91,6 +95,31 @@ export function findQuote(text: string, quote: string, threshold = 0.8): number 
  * No-op when there are no comments yet. Code-anchored threads (code_path set)
  * are skipped here — they go through reanchorCodeThreads.
  */
+/** Characters of quote context that must frame an applied suggestion. */
+const APPLIED_CONTEXT = 12;
+
+/**
+ * Whether normalized section `text` shows a suggestion applied: the replacement
+ * sits next to the quote's original prefix or suffix context. A deletion needs
+ * both sides to meet, since an empty replacement says nothing on its own.
+ * Conservative by design; a miss just leaves the suggestion for a human.
+ */
+export function suggestionApplied(
+  text: string,
+  s: { prefix: string; suffix: string; replacement: string },
+): boolean {
+  const before = normalize(s.prefix).slice(-APPLIED_CONTEXT);
+  const after = normalize(s.suffix).slice(0, APPLIED_CONTEXT);
+  const replacement = normalize(s.replacement);
+  const candidates = replacement
+    ? [`${before} ${replacement}`, `${replacement} ${after}`]
+    : [`${before} ${after}`];
+  return candidates.some((c) => {
+    const needle = normalize(c);
+    return needle.length >= APPLIED_CONTEXT && text.includes(needle);
+  });
+}
+
 export async function reanchorThreads(
   sql: Queryable,
   area: string,
@@ -116,9 +145,14 @@ export async function reanchorThreads(
       anchor_fingerprint: string;
       orphaned: boolean;
       selector_quote: string | null;
+      selector_prefix: string | null;
+      selector_suffix: string | null;
+      suggestion_replacement: string | null;
+      suggestion_state: string | null;
     }[]
   >`
-    select id, anchor_slug, anchor_fingerprint, orphaned, selector_quote
+    select id, anchor_slug, anchor_fingerprint, orphaned, selector_quote,
+           selector_prefix, selector_suffix, suggestion_replacement, suggestion_state
     from comment
     where area = ${area} and slug = ${slug} and parent_id is null
       and code_path is null
@@ -146,6 +180,21 @@ export async function reanchorThreads(
         if (at !== -1) {
           await refreshStart(sql, root, at);
           continue;
+        }
+        if (
+          root.suggestion_state === "open" &&
+          suggestionApplied(ownNorm, {
+            prefix: root.selector_prefix ?? "",
+            suffix: root.selector_suffix ?? "",
+            replacement: root.suggestion_replacement ?? "",
+          })
+        ) {
+          await sql`
+            update comment
+            set suggestion_state = 'applied', suggestion_state_by = 'system',
+                suggestion_state_at = now()
+            where id = ${root.id}
+          `;
         }
       }
       // Tier 2: quote found in some other section → relink slug + start.

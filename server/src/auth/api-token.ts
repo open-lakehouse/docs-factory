@@ -6,7 +6,7 @@
 // to its scopes by tokenMayCall, enforced in authInterceptor.
 import { createHash, randomBytes } from "node:crypto";
 import { db, type Queryable } from "../db.js";
-import type { Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
+import { SuggestionState, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { type Authentication, type AuthProvider, anonymousViewer } from "./provider.js";
 
 export const TOKEN_PREFIX = "dfr_";
@@ -51,9 +51,10 @@ export function apiTokenFromHeader(header: Headers): string | undefined {
 }
 
 /**
- * Whether a token holding `scopes` may call `method` with `message`. Replies
- * are the only write: a token can't open a new thread (no `parentId`), resolve,
- * approve, release, administer, or manage tokens. Anything not listed is denied,
+ * Whether a token holding `scopes` may call `method` with `message`. The only
+ * writes are replies and marking a suggestion applied (an agent reports a change
+ * it landed; dismissing stays a reviewer's call): a token can't open a new
+ * thread (no `parentId`), resolve, approve, release, administer, or manage tokens. Anything not listed is denied,
  * so a newly added RPC is token-inaccessible until deliberately allowed here.
  */
 export function tokenMayCall(method: string, message: unknown, scopes: readonly string[]): boolean {
@@ -61,6 +62,10 @@ export function tokenMayCall(method: string, message: unknown, scopes: readonly 
   if (method === "CreateComment") {
     const parentId = (message as { parentId?: string } | undefined)?.parentId;
     return scopes.includes(SCOPE_REPLY) && !!parentId;
+  }
+  if (method === "SetSuggestionState") {
+    const state = (message as { state?: SuggestionState } | undefined)?.state;
+    return scopes.includes(SCOPE_REPLY) && state === SuggestionState.APPLIED;
   }
   return false;
 }

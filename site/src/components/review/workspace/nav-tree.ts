@@ -1,6 +1,7 @@
 // Map a project's resolved nav.yml onto workspace tree nodes. Kept free of the
 // build-time content globs so it can be unit-tested under bun.
 import type { NavNode } from "../../../doc-nav";
+import { ContentArea } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { docRef } from "../../../lib/content-ref";
 import { treeNodeId } from "./expansion-context";
 import type { TreeNode } from "./tree-model";
@@ -8,7 +9,8 @@ import type { TreeNode } from "./tree-model";
 /**
  * Secondary placements stay in, so the tree reads like the emitted sidebar.
  * Section ids carry the full label trail: the same label may recur under
- * different parents.
+ * different parents. So does a content request's placement (`A › B`), which is
+ * how an agent finds the nav.yml section to add the planned slot to.
  */
 export function navBranches(
   project: string,
@@ -24,6 +26,7 @@ export function navBranches(
         id: treeNodeId.navSection(project, path),
         label: node.label,
         role: "section",
+        request: { area: ContentArea.DOCS, project, placement: path.join(" › ") },
         children: navBranches(project, node.children, statusOf, path),
       };
     }

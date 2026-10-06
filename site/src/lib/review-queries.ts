@@ -12,6 +12,7 @@ import {
   listAllowlist,
   listComments,
   listContentEvents,
+  listContentRequests,
   listDrafts,
   listRatings,
   listRegisteredUsers,
@@ -139,8 +140,22 @@ export function useReviewInvalidation() {
     [queryClient, transport],
   );
 
+  // Every listContentRequests query (tree, dashboard; all filters).
+  const invalidateContentRequests = useCallback(
+    () =>
+      queryClient.invalidateQueries({
+        queryKey: createConnectQueryKey({
+          schema: listContentRequests,
+          transport,
+          cardinality: "finite",
+        }),
+      }),
+    [queryClient, transport],
+  );
+
   return {
     commentsKey,
+    invalidateContentRequests,
     invalidateComments,
     invalidateDrafts,
     invalidateReviewRequests,

@@ -15,6 +15,7 @@ import { useQuery } from "@connectrpc/connect-query";
 import { Link } from "react-router-dom";
 import Shell from "../components/layout/Shell";
 import BlogPipeline from "../components/review/BlogPipeline";
+import { ContentRequestList } from "../components/review/ContentRequests";
 import ProductRollup from "../components/review/ProductRollup";
 import { overviewTabsParam, overviewToken } from "../components/review/workspace/overview-token";
 import {
@@ -261,6 +262,15 @@ export default function ReviewDashboard() {
             </ul>
           </section>
         )}
+
+        <section className="review-dash-section">
+          <h2>Content requests</h2>
+          <p className="muted review-dash-hint">
+            Missing content reviewers asked for. Request more from a nav section or blog series in
+            the workspace tree.
+          </p>
+          <ContentRequestList />
+        </section>
 
         <section className="review-dash-section">
           <h2>Requested from me</h2>

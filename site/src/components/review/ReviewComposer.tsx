@@ -18,6 +18,8 @@ interface ReviewComposerProps {
   compact?: boolean;
   /** Always-on single field with an embedded send button (no reveal step). */
   inline?: boolean;
+  /** Submittable with an empty body (the comment carries a suggestion). */
+  allowEmpty?: boolean;
 }
 
 function InlineReviewComposer({
@@ -124,12 +126,14 @@ export default function ReviewComposer({
   autoFocus = false,
   compact = false,
   inline = false,
+  allowEmpty = false,
 }: ReviewComposerProps) {
+  const hasContent = allowEmpty || Boolean(value.trim());
   const handleKeyDown = useCallback(
     (e: KeyboardEvent<HTMLTextAreaElement>) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
         e.preventDefault();
-        if (!disabled && !submitting && value.trim()) onSubmit();
+        if (!disabled && !submitting && hasContent) onSubmit();
         return;
       }
       if (e.key === "Escape" && onCancel) {
@@ -138,7 +142,7 @@ export default function ReviewComposer({
         onCancel();
       }
     },
-    [disabled, onCancel, onSubmit, submitting, value],
+    [disabled, onCancel, onSubmit, submitting, hasContent],
   );
 
   if (inline) {
@@ -173,7 +177,7 @@ export default function ReviewComposer({
           type="button"
           size="sm"
           onClick={onSubmit}
-          disabled={disabled || submitting || !value.trim()}
+          disabled={disabled || submitting || !hasContent}
         >
           {submitting ? "Posting…" : submitLabel}
         </Button>

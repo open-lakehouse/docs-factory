@@ -75,7 +75,11 @@ export default function ThreadCard({
     : undefined;
 
   const label = sectionLabel || (thread.root?.orphaned ? "Removed section" : "Section");
-  const preview = thread.root?.bodyMd || sel?.quote || codeLabel || "";
+  const sug = thread.root?.suggestion;
+  const suggestionPreview = sug
+    ? `${sug.replacement ? "Suggested edit" : "Suggested deletion"}${thread.root?.bodyMd ? ` · ${thread.root.bodyMd}` : ""}`
+    : undefined;
+  const preview = suggestionPreview || thread.root?.bodyMd || sel?.quote || codeLabel || "";
   const replyCount = thread.replies.length;
 
   function onKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {

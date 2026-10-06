@@ -130,6 +130,7 @@ function ScriptViewBody({
       anchorSlug: "",
       headingText: "",
       quote: lineText.trim(),
+      original: lineText,
     });
     setSelecting(false);
   }

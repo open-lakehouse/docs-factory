@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -17,6 +18,8 @@ interface CommentBubbleProps {
   authoredGitSha?: string;
   /** Written through a personal access token (an agent acting for the author). */
   viaAgent?: boolean;
+  /** A suggested edit, shown above the body (which is then its rationale). */
+  suggestion?: ReactNode;
 }
 
 // A tombstoned/erased author has this login (see EraseUser). We drop the avatar
@@ -37,6 +40,7 @@ export default function CommentBubble({
   onReply,
   authoredGitSha,
   viaAgent,
+  suggestion,
 }: CommentBubbleProps) {
   const indent = Math.min(depth, MAX_INDENT_LEVELS) * INDENT_STEP_REM;
   const attributed = login != null && login !== TOMBSTONE_LOGIN;
@@ -70,6 +74,7 @@ export default function CommentBubble({
           via agent
         </span>
       )}
+      {suggestion}
       {body && <p className="review-body">{body}</p>}
       {(authoredGitSha || onReply) && (
         <div className={cn("review-comment-foot", !authoredGitSha && "reply-only")}>

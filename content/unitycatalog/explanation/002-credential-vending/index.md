@@ -9,7 +9,7 @@ references:
   - lakehouse.credentialIssuer
   - lakehouse.objectStorage
   - s3Api
-status: draft
+status: ready
 ---
 
 Engines read and write a lakehouse's data directly in

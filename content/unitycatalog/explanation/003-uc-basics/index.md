@@ -10,21 +10,20 @@ references:
   - lakehouse.volume
   - lakehouse.registeredFunction
   - lakehouse.mlModel
-status: draft
+status: ready
 ---
 
-Everything [Unity Catalog](model:unityCatalogOSS) governs is a *securable
-object*: something with a name, an owner, and privileges that decide who can
-use it. This page describes the securable objects in the open source server,
-how they nest, and how they relate to the files they describe.
+The umbrella term for things that Unity Catalog governs is *securable*: 
+something with a name, an owner, and privileges that decide who can
+use it. This page describes the securable objects in the open source server as
+of 0.6.0, how they nest, and how they relate to the files they describe.
 
 Securables fall into two groups:
 
 - **Data and AI assets**, the tables, volumes, functions, and models that users,
   pipelines, and agents read and write.
-- **Storage access objects**, the credentials and external locations that
-  decide which storage the server can reach and which paths those assets may
-  use.
+- **System/metastore assets**, the credentials and external locations that decide which storage
+  the server can reach and which paths those assets may use.
 
 ## The three-level namespace
 
@@ -70,7 +69,7 @@ The API's `TableType` enum also lists `STREAMING_TABLE` and
 `MATERIALIZED_VIEW`. An enum value is not the same as a supported workflow, so
 check the release's compatibility notes before relying on those types.
 
-## Storage access objects
+## System/metastore assets
 
 These objects live directly under the metastore. They don't hold data. They
 control which storage the server can access, and on whose behalf.
@@ -110,7 +109,7 @@ nearest storage root:
 
 1. the schema's `storage_root`, if it has one;
 2. otherwise the catalog's `storage_root`;
-3. otherwise the deprecated server-wide `storage-root.tables` property.
+3. otherwise the metastore's `storage_root`.
 
 The server allocates a unique path below that root, under a reserved
 `__unitystorage` prefix, for example

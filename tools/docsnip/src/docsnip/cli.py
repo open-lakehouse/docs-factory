@@ -3,7 +3,9 @@
 Subcommands:
   validate      — check frontmatter on all content pages
   snippetcheck  — verify every snippet fence resolves to a unique source region
-  check         — validate + snippetcheck (CI entry)
+  versions      — UC pins against content/unitycatalog/release.yml (--fix rewrites)
+  bump-uc       — move the docs to a new UC release and rewrite every pin
+  check         — validate + snippetcheck + versions (CI entry)
 
 llms.txt generation lives in the docs-site emitter (emit/docs), which re-uses
 content-core for content discovery, identity, and URL derivation instead of
@@ -19,7 +21,7 @@ import re
 import sys
 from pathlib import Path
 
-from . import environments, published
+from . import environments, published, versions
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -250,9 +252,30 @@ def cmd_scripts(p, as_json: bool = True) -> int:
     return 0
 
 
+def cmd_versions(p, fix: bool = False) -> int:
+    if fix:
+        for path in versions.fix(p["root"]):
+            print(f"rewrote {path.relative_to(p['root'])}")
+    errors = versions.check(p["root"])
+    for warning in versions.prose_warnings(p["root"]):
+        print(f"warning: {warning}", file=sys.stderr)
+    if errors:
+        print("\n".join(errors), file=sys.stderr)
+        print(f"\n{len(errors)} version error(s)", file=sys.stderr)
+        return 1
+    print("versions OK")
+    return 0
+
+
+def cmd_bump_uc(p, release: str) -> int:
+    for path in versions.bump(p["root"], release):
+        print(f"rewrote {path.relative_to(p['root'])}")
+    return cmd_versions(p)
+
+
 def cmd_check(p) -> int:
-    """CI entry point: validate + snippetcheck."""
-    rc = cmd_validate(p) or cmd_snippetcheck(p)
+    """CI entry point: validate + snippetcheck + versions."""
+    rc = cmd_validate(p) or cmd_snippetcheck(p) or cmd_versions(p)
     if rc == 0:
         print("check OK")
     return rc
@@ -279,11 +302,22 @@ def main(argv: list[str] | None = None) -> int:
         "--json", action="store_true", default=True, help="emit JSON (default)"
     )
 
+    sp_versions = sub.add_parser("versions")
+    sp_versions.add_argument(
+        "--fix", action="store_true", help="rewrite pins to the manifest first"
+    )
+    sp_bump = sub.add_parser("bump-uc")
+    sp_bump.add_argument("release", help="the new Unity Catalog release, X.Y.Z")
+
     args = parser.parse_args(argv)
     p = _paths(args.root)
 
     if args.cmd == "scripts":
         return cmd_scripts(p, as_json=args.json)
+    if args.cmd == "versions":
+        return cmd_versions(p, fix=args.fix)
+    if args.cmd == "bump-uc":
+        return cmd_bump_uc(p, args.release)
 
     dispatch = {
         "validate": cmd_validate,

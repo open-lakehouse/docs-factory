@@ -1,5 +1,5 @@
 ---
-title: Read and write Unity Catalog tables from DuckDB
+title: Use DuckDB with Unity Catalog
 summary: Attach a Unity Catalog catalog in DuckDB, query its Delta tables with SQL, and append rows to catalog-managed and external tables.
 diataxis: how-to
 project: unitycatalog

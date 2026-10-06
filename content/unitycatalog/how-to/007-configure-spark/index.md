@@ -1,5 +1,5 @@
 ---
-title: Configure Spark to use Unity Catalog
+title: Use Spark with Unity Catalog
 summary: Pick matching Spark, Delta, and Unity Catalog connector versions, register a Unity Catalog catalog in a SparkSession, and choose how Spark authenticates to the server.
 diataxis: how-to
 project: unitycatalog

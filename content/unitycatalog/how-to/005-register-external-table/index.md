@@ -1,5 +1,5 @@
 ---
-title: Register an existing external table
+title: Register external Delta table
 summary: Register a Delta table that already exists in storage as an external table in Unity Catalog, inspect and read it, and drop it without losing data.
 diataxis: how-to
 project: unitycatalog

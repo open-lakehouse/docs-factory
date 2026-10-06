@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - deltaSpec
-status: draft
+status: ready
 ---
 
 DuckDB queries [Unity Catalog](model:unityCatalogOSS) tables with SQL and

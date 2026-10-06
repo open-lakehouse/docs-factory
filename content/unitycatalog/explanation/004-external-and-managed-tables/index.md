@@ -9,7 +9,7 @@ references:
   - ucSpec
   - deltaSpec
   - deltaSpark
-status: draft
+status: ready
 ---
 
 Unity Catalog knows two kinds of table. They differ in two things: who owns

@@ -8,7 +8,7 @@ references:
   - duckdb
   - polars
   - deltaRs
-status: draft
+status: ready
 ---
 
 Unity Catalog doesn't run queries, so you always reach it through a client or

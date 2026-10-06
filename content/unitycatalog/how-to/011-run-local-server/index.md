@@ -5,7 +5,7 @@ diataxis: how-to
 project: unitycatalog
 references:
   - unityCatalogOSS
-status: draft
+status: ready
 ---
 
 Every example in these docs runs against the same local

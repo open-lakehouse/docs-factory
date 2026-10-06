@@ -8,7 +8,7 @@ references:
   - deltaSpec
   - polars
   - deltaRs
-status: draft
+status: ready
 ---
 
 Polars, Daft, and pandas can find [Unity Catalog](model:unityCatalogOSS)

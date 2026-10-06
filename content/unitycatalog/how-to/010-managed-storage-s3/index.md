@@ -7,7 +7,7 @@ references:
   - unityCatalogOSS
   - lakehouse.catalog
   - lakehouse.objectStorage
-status: draft
+status: ready
 ---
 
 A storage root on a catalog or schema tells

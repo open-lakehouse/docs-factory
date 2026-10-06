@@ -7,7 +7,7 @@ references:
   - unityCatalogOSS
   - lakehouse.objectStorage
   - s3Api
-status: draft
+status: ready
 ---
 
 A [Unity Catalog](model:unityCatalogOSS) server governs access to Amazon S3

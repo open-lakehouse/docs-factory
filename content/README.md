@@ -99,8 +99,9 @@ documentation, rewritten for what the open source server actually does.
 is the reference example.
 
 1. **Intro.** One or two sentences that state the answer: what the object is or
-   what the reader achieves, naming Unity Catalog and the version, so the
-   paragraph stands alone when an AI search engine quotes it. Don't open with
+   what the reader achieves, naming Unity Catalog, so the paragraph stands
+   alone when an AI search engine quotes it. Don't name the release: see
+   [Versions](#versions). Don't open with
    "This page shows how to". Link the explanation that covers the concepts.
 2. **Prerequisites.** A `:::prerequisites` box with what the reader brings:
    client versions, and data or configuration the page assumes. Pages don't
@@ -148,6 +149,23 @@ the emitted site, and the variables a host client needs for a stack
 `UC_DOCS_ROOT` (default `/tmp/uc-docs`) at the same path in the container, for
 pages whose server must see your files. A page that needs a different server
 configuration is the exception: give it its own compose file and say why.
+
+## Versions
+
+The docs describe the current release only
+([design](../docs/design/docs-versioning.md)). The release and its companion
+pins live in [`unitycatalog/release.yml`](unitycatalog/release.yml), and readers
+see the release in the environment title of the prerequisites box. So:
+
+- Don't scope prose to the release ("In 0.6.0 the server…", "as of 0.6.0").
+  Write it in the present tense. A number in prose marks a boundary: "requires
+  0.4.0 or later", "deprecated since 0.6.0", "fixed in 0.7.0".
+- Commands pin exactly: `uv run --with unitycatalog-client==0.6.0`.
+- Version-specific facts go in R01's known issues (with **Affects**), R02's
+  matrix, version tables, and upstream links pinned to `blob/vX`.
+
+`docsnip check` fails on a pin that disagrees with the manifest and warns on
+release-scoped prose. `just bump-uc <version>` rewrites every pin.
 
 ## Tutorials: colocated, self-testing folder mode
 

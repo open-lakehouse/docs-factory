@@ -193,7 +193,6 @@ bun alone, because uv, Chromium, and `envs/` are needed only to emit, and
   the manifest records.
 - **Shell CI:** a build job for the shell (it needs Chromium for the LikeC4 export).
 - **Gating:** DB `released` gating for publish emits.
-- **Versions:** versioned docs (per UC release).
 - **Support files:** files a script needs but the site doesn't serve, such as
   `compose.yaml`, `server.properties`, policy JSON, and imported helpers like
   `_seed.py`. Today the page inlines them, but the companion list doesn't include

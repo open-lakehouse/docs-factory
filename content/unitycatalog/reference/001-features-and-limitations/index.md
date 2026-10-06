@@ -116,6 +116,9 @@ link here.
 | DuckDB 1.5.4 | `CREATE TABLE`, `CREATE TABLE … AS SELECT`, `DROP TABLE` | `Not implemented Error`. |
 | DuckDB 1.5.4 | `UPDATE`, `DELETE` | `Binder Error: Can only update base table` (or `delete from`). |
 | DuckDB 1.5.4, stable `unity_catalog` | Tables with `DECIMAL` columns | `Invalid field found while parsing field: type_precision`. Install the extension from `core_nightly`. |
+| Polars 1.44.2 | `Catalog.scan_table` on non-Delta tables | `Object at location … not found: is directory`: it reads the location as a single file. Read the folder with `scan_parquet`, `scan_csv`, or `scan_ndjson`; see [Register non-Delta external tables](../../how-to/table-storage-formats/index.md#read-the-data). |
+| DuckDB 1.5.4, `unity_catalog` | Non-Delta tables | `Table '…' is of unsupported format 'PARQUET'` (or `CSV`, …). Read the location with `read_parquet`, `read_csv`, or `read_json`. |
+| `uc` CLI 0.6.0 | `table read` on non-Delta tables | `Only Delta tables are supported for read operations`. |
 | `unitycatalog-ai` 0.4.0 | Functions that return a falsy value, such as `0` or `""` | `result.value` holds a "no output was produced" message instead of the value. |
 
 ## Not in Unity Catalog OSS

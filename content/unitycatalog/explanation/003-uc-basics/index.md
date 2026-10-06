@@ -15,8 +15,8 @@ status: ready
 
 The umbrella term for things that Unity Catalog governs is *securable*: 
 something with a name, an owner, and privileges that decide who can
-use it. This page describes the securable objects in the open source server as
-of 0.6.0, how they nest, and how they relate to the files they describe.
+use it. This page describes the securable objects in the open source server,
+how they nest, and how they relate to the files they describe.
 
 Securables fall into two groups:
 

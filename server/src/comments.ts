@@ -1,8 +1,10 @@
 // Comment/thread mapping + assembly helpers used by the comment RPCs.
 import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+import { hashLine, normalize } from "./anchor.js";
 import { areaFromDb } from "./db-map.js";
 import {
+  type CodeSelector,
   CodeSelectorSchema,
   type Comment,
   CommentSchema,
@@ -10,6 +12,10 @@ import {
   ContentRefSchema,
   type RecentComment,
   RecentCommentSchema,
+  type Suggestion,
+  SuggestionSchema,
+  SuggestionState,
+  type TextSelector,
   TextSelectorSchema,
   type Thread,
   ThreadSchema,
@@ -50,6 +56,13 @@ export interface CommentRow {
   // Written through a personal access token. Optional so queries that don't
   // select it (e.g. re-anchoring) still type-check; absent reads as false.
   via_agent?: boolean | null;
+  // Suggested edit (thread roots only). Optional for the same reason as
+  // via_agent; a null state means the comment carries no suggestion.
+  suggestion_original?: string | null;
+  suggestion_replacement?: string | null;
+  suggestion_state?: string | null;
+  suggestion_state_by?: string | null;
+  suggestion_state_at?: Date | null;
 }
 
 export interface ResolutionRow {
@@ -57,6 +70,54 @@ export interface ResolutionRow {
   resolved: boolean;
   resolved_by: string | null;
   resolved_at: Date | null;
+}
+
+const SUGGESTION_STATE_FROM_DB: Record<string, SuggestionState> = {
+  open: SuggestionState.OPEN,
+  applied: SuggestionState.APPLIED,
+  dismissed: SuggestionState.DISMISSED,
+};
+
+export const SUGGESTION_STATE_TO_DB: Partial<Record<SuggestionState, string>> = {
+  [SuggestionState.OPEN]: "open",
+  [SuggestionState.APPLIED]: "applied",
+  [SuggestionState.DISMISSED]: "dismissed",
+};
+
+/** Longest `original` or `replacement` a suggestion may carry, in characters. */
+export const MAX_SUGGESTION_CHARS = 10_000;
+
+/**
+ * Why a CreateComment's suggestion is invalid, or undefined when it's fine (or
+ * absent). The pair must restate the comment's own anchor: a prose `original`
+ * normalizes to the selector's quote, a code `original` starts with the hashed
+ * line. Otherwise the suggested edit could target text the anchor doesn't.
+ */
+export function suggestionError(req: {
+  parentId?: string;
+  selector?: TextSelector;
+  codeSelector?: CodeSelector;
+  suggestion?: Suggestion;
+}): string | undefined {
+  const sug = req.suggestion;
+  if (!sug) return undefined;
+  if (req.parentId) return "a suggestion can only start a thread";
+  if (!req.selector === !req.codeSelector) {
+    return "a suggestion needs exactly one selector";
+  }
+  if (!sug.original.trim()) return "suggestion original is required";
+  if (sug.original.length > MAX_SUGGESTION_CHARS || sug.replacement.length > MAX_SUGGESTION_CHARS) {
+    return `suggestion exceeds ${MAX_SUGGESTION_CHARS} characters`;
+  }
+  if (sug.original === sug.replacement) return "suggestion changes nothing";
+  if (req.selector && normalize(sug.original) !== req.selector.quote) {
+    return "suggestion original does not match the selected quote";
+  }
+  const lineHash = req.codeSelector?.lineHash;
+  if (lineHash && hashLine(sug.original.split("\n")[0] ?? "") !== lineHash) {
+    return "suggestion original does not match the selected source lines";
+  }
+  return undefined;
 }
 
 export function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
@@ -95,6 +156,18 @@ export function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
             endLine: row.code_end_line ?? row.code_line ?? 0,
             lineHash: row.code_line_hash ?? "",
             fileHash: row.code_file_hash ?? "",
+          })
+        : undefined,
+    suggestion:
+      row.suggestion_state != null
+        ? create(SuggestionSchema, {
+            original: row.suggestion_original ?? "",
+            replacement: row.suggestion_replacement ?? "",
+            state: SUGGESTION_STATE_FROM_DB[row.suggestion_state] ?? SuggestionState.UNSPECIFIED,
+            stateByLogin: row.suggestion_state_by ?? undefined,
+            stateAt: row.suggestion_state_at
+              ? timestampFromDate(row.suggestion_state_at)
+              : undefined,
           })
         : undefined,
   });

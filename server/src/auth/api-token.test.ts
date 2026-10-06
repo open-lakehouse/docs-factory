@@ -9,6 +9,7 @@ import {
   ContentArea,
   ContentRefSchema,
   Role,
+  SuggestionState,
   type Viewer,
 } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { ReviewService } from "../gen/docs_factory/review/v1/review_service_pb.js";
@@ -40,6 +41,16 @@ describe("tokenMayCall", () => {
     expect(tokenMayCall("CreateComment", { parentId: "c1" }, [SCOPE_READ])).toBe(false);
     expect(tokenMayCall("CreateComment", {}, BOTH)).toBe(false);
     expect(tokenMayCall("CreateComment", { parentId: "" }, BOTH)).toBe(false);
+  });
+
+  test("reply scope admits SetSuggestionState only to mark applied", () => {
+    expect(tokenMayCall("SetSuggestionState", { state: SuggestionState.APPLIED }, BOTH)).toBe(true);
+    expect(
+      tokenMayCall("SetSuggestionState", { state: SuggestionState.APPLIED }, [SCOPE_READ]),
+    ).toBe(false);
+    for (const state of [SuggestionState.DISMISSED, SuggestionState.OPEN]) {
+      expect(tokenMayCall("SetSuggestionState", { state }, BOTH)).toBe(false);
+    }
   });
 
   test("everything else is denied regardless of scope", () => {

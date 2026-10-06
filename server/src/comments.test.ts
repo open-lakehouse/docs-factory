@@ -5,7 +5,22 @@
 // list in depth-first pre-order, each carrying its parent_id, and roots split
 // into resolved/orphaned buckets.
 import { describe, expect, test } from "bun:test";
-import { assembleThreads, type CommentRow, type ResolutionRow } from "./comments.js";
+import { create } from "@bufbuild/protobuf";
+import { hashLine } from "./anchor.js";
+import {
+  assembleThreads,
+  type CommentRow,
+  commentFromRow,
+  type ResolutionRow,
+  suggestionError,
+} from "./comments.js";
+import {
+  CodeSelectorSchema,
+  ContentRefSchema,
+  SuggestionSchema,
+  SuggestionState,
+  TextSelectorSchema,
+} from "./gen/docs_factory/review/v1/messages_pb.js";
 
 /** Minimal CommentRow factory — only the fields assembleThreads reads. */
 function row(id: string, parentId: string | null, extra: Partial<CommentRow> = {}): CommentRow {
@@ -127,5 +142,84 @@ describe("assembleThreads unread watermark", () => {
     const { threads } = assembleThreads(ref, tree, [], seen);
     expect(threads[0]!.hasUnread).toBe(false);
     expect(threads[0]!.unreadCount).toBe(0);
+  });
+});
+
+describe("suggestionError", () => {
+  const selector = create(TextSelectorSchema, { quote: "short-lived tokens" });
+  const suggestion = (original: string, replacement: string) =>
+    create(SuggestionSchema, { original, replacement });
+
+  test("accepts a rewrite or a deletion of the selected prose", () => {
+    expect(
+      suggestionError({
+        selector,
+        suggestion: suggestion("Short-lived  tokens", "scoped credentials"),
+      }),
+    ).toBeUndefined();
+    expect(
+      suggestionError({ selector, suggestion: suggestion("short-lived tokens", "") }),
+    ).toBeUndefined();
+  });
+
+  test("rejects a suggestion that doesn't restate its anchor", () => {
+    expect(suggestionError({ selector, suggestion: suggestion("other text", "x") })).toContain(
+      "quote",
+    );
+    expect(suggestionError({ suggestion: suggestion("short-lived tokens", "x") })).toContain(
+      "selector",
+    );
+    expect(
+      suggestionError({
+        parentId: "r",
+        selector,
+        suggestion: suggestion("short-lived tokens", "x"),
+      }),
+    ).toContain("thread");
+    expect(
+      suggestionError({
+        selector,
+        suggestion: suggestion("short-lived tokens", "short-lived tokens"),
+      }),
+    ).toContain("nothing");
+  });
+
+  test("checks a code suggestion against the hashed first line", () => {
+    const codeSelector = create(CodeSelectorSchema, {
+      path: "a.py",
+      line: 3,
+      endLine: 4,
+      lineHash: hashLine("x = 1"),
+    });
+    expect(
+      suggestionError({ codeSelector, suggestion: suggestion("  x = 1\ny = 2", "x = 2") }),
+    ).toBeUndefined();
+    expect(suggestionError({ codeSelector, suggestion: suggestion("z = 1", "x = 2") })).toContain(
+      "source lines",
+    );
+  });
+});
+
+describe("commentFromRow suggestion", () => {
+  const ref = create(ContentRefSchema, { slug: "post" });
+  test("maps the suggestion columns, keeping an empty replacement", () => {
+    const c = commentFromRow(
+      row("r", null, {
+        selector_quote: "q",
+        suggestion_original: "Q",
+        suggestion_replacement: "",
+        suggestion_state: "applied",
+        suggestion_state_by: "system",
+        suggestion_state_at: new Date("2026-01-02T00:00:00Z"),
+      }),
+      ref,
+    );
+    expect(c.suggestion?.original).toBe("Q");
+    expect(c.suggestion?.replacement).toBe("");
+    expect(c.suggestion?.state).toBe(SuggestionState.APPLIED);
+    expect(c.suggestion?.stateByLogin).toBe("system");
+  });
+  test("leaves suggestion unset for a plain comment", () => {
+    expect(commentFromRow(row("r", null), ref).suggestion).toBeUndefined();
   });
 });

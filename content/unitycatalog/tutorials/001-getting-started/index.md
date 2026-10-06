@@ -5,7 +5,7 @@ diataxis: tutorial
 project: unitycatalog
 references:
   - unityCatalogOSS
-status: draft
+status: ready
 ---
 
 In this tutorial you start a Unity Catalog server on your machine, look around

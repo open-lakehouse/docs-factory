@@ -1,12 +1,12 @@
 ---
 title: Use the Python client
-summary: Connect to Unity Catalog 0.6.0 with the asynchronous unitycatalog-client SDK, create a catalog, a schema, and a table, handle a missing object, and clean up.
+summary: Use the official Python SDK to write, read, and organize data.
 diataxis: tutorial
 project: unitycatalog
 references:
   - unityCatalogOSS
   - lakehouse.catalog
-status: draft
+status: ready
 ---
 
 In this tutorial you build the same small catalog as in
@@ -16,8 +16,6 @@ the official SDK for the [Unity Catalog](model:unityCatalogOSS) REST API. You
 connect, create a catalog, a schema, and a table, see how the client reports
 an object that doesn't exist, and clean up. Applications, notebooks, and
 scripts use the same calls to manage catalog objects.
-
-It takes about ten minutes.
 
 :::prerequisites
 - [uv](https://docs.astral.sh/uv/).
@@ -32,7 +30,7 @@ from an earlier tutorial. Then open a Python session with the
 client installed:
 
 ```bash
-uv run --with unitycatalog-client==0.6.0 python -m asyncio
+uv run --with unitycatalog-client>=0.6.0 python -m asyncio
 ```
 
 `python -m asyncio` is a Python shell that accepts `await` at the top level.

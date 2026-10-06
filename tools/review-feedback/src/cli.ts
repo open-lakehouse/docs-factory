@@ -23,9 +23,11 @@ import {
   reply,
   type StateFilter,
 } from "./feedback.js";
-import { formatThread, formatThreads } from "./format.js";
+import { formatRequests, formatStatuses, formatThread, formatThreads } from "./format.js";
 import { browserLogin } from "./login.js";
 import { repoRoot } from "./repo.js";
+import { completeRequest, listRequests, type RequestFilter } from "./requests.js";
+import { checkReady, listStatus, type PageStatusFilter } from "./status.js";
 
 const USAGE = `review-feedback: read and answer docs-factory review threads
 
@@ -37,6 +39,11 @@ Usage:
   review-feedback show <thread-id> [--json]
   review-feedback pull [--out .review] [list filters]
   review-feedback reply <thread-id> (--body <md> | --file <path|->) [--applied]
+  review-feedback status [--filter awaiting-ready|unapproved-ready|in-review|all]
+                         [--area docs|blogs] [--project p] [--slug s] [--json]
+  review-feedback requests [--filter accepted|open|all] [--project p] [--json]
+  review-feedback complete-request <id> --planned <backlog-id> [--pr <url>]
+  review-feedback check-ready [--base origin/main]
 
 Config: flags, then DOCS_REVIEW_URL / DOCS_REVIEW_API_URL / DOCS_REVIEW_TOKEN,
 then ${configPath()} (written by login).`;
@@ -57,6 +64,10 @@ const { values: flags, positionals } = parseArgs({
     body: { type: "string" },
     file: { type: "string" },
     applied: { type: "boolean" },
+    filter: { type: "string" },
+    planned: { type: "string" },
+    pr: { type: "string" },
+    base: { type: "string" },
     help: { type: "boolean", short: "h" },
   },
 });
@@ -131,6 +142,40 @@ function pull(threads: FeedbackThread[], out: string) {
   print(`Wrote ${byPage.size} page file(s), ${threads.length} thread(s), to ${out}/`);
 }
 
+/**
+ * Warn about pages this branch moves to `ready` without an approval. Always
+ * exits 0: release is git's, and the check only tells the author what the
+ * review app knows. In GitHub Actions it emits warning annotations.
+ */
+async function checkReadyCommand() {
+  const root = repoRoot();
+  if (!root) throw new ConfigError("check-ready must run inside the checkout");
+  let config: ReturnType<typeof resolveConfig>;
+  try {
+    config = resolveConfig({ url: flags.url, apiUrl: flags["api-url"], token: flags.token });
+  } catch (e) {
+    if (!(e instanceof ConfigError)) throw e;
+    return print(`check-ready: skipped, ${e.message}`);
+  }
+  const gha = process.env.GITHUB_ACTIONS === "true";
+  const warn = (path: string, msg: string) =>
+    print(gha ? `::warning file=${path},line=1::${msg}` : `warning: ${path}: ${msg}`);
+  if (!config.token) {
+    return print("check-ready: skipped, no access token (set DOCS_REVIEW_TOKEN)");
+  }
+  let checks: Awaited<ReturnType<typeof checkReady>>;
+  try {
+    checks = await checkReady(reviewClient(config), root, flags.base ?? "origin/main");
+  } catch (e) {
+    return print(`check-ready: skipped, ${describeError(e)}`);
+  }
+  if (checks.length === 0) return print("check-ready: no page moves to ready on this branch");
+  for (const c of checks) {
+    if (c.approved) print(`ok: ${c.page} approved by ${c.approvers.join(", ") || "a maintainer"}`);
+    else warn(c.path, `${c.page} is set to ready without an approval in the review app`);
+  }
+}
+
 async function main() {
   const [cmd, arg] = positionals;
   if (!cmd || flags.help) return print(USAGE);
@@ -175,6 +220,40 @@ async function main() {
       const marked = flags.applied ? " and marked its suggestion applied" : "";
       return print(`Replied on ${t.page} thread ${t.id} (comment ${posted?.id ?? "?"})${marked}.`);
     }
+    case "status": {
+      const filter = (flags.filter ?? "awaiting-ready") as PageStatusFilter;
+      if (!["awaiting-ready", "unapproved-ready", "in-review", "all"].includes(filter)) {
+        throw new ConfigError(
+          "--filter must be awaiting-ready, unapproved-ready, in-review, or all",
+        );
+      }
+      const { area, project, slug } = listOpts();
+      const pages = await listStatus(connection(), {
+        area,
+        project,
+        slug,
+        filter,
+        repoRoot: repoRoot(),
+      });
+      return flags.json ? json(pages) : print(formatStatuses(pages));
+    }
+    case "requests": {
+      const filter = (flags.filter ?? "accepted") as RequestFilter;
+      if (!["accepted", "open", "all"].includes(filter)) {
+        throw new ConfigError("--filter must be accepted, open, or all");
+      }
+      const requests = await listRequests(connection(), { filter, project: flags.project });
+      return flags.json ? json(requests) : print(formatRequests(requests));
+    }
+    case "complete-request": {
+      if (!arg || !flags.planned) {
+        throw new ConfigError("usage: review-feedback complete-request <id> --planned <id>");
+      }
+      const r = await completeRequest(connection(), arg, flags.planned, flags.pr);
+      return print(`Marked request ${arg} done as ${r?.plannedId ?? flags.planned}.`);
+    }
+    case "check-ready":
+      return checkReadyCommand();
     default:
       throw new ConfigError(`unknown command "${cmd}"\n\n${USAGE}`);
   }

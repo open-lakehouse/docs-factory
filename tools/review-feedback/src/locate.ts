@@ -14,6 +14,7 @@ import { extractHeadings, isPreambleAnchor } from "../../../site/src/content-cor
 import { walkContent } from "../../../site/src/content-core/walk.mjs";
 import {
   type Comment,
+  CommentScope,
   ContentArea,
   type ContentRef,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
@@ -359,6 +360,9 @@ export function locate(repoRoot: string, comment: Comment): Location | undefined
   if (!comment.ref) return undefined;
   const path = sourcePathForRef(repoRoot, comment.ref);
   if (!path) return undefined;
+  if (comment.scope === CommentScope.DOCUMENT) {
+    return { path, precision: "file", drifted: fileChangedSince(repoRoot, sha, path) };
+  }
   const loc = locateProse(comment, path, readFileSync(join(repoRoot, path), "utf8"));
   return { ...loc, drifted: fileChangedSince(repoRoot, sha, path) };
 }

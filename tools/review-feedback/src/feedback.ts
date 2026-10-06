@@ -6,6 +6,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import type { ReviewClient } from "./client.js";
 import {
   type Comment,
+  CommentScope,
   ContentArea,
   type ContentRef,
   type DraftSummary,
@@ -60,6 +61,8 @@ export interface FeedbackThread {
   /** The anchored section no longer exists in the latest registered version. */
   orphaned: boolean;
   anchor: {
+    /** `document` threads are about the whole page: heading is empty. */
+    scope: "section" | "document";
     heading: string;
     fingerprint: string;
     quote?: string;
@@ -121,6 +124,7 @@ function toFeedback(
     state: agentState(thread),
     orphaned,
     anchor: {
+      scope: root.scope === CommentScope.DOCUMENT ? "document" : "section",
       heading: root.anchorSlug,
       fingerprint: root.anchorFingerprint,
       quote: root.selector?.quote || undefined,

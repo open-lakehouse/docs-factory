@@ -1,5 +1,5 @@
 ---
-title: Register non-Delta external tables
+title: Register external files as tables
 summary: Register Parquet, CSV, JSON, and other file-based data as external tables in Unity Catalog, and read them from PyArrow, Polars, or DuckDB.
 diataxis: how-to
 project: unitycatalog

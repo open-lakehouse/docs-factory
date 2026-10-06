@@ -14,6 +14,11 @@ model {
     // engine and emits run status to observability.
     orchestration -[flows]-> queryEngine "schedules + triggers pipelines that run on"
     orchestration -[flows]-> observability "emits run status + metrics"
+
+    // Credential vending: the catalog mints scoped credentials through the
+    // issuer, and object storage enforces the scope they carry.
+    catalog -[dependsOn]-> credentialIssuer "mints scoped storage credentials through"
+    credentialIssuer -[flows]-> objectStorage "issues credentials honored by"
   }
 
   // --- Specifications & implementations ------------------------------------

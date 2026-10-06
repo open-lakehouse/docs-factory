@@ -50,22 +50,20 @@ const EVENT_KIND_BY_DB: Record<string, EventKind> = {
   "approved-by": EventKind.APPROVED,
   "approval-dismissed": EventKind.APPROVAL_DISMISSED,
   released: EventKind.RELEASED,
-  unpublished: EventKind.UNPUBLISHED,
-  republished: EventKind.REPUBLISHED,
+  unreleased: EventKind.UNRELEASED,
   "content-revised": EventKind.CONTENT_REVISED,
 };
 
 /**
  * The content_event `kind` for an explicit review-state outcome, keyed on the DB
  * state string it lands in. Only the storable explicit outcomes are mapped; any
- * unmapped state returns null (not logged). `released` is logged from
- * releaseContent (with the published latch) rather than here. Ordinary approvals
- * are logged as `approved-by` from recordApproval, not through this map.
+ * unmapped state returns null (not logged). Ordinary approvals are logged as
+ * `approved-by` from recordApproval, not through this map; `released` /
+ * `unreleased` come from registerVersion.
  */
 export const EVENT_KIND_BY_STATE: Record<string, string | null> = {
   "changes-requested": "state-changes-requested",
   approved: "state-approved",
-  released: "released",
 };
 
 // --- Row shapes -------------------------------------------------------------

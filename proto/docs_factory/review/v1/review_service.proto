@@ -5,13 +5,14 @@ package docs_factory.review.v1;
 import "docs_factory/review/v1/messages.proto";
 import "google/protobuf/timestamp.proto";
 
-// The review & release API, served over Connect from the Neon Function and
-// called from the React SPA (connect-web + connect-query).
+// The review API, served over Connect from the Neon Function and called from
+// the React SPA (connect-web + connect-query). Release is not an RPC: it is
+// `status: ready` merged to main (docs/decisions/ADR-0002).
 //
 // Authorization (enforced server-side per method):
-//   - published-content reads: public
-//   - unpublished-content reads + all writes: allowlisted reviewers
-//   - release + allowlist management: maintainers
+//   - released-content reads: public
+//   - other content reads + all writes: allowlisted reviewers
+//   - allowlist management + content-request triage: maintainers
 //   - RegisterVersion: build-time only, guarded by a GitHub Actions OIDC token
 //     in the Authorization header (repo + environment pinned), not viewer auth
 service ReviewService {
@@ -54,18 +55,20 @@ service ReviewService {
   rpc GetSourceFile(GetSourceFileRequest) returns (GetSourceFileResponse);
 
   // Record an explicit review-state OUTCOME (validated against the state
-  // machine). Only the explicit outcomes are accepted: CHANGES_REQUESTED,
-  // RELEASED, and the maintainer APPROVED override. NEEDS_REVIEW and NONE are
-  // derived and cannot be set here; ordinary approvals go through RecordApproval.
+  // machine). Only CHANGES_REQUESTED and the maintainer APPROVED override are
+  // accepted; the other states are derived. Ordinary approvals go through
+  // RecordApproval.
   rpc TransitionReview(TransitionReviewRequest) returns (TransitionReviewResponse);
-  // Maintainer-only convenience for the terminal RELEASED transition.
-  rpc ReleaseContent(ReleaseContentRequest) returns (ReleaseContentResponse);
 
   // Record the current viewer's approval of an artifact (allowlist-gated,
   // idempotent). Satisfies any open REQUIRED request addressed to that reviewer.
   // Once the artifact's approval preconditions are met it derives to APPROVED —
   // there is no manual transition. Returns the refreshed summary.
+  // Rejected for `private` content, which is never released.
   rpc RecordApproval(RecordApprovalRequest) returns (RecordApprovalResponse);
+  // Private content only: satisfy the viewer's open review requests without an
+  // approval. Returns the refreshed summary.
+  rpc MarkReviewed(MarkReviewedRequest) returns (MarkReviewedResponse);
   // Dismiss an approval. A reviewer may dismiss their own; a maintainer may
   // dismiss anyone's (via `approver_login`). Returns the refreshed summary.
   rpc DismissApproval(DismissApprovalRequest) returns (DismissApprovalResponse);
@@ -99,12 +102,17 @@ service ReviewService {
   rpc ListReviewRequests(ListReviewRequestsRequest) returns (ListReviewRequestsResponse);
   // The review timeline for one artifact (most-recent first). Allowlist-gated.
   rpc ListContentEvents(ListContentEventsRequest) returns (ListContentEventsResponse);
-  // Reopen a released artifact to request changes (the terminal RELEASED state
-  // is otherwise closed). Maintainer-only. Transitions released -> changes-
-  // requested and, when `unpublish` is set, also clears the published latch so
-  // the artifact drops out of anonymous view (DB-only; no git write).
-  rpc RequestChangesOnPublished(RequestChangesOnPublishedRequest)
-      returns (RequestChangesOnPublishedResponse);
+
+  // Request content that doesn't exist yet, placed under a nav section (docs)
+  // or tag/series (blogs). Allowlist-gated.
+  rpc CreateContentRequest(CreateContentRequestRequest) returns (CreateContentRequestResponse);
+  // List content requests, newest first. Allowlist-gated (`feedback:read` for
+  // tokens).
+  rpc ListContentRequests(ListContentRequestsRequest) returns (ListContentRequestsResponse);
+  // Move a request through its lifecycle. Accept/decline/reopen are
+  // maintainer-only; DONE (with planned_id + pr_url) is also open to a token
+  // with `requests:write`, for the agent that wrote the planned slot.
+  rpc UpdateContentRequest(UpdateContentRequestRequest) returns (UpdateContentRequestResponse);
 
   // Maintainer-only allowlist management.
   rpc ManageAllowlist(ManageAllowlistRequest) returns (ManageAllowlistResponse);
@@ -153,9 +161,10 @@ service ReviewService {
   rpc ProductChanges(ProductChangesRequest) returns (ProductChangesResponse);
 
   // Personal access tokens for agents (CLI / MCP). A token acts as its owner,
-  // narrowed to its scopes: `feedback:read` (list/read content + comments) and
-  // `feedback:reply` (replies only — never new threads, resolution, approvals,
-  // or any admin action). Managing tokens requires a browser session; a token
+  // narrowed to its scopes: `feedback:read` (list/read content, comments, and
+  // content requests), `feedback:reply` (replies only — never new threads,
+  // resolution, approvals, or any admin action), and `requests:write` (mark an
+  // accepted content request done). Managing tokens requires a browser session; a token
   // can't mint, list, or revoke tokens.
   rpc CreateApiToken(CreateApiTokenRequest) returns (CreateApiTokenResponse);
   rpc ListApiTokens(ListApiTokensRequest) returns (ListApiTokensResponse);
@@ -222,6 +231,10 @@ message CreateCommentRequest {
   // only. The server reads `original` and `replacement` and starts it OPEN.
   // `body_md` may be empty when a suggestion is attached.
   optional Suggestion suggestion = 8;
+  // DOCUMENT starts a page-level thread: anchor_slug/fingerprint must be empty
+  // and no selector or suggestion is allowed. Unset means SECTION; replies
+  // inherit their root's scope.
+  CommentScope scope = 9;
 }
 message CreateCommentResponse {
   Comment comment = 1;
@@ -281,18 +294,17 @@ message TransitionReviewResponse {
   ReviewState state = 1;
 }
 
-message ReleaseContentRequest {
-  ContentRef ref = 1;
-  optional string note = 2;
-}
-message ReleaseContentResponse {
-  ReviewState state = 1;
-}
-
 message RecordApprovalRequest {
   ContentRef ref = 1;
 }
 message RecordApprovalResponse {
+  DraftSummary draft = 1;
+}
+
+message MarkReviewedRequest {
+  ContentRef ref = 1;
+}
+message MarkReviewedResponse {
   DraftSummary draft = 1;
 }
 
@@ -408,15 +420,39 @@ message ListContentEventsResponse {
   repeated ContentEvent events = 1;
 }
 
-message RequestChangesOnPublishedRequest {
-  ContentRef ref = 1;
-  optional string note = 2;
-  // When true, also unpublish (hide) the artifact. Default keeps it visible.
-  bool unpublish = 3;
+message CreateContentRequestRequest {
+  ContentArea area = 1;
+  optional string project = 2;
+  string placement = 3;
+  string diataxis = 4;
+  string title = 5;
+  string body_md = 6;
 }
-message RequestChangesOnPublishedResponse {
-  ReviewState state = 1;
-  bool published = 2;
+message CreateContentRequestResponse {
+  ContentRequest request = 1;
+}
+
+message ListContentRequestsRequest {
+  optional ContentArea area = 1;
+  optional string project = 2;
+  // Empty = every status.
+  repeated ContentRequestStatus statuses = 3;
+}
+message ListContentRequestsResponse {
+  repeated ContentRequest requests = 1;
+}
+
+message UpdateContentRequestRequest {
+  string id = 1;
+  ContentRequestStatus status = 2;
+  // Required with DONE.
+  optional string planned_id = 3;
+  optional string pr_url = 4;
+  // A reason, shown with DECLINED.
+  optional string resolution_note = 5;
+}
+message UpdateContentRequestResponse {
+  ContentRequest request = 1;
 }
 
 message ManageAllowlistRequest {

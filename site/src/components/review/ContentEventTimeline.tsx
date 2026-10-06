@@ -15,7 +15,6 @@ import {
   type LucideIcon,
   MessageSquare,
   Rocket,
-  RotateCcw,
   UserPlus,
   X,
 } from "lucide-react";
@@ -41,8 +40,7 @@ const KIND_LABEL: Record<number, string> = {
   [EventKind.APPROVED]: "Approved",
   [EventKind.APPROVAL_DISMISSED]: "Approval dismissed",
   [EventKind.RELEASED]: "Released",
-  [EventKind.UNPUBLISHED]: "Unpublished",
-  [EventKind.REPUBLISHED]: "Republished",
+  [EventKind.UNRELEASED]: "Unreleased",
 };
 
 interface TimelineItem {
@@ -71,10 +69,8 @@ function eventAppearance(kind: EventKind): { tone: TimelineTone; Icon: LucideIco
       return { tone: "danger", Icon: X };
     case EventKind.RELEASED:
       return { tone: "release", Icon: Rocket };
-    case EventKind.UNPUBLISHED:
+    case EventKind.UNRELEASED:
       return { tone: "danger", Icon: EyeOff };
-    case EventKind.REPUBLISHED:
-      return { tone: "release", Icon: RotateCcw };
     default:
       return { tone: "neutral", Icon: MessageSquare };
   }

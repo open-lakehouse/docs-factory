@@ -155,7 +155,7 @@ export async function reanchorThreads(
            selector_prefix, selector_suffix, suggestion_replacement, suggestion_state
     from comment
     where area = ${area} and slug = ${slug} and parent_id is null
-      and code_path is null
+      and code_path is null and scope = 'section'
   `;
 
   let orphaned = 0;

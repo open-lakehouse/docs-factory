@@ -1,17 +1,15 @@
 // ReviewService registration. Highlights:
 //   - GetViewer / RegisterVersion — viewer resolution + build-time version upsert.
-//   - ListDrafts / GetDraftContent — publication is (frontmatter `ready` AND the
-//     content_revops.published latch); else allowlist-gated.
-//   - Comments + threads + read-state + code-review panes.
-//   - Review lifecycle: TransitionReview / ReleaseContent (transactional, logs a
-//     content_event; release is blocked while a required request is open and sets
-//     the published latch).
+//   - ListDrafts / GetDraftContent — released (frontmatter `ready`) content is
+//     public; everything else is allowlist- or grant-gated.
+//   - Comments + threads (section or whole-page) + read-state + code-review panes.
+//   - Review lifecycle: TransitionReview / RecordApproval / MarkReviewed. Release
+//     is git's (ADR-0002): RELEASED derives from the registered main version.
 //   - Review requests: RequestReview / CancelReviewRequest / ListReviewRequests —
 //     request reviews from allowlisted reviewers (one open request per reviewer;
-//     optional upgrades to required), required blocks release, satisfied when the
-//     artifact is approved.
-//   - RequestChangesOnPublished — reopen a released page to changes-requested, with
-//     an optional unpublish (clears the latch, DB-only).
+//     optional upgrades to required), satisfied when the reviewer approves (or
+//     marks private content reviewed).
+//   - Content requests: Create / List / UpdateContentRequest.
 //   - ListContentEvents — the append-only per-artifact lifecycle timeline.
 //   - ManageAllowlist / EraseUser — maintainer-only.
 //
@@ -37,6 +35,7 @@ import {
   assembleThreads,
   type CommentRow,
   commentFromRow,
+  documentCommentError,
   type RecentCommentRow,
   type ResolutionRow,
   recentCommentFromRow,
@@ -56,6 +55,7 @@ import {
 import {
   AllowlistEntryDetailSchema,
   AllowlistEntrySchema,
+  CommentScope,
   ContentRefSchema,
   DraftSummarySchema,
   RegisteredUserSchema,
@@ -102,6 +102,8 @@ import {
   type ManageAllowlistRequest,
   ManageAllowlistRequest_Action,
   ManageAllowlistResponseSchema,
+  type MarkReviewedRequest,
+  MarkReviewedResponseSchema,
   type MarkThreadSeenRequest,
   MarkThreadSeenResponseSchema,
   ProductChangeEntrySchema,
@@ -113,10 +115,6 @@ import {
   RecordRatingResponseSchema,
   type RegisterVersionRequest,
   RegisterVersionResponseSchema,
-  type ReleaseContentRequest,
-  ReleaseContentResponseSchema,
-  type RequestChangesOnPublishedRequest,
-  RequestChangesOnPublishedResponseSchema,
   type RequestReviewRequest,
   RequestReviewResponseSchema,
   type ResolveThreadRequest,
@@ -158,19 +156,20 @@ import {
 } from "../review-requests.js";
 import { type DiffEntry, reviewDiff, unchangedSlugs } from "../tree-diff.js";
 import { apiTokenHandlers } from "./api-tokens.js";
+import { contentRequestHandlers } from "./content-requests.js";
 
-// A page is shown to anonymous (non-allowlisted) viewers only when BOTH hold:
-// its git authoring intent is `ready` (frontmatter_status) AND the published
-// latch is set (content_revops.published). Publication is the intersection of
-// author intent and the sticky release outcome — decoupled from the live
-// review_state, so a released page can be reopened for changes without dropping
-// out of public view unless a maintainer explicitly unpublishes.
+// `ready` on main is the release (docs/decisions/ADR-0002): the latest
+// registered version carrying it derives to RELEASED, and only released content
+// is shown to non-allowlisted viewers. Prod registers versions from main only,
+// so "latest registered" is main.
 //
 // This is the server's mirror of content-core's PUBLISH_STATUS
 // (site/src/content-core/frontmatter.mjs); the value MUST match its build-side
 // twin. We keep a local copy rather than import across the package boundary,
 // following the same no-cross-package-import convention as anchor.ts.
 const READY_STATUS = "ready";
+// Reviewable, never released: no approval axis (deriveReviewState).
+const PRIVATE_STATUS = "private";
 // Maximum reply nesting under a thread root (root = depth 0). Keeps the tree
 // legible and client indentation bounded; enforced in createComment.
 const MAX_REPLY_DEPTH = 4;
@@ -211,30 +210,26 @@ const RECENT_COMMENTS_MAX = 100;
 const CONTENT_EVENTS_DEFAULT = 50;
 const CONTENT_EVENTS_MAX = 200;
 // The storable explicit outcomes (the only states that live in review_state).
-// The derived states (none, needs-review, derived approved) are never stored, so
-// they are absent here. Used to translate a stored outcome and to guard writes.
+// The derived states (none, needs-review, derived approved, released) are never
+// stored, so they are absent here. Used to translate a stored outcome and to
+// guard writes.
 const DB_BY_REVIEW_STATE: Record<number, string> = {
   [ReviewState.CHANGES_REQUESTED]: "changes-requested",
   [ReviewState.APPROVED]: "approved",
-  [ReviewState.RELEASED]: "released",
 };
 // Allowed transitions of the EXPLICIT (storable) review-state machine, keyed on
 // the DERIVED `from` state (deriveReviewState), so a transition is validated
-// against what the artifact effectively is right now. TransitionReview only ever
-// requests one of the storable outcomes:
-//   - changes-requested: reachable while the artifact is under review or approved
-//     (a reviewer/maintainer rejects it); the reopen-published flow does
-//     released -> changes-requested.
-//   - approved: the maintainer override, reachable from needs-review /
-//     changes-requested (ordinary approval goes through recordApproval, not here).
-//   - released: maintainer-only (enforced below), reachable once APPROVED.
-// The sticky `published` latch is independent — visibility only changes on an
-// explicit unpublish.
+// against what the artifact effectively is right now:
+//   - changes-requested: from any state. Drafts are reviewed before anyone asks,
+//     and on a released page it flags follow-up work; the page stays live until
+//     git moves it off `ready`.
+//   - approved: the maintainer override (ordinary approval goes through
+//     recordApproval, not here). Never for private content.
 const ALLOWED_TRANSITIONS: Record<string, string[]> = {
-  none: [],
+  none: ["changes-requested", "approved"],
   "needs-review": ["changes-requested", "approved"],
   "changes-requested": ["approved"],
-  approved: ["released", "changes-requested"],
+  approved: ["changes-requested"],
   released: ["changes-requested"],
 };
 
@@ -249,12 +244,14 @@ const DB_BY_DERIVED_STATE: Record<number, string> = {
 };
 
 // Inputs to the single review-state derivation. All are already loaded per
-// (area, slug) by listDrafts/loadDraftSummary/getDraftContent.
+// (area, slug) by listDrafts/loadDraftSummary/loadDerivedState.
 export interface DeriveReviewStateInput {
+  // The latest registered version's frontmatter status. Prod registers from
+  // main only, so `ready` here means released.
   frontmatterStatus: string | null;
   // The latest EXPLICIT outcome stored in review_state (changes-requested |
-  // approved | released), or null if none, plus when it was recorded.
-  explicitOutcome: "changes-requested" | "approved" | "released" | null;
+  // approved), or null if none, plus when it was recorded.
+  explicitOutcome: "changes-requested" | "approved" | null;
   explicitOutcomeAt: Date | null;
   // Active (non-dismissed) approvals, and when the most recent one was recorded.
   // `approverUserId` is the stable per-reviewer key (only membership/count matter
@@ -266,29 +263,35 @@ export interface DeriveReviewStateInput {
   // Whether ANY required request exists on the artifact (open or already
   // satisfied) — distinguishes "no required reviewers" from "all satisfied".
   hasRequiredRequests: boolean;
+  // Whether any request (required or optional) is still open.
+  hasOpenRequests: boolean;
+  // When a request was last satisfied. On private content, which has no
+  // approvals, this is what supersedes an older change request.
+  latestSatisfiedAt: Date | null;
 }
 
 export interface DerivedReviewState {
   state: ReviewState;
   pendingRequiredUserIds: string[];
   needsReview: boolean;
+  // RELEASED without an active approval or maintainer override.
+  readyWithoutApproval: boolean;
 }
 
 /**
  * The single source of truth for the effective review state (see the ReviewState
  * proto comment). Pure and DB-free so it can be unit-tested directly. Precedence:
- *   1. released                                   -> RELEASED
- *   2. isApproved                                 -> APPROVED
- *   2. maintainer `approved` override               -> APPROVED
- *   3. changes-requested newer than the last approval -> CHANGES_REQUESTED
- *   4. derived approval (preconditions met)          -> APPROVED
- *   5. frontmatter ready                             -> NEEDS_REVIEW
- *   6. otherwise                                     -> NONE
- * The maintainer override (2) beats a pending change request, but an ordinary
- * reviewer approval (4) does NOT silently override a *newer* change request —
- * hence (3) is checked before (4). Derived approval needs: required requests
- * exist AND none remain open (with >=1 approval), OR no required requests AND
- * >=1 active approval.
+ *   1. changes-requested newer than the last sign-off -> CHANGES_REQUESTED
+ *   2. frontmatter `ready` (released on main)         -> RELEASED
+ *   3. maintainer override or derived approval        -> APPROVED
+ *   4. an open review request                         -> NEEDS_REVIEW
+ *   5. otherwise                                      -> NONE
+ * A change request (1) outranks RELEASED: the page stays live, since git owns
+ * release, but the follow-up shows. A maintainer override is the latest stored
+ * outcome when present, so it already supersedes any change request. Derived
+ * approval needs: required requests exist AND none remain open (with >=1
+ * approval), OR no required requests AND >=1 active approval. Private content
+ * skips 2–3: it is never released, so there is nothing to approve.
  */
 export function deriveReviewState(input: DeriveReviewStateInput): DerivedReviewState {
   const {
@@ -299,39 +302,43 @@ export function deriveReviewState(input: DeriveReviewStateInput): DerivedReviewS
     latestApprovalAt,
     openRequiredUserIds,
     hasRequiredRequests,
+    hasOpenRequests,
+    latestSatisfiedAt,
   } = input;
+  const isPrivate = frontmatterStatus === PRIVATE_STATUS;
   const pendingRequiredUserIds = openRequiredUserIds;
+  const result = (state: ReviewState, pending = pendingRequiredUserIds): DerivedReviewState => ({
+    state,
+    pendingRequiredUserIds: pending,
+    needsReview: state === ReviewState.NEEDS_REVIEW,
+    readyWithoutApproval:
+      state === ReviewState.RELEASED &&
+      activeApprovals.length === 0 &&
+      explicitOutcome !== "approved",
+  });
 
-  if (explicitOutcome === "released") {
-    return { state: ReviewState.RELEASED, pendingRequiredUserIds, needsReview: false };
-  }
-
-  // The maintainer override wins over a pending change request.
-  if (explicitOutcome === "approved") {
-    return { state: ReviewState.APPROVED, pendingRequiredUserIds: [], needsReview: false };
-  }
-
-  // A changes-requested outcome holds while it is at least as recent as the
-  // latest active approval — a newer approval supersedes it without a write.
+  // A change request holds while it is at least as recent as the latest
+  // sign-off — a newer approval (or, for private, a newer "reviewed" mark)
+  // supersedes it without a write.
+  const signedOffAt = isPrivate ? latestSatisfiedAt : latestApprovalAt;
   const changesRequestedHolds =
     explicitOutcome === "changes-requested" &&
-    (latestApprovalAt == null ||
-      (explicitOutcomeAt != null && explicitOutcomeAt.getTime() >= latestApprovalAt.getTime()));
-  if (changesRequestedHolds) {
-    return { state: ReviewState.CHANGES_REQUESTED, pendingRequiredUserIds, needsReview: false };
+    (signedOffAt == null ||
+      (explicitOutcomeAt != null && explicitOutcomeAt.getTime() >= signedOffAt.getTime()));
+  if (changesRequestedHolds) return result(ReviewState.CHANGES_REQUESTED);
+
+  if (!isPrivate) {
+    if (frontmatterStatus === READY_STATUS) return result(ReviewState.RELEASED);
+    const isApproved =
+      explicitOutcome === "approved" ||
+      (hasRequiredRequests
+        ? openRequiredUserIds.length === 0 && activeApprovals.length > 0
+        : activeApprovals.length > 0);
+    if (isApproved) return result(ReviewState.APPROVED, []);
   }
 
-  const isApproved = hasRequiredRequests
-    ? openRequiredUserIds.length === 0 && activeApprovals.length > 0
-    : activeApprovals.length > 0;
-  if (isApproved) {
-    return { state: ReviewState.APPROVED, pendingRequiredUserIds: [], needsReview: false };
-  }
-
-  if (frontmatterStatus === READY_STATUS) {
-    return { state: ReviewState.NEEDS_REVIEW, pendingRequiredUserIds, needsReview: true };
-  }
-  return { state: ReviewState.NONE, pendingRequiredUserIds, needsReview: false };
+  if (hasOpenRequests) return result(ReviewState.NEEDS_REVIEW);
+  return result(ReviewState.NONE);
 }
 
 // The joined shape behind a DraftSummary: latest version metadata + current
@@ -347,7 +354,6 @@ type DraftSummaryRow = {
   frontmatter_status: string | null;
   priority: number | null;
   target_release_date: Date | string | null;
-  published: boolean | null;
   open_required_requests: number;
   // Raw inputs to deriveReviewState (the effective review_state is computed, not
   // read from a single column):
@@ -355,12 +361,15 @@ type DraftSummaryRow = {
   //   pending_required_user_ids — user ids of open required requests (for derive)
   //   pending_required_logins — resolved display logins of the same (for the UI)
   //   has_required_requests — any required request exists (open or satisfied)
+  //   has_open_requests / latest_satisfied_at — any open request; last satisfaction
   //   approvals — active (non-dismissed) approval rows, most-recent last
   explicit_outcome: string | null;
   explicit_outcome_at: Date | null;
   pending_required_user_ids: string[] | null;
   pending_required_logins: string[] | null;
   has_required_requests: boolean;
+  has_open_requests: boolean;
+  latest_satisfied_at: Date | null;
   approvals: ContentApprovalRow[] | null;
   open_comments: number;
   version_id: string | null;
@@ -371,6 +380,10 @@ type DraftSummaryRow = {
   // the query was given a viewer id.
   my_rating: ContentRatingRow | null;
 } & RatingAggregateRow;
+
+function explicitOutcomeFromDb(outcome: string | null | undefined) {
+  return outcome === "changes-requested" || outcome === "approved" ? outcome : null;
+}
 
 function draftSummaryFromRow(r: DraftSummaryRow) {
   const target =
@@ -388,22 +401,19 @@ function draftSummaryFromRow(r: DraftSummaryRow) {
     // jsonb timestamps come back as strings; normalize to Date for the mapper.
     created_at: a.created_at instanceof Date ? a.created_at : new Date(a.created_at),
   }));
-  const outcome = r.explicit_outcome;
-  const explicitOutcome =
-    outcome === "changes-requested" || outcome === "approved" || outcome === "released"
-      ? outcome
-      : null;
   const latestApprovalAt = approvalRows.length
     ? approvalRows[approvalRows.length - 1].created_at
     : null;
   const derived = deriveReviewState({
     frontmatterStatus: r.frontmatter_status,
-    explicitOutcome,
+    explicitOutcome: explicitOutcomeFromDb(r.explicit_outcome),
     explicitOutcomeAt: r.explicit_outcome_at,
     activeApprovals: approvalRows.map((a) => ({ approverUserId: a.approver_user_id })),
     latestApprovalAt,
     openRequiredUserIds: r.pending_required_user_ids ?? [],
     hasRequiredRequests: r.has_required_requests,
+    hasOpenRequests: r.has_open_requests,
+    latestSatisfiedAt: r.latest_satisfied_at,
   });
   // The proto surfaces resolved display logins (id-keyed internally): map each
   // pending user id to its joined login, falling back to the id when unresolved.
@@ -424,11 +434,11 @@ function draftSummaryFromRow(r: DraftSummaryRow) {
     openCommentCount: r.open_comments,
     priority: r.priority ?? undefined,
     targetReleaseDate: target,
-    published: r.published ?? false,
     openRequiredRequestCount: r.open_required_requests,
     approvals: approvalRows.map(approvalFromRow),
     pendingRequiredLogins,
     needsReview: derived.needsReview,
+    readyWithoutApproval: derived.readyWithoutApproval,
     ratingSummary: ratingSummaryFromRow(r),
     myRating: r.my_rating ? ratingFromRow(r.my_rating) : undefined,
     latestVersion:
@@ -475,7 +485,7 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string, viewerUser
       l.project, l.bucket, l.title, l.frontmatter_status,
       l.id as version_id, l.content_hash as version_content_hash,
       l.git_sha as version_git_sha, l.created_at as version_created_at,
-      rv.priority, rv.target_release_date, coalesce(rv.published, false) as published,
+      rv.priority, rv.target_release_date,
       (select rs.state from review_state rs
         where rs.area = ${area} and rs.slug = ${slug}
         order by rs.created_at desc limit 1) as explicit_outcome,
@@ -502,6 +512,11 @@ async function loadDraftSummary(sql: Sql, area: string, slug: string, viewerUser
       (select exists (select 1 from review_request rq
         where rq.area = ${area} and rq.slug = ${slug}
           and rq.requirement = 'required')) as has_required_requests,
+      (select exists (select 1 from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}
+          and rq.status = 'open')) as has_open_requests,
+      (select max(rq.satisfied_at) from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}) as latest_satisfied_at,
       (select coalesce(jsonb_agg(
           jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
             'approver_login', ui.github_login, 'approver_user_id', ca.approver_user_id,
@@ -587,7 +602,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           select k.area, k.slug, l.project, l.bucket, l.title, l.frontmatter_status,
             l.id as version_id, l.content_hash as version_content_hash,
             l.git_sha as version_git_sha, l.created_at as version_created_at,
-            rv.priority, rv.target_release_date, coalesce(rv.published, false) as published,
+            rv.priority, rv.target_release_date,
             (select rs.state from review_state rs
               where rs.area = k.area and rs.slug = k.slug
               order by rs.created_at desc limit 1) as explicit_outcome,
@@ -614,6 +629,11 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             (select exists (select 1 from review_request rq
               where rq.area = k.area and rq.slug = k.slug
                 and rq.requirement = 'required')) as has_required_requests,
+            (select exists (select 1 from review_request rq
+              where rq.area = k.area and rq.slug = k.slug
+                and rq.status = 'open')) as has_open_requests,
+            (select max(rq.satisfied_at) from review_request rq
+              where rq.area = k.area and rq.slug = k.slug) as latest_satisfied_at,
             (select coalesce(jsonb_agg(
                 jsonb_build_object('id', ca.id, 'version_id', ca.version_id,
                   'approver_login', ui.github_login, 'approver_user_id', ca.approver_user_id,
@@ -649,10 +669,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           where (${areaFilter}::text is null or k.area = ${areaFilter})
             and (
               ${viewer.isAllowlisted}
-              or (
-                l.frontmatter_status = ${READY_STATUS}
-                and coalesce(rv.published, false) = true
-              )
+              or l.frontmatter_status = ${READY_STATUS}
               -- An external contributor sees the specific content shared with
               -- them: a non-cancelled review_request addressed to their user id.
               -- Gated on a JS boolean so an id-less/anonymous viewer skips it
@@ -688,15 +705,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         `;
         if (!row) throw new ConnectError("content not found", Code.NotFound);
 
-        // Public content requires BOTH author intent (frontmatter `ready`) AND the
-        // published latch (content_revops.published) — the sticky publication
-        // outcome, decoupled from the live review_state. Anything short of that
-        // is allowlist-gated.
-        const [revops] = await sql<{ published: boolean }[]>`
-          select coalesce(published, false) as published from content_revops
-          where area = ${area} and slug = ${req.ref.slug}
-        `;
-        const isPublic = row.frontmatter_status === READY_STATUS && revops?.published === true;
+        // Released (`ready`) content is public; it's on the emitted sites anyway.
+        const isPublic = row.frontmatter_status === READY_STATUS;
         // Non-public content is visible to allowlisted viewers AND to an external
         // contributor holding a scoped grant on this exact (area, slug).
         if (!isPublic) await requireContentAccess(ctx, sql, area, req.ref.slug);
@@ -726,7 +736,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.code_path, c.code_region, c.code_line, c.code_end_line,
                  c.code_line_hash, c.code_file_hash, c.via_agent,
                  c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
-                 c.suggestion_state_by, c.suggestion_state_at,
+                 c.suggestion_state_by, c.suggestion_state_at, c.scope,
                  c.authored_version_id, cv.git_sha as authored_git_sha
           from comment c
           left join content_version cv on cv.id = c.authored_version_id
@@ -801,7 +811,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.code_path, c.code_region, c.code_line, c.code_end_line,
                  c.code_line_hash, c.code_file_hash, c.via_agent,
                  c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
-                 c.suggestion_state_by, c.suggestion_state_at,
+                 c.suggestion_state_by, c.suggestion_state_at, c.scope,
                  c.authored_version_id, cv.git_sha as authored_git_sha,
                  l.title as content_title,
                  sec.heading_text as heading_text,
@@ -830,8 +840,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         if (!req.bodyMd.trim() && !req.suggestion) {
           throw new ConnectError("body_md is required", Code.InvalidArgument);
         }
-        const badSuggestion = suggestionError(req);
-        if (badSuggestion) throw new ConnectError(badSuggestion, Code.InvalidArgument);
+        const badRequest = documentCommentError(req) ?? suggestionError(req);
+        if (badRequest) throw new ConnectError(badRequest, Code.InvalidArgument);
         const sql = db();
         const area = areaToDb(req.ref.area);
         // An external contributor may comment on the content shared with them;
@@ -842,14 +852,16 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // bounded. A root is depth 0; a reply is parent.depth + 1. Rejecting at
         // MAX_REPLY_DEPTH keeps at most that many levels of replies under a root.
         const parentId: string | null = req.parentId ?? null;
+        let scope = req.scope === CommentScope.DOCUMENT ? "document" : "section";
         if (parentId) {
-          const [parent] = await sql<{ id: string; parent_id: string | null }[]>`
-            select id, parent_id from comment
+          const [parent] = await sql<{ id: string; parent_id: string | null; scope: string }[]>`
+            select id, parent_id, scope from comment
             where id = ${parentId} and area = ${area} and slug = ${req.ref.slug}
           `;
           if (!parent) {
             throw new ConnectError("parent comment not found", Code.NotFound);
           }
+          scope = parent.scope;
           const depth = await commentDepth(sql, parent.id);
           if (depth + 1 > MAX_REPLY_DEPTH) {
             throw new ConnectError(
@@ -868,12 +880,13 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           where area = ${area} and slug = ${req.ref.slug}
           order by created_at desc limit 1
         `;
-        const [section] = latest
-          ? await sql<{ id: string }[]>`
+        const [section] =
+          latest && scope === "section"
+            ? await sql<{ id: string }[]>`
               select id from content_section
               where version_id = ${latest.id} and anchor_slug = ${req.anchorSlug}
             `
-          : [];
+            : [];
 
         // A comment carries at most one fine-grained selector. Prose ranges pin
         // within a section; code selectors pin to snippet source. Both null =
@@ -888,7 +901,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
              author_user_id, author_login, author_name, body_md, orphaned,
              selector_quote, selector_prefix, selector_suffix, selector_start,
              code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
-             via_agent, suggestion_original, suggestion_replacement, suggestion_state)
+             via_agent, suggestion_original, suggestion_replacement, suggestion_state, scope)
           values
             (${area}, ${req.ref.slug}, ${section?.id ?? null}, ${latest?.id ?? null}, ${req.anchorSlug},
              ${req.anchorFingerprint}, ${parentId},
@@ -899,14 +912,14 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
              ${code?.path ?? null}, ${code?.region ?? null}, ${code ? code.line : null},
              ${code ? code.endLine : null}, ${code?.lineHash ?? null}, ${code?.fileHash ?? null},
              ${getTokenGrant(ctx) !== undefined}, ${sug?.original ?? null},
-             ${sug?.replacement ?? null}, ${sug ? "open" : null})
+             ${sug?.replacement ?? null}, ${sug ? "open" : null}, ${scope})
           returning id, area, slug, anchor_slug, anchor_fingerprint, parent_id,
                     author_login, author_name, body_md, created_at, edited_at, orphaned,
                     selector_quote, selector_prefix, selector_suffix, selector_start,
                     code_path, code_region, code_line, code_end_line, code_line_hash, code_file_hash,
                     via_agent, authored_version_id,
                     suggestion_original, suggestion_replacement, suggestion_state,
-                    suggestion_state_by, suggestion_state_at,
+                    suggestion_state_by, suggestion_state_at, scope,
                     (select git_sha from content_version where id = comment.authored_version_id)
                       as authored_git_sha
         `;
@@ -1071,6 +1084,12 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         if (!viewer.userId) {
           throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
         }
+        if (await isPrivateContent(sql, area, slug)) {
+          throw new ConnectError(
+            "private content is never released, so it has no approval; use MarkReviewed",
+            Code.FailedPrecondition,
+          );
+        }
         const actor = actorId(viewer);
         const userId = viewer.userId;
         const login = viewer.login ?? actor;
@@ -1118,6 +1137,45 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         });
         const draft = await loadDraftSummary(sql, area, slug, viewer.userId ?? "");
         return create(RecordApprovalResponseSchema, { draft: draft ?? undefined });
+      },
+
+      // Private content has no approvals, so a reviewer closes their requests on
+      // it directly. Only their own requests: marking someone else's done would
+      // speak for them.
+      async markReviewed(req: MarkReviewedRequest, ctx) {
+        const viewer = requireAllowlisted(ctx);
+        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
+        if (!viewer.userId) {
+          throw new ConnectError("viewer has no user id", Code.FailedPrecondition);
+        }
+        const sql = db();
+        const area = areaToDb(req.ref.area);
+        const slug = req.ref.slug;
+        if (!(await isPrivateContent(sql, area, slug))) {
+          throw new ConnectError(
+            "only private content is marked reviewed; approve it instead",
+            Code.FailedPrecondition,
+          );
+        }
+        const actor = actorId(viewer);
+        const userId = viewer.userId;
+        const versionId = await latestVersionId(sql, area, slug);
+        await sql.begin(async (tx) => {
+          const satisfied = await tx<{ id: string }[]>`
+            update review_request
+            set status = 'satisfied', satisfied_at = now(), satisfied_by = ${actor}
+            where area = ${area} and slug = ${slug} and status = 'open'
+              and reviewer_user_id = ${userId}
+            returning id
+          `;
+          for (const r of satisfied) {
+            await logEvent(tx, area, slug, "request-satisfied", actor, versionId, {
+              request_id: r.id,
+            });
+          }
+        });
+        const draft = await loadDraftSummary(sql, area, slug, userId);
+        return create(MarkReviewedResponseSchema, { draft: draft ?? undefined });
       },
 
       // Dismiss an approval. A reviewer may dismiss their own; a maintainer may
@@ -1255,64 +1313,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         return create(ListRatingsResponseSchema, { ratings: rows.map(ratingFromRow) });
       },
 
-      async releaseContent(req: ReleaseContentRequest, ctx) {
-        // Release is maintainer-only. It is blocked while any REQUIRED review
-        // request is still open (optional requests are advisory).
-        const viewer = requireMaintainer(ctx);
-        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
-        const sql = db();
-        const area = areaToDb(req.ref.area);
-        const actor = actorId(viewer);
-
-        const [{ open }] = await sql<{ open: number }[]>`
-          select count(*)::int as open from review_request
-          where area = ${area} and slug = ${req.ref.slug}
-            and requirement = 'required' and status = 'open'
-        `;
-        if (open > 0) {
-          throw new ConnectError(
-            `cannot release: ${open} required review request(s) still open`,
-            Code.FailedPrecondition,
-          );
-        }
-
-        // Transition to RELEASED (logs the approved->released state event via
-        // transition()), then set the sticky published latch and log `released`.
-        // Was this a first release or a re-release after a reopen? `republished`
-        // when the latch was already set.
-        const state = await transition(req.ref, ReviewState.RELEASED, req.note, ctx, actor);
-        await sql.begin(async (tx) => {
-          const [ver] = await tx<{ id: string }[]>`
-            select id from content_version
-            where area = ${area} and slug = ${req.ref!.slug}
-            order by created_at desc limit 1
-          `;
-          const [prev] = await tx<{ published: boolean }[]>`
-            select coalesce(published, false) as published from content_revops
-            where area = ${area} and slug = ${req.ref!.slug}
-          `;
-          const wasPublished = prev?.published === true;
-          await tx`
-            insert into content_revops (area, slug, published, updated_by)
-            values (${area}, ${req.ref!.slug}, true, ${viewer.login ?? "unknown"})
-            on conflict (area, slug) do update
-              set published = true, updated_by = ${viewer.login ?? "unknown"}, updated_at = now()
-          `;
-          await logEvent(
-            tx,
-            area,
-            req.ref!.slug,
-            wasPublished ? "republished" : "released",
-            actor,
-            ver?.id ?? null,
-            { note: req.note ?? undefined },
-          );
-        });
-        return create(ReleaseContentResponseSchema, { state });
-      },
-
       // RevOps: setting priority/target date is routine reviewer work, so both
-      // are allowlist-gated (release stays maintainer-only). The upsert creates
+      // are allowlist-gated. The upsert creates
       // the content_revops row on first use — a piece of content can be ranked
       // before it has any registered version.
       async setPriority(req: SetPriorityRequest, ctx) {
@@ -1561,52 +1563,6 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         return create(ListContentEventsResponseSchema, {
           events: rows.map(contentEventFromRow),
         });
-      },
-
-      // Reopen a released artifact to request changes. Maintainer-only, since it
-      // may unpublish. Transitions released -> changes-requested; when `unpublish`
-      // is set, also clears the published latch (DB-only, no git write) and logs
-      // `unpublished`. Otherwise the artifact stays visible while under review.
-      async requestChangesOnPublished(req: RequestChangesOnPublishedRequest, ctx) {
-        const viewer = requireMaintainer(ctx);
-        if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
-        const sql = db();
-        const area = areaToDb(req.ref.area);
-        const slug = req.ref.slug;
-        const actor = actorId(viewer);
-
-        // Transition first (validates released -> changes-requested and logs the
-        // state event). Then, if unpublishing, clear the latch + log it.
-        const state = await transition(
-          req.ref,
-          ReviewState.CHANGES_REQUESTED,
-          req.note,
-          ctx,
-          actor,
-        );
-        let published = true;
-        if (req.unpublish) {
-          await sql.begin(async (tx) => {
-            const versionId = await latestVersionId(tx, area, slug);
-            await tx`
-              insert into content_revops (area, slug, published, updated_by)
-              values (${area}, ${slug}, false, ${viewer.login ?? "unknown"})
-              on conflict (area, slug) do update
-                set published = false, updated_by = ${viewer.login ?? "unknown"}, updated_at = now()
-            `;
-            await logEvent(tx, area, slug, "unpublished", actor, versionId, {
-              note: req.note ?? undefined,
-            });
-          });
-          published = false;
-        } else {
-          const [rv] = await sql<{ published: boolean }[]>`
-            select coalesce(published, false) as published from content_revops
-            where area = ${area} and slug = ${slug}
-          `;
-          published = rv?.published ?? false;
-        }
-        return create(RequestChangesOnPublishedResponseSchema, { state, published });
       },
 
       async manageAllowlist(req: ManageAllowlistRequest, ctx) {
@@ -2020,9 +1976,14 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
           // content revised) are DERIVED from content_version rows in the UI, not
           // written as content_event rows.
           const [prior] = await sql<
-            { id: string; root_hash: string | null; merkle_tree: MerkleNodeJson | null }[]
+            {
+              id: string;
+              root_hash: string | null;
+              merkle_tree: MerkleNodeJson | null;
+              frontmatter_status: string | null;
+            }[]
           >`
-          select id, root_hash, merkle_tree from content_version
+          select id, root_hash, merkle_tree, frontmatter_status from content_version
           where area = ${area} and slug = ${slug}
           order by created_at desc limit 1
         `;
@@ -2158,6 +2119,16 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             })),
             req.sourceFiles.map((f) => ({ path: f.path, text: f.text, fileHash: f.fileHash })),
           );
+
+          // Release is git's: moving onto or off `ready` on main is the
+          // release (or its withdrawal), logged here since no RPC performs it.
+          const wasReady = prior?.frontmatter_status === READY_STATUS;
+          const isReady = row.frontmatter_status === READY_STATUS;
+          if (wasReady !== isReady) {
+            await logEvent(sql, area, slug, isReady ? "released" : "unreleased", "git", row.id, {
+              git_sha: req.gitSha,
+            });
+          }
 
           return create(RegisterVersionResponseSchema, {
             version: contentVersionFromRow(row, ref),
@@ -2306,6 +2277,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
       },
 
       ...apiTokenHandlers,
+      ...contentRequestHandlers,
     },
     { interceptors: [authInterceptor(auth)] },
   );
@@ -2338,7 +2310,7 @@ async function loadThread(sql: Queryable, threadRootId: string) {
            c.code_path, c.code_region, c.code_line, c.code_end_line,
            c.code_line_hash, c.code_file_hash, c.via_agent,
            c.suggestion_original, c.suggestion_replacement, c.suggestion_state,
-           c.suggestion_state_by, c.suggestion_state_at,
+           c.suggestion_state_by, c.suggestion_state_at, c.scope,
            c.authored_version_id, cv.git_sha as authored_git_sha
     from comment c
     left join content_version cv on cv.id = c.authored_version_id
@@ -2564,6 +2536,8 @@ async function loadDerivedState(sql: Sql, area: string, slug: string): Promise<D
       explicit_outcome_at: Date | null;
       pending_required_user_ids: string[] | null;
       has_required_requests: boolean;
+      has_open_requests: boolean;
+      latest_satisfied_at: Date | null;
       approver_user_ids: string[] | null;
       latest_approval_at: Date | null;
     }[]
@@ -2585,37 +2559,37 @@ async function loadDerivedState(sql: Sql, area: string, slug: string): Promise<D
       (select exists (select 1 from review_request rq
         where rq.area = ${area} and rq.slug = ${slug}
           and rq.requirement = 'required')) as has_required_requests,
+      (select exists (select 1 from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}
+          and rq.status = 'open')) as has_open_requests,
+      (select max(rq.satisfied_at) from review_request rq
+        where rq.area = ${area} and rq.slug = ${slug}) as latest_satisfied_at,
       (select coalesce(array_agg(ca.approver_user_id order by ca.created_at), '{}')
         from content_approval ca
         where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as approver_user_ids,
       (select max(ca.created_at) from content_approval ca
         where ca.area = ${area} and ca.slug = ${slug} and ca.dismissed_at is null) as latest_approval_at
   `;
-  const outcome = row?.explicit_outcome;
-  const explicitOutcome =
-    outcome === "changes-requested" || outcome === "approved" || outcome === "released"
-      ? outcome
-      : null;
   return deriveReviewState({
     frontmatterStatus: row?.frontmatter_status ?? null,
-    explicitOutcome,
+    explicitOutcome: explicitOutcomeFromDb(row?.explicit_outcome),
     explicitOutcomeAt: row?.explicit_outcome_at ?? null,
     activeApprovals: (row?.approver_user_ids ?? []).map((approverUserId) => ({ approverUserId })),
     latestApprovalAt: row?.latest_approval_at ?? null,
     openRequiredUserIds: row?.pending_required_user_ids ?? [],
     hasRequiredRequests: row?.has_required_requests ?? false,
+    hasOpenRequests: row?.has_open_requests ?? false,
+    latestSatisfiedAt: row?.latest_satisfied_at ?? null,
   });
 }
 
 /**
  * Validate + append an EXPLICIT review-state outcome (changes-requested |
- * approved override | released). Returns the effective state. `from` is the
+ * maintainer approved override). Returns the effective state. `from` is the
  * DERIVED current state, so the machine is validated against what the artifact
- * effectively is now (deriveReviewState), not just the last stored row. Enforces
- * that RELEASED is only reachable by a maintainer (the caller already did the
- * entry-point auth; this re-checks so no path can release without maintainer).
- * Ordinary approvals go through recordApproval — this no longer satisfies
- * requests. The state insert + timeline event are one transaction.
+ * effectively is now (deriveReviewState), not just the last stored row.
+ * Ordinary approvals go through recordApproval — this never satisfies requests.
+ * The state insert + timeline event are one transaction.
  */
 async function transition(
   ref: { area: number; slug: string } | undefined,
@@ -2631,10 +2605,16 @@ async function transition(
     // are derived and cannot be set.
     throw new ConnectError("invalid target review state", Code.InvalidArgument);
   }
-  if (toDb === "released") requireMaintainer(ctx);
+  if (toDb === "approved") requireMaintainer(ctx);
 
   const sql = db();
   const area = areaToDb(ref.area);
+  if (toDb === "approved" && (await isPrivateContent(sql, area, ref.slug))) {
+    throw new ConnectError(
+      "private content is never released, so it has no approval",
+      Code.FailedPrecondition,
+    );
+  }
   const current = await loadDerivedState(sql, area, ref.slug);
   const from = DB_BY_DERIVED_STATE[current.state] ?? "none";
   if (from === toDb) return toState; // idempotent no-op — no write, no event
@@ -2650,10 +2630,8 @@ async function transition(
       insert into review_state (area, slug, state, version_id, actor_user_id, note)
       values (${area}, ${ref.slug}, ${toDb}, ${versionId}, ${actor}, ${note ?? null})
     `;
-    // Log the transition itself (releaseContent logs `released` with the latch,
-    // so skip it here to avoid a duplicate).
     const kind = EVENT_KIND_BY_STATE[toDb];
-    if (kind && kind !== "released") {
+    if (kind) {
       await logEvent(tx, area, ref.slug, kind, actor, versionId, {
         from_state: from,
         to_state: toDb,
@@ -2672,6 +2650,16 @@ async function transition(
  */
 function actorId(viewer: { userId?: string; login?: string }): string {
   return viewer.userId ?? viewer.login ?? "unknown";
+}
+
+/** Whether the latest registered version of an artifact is `private`. */
+async function isPrivateContent(sql: Queryable, area: string, slug: string): Promise<boolean> {
+  const [ver] = await sql<{ frontmatter_status: string | null }[]>`
+    select frontmatter_status from content_version
+    where area = ${area} and slug = ${slug}
+    order by created_at desc limit 1
+  `;
+  return ver?.frontmatter_status === PRIVATE_STATUS;
 }
 
 /** The latest content_version id for an artifact, or null if none is registered. */

@@ -6,14 +6,19 @@
 // to its scopes by tokenMayCall, enforced in authInterceptor.
 import { createHash, randomBytes } from "node:crypto";
 import { db, type Queryable } from "../db.js";
-import { SuggestionState, type Viewer } from "../gen/docs_factory/review/v1/messages_pb.js";
+import {
+  ContentRequestStatus,
+  SuggestionState,
+  type Viewer,
+} from "../gen/docs_factory/review/v1/messages_pb.js";
 import { type Authentication, type AuthProvider, anonymousViewer } from "./provider.js";
 
 export const TOKEN_PREFIX = "dfr_";
 
 export const SCOPE_READ = "feedback:read";
 export const SCOPE_REPLY = "feedback:reply";
-export const ALL_SCOPES: readonly string[] = [SCOPE_READ, SCOPE_REPLY];
+export const SCOPE_REQUESTS_WRITE = "requests:write";
+export const ALL_SCOPES: readonly string[] = [SCOPE_READ, SCOPE_REPLY, SCOPE_REQUESTS_WRITE];
 
 export const DEFAULT_TTL_DAYS = 90;
 export const MAX_TTL_DAYS = 365;
@@ -30,6 +35,7 @@ const READ_METHODS = new Set([
   "ListRecentComments",
   "GetSourceFile",
   "ListVersions",
+  "ListContentRequests",
 ]);
 
 export function hashToken(token: string): string {
@@ -52,10 +58,11 @@ export function apiTokenFromHeader(header: Headers): string | undefined {
 
 /**
  * Whether a token holding `scopes` may call `method` with `message`. The only
- * writes are replies and marking a suggestion applied (an agent reports a change
- * it landed; dismissing stays a reviewer's call): a token can't open a new
- * thread (no `parentId`), resolve, approve, release, administer, or manage tokens. Anything not listed is denied,
- * so a newly added RPC is token-inaccessible until deliberately allowed here.
+ * writes report work an agent landed: replies, marking a suggestion applied,
+ * and marking a content request done (dismissing, declining, and accepting stay
+ * a human's call). A token can't open a new thread (no `parentId`), resolve,
+ * approve, administer, or manage tokens. Anything not listed is denied, so a
+ * newly added RPC is token-inaccessible until deliberately allowed here.
  */
 export function tokenMayCall(method: string, message: unknown, scopes: readonly string[]): boolean {
   if (READ_METHODS.has(method)) return scopes.includes(SCOPE_READ);
@@ -66,6 +73,10 @@ export function tokenMayCall(method: string, message: unknown, scopes: readonly 
   if (method === "SetSuggestionState") {
     const state = (message as { state?: SuggestionState } | undefined)?.state;
     return scopes.includes(SCOPE_REPLY) && state === SuggestionState.APPLIED;
+  }
+  if (method === "UpdateContentRequest") {
+    const status = (message as { status?: ContentRequestStatus } | undefined)?.status;
+    return scopes.includes(SCOPE_REQUESTS_WRITE) && status === ContentRequestStatus.DONE;
   }
   return false;
 }

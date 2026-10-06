@@ -11,8 +11,6 @@ import {
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "./auth-context";
 
-const READY = "ready";
-
 /** Review states that count as active pending work for a reviewer. */
 export const PENDING_REVIEW_STATES = new Set<ReviewState>([
   ReviewState.NEEDS_REVIEW,
@@ -36,10 +34,9 @@ export function useReviewInbox() {
 
   const allDrafts = drafts.data?.drafts ?? [];
   const pending = allDrafts.filter((d) => PENDING_REVIEW_STATES.has(d.reviewState));
+  // `ready` derives to RELEASED, so APPROVED is exactly "cleared, not yet ready".
   const approvedNotReady = allDrafts.filter(
-    (d: DraftSummary) =>
-      (d.reviewState === ReviewState.APPROVED || d.reviewState === ReviewState.RELEASED) &&
-      d.frontmatterStatus !== READY,
+    (d: DraftSummary) => d.reviewState === ReviewState.APPROVED,
   );
 
   return {

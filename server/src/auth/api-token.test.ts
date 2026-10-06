@@ -8,6 +8,7 @@ import type { Queryable } from "../db.js";
 import {
   ContentArea,
   ContentRefSchema,
+  ContentRequestStatus,
   Role,
   SuggestionState,
   type Viewer,
@@ -20,6 +21,7 @@ import {
   hashToken,
   SCOPE_READ,
   SCOPE_REPLY,
+  SCOPE_REQUESTS_WRITE,
   TOKEN_PREFIX,
   tokenMayCall,
   withApiTokens,
@@ -53,11 +55,30 @@ describe("tokenMayCall", () => {
     }
   });
 
+  test("requests:write admits UpdateContentRequest only to mark done", () => {
+    const write = [SCOPE_READ, SCOPE_REQUESTS_WRITE];
+    expect(tokenMayCall("UpdateContentRequest", { status: ContentRequestStatus.DONE }, write)).toBe(
+      true,
+    );
+    expect(tokenMayCall("UpdateContentRequest", { status: ContentRequestStatus.DONE }, BOTH)).toBe(
+      false,
+    );
+    for (const status of [
+      ContentRequestStatus.ACCEPTED,
+      ContentRequestStatus.DECLINED,
+      ContentRequestStatus.OPEN,
+    ]) {
+      expect(tokenMayCall("UpdateContentRequest", { status }, write)).toBe(false);
+    }
+    expect(tokenMayCall("ListContentRequests", {}, [SCOPE_READ])).toBe(true);
+  });
+
   test("everything else is denied regardless of scope", () => {
     for (const m of [
       "ResolveThread",
       "RecordApproval",
-      "ReleaseContent",
+      "MarkReviewed",
+      "CreateContentRequest",
       "ManageAllowlist",
       "CreateApiToken",
       "ListApiTokens",

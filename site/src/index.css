@@ -1961,17 +1961,9 @@ button.tag {
   font-size: 0.75rem;
 }
 
-/* Reopen-published controls. */
 .review-controls-hint {
   font-size: 0.75rem;
   margin: 0;
-}
-.review-controls-unpublish {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.85rem;
-  margin-bottom: 0.75rem;
 }
 
 /* Per-artifact activity timeline: GitHub-style rail, using our surface tokens. */

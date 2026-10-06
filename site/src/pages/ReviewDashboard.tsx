@@ -3,9 +3,9 @@
 //   1. Pending review — content actively in the review workflow.
 //   2. Latest comments — recent comment activity, each linking back to its
 //      content + heading anchor (traceable via the comment's stored ref/anchor).
-//   3. Approved · not git-`ready` — Issue #40: content that has cleared review in
-//      the DB but whose author hasn't flipped the frontmatter switch, so it can't
-//      ship. A pure client-side filter over listDrafts (no schema change).
+//   3. Approved · not git-`ready` — content that has cleared review in the DB
+//      but whose author hasn't flipped the frontmatter switch, so it can't ship;
+//      plus pages that reached `ready` on main without an approval.
 //   4. Review requests — placeholder; lands next iteration.
 //
 // All read-only over listDrafts + listRecentComments. Reuses the shared review
@@ -31,8 +31,6 @@ import { useAuth } from "../lib/auth-context";
 import { refHref } from "../lib/content-ref";
 import { ratingLabel } from "../lib/rating";
 import { ReviewRequestBadge, ReviewStateBadge } from "../lib/review-status";
-
-const READY = "ready";
 
 /** Deep-link into the desktop workspace Overview (ignored on narrow, where this
  *  dashboard itself surfaces the pipeline + rollup below). */
@@ -119,12 +117,9 @@ export default function ReviewDashboard() {
 
   const drafts = draftsData?.drafts ?? [];
   const pending = drafts.filter((d) => PENDING_STATES.has(d.reviewState));
-  // Issue #40: cleared review in the DB (approved/released) but still git-draft.
-  const approvedNotReady = drafts.filter(
-    (d) =>
-      (d.reviewState === ReviewState.APPROVED || d.reviewState === ReviewState.RELEASED) &&
-      d.frontmatterStatus !== READY,
-  );
+  // `ready` derives to RELEASED, so APPROVED is exactly "cleared, not yet ready".
+  const approvedNotReady = drafts.filter((d) => d.reviewState === ReviewState.APPROVED);
+  const releasedUnreviewed = drafts.filter((d) => d.readyWithoutApproval);
   const recent = recentData?.comments ?? [];
   const toMe = toMeData?.requests ?? [];
   const byMe = byMeData?.requests ?? [];
@@ -211,8 +206,8 @@ export default function ReviewDashboard() {
             Approved · not <code>ready</code>
           </h2>
           <p className="muted review-dash-hint">
-            Cleared review in the app, but the author hasn't marked the source <code>ready</code> —
-            so it can't go live yet.
+            Cleared review in the app. Set <code>status: ready</code> in the source to release it;
+            merging that to main ships it.
           </p>
           {draftsLoading ? (
             <p className="muted">Loading…</p>
@@ -241,6 +236,31 @@ export default function ReviewDashboard() {
             </ul>
           )}
         </section>
+
+        {releasedUnreviewed.length > 0 && (
+          <section className="review-dash-section">
+            <h2>Released without approval</h2>
+            <p className="muted review-dash-hint">
+              These reached <code>ready</code> on main with no approval on record.
+            </p>
+            <ul className="review-dash-list">
+              {releasedUnreviewed.map((d) => (
+                <li key={d.ref && refHref(d.ref)} className="review-dash-row">
+                  {d.ref ? (
+                    <Link to={refHref(d.ref)} className="review-dash-title">
+                      {draftLabel(d)}
+                    </Link>
+                  ) : (
+                    <span className="review-dash-title">{draftLabel(d)}</span>
+                  )}
+                  <span className="review-dash-meta">
+                    <ReviewStateBadge state={d.reviewState} />
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
         <section className="review-dash-section">
           <h2>Requested from me</h2>

@@ -11,11 +11,13 @@ import {
   assembleThreads,
   type CommentRow,
   commentFromRow,
+  documentCommentError,
   type ResolutionRow,
   suggestionError,
 } from "./comments.js";
 import {
   CodeSelectorSchema,
+  CommentScope,
   ContentRefSchema,
   SuggestionSchema,
   SuggestionState,
@@ -222,4 +224,45 @@ describe("commentFromRow suggestion", () => {
   test("leaves suggestion unset for a plain comment", () => {
     expect(commentFromRow(row("r", null), ref).suggestion).toBeUndefined();
   });
+});
+
+describe("documentCommentError", () => {
+  const root = {
+    scope: CommentScope.DOCUMENT,
+    anchorSlug: "",
+    anchorFingerprint: "",
+  };
+
+  test("a bare page-level root is valid", () => {
+    expect(documentCommentError(root)).toBeUndefined();
+  });
+
+  test("a page-level root carries no anchor, selector, or suggestion", () => {
+    expect(documentCommentError({ ...root, anchorSlug: "intro" })).toBe(
+      "a page-level comment has no anchor",
+    );
+    const selector = create(TextSelectorSchema, { quote: "x" });
+    expect(documentCommentError({ ...root, selector })).toBe(
+      "a page-level comment has no selector",
+    );
+    const suggestion = create(SuggestionSchema, { original: "a", replacement: "b" });
+    expect(documentCommentError({ ...root, suggestion })).toBe(
+      "a page-level comment can't suggest an edit",
+    );
+  });
+
+  test("section comments and replies are not checked here", () => {
+    expect(documentCommentError({ ...root, scope: CommentScope.SECTION, anchorSlug: "a" })).toBe(
+      undefined,
+    );
+    expect(documentCommentError({ ...root, parentId: "c1", anchorSlug: "a" })).toBeUndefined();
+  });
+});
+
+test("commentFromRow maps scope, defaulting to section", () => {
+  const ref = create(ContentRefSchema, { slug: "post" });
+  expect(commentFromRow(row("c1", null, { scope: "document" }), ref).scope).toBe(
+    CommentScope.DOCUMENT,
+  );
+  expect(commentFromRow(row("c2", null), ref).scope).toBe(CommentScope.SECTION);
 });

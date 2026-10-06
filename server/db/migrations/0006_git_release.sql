@@ -10,9 +10,9 @@ alter table review_state add constraint review_state_state_check
 
 -- RegisterVersion logs `released` / `unreleased` when a main version moves to or
 -- from `ready`. The latch-era unpublish/republish rows map onto them.
+alter table content_event drop constraint if exists content_event_kind_check;
 update content_event set kind = 'unreleased' where kind = 'unpublished';
 update content_event set kind = 'released' where kind = 'republished';
-alter table content_event drop constraint if exists content_event_kind_check;
 alter table content_event add constraint content_event_kind_check check (kind in (
   'review-requested', 'request-satisfied', 'request-cancelled',
   'state-changes-requested', 'state-approved', 'approved-by',

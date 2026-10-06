@@ -93,6 +93,7 @@ describe.skipIf(!testUrl)("RegisterVersion (Postgres)", () => {
   afterEach(async () => {
     const sql = db();
     await sql`delete from comment where area = 'blogs' and slug = ${slug}`;
+    await sql`delete from content_event where area = 'blogs' and slug = ${slug}`;
     await sql`delete from content_version where area = 'blogs' and slug = ${slug}`;
   });
 
@@ -253,5 +254,25 @@ describe.skipIf(!testUrl)("RegisterVersion (Postgres)", () => {
       select id from content_section where version_id = ${first.version.id}
     `;
     expect(section.id).toBe(before[0].section_id);
+  });
+
+  test("moving onto and off `ready` logs released and unreleased once each", async () => {
+    const kinds = async () =>
+      (
+        await db()<{ kind: string }[]>`
+          select kind from content_event
+          where area = 'blogs' and slug = ${slug} order by id
+        `
+      ).map((r) => r.kind);
+    await register();
+    expect(await kinds()).toEqual([]);
+    request.frontmatterStatus = "ready";
+    await register();
+    await register();
+    expect(await kinds()).toEqual(["released"]);
+    request.frontmatterStatus = "draft";
+    request.contentHash = "body-v2";
+    await register();
+    expect(await kinds()).toEqual(["released", "unreleased"]);
   });
 });

@@ -5,6 +5,7 @@
 // persisted in sessionStorage (expansion-context.tsx). Leaf icons tint with
 // the effective status; branches show descendant counts by status immediately
 // after their label. A right-edge icon marks items requested from the viewer.
+// Nav sections and blog series take content requests, listed under them.
 
 import { useQuery } from "@connectrpc/connect-query";
 import {
@@ -15,12 +16,14 @@ import {
   Layers3,
   LayoutDashboard,
   ListTree,
+  MessageSquarePlus,
   Newspaper,
   UserCheck,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import { projectNav } from "../../../doc-nav";
+import type { ContentRequest } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import {
   listDrafts,
@@ -40,6 +43,12 @@ import {
 } from "../../../lib/effective-status";
 import { refKey } from "../../../lib/review-queries";
 import DiataxisIcon from "../../DiataxisIcon";
+import {
+  placementKey,
+  RequestContentButton,
+  requestStatusLabel,
+  useOpenContentRequests,
+} from "../ContentRequests";
 import { useExpansion } from "./expansion-context";
 import { isOverviewGroup } from "./overview-token";
 import { TreeRow } from "./TreeRow";
@@ -201,14 +210,17 @@ function Node({
   depth,
   reviewByRef,
   requestedRefs,
+  requestsByPlacement,
 }: {
   node: TreeNode;
   depth: number;
   reviewByRef: Map<string, ReviewState>;
   requestedRefs: Set<string>;
+  requestsByPlacement: Map<string, ContentRequest[]>;
 }) {
   const { isOpen, toggle } = useExpansion();
   const { openTab, activeToken } = useWorkspaceTabs();
+  const { isAllowlisted } = useAuth();
 
   if (node.kind === "planned") {
     return (
@@ -239,6 +251,7 @@ function Node({
   }
 
   const open = isOpen(node.id);
+  const requests = node.request ? (requestsByPlacement.get(placementKey(node.request)) ?? []) : [];
   const counts = statusCountsInSubtree(node, reviewByRef);
   const requestedCount = requestedInSubtree(node, requestedRefs);
   return (
@@ -253,6 +266,9 @@ function Node({
         trailing={
           requestedCount > 0 ? <RequestedReviewIndicator count={requestedCount} /> : undefined
         }
+        action={
+          isAllowlisted && node.request ? <RequestContentButton target={node.request} /> : undefined
+        }
         onToggle={() => toggle(node.id)}
       />
       {open &&
@@ -263,6 +279,17 @@ function Node({
             depth={depth + 1}
             reviewByRef={reviewByRef}
             requestedRefs={requestedRefs}
+            requestsByPlacement={requestsByPlacement}
+          />
+        ))}
+      {open &&
+        requests.map((r) => (
+          <TreeRow
+            key={r.id}
+            depth={depth + 1}
+            icon={<MessageSquarePlus className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
+            label={`${requestStatusLabel(r.status)} · ${r.title}`}
+            muted
           />
         ))}
     </>
@@ -280,6 +307,15 @@ export default function ReviewTree() {
     { enabled: isAllowlisted },
   );
   const { openOverview, activeToken } = useWorkspaceTabs();
+  const contentRequests = useOpenContentRequests();
+  const requestsByPlacement = useMemo(() => {
+    const map = new Map<string, ContentRequest[]>();
+    for (const r of contentRequests) {
+      const key = placementKey(r);
+      map.set(key, [...(map.get(key) ?? []), r]);
+    }
+    return map;
+  }, [contentRequests]);
 
   const reviewByRef = useMemo(() => {
     const map = new Map<string, ReviewState>();
@@ -337,6 +373,7 @@ export default function ReviewTree() {
             depth={0}
             reviewByRef={reviewByRef}
             requestedRefs={requestedRefs}
+            requestsByPlacement={requestsByPlacement}
           />
         ))
       )}

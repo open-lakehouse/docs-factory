@@ -9,8 +9,9 @@
  * Entries are one of:
  *   - { section: <label>, items: [...] }
  *   - { page: <bucket>/<slug>, id?: <backlog id>, label?: <override> }
- *   - { planned: <backlog id>, title: <working title> }
- * `page:` is the docIdentity bucket/slug (order prefix stripped, `slug:` override
+ *   - { planned: <backlog id>, title: <working title>, request?: <uuid> }
+ * `request:` links a planned slot to the review app's content request it was
+ * promoted from. `page:` is the docIdentity bucket/slug (order prefix stripped, `slug:` override
  * applied), so renumbering a file never breaks the manifest.
  *
  * Pure and dependency-free (callers parse the YAML), so it is browser-safe and
@@ -19,6 +20,8 @@
 
 /** Sections may nest at most this deep (top-level section = depth 1). */
 export const MAX_NAV_DEPTH = 3;
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * Resolve a parsed manifest against a project's docs.
@@ -80,7 +83,15 @@ export function resolveNav(manifest, docs) {
       if (typeof entry.title !== "string" || !entry.title) {
         errors.push(`${where}: planned "${id}" needs a title`);
       }
-      return { kind: "planned", id, title: entry.title ?? id };
+      if (entry.request != null && !UUID.test(String(entry.request))) {
+        errors.push(`${where}: planned "${id}" request must be a content request id (uuid)`);
+      }
+      return {
+        kind: "planned",
+        id,
+        title: entry.title ?? id,
+        ...(entry.request != null ? { request: String(entry.request) } : {}),
+      };
     }
 
     const key = String(entry.page);

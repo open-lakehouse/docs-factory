@@ -87,30 +87,32 @@ export const getSourceFile = ReviewService.method.getSourceFile;
 
 /**
  * Record an explicit review-state OUTCOME (validated against the state
- * machine). Only the explicit outcomes are accepted: CHANGES_REQUESTED,
- * RELEASED, and the maintainer APPROVED override. NEEDS_REVIEW and NONE are
- * derived and cannot be set here; ordinary approvals go through RecordApproval.
+ * machine). Only CHANGES_REQUESTED and the maintainer APPROVED override are
+ * accepted; the other states are derived. Ordinary approvals go through
+ * RecordApproval.
  *
  * @generated from rpc docs_factory.review.v1.ReviewService.TransitionReview
  */
 export const transitionReview = ReviewService.method.transitionReview;
 
 /**
- * Maintainer-only convenience for the terminal RELEASED transition.
- *
- * @generated from rpc docs_factory.review.v1.ReviewService.ReleaseContent
- */
-export const releaseContent = ReviewService.method.releaseContent;
-
-/**
  * Record the current viewer's approval of an artifact (allowlist-gated,
  * idempotent). Satisfies any open REQUIRED request addressed to that reviewer.
  * Once the artifact's approval preconditions are met it derives to APPROVED —
  * there is no manual transition. Returns the refreshed summary.
+ * Rejected for `private` content, which is never released.
  *
  * @generated from rpc docs_factory.review.v1.ReviewService.RecordApproval
  */
 export const recordApproval = ReviewService.method.recordApproval;
+
+/**
+ * Private content only: satisfy the viewer's open review requests without an
+ * approval. Returns the refreshed summary.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.MarkReviewed
+ */
+export const markReviewed = ReviewService.method.markReviewed;
 
 /**
  * Dismiss an approval. A reviewer may dismiss their own; a maintainer may
@@ -193,14 +195,29 @@ export const listReviewRequests = ReviewService.method.listReviewRequests;
 export const listContentEvents = ReviewService.method.listContentEvents;
 
 /**
- * Reopen a released artifact to request changes (the terminal RELEASED state
- * is otherwise closed). Maintainer-only. Transitions released -> changes-
- * requested and, when `unpublish` is set, also clears the published latch so
- * the artifact drops out of anonymous view (DB-only; no git write).
+ * Request content that doesn't exist yet, placed under a nav section (docs)
+ * or tag/series (blogs). Allowlist-gated.
  *
- * @generated from rpc docs_factory.review.v1.ReviewService.RequestChangesOnPublished
+ * @generated from rpc docs_factory.review.v1.ReviewService.CreateContentRequest
  */
-export const requestChangesOnPublished = ReviewService.method.requestChangesOnPublished;
+export const createContentRequest = ReviewService.method.createContentRequest;
+
+/**
+ * List content requests, newest first. Allowlist-gated (`feedback:read` for
+ * tokens).
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.ListContentRequests
+ */
+export const listContentRequests = ReviewService.method.listContentRequests;
+
+/**
+ * Move a request through its lifecycle. Accept/decline/reopen are
+ * maintainer-only; DONE (with planned_id + pr_url) is also open to a token
+ * with `requests:write`, for the agent that wrote the planned slot.
+ *
+ * @generated from rpc docs_factory.review.v1.ReviewService.UpdateContentRequest
+ */
+export const updateContentRequest = ReviewService.method.updateContentRequest;
 
 /**
  * Maintainer-only allowlist management.
@@ -288,9 +305,10 @@ export const productChanges = ReviewService.method.productChanges;
 
 /**
  * Personal access tokens for agents (CLI / MCP). A token acts as its owner,
- * narrowed to its scopes: `feedback:read` (list/read content + comments) and
- * `feedback:reply` (replies only — never new threads, resolution, approvals,
- * or any admin action). Managing tokens requires a browser session; a token
+ * narrowed to its scopes: `feedback:read` (list/read content, comments, and
+ * content requests), `feedback:reply` (replies only — never new threads,
+ * resolution, approvals, or any admin action), and `requests:write` (mark an
+ * accepted content request done). Managing tokens requires a browser session; a token
  * can't mint, list, or revoke tokens.
  *
  * @generated from rpc docs_factory.review.v1.ReviewService.CreateApiToken

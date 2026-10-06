@@ -7,7 +7,7 @@
 import { useMemo } from "react";
 import { blogsBySeries, findDoc } from "../../../content";
 import { docNav, projectNav } from "../../../doc-nav";
-import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
+import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { type DiataxisKey, diataxisKeyOf } from "../../../graph";
 import { useAuth } from "../../../lib/auth-context";
 import { blogRef, docRef } from "../../../lib/content-ref";
@@ -20,7 +20,7 @@ export interface TreeLeaf {
   kind: "leaf";
   label: string;
   ref: ContentRef;
-  /** Git frontmatter authoring status (idea | draft | ready). */
+  /** Git frontmatter status (idea | draft | ready | private). */
   frontmatterStatus?: string;
 }
 
@@ -32,6 +32,8 @@ export interface TreeBranch {
   role: "project" | "axis" | "section" | "blog" | "series";
   /** Singular Diátaxis key when `role === "axis"`. */
   axis?: DiataxisKey;
+  /** Where a content request started from this branch is placed. */
+  request?: { area: ContentArea; project?: string; placement: string };
   children: TreeNode[];
 }
 
@@ -113,6 +115,7 @@ export function useReviewTree(mode: TreeMode): { tree: TreeNode[]; isLoading: bo
         id: treeNodeId.series(group.series),
         label: group.series,
         role: "series" as const,
+        request: { area: ContentArea.BLOGS, placement: group.series },
         children: group.posts.map((post) => ({
           kind: "leaf" as const,
           label: post.frontmatter.title ?? post.slug,
@@ -133,6 +136,7 @@ export function useReviewTree(mode: TreeMode): { tree: TreeNode[]; isLoading: bo
       id: treeNodeId.blogRoot(),
       label: "Blog",
       role: "blog",
+      request: { area: ContentArea.BLOGS, placement: "Blog" },
       children: blogChildren,
     };
 

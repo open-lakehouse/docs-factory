@@ -55,13 +55,11 @@ execute — while search engines index rich, prerendered HTML.
   **everything viewable-as-anonymous, regardless of login status** — it is a
   public documentation site. So the agent-facing corpus (`.md` twins, `/llms.txt`,
   MCP read tools) is **openly readable, no auth**.
-- **Index on frontmatter `status: ready`, not the DB `released` gate.** The
-  `released` approval state lives in the review DB; consulting it at build time
-  would force build-time DB requests. Instead the build-time corpus keys on the
-  git-authoritative `status: ready` frontmatter (exactly what
-  [`build-llmstxt.mjs`](../../site/scripts/build-llmstxt.mjs) already does). A
-  `ready` page may briefly precede its DB `released` state; that skew is accepted
-  to keep authoring/deploy DB-free — the same trade-off llms.txt already makes.
+- **Index on frontmatter `status: ready`.** `ready` on main is the release
+  ([ADR-0002](../decisions/ADR-0002-git-ready-is-release.md)), so the build-time
+  corpus keys on it with no DB request (exactly what
+  [`build-llmstxt.mjs`](../../site/scripts/build-llmstxt.mjs) already does).
+  `private` and `draft` pages never enter it.
 - **MCP is not read-only-docs alone, and not on the review Function.** Beyond
   read-only doc/concept/example tools, the MCP server exposes a **generative
   "stack topology" tool** backed by the sibling `trestle` repo's

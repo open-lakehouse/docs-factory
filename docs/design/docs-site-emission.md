@@ -117,9 +117,11 @@ shell.
 
 ## Selection and URLs
 
-- A publish emit takes `status: ready` pages (`isPublic()`), with no DB
-  involved. `--drafts` adds `draft` pages for a local preview. `idea` pages and
-  `planned:` nav slots never ship.
+- A publish emit takes `status: ready` pages (`isEmitted()`), with no DB
+  involved: `ready` on main is the release
+  ([ADR-0002](../decisions/ADR-0002-git-ready-is-release.md)). `--drafts` adds
+  `draft` pages for a local preview. `idea` and `private` pages and `planned:`
+  nav slots never ship.
 - `emit/docs/sites/<site>.mjs` `hrefFor(identity)` is the only URL mapping.
   Every route, canonical, twin, sitemap entry, and rewritten link goes through
   it. The factory builders (`pageHead`, `sitemapUrls`, `toEntry`, `scriptEntry`,
@@ -192,7 +194,10 @@ bun alone, because uv, Chromium, and `envs/` are needed only to emit, and
 - **Redirects:** for legacy MkDocs paths (plan §7 migration map) and for renames
   the manifest records.
 - **Shell CI:** a build job for the shell (it needs Chromium for the LikeC4 export).
-- **Gating:** DB `released` gating for publish emits.
+- **Blog release automation:** a push-to-main workflow that emits each blog
+  newly at `status: ready` to its `target` and opens a PR in that site repo, as
+  `uc-docs-sync.yml` does for docs (ADR-0002). Delivery is the `blog-emit` skill
+  until then.
 - **Support files:** files a script needs but the site doesn't serve, such as
   `compose.yaml`, `server.properties`, policy JSON, and imported helpers like
   `_seed.py`. Today the page inlines them, but the companion list doesn't include

@@ -8,6 +8,7 @@ import { hashLineSync } from "../../../site/src/content-core/hash.mjs";
 import {
   CodeSelectorSchema,
   CommentSchema,
+  CommentScope,
   ContentArea,
   ContentRefSchema,
   TextSelectorSchema,
@@ -141,6 +142,10 @@ describe("locate prose", () => {
     const loc = locate(repo, prose("gone", undefined, "gone"));
     expect(loc?.precision).toBe("file");
     expect(loc?.path).toBe(PAGE);
+  });
+  test("a DOCUMENT-scoped thread maps to the whole file", () => {
+    const loc = locate(repo, { ...prose(""), scope: CommentScope.DOCUMENT });
+    expect(loc).toEqual({ path: PAGE, precision: "file", drifted: false });
   });
 });
 

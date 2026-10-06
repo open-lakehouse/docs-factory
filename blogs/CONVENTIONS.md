@@ -24,9 +24,12 @@ blogs keep one canonical Markdown file — `index.md` *is* the source of truth.
 
 ## 1. Lifecycle of a post
 
-The frontmatter `status` has exactly three canonical values — **`idea | draft |
-ready`** — unified with content pages. Review is tracked in the DB review lifecycle
-(in-review → approved → released), *not* in frontmatter.
+The frontmatter `status` has four canonical values — **`idea | draft | ready |
+private`** — unified with content pages. `ready` merged to main is the release
+([ADR-0002](../docs/decisions/ADR-0002-git-ready-is-release.md)); the review app
+records comments, requests, and approvals, and an approval is the signal to set
+`ready`. `private` is a reviewable post that never ships (an internal write-up
+kept beside the drafts); it needs no `target`.
 
 1. **Idea.** Park a one-liner in `IDEAS.md`. No folder, no commitment — ideas
    can sit indefinitely. An idea worth ranking or reviewing early can graduate to
@@ -46,11 +49,15 @@ ready`** — unified with content pages. Review is tracked in the DB review life
    pass (§8). Verify every code sample and factual claim against its cited ref.
    (Refining is an activity, not a status — the post stays `status: draft`.)
 5. **Review.** Run the multi-agent quality-review pass (§9), scored against
-   [`QUALITY.md`](./QUALITY.md), and resolve its findings. The review outcome is
-   recorded DB-side (in-review → approved → released), not in frontmatter.
-6. **Ready → released.** Finalize front-matter/target, CTA, and links; the author
-   sets `status: ready` once the post is publishable. Actual release is gated by the
-   DB review state reaching `approved`/`released` — not by a frontmatter value. When
+   [`QUALITY.md`](./QUALITY.md), and resolve its findings. Request reviewers in
+   the review app; they comment and approve there while the post is `draft`.
+6. **Ready → released.** Once the post is approved in the review app, finalize
+   front-matter/target, CTA, and links and set `status: ready` in a PR (an agent
+   may do this; `review-feedback status` lists approved posts). Never set `ready`
+   without an approval: CI warns when a PR does. Merging to main is the release;
+   delivery to the target site is the `blog-emit` skill today, and is meant to
+   become a workflow on push to main that emits each newly `ready` post and opens
+   a PR in its target repo (the `uc-docs-sync` pattern). When
    rendering to an HTML target, run the **publish-target checklist** in
    [`QUALITY.md`](./QUALITY.md) (Schema.org Microdata, validated in Google's Rich
    Results Test) against the rendered page — this is a publishing concern, not a
@@ -87,12 +94,12 @@ target with minimal reshaping — we are not inventing a metadata scheme.
 ---
 title: <Working title>
 slug: <kebab-slug>
-status: idea | draft | ready
+status: idea | draft | ready | private
 tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
 author: <Full Name>           # real person; the byline (§10). never "Admin"
-target: <delta | unitycatalog | openlakehouse | …>
+target: <delta | unitycatalog | openlakehouse | …>   # not needed for idea / private
 ---
 ```
 
@@ -466,8 +473,8 @@ Before a post is marked `status: ready`, run a multi-agent review modeled on the
 blogs. This is implemented as the [`blog-review`](../.claude/skills/blog-review/)
 skill; the criteria each facet is graded against live in
 [`QUALITY.md`](./QUALITY.md). The review is **advisory** — it produces scores and
-findings; the author decides when to set `status: ready`, and the DB review state
-(in-review → approved → released) gates the actual release.
+findings. Human approval in the review app is what clears a post for
+`status: ready`.
 
 1. **Dispatch parallel facet reviewers** over `index.md` + `brief.md`, one
    concern each, so no single pass has to hold everything. Each is scored against
@@ -495,8 +502,8 @@ findings; the author decides when to set `status: ready`, and the DB review stat
    Where facet (f) fights facet (b), **voice wins ties** — downgrade the (f) issue
    rather than flatten the stance.
 4. **Consolidate** the survivors into one prioritized report against `index.md`,
-   with a per-facet 0–100 score. The author resolves the findings before setting
-   `status: ready`; the DB review state gates the actual release.
+   with a per-facet 0–100 score. The author resolves the findings before asking
+   for approval in the review app; an approval is what clears `status: ready`.
 
 ## 10. Accuracy & disclosure
 

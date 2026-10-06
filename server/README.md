@@ -53,10 +53,11 @@ with `Authorization: Bearer dfr_…` instead of the browser JWT, in both `neon` 
 `mock` modes. A token acts as its owner, re-derived from the allowlist on every
 request, and is narrowed to its scopes in `authInterceptor`:
 
-- `feedback:read` covers the read RPCs.
+- `feedback:read` covers the read RPCs, including content requests.
 - `feedback:reply` covers `CreateComment` replies only.
-- Everything else, including resolve, approvals, release, admin, and token
-  management, is denied.
+- `requests:write` covers marking an accepted content request done.
+- Everything else, including resolve, approvals, admin, and token management,
+  is denied.
 
 Comments written with a token are stored `via_agent`. Tokens are managed in the
 site at `/tokens`, or through `review-feedback login`. See

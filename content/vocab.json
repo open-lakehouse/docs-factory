@@ -2,7 +2,7 @@
   "$comment": "Single source of truth for the docs-factory content vocabulary. Loaded by site/src/content-core/vocab.mjs (JS) and tools/docsnip/src/docsnip/vocab.py (Python) so the controlled vocabularies cannot drift between the site and docsnip. Model element ids are NOT here — they come from the LikeC4 model (architecture/dist/model.json).",
   "diataxis": ["tutorial", "how-to", "reference", "explanation"],
   "projects": ["delta", "unitycatalog", "open-lakehouse"],
-  "statuses": ["idea", "draft", "ready"],
+  "statuses": ["idea", "draft", "ready", "private"],
   "pageWorthyKinds": ["capability", "openSpecification", "implementation"],
   "$topicsComment": "The controlled product/topic axis for the review layer's version rows and the 'what changed for X' rollup. `topics` are the canonical ids; `topicSynonyms` folds blog `tags` spellings and doc `project` values onto a canonical id (unmatched tags are dropped with a warning at manifest time). A canonical id with no tagged content yet (e.g. duckdb) is valid — it renders an empty rollup.",
   "topics": [

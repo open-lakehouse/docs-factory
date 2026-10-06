@@ -2,12 +2,13 @@
 // @generated from file docs_factory/review/v1/messages.proto (package docs_factory.review.v1, syntax proto3)
 /* eslint-disable */
 
-// The review & release lifecycle domain for docs-factory content (blog drafts
-// and Diátaxis docs). The database is authoritative for everything defined here;
-// git frontmatter carries only the orthogonal authoring `status` (`idea` /
-// `draft` / `ready`), which is author intent — not review state. Content is
-// shown to anonymous viewers only when its frontmatter is `ready` AND its
-// review_state is RELEASED; allowlisted reviewers see everything.
+// The review lifecycle domain for docs-factory content (blog drafts and
+// Diátaxis docs). The database is authoritative for review activity (comments,
+// requests, approvals, outcomes). Release is git's: frontmatter `status: ready`
+// merged to main is the release, and the emitters read git alone. An approval
+// here is the signal to set `ready`; RELEASED is derived from the registered
+// main version (docs/decisions/ADR-0002). `private` content is reviewable here
+// and never released. Allowlisted reviewers see everything.
 
 import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
 import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
@@ -19,7 +20,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file docs_factory/review/v1/messages.proto.
  */
 export const file_docs_factory_review_v1_messages: GenFile = /*@__PURE__*/
-  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQi6AIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYSEQoJcm9vdF9oYXNoGAkgASgJEg4KBnRvcGljcxgKIAMoCRI1CgR0cmVlGAsgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5NZXJrbGVOb2RlSACIAQFCBwoFX3RyZWUi4gEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBRIRCglub2RlX2hhc2gYCCABKAkSFAoMc3VidHJlZV9oYXNoGAkgASgJEhoKEnBhcmVudF9hbmNob3Jfc2x1ZxgKIAEoCRISCgpkZXB0aF9wYXRoGAsgASgJIqoCCgpNZXJrbGVOb2RlEgsKA2tleRgBIAEoCRIMCgRraW5kGAIgASgJEhEKCW5vZGVfaGFzaBgDIAEoCRIUCgxzdWJ0cmVlX2hhc2gYBCABKAkSDQoFbGV2ZWwYBSABKAUSDQoFbGFiZWwYBiABKAkSNAoIY2hpbGRyZW4YByADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLk1lcmtsZU5vZGUSGAoLYW5jaG9yX3NsdWcYCCABKAlIAIgBARIZCgxzbmlwcGV0X3BhdGgYCSABKAlIAYgBARIbCg5zbmlwcGV0X3JlZ2lvbhgKIAEoCUgCiAEBQg4KDF9hbmNob3Jfc2x1Z0IPCg1fc25pcHBldF9wYXRoQhEKD19zbmlwcGV0X3JlZ2lvbiJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJItsBCgpTdWdnZXN0aW9uEhAKCG9yaWdpbmFsGAEgASgJEhMKC3JlcGxhY2VtZW50GAIgASgJEjYKBXN0YXRlGAMgASgOMicuZG9jc19mYWN0b3J5LnJldmlldy52MS5TdWdnZXN0aW9uU3RhdGUSGwoOc3RhdGVfYnlfbG9naW4YBCABKAlIAIgBARIxCghzdGF0ZV9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBAUIRCg9fc3RhdGVfYnlfbG9naW5CCwoJX3N0YXRlX2F0ImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIoQCCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAgSFAoHdXNlcl9pZBgFIAEoCUgBiAEBEhEKBG5hbWUYBiABKAlIAogBARIVCg1pc19zaXRlX2FkbWluGAcgASgIEhkKEWhhc19zY29wZWRfZ3JhbnRzGAggASgIEhEKCXZpYV9hZ2VudBgJIAEoCEIICgZfbG9naW5CCgoIX3VzZXJfaWRCBwoFX25hbWUi3QUKB0NvbW1lbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhMKC2FuY2hvcl9zbHVnGAMgASgJEhoKEmFuY2hvcl9maW5nZXJwcmludBgEIAEoCRIWCglwYXJlbnRfaWQYBSABKAlIAIgBARIUCgxhdXRob3JfbG9naW4YBiABKAkSDwoHYm9keV9tZBgHIAEoCRIYCgthdXRob3JfbmFtZRgPIAEoCUgBiAEBEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIQCghvcnBoYW5lZBgKIAEoCBI7CghzZWxlY3RvchgLIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGV4dFNlbGVjdG9ySAOIAQESQAoNY29kZV9zZWxlY3RvchgMIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29kZVNlbGVjdG9ySASIAQESIAoTYXV0aG9yZWRfdmVyc2lvbl9pZBgNIAEoCUgFiAEBEh0KEGF1dGhvcmVkX2dpdF9zaGEYDiABKAlIBogBARIRCgl2aWFfYWdlbnQYECABKAgSOwoKc3VnZ2VzdGlvbhgRIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU3VnZ2VzdGlvbkgHiAEBQgwKCl9wYXJlbnRfaWRCDgoMX2F1dGhvcl9uYW1lQgwKCl9lZGl0ZWRfYXRCCwoJX3NlbGVjdG9yQhAKDl9jb2RlX3NlbGVjdG9yQhYKFF9hdXRob3JlZF92ZXJzaW9uX2lkQhMKEV9hdXRob3JlZF9naXRfc2hhQg0KC19zdWdnZXN0aW9uIpUCCgZUaHJlYWQSLQoEcm9vdBgBIAEoCzIfLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29tbWVudBIwCgdyZXBsaWVzGAIgAygLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50EhAKCHJlc29sdmVkGAMgASgIEhgKC3Jlc29sdmVkX2J5GAQgASgJSACIAQESNAoLcmVzb2x2ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAGIAQESEgoKaGFzX3VucmVhZBgGIAEoCBIUCgx1bnJlYWRfY291bnQYByABKAVCDgoMX3Jlc29sdmVkX2J5Qg4KDF9yZXNvbHZlZF9hdCK8BQoMRHJhZnRTdW1tYXJ5Ei8KA3JlZhgBIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhINCgV0aXRsZRgCIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYAyABKAkSOQoMcmV2aWV3X3N0YXRlGAQgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZRJDCg5sYXRlc3RfdmVyc2lvbhgFIAEoCzImLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFZlcnNpb25IAIgBARIaChJvcGVuX2NvbW1lbnRfY291bnQYBiABKAUSFQoIcHJpb3JpdHkYByABKAVIAYgBARI8ChN0YXJnZXRfcmVsZWFzZV9kYXRlGAggASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgCiAEBEiMKG29wZW5fcmVxdWlyZWRfcmVxdWVzdF9jb3VudBgJIAEoBRIRCglwdWJsaXNoZWQYCiABKAgSMwoJYXBwcm92YWxzGAsgAygLMiAuZG9jc19mYWN0b3J5LnJldmlldy52MS5BcHByb3ZhbBIfChdwZW5kaW5nX3JlcXVpcmVkX2xvZ2lucxgMIAMoCRIUCgxuZWVkc19yZXZpZXcYDSABKAgSPQoOcmF0aW5nX3N1bW1hcnkYDiABKAsyJS5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJhdGluZ1N1bW1hcnkSNgoJbXlfcmF0aW5nGA8gASgLMh4uZG9jc19mYWN0b3J5LnJldmlldy52MS5SYXRpbmdIA4gBAUIRCg9fbGF0ZXN0X3ZlcnNpb25CCwoJX3ByaW9yaXR5QhYKFF90YXJnZXRfcmVsZWFzZV9kYXRlQgwKCl9teV9yYXRpbmci2AEKC1VzZXJTdW1tYXJ5Eg8KB3VzZXJfaWQYASABKAkSGQoMZ2l0aHViX2xvZ2luGAIgASgJSACIAQESEQoEbmFtZRgDIAEoCUgBiAEBEhIKBWVtYWlsGAQgASgJSAKIAQESFwoKYXZhdGFyX3VybBgFIAEoCUgDiAEBEioKBHJvbGUYBiABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGVCDwoNX2dpdGh1Yl9sb2dpbkIHCgVfbmFtZUIICgZfZW1haWxCDQoLX2F2YXRhcl91cmwiUwoOQWxsb3dsaXN0RW50cnkSDwoHdXNlcl9pZBgBIAEoCRIqCgRyb2xlGAMgASgOMhwuZG9jc19mYWN0b3J5LnJldmlldy52MS5Sb2xlSgQIAhADIo0CChRBbGxvd2xpc3RFbnRyeURldGFpbBIPCgd1c2VyX2lkGAEgASgJEhkKDGdpdGh1Yl9sb2dpbhgCIAEoCUgAiAEBEhIKBWVtYWlsGAMgASgJSAGIAQESKgoEcm9sZRgEIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZRIVCghhZGRlZF9ieRgFIAEoCUgCiAEBEi4KCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhEKBG5hbWUYByABKAlIA4gBAUIPCg1fZ2l0aHViX2xvZ2luQggKBl9lbWFpbEILCglfYWRkZWRfYnlCBwoFX25hbWUi+wEKDlJlZ2lzdGVyZWRVc2VyEg8KB3VzZXJfaWQYASABKAkSGQoMZ2l0aHViX2xvZ2luGAIgASgJSACIAQESEgoFZW1haWwYAyABKAlIAYgBARIqCgRyb2xlGAQgASgOMhwuZG9jc19mYWN0b3J5LnJldmlldy52MS5Sb2xlEjUKDGxhc3Rfc2Vlbl9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIRCgRuYW1lGAYgASgJSAOIAQFCDwoNX2dpdGh1Yl9sb2dpbkIICgZfZW1haWxCDwoNX2xhc3Rfc2Vlbl9hdEIHCgVfbmFtZSLGAQoNUmVjZW50Q29tbWVudBIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50Ei8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhITCgthbmNob3Jfc2x1ZxgDIAEoCRIUCgxoZWFkaW5nX3RleHQYBCABKAkSEAoIcmVzb2x2ZWQYBSABKAgSFQoNY29udGVudF90aXRsZRgGIAEoCSLXAwoNUmV2aWV3UmVxdWVzdBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGAoQcmV2aWV3ZXJfdXNlcl9pZBgDIAEoCRI4CgtyZXF1aXJlbWVudBgFIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVxdWlyZW1lbnQSNQoGc3RhdHVzGAYgASgOMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0U3RhdHVzEhQKDHJlcXVlc3RlZF9ieRgHIAEoCRIMCgRub3RlGAggASgJEi4KCmNyZWF0ZWRfYXQYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjUKDHNhdGlzZmllZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBARIbCg5yZXZpZXdlcl9sb2dpbhgLIAEoCUgBiAEBEhoKDXJldmlld2VyX25hbWUYDCABKAlIAogBAUIPCg1fc2F0aXNmaWVkX2F0QhEKD19yZXZpZXdlcl9sb2dpbkIQCg5fcmV2aWV3ZXJfbmFtZUoECAQQBSLpAQoIQXBwcm92YWwSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhsKDmFwcHJvdmVyX2xvZ2luGAMgASgJSACIAQESGAoQYXBwcm92ZXJfdXNlcl9pZBgEIAEoCRIXCgp2ZXJzaW9uX2lkGAUgASgJSAGIAQESLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCEQoPX2FwcHJvdmVyX2xvZ2luQg0KC192ZXJzaW9uX2lkIsYECgZSYXRpbmcSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhUKDXJhdGVyX3VzZXJfaWQYAyABKAkSGAoLcmF0ZXJfbG9naW4YBCABKAlIAIgBARIXCgp2ZXJzaW9uX2lkGAUgASgJSAGIAQESFAoHZ2l0X3NoYRgGIAEoCUgCiAEBEg0KBXNjb3JlGAcgASgFEhQKB3Byb3NfbWQYCCABKAlIA4gBARIUCgdjb25zX21kGAkgASgJSASIAQESOwoJc3RyZW5ndGhzGAogAygOMiguZG9jc19mYWN0b3J5LnJldmlldy52MS5RdWFsaXR5RGltZW5zaW9uEjwKCndlYWtuZXNzZXMYCyADKA4yKC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlF1YWxpdHlEaW1lbnNpb24SMgoIZXhlbXBsYXIYDCABKA4yIC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkV4ZW1wbGFyEi4KCmNyZWF0ZWRfYXQYDSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYDiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhIKCnN1cGVyc2VkZWQYDyABKAhCDgoMX3JhdGVyX2xvZ2luQg0KC192ZXJzaW9uX2lkQgoKCF9naXRfc2hhQgoKCF9wcm9zX21kQgoKCF9jb25zX21kIlYKDVJhdGluZ1N1bW1hcnkSDQoFY291bnQYASABKAUSDwoHYXZlcmFnZRgCIAEoARISCgpnb29kX2NvdW50GAMgASgFEhEKCWJhZF9jb3VudBgEIAEoBSKPAwoMQ29udGVudEV2ZW50EgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIvCgRraW5kGAMgASgOMiEuZG9jc19mYWN0b3J5LnJldmlldy52MS5FdmVudEtpbmQSDQoFYWN0b3IYBCABKAkSDAoEbm90ZRgFIAEoCRI8Cgpmcm9tX3N0YXRlGAYgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZUgAiAEBEjoKCHRvX3N0YXRlGAcgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZUgBiAEBEhsKDnJldmlld2VyX2xvZ2luGAggASgJSAKIAQESLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCDQoLX2Zyb21fc3RhdGVCCwoJX3RvX3N0YXRlQhEKD19yZXZpZXdlcl9sb2dpbiLsAQoIQXBpVG9rZW4SCgoCaWQYASABKAkSDAoEbmFtZRgCIAEoCRIOCgZzY29wZXMYAyADKAkSDgoGcHJlZml4GAQgASgJEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCmV4cGlyZXNfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjUKDGxhc3RfdXNlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBAUIPCg1fbGFzdF91c2VkX2F0KloKC0NvbnRlbnRBcmVhEhwKGENPTlRFTlRfQVJFQV9VTlNQRUNJRklFRBAAEhYKEkNPTlRFTlRfQVJFQV9CTE9HUxABEhUKEUNPTlRFTlRfQVJFQV9ET0NTEAIqjAEKD1N1Z2dlc3Rpb25TdGF0ZRIgChxTVUdHRVNUSU9OX1NUQVRFX1VOU1BFQ0lGSUVEEAASGQoVU1VHR0VTVElPTl9TVEFURV9PUEVOEAESHAoYU1VHR0VTVElPTl9TVEFURV9BUFBMSUVEEAISHgoaU1VHR0VTVElPTl9TVEFURV9ESVNNSVNTRUQQAyq7AQoLUmV2aWV3U3RhdGUSHAoYUkVWSUVXX1NUQVRFX1VOU1BFQ0lGSUVEEAASFQoRUkVWSUVXX1NUQVRFX05PTkUQARIdChlSRVZJRVdfU1RBVEVfTkVFRFNfUkVWSUVXEAISIgoeUkVWSUVXX1NUQVRFX0NIQU5HRVNfUkVRVUVTVEVEEAMSGQoVUkVWSUVXX1NUQVRFX0FQUFJPVkVEEAQSGQoVUkVWSUVXX1NUQVRFX1JFTEVBU0VEEAUqWAoEUm9sZRIUChBST0xFX1VOU1BFQ0lGSUVEEAASEgoOUk9MRV9BTk9OWU1PVVMQARIRCg1ST0xFX1JFVklFV0VSEAISEwoPUk9MRV9NQUlOVEFJTkVSEAMqXgoLUmVxdWlyZW1lbnQSGwoXUkVRVUlSRU1FTlRfVU5TUEVDSUZJRUQQABIYChRSRVFVSVJFTUVOVF9SRVFVSVJFRBABEhgKFFJFUVVJUkVNRU5UX09QVElPTkFMEAIqhAEKDVJlcXVlc3RTdGF0dXMSHgoaUkVRVUVTVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIXChNSRVFVRVNUX1NUQVRVU19PUEVOEAESHAoYUkVRVUVTVF9TVEFUVVNfU0FUSVNGSUVEEAISHAoYUkVRVUVTVF9TVEFUVVNfQ0FOQ0VMTEVEEAMqoAMKCUV2ZW50S2luZBIaChZFVkVOVF9LSU5EX1VOU1BFQ0lGSUVEEAASHwobRVZFTlRfS0lORF9SRVZJRVdfUkVRVUVTVEVEEAESIAocRVZFTlRfS0lORF9SRVFVRVNUX1NBVElTRklFRBACEiAKHEVWRU5UX0tJTkRfUkVRVUVTVF9DQU5DRUxMRUQQAxIeChpFVkVOVF9LSU5EX1NUQVRFX0lOX1JFVklFVxAEEiYKIkVWRU5UX0tJTkRfU1RBVEVfQ0hBTkdFU19SRVFVRVNURUQQBRIdChlFVkVOVF9LSU5EX1NUQVRFX0FQUFJPVkVEEAYSFwoTRVZFTlRfS0lORF9SRUxFQVNFRBAHEhoKFkVWRU5UX0tJTkRfVU5QVUJMSVNIRUQQCBIaChZFVkVOVF9LSU5EX1JFUFVCTElTSEVEEAkSFwoTRVZFTlRfS0lORF9BUFBST1ZFRBAKEiEKHUVWRU5UX0tJTkRfQVBQUk9WQUxfRElTTUlTU0VEEAsSHgoaRVZFTlRfS0lORF9DT05URU5UX1JFVklTRUQQDCr6AQoQUXVhbGl0eURpbWVuc2lvbhIhCh1RVUFMSVRZX0RJTUVOU0lPTl9VTlNQRUNJRklFRBAAEh4KGlFVQUxJVFlfRElNRU5TSU9OX0FDQ1VSQUNZEAESHQoZUVVBTElUWV9ESU1FTlNJT05fQ0xBUklUWRACEh8KG1FVQUxJVFlfRElNRU5TSU9OX1NUUlVDVFVSRRADEiIKHlFVQUxJVFlfRElNRU5TSU9OX0NPTVBMRVRFTkVTUxAEEiMKH1FVQUxJVFlfRElNRU5TSU9OX1JVTk5BQkxFX0NPREUQBRIaChZRVUFMSVRZX0RJTUVOU0lPTl9UT05FEAYqSQoIRXhlbXBsYXISGAoURVhFTVBMQVJfVU5TUEVDSUZJRUQQABIRCg1FWEVNUExBUl9HT09EEAESEAoMRVhFTVBMQVJfQkFEEAJiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("CiVkb2NzX2ZhY3RvcnkvcmV2aWV3L3YxL21lc3NhZ2VzLnByb3RvEhZkb2NzX2ZhY3RvcnkucmV2aWV3LnYxIo8BCgpDb250ZW50UmVmEjEKBGFyZWEYASABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRBcmVhEgwKBHNsdWcYAiABKAkSFAoHcHJvamVjdBgDIAEoCUgAiAEBEhMKBmJ1Y2tldBgEIAEoCUgBiAEBQgoKCF9wcm9qZWN0QgkKB19idWNrZXQi6AIKDkNvbnRlbnRWZXJzaW9uEgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIUCgxjb250ZW50X2hhc2gYAyABKAkSDwoHZ2l0X3NoYRgEIAEoCRINCgV0aXRsZRgFIAEoCRIaChJmcm9udG1hdHRlcl9zdGF0dXMYBiABKAkSLgoKY3JlYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASNAoIc25pcHBldHMYCCADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlNuaXBwZXRSZWYSEQoJcm9vdF9oYXNoGAkgASgJEg4KBnRvcGljcxgKIAMoCRI1CgR0cmVlGAsgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5NZXJrbGVOb2RlSACIAQFCBwoFX3RyZWUi4gEKB1NlY3Rpb24SEwoLYW5jaG9yX3NsdWcYASABKAkSEwoLZmluZ2VycHJpbnQYAiABKAkSFAoMaGVhZGluZ190ZXh0GAMgASgJEg0KBWxldmVsGAQgASgFEg8KB29yZGluYWwYBSABKAUSDAoEdGV4dBgGIAEoCRIQCghjaGFyX2xlbhgHIAEoBRIRCglub2RlX2hhc2gYCCABKAkSFAoMc3VidHJlZV9oYXNoGAkgASgJEhoKEnBhcmVudF9hbmNob3Jfc2x1ZxgKIAEoCRISCgpkZXB0aF9wYXRoGAsgASgJIqoCCgpNZXJrbGVOb2RlEgsKA2tleRgBIAEoCRIMCgRraW5kGAIgASgJEhEKCW5vZGVfaGFzaBgDIAEoCRIUCgxzdWJ0cmVlX2hhc2gYBCABKAkSDQoFbGV2ZWwYBSABKAUSDQoFbGFiZWwYBiABKAkSNAoIY2hpbGRyZW4YByADKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLk1lcmtsZU5vZGUSGAoLYW5jaG9yX3NsdWcYCCABKAlIAIgBARIZCgxzbmlwcGV0X3BhdGgYCSABKAlIAYgBARIbCg5zbmlwcGV0X3JlZ2lvbhgKIAEoCUgCiAEBQg4KDF9hbmNob3Jfc2x1Z0IPCg1fc25pcHBldF9wYXRoQhEKD19zbmlwcGV0X3JlZ2lvbiJMCgxUZXh0U2VsZWN0b3ISDQoFcXVvdGUYASABKAkSDgoGcHJlZml4GAIgASgJEg4KBnN1ZmZpeBgDIAEoCRINCgVzdGFydBgEIAEoBSJyCgxDb2RlU2VsZWN0b3ISDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSDAoEbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglsaW5lX2hhc2gYBSABKAkSEQoJZmlsZV9oYXNoGAYgASgJItsBCgpTdWdnZXN0aW9uEhAKCG9yaWdpbmFsGAEgASgJEhMKC3JlcGxhY2VtZW50GAIgASgJEjYKBXN0YXRlGAMgASgOMicuZG9jc19mYWN0b3J5LnJldmlldy52MS5TdWdnZXN0aW9uU3RhdGUSGwoOc3RhdGVfYnlfbG9naW4YBCABKAlIAIgBARIxCghzdGF0ZV9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBAUIRCg9fc3RhdGVfYnlfbG9naW5CCwoJX3N0YXRlX2F0ImMKClNuaXBwZXRSZWYSDAoEcGF0aBgBIAEoCRIOCgZyZWdpb24YAiABKAkSEgoKc3RhcnRfbGluZRgDIAEoBRIQCghlbmRfbGluZRgEIAEoBRIRCglmaWxlX2hhc2gYBSABKAkiOwoKU291cmNlRmlsZRIMCgRwYXRoGAEgASgJEgwKBHRleHQYAiABKAkSEQoJZmlsZV9oYXNoGAMgASgJIoQCCgZWaWV3ZXISFQoNYXV0aGVudGljYXRlZBgBIAEoCBISCgVsb2dpbhgCIAEoCUgAiAEBEioKBHJvbGUYAyABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGUSFgoOaXNfYWxsb3dsaXN0ZWQYBCABKAgSFAoHdXNlcl9pZBgFIAEoCUgBiAEBEhEKBG5hbWUYBiABKAlIAogBARIVCg1pc19zaXRlX2FkbWluGAcgASgIEhkKEWhhc19zY29wZWRfZ3JhbnRzGAggASgIEhEKCXZpYV9hZ2VudBgJIAEoCEIICgZfbG9naW5CCgoIX3VzZXJfaWRCBwoFX25hbWUikgYKB0NvbW1lbnQSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhMKC2FuY2hvcl9zbHVnGAMgASgJEhoKEmFuY2hvcl9maW5nZXJwcmludBgEIAEoCRIWCglwYXJlbnRfaWQYBSABKAlIAIgBARIUCgxhdXRob3JfbG9naW4YBiABKAkSDwoHYm9keV9tZBgHIAEoCRIYCgthdXRob3JfbmFtZRgPIAEoCUgBiAEBEi4KCmNyZWF0ZWRfYXQYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjIKCWVkaXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIQCghvcnBoYW5lZBgKIAEoCBI7CghzZWxlY3RvchgLIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuVGV4dFNlbGVjdG9ySAOIAQESQAoNY29kZV9zZWxlY3RvchgMIAEoCzIkLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29kZVNlbGVjdG9ySASIAQESIAoTYXV0aG9yZWRfdmVyc2lvbl9pZBgNIAEoCUgFiAEBEh0KEGF1dGhvcmVkX2dpdF9zaGEYDiABKAlIBogBARIRCgl2aWFfYWdlbnQYECABKAgSOwoKc3VnZ2VzdGlvbhgRIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuU3VnZ2VzdGlvbkgHiAEBEjMKBXNjb3BlGBIgASgOMiQuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50U2NvcGVCDAoKX3BhcmVudF9pZEIOCgxfYXV0aG9yX25hbWVCDAoKX2VkaXRlZF9hdEILCglfc2VsZWN0b3JCEAoOX2NvZGVfc2VsZWN0b3JCFgoUX2F1dGhvcmVkX3ZlcnNpb25faWRCEwoRX2F1dGhvcmVkX2dpdF9zaGFCDQoLX3N1Z2dlc3Rpb24ilQIKBlRocmVhZBItCgRyb290GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50EjAKB3JlcGxpZXMYAiADKAsyHy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbW1lbnQSEAoIcmVzb2x2ZWQYAyABKAgSGAoLcmVzb2x2ZWRfYnkYBCABKAlIAIgBARI0CgtyZXNvbHZlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBARISCgpoYXNfdW5yZWFkGAYgASgIEhQKDHVucmVhZF9jb3VudBgHIAEoBUIOCgxfcmVzb2x2ZWRfYnlCDgoMX3Jlc29sdmVkX2F0Is8FCgxEcmFmdFN1bW1hcnkSLwoDcmVmGAEgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEg0KBXRpdGxlGAIgASgJEhoKEmZyb250bWF0dGVyX3N0YXR1cxgDIAEoCRI5CgxyZXZpZXdfc3RhdGUYBCABKA4yIy5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJldmlld1N0YXRlEkMKDmxhdGVzdF92ZXJzaW9uGAUgASgLMiYuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50VmVyc2lvbkgAiAEBEhoKEm9wZW5fY29tbWVudF9jb3VudBgGIAEoBRIVCghwcmlvcml0eRgHIAEoBUgBiAEBEjwKE3RhcmdldF9yZWxlYXNlX2RhdGUYCCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSAKIAQESIwobb3Blbl9yZXF1aXJlZF9yZXF1ZXN0X2NvdW50GAkgASgFEjMKCWFwcHJvdmFscxgLIAMoCzIgLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQXBwcm92YWwSHwoXcGVuZGluZ19yZXF1aXJlZF9sb2dpbnMYDCADKAkSFAoMbmVlZHNfcmV2aWV3GA0gASgIEj0KDnJhdGluZ19zdW1tYXJ5GA4gASgLMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SYXRpbmdTdW1tYXJ5EjYKCW15X3JhdGluZxgPIAEoCzIeLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmF0aW5nSAOIAQESHgoWcmVhZHlfd2l0aG91dF9hcHByb3ZhbBgQIAEoCEIRCg9fbGF0ZXN0X3ZlcnNpb25CCwoJX3ByaW9yaXR5QhYKFF90YXJnZXRfcmVsZWFzZV9kYXRlQgwKCl9teV9yYXRpbmdKBAgKEAsi2AEKC1VzZXJTdW1tYXJ5Eg8KB3VzZXJfaWQYASABKAkSGQoMZ2l0aHViX2xvZ2luGAIgASgJSACIAQESEQoEbmFtZRgDIAEoCUgBiAEBEhIKBWVtYWlsGAQgASgJSAKIAQESFwoKYXZhdGFyX3VybBgFIAEoCUgDiAEBEioKBHJvbGUYBiABKA4yHC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlJvbGVCDwoNX2dpdGh1Yl9sb2dpbkIHCgVfbmFtZUIICgZfZW1haWxCDQoLX2F2YXRhcl91cmwiUwoOQWxsb3dsaXN0RW50cnkSDwoHdXNlcl9pZBgBIAEoCRIqCgRyb2xlGAMgASgOMhwuZG9jc19mYWN0b3J5LnJldmlldy52MS5Sb2xlSgQIAhADIo0CChRBbGxvd2xpc3RFbnRyeURldGFpbBIPCgd1c2VyX2lkGAEgASgJEhkKDGdpdGh1Yl9sb2dpbhgCIAEoCUgAiAEBEhIKBWVtYWlsGAMgASgJSAGIAQESKgoEcm9sZRgEIAEoDjIcLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUm9sZRIVCghhZGRlZF9ieRgFIAEoCUgCiAEBEi4KCmNyZWF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhEKBG5hbWUYByABKAlIA4gBAUIPCg1fZ2l0aHViX2xvZ2luQggKBl9lbWFpbEILCglfYWRkZWRfYnlCBwoFX25hbWUi+wEKDlJlZ2lzdGVyZWRVc2VyEg8KB3VzZXJfaWQYASABKAkSGQoMZ2l0aHViX2xvZ2luGAIgASgJSACIAQESEgoFZW1haWwYAyABKAlIAYgBARIqCgRyb2xlGAQgASgOMhwuZG9jc19mYWN0b3J5LnJldmlldy52MS5Sb2xlEjUKDGxhc3Rfc2Vlbl9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAogBARIRCgRuYW1lGAYgASgJSAOIAQFCDwoNX2dpdGh1Yl9sb2dpbkIICgZfZW1haWxCDwoNX2xhc3Rfc2Vlbl9hdEIHCgVfbmFtZSLGAQoNUmVjZW50Q29tbWVudBIwCgdjb21tZW50GAEgASgLMh8uZG9jc19mYWN0b3J5LnJldmlldy52MS5Db21tZW50Ei8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhITCgthbmNob3Jfc2x1ZxgDIAEoCRIUCgxoZWFkaW5nX3RleHQYBCABKAkSEAoIcmVzb2x2ZWQYBSABKAgSFQoNY29udGVudF90aXRsZRgGIAEoCSLXAwoNUmV2aWV3UmVxdWVzdBIKCgJpZBgBIAEoCRIvCgNyZWYYAiABKAsyIi5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkNvbnRlbnRSZWYSGAoQcmV2aWV3ZXJfdXNlcl9pZBgDIAEoCRI4CgtyZXF1aXJlbWVudBgFIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuUmVxdWlyZW1lbnQSNQoGc3RhdHVzGAYgASgOMiUuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXF1ZXN0U3RhdHVzEhQKDHJlcXVlc3RlZF9ieRgHIAEoCRIMCgRub3RlGAggASgJEi4KCmNyZWF0ZWRfYXQYCSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjUKDHNhdGlzZmllZF9hdBgKIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBARIbCg5yZXZpZXdlcl9sb2dpbhgLIAEoCUgBiAEBEhoKDXJldmlld2VyX25hbWUYDCABKAlIAogBAUIPCg1fc2F0aXNmaWVkX2F0QhEKD19yZXZpZXdlcl9sb2dpbkIQCg5fcmV2aWV3ZXJfbmFtZUoECAQQBSLpAQoIQXBwcm92YWwSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhsKDmFwcHJvdmVyX2xvZ2luGAMgASgJSACIAQESGAoQYXBwcm92ZXJfdXNlcl9pZBgEIAEoCRIXCgp2ZXJzaW9uX2lkGAUgASgJSAGIAQESLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCEQoPX2FwcHJvdmVyX2xvZ2luQg0KC192ZXJzaW9uX2lkIsYECgZSYXRpbmcSCgoCaWQYASABKAkSLwoDcmVmGAIgASgLMiIuZG9jc19mYWN0b3J5LnJldmlldy52MS5Db250ZW50UmVmEhUKDXJhdGVyX3VzZXJfaWQYAyABKAkSGAoLcmF0ZXJfbG9naW4YBCABKAlIAIgBARIXCgp2ZXJzaW9uX2lkGAUgASgJSAGIAQESFAoHZ2l0X3NoYRgGIAEoCUgCiAEBEg0KBXNjb3JlGAcgASgFEhQKB3Byb3NfbWQYCCABKAlIA4gBARIUCgdjb25zX21kGAkgASgJSASIAQESOwoJc3RyZW5ndGhzGAogAygOMiguZG9jc19mYWN0b3J5LnJldmlldy52MS5RdWFsaXR5RGltZW5zaW9uEjwKCndlYWtuZXNzZXMYCyADKA4yKC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLlF1YWxpdHlEaW1lbnNpb24SMgoIZXhlbXBsYXIYDCABKA4yIC5kb2NzX2ZhY3RvcnkucmV2aWV3LnYxLkV4ZW1wbGFyEi4KCmNyZWF0ZWRfYXQYDSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYDiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEhIKCnN1cGVyc2VkZWQYDyABKAhCDgoMX3JhdGVyX2xvZ2luQg0KC192ZXJzaW9uX2lkQgoKCF9naXRfc2hhQgoKCF9wcm9zX21kQgoKCF9jb25zX21kIlYKDVJhdGluZ1N1bW1hcnkSDQoFY291bnQYASABKAUSDwoHYXZlcmFnZRgCIAEoARISCgpnb29kX2NvdW50GAMgASgFEhEKCWJhZF9jb3VudBgEIAEoBSKPAwoMQ29udGVudEV2ZW50EgoKAmlkGAEgASgJEi8KA3JlZhgCIAEoCzIiLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlZhIvCgRraW5kGAMgASgOMiEuZG9jc19mYWN0b3J5LnJldmlldy52MS5FdmVudEtpbmQSDQoFYWN0b3IYBCABKAkSDAoEbm90ZRgFIAEoCRI8Cgpmcm9tX3N0YXRlGAYgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZUgAiAEBEjoKCHRvX3N0YXRlGAcgASgOMiMuZG9jc19mYWN0b3J5LnJldmlldy52MS5SZXZpZXdTdGF0ZUgBiAEBEhsKDnJldmlld2VyX2xvZ2luGAggASgJSAKIAQESLgoKY3JlYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCDQoLX2Zyb21fc3RhdGVCCwoJX3RvX3N0YXRlQhEKD19yZXZpZXdlcl9sb2dpbiLqAwoOQ29udGVudFJlcXVlc3QSCgoCaWQYASABKAkSMQoEYXJlYRgCIAEoDjIjLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudEFyZWESFAoHcHJvamVjdBgDIAEoCUgAiAEBEhEKCXBsYWNlbWVudBgEIAEoCRIQCghkaWF0YXhpcxgFIAEoCRINCgV0aXRsZRgGIAEoCRIPCgdib2R5X21kGAcgASgJEjwKBnN0YXR1cxgIIAEoDjIsLmRvY3NfZmFjdG9yeS5yZXZpZXcudjEuQ29udGVudFJlcXVlc3RTdGF0dXMSGgoScmVxdWVzdGVkX2J5X2xvZ2luGAkgASgJEhcKCnBsYW5uZWRfaWQYCiABKAlIAYgBARITCgZwcl91cmwYCyABKAlIAogBARIcCg9yZXNvbHV0aW9uX25vdGUYDCABKAlIA4gBARIuCgpjcmVhdGVkX2F0GA0gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIuCgp1cGRhdGVkX2F0GA4gASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEIKCghfcHJvamVjdEINCgtfcGxhbm5lZF9pZEIJCgdfcHJfdXJsQhIKEF9yZXNvbHV0aW9uX25vdGUi7AEKCEFwaVRva2VuEgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSDgoGc2NvcGVzGAMgAygJEg4KBnByZWZpeBgEIAEoCRIuCgpjcmVhdGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIuCgpleHBpcmVzX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBI1CgxsYXN0X3VzZWRfYXQYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSACIAQFCDwoNX2xhc3RfdXNlZF9hdCpaCgtDb250ZW50QXJlYRIcChhDT05URU5UX0FSRUFfVU5TUEVDSUZJRUQQABIWChJDT05URU5UX0FSRUFfQkxPR1MQARIVChFDT05URU5UX0FSRUFfRE9DUxACKowBCg9TdWdnZXN0aW9uU3RhdGUSIAocU1VHR0VTVElPTl9TVEFURV9VTlNQRUNJRklFRBAAEhkKFVNVR0dFU1RJT05fU1RBVEVfT1BFThABEhwKGFNVR0dFU1RJT05fU1RBVEVfQVBQTElFRBACEh4KGlNVR0dFU1RJT05fU1RBVEVfRElTTUlTU0VEEAMquwEKC1Jldmlld1N0YXRlEhwKGFJFVklFV19TVEFURV9VTlNQRUNJRklFRBAAEhUKEVJFVklFV19TVEFURV9OT05FEAESHQoZUkVWSUVXX1NUQVRFX05FRURTX1JFVklFVxACEiIKHlJFVklFV19TVEFURV9DSEFOR0VTX1JFUVVFU1RFRBADEhkKFVJFVklFV19TVEFURV9BUFBST1ZFRBAEEhkKFVJFVklFV19TVEFURV9SRUxFQVNFRBAFKlgKBFJvbGUSFAoQUk9MRV9VTlNQRUNJRklFRBAAEhIKDlJPTEVfQU5PTllNT1VTEAESEQoNUk9MRV9SRVZJRVdFUhACEhMKD1JPTEVfTUFJTlRBSU5FUhADKl4KC1JlcXVpcmVtZW50EhsKF1JFUVVJUkVNRU5UX1VOU1BFQ0lGSUVEEAASGAoUUkVRVUlSRU1FTlRfUkVRVUlSRUQQARIYChRSRVFVSVJFTUVOVF9PUFRJT05BTBACKoQBCg1SZXF1ZXN0U3RhdHVzEh4KGlJFUVVFU1RfU1RBVFVTX1VOU1BFQ0lGSUVEEAASFwoTUkVRVUVTVF9TVEFUVVNfT1BFThABEhwKGFJFUVVFU1RfU1RBVFVTX1NBVElTRklFRBACEhwKGFJFUVVFU1RfU1RBVFVTX0NBTkNFTExFRBADKu8CCglFdmVudEtpbmQSGgoWRVZFTlRfS0lORF9VTlNQRUNJRklFRBAAEh8KG0VWRU5UX0tJTkRfUkVWSUVXX1JFUVVFU1RFRBABEiAKHEVWRU5UX0tJTkRfUkVRVUVTVF9TQVRJU0ZJRUQQAhIgChxFVkVOVF9LSU5EX1JFUVVFU1RfQ0FOQ0VMTEVEEAMSJgoiRVZFTlRfS0lORF9TVEFURV9DSEFOR0VTX1JFUVVFU1RFRBAFEh0KGUVWRU5UX0tJTkRfU1RBVEVfQVBQUk9WRUQQBhIXChNFVkVOVF9LSU5EX1JFTEVBU0VEEAcSGQoVRVZFTlRfS0lORF9VTlJFTEVBU0VEEAgSFwoTRVZFTlRfS0lORF9BUFBST1ZFRBAKEiEKHUVWRU5UX0tJTkRfQVBQUk9WQUxfRElTTUlTU0VEEAsSHgoaRVZFTlRfS0lORF9DT05URU5UX1JFVklTRUQQDCIECAQQBCIECAkQCSpkCgxDb21tZW50U2NvcGUSHQoZQ09NTUVOVF9TQ09QRV9VTlNQRUNJRklFRBAAEhkKFUNPTU1FTlRfU0NPUEVfU0VDVElPThABEhoKFkNPTU1FTlRfU0NPUEVfRE9DVU1FTlQQAir6AQoQUXVhbGl0eURpbWVuc2lvbhIhCh1RVUFMSVRZX0RJTUVOU0lPTl9VTlNQRUNJRklFRBAAEh4KGlFVQUxJVFlfRElNRU5TSU9OX0FDQ1VSQUNZEAESHQoZUVVBTElUWV9ESU1FTlNJT05fQ0xBUklUWRACEh8KG1FVQUxJVFlfRElNRU5TSU9OX1NUUlVDVFVSRRADEiIKHlFVQUxJVFlfRElNRU5TSU9OX0NPTVBMRVRFTkVTUxAEEiMKH1FVQUxJVFlfRElNRU5TSU9OX1JVTk5BQkxFX0NPREUQBRIaChZRVUFMSVRZX0RJTUVOU0lPTl9UT05FEAYqSQoIRXhlbXBsYXISGAoURVhFTVBMQVJfVU5TUEVDSUZJRUQQABIRCg1FWEVNUExBUl9HT09EEAESEAoMRVhFTVBMQVJfQkFEEAIqygEKFENvbnRlbnRSZXF1ZXN0U3RhdHVzEiYKIkNPTlRFTlRfUkVRVUVTVF9TVEFUVVNfVU5TUEVDSUZJRUQQABIfChtDT05URU5UX1JFUVVFU1RfU1RBVFVTX09QRU4QARIjCh9DT05URU5UX1JFUVVFU1RfU1RBVFVTX0FDQ0VQVEVEEAISIwofQ09OVEVOVF9SRVFVRVNUX1NUQVRVU19ERUNMSU5FRBADEh8KG0NPTlRFTlRfUkVRVUVTVF9TVEFUVVNfRE9ORRAEYgZwcm90bzM", [file_google_protobuf_timestamp]);
 
 /**
  * Stable reference to one piece of content. `project`/`bucket` are set only for
@@ -695,6 +696,14 @@ export type Comment = Message<"docs_factory.review.v1.Comment"> & {
    * @generated from field: optional docs_factory.review.v1.Suggestion suggestion = 17;
    */
   suggestion?: Suggestion | undefined;
+
+  /**
+   * SECTION (anchored by anchor_slug, optionally a selector) or DOCUMENT
+   * (anchor_slug empty). Replies carry their root's scope.
+   *
+   * @generated from field: docs_factory.review.v1.CommentScope scope = 18;
+   */
+  scope: CommentScope;
 };
 
 /**
@@ -812,22 +821,11 @@ export type DraftSummary = Message<"docs_factory.review.v1.DraftSummary"> & {
   /**
    * Number of open REQUIRED review requests on this content — i.e. required
    * reviewers who have not yet approved (satisfaction is per-reviewer). Non-zero
-   * blocks release (ReleaseContent throws) and keeps the derived state at
-   * NEEDS_REVIEW; surfaced in the reviewer UI.
+   * keeps the derived state from reaching APPROVED; surfaced in the reviewer UI.
    *
    * @generated from field: int32 open_required_request_count = 9;
    */
   openRequiredRequestCount: number;
-
-  /**
-   * Whether the content is currently published (publicly visible). This is a
-   * sticky latch on content_revops, decoupled from review_state: set true on
-   * release, cleared only by an explicit unpublish. Anonymous visibility is
-   * `frontmatter_status == "ready" AND published`.
-   *
-   * @generated from field: bool published = 10;
-   */
-  published: boolean;
 
   /**
    * Active (non-dismissed) approvals on this content — the "approved by whom".
@@ -869,6 +867,14 @@ export type DraftSummary = Message<"docs_factory.review.v1.DraftSummary"> & {
    * @generated from field: optional docs_factory.review.v1.Rating my_rating = 15;
    */
   myRating?: Rating | undefined;
+
+  /**
+   * RELEASED with no active approval: `ready` reached main without going
+   * through review. A warning, never a block.
+   *
+   * @generated from field: bool ready_without_approval = 16;
+   */
+  readyWithoutApproval: boolean;
 };
 
 /**
@@ -1429,6 +1435,104 @@ export const ContentEventSchema: GenMessage<ContentEvent> = /*@__PURE__*/
   messageDesc(file_docs_factory_review_v1_messages, 22);
 
 /**
+ * A reviewer's request for content that doesn't exist yet, anchored where it
+ * should live: a docs project's nav section, or (for blogs) a tag or series.
+ * The accepted backlog stays git's: accepting a request means a `planned:`
+ * slot carrying `request: <id>` gets written into nav.yml (or blogs/IDEAS.md).
+ *
+ * @generated from message docs_factory.review.v1.ContentRequest
+ */
+export type ContentRequest = Message<"docs_factory.review.v1.ContentRequest"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: docs_factory.review.v1.ContentArea area = 2;
+   */
+  area: ContentArea;
+
+  /**
+   * Docs project (content/<project>); absent for blogs.
+   *
+   * @generated from field: optional string project = 3;
+   */
+  project?: string | undefined;
+
+  /**
+   * The nav.yml section label (docs) or tag/series (blogs) it belongs under.
+   *
+   * @generated from field: string placement = 4;
+   */
+  placement: string;
+
+  /**
+   * Diátaxis quadrant for docs (tutorial | how-to | reference | explanation);
+   * empty for blogs.
+   *
+   * @generated from field: string diataxis = 5;
+   */
+  diataxis: string;
+
+  /**
+   * @generated from field: string title = 6;
+   */
+  title: string;
+
+  /**
+   * @generated from field: string body_md = 7;
+   */
+  bodyMd: string;
+
+  /**
+   * @generated from field: docs_factory.review.v1.ContentRequestStatus status = 8;
+   */
+  status: ContentRequestStatus;
+
+  /**
+   * @generated from field: string requested_by_login = 9;
+   */
+  requestedByLogin: string;
+
+  /**
+   * Set on DONE: the backlog id of the planned slot, and the PR that added it.
+   *
+   * @generated from field: optional string planned_id = 10;
+   */
+  plannedId?: string | undefined;
+
+  /**
+   * @generated from field: optional string pr_url = 11;
+   */
+  prUrl?: string | undefined;
+
+  /**
+   * A maintainer's reason when declining.
+   *
+   * @generated from field: optional string resolution_note = 12;
+   */
+  resolutionNote?: string | undefined;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 13;
+   */
+  createdAt?: Timestamp | undefined;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp updated_at = 14;
+   */
+  updatedAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message docs_factory.review.v1.ContentRequest.
+ * Use `create(ContentRequestSchema)` to create a new message.
+ */
+export const ContentRequestSchema: GenMessage<ContentRequest> = /*@__PURE__*/
+  messageDesc(file_docs_factory_review_v1_messages, 23);
+
+/**
  * A personal access token's metadata. The secret itself is returned exactly
  * once, by CreateApiToken; the server keeps only its sha256.
  *
@@ -1446,7 +1550,7 @@ export type ApiToken = Message<"docs_factory.review.v1.ApiToken"> & {
   name: string;
 
   /**
-   * e.g. "feedback:read", "feedback:reply".
+   * e.g. "feedback:read", "feedback:reply", "requests:write".
    *
    * @generated from field: repeated string scopes = 3;
    */
@@ -1481,7 +1585,7 @@ export type ApiToken = Message<"docs_factory.review.v1.ApiToken"> & {
  * Use `create(ApiTokenSchema)` to create a new message.
  */
 export const ApiTokenSchema: GenMessage<ApiToken> = /*@__PURE__*/
-  messageDesc(file_docs_factory_review_v1_messages, 23);
+  messageDesc(file_docs_factory_review_v1_messages, 24);
 
 /**
  * Which content tree a piece of content lives in.
@@ -1554,17 +1658,16 @@ export const SuggestionStateSchema: GenEnum<SuggestionState> = /*@__PURE__*/
   enumDesc(file_docs_factory_review_v1_messages, 1);
 
 /**
- * The reviewer-facing review/release state. Distinct from the git authoring
- * `status`; RELEASED is a database action, never a frontmatter write.
- *
- * This is the *effective* state the UI shows, and it is mostly DERIVED, not
- * stored (see deriveReviewState on the server):
- *   - NEEDS_REVIEW is derived from frontmatter `ready` with no terminal outcome —
- *     there is no manual "start review" step, and it is never stored.
- *   - APPROVED is normally derived from recorded per-reviewer Approvals meeting
- *     the artifact's preconditions (a maintainer may also force it explicitly).
- *   - Only CHANGES_REQUESTED, RELEASED, and the maintainer APPROVED override are
- *     persisted as explicit outcomes; NONE and NEEDS_REVIEW are never stored.
+ * The reviewer-facing review state: the *effective* state the UI shows, DERIVED
+ * on every read (see deriveReviewState on the server):
+ *   - NEEDS_REVIEW: an open review request exists.
+ *   - APPROVED: recorded per-reviewer Approvals meet the artifact's
+ *     preconditions (or a maintainer forced it). For a draft this means
+ *     "approved, set `status: ready`".
+ *   - RELEASED: the latest version registered from main is `ready`.
+ * Only CHANGES_REQUESTED and the maintainer APPROVED override are stored.
+ * `private` content has no approval axis: it is NONE, NEEDS_REVIEW, or
+ * CHANGES_REQUESTED, never APPROVED or RELEASED.
  * Enum numbers are stable across this rename (2 was formerly IN_REVIEW).
  *
  * @generated from enum docs_factory.review.v1.ReviewState
@@ -1581,7 +1684,7 @@ export enum ReviewState {
   NONE = 1,
 
   /**
-   * Derived: frontmatter is `ready` and no terminal outcome/approval applies yet.
+   * Derived: an open review request, and no approval or change request applies.
    *
    * @generated from enum value: REVIEW_STATE_NEEDS_REVIEW = 2;
    */
@@ -1621,7 +1724,7 @@ export enum Role {
   UNSPECIFIED = 0,
 
   /**
-   * Not on the allowlist; can see published content only.
+   * Not on the allowlist; can see released content only.
    *
    * @generated from enum value: ROLE_ANONYMOUS = 1;
    */
@@ -1645,9 +1748,8 @@ export const RoleSchema: GenEnum<Role> = /*@__PURE__*/
   enumDesc(file_docs_factory_review_v1_messages, 3);
 
 /**
- * Whether a review request must be satisfied before the artifact can be
- * released. A REQUIRED open request blocks ReleaseContent; OPTIONAL is advisory
- * (a dashboard signal only).
+ * Whether a review request must be satisfied before the artifact derives to
+ * APPROVED. OPTIONAL is advisory (a dashboard signal only).
  *
  * @generated from enum docs_factory.review.v1.Requirement
  */
@@ -1676,9 +1778,9 @@ export const RequirementSchema: GenEnum<Requirement> = /*@__PURE__*/
 
 /**
  * Lifecycle of a single review request. Satisfaction is per-reviewer: a request
- * is SATISFIED when the reviewer it names records an Approval on the artifact.
- * (A required, still-OPEN request blocks release and keeps the derived state at
- * NEEDS_REVIEW until that specific reviewer approves.)
+ * is SATISFIED when the reviewer it names records an Approval, or, on private
+ * content (which has no approvals), marks it reviewed. A still-OPEN request
+ * keeps the derived state at NEEDS_REVIEW.
  *
  * @generated from enum docs_factory.review.v1.RequestStatus
  */
@@ -1712,8 +1814,8 @@ export const RequestStatusSchema: GenEnum<RequestStatus> = /*@__PURE__*/
 
 /**
  * A major lifecycle event recorded on an artifact, for the per-artifact review
- * timeline. Frontmatter authoring changes are intentionally absent — those run
- * through git/CI, not this app.
+ * timeline. RELEASED / UNRELEASED are logged by RegisterVersion when a main
+ * version's frontmatter status moves to or from `ready`.
  *
  * @generated from enum docs_factory.review.v1.EventKind
  */
@@ -1739,14 +1841,6 @@ export enum EventKind {
   REQUEST_CANCELLED = 3,
 
   /**
-   * Vestigial: the manual "in review" transition no longer exists (NEEDS_REVIEW
-   * is derived), so this is never emitted. The number is retained, not reused.
-   *
-   * @generated from enum value: EVENT_KIND_STATE_IN_REVIEW = 4;
-   */
-  STATE_IN_REVIEW = 4,
-
-  /**
    * @generated from enum value: EVENT_KIND_STATE_CHANGES_REQUESTED = 5;
    */
   STATE_CHANGES_REQUESTED = 5,
@@ -1765,14 +1859,11 @@ export enum EventKind {
   RELEASED = 7,
 
   /**
-   * @generated from enum value: EVENT_KIND_UNPUBLISHED = 8;
+   * A version registered from main moved the page off `ready`.
+   *
+   * @generated from enum value: EVENT_KIND_UNRELEASED = 8;
    */
-  UNPUBLISHED = 8,
-
-  /**
-   * @generated from enum value: EVENT_KIND_REPUBLISHED = 9;
-   */
-  REPUBLISHED = 9,
+  UNRELEASED = 8,
 
   /**
    * A specific reviewer recorded an approval (payload carries reviewer_login).
@@ -1803,6 +1894,35 @@ export enum EventKind {
  */
 export const EventKindSchema: GenEnum<EventKind> = /*@__PURE__*/
   enumDesc(file_docs_factory_review_v1_messages, 6);
+
+/**
+ * What a thread root is anchored to. A DOCUMENT thread is about the page as a
+ * whole: it has no section or selector, and it is never orphaned.
+ *
+ * @generated from enum docs_factory.review.v1.CommentScope
+ */
+export enum CommentScope {
+  /**
+   * @generated from enum value: COMMENT_SCOPE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: COMMENT_SCOPE_SECTION = 1;
+   */
+  SECTION = 1,
+
+  /**
+   * @generated from enum value: COMMENT_SCOPE_DOCUMENT = 2;
+   */
+  DOCUMENT = 2,
+}
+
+/**
+ * Describes the enum docs_factory.review.v1.CommentScope.
+ */
+export const CommentScopeSchema: GenEnum<CommentScope> = /*@__PURE__*/
+  enumDesc(file_docs_factory_review_v1_messages, 7);
 
 /**
  * A quality criterion a rating can mark as a strength or a weakness.
@@ -1850,7 +1970,7 @@ export enum QualityDimension {
  * Describes the enum docs_factory.review.v1.QualityDimension.
  */
 export const QualityDimensionSchema: GenEnum<QualityDimension> = /*@__PURE__*/
-  enumDesc(file_docs_factory_review_v1_messages, 7);
+  enumDesc(file_docs_factory_review_v1_messages, 8);
 
 /**
  * Whether the rater nominates this version as a reference example of good or
@@ -1879,5 +1999,45 @@ export enum Exemplar {
  * Describes the enum docs_factory.review.v1.Exemplar.
  */
 export const ExemplarSchema: GenEnum<Exemplar> = /*@__PURE__*/
-  enumDesc(file_docs_factory_review_v1_messages, 8);
+  enumDesc(file_docs_factory_review_v1_messages, 9);
+
+/**
+ * Lifecycle of a content request. A maintainer accepts or declines an OPEN
+ * request; an agent marks an ACCEPTED one DONE once a `planned:` slot (or a
+ * page) for it has landed.
+ *
+ * @generated from enum docs_factory.review.v1.ContentRequestStatus
+ */
+export enum ContentRequestStatus {
+  /**
+   * @generated from enum value: CONTENT_REQUEST_STATUS_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: CONTENT_REQUEST_STATUS_OPEN = 1;
+   */
+  OPEN = 1,
+
+  /**
+   * @generated from enum value: CONTENT_REQUEST_STATUS_ACCEPTED = 2;
+   */
+  ACCEPTED = 2,
+
+  /**
+   * @generated from enum value: CONTENT_REQUEST_STATUS_DECLINED = 3;
+   */
+  DECLINED = 3,
+
+  /**
+   * @generated from enum value: CONTENT_REQUEST_STATUS_DONE = 4;
+   */
+  DONE = 4,
+}
+
+/**
+ * Describes the enum docs_factory.review.v1.ContentRequestStatus.
+ */
+export const ContentRequestStatusSchema: GenEnum<ContentRequestStatus> = /*@__PURE__*/
+  enumDesc(file_docs_factory_review_v1_messages, 10);
 

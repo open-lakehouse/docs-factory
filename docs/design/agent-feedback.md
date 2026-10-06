@@ -49,7 +49,11 @@ sha256 is stored (`api_token`).
   - `feedback:reply` also covers `SetSuggestionState` **only to mark a
     suggestion applied**. An agent can report a change it landed but can't
     dismiss or reopen one.
-  - Everything else is denied: resolve, approvals, release, admin, and token
+  - `feedback:read` also covers `ListContentRequests`.
+  - `requests:write` covers `UpdateContentRequest` **only to mark a request
+    done**: an agent reports the planned slot it added, but accepting and
+    declining stay a maintainer's call.
+  - Everything else is denied: new threads, resolve, approvals, admin, and token
     management itself. New RPCs are denied until added deliberately.
 - **Provenance.** Comments written with a token are `via_agent`, and the UI shows a
   "via agent" badge.
@@ -94,10 +98,37 @@ server anchor with, so ids and hashes agree by construction.
      line-joined text, so it matches across soft breaks and through
      emphasis/links. Fall back to the first 60 characters.
    - Precision is `quote`, then `section`, then `file`.
-3. Code: `code_path` plus `line_hash`. Stay on the original line if its hash
+3. Page-level (`document` scope) threads are about the whole page and map to the
+   file with precision `file`.
+4. Code: `code_path` plus `line_hash`. Stay on the original line if its hash
    still matches, otherwise take the nearest line with that hash.
-4. Drift: `git diff --quiet <authored_git_sha> -- <path>`. When it reports a
+5. Drift: `git diff --quiet <authored_git_sha> -- <path>`. When it reports a
    change, the agent is told to read around rather than trust the numbers.
+
+## Approvals and releasing
+
+An approval in the review app is the signal to set `status: ready`; merging that
+to main is the release
+([ADR-0002](../decisions/ADR-0002-git-ready-is-release.md)). Agents read the
+signal and never write it:
+
+- `review_status` (CLI `status`) lists pages by review state with their file.
+  The default `awaiting-ready` filter is the work: approved pages to flip to
+  `ready` in a PR, after any open threads are answered. `unapproved-ready` lists
+  pages that reached `ready` without an approval. `private` pages have no
+  approval and are never flipped.
+- `check-ready --base origin/main` warns about pages a branch moves to `ready`
+  without an approval. CI runs it as a non-blocking job.
+
+## Content requests
+
+Reviewers request missing content in the workspace tree, placed under a nav
+section trail (`A › B`) or a blog series. A maintainer accepts or declines it.
+`list_content_requests` (CLI `requests`) defaults to `accepted`. For each one
+the agent adds a `planned:` slot with a fresh backlog id, the request's title,
+and `request: <id>` under that section of `content/<project>/nav.yml` (blogs:
+an entry in `blogs/IDEAS.md`), opens a PR, and calls `complete_content_request`
+(CLI `complete-request`) with the backlog id and PR link.
 
 ## Suggested edits
 

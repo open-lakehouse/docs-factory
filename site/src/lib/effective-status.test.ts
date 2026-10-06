@@ -22,18 +22,23 @@ describe("effectiveStatus", () => {
     });
   });
 
-  test("ready derives to needs review — show review entry, not ready", () => {
-    expect(effectiveStatus("ready", ReviewState.NEEDS_REVIEW)).toEqual({
-      kind: "review",
-      state: ReviewState.NEEDS_REVIEW,
-    });
-    expect(effectiveStatus("ready", ReviewState.NONE)).toEqual({
-      kind: "review",
-      state: ReviewState.NEEDS_REVIEW,
-    });
-    expect(effectiveStatusLabel(effectiveStatus("ready", ReviewState.NEEDS_REVIEW))).toBe(
+  test("an open review request shows needs review on any status", () => {
+    for (const status of ["draft", "private"]) {
+      expect(effectiveStatus(status, ReviewState.NEEDS_REVIEW)).toEqual({
+        kind: "review",
+        state: ReviewState.NEEDS_REVIEW,
+      });
+    }
+    expect(effectiveStatusLabel(effectiveStatus("draft", ReviewState.NEEDS_REVIEW))).toBe(
       "needs review",
     );
+  });
+
+  test("private with no review activity → authoring private", () => {
+    const status = effectiveStatus("private", ReviewState.NONE);
+    expect(status).toEqual({ kind: "authoring", status: "private" });
+    expect(statusBucket(status)).toBe("private");
+    expect(effectiveStatusIconClass(status)).toBe("tree-status-icon-private");
   });
 
   test("later review states win over frontmatter", () => {
@@ -60,7 +65,7 @@ describe("effectiveStatus", () => {
     expect(effectiveStatusIconClass(effectiveStatus("idea", ReviewState.NONE))).toBe(
       "tree-status-icon-idea",
     );
-    expect(effectiveStatusIconClass(effectiveStatus("ready", ReviewState.NEEDS_REVIEW))).toBe(
+    expect(effectiveStatusIconClass(effectiveStatus("draft", ReviewState.NEEDS_REVIEW))).toBe(
       "tree-status-icon-in-review",
     );
   });
@@ -68,7 +73,8 @@ describe("effectiveStatus", () => {
   test("statusBucket maps authoring and review states", () => {
     expect(statusBucket(effectiveStatus("idea", ReviewState.NONE))).toBe("idea");
     expect(statusBucket(effectiveStatus("draft", ReviewState.NONE))).toBe("draft");
-    expect(statusBucket(effectiveStatus("ready", ReviewState.NEEDS_REVIEW))).toBe("needs-review");
+    expect(statusBucket(effectiveStatus("draft", ReviewState.NEEDS_REVIEW))).toBe("needs-review");
+    expect(statusBucket(effectiveStatus("ready", ReviewState.RELEASED))).toBe("released");
     expect(statusBucket(effectiveStatus("ready", ReviewState.CHANGES_REQUESTED))).toBe(
       "changes-requested",
     );

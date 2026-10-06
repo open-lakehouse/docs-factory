@@ -8,6 +8,7 @@ import {
   CodeSelectorSchema,
   type Comment,
   CommentSchema,
+  CommentScope,
   type ContentRef,
   ContentRefSchema,
   type RecentComment,
@@ -56,6 +57,8 @@ export interface CommentRow {
   // Written through a personal access token. Optional so queries that don't
   // select it (e.g. re-anchoring) still type-check; absent reads as false.
   via_agent?: boolean | null;
+  // 'section' | 'document'. Optional like via_agent; absent reads as section.
+  scope?: string | null;
   // Suggested edit (thread roots only). Optional for the same reason as
   // via_agent; a null state means the comment carries no suggestion.
   suggestion_original?: string | null;
@@ -93,6 +96,27 @@ export const MAX_SUGGESTION_CHARS = 10_000;
  * normalizes to the selector's quote, a code `original` starts with the hashed
  * line. Otherwise the suggested edit could target text the anchor doesn't.
  */
+/**
+ * Validate a page-level (DOCUMENT) thread root; returns the problem, or
+ * undefined. It has no anchor to re-find later, so it carries no section or
+ * selector, and with nothing selected there is nothing to suggest an edit to.
+ */
+export function documentCommentError(req: {
+  scope: CommentScope;
+  parentId?: string;
+  anchorSlug: string;
+  anchorFingerprint: string;
+  selector?: TextSelector;
+  codeSelector?: CodeSelector;
+  suggestion?: Suggestion;
+}): string | undefined {
+  if (req.scope !== CommentScope.DOCUMENT || req.parentId) return undefined;
+  if (req.anchorSlug || req.anchorFingerprint) return "a page-level comment has no anchor";
+  if (req.selector || req.codeSelector) return "a page-level comment has no selector";
+  if (req.suggestion) return "a page-level comment can't suggest an edit";
+  return undefined;
+}
+
 export function suggestionError(req: {
   parentId?: string;
   selector?: TextSelector;
@@ -136,6 +160,7 @@ export function commentFromRow(row: CommentRow, ref: ContentRef): Comment {
     authoredVersionId: row.authored_version_id ?? undefined,
     authoredGitSha: row.authored_git_sha ?? undefined,
     viaAgent: row.via_agent ?? false,
+    scope: row.scope === "document" ? CommentScope.DOCUMENT : CommentScope.SECTION,
     // At most one fine-grained selector; prose takes precedence if both were
     // somehow set (they never are — create writes exactly one branch).
     selector:

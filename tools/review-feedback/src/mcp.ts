@@ -15,9 +15,11 @@ import {
   markSuggestionApplied,
   reply,
 } from "./feedback.js";
-import { formatThread, formatThreads } from "./format.js";
+import { formatRequests, formatStatuses, formatThread, formatThreads } from "./format.js";
 import type { ContentRef } from "./gen/docs_factory/review/v1/messages_pb.js";
 import { repoRoot } from "./repo.js";
+import { completeRequest, listRequests } from "./requests.js";
+import { listStatus } from "./status.js";
 
 const root = repoRoot();
 
@@ -136,6 +138,69 @@ server.registerTool(
       if (suggestion_applied) await markSuggestionApplied(c, t.id);
       const marked = suggestion_applied ? " and marked its suggestion applied" : "";
       return `Replied on ${t.page} thread ${t.id} (comment ${posted?.id ?? "?"})${marked}.`;
+    }),
+);
+
+server.registerTool(
+  "review_status",
+  {
+    title: "Review status",
+    description:
+      "Pages by review state, each mapped to its file in this checkout. An approval in the " +
+      "review app is the signal to set `status: ready` in the page's frontmatter; merging " +
+      "that to main releases it. Default filter `awaiting-ready` lists approved pages not " +
+      "yet ready. `unapproved-ready` lists pages released without an approval. Never set " +
+      "`ready` on a page that isn't approved, and never on a `private` page.",
+    inputSchema: {
+      filter: z
+        .enum(["awaiting-ready", "unapproved-ready", "in-review", "all"])
+        .optional()
+        .describe("Default `awaiting-ready`."),
+      area: z.enum(["docs", "blogs"]).optional(),
+      project: z.string().optional(),
+      slug: z.string().optional(),
+    },
+    annotations: { readOnlyHint: true },
+  },
+  (opts) =>
+    run(async () => formatStatuses(await listStatus(client(), { ...opts, repoRoot: root }))),
+);
+
+server.registerTool(
+  "list_content_requests",
+  {
+    title: "List content requests",
+    description:
+      "Requests for new content filed in the review app. An `accepted` request is work: add " +
+      "a `planned:` slot (a fresh backlog id, the request's title, and `request: <id>`) " +
+      "under the named section of `content/<project>/nav.yml`, or to `blogs/IDEAS.md` for " +
+      "blogs, open a PR, then call complete_content_request.",
+    inputSchema: {
+      filter: z.enum(["accepted", "open", "all"]).optional().describe("Default `accepted`."),
+      project: z.string().optional(),
+    },
+    annotations: { readOnlyHint: true },
+  },
+  (opts) => run(async () => formatRequests(await listRequests(client(), opts))),
+);
+
+server.registerTool(
+  "complete_content_request",
+  {
+    title: "Complete a content request",
+    description:
+      "Mark an accepted content request done once its planned slot is in a PR. Needs a " +
+      "token with the `requests:write` scope.",
+    inputSchema: {
+      request_id: z.string().describe("Request id from list_content_requests."),
+      planned_id: z.string().min(1).describe("The backlog id of the planned slot you added."),
+      pr_url: z.string().url().optional().describe("The PR that adds it."),
+    },
+  },
+  ({ request_id, planned_id, pr_url }) =>
+    run(async () => {
+      const r = await completeRequest(client(), request_id, planned_id, pr_url);
+      return `Marked request ${request_id} done as ${r?.plannedId ?? planned_id}.`;
     }),
 );
 

@@ -1,36 +1,28 @@
-// Review status badge + transition controls for a rendered blog/doc page.
-// Allowlisted viewers see one effective status (authoring idea/draft, or the
-// review lifecycle once ready derives to needs-review) and can advance it;
-// maintainers can Release. Reads state from listDrafts and mutates via
-// connect-query.
+// Review status badge + review actions for a rendered blog/doc page.
+// Allowlisted viewers see one effective status and can approve or request
+// changes. There is no Release action: approval tells the author (or an agent)
+// to set `status: ready`, and that merged to main is the release (ADR-0002).
+// Private pages have no approval; a requested reviewer marks them reviewed.
+// Reads state from listDrafts and mutates via connect-query.
 
 import { useMutation, useQuery } from "@connectrpc/connect-query";
 import { ChevronDown } from "lucide-react";
-import { type ReactNode, useState } from "react";
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { type ContentRef, ReviewState } from "../../gen/docs_factory/review/v1/messages_pb";
 import {
   dismissApproval,
   listDrafts,
+  listReviewRequests,
+  markReviewed,
   recordApproval,
-  releaseContent,
-  requestChangesOnPublished,
   transitionReview,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
@@ -41,24 +33,6 @@ type ReviewControlsLayout = "inline" | "aside" | "dock";
 
 type TransitionVariant = "default" | "outline";
 
-// Reviewer-available EXPLICIT transitions from each derived state (Approve is a
-// separate recordApproval action, Release/reopen handled separately). Approval is
-// no longer a transition — it's recorded per reviewer and the state derives to
-// APPROVED once preconditions are met, so there is no "Start review"/"Back to
-// review"/"Reopen review" step. The only transition surfaced here is "Request
-// changes", available while the artifact needs review or is approved.
-const NEXT: Record<number, { to: ReviewState; label: string; variant: TransitionVariant }[]> = {
-  [ReviewState.NONE]: [],
-  [ReviewState.NEEDS_REVIEW]: [
-    { to: ReviewState.CHANGES_REQUESTED, label: "Request changes", variant: "outline" },
-  ],
-  [ReviewState.CHANGES_REQUESTED]: [],
-  [ReviewState.APPROVED]: [
-    { to: ReviewState.CHANGES_REQUESTED, label: "Request changes", variant: "outline" },
-  ],
-  [ReviewState.RELEASED]: [],
-};
-
 export default function ReviewControls({
   contentRef,
   frontmatterStatus,
@@ -67,7 +41,7 @@ export default function ReviewControls({
   showStatus = true,
 }: {
   contentRef: ContentRef;
-  /** Git authoring status — folded with reviewState into one effective badge. */
+  /** Git frontmatter status — folded with reviewState into one effective badge. */
   frontmatterStatus?: string;
   layout?: ReviewControlsLayout;
   /** When set, renders a section heading with the state badge beside it (used
@@ -76,10 +50,17 @@ export default function ReviewControls({
   /** Compact chrome may render the effective status separately at its leading edge. */
   showStatus?: boolean;
 }) {
-  const { isAllowlisted, isMaintainer, reviewActive, viewer } = useAuth();
+  const { isAllowlisted, reviewActive, viewer } = useAuth();
   const { invalidateDrafts, invalidateContentEvents, invalidateReviewRequests } =
     useReviewInvalidation();
   const { data } = useQuery(listDrafts, {}, { enabled: isAllowlisted });
+  const summary = data?.drafts.find((d) => d.ref && sameRef(d.ref, contentRef));
+  const isPrivate = (summary?.frontmatterStatus || frontmatterStatus) === "private";
+  const { data: myRequests } = useQuery(
+    listReviewRequests,
+    { ref: contentRef, mine: true, openOnly: true },
+    { enabled: isAllowlisted && isPrivate },
+  );
   // Mutations invalidate the shared listDrafts cache (+ events/requests) on
   // success, so every mounted consumer (this badge, an index list, the timeline)
   // refreshes — not just this component's own query instance.
@@ -89,55 +70,18 @@ export default function ReviewControls({
     void invalidateReviewRequests();
   };
   const transition = useMutation(transitionReview, { onSuccess: invalidateAll });
-  const release = useMutation(releaseContent, { onSuccess: invalidateAll });
-  const reopen = useMutation(requestChangesOnPublished, { onSuccess: invalidateAll });
   const approve = useMutation(recordApproval, { onSuccess: invalidateAll });
   const dismiss = useMutation(dismissApproval, { onSuccess: invalidateAll });
-
-  // Reopen-a-published-artifact dialog: the maintainer chooses keep-visible
-  // (default) or unpublish when requesting changes on a released page.
-  const [reopenOpen, setReopenOpen] = useState(false);
-  const [reopenNote, setReopenNote] = useState("");
-  const [unpublish, setUnpublish] = useState(false);
+  const reviewed = useMutation(markReviewed, { onSuccess: invalidateAll });
 
   if (!reviewActive) return null;
 
-  const summary = data?.drafts.find((d) => d.ref && sameRef(d.ref, contentRef));
   const state = summary?.reviewState ?? ReviewState.NONE;
-  const openRequired = summary?.openRequiredRequestCount ?? 0;
   const approvals = summary?.approvals ?? [];
   const iApproved = !!viewer?.userId && approvals.some((a) => a.approverUserId === viewer.userId);
+  const askedToReview = (myRequests?.requests.length ?? 0) > 0;
 
-  async function go(to: ReviewState) {
-    await transition.mutateAsync({ ref: contentRef, toState: to });
-  }
-  async function doApprove() {
-    await approve.mutateAsync({ ref: contentRef });
-  }
-  async function doDismiss() {
-    await dismiss.mutateAsync({ ref: contentRef });
-  }
-  async function doRelease() {
-    await release.mutateAsync({ ref: contentRef });
-  }
-  async function doReopen() {
-    await reopen.mutateAsync({
-      ref: contentRef,
-      note: reopenNote.trim() || undefined,
-      unpublish,
-    });
-    setReopenNote("");
-    setUnpublish(false);
-    setReopenOpen(false);
-  }
-
-  const busy =
-    transition.isPending ||
-    release.isPending ||
-    reopen.isPending ||
-    approve.isPending ||
-    dismiss.isPending;
-  const actions = NEXT[state] ?? [];
+  const busy = transition.isPending || approve.isPending || dismiss.isPending || reviewed.isPending;
   const badge = <EffectiveStatusBadge frontmatterStatus={frontmatterStatus} reviewState={state} />;
   const size = layout === "inline" ? "xs" : "sm";
   type ActionOption = {
@@ -147,47 +91,52 @@ export default function ReviewControls({
     disabled?: boolean;
     run: () => void | Promise<void>;
   };
-  // Approve (or Dismiss my approval) is the happy-path primary while the artifact
-  // is still open for review; then any explicit transitions (Request changes);
-  // then Release/reopen. Request-review lives in RequestReviewControl's menu.
-  // The first `default` option becomes the split-button primary; the rest open
-  // from the chevron.
+  // Approve (or Dismiss my approval) is the happy-path primary on releasable
+  // content; Mark reviewed takes its place on private content. Request changes
+  // follows. Request-review lives in RequestReviewControl's menu. The first
+  // `default` option becomes the split-button primary; the rest open from the
+  // chevron.
   const actionOptions: ActionOption[] = [];
-  const canApprove =
-    state === ReviewState.NEEDS_REVIEW ||
-    state === ReviewState.CHANGES_REQUESTED ||
-    state === ReviewState.APPROVED;
-  if (canApprove) {
+  if (isPrivate) {
+    if (askedToReview) {
+      actionOptions.push({
+        key: "reviewed",
+        label: "Mark reviewed",
+        variant: "default",
+        run: async () => {
+          await reviewed.mutateAsync({ ref: contentRef });
+        },
+      });
+    }
+  } else {
     actionOptions.push(
       iApproved
-        ? { key: "dismiss", label: "Dismiss my approval", variant: "outline", run: doDismiss }
-        : { key: "approve", label: "Approve", variant: "default", run: doApprove },
+        ? {
+            key: "dismiss",
+            label: "Dismiss my approval",
+            variant: "outline",
+            run: async () => {
+              await dismiss.mutateAsync({ ref: contentRef });
+            },
+          }
+        : {
+            key: "approve",
+            label: "Approve",
+            variant: "default",
+            run: async () => {
+              await approve.mutateAsync({ ref: contentRef });
+            },
+          },
     );
   }
-  for (const action of actions) {
+  if (state !== ReviewState.CHANGES_REQUESTED) {
     actionOptions.push({
-      key: `state-${action.to}`,
-      label: action.label,
-      variant: action.variant,
-      run: () => go(action.to),
-    });
-  }
-
-  if (state === ReviewState.APPROVED && isMaintainer) {
-    actionOptions.unshift({
-      key: "release",
-      label: "Release",
-      variant: "default",
-      disabled: openRequired > 0,
-      run: doRelease,
-    });
-  }
-  if (state === ReviewState.RELEASED && isMaintainer) {
-    actionOptions.push({
-      key: "request-changes-published",
+      key: "request-changes",
       label: "Request changes",
       variant: "outline",
-      run: () => setReopenOpen(true),
+      run: async () => {
+        await transition.mutateAsync({ ref: contentRef, toState: ReviewState.CHANGES_REQUESTED });
+      },
     });
   }
 
@@ -267,61 +216,13 @@ export default function ReviewControls({
         badge
       ) : null}
       {actionControl && <div className="review-controls-actions">{actionControl}</div>}
-      {state === ReviewState.APPROVED && isMaintainer && openRequired > 0 && (
-        <p className="review-controls-hint muted">
-          Blocked: {openRequired} required review
-          {openRequired === 1 ? "" : "s"} still open.
-        </p>
-      )}
-
-      <Dialog open={reopenOpen} onOpenChange={setReopenOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Request changes on a published page</DialogTitle>
-            <DialogDescription>
-              This reopens the review (state → changes requested). By default the page stays public;
-              choose to unpublish if it should be hidden while you work.
-            </DialogDescription>
-          </DialogHeader>
-
-          <label className="request-review-field">
-            <span>Note (optional)</span>
-            <Textarea
-              value={reopenNote}
-              onChange={(e) => setReopenNote(e.target.value)}
-              placeholder="What needs to change?"
-              rows={2}
-              autoFocus
-            />
-          </label>
-
-          <label className="review-controls-unpublish">
-            <input
-              type="checkbox"
-              checked={unpublish}
-              onChange={(e) => setUnpublish(e.target.checked)}
-            />
-            <span>Also unpublish (hide the page while under review)</span>
-          </label>
-
-          {reopen.isError && (
-            <p className="request-review-error">{reopen.error?.message ?? "Reopen failed."}</p>
-          )}
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setReopenOpen(false)}
-              disabled={reopen.isPending}
-            >
-              Cancel
-            </Button>
-            <Button onClick={() => void doReopen()} disabled={reopen.isPending}>
-              {reopen.isPending ? "Reopening…" : unpublish ? "Reopen & unpublish" : "Reopen"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {isPrivate ? (
+        <p className="review-controls-hint muted">Private · never released</p>
+      ) : state === ReviewState.APPROVED ? (
+        <p className="review-controls-hint muted">Approved: set `status: ready` to release.</p>
+      ) : summary?.readyWithoutApproval ? (
+        <p className="review-controls-hint muted">Released without an approval.</p>
+      ) : null}
     </div>
   );
 }

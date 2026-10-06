@@ -8,8 +8,9 @@
 ## Context — why this doc exists
 
 The review/release server (`server/`) has grown a real authorization surface. What
-started as two guard helpers now decides: who can comment, who can approve, who can
-release, who sees an unpublished draft, who can dismiss whose approval, and — since
+started as two guard helpers now decides: who can comment, who can approve, who
+sees an unreleased draft, who can dismiss whose approval, who triages content
+requests, and — since
 the maintainer admin surface (#91) — who can manage the allowlist, discover
 registered users, and erase a user's personal data.
 
@@ -24,8 +25,10 @@ Today those decisions are **scattered and implicit**:
   maintainer" invariant imperatively.
 - Plus a **content-visibility rule duplicated three times**: the `listDrafts` SQL
   filter, the `getDraftContent` code gate, and the frontend reconciler in
-  `site/src/lib/content-visibility.ts` — the rule "public ⟺ frontmatter `ready`
-  AND the `content_revops.published` latch set."
+  `site/src/lib/content-visibility.ts` — the rule "public ⟺ frontmatter
+  `ready`" (release is git's since
+  [ADR-0002](../decisions/ADR-0002-git-ready-is-release.md); the old
+  `content_revops.published` latch is gone)."
 - Plus a **non-human principal**: `registerVersion` is guarded by a shared build
   secret, not viewer auth — a second, unrelated authorization mechanism.
 
@@ -71,9 +74,9 @@ cut can share the same policy set client-side for UX gating; see *Deferred*).
 
 | Guard | Count | Notes |
 |---|---|---|
-| conditional public / allowlist | 2 | `ListDrafts`, `GetDraftContent` — public iff `ready && published` |
+| conditional public / allowlist | 2 | `ListDrafts`, `GetDraftContent` — public iff `ready` |
 | `requireAllowlisted` | 19 | the reviewer working set (comments, threads, review state, revops, requests, versions…) |
-| `requireMaintainer` | 6 | `ReleaseContent`, `RequestChangesOnPublished`, `ManageAllowlist`, `ListAllowlist`, `ListRegisteredUsers`, `EraseUser` |
+| `requireMaintainer` | 4+ | `ManageAllowlist`, `ListAllowlist`, `ListRegisteredUsers`, `EraseUser`, plus accept/decline in `UpdateContentRequest` and the approved override in `TransitionReview` |
 | inline escalation | 1 | `DismissApproval` — allowlisted for own, maintainer for another's |
 | build secret (non-viewer) | 1 | `RegisterVersion` — build pipeline, not a human |
 | public | 1 | `GetViewer` |
@@ -82,11 +85,12 @@ The interesting parts for a policy model are **not** the flat RBAC (`isAllowlist
 / `role == maintainer`) — those are one-liners. They are the **ABAC / relationship**
 rules:
 
-- **content visibility** — resource attributes (`frontmatterStatus`, `published`)
-  decide, and the rule is duplicated 3×;
+- **content visibility** — the resource attribute `frontmatterStatus` decides,
+  and the rule is duplicated 3×;
 - **dismiss ownership** — `approval.approverLogin == principal.login` OR maintainer;
-- **release precondition** — `content.hasOpenRequiredRequests` blocks release (today
-  a `FailedPrecondition`, distinct from a role denial);
+- **no approval on private content** — `content.frontmatterStatus == "private"`
+  blocks `RecordApproval` and the approved override (a `FailedPrecondition`,
+  distinct from a role denial); `MarkReviewed` is its private-only counterpart;
 - **last-maintainer invariant** — an allowlist mutation may not drop the maintainer
   count to zero;
 - **non-human principal** — the build pipeline registering a version.
@@ -113,8 +117,9 @@ Cedar authorizes on an explicit **`Action`** against a **resource** for a
 
 ### Resources
 `Content` (draft/version — carries `area`, `slug`, `frontmatterStatus`,
-`published`, `hasOpenRequiredRequests`), `Comment`/`Thread`, `Approval` (carries
-`approverLogin`), `ReviewRequest`, `RevOps` metadata, `ContentEvent`, `Version`,
+`hasOpenRequiredRequests`), `Comment`/`Thread`, `Approval` (carries
+`approverLogin`), `ReviewRequest`, `ContentRequest`, `RevOps` metadata,
+`ContentEvent`, `Version`,
 `Allowlist` entries, `RegisteredUser`, and a `System` singleton for global admin
 actions.
 
@@ -126,11 +131,11 @@ actions.
 | `Transition` | Content review-state | `TransitionReview` | RBAC allowlist |
 | `Approve` | Approval | `RecordApproval` | RBAC allowlist |
 | `DismissApproval` | Approval | `DismissApproval` | ABAC ownership |
-| `Release` | Content | `ReleaseContent` | RBAC maintainer + precondition |
+| `MarkReviewed` | ReviewRequest | `MarkReviewed` | RBAC allowlist + private-only precondition |
 | `SetRevOps` | RevOps | `SetPriority`, `SetTargetReleaseDate` | RBAC allowlist |
 | `RequestReview` / `CancelReview` / `ListRequests` | ReviewRequest | `RequestReview`, `CancelReviewRequest`, `ListReviewRequests` | RBAC allowlist (cancel: requester-or-maintainer) |
 | `ViewTimeline` | ContentEvent | `ListContentEvents` | RBAC allowlist |
-| `ReopenPublished` | Content | `RequestChangesOnPublished` | RBAC maintainer |
+| `RequestContent` / `TriageRequest` / `CompleteRequest` | ContentRequest | `CreateContentRequest` + `ListContentRequests`, `UpdateContentRequest` (accept/decline/reopen), `UpdateContentRequest` (done) | RBAC allowlist / maintainer / allowlist (token: `requests:write`) |
 | `ManageAllowlist` / `ViewAllowlist` | Allowlist / System | `ManageAllowlist`, `ListAllowlist` | RBAC maintainer + last-maintainer invariant |
 | `DiscoverUsers` | System | `ListRegisteredUsers` | RBAC maintainer |
 | `EraseUser` | User | `EraseUser` | RBAC maintainer |
@@ -196,18 +201,17 @@ when { principal.role == "maintainer" };
 
 // ABAC — content visibility (the rule duplicated 3× today)
 permit (principal, action == DocsFactory::Action::"ViewContent", resource)
-when { principal.isAllowlisted ||
-       (resource.frontmatterStatus == "ready" && resource.published) };
+when { principal.isAllowlisted || resource.frontmatterStatus == "ready" };
 
 // ABAC — dismiss ownership
 permit (principal, action == DocsFactory::Action::"DismissApproval", resource)
 when { principal.role == "maintainer" ||
        (principal.isAllowlisted && resource.approverLogin == principal.login) };
 
-// Release precondition — modeled as forbid for the audit story;
-// surfaced at the call site as FailedPrecondition (not PermissionDenied).
-forbid (principal, action == DocsFactory::Action::"Release", resource)
-when { resource.hasOpenRequiredRequests };
+// Private content is never released, so it has no approval — modeled as
+// forbid for the audit story; surfaced as FailedPrecondition.
+forbid (principal, action == DocsFactory::Action::"Approve", resource)
+when { resource.frontmatterStatus == "private" };
 
 // Non-human principal — the build pipeline
 permit (principal, action == DocsFactory::Action::"RegisterVersion", resource)
@@ -238,7 +242,7 @@ when { principal is DocsFactory::Service && principal.kind == "build" };
   **synchronous** thin wrappers for the pure-RBAC sites (their predicate is the same
   boolean the PDP makes) — so none of the ~28 call sites change signature. Add an
   **async `authorize(ctx, action, resource, ctx?)`** only for the ABAC/precondition
-  sites (`getDraftContent`, `dismissApproval`, `releaseContent`, and the
+  sites (`getDraftContent`, `dismissApproval`, `recordApproval`, and the
   last-maintainer check) — those are already inside `async` handlers.
 - **`ListDrafts` stays SQL-enforced** (the filter must live in SQL for
   pagination/ordering); Cedar's `ViewContent` policy is the *spec*, SQL the
@@ -286,11 +290,10 @@ when { principal is DocsFactory::Service && principal.kind == "build" };
 ## Verification (when we build)
 
 - `bun test` PDP fixtures per rule class (reviewer can comment / anon can't; anon
-  sees only `ready && published`; maintainer releases only when no open required
-  requests; own-vs-other dismiss; build `Service` can register; last-maintainer
+  sees only `ready`; nobody approves private content; own-vs-other dismiss; build `Service` can register; last-maintainer
   blocked). Assert `determiningPolicies` names.
 - A `consistency.test.ts` proving the `ListDrafts` SQL branch and the Cedar
-  `ViewContent` decision agree across the (allowlisted × status × published) grid.
+  `ViewContent` decision agree across the (allowlisted × status) grid.
 - CI: `cedar validate` + a drift check that `policy-source.ts` matches the canonical
   `.cedar`/`.cedarschema`.
 - The preview-deploy WASM self-check gates the merge.

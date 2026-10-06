@@ -16,6 +16,7 @@ server, `docsnip` pipeline, and authoring conventions. Decisions about the
 | ADR | Title | Status | Date |
 |---|---|---|---|
 | [ADR-0001](./ADR-0001-model-driven-information-system.md) | The docs site is a model-driven information system | Accepted | 2026-07-18 |
+| [ADR-0002](./ADR-0002-git-ready-is-release.md) | Git `ready` is the release; review approval is the signal to set it | Accepted | 2026-10-06 |
 
 ---
 

@@ -12,7 +12,12 @@ function thread(suggestion: FeedbackThread["suggestion"]): FeedbackThread {
     title: "P",
     state: "open",
     orphaned: false,
-    anchor: { heading: "intro", fingerprint: "intro", quote: "short-lived tokens" },
+    anchor: {
+      scope: "section",
+      heading: "intro",
+      fingerprint: "intro",
+      quote: "short-lived tokens",
+    },
     comments: [{ id: "t1", author: "@alice", viaAgent: false, body: "" }],
     suggestion,
   };
@@ -42,4 +47,10 @@ describe("formatThread suggestion", () => {
     expect(out).toContain("no literal source match");
     expect(out).toContain("```diff\n- short-lived tokens\n```");
   });
+});
+
+test("a page-level thread names the whole page as its anchor", () => {
+  const t = thread(undefined);
+  const out = formatThread({ ...t, anchor: { scope: "document", heading: "", fingerprint: "" } });
+  expect(out).toContain("- anchor: the whole page");
 });

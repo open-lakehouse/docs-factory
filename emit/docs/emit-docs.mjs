@@ -8,7 +8,7 @@
  *
  * One run:
  *   1. inventory content/<project>/ and select pages (`status: ready`, or
- *      `ready` + `draft` with --drafts);
+ *      `ready` + `draft` with --drafts; `private` and `idea` never ship);
  *   2. project content/<project>/nav.yml onto the selection;
  *   3. render every page twice through the shared emitter core (emitOne): the
  *      site page (docs-site target) and its `.md` twin (md-twin target);
@@ -47,7 +47,7 @@ import {
   scriptSummary,
 } from "../../site/scripts/build-script-index.mjs";
 import { declaredEnvironment, pageEnvironment } from "../../site/src/content-core/environment.mjs";
-import { isPublic, splitFrontmatter } from "../../site/src/content-core/frontmatter.mjs";
+import { isEmitted, splitFrontmatter } from "../../site/src/content-core/frontmatter.mjs";
 import { canonicalUrl, pageHead } from "../../site/src/content-core/head.mjs";
 import { docIdentity } from "../../site/src/content-core/identity.mjs";
 import { resolveNav } from "../../site/src/content-core/nav.mjs";
@@ -103,8 +103,6 @@ const VENDORED_PLUGINS = [
   "lib/mdx-helpers.mjs",
 ];
 
-const EMIT_STATUSES = new Set(["draft", "ready"]);
-
 function parseArgs(argv) {
   const out = { drafts: false, dryRun: false };
   for (let i = 0; i < argv.length; i++) {
@@ -149,7 +147,7 @@ function linkErrors() {
 }
 
 export async function emitDocs({ site, drafts = false }) {
-  const isIncluded = drafts ? (meta) => EMIT_STATUSES.has(meta.status) : isPublic;
+  const isIncluded = (meta) => isEmitted(meta, { drafts });
   const { hrefFor, origin } = site;
   const contentDir = join(REPO_ROOT, "content", site.project);
   const files = new Map();

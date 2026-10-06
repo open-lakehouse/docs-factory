@@ -4,99 +4,108 @@ import { describe, expect, test } from "bun:test";
 import { ReviewState } from "../gen/docs_factory/review/v1/messages_pb.js";
 import { type DeriveReviewStateInput, deriveReviewState } from "./review.js";
 
-// A baseline: frontmatter not ready, no outcome, no approvals, no requests.
+// A baseline: a draft with no outcome, no approvals, no requests.
 function base(over: Partial<DeriveReviewStateInput> = {}): DeriveReviewStateInput {
   return {
-    frontmatterStatus: null,
+    frontmatterStatus: "draft",
     explicitOutcome: null,
     explicitOutcomeAt: null,
     activeApprovals: [],
     latestApprovalAt: null,
     openRequiredUserIds: [],
     hasRequiredRequests: false,
+    hasOpenRequests: false,
+    latestSatisfiedAt: null,
     ...over,
   };
 }
 
 const T0 = new Date("2026-07-01T00:00:00Z");
 const T1 = new Date("2026-07-02T00:00:00Z");
+const APPROVED_BY_ALICE = { activeApprovals: [{ approverUserId: "alice" }], latestApprovalAt: T0 };
 
 describe("deriveReviewState", () => {
-  test("not ready, nothing set -> NONE", () => {
-    expect(deriveReviewState(base()).state).toBe(ReviewState.NONE);
+  test("a draft with no review activity -> NONE", () => {
+    const d = deriveReviewState(base());
+    expect(d.state).toBe(ReviewState.NONE);
+    expect(d.needsReview).toBe(false);
   });
 
-  test("frontmatter ready with no outcome -> NEEDS_REVIEW (and needsReview flag)", () => {
-    const d = deriveReviewState(base({ frontmatterStatus: "ready" }));
+  test("an unregistered artifact (no status) -> NONE", () => {
+    expect(deriveReviewState(base({ frontmatterStatus: null })).state).toBe(ReviewState.NONE);
+  });
+
+  test("an open review request -> NEEDS_REVIEW (and needsReview flag)", () => {
+    const d = deriveReviewState(base({ hasOpenRequests: true }));
     expect(d.state).toBe(ReviewState.NEEDS_REVIEW);
     expect(d.needsReview).toBe(true);
   });
 
-  test("ready + one approval, no required requests -> APPROVED", () => {
+  test("an open optional request alongside an approval -> APPROVED", () => {
+    const d = deriveReviewState(base({ hasOpenRequests: true, ...APPROVED_BY_ALICE }));
+    expect(d.state).toBe(ReviewState.APPROVED);
+  });
+
+  test("a draft with one approval and no required requests -> APPROVED (awaiting ready)", () => {
+    const d = deriveReviewState(base(APPROVED_BY_ALICE));
+    expect(d.state).toBe(ReviewState.APPROVED);
+    expect(d.pendingRequiredUserIds).toEqual([]);
+    expect(d.readyWithoutApproval).toBe(false);
+  });
+
+  test("a still-open required request blocks derived approval -> NEEDS_REVIEW", () => {
     const d = deriveReviewState(
       base({
-        frontmatterStatus: "ready",
-        activeApprovals: [{ approverUserId: "alice" }],
-        latestApprovalAt: T0,
+        ...APPROVED_BY_ALICE,
+        hasRequiredRequests: true,
+        hasOpenRequests: true,
+        openRequiredUserIds: ["bob"],
+      }),
+    );
+    expect(d.state).toBe(ReviewState.NEEDS_REVIEW);
+    expect(d.pendingRequiredUserIds).toEqual(["bob"]);
+  });
+
+  test("every required request satisfied -> APPROVED", () => {
+    const d = deriveReviewState(
+      base({
+        activeApprovals: [{ approverUserId: "alice" }, { approverUserId: "bob" }],
+        latestApprovalAt: T1,
+        hasRequiredRequests: true,
       }),
     );
     expect(d.state).toBe(ReviewState.APPROVED);
-    expect(d.needsReview).toBe(false);
   });
 
-  test("required requests: not approved until every required reviewer approved", () => {
-    // alice approved, bob still pending -> NEEDS_REVIEW, bob listed as pending.
-    const partial = deriveReviewState(
+  test("required requests all satisfied but every approval dismissed -> NONE", () => {
+    const d = deriveReviewState(base({ hasRequiredRequests: true }));
+    expect(d.state).toBe(ReviewState.NONE);
+  });
+
+  test("the maintainer approved override beats a pending required request", () => {
+    const d = deriveReviewState(
       base({
-        frontmatterStatus: "ready",
+        explicitOutcome: "approved",
+        explicitOutcomeAt: T0,
         hasRequiredRequests: true,
+        hasOpenRequests: true,
         openRequiredUserIds: ["bob"],
-        activeApprovals: [{ approverUserId: "alice" }],
-        latestApprovalAt: T0,
       }),
     );
-    expect(partial.state).toBe(ReviewState.NEEDS_REVIEW);
-    expect(partial.pendingRequiredUserIds).toEqual(["bob"]);
-
-    // Both approved (no open required left) -> APPROVED.
-    const full = deriveReviewState(
-      base({
-        frontmatterStatus: "ready",
-        hasRequiredRequests: true,
-        openRequiredUserIds: [],
-        activeApprovals: [{ approverUserId: "alice" }, { approverUserId: "bob" }],
-        latestApprovalAt: T1,
-      }),
-    );
-    expect(full.state).toBe(ReviewState.APPROVED);
+    expect(d.state).toBe(ReviewState.APPROVED);
+    expect(d.pendingRequiredUserIds).toEqual([]);
   });
 
-  test("required requests but zero approvals is NOT approved", () => {
-    // Guard: with required requests, APPROVED needs open==0 AND >=1 approval, so
-    // a brand-new artifact with no requests recorded yet can't derive approved.
+  test("a change request newer than the latest approval -> CHANGES_REQUESTED", () => {
     const d = deriveReviewState(
-      base({ frontmatterStatus: "ready", hasRequiredRequests: true, openRequiredUserIds: [] }),
-    );
-    expect(d.state).toBe(ReviewState.NEEDS_REVIEW);
-  });
-
-  test("changes-requested holds while newer than the latest approval", () => {
-    const d = deriveReviewState(
-      base({
-        frontmatterStatus: "ready",
-        explicitOutcome: "changes-requested",
-        explicitOutcomeAt: T1,
-        activeApprovals: [{ approverUserId: "alice" }],
-        latestApprovalAt: T0,
-      }),
+      base({ ...APPROVED_BY_ALICE, explicitOutcome: "changes-requested", explicitOutcomeAt: T1 }),
     );
     expect(d.state).toBe(ReviewState.CHANGES_REQUESTED);
   });
 
-  test("a later approval supersedes an earlier changes-requested -> APPROVED", () => {
+  test("an approval newer than the change request supersedes it -> APPROVED", () => {
     const d = deriveReviewState(
       base({
-        frontmatterStatus: "ready",
         explicitOutcome: "changes-requested",
         explicitOutcomeAt: T0,
         activeApprovals: [{ approverUserId: "alice" }],
@@ -106,32 +115,91 @@ describe("deriveReviewState", () => {
     expect(d.state).toBe(ReviewState.APPROVED);
   });
 
-  test("maintainer approved override -> APPROVED even with no approvals", () => {
+  test("a change request with no approval holds even with an open request", () => {
+    const d = deriveReviewState(
+      base({ explicitOutcome: "changes-requested", explicitOutcomeAt: T0, hasOpenRequests: true }),
+    );
+    expect(d.state).toBe(ReviewState.CHANGES_REQUESTED);
+  });
+});
+
+describe("release is git's", () => {
+  test("frontmatter ready on main -> RELEASED", () => {
+    const d = deriveReviewState(base({ frontmatterStatus: "ready", ...APPROVED_BY_ALICE }));
+    expect(d.state).toBe(ReviewState.RELEASED);
+    expect(d.readyWithoutApproval).toBe(false);
+  });
+
+  test("ready without any approval -> RELEASED, flagged readyWithoutApproval", () => {
+    const d = deriveReviewState(base({ frontmatterStatus: "ready" }));
+    expect(d.state).toBe(ReviewState.RELEASED);
+    expect(d.readyWithoutApproval).toBe(true);
+  });
+
+  test("the maintainer override counts as approval for the warning", () => {
     const d = deriveReviewState(
       base({ frontmatterStatus: "ready", explicitOutcome: "approved", explicitOutcomeAt: T0 }),
     );
-    expect(d.state).toBe(ReviewState.APPROVED);
+    expect(d.readyWithoutApproval).toBe(false);
   });
 
-  test("released wins over everything", () => {
+  test("an open request on released content keeps it RELEASED", () => {
     const d = deriveReviewState(
-      base({
-        frontmatterStatus: "ready",
-        explicitOutcome: "released",
-        explicitOutcomeAt: T0,
-        activeApprovals: [{ approverUserId: "alice" }],
-        latestApprovalAt: T1,
-      }),
+      base({ frontmatterStatus: "ready", hasOpenRequests: true, ...APPROVED_BY_ALICE }),
     );
     expect(d.state).toBe(ReviewState.RELEASED);
   });
 
-  test("not-ready + changes-requested still shows CHANGES_REQUESTED (outcome outranks frontmatter)", () => {
+  test("a change request newer than the approval outranks RELEASED", () => {
     const d = deriveReviewState(
       base({
-        frontmatterStatus: "draft",
+        frontmatterStatus: "ready",
+        ...APPROVED_BY_ALICE,
+        explicitOutcome: "changes-requested",
+        explicitOutcomeAt: T1,
+      }),
+    );
+    expect(d.state).toBe(ReviewState.CHANGES_REQUESTED);
+    expect(d.readyWithoutApproval).toBe(false);
+  });
+});
+
+describe("private content has no approval axis", () => {
+  const priv = (over: Partial<DeriveReviewStateInput> = {}) =>
+    base({ frontmatterStatus: "private", ...over });
+
+  test("never APPROVED, even with approvals or the override on record", () => {
+    expect(deriveReviewState(priv(APPROVED_BY_ALICE)).state).toBe(ReviewState.NONE);
+    expect(
+      deriveReviewState(priv({ explicitOutcome: "approved", explicitOutcomeAt: T0 })).state,
+    ).toBe(ReviewState.NONE);
+  });
+
+  test("never RELEASED", () => {
+    const d = deriveReviewState(priv());
+    expect(d.state).toBe(ReviewState.NONE);
+    expect(d.readyWithoutApproval).toBe(false);
+  });
+
+  test("an open review request -> NEEDS_REVIEW", () => {
+    expect(deriveReviewState(priv({ hasOpenRequests: true })).state).toBe(ReviewState.NEEDS_REVIEW);
+  });
+
+  test("a change request holds until a later request is marked reviewed", () => {
+    const requested = { explicitOutcome: "changes-requested" as const, explicitOutcomeAt: T0 };
+    expect(deriveReviewState(priv(requested)).state).toBe(ReviewState.CHANGES_REQUESTED);
+    expect(deriveReviewState(priv({ ...requested, latestSatisfiedAt: T1 })).state).toBe(
+      ReviewState.NONE,
+    );
+  });
+
+  test("an approval does not supersede a private change request", () => {
+    const d = deriveReviewState(
+      priv({
         explicitOutcome: "changes-requested",
         explicitOutcomeAt: T0,
+        activeApprovals: [{ approverUserId: "alice" }],
+        latestApprovalAt: T1,
       }),
     );
     expect(d.state).toBe(ReviewState.CHANGES_REQUESTED);

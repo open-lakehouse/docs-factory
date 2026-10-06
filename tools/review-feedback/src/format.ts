@@ -2,6 +2,8 @@
 import { isPreambleAnchor } from "../../../site/src/content-core/slug.mjs";
 import type { FeedbackThread } from "./feedback.js";
 import type { Location } from "./locate.js";
+import type { FeedbackRequest } from "./requests.js";
+import type { PageStatus } from "./status.js";
 
 function locationLine(loc: Location | undefined): string {
   if (!loc) return "- location: not in this checkout";
@@ -22,6 +24,7 @@ function anchorLine(t: FeedbackThread): string {
     const region = code.region ? ` region \`${code.region}\`` : "";
     return `- anchor: code \`${code.path}\` lines ${code.line}-${code.endLine}${region}`;
   }
+  if (t.anchor.scope === "document") return "- anchor: the whole page";
   const quote = t.anchor.quote ? ` › “${t.anchor.quote}”` : "";
   const section = isPreambleAnchor(t.anchor.heading)
     ? "(before first heading)"
@@ -96,4 +99,39 @@ export function formatThreads(threads: FeedbackThread[], opts: { excerpt?: boole
       ts.map((t) => formatThread(t, opts)).join("\n\n"),
   );
   return sections.join("\n\n");
+}
+
+/** Review status rows, one per page. */
+export function formatStatuses(pages: PageStatus[]): string {
+  if (!pages.length) return "No matching pages.";
+  return pages
+    .map((p) => {
+      const out = [`### ${p.page} — ${p.title}`, `- status: \`${p.status}\`, review: ${p.state}`];
+      if (p.path) out.push(`- file: \`${p.path}\``);
+      if (p.approvers.length) out.push(`- approved by: ${p.approvers.join(", ")}`);
+      if (p.pendingRequired.length) out.push(`- waiting on: ${p.pendingRequired.join(", ")}`);
+      if (p.openComments) out.push(`- open threads: ${p.openComments}`);
+      if (p.next) out.push(`- next: ${p.next}`);
+      return out.join("\n");
+    })
+    .join("\n\n");
+}
+
+/** Content requests, one block each. */
+export function formatRequests(requests: FeedbackRequest[]): string {
+  if (!requests.length) return "No matching content requests.";
+  return requests
+    .map((r) => {
+      const where = r.area === "docs" ? `${r.project} nav section “${r.placement}”` : r.placement;
+      const out = [
+        `### ${r.id}`,
+        `- ${r.title}${r.diataxis ? ` (${r.diataxis})` : ""}`,
+        `- status: ${r.status}, requested by @${r.requestedBy}`,
+        `- place under: ${where}`,
+      ];
+      if (r.plannedId) out.push(`- planned as: ${r.plannedId}${r.prUrl ? ` (${r.prUrl})` : ""}`);
+      if (r.body) out.push("", ...r.body.split("\n").map((l) => `> ${l}`));
+      return out.join("\n");
+    })
+    .join("\n\n");
 }

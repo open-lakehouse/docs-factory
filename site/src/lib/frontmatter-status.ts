@@ -1,4 +1,4 @@
-// Presentation for the git frontmatter authoring status (idea | draft | ready) —
+// Presentation for the git frontmatter status (idea | draft | ready | private) —
 // the author-intent vocabulary, distinct from the DB review lifecycle
 // (see review-status.tsx). One source of truth for the status-badge tone so the
 // index tables and the RevOps pipeline view render it identically.
@@ -10,6 +10,8 @@ export function statusBadgeClass(status: string | undefined): string {
       return "status-badge-ready";
     case "idea":
       return "status-badge-idea";
+    case "private":
+      return "status-badge-private";
     default:
       return "";
   }
@@ -22,6 +24,8 @@ export function statusDotClass(status: string | undefined): string {
       return "tree-status-dot-ready";
     case "idea":
       return "tree-status-dot-idea";
+    case "private":
+      return "tree-status-dot-private";
     default:
       return "tree-status-dot-draft";
   }

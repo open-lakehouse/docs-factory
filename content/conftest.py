@@ -19,6 +19,7 @@ compose can't start.
 from __future__ import annotations
 
 import os
+import signal
 import subprocess
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -39,6 +40,14 @@ from docsnip.scriptmeta import ScriptMeta, parse_script
 _NATIVE_ABORT_CODES = frozenset({134, 139})
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
+
+# Holds sitecustomize.py, which skips pyarrow's native teardown once a script has
+# finished (see that module). Harness-only: readers never get it.
+_HARNESS_DIR = Path(__file__).resolve().parent / "_harness"
+
+# A script that outlives this is killed and fails, instead of hanging the job.
+# Generous: a service-backed script may pull wheels and seed data on a cold cache.
+_SCRIPT_TIMEOUT_S = int(os.environ.get("DOCS_FACTORY_SCRIPT_TIMEOUT", "600"))
 
 
 def pytest_collect_file(parent, file_path):
@@ -87,12 +96,14 @@ class TutorialScriptItem(pytest.Item):
         try:
             if base_url is not None and self.script_meta.docs_factory.base_url_env:
                 env[self.script_meta.docs_factory.base_url_env] = base_url
-            proc = subprocess.run(
-                ["uv", "run", "--no-project", str(self.script_meta.path)],
-                capture_output=True,
-                text=True,
-                env=env,
-            )
+            # sitecustomize can't see a bare `raise SystemExit(n)`, so such a
+            # script keeps the normal (slow, hang-prone) teardown rather than
+            # risk reporting its failure as a pass.
+            if "SystemExit" not in self.script_meta.path.read_text():
+                env["PYTHONPATH"] = os.pathsep.join(
+                    p for p in (str(_HARNESS_DIR), env.get("PYTHONPATH")) if p
+                )
+            proc = _run_script(self.script_meta, env)
             if proc.returncode < 0 or proc.returncode in _NATIVE_ABORT_CODES:
                 # A native crash in the deltalake/pyarrow layer (SIGABRT/SIGSEGV,
                 # surfaced as exit 134/139 or a negative signal code) aborts the
@@ -119,6 +130,33 @@ class TutorialScriptItem(pytest.Item):
 
     def reportinfo(self):
         return self.path, 0, f"tutorial script: {self.path.name}"
+
+
+def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedProcess:
+    """`uv run` the script, killing its whole process group on timeout.
+
+    ``subprocess.run(timeout=)`` would kill only uv and then block reading pipes
+    the orphaned interpreter still holds open; a session of its own lets the
+    harness kill the interpreter too.
+    """
+    args = ["uv", "run", "--no-project", str(meta.path)]
+    with subprocess.Popen(
+        args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+        env=env,
+        start_new_session=True,
+    ) as proc:
+        try:
+            stdout, stderr = proc.communicate(timeout=_SCRIPT_TIMEOUT_S)
+        except subprocess.TimeoutExpired:
+            os.killpg(proc.pid, signal.SIGKILL)
+            stdout, stderr = proc.communicate()
+            raise TutorialScriptTimeout(
+                meta, subprocess.CompletedProcess(args, -9, stdout, stderr)
+            ) from None
+    return subprocess.CompletedProcess(args, proc.returncode, stdout, stderr)
 
 
 class TutorialScriptFailure(Exception):
@@ -175,3 +213,14 @@ def _stop_services(meta: ScriptMeta) -> None:
     compose = _ACTIVE.pop(str(compose_path), None)
     if compose is not None:
         compose.stop()
+
+
+class TutorialScriptTimeout(TutorialScriptFailure):
+    """A tutorial script ran past the harness timeout and was killed."""
+
+    def __str__(self) -> str:
+        return (
+            f"`uv run {self.meta.path.name}` ran past {_SCRIPT_TIMEOUT_S}s and was "
+            f"killed\n--- stdout ---\n{self.proc.stdout}\n"
+            f"--- stderr ---\n{self.proc.stderr}"
+        )

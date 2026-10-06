@@ -94,12 +94,12 @@ def validate_blog(page: Page, known_tags: set[str]) -> list[str]:
         errors.append(f"status '{status}' not in {sorted(BLOG_STATUSES)}")
     if not require("author"):
         pass
-    # An idea is the earliest folder: it hasn't chosen a publish target yet, so
-    # `target` is only required once the post is a real draft. Everything else
+    # An idea hasn't chosen a publish target yet, and a private post never
+    # ships, so `target` is only required for posts headed for release. Everything else
     # (title/slug/author/tags) is required even for ideas. Publish timing lives
     # in RevOps (`target_release_date`) and content_version (`created_at`), not
     # git frontmatter.
-    if status != "idea" and not require("target"):
+    if status not in ("idea", "private") and not require("target"):
         pass
 
     tags = m.get("tags")

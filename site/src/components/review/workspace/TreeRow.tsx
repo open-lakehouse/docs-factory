@@ -21,6 +21,7 @@ export function TreeRow({
   open,
   selected,
   muted,
+  action,
   onToggle,
   onSelect,
 }: {
@@ -31,6 +32,8 @@ export function TreeRow({
   afterLabel?: ReactNode;
   /** Optional right-aligned adornment (e.g. requested-review indicator). */
   trailing?: ReactNode;
+  /** A control beside the row (outside its button), shown on hover/focus. */
+  action?: ReactNode;
   expandable?: boolean;
   open?: boolean;
   selected?: boolean;
@@ -87,6 +90,11 @@ export function TreeRow({
           <span className="min-w-0 flex-1" />
           {trailing}
         </button>
+        {action && (
+          <span className="opacity-0 group-hover:opacity-100 focus-within:opacity-100">
+            {action}
+          </span>
+        )}
       </div>
     </div>
   );

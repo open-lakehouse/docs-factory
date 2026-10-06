@@ -1,7 +1,7 @@
-// Compact "one badge" presentation that folds the two orthogonal status axes
-// (git frontmatter authoring + DB review lifecycle) into a single effective
-// status. Ready derives to needs-review server-side, so compact chrome shows
-// the review entry state rather than both "ready" and "needs review".
+// Compact "one badge" presentation that folds the git frontmatter status and
+// the DB review state into a single effective status. Review activity wins;
+// with none, the frontmatter status shows (`ready` on main derives to
+// RELEASED server-side, so a bare `ready` only appears before registration).
 //
 // Detailed listings (blog pipeline, ContentTable) still render both axes.
 
@@ -26,9 +26,8 @@ const REVIEW_LIFECYCLE_STATES = new Set<ReviewState>([
 /**
  * Pick the single status a compact surface should show.
  *
- * - idea / draft (review not started) → authoring label
- * - ready → needs review (derived entry to the review state machine)
- * - changes requested / approved / released → that review state
+ * - needs review / changes requested / approved / released → that review state
+ * - otherwise the authoring label (idea / draft / ready / private)
  */
 export function effectiveStatus(
   frontmatterStatus: string | undefined,
@@ -38,13 +37,9 @@ export function effectiveStatus(
   if (REVIEW_LIFECYCLE_STATES.has(state)) {
     return { kind: "review", state };
   }
-  const status = (frontmatterStatus ?? "").trim().toLowerCase();
-  // Ready is the authoring gate into review; never show "ready" in compact UI.
-  if (status === "ready") {
-    return { kind: "review", state: ReviewState.NEEDS_REVIEW };
-  }
+  const status = (frontmatterStatus ?? "").trim();
   if (status) {
-    return { kind: "authoring", status: frontmatterStatus!.trim() };
+    return { kind: "authoring", status };
   }
   return { kind: "review", state: ReviewState.NONE };
 }
@@ -74,6 +69,7 @@ export type StatusBucket =
   | "draft"
   | "approved"
   | "released"
+  | "private"
   | "none";
 
 export const STATUS_BUCKET_ORDER: StatusBucket[] = [
@@ -83,6 +79,7 @@ export const STATUS_BUCKET_ORDER: StatusBucket[] = [
   "draft",
   "approved",
   "released",
+  "private",
   "none",
 ];
 
@@ -90,6 +87,8 @@ export function statusBucket(status: EffectiveStatus): StatusBucket {
   if (status.kind === "authoring") {
     const s = status.status.toLowerCase();
     if (s === "idea") return "idea";
+    if (s === "private") return "private";
+    if (s === "ready") return "released";
     return "draft";
   }
   switch (status.state) {
@@ -120,6 +119,8 @@ export function statusBucketLabel(bucket: StatusBucket): string {
       return "approved";
     case "released":
       return "released";
+    case "private":
+      return "private";
     case "none":
       return "not started";
   }
@@ -136,6 +137,8 @@ export function statusBucketDotClass(bucket: StatusBucket): string {
       return "tree-status-dot-ready";
     case "released":
       return "tree-status-dot-released";
+    case "private":
+      return "tree-status-dot-private";
     case "draft":
     case "none":
       return "tree-status-dot-draft";

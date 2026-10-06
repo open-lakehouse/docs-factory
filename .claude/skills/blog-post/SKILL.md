@@ -118,11 +118,10 @@ CLI). Details in
 
 ### 7. Hand off to review
 
-Tell the user to run **`/blog-review`** on `blogs/<slug>/`. The author sets
-`status: ready` once the post is publishable; the actual release is gated by the
-DB review state reaching `approved`/`released`, not by a frontmatter value. Do
-**not** run the review yourself and do **not** self-certify the post as ready — the
-author owns the `status: ready` call after resolving review findings.
+Tell the user to run **`/blog-review`** on `blogs/<slug>/` and then request
+reviewers in the review app. `status: ready` follows a reviewer's approval there,
+and merging it to main is the release (ADR-0002). Do **not** run the review
+yourself and do **not** self-certify the post as ready.
 
 ### 8. Series & tags (throughout)
 

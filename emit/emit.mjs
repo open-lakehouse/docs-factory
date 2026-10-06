@@ -30,6 +30,7 @@ import { unified } from "unified";
 import { parse as parseYaml, stringify as stringifyYaml } from "yaml";
 
 // Shared, target-agnostic transforms — imported verbatim from the preview.
+import { isPublic, splitFrontmatter } from "../site/src/content-core/frontmatter.mjs";
 import remarkCodeSnippets from "../site/src/plugins/remark-code-snippets.mjs";
 import remarkDirectiveProseGuard from "../site/src/plugins/remark-directive-prose-guard.mjs";
 
@@ -388,6 +389,13 @@ async function main() {
   const draftDir = join(REPO_ROOT, "blogs", slug);
   const draftPath = join(draftDir, "index.md");
   if (!existsSync(draftPath)) throw new Error(`draft not found: ${draftPath}`);
+  const { meta } = splitFrontmatter(readFileSync(draftPath, "utf8"));
+  if (meta.status === "private") throw new Error(`${slug} is private and never emitted`);
+  // Re-emitting an unreleased draft to check a target's rendering is routine;
+  // delivering one is the mistake this warns about.
+  if (!isPublic(meta)) {
+    console.warn(`warning: ${slug} is status: ${meta.status ?? "draft"}, not ready`);
+  }
 
   // dist/ root holds the shared, target-agnostic LikeC4 PNG export; each target's
   // RENDERED output lands under dist/<target>/ so cross-publishing to several

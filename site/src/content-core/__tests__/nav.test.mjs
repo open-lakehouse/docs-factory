@@ -101,3 +101,27 @@ test("empty sections, over-deep nesting, and malformed entries are errors", () =
 test("a manifest without a nav list is rejected", () => {
   expect(resolveNav({}, docs).errors).toEqual(["nav.yml: expected a top-level `nav:` list"]);
 });
+
+test("a planned slot keeps the content request it was promoted from", () => {
+  const request = "0199b6c4-2f1e-7a3b-9c4d-5e6f7a8b9c0d";
+  const { tree, errors } = resolveNav(
+    {
+      nav: [
+        {
+          section: "Start here",
+          items: [
+            { page: "explanation/what-is-uc" },
+            { page: "tutorials/getting-started" },
+            { planned: "T09", title: "Requested", request },
+            { planned: "T10", title: "Bad ref", request: "not-a-uuid" },
+          ],
+        },
+      ],
+    },
+    docs,
+  );
+  expect(tree[0].children[2]).toEqual({ kind: "planned", id: "T09", title: "Requested", request });
+  expect(errors).toEqual([
+    'nav[0].items[3]: planned "T10" request must be a content request id (uuid)',
+  ]);
+});

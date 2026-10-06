@@ -43,6 +43,13 @@ export function db(): Sql {
   return cached;
 }
 
+/** End the shared client; the next db() call opens a fresh one. */
+export async function closeDb(): Promise<void> {
+  const sql = cached;
+  cached = undefined;
+  await sql?.end();
+}
+
 /**
  * A dedicated single-connection client for a long-lived LISTEN. Each open SSE
  * stream needs its own connection for the duration it's held; taking that from

@@ -39,7 +39,7 @@ export function effectiveStatus(
   }
   const status = (frontmatterStatus ?? "").trim();
   if (status) {
-    return { kind: "authoring", status: frontmatterStatus!.trim() };
+    return { kind: "authoring", status };
   }
   return { kind: "review", state: ReviewState.NONE };
 }

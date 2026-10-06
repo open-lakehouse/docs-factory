@@ -24,22 +24,20 @@ from . import vocab
 # project; it mirrors the site's implicit "all" scope (site/src/scope.ts).
 DIATAXIS = vocab.diataxis()
 PROJECTS = vocab.projects()
-# Git authoring intent — orthogonal to the DB-canonical review lifecycle
-# (review_state). This is the single canonical status vocabulary, shared by both
-# content pages and blog drafts (blog.py re-exports it):
-#   `idea`  = earliest reviewable stage; structural feedback still welcome, the
-#             angle isn't committed to. Visible to reviewers, never public.
-#   `draft` = being written (reviewers can see it, not in llms.txt, never shown
-#             to anonymous site visitors).
-#   `ready` = the author asserts it is publishable.
-# `ready` gates llms.txt inclusion, but a page is shown to anonymous visitors
-# ONLY when it is `ready` AND its DB review_state is `released` — publication is
-# the intersection of author intent (git) and review outcome (DB), never git
-# alone. The old intermediate blog stages (brief/drafting/refining/
-# publish-ready/published) collapse into these three; "which stage of draft" is
-# now signalled by which files exist (brief.md vs index.md) and by the DB review
-# lifecycle, not a frontmatter enum. See server/src/services/review.ts.
-STATUSES = {"idea", "draft", "ready"}
+# The single canonical status vocabulary, shared by content pages and blog
+# drafts (blog.py re-exports it). Git `status` is the release signal; the DB
+# review layer only tells the author when to set it (docs/decisions/ADR-0002):
+#   `idea`    = earliest reviewable stage; structural feedback still welcome.
+#   `draft`   = being written and reviewed. Never emitted (except `--drafts`
+#               previews).
+#   `ready`   = approved for release. Merging it to main IS the release: the
+#               emitters and llms.txt select `ready` alone, DB-free.
+#   `private` = reviewable in the factory app, never emitted or released (shared
+#               reference state such as feature/compatibility lists).
+# The old intermediate blog stages (brief/drafting/refining/publish-ready/
+# published) collapse into these; "which stage of draft" is signalled by which
+# files exist (brief.md vs index.md), not a frontmatter enum.
+STATUSES = vocab.statuses()
 
 
 # Content pages are Markdown (``.md``) or MDX (``.mdx``). MDX pages may embed

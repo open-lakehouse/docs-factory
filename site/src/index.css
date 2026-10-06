@@ -1591,6 +1591,13 @@ button.tag {
   background: color-mix(in srgb, #b7791f 12%, transparent);
   border-color: color-mix(in srgb, #b7791f 30%, transparent);
 }
+/* Private: reviewable, never released. A cool slate so it reads as "parked
+ * here on purpose", apart from the draft grey and the release greens. */
+.status-badge-private {
+  color: #64748b;
+  background: color-mix(in srgb, #64748b 12%, transparent);
+  border-color: color-mix(in srgb, #64748b 30%, transparent);
+}
 /* In review: active lifecycle — purple so it reads apart from ready-green and
  * changes-requested amber (and from the muted "not started" idle tone). */
 .status-badge-in-review {
@@ -1622,6 +1629,9 @@ button.tag {
 .tree-status-dot-in-review {
   background: #8b5cf6;
 }
+.tree-status-dot-private {
+  background: #64748b;
+}
 .tree-status-dot-released {
   background: #4f9c5a;
   box-shadow: 0 0 0 1.5px color-mix(in srgb, #4f9c5a 45%, transparent);
@@ -1642,6 +1652,9 @@ button.tag {
 }
 .tree-status-icon-in-review {
   color: #8b5cf6;
+}
+.tree-status-icon-private {
+  color: #64748b;
 }
 
 /* Branch rollup: compact per-status counts (dot + n). */

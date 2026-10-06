@@ -1,0 +1,94 @@
+// Views embedded in content/ pages. Ids are page-prefixed because they share one
+// LikeC4 workspace with the blog views (blog-views.likec4).
+
+views {
+
+  dynamic view ucCredentialVending_tableRead {
+    title "UC credential vending"
+    description "
+      How a client reads a Unity Catalog table with a credential the server vends
+      for that table's location only.
+    "
+
+    lakehouse.queryEngine -> unityCatalogOSS "GET /tables/{full_name} (bearer token)" {
+      notes "
+        **Resolve the name.** The client sends its own token, issued by your
+        identity provider or the server, and asks for the table by its
+        three-level name. The answer holds the table's **table_id** and its
+        **storage_location**. The client holds no storage keys at this point.
+      "
+    }
+
+    lakehouse.queryEngine -> unityCatalogOSS "POST /temporary-table-credentials { table_id, operation: READ }" {
+      notes "
+        **Ask for access.** The client names the table and what it wants to do:
+        `READ`, or `READ_WRITE` to add or remove files.
+      "
+    }
+
+    unityCatalogOSS -> unityCatalogOSS "authorize: USE CATALOG, USE SCHEMA, SELECT" {
+      notes "
+        **Decide.** The server checks the caller's privileges before anything
+        reaches the cloud. A read needs `USE CATALOG`, `USE SCHEMA`, and
+        `SELECT` on the table, or ownership. A write also needs `MODIFY`. If a
+        check fails, the request stops here and no credential exists.
+      "
+    }
+
+    unityCatalogOSS -> lakehouse.credentialIssuer "mint a credential for the table's location" {
+      notes "
+        **Narrow.** The server finds the external location that contains the
+        table's path and uses that location's storage credential. Only the
+        server holds that identity. How the credential gets narrowed depends on
+        the cloud:
+
+        - **AWS**: STS `AssumeRole` on the storage role, with a session policy
+          that allows only this prefix and operation.
+        - **Azure**: the server fetches a user-delegation key and signs a SAS
+          for this path.
+        - **GCS**: Google STS downscopes a token with a credential access
+          boundary on this prefix.
+
+        A local `file://` location needs no keys, so this step is skipped.
+      "
+    }
+
+    lakehouse.credentialIssuer -> unityCatalogOSS "short-lived, scoped credential" {
+      notes "
+        **One hour.** The new credential works only under the table's location,
+        only for the requested operation, and expires within an hour.
+      "
+    }
+
+    unityCatalogOSS -> lakehouse.queryEngine "temporary credentials, expiration_time, url" {
+      notes "
+        **Hand over.** The response carries the cloud-specific credential
+        (AWS session keys, an Azure SAS, or a GCS OAuth token), the location it
+        covers, and **expiration_time** in epoch milliseconds.
+      "
+    }
+
+    lakehouse.queryEngine -> lakehouse.objectStorage "read files under the location" {
+      notes "
+        **Use it.** The client reads the table's files directly from storage.
+        Data never passes through the catalog.
+      "
+    }
+
+    lakehouse.objectStorage -> lakehouse.queryEngine "data, or AccessDenied outside the scope" {
+      notes "
+        **Storage enforces.** Object storage checks the credential on every
+        request. A path outside the table's location, or a write with a read
+        credential, is denied.
+      "
+    }
+
+    lakehouse.queryEngine -> unityCatalogOSS "renew before expiration_time" {
+      notes "
+        **Renew.** A long job asks again before the credential expires, and the
+        server repeats the authorization check. A grant revoked in the meantime
+        means no new credential. Connectors such as Spark's renew automatically.
+      "
+    }
+  }
+}

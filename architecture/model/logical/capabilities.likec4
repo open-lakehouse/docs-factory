@@ -125,6 +125,25 @@ model {
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
+    // How the issuer narrows a credential differs per cloud: AWS STS assumes
+    // a role with a session policy, Azure signs a SAS with a user-delegation
+    // key fetched from the storage account, and Google STS downscopes a token
+    // with a credential access boundary. The model stays vendor-neutral.
+    credentialIssuer = capability "Storage credential issuer" {
+      summary "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
+      description "
+        A storage credential issuer turns a trusted, long-lived identity into
+        a short-lived credential that object storage accepts for one location
+        and one kind of access. Object storage then enforces that scope on
+        every request.
+
+        It is what makes credential vending possible: the catalog holds the
+        trusted identity, asks the issuer for a narrowed credential after an
+        authorization check, and hands only that credential to the client.
+      "
+      metadata { canonicalDoc "design/governance.md" }
+    }
+
     lineage = capability "Lineage" {
       summary "Records where data came from and where it flows, down to the column."
       description "

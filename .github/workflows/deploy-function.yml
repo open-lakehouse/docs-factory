@@ -34,6 +34,9 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    # The group doesn't cancel in progress, so a hung job blocks every later
+    # deploy; each job normally finishes in under 3 minutes.
+    timeout-minutes: 15
     # Runs on every push to main (and on manual dispatch). Prod secrets/vars
     # (DATABASE_URL, prod NEON_API_KEY, prod REVIEW_ALLOWED_ORIGIN) live in the
     # `production` environment, branch-restricted to main with optional required
@@ -127,6 +130,7 @@ jobs:
   deploy-site:
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     # Same production environment: the main-only branch restriction gates prod, and
     # the Vercel token/ids live here (also present in the preview environment).
     environment: production
@@ -235,6 +239,7 @@ jobs:
   register:
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment: production
     # Override the workflow's read-only default for THIS job: mint a GitHub Actions
     # OIDC token so register-versions.mjs can authenticate to the review Function

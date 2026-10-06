@@ -11,5 +11,29 @@
       "!**/*.css",
       "!src/lib/tree-diff.ts"
     ]
-  }
+  },
+  "overrides": [
+    {
+      "includes": ["src/**/*.ts", "src/**/*.tsx"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": {
+              "level": "error",
+              "options": {
+                "patterns": [
+                  {
+                    "group": [
+                      "**/content-core/{node,vocab,topics,walk,pipeline,hash,tree,frontmatter}.mjs"
+                    ],
+                    "message": "Node-only content-core module (node:fs / node:crypto): it crashes the browser app at load. Use src/vocab.ts for the vocabulary."
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

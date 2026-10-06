@@ -7,7 +7,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { create } from "@bufbuild/protobuf";
 import { Code, ConnectError, createClient, createRouterTransport } from "@connectrpc/connect";
 import { viewer } from "../auth/provider.js";
-import { db } from "../db.js";
+import { closeDb, db } from "../db.js";
 import {
   CommentScope,
   ContentArea,
@@ -105,7 +105,7 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
     }
     await sql`delete from content_version where area = 'blogs' and slug = ${slug}`;
     await sql`delete from content_request where requested_by_user_id = 'flow-reviewer'`;
-    await sql.end();
+    await closeDb();
     for (const [key, value] of Object.entries(savedEnv)) {
       if (value === undefined) delete process.env[key];
       else process.env[key] = value;

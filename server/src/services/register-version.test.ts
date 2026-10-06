@@ -5,7 +5,7 @@ import { readdirSync, readFileSync } from "node:fs";
 import { create } from "@bufbuild/protobuf";
 import { createClient, createRouterTransport } from "@connectrpc/connect";
 import { viewer } from "../auth/provider.js";
-import { db } from "../db.js";
+import { closeDb, db } from "../db.js";
 import { ContentArea, Role } from "../gen/docs_factory/review/v1/messages_pb.js";
 import {
   type RegisterVersionRequest,
@@ -98,7 +98,7 @@ describe.skipIf(!testUrl)("RegisterVersion (Postgres)", () => {
   });
 
   afterAll(async () => {
-    await db().end();
+    await closeDb();
     for (const [key, value] of Object.entries(savedEnv)) {
       if (value === undefined) delete process.env[key];
       else process.env[key] = value;

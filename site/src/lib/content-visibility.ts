@@ -1,7 +1,7 @@
 // Which content the current viewer may open in the workspace. Reviewers see every
 // build-time page. An invited contributor sees only the rows `listDrafts`
 // returns for them: the server already narrows those to their scoped grants
-// (plus anything published), so the client never re-derives the rule.
+// (plus anything released), so the client never re-derives the rule.
 //
 // Keying is by ContentRef (area + slug + project + bucket), the same identity
 // the review UI uses everywhere (see review-queries.sameRef / refKey).

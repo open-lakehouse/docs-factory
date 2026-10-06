@@ -65,18 +65,21 @@ research/         existing research reports (leave alone)
    `project`. Blog drafts require `title`, `slug`, `status`, `tags`, `author`,
    `target` (tags must exist in `blogs/tags.yml`).
 
-   **Status is two orthogonal axes — don't conflate them.** A content page's git
-   `status` is *authoring intent* only: `draft` (still being written) or `ready`
-   (the author asserts it's publishable). The *review/release lifecycle* is
-   DB-canonical (`review_state`: none → in-review → changes-requested → approved
-   → released), owned by the review server, never written back to git. A page is
-   **published** only when it is **`ready` AND its DB `review_state` is
-   `released`**: publication is the intersection of author intent (git) and
-   review outcome (DB), and neither alone exposes content. In the factory app,
-   allowlisted reviewers see everything, so review can start while a page is
-   still `draft`; an invited contributor sees only what was shared with them.
-   The emitted sites build DB-free and gate on git `ready`, which keeps authoring
-   decoupled from the deploy DB. An
+   **Git `status` is the release; the review app tells you when to set it**
+   ([ADR-0002](docs/decisions/ADR-0002-git-ready-is-release.md)). Values:
+   `idea` / `draft` (being written and reviewed), `ready` (approved; merging it
+   to main **is** the release), and `private` (reviewable in the factory app,
+   never emitted or released — shared reference state such as feature or
+   compatibility lists). Review happens on drafts: reviewers comment, request
+   changes, and approve in the app, and agents work the threads through the
+   review-feedback MCP. An **approval** is the signal to set `status: ready` in
+   a PR; never set `ready` on an unapproved page, and never on a `private` one.
+   The review state (none → needs-review → changes-requested → approved →
+   released) is derived in the DB and never written back to git; RELEASED just
+   means the main version is `ready`. The emitted sites build DB-free from git
+   `ready`, and a non-blocking CI check warns when a PR sets `ready` without an
+   approval. Reviewers can also request missing content under a nav section; an
+   accepted request becomes a `planned:` slot (see `content/README.md`). An
    explanation page also declares `explains: <c4-element-id>` (its canonical
    model concept); see `content/README.md`.
 

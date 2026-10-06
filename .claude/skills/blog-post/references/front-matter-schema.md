@@ -9,7 +9,7 @@ ever diverge.
 ---
 title: <Working title>
 slug: <kebab-slug>
-status: idea | draft | ready
+status: idea | draft | ready | private
 tags: [<from tags.yml>, …]    # every tag MUST exist in blogs/tags.yml
 series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
@@ -34,4 +34,7 @@ CONVENTIONS.md §5, "Emit to a downstream target".
   facet (e)). The visible bio/credentials and the `Person`/`sameAs` Microdata are
   supplied by the **publishing target** at release, not duplicated per post — see
   QUALITY.md's publish-target section.
-- **`status`** advances through the lifecycle (idea → draft → ready).
+- **`status`** advances through the lifecycle (idea → draft → ready). `ready`
+  follows a reviewer's approval in the review app, and merging it to main is the
+  release. `private` marks a post that is reviewed but never published; it needs
+  no `target`.

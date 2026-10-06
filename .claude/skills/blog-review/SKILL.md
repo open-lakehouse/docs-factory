@@ -10,7 +10,7 @@ argument-hint: 'Path to a blogs/<slug>/ folder or a index.md to review'
 
 # blog-review: multi-agent quality review
 
-Review a blog draft against the rubric before it's released. The shape is the same
+Review a blog draft against the rubric before it goes to reviewers. The shape is the same
 **dispatch → confidence-score → consolidate** as `/code-review`, adapted to blogs
 (`blogs/CONVENTIONS.md` §9), over **six facets (a–f)**.
 
@@ -22,9 +22,9 @@ Two documents are the source of truth:
   implements, plus the rules a draft must satisfy.
 
 The review is **advisory**: it produces per-facet 0–100 scores and a prioritized
-findings report. It does **not** gate the frontmatter — the author resolves findings
-and decides when to set `status: ready`. The actual release is gated by the DB review
-state (in-review → approved → released), not by this pass or a frontmatter value.
+findings report. It does **not** gate the frontmatter: the author resolves the
+findings and asks for approval in the review app. A human approval there is what
+clears `status: ready`, and merging that to main is the release.
 
 ## Steps
 
@@ -73,9 +73,9 @@ Produce **one** report against `index.md`:
   each.
 - Findings **grouped by facet**, ordered by confidence/severity, each pointing at a
   specific location with the rule it violates and a concrete fix.
-- State plainly that this is advisory — the author resolves the findings and decides
-  when to set `status: ready`; the DB review state gates the actual release. Do not
-  set the status yourself.
+- State plainly that this is advisory: the author resolves the findings, then a
+  reviewer's approval in the review app clears `status: ready`. Do not set the
+  status yourself.
 
 ### 5. Publish-target check (conditional)
 

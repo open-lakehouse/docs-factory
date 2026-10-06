@@ -13,6 +13,23 @@ content/<project>/
   explanation/   understanding-oriented, language-agnostic (incl. kernel architecture)
 ```
 
+## Status and release
+
+Frontmatter `status` is the release switch
+([ADR-0002](../docs/decisions/ADR-0002-git-ready-is-release.md)):
+
+| `status` | Meaning | Emitted to the docs sites |
+|---|---|---|
+| `draft` (default) | being written and reviewed | only in `--drafts` previews |
+| `ready` | approved in the review app; merging it to main releases it | yes |
+| `private` | reviewable reference content (feature lists, compatibility detail) | never |
+
+Review happens while a page is `draft`: reviewers comment and approve in the
+factory app, and agents answer threads through the review-feedback MCP. Set
+`ready` in a PR once the page is approved (`review-feedback status` lists
+approved pages still waiting). CI warns, without failing, when a PR sets `ready`
+on a page that has no approval. To take a page down, move it off `ready`.
+
 ## Navigation order (filename prefix + `slug:`)
 
 There is no `_meta.yaml`. Nav order comes entirely from the tree:
@@ -49,8 +66,17 @@ Diátaxis grouping above as the full content index.
   occurrence is its primary placement, which breadcrumbs and prev/next follow.
 - **Entries** are `section:` + `items:` (at most 3 levels deep),
   `page:` (optional `id:` backlog id and `label:` override), or `planned:` +
-  `title:`. A planned entry is a backlog slot with no page yet. Only reviewers
-  see it, and it is never a placeholder `.md` file.
+  `title:` (optional `request:`). A planned entry is a backlog slot with no page
+  yet. Only reviewers see it, and it is never a placeholder `.md` file.
+- **`private` pages are listed too.** They show in the review workspace like any
+  page, and the emitter drops them along with drafts.
+- **Content requests become planned slots.** Reviewers request missing content
+  from a nav section in the review workspace. A maintainer accepts or declines
+  it. For an accepted request, an agent (`review-feedback requests`) adds
+  `planned: <new backlog id>`, `title:`, and `request: <request id>` under the
+  section the request names (its placement is the section trail, `A › B`),
+  opens a PR, and marks the request done with `complete-request`. Blog requests
+  land in `blogs/IDEAS.md` instead.
 - **Every page must be listed.** `site/scripts/check-nav.mjs` (run at prebuild,
   in `just check`, and in CI) fails on unknown pages, orphans, duplicate ids,
   empty sections, and over-deep nesting.

@@ -2,7 +2,7 @@
 
 Entry format: a **title**, a one-line thesis, and optional inline tags —
 `repos:` (local code the post draws on), `audience:`, `src:` (existing draft or
-source material). **Homing rule:** this repo is the canonical home for blog
+source material), `request:` (the review-app content request it came from). **Homing rule:** this repo is the canonical home for blog
 material, so DevRel *prose* — narratives, sketches, build logs written to become a
 post — may be **moved here** (into the post's `<slug>/source/`) rather than kept as
 a remote pointer; live, verifiable **code** stays in its home repo and is `src:`-

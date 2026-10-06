@@ -78,7 +78,10 @@ This writes, under `blogs/<slug>/dist/<target>/`:
   the post has a `likec4=` diagram);
 
 and, shared at `blogs/<slug>/dist/.likec4-export/<viewId>.png`, regenerated PNGs. It
-also prints whether delivery should **CREATE** or **UPDATE**. If the LikeC4 export
+also prints whether delivery should **CREATE** or **UPDATE**. The core refuses a
+`private` post and warns when the post isn't `ready`: rendering a draft to check
+the target is fine, but deliver only a `ready` post (merged to main is the
+release, ADR-0002), unless the user explicitly asks for a draft delivery. If the LikeC4 export
 fails for want of a browser, run `bunx playwright install chromium` once and re-run.
 
 ### 2. Read the render + manifest

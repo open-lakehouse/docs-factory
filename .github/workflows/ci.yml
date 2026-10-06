@@ -156,6 +156,31 @@ jobs:
           cd tools/review-feedback && bun install --frozen-lockfile
           bun run typecheck && bun test
 
+  ready-approvals:
+    # Advisory (docs/decisions/ADR-0002): `status: ready` merged to main is the
+    # release, and an approval in the review app is what should precede it. Warns
+    # on pages this PR moves to ready without one; never fails. Inert until the
+    # DOCS_REVIEW_API_URL + DOCS_REVIEW_TOKEN (a `feedback:read` token) repo
+    # secrets exist, and on fork PRs, which get no secrets.
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: ./.github/actions/bun-setup
+      - name: Warn on ready without approval
+        env:
+          DOCS_REVIEW_API_URL: ${{ secrets.DOCS_REVIEW_API_URL }}
+          DOCS_REVIEW_TOKEN: ${{ secrets.DOCS_REVIEW_TOKEN }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          cd site && bun install --frozen-lockfile && cd ../tools/review-feedback
+          bun install --frozen-lockfile
+          bun run cli check-ready --base "origin/$BASE_REF"
+
   architecture:
     runs-on: ubuntu-latest
     steps:

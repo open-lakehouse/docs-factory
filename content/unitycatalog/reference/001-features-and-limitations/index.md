@@ -5,7 +5,7 @@ diataxis: reference
 project: unitycatalog
 references:
   - unityCatalogOSS
-status: draft
+status: ready
 ---
 
 The open source Unity Catalog server implements catalogs, schemas, external

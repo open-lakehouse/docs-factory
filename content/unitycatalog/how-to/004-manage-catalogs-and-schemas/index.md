@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - lakehouse.catalog
-status: draft
+status: ready
 ---
 
 Catalogs and schemas organize every asset in

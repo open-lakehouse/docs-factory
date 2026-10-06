@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - lakehouse.catalog
-status: draft
+status: ready
 ---
 
 In this tutorial you register a folder of documents as a Unity Catalog

@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - deltaSpark
-status: draft
+status: ready
 ---
 
 Apache Spark connects to a [Unity Catalog](model:unityCatalogOSS) server

@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - deltaSpec
-status: draft
+status: ready
 ---
 
 Registering a [Delta](model:deltaSpec) table that already exists in storage as

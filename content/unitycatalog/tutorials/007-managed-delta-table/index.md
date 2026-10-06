@@ -7,7 +7,7 @@ references:
   - unityCatalogOSS
   - deltaSpec
   - deltaSpark
-status: draft
+status: ready
 ---
 
 In this tutorial you create a Delta table that Unity Catalog *manages*: the

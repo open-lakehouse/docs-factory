@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - lakehouse.catalog
-status: draft
+status: ready
 ---
 
 A [Unity Catalog](model:unityCatalogOSS) server stores catalogs,

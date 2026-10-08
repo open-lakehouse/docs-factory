@@ -114,3 +114,58 @@ def test_prose_flags_scoping_but_not_boundaries(tmp_path: Path) -> None:
     )
     warnings = versions.prose_warnings(repo)
     assert [w.split(":")[1] for w in warnings] == ["3", "5"]
+
+
+NEXT = """\
+next:
+  release: 0.7.0
+  pins:
+    unitycatalog-chart: 0.1.0
+  paths:
+    - content/unitycatalog/how-to/deploy/
+"""
+
+
+def _next_repo(tmp_path: Path, pages: dict[str, str]) -> Path:
+    repo = _repo(tmp_path, pages)
+    manifest = repo / versions.MANIFEST
+    manifest.write_text(manifest.read_text() + NEXT)
+    return repo
+
+
+def test_next_paths_pin_the_next_release(tmp_path: Path) -> None:
+    image = "image: unitycatalog/unitycatalog:v0.7.0\n"
+    chart = "helm install uc oci://ghcr.io/unitycatalog/charts/unitycatalog \\\n  --version 0.1.0\n"
+    repo = _next_repo(
+        tmp_path,
+        {
+            "how-to/deploy/snippets/compose.yaml": image,
+            "how-to/deploy/snippets/deploy.sh": chart,
+            "how-to/other/compose.yaml": image,
+        },
+    )
+    [error] = versions.check(repo)
+    assert "how-to/other/compose.yaml:1" in error and "should be 0.6.0" in error
+
+
+def test_next_page_cannot_be_ready(tmp_path: Path) -> None:
+    page = "---\ntitle: T\nstatus: ready\n---\nBody.\n"
+    repo = _next_repo(tmp_path, {"how-to/deploy/index.md": page})
+    [error] = versions.check(repo)
+    assert "keep it a draft" in error
+
+
+def test_bump_to_next_folds_the_block(tmp_path: Path) -> None:
+    repo = _next_repo(
+        tmp_path,
+        {
+            "how-to/deploy/values.yaml": "  tag: v0.7.0\n",
+            "how-to/h/compose.yaml": "image: unitycatalog/unitycatalog:v0.6.0\n",
+        },
+    )
+    versions.bump(repo, "0.7.0")
+    assert versions.load_next(repo) is None
+    loaded = versions.load(repo)
+    assert loaded["release"] == "0.7.0" and loaded["unitycatalog-chart"] == "0.1.0"
+    assert "v0.7.0" in (repo / "content/unitycatalog/how-to/h/compose.yaml").read_text()
+    assert versions.check(repo) == []

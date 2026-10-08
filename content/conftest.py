@@ -99,7 +99,7 @@ class TutorialScriptItem(pytest.Item):
         }
         _prepare_prerelease(self.script_meta)
         if self.script_meta.docs_factory.lane == "k8s":
-            env["DOCS_FACTORY_KIND_CLUSTER"] = _start_kind(self.script_meta)
+            env["KUBECONFIG"] = str(_start_kind(self.script_meta))
         base_url = _start_services(self.script_meta)
         try:
             if base_url is not None and self.script_meta.docs_factory.base_url_env:
@@ -228,6 +228,9 @@ def _stop_services(meta: ScriptMeta) -> None:
 # --- pre-release artifacts and the kind cluster ------------------------------
 
 _KIND_CLUSTER = "uc-docs"
+# Its own kubeconfig, so the run never touches the user's contexts. Under
+# $HOME, which every Docker runtime can read.
+_KUBECONFIG = Path.home() / ".cache" / "docs-factory" / "kind-kubeconfig"
 
 
 def _prepare_prerelease(meta: ScriptMeta) -> None:
@@ -237,11 +240,23 @@ def _prepare_prerelease(meta: ScriptMeta) -> None:
         prerelease.ensure_image(channel.versions["release"])
 
 
-def _start_kind(meta: ScriptMeta) -> str:
-    """A fresh kind cluster holding the server image the page installs."""
+def _start_kind(meta: ScriptMeta) -> Path:
+    """A fresh kind cluster holding the server image the page installs; returns
+    its kubeconfig."""
     _stop_kind()
+    _KUBECONFIG.parent.mkdir(parents=True, exist_ok=True)
     subprocess.run(
-        ["kind", "create", "cluster", "--name", _KIND_CLUSTER, "--wait", "120s"],
+        [
+            "kind",
+            "create",
+            "cluster",
+            "--name",
+            _KIND_CLUSTER,
+            "--kubeconfig",
+            str(_KUBECONFIG),
+            "--wait",
+            "120s",
+        ],
         check=True,
     )
     channel = prerelease.upcoming(_REPO_ROOT, meta.path)
@@ -251,12 +266,21 @@ def _start_kind(meta: ScriptMeta) -> str:
         subprocess.run(
             ["kind", "load", "docker-image", ref, "--name", _KIND_CLUSTER], check=True
         )
-    return _KIND_CLUSTER
+    return _KUBECONFIG
 
 
 def _stop_kind() -> None:
     subprocess.run(
-        ["kind", "delete", "cluster", "--name", _KIND_CLUSTER], capture_output=True
+        [
+            "kind",
+            "delete",
+            "cluster",
+            "--name",
+            _KIND_CLUSTER,
+            "--kubeconfig",
+            str(_KUBECONFIG),
+        ],
+        capture_output=True,
     )
 
 

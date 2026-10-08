@@ -1,0 +1,9 @@
+# Route https://catalog.example.com/api to the server through a Gateway.
+httpRoute:
+  enabled: true
+  host: catalog.example.com
+  parentRefs:
+    - name: my-gateway
+      namespace: gateway-system
+      kind: Gateway
+      group: gateway.networking.k8s.io

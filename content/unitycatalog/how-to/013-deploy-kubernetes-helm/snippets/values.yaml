@@ -1,0 +1,28 @@
+# Values for one Unity Catalog server with its metadata in PostgreSQL.
+server:
+  db:
+    type: postgresql
+    postgresqlConfig:
+      host: postgres
+      dbName: unitycatalog
+      username: unitycatalog
+      # The chart reads the password from this Secret.
+      passwordSecretName: unitycatalog-db
+      passwordSecretKey: password
+
+  deployment:
+    image:
+      tag: v0.7.0
+    resources:
+      requests:
+        cpu: 500m
+        memory: 1Gi
+      limits:
+        memory: 2Gi
+    # The chart's probes check that the API port accepts connections.
+    enableReadinessProbe: true
+    enableLivenessProbe: true
+
+# The UI image isn't published with the server releases.
+ui:
+  enabled: false

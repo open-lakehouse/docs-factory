@@ -1,0 +1,6 @@
+# Route https://catalog.example.com/api to the server through an Ingress.
+ingress:
+  enabled: true
+  host: catalog.example.com
+  ingressClassName: nginx
+  tlsSecretName: catalog-example-com-tls

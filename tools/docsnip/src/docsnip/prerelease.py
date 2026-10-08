@@ -15,7 +15,6 @@ import os
 import shutil
 import subprocess
 import tarfile
-import urllib.request
 from pathlib import Path
 
 from . import versions
@@ -63,9 +62,11 @@ def chart_package(release: str, chart_version: str, out: Path) -> Path | None:
     archive = f"{UPSTREAM}/archive/refs/heads/{_branch(release)}.tar.gz"
     src = out / "chart-src"
     shutil.rmtree(src, ignore_errors=True)
-    with urllib.request.urlopen(archive) as resp:
-        data = io.BytesIO(resp.read())
-    with tarfile.open(fileobj=data) as tar:
+    # curl, not urllib: urllib stalls where IPv6 is advertised but unrouted.
+    data = subprocess.run(
+        ["curl", "-fsSL", archive], check=True, capture_output=True
+    ).stdout
+    with tarfile.open(fileobj=io.BytesIO(data)) as tar:
         members = [m for m in tar.getmembers() if "/helm/" in m.name]
         tar.extractall(src, members=members, filter="data")
     [chart] = list(src.glob("*/helm"))

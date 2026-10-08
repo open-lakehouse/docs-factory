@@ -1,17 +1,14 @@
-# The Unity Catalog release these docs describe, and the companion versions
-# they pin. Pages state the release only through their environment's title;
-# `docsnip check` fails on any pin in content/, envs/, or the site config that
-# disagrees with this file, and `just bump-uc <version>` rewrites them all.
-# See docs/design/docs-versioning.md.
 release: 0.6.0
 pins:
   unitycatalog-client: 0.6.0
-  # The AI packages version independently; 0.4.0 is the one in the release's
-  # source tree.
   unitycatalog-ai: 0.4.0
-  # The newest delta-spark the release's Spark connector is tested with.
   delta-spark: 4.3.1
   pyspark: 4.1.0
-  # build.sbt `icebergVersion` at the release tag; the Iceberg REST spec page
-  # renders from this ref.
   iceberg: 1.11.0
+next:
+  release: 0.7.0
+  pins:
+    unitycatalog-chart: 0.1.0
+  paths:
+    - content/unitycatalog/how-to/012-deploy-docker-compose/
+    - content/unitycatalog/how-to/013-deploy-kubernetes-helm/

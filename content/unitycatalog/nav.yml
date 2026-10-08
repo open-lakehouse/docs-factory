@@ -113,12 +113,12 @@ nav:
         items:
           - section: Deploy and persist
             items:
-              - planned: H22
-                title: Deploy a persistent UC server with containers
+              - page: how-to/deploy-docker-compose
+                id: H22
               - planned: H23
                 title: Run a released Java distribution or build from source
-              - planned: H24
-                title: Deploy Unity Catalog on Kubernetes with Helm
+              - page: how-to/deploy-kubernetes-helm
+                id: H24
               # Primary home for H25; selection rationale moves to E10 when written.
               - page: how-to/configure-backend-db
                 id: H25

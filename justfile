@@ -184,7 +184,12 @@ test:
 # script's [tool.docs-factory] metadata names the compose the harness starts.
 # Fails hard (never skips) if Docker/the server is unavailable.
 test-services:
-    uv run --group test-services pytest -m "needs_docker or needs_uc_server"
+    uv run --group test-services pytest -m "(needs_docker or needs_uc_server) and not needs_k8s"
+
+# Run the Kubernetes pages' tests (opt-in) on a throwaway kind cluster. Needs
+# Docker, kind, kubectl, and helm.
+test-k8s:
+    uv run --group test-services pytest -m needs_k8s
 
 # --- aws-sim (pretend-AWS S3/STS for UC; see envs/aws-sim/README.md) --------
 

@@ -72,7 +72,7 @@ jobs:
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages --group test-services
       - name: Run service-backed tutorial tests
-        run: uv run --group test-services pytest -m "needs_docker or needs_uc_server" -v
+        run: uv run --group test-services pytest -m "(needs_docker or needs_uc_server) and not needs_k8s" -v
 
   content:
     runs-on: ubuntu-latest

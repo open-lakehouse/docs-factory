@@ -390,11 +390,14 @@ documentation. Add a UC-specific how-to only when the catalog changes the task.
 
 ### 6.4 How-to: platform operations and security
 
+The upstream changes the deployment pages depend on are tracked in
+[unitycatalog-deployment-upstream](unitycatalog-deployment-upstream.md).
+
 | ID | Proposed article | Priority / journeys | Required content |
 | --- | --- | --- | --- |
-| H22 | Deploy a persistent UC server with containers | P0 / J02 | Pinned server/UI images separately, configuration, database/key material mounts, data paths, readiness and restart verification. Clearly separate local convenience from shared deployment. |
-| H23 | Run a released Java distribution or build from source | P1 / J02, J10 | Runtime/build requirements, artifact acquisition and provenance, startup/config/classpath. Source builds are an explicit developer alternative. |
-| H24 | Deploy Unity Catalog on Kubernetes with Helm | P1 / J02 | Release-tagged chart, explicit image tags, DB/secrets, persistent signing material, ingress/UI routing, probes, resources, validation; no implied HA certification. |
+| H22 | Deploy a persistent UC server with containers | P0 / J02 | Pinned server/UI images separately, configuration, database/key material mounts, data paths, readiness and restart verification. Clearly separate local convenience from shared deployment. Drafted against 0.7.0 (`how-to/deploy-docker-compose`, `next` channel). |
+| H23 | Run a released Java distribution or build from source | P1 / J02, J10 | Runtime/build requirements, artifact acquisition and provenance, startup/config/classpath. Source builds are an explicit developer alternative. Deferred: no release ships a distribution yet (upstream U2). |
+| H24 | Deploy Unity Catalog on Kubernetes with Helm | P1 / J02 | Release-tagged chart, explicit image tags, DB/secrets, persistent signing material, ingress/UI routing, probes, resources, validation; no implied HA certification. Drafted against 0.7.0 and chart 0.1.0 (`how-to/deploy-kubernetes-helm`, `next` channel). |
 | H25 | Configure PostgreSQL as the metadata backend | P0 / J02 | JDBC/driver packaging, DB credentials/TLS, configuration, permission policy persistence, connectivity and restart checks. |
 | H26 | Configure a MySQL metadata backend | P2 / J02 | Existing upstream deployment recipe as a lead; publish only after authorization and managed-table regression tests. Otherwise retain a labeled upstream link. |
 | H27 | Configure AWS storage credentials and external locations | P0 / J02-J05 | Workload/master role, narrowly scoped storage role and trust/external ID, credential/location securables, grants, S3/KMS permissions and validation. |

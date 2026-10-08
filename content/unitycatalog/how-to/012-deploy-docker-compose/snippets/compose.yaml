@@ -1,0 +1,63 @@
+# A single Unity Catalog server with its metadata in PostgreSQL. Keep this
+# file, server.properties, and .env together in one folder, and start the
+# stack from it with `docker compose up -d --wait`.
+name: unitycatalog
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: unitycatalog
+      POSTGRES_USER: unitycatalog
+      POSTGRES_PASSWORD: ${UC_DB_PASSWORD:?set UC_DB_PASSWORD in .env}
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U unitycatalog -d unitycatalog"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  unitycatalog:
+    image: unitycatalog/unitycatalog:v0.7.0
+    restart: unless-stopped
+    # Health and metrics listen on their own port, which is unauthenticated:
+    # it stays on the Compose network and isn't published.
+    command: ["./bin/start-uc-server", "--obs-port", "8090"]
+    depends_on:
+      postgres: { condition: service_healthy }
+    ports:
+      - "8080:8080"
+    volumes:
+      # The server writes its token-signing keys and admin token here on
+      # first start. The volume keeps them across new containers.
+      - conf:/home/unitycatalog/etc/conf
+      - type: bind
+        source: ./server.properties
+        target: /home/unitycatalog/etc/conf/server.properties
+        read_only: true
+    configs:
+      - source: hibernate
+        target: /home/unitycatalog/etc/conf/hibernate.properties
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8090/readyz || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+configs:
+  hibernate:
+    content: |
+      hibernate.connection.driver_class=org.postgresql.Driver
+      hibernate.connection.url=jdbc:postgresql://postgres:5432/unitycatalog
+      hibernate.connection.username=unitycatalog
+      hibernate.connection.password=${UC_DB_PASSWORD}
+      hibernate.hbm2ddl.auto=update
+      hibernate.archive.autodetection=class
+      hibernate.show_sql=false
+
+volumes:
+  db:
+  conf:

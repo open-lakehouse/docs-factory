@@ -32,6 +32,9 @@ _BLOCK_RE = r"(?m)^# /// (?P<type>[a-zA-Z0-9-]+)$\s(?P<content>(^#(| .*)$\s)+)^#
 # The namespaced table our tooling owns inside a script's PEP 723 metadata.
 TOOL_TABLE = "docs-factory"
 
+# Opt-in test lanes a script can name with ``lane``.
+LANES = ("docker", "k8s")
+
 # A script importing docsnip.shellregions is a harness driving a shell snippet.
 _SHELL_HARNESS_RE = re.compile(
     r"^\s*(?:from\s+docsnip\.shellregions\s+import|import\s+docsnip\.shellregions)\b",
@@ -58,7 +61,9 @@ class DocsFactoryMeta:
     while the snippet code stays endpoint-free. ``verifies`` (relative to the
     script's directory) marks the script as a test harness for a non-Python
     snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh``: the
-    published runnable example is that file, not the harness.
+    published runnable example is that file, not the harness. ``lane`` opts a
+    script without a shared compose into a gated lane: ``docker`` for one that
+    starts its own containers, ``k8s`` for one that needs a kind cluster.
     """
 
     compose: str | None = None
@@ -66,6 +71,7 @@ class DocsFactoryMeta:
     base_url_env: str | None = None
     env: dict[str, str] = dataclasses.field(default_factory=dict)
     verifies: str | None = None
+    lane: str | None = None
 
     @property
     def needs_services(self) -> bool:
@@ -130,6 +136,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
     base_url_env = tool.get("base-url-env")
     env = tool.get("env", {}) or {}
     verifies = tool.get("verifies")
+    lane = tool.get("lane")
 
     if compose is not None and not isinstance(compose, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].compose must be a string")
@@ -147,6 +154,10 @@ def parse_script(path: Path) -> ScriptMeta | None:
         )
     if verifies is not None and not isinstance(verifies, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].verifies must be a string")
+    if lane not in (None, *LANES):
+        raise ScriptMetaError(
+            f"{path}: [tool.docs-factory].lane must be one of {', '.join(LANES)}"
+        )
 
     return ScriptMeta(
         path=path,
@@ -158,6 +169,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
             base_url_env=base_url_env,
             env=dict(env),
             verifies=verifies,
+            lane=lane,
         ),
     )
 

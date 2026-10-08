@@ -193,6 +193,10 @@ see the release in the environment title of the prerequisites box. So:
 `docsnip check` fails on a pin that disagrees with the manifest and warns on
 release-scoped prose. `just bump-uc <version>` rewrites every pin.
 
+Drafts that need an unreleased server go under the manifest's `next:` block.
+Their pins follow `next.release` and they stay drafts until the bump (see
+[docs-versioning](../docs/design/docs-versioning.md#drafting-against-the-next-release)).
+
 ## Tutorials: colocated, self-testing folder mode
 
 A how-to references shared `examples/` code across engines. A *tutorial* is one

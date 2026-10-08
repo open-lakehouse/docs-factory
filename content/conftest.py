@@ -31,6 +31,7 @@ if TYPE_CHECKING:
 
 # tools/docsnip is a workspace package; its scriptmeta reader is the single
 # source of truth for discovering + parsing a script's inline metadata.
+from docsnip import prerelease
 from docsnip.environments import client_env
 from docsnip.scriptmeta import ScriptMeta, parse_script
 
@@ -83,6 +84,10 @@ class TutorialScriptItem(pytest.Item):
         # default lane's -m filter deselects it without any hand-marking.
         if script_meta.docs_factory.needs_services:
             self.add_marker(pytest.mark.needs_uc_server)
+        if script_meta.docs_factory.lane == "docker":
+            self.add_marker(pytest.mark.needs_docker)
+        if script_meta.docs_factory.lane == "k8s":
+            self.add_marker(pytest.mark.needs_k8s)
 
     def runtest(self):
         # The registry's client-env is what the page tells a reader to export;
@@ -92,6 +97,9 @@ class TutorialScriptItem(pytest.Item):
             **client_env(self.script_meta.compose_path(), _REPO_ROOT),
             **self.script_meta.docs_factory.env,
         }
+        _prepare_prerelease(self.script_meta)
+        if self.script_meta.docs_factory.lane == "k8s":
+            env["KUBECONFIG"] = str(_start_kind(self.script_meta))
         base_url = _start_services(self.script_meta)
         try:
             if base_url is not None and self.script_meta.docs_factory.base_url_env:
@@ -122,6 +130,8 @@ class TutorialScriptItem(pytest.Item):
                 raise TutorialScriptFailure(self.script_meta, proc)
         finally:
             _stop_services(self.script_meta)
+            if self.script_meta.docs_factory.lane == "k8s":
+                _stop_kind()
 
     def repr_failure(self, excinfo, style=None):
         if isinstance(excinfo.value, TutorialScriptFailure):
@@ -213,6 +223,65 @@ def _stop_services(meta: ScriptMeta) -> None:
     compose = _ACTIVE.pop(str(compose_path), None)
     if compose is not None:
         compose.stop()
+
+
+# --- pre-release artifacts and the kind cluster ------------------------------
+
+_KIND_CLUSTER = "uc-docs"
+# Its own kubeconfig, so the run never touches the user's contexts. Under
+# $HOME, which every Docker runtime can read.
+_KUBECONFIG = Path.home() / ".cache" / "docs-factory" / "kind-kubeconfig"
+
+
+def _prepare_prerelease(meta: ScriptMeta) -> None:
+    """Make the next release's image exist locally for a page drafted against it."""
+    channel = prerelease.upcoming(_REPO_ROOT, meta.path)
+    if channel is not None:
+        prerelease.ensure_image(channel.versions["release"])
+
+
+def _start_kind(meta: ScriptMeta) -> Path:
+    """A fresh kind cluster holding the server image the page installs; returns
+    its kubeconfig."""
+    _stop_kind()
+    _KUBECONFIG.parent.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [
+            "kind",
+            "create",
+            "cluster",
+            "--name",
+            _KIND_CLUSTER,
+            "--kubeconfig",
+            str(_KUBECONFIG),
+            "--wait",
+            "120s",
+        ],
+        check=True,
+    )
+    channel = prerelease.upcoming(_REPO_ROOT, meta.path)
+    if channel is not None:
+        # The node can't pull an image that only exists in the local daemon.
+        ref = prerelease.ensure_image(channel.versions["release"])
+        subprocess.run(
+            ["kind", "load", "docker-image", ref, "--name", _KIND_CLUSTER], check=True
+        )
+    return _KUBECONFIG
+
+
+def _stop_kind() -> None:
+    subprocess.run(
+        [
+            "kind",
+            "delete",
+            "cluster",
+            "--name",
+            _KIND_CLUSTER,
+            "--kubeconfig",
+            str(_KUBECONFIG),
+        ],
+        capture_output=True,
+    )
 
 
 class TutorialScriptTimeout(TutorialScriptFailure):

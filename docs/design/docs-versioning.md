@@ -76,5 +76,29 @@ stay as they are. After a bump:
    to the **Affects** column of rows that still reproduce.
 3. Re-read the "since" and "or later" boundaries the release changes.
 
+## Drafting against the next release
+
+Some pages can only be written against a release that isn't out yet, such as
+the deployment guides that rely on 0.7's health endpoints. The manifest's
+`next:` block holds that release, any pins only it has (the Helm chart, which
+versions on its own cadence), and the folders written against it:
+
+```yaml
+next:
+  release: 0.7.0
+  pins:
+    unitycatalog-chart: 0.1.0
+  paths:
+    - content/unitycatalog/how-to/012-deploy-docker-compose/
+```
+
+Files under `paths` are checked against `next`, and everything else against
+the current release. A page under `paths` must stay a draft: `docsnip check`
+fails if one is `ready` while the block exists. While a released artifact is
+missing, the test harness builds a stand-in for it from the release branch.
+`just bump-uc 0.7.0` folds the block into the manifest. After that the pages
+are ordinary drafts that can be approved, and their tests use the published
+artifacts.
+
 The same scheme carries over to the Delta docs when they land: a
 `content/delta/release.yml` and its own rule set.

@@ -5,6 +5,11 @@ either a pin a reader copies (it must match what CI tests) or a boundary
 ("since 0.6.0", "0.4.0 or later"). ``check`` enforces the first, ``fix``
 rewrites pins to the manifest, and ``prose_warnings`` flags prose that scopes a
 statement to the release instead. See docs/design/docs-versioning.md.
+
+A manifest may also carry a ``next:`` block: the upcoming release, any pins
+that only it has, and the draft pages written against it. Files under those
+``paths`` are checked against ``next`` instead, and ``bump`` to that release
+folds the block into the manifest.
 """
 
 from __future__ import annotations
@@ -72,6 +77,13 @@ RULES = (
         re.compile(rf"`unitycatalog-ai`(?:\]\([^)]*\))?\s+{_V}"),
         skip="content/unitycatalog/reference/",
     ),
+    # A Helm values file's image tag.
+    Rule("release", re.compile(rf"^\s*tag:\s*\"?v{_V}", re.MULTILINE)),
+    # The chart versions on its own cadence, not with the server.
+    Rule(
+        "unitycatalog-chart",
+        re.compile(rf"charts/unitycatalog(?:\s|\\)+--version\s+{_V}"),
+    ),
     Rule("delta-spark", re.compile(rf"io\.delta:delta-spark_[\d.]+_[\d.]+:{_V}")),
     Rule("pyspark", re.compile(rf"\bpyspark=={_V}")),
     Rule("iceberg", re.compile(rf"apache-iceberg-{_V}")),
@@ -82,18 +94,66 @@ RULES = (
 _RANGE_RE = re.compile(r"\bunitycatalog-(?:client|ai)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)")
 
 
+def _version(key: str, value: object) -> str:
+    if not isinstance(value, str) or not re.fullmatch(r"\d+\.\d+\.\d+", value):
+        raise ValueError(f"{MANIFEST}: {key} must be an X.Y.Z version")
+    return value
+
+
+def _raw(repo_root: Path) -> dict:
+    return yaml.safe_load((repo_root / MANIFEST).read_text()) or {}
+
+
+_READY_RE = re.compile(r"---\n(?:(?!---\n).*\n)*?status:\s*ready\s*\n")
+
+
 def load(repo_root: Path) -> dict[str, str]:
     """``{"release": ..., <pin>: ...}``. Raises ``ValueError`` if malformed."""
-    raw = yaml.safe_load((repo_root / MANIFEST).read_text()) or {}
-    versions: dict[str, str] = {}
-    for key, value in {
-        "release": raw.get("release"),
-        **(raw.get("pins") or {}),
-    }.items():
-        if not isinstance(value, str) or not re.fullmatch(r"\d+\.\d+\.\d+", value):
-            raise ValueError(f"{MANIFEST}: {key} must be an X.Y.Z version")
-        versions[key] = value
-    return versions
+    raw = _raw(repo_root)
+    return {
+        key: _version(key, value)
+        for key, value in {
+            "release": raw.get("release"),
+            **(raw.get("pins") or {}),
+        }.items()
+    }
+
+
+@dataclasses.dataclass(frozen=True)
+class Next:
+    versions: dict[str, str]  # the current manifest, overlaid with next's
+    paths: tuple[str, ...]  # repo-relative prefixes written against it
+
+    def covers(self, rel: str) -> bool:
+        return any(rel.startswith(prefix) for prefix in self.paths)
+
+
+def load_next(repo_root: Path) -> Next | None:
+    """The ``next:`` block, or ``None``. Raises ``ValueError`` if malformed."""
+    block = _raw(repo_root).get("next")
+    if block is None:
+        return None
+    paths = block.get("paths") if isinstance(block, dict) else None
+    if not paths or not all(isinstance(p, str) for p in paths):
+        raise ValueError(f"{MANIFEST}: next.paths must list repo-relative paths")
+    versions = {
+        **load(repo_root),
+        "release": _version("next.release", block.get("release")),
+        **{
+            key: _version(f"next.pins.{key}", value)
+            for key, value in (block.get("pins") or {}).items()
+        },
+    }
+    return Next(versions, tuple(paths))
+
+
+def _scoped(repo_root: Path):
+    """Map a repo-relative path to the versions it's checked against."""
+    current = load(repo_root)
+    upcoming = load_next(repo_root)
+    return lambda rel: (
+        upcoming.versions if upcoming and upcoming.covers(rel) else current
+    )
 
 
 def _files(repo_root: Path):
@@ -120,23 +180,37 @@ def _applies(rule: Rule, rel: str) -> bool:
 def check(repo_root: Path) -> list[str]:
     """Pins that disagree with the manifest, and ranged UC installs in pages."""
     try:
-        versions = load(repo_root)
+        scoped = _scoped(repo_root)
+        upcoming = load_next(repo_root)
     except (OSError, ValueError, yaml.YAMLError) as exc:
         return [str(exc)]
     errors: list[str] = []
     for path in _files(repo_root):
         rel = path.relative_to(repo_root).as_posix()
         text = path.read_text()
+        versions = scoped(rel)
+        channel = "next " if upcoming and upcoming.covers(rel) else ""
         for rule in RULES:
             if not _applies(rule, rel):
                 continue
-            want = versions[rule.key]
+            want = versions.get(rule.key)
             for m in rule.pattern.finditer(text):
-                if m.group(1) != want:
+                if want is None:
                     errors.append(
                         f"{rel}:{_line(text, m.start())}: {m.group(0).strip()} "
-                        f"should be {want} ({MANIFEST} {rule.key}); run `just bump-uc`"
+                        f"has no {rule.key} pin in {MANIFEST}"
                     )
+                elif m.group(1) != want:
+                    errors.append(
+                        f"{rel}:{_line(text, m.start())}: {m.group(0).strip()} "
+                        f"should be {want} ({MANIFEST} {channel}{rule.key}); "
+                        "run `just bump-uc`"
+                    )
+        if path.name == "index.md" and channel and _READY_RE.match(text):
+            errors.append(
+                f"{rel}: is ready, but targets the unreleased next release "
+                f"{versions['release']}; keep it a draft until `just bump-uc`"
+            )
         if path.name == "index.md":
             for m in _RANGE_RE.finditer(text):
                 errors.append(
@@ -148,16 +222,17 @@ def check(repo_root: Path) -> list[str]:
 
 def fix(repo_root: Path) -> list[Path]:
     """Rewrite every pin to the manifest; returns the files changed."""
-    versions = load(repo_root)
+    scoped = _scoped(repo_root)
     changed: list[Path] = []
     for path in _files(repo_root):
         rel = path.relative_to(repo_root).as_posix()
         text = path.read_text()
+        versions = scoped(rel)
         new = text
         for rule in RULES:
-            if not _applies(rule, rel):
+            want = versions.get(rule.key)
+            if want is None or not _applies(rule, rel):
                 continue
-            want = versions[rule.key]
             new = rule.pattern.sub(
                 lambda m, want=want: (
                     m.group(0)[: m.start(1) - m.start()]
@@ -174,10 +249,17 @@ def fix(repo_root: Path) -> list[Path]:
 
 def bump(repo_root: Path, release: str) -> list[Path]:
     """Move the manifest to ``release`` (and every pin that tracked the old
-    release, such as the Python client), then rewrite the pins."""
+    release, such as the Python client), then rewrite the pins. Bumping to the
+    ``next`` release also takes next's own pins and drops the block."""
     if not re.fullmatch(r"\d+\.\d+\.\d+", release):
         raise ValueError(f"release must be X.Y.Z, got {release!r}")
     path = repo_root / MANIFEST
+    raw = _raw(repo_root)
+    upcoming = raw.get("next") or {}
+    if upcoming.get("release") == release:
+        raw.pop("next")
+        raw["pins"] = {**(raw.get("pins") or {}), **(upcoming.get("pins") or {})}
+        path.write_text(yaml.safe_dump(raw, sort_keys=False))
     old = load(repo_root)["release"]
     text = re.sub(
         rf"^(\s*[\w-]+:\s*){re.escape(old)}\s*$",
@@ -229,15 +311,16 @@ def prose_warnings(repo_root: Path) -> list[str]:
     """Prose that names the release without boundary wording ("In 0.6.0 the
     server…"). A client version after its package name is allowed."""
     try:
-        release = load(repo_root)["release"]
+        scoped = _scoped(repo_root)
     except (OSError, ValueError, yaml.YAMLError):
         return []  # reported by check()
-    number = re.compile(rf"(?<![\w.]){re.escape(release)}(?!\w|\.\d)")
     root = repo_root / "content" / "unitycatalog"
     warnings: list[str] = []
     for md in sorted(root.rglob("index.md")):
         if md.relative_to(root).parts[0] not in _PROSE_BUCKETS:
             continue
+        release = scoped(md.relative_to(repo_root).as_posix())["release"]
+        number = re.compile(rf"(?<![\w.]){re.escape(release)}(?!\w|\.\d)")
         prev = ""
         for n, line in _prose_lines(md.read_text()):
             for m in number.finditer(line):

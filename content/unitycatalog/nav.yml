@@ -113,8 +113,8 @@ nav:
         items:
           - section: Deploy and persist
             items:
-              - planned: H22
-                title: Deploy a persistent UC server with containers
+              - page: how-to/deploy-docker-compose
+                id: H22
               - planned: H23
                 title: Run a released Java distribution or build from source
               - planned: H24

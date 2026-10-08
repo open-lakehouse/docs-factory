@@ -27,17 +27,25 @@ def regions(script: Path) -> dict[str, str]:
 
 
 def run(
-    script: Path, name: str, *, expect_failure: bool = False, cwd: Path | None = None
+    script: Path,
+    name: str,
+    *,
+    expect_failure: bool = False,
+    cwd: Path | None = None,
+    prelude: str = "",
 ) -> str:
     """Run one region and return its combined output.
 
     ``cwd`` defaults to the script's grandparent, the page folder: snippets live
     in ``<page>/snippets/``. Pass the folder the page tells the reader to run
     the region from when that differs, such as ``envs/unitycatalog``.
+    ``prelude`` is harness-only shell run before the setup region; it never
+    appears in the served script.
     """
     blocks = regions(script)
+    body = prelude + blocks.get(SETUP, "") + blocks[name]
     proc = subprocess.run(
-        ["bash", "-euo", "pipefail", "-c", blocks.get(SETUP, "") + blocks[name]],
+        ["bash", "-euo", "pipefail", "-c", body],
         cwd=cwd or script.parent.parent,
         capture_output=True,
         text=True,

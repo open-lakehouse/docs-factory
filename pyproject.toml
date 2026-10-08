@@ -38,8 +38,9 @@ test-services = [
 testpaths = ["tools/docsnip/tests", "content"]
 # Service-backed tests are opt-in: excluded by default so a Docker-less `pytest`
 # stays green; CI's tutorials-services job selects them with `-m`.
-addopts = "-m 'not needs_docker and not needs_uc_server'"
+addopts = "-m 'not needs_docker and not needs_uc_server and not needs_k8s'"
 markers = [
     "needs_docker: requires a running Docker daemon (opt-in)",
     "needs_uc_server: requires a Unity Catalog server via docker-compose (opt-in)",
+    "needs_k8s: requires Docker plus kind, kubectl, and helm (opt-in)",
 ]

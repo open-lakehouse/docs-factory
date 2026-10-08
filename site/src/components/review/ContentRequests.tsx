@@ -22,7 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { DIATAXIS } from "../../content-core/vocab.mjs";
 import {
   ContentArea,
   type ContentRequest,
@@ -35,6 +34,7 @@ import {
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
 import { useReviewInvalidation } from "../../lib/review-queries";
+import { vocab } from "../../vocab";
 
 /** Where a request belongs: a docs nav section trail, or a blog series. */
 export interface RequestPlacement {
@@ -148,7 +148,7 @@ function ContentRequestDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {DIATAXIS.map((d: string) => (
+                {vocab.diataxis.map((d: string) => (
                   <SelectItem key={d} value={d}>
                     {d}
                   </SelectItem>

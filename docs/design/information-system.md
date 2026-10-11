@@ -198,6 +198,11 @@ delete the file. If a future rework can express every residual field as model
 
 ## 6. UX surfaces (prioritized)
 
+> **Status (2026-10).** The `/explain/<id>` pages and reader routes left the
+> factory app in #153; readers now meet the model only on the emitted docs
+> sites. What ships there, and the re-prioritized plan, is in
+> [`model-leverage.md`](./model-leverage.md).
+
 Ordered by value-to-effort, all deriving from the live model join (§2):
 
 1. **Entity pages + hover cards.** Every model element resolves to a canonical
@@ -222,6 +227,9 @@ Ordered by value-to-effort, all deriving from the live model join (§2):
    first mention; terms that are also model elements get the full entity card.
 
 ## 7. Agent & LLM surface
+
+> **Status (2026-10).** See [`model-leverage.md`](./model-leverage.md) §2–§3
+> for an assessment of which of these surfaces earn their cost.
 
 The same join makes the site and the domain legible to machines. Agents are
 first-class consumers — the estate is itself about agentic workloads.

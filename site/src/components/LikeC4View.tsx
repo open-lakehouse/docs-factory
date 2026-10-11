@@ -13,13 +13,15 @@ import { LikeC4View as LikeC4ViewEmbed } from "likec4:react";
  */
 export function LikeC4View({
   viewId,
+  alt,
   dynamicViewVariant = "sequence",
 }: {
   viewId: string;
+  alt?: string;
   dynamicViewVariant?: "sequence" | "diagram";
 }) {
   return (
-    <div className="diagram-frame diagram-frame-fit">
+    <figure className="diagram-frame diagram-frame-fit" aria-label={alt || undefined}>
       <LikeC4ViewEmbed
         viewId={viewId}
         dynamicViewVariant={dynamicViewVariant}
@@ -32,6 +34,6 @@ export function LikeC4View({
         // elongated + legible); the native browser handles pan/zoom on click.
         style={{ width: "100%" }}
       />
-    </div>
+    </figure>
   );
 }

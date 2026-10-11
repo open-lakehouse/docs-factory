@@ -28,8 +28,9 @@ function frontmatter(draft) {
 /**
  * The target for one page. `assetBase` is the URL the page's own images are
  * served under (e.g. `/assets/how-to/duckdb`); LikeC4 PNGs are shared site-wide.
+ * `altText(entry)` may supply alt text the author left out (e.g. from the model).
  */
-export function docsSiteTarget({ assetBase }) {
+export function docsSiteTarget({ assetBase, altText = (entry) => entry.altText }) {
   return {
     name: "docs-site",
     stringify: {
@@ -48,10 +49,15 @@ export function docsSiteTarget({ assetBase }) {
         ? {
             type: "image",
             url: `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`,
-            alt: entry.altText,
+            alt: altText(entry),
             title: `likec4=${entry.likec4}`,
           }
-        : { type: "image", url: `${assetBase}/${entry.filename}`, alt: entry.altText, title: null };
+        : {
+            type: "image",
+            url: `${assetBase}/${entry.filename}`,
+            alt: altText(entry),
+            title: null,
+          };
       return { type: "paragraph", children: [image] };
     },
   };

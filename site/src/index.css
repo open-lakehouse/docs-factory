@@ -2214,6 +2214,7 @@ button.tag {
 
 .diagram-frame {
   position: relative;
+  margin: 0;
   height: 460px;
   width: 100%;
   border: 1px solid var(--border);

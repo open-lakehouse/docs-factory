@@ -203,7 +203,9 @@ bullets. Copy this to start a post.
     100% CommonMark: `![real alt text](./assets/<name>.png "likec4=<viewId>")`.
     On static targets the title is just a tooltip and the PNG renders as-is; the
     `site/` harness (and the site) key off `likec4=<viewId>` to swap in the
-    interactive view. An image with no `likec4=` title (a D2 SVG, a screenshot)
+    interactive view, which keeps the alt text as the diagram's only text
+    equivalent for crawlers, agents, and screen readers: describe what the flow
+    shows, not its name. An image with no `likec4=` title (a D2 SVG, a screenshot)
     stays a plain static image. **View ids are globally unique and slug-prefixed**
     (e.g. `ucDeltaApi_managedTableFlow`) because blog views share the estate
     LikeC4 workspace.

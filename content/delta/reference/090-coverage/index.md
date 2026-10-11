@@ -41,12 +41,16 @@ come from the [documentation plan][plan].
 
 ## Engines and versions
 
+The pins live in [`release.yml`](../../release.yml): Delta Spark 4.4.0 on
+PySpark 4.2.0, `deltalake` 1.6.6, and DuckDB 1.5.6. A `tested` cell ran with
+them unless it says otherwise.
+
 | Interface | Install | Cells refer to |
 | --- | --- | --- |
-| Spark SQL | `spark-sql` from the pip `pyspark` wheel, with `io.delta:delta-spark_2.13` | `documented`: Delta 4.4.0 ([release][dd-4.4]). `tested`: the UC pages pin `delta-spark` 4.3.1 on PySpark 4.1.0. |
+| Spark SQL | `spark-sql` from the pip `pyspark` wheel, with `io.delta:delta-spark_2.13` | `documented`: Delta 4.4.0 ([release][dd-4.4]). `tested` through UC: the UC pages pin `delta-spark` 4.3.1 on PySpark 4.1.0. |
 | PySpark | `pip install delta-spark`, then `configure_spark_with_delta_pip` | Same as Spark SQL. |
-| Python | `pip install deltalake` | `documented`: 1.6.6 source ([table.py][dr-table], [feature table][dr-features]). `tested`: the Delta pages require `deltalake>=0.20`, so they run the newest release. |
-| DuckDB | `INSTALL delta; LOAD delta;` | `documented`: the [`delta` extension page][duck]. `tested`: `duckdb==1.5.4` with `unity_catalog` from `core_nightly` (UC pages). |
+| Python | `pip install deltalake` | `documented`: 1.6.6 source ([table.py][dr-table], [feature table][dr-features]). |
+| DuckDB | `INSTALL delta; LOAD delta;` | `documented`: the [`delta` extension page][duck]. `tested` through UC: DuckDB 1.5.4 with `unity_catalog` from `core_nightly` (UC pages). |
 
 Not tracked yet: Polars, pandas, Daft, DataFusion, the Rust `deltalake` crate,
 Delta Kernel (Rust and Java), Trino, Flink, Iceberg readers through UniForm.

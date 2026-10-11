@@ -76,5 +76,10 @@ stay as they are. After a bump:
    to the **Affects** column of rows that still reproduce.
 3. Re-read the "since" and "or later" boundaries the release changes.
 
-The same scheme carries over to the Delta docs when they land: a
-`content/delta/release.yml` and its own rule set.
+The Delta docs use the same scheme with their own manifest,
+`content/delta/release.yml`, and rule set (`DELTA` in `versions.py`). Their
+release is Delta Spark's. `pyspark`, `deltalake`, and `duckdb` are pins, the
+latter two versioned independently: `just bump-delta 4.5.0` moves the release,
+and the other pins change in the manifest followed by `docsnip versions --fix`.
+Delta has no environment title yet, so its pages name the versions in their
+prerequisites (`` `deltalake` 1.6.6 ``), which the rules also check.

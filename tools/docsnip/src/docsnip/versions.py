@@ -1,4 +1,4 @@
-"""Keep the Unity Catalog docs on one release: ``content/unitycatalog/release.yml``.
+"""Keep each project's docs on one release: ``content/<project>/release.yml``.
 
 The docs describe only the current release, so a version number in a page is
 either a pin a reader copies (it must match what CI tests) or a boundary
@@ -15,16 +15,6 @@ from pathlib import Path
 
 import yaml
 
-MANIFEST = Path("content") / "unitycatalog" / "release.yml"
-
-# Where pins live, relative to the repo root. Blogs are dated narrative and
-# keep the versions they were written against.
-_SCAN = (
-    ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml")),
-    ("envs", ("*.yaml", "*.yml", "*.md", "*.py", "Dockerfile")),
-    ("emit/docs/sites", ("unitycatalog-docs.mjs",)),
-)
-
 _V = r"(\d+\.\d+\.\d+)"
 
 
@@ -36,68 +26,126 @@ class Rule:
     skip: str | None = None  # repo-relative prefix the rule doesn't apply under
 
 
-RULES = (
-    Rule("release", re.compile(rf"unitycatalog/unitycatalog:v{_V}")),
-    Rule("release", re.compile(rf"unitycatalog/unitycatalog/(?:blob|tree)/v{_V}")),
-    Rule(
-        "release",
-        re.compile(
-            rf"io\.unitycatalog:unitycatalog-(?:spark_[\d.]+_[\d.]+|client):{_V}"
+@dataclasses.dataclass(frozen=True)
+class Project:
+    name: str  # the content/<name> folder
+    product: str  # regex for the product name, as boundary prose spells it
+    scan: tuple[tuple[str, tuple[str, ...]], ...]  # (repo-relative dir, globs)
+    rules: tuple[Rule, ...]
+    # A reader-facing install must be exact: a range in an unquoted shell word
+    # is also a redirect (`pkg>=0.6.0` writes to `=0.6.0`).
+    ranged_install: re.Pattern[str]
+    bump: str  # the recipe that moves the release
+
+    @property
+    def manifest(self) -> Path:
+        return Path("content") / self.name / "release.yml"
+
+
+def _prose_pin(key: str, package: str, project: str) -> Rule:
+    """A prerequisite's "`<package>` 1.2.3". Reference tables name the versions
+    a defect was verified in, which a bump must not rewrite."""
+    return Rule(
+        key,
+        re.compile(rf"`{re.escape(package)}`(?:\]\([^)]*\))?\s+{_V}"),
+        skip=f"content/{project}/reference/",
+    )
+
+
+# Blogs are dated narrative and keep the versions they were written against.
+UNITYCATALOG = Project(
+    name="unitycatalog",
+    product=r"Unity Catalog\s+(?:OSS\s+)?",
+    scan=(
+        ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml")),
+        ("envs", ("*.yaml", "*.yml", "*.md", "*.py", "Dockerfile")),
+        ("emit/docs/sites", ("unitycatalog-docs.mjs",)),
+    ),
+    rules=(
+        Rule("release", re.compile(rf"unitycatalog/unitycatalog:v{_V}")),
+        Rule("release", re.compile(rf"unitycatalog/unitycatalog/(?:blob|tree)/v{_V}")),
+        Rule(
+            "release",
+            re.compile(
+                rf"io\.unitycatalog:unitycatalog-(?:spark_[\d.]+_[\d.]+|client):{_V}"
+            ),
         ),
+        Rule(
+            "release",
+            re.compile(rf"^\s*title: Unity Catalog {_V}", re.MULTILINE),
+            ("envs/environments.yml",),
+        ),
+        Rule(
+            "release",
+            re.compile(rf'ref: "v{_V}"'),
+            ("emit/docs/sites/unitycatalog-docs.mjs",),
+        ),
+        # Where a reference page names the release it describes.
+        Rule("release", re.compile(rf"(?:release|server) \*\*{_V}\*\*")),
+        Rule("release", re.compile(rf"`v{_V}` source tree")),
+        Rule("unitycatalog-client", re.compile(rf"\bunitycatalog-client=={_V}")),
+        Rule("unitycatalog-ai", re.compile(rf"\bunitycatalog-ai=={_V}")),
+        _prose_pin("unitycatalog-client", "unitycatalog-client", "unitycatalog"),
+        _prose_pin("unitycatalog-ai", "unitycatalog-ai", "unitycatalog"),
+        Rule("delta-spark", re.compile(rf"io\.delta:delta-spark_[\d.]+_[\d.]+:{_V}")),
+        Rule("pyspark", re.compile(rf"\bpyspark=={_V}")),
+        Rule("iceberg", re.compile(rf"apache-iceberg-{_V}")),
     ),
-    Rule(
-        "release",
-        re.compile(rf"^\s*title: Unity Catalog {_V}", re.MULTILINE),
-        ("envs/environments.yml",),
+    ranged_install=re.compile(
+        r"\bunitycatalog-(?:client|ai)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)"
     ),
-    Rule(
-        "release",
-        re.compile(rf'ref: "v{_V}"'),
-        ("emit/docs/sites/unitycatalog-docs.mjs",),
-    ),
-    # Where a reference page names the release it describes.
-    Rule("release", re.compile(rf"(?:release|server) \*\*{_V}\*\*")),
-    Rule("release", re.compile(rf"`v{_V}` source tree")),
-    Rule("unitycatalog-client", re.compile(rf"\bunitycatalog-client=={_V}")),
-    Rule("unitycatalog-ai", re.compile(rf"\bunitycatalog-ai=={_V}")),
-    # A prerequisite's "`unitycatalog-client` 0.6.0". Reference tables name the
-    # versions a defect was verified in, which a bump must not rewrite.
-    Rule(
-        "unitycatalog-client",
-        re.compile(rf"`unitycatalog-client`(?:\]\([^)]*\))?\s+{_V}"),
-        skip="content/unitycatalog/reference/",
-    ),
-    Rule(
-        "unitycatalog-ai",
-        re.compile(rf"`unitycatalog-ai`(?:\]\([^)]*\))?\s+{_V}"),
-        skip="content/unitycatalog/reference/",
-    ),
-    Rule("delta-spark", re.compile(rf"io\.delta:delta-spark_[\d.]+_[\d.]+:{_V}")),
-    Rule("pyspark", re.compile(rf"\bpyspark=={_V}")),
-    Rule("iceberg", re.compile(rf"apache-iceberg-{_V}")),
+    bump="just bump-uc",
 )
 
-# A reader-facing install of a UC package must be exact: a range in an
-# unquoted shell word is also a redirect (`pkg>=0.6.0` writes to `=0.6.0`).
-_RANGE_RE = re.compile(r"\bunitycatalog-(?:client|ai)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)")
+# The release is Delta Spark's; deltalake and DuckDB version independently.
+DELTA = Project(
+    name="delta",
+    product=r"Delta(?:\s+Lake|\s+Spark)?\s+",
+    scan=(("content/delta", ("*.md", "*.py", "*.sh", "*.sql", "*.yaml")),),
+    rules=(
+        # Unsuffixed artifacts target the release's default Spark version.
+        Rule("release", re.compile(rf"io\.delta:delta-spark_2\.13:{_V}")),
+        Rule("release", re.compile(rf"\bdelta-spark=={_V}")),
+        Rule("release", re.compile(rf"delta-io/delta/(?:blob|tree)/v{_V}")),
+        _prose_pin("release", "delta-spark", "delta"),
+        Rule("pyspark", re.compile(rf"\bpyspark=={_V}")),
+        _prose_pin("pyspark", "pyspark", "delta"),
+        Rule("deltalake", re.compile(rf"\bdeltalake(?:\[[^\]]*\])?=={_V}")),
+        Rule("deltalake", re.compile(rf"delta-rs/(?:blob|tree)/python-v{_V}")),
+        _prose_pin("deltalake", "deltalake", "delta"),
+        Rule("duckdb", re.compile(rf"\bduckdb=={_V}")),
+        _prose_pin("duckdb", "duckdb", "delta"),
+    ),
+    ranged_install=re.compile(
+        r"\b(?:delta-spark|pyspark|deltalake|duckdb)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)"
+    ),
+    bump="just bump-delta",
+)
+
+PROJECTS = (UNITYCATALOG, DELTA)
 
 
-def load(repo_root: Path) -> dict[str, str]:
+def load(repo_root: Path, project: Project = UNITYCATALOG) -> dict[str, str]:
     """``{"release": ..., <pin>: ...}``. Raises ``ValueError`` if malformed."""
-    raw = yaml.safe_load((repo_root / MANIFEST).read_text()) or {}
+    raw = yaml.safe_load((repo_root / project.manifest).read_text()) or {}
     versions: dict[str, str] = {}
     for key, value in {
         "release": raw.get("release"),
         **(raw.get("pins") or {}),
     }.items():
         if not isinstance(value, str) or not re.fullmatch(r"\d+\.\d+\.\d+", value):
-            raise ValueError(f"{MANIFEST}: {key} must be an X.Y.Z version")
+            raise ValueError(f"{project.manifest}: {key} must be an X.Y.Z version")
         versions[key] = value
     return versions
 
 
-def _files(repo_root: Path):
-    for rel, globs in _SCAN:
+def _active(repo_root: Path) -> list[Project]:
+    """Projects with a content folder. Their manifest is then required."""
+    return [p for p in PROJECTS if (repo_root / "content" / p.name).is_dir()]
+
+
+def _files(repo_root: Path, project: Project):
+    for rel, globs in project.scan:
         base = repo_root / rel
         if not base.is_dir():
             continue
@@ -118,67 +166,71 @@ def _applies(rule: Rule, rel: str) -> bool:
 
 
 def check(repo_root: Path) -> list[str]:
-    """Pins that disagree with the manifest, and ranged UC installs in pages."""
-    try:
-        versions = load(repo_root)
-    except (OSError, ValueError, yaml.YAMLError) as exc:
-        return [str(exc)]
+    """Pins that disagree with their manifest, and ranged installs in pages."""
     errors: list[str] = []
-    for path in _files(repo_root):
-        rel = path.relative_to(repo_root).as_posix()
-        text = path.read_text()
-        for rule in RULES:
-            if not _applies(rule, rel):
-                continue
-            want = versions[rule.key]
-            for m in rule.pattern.finditer(text):
-                if m.group(1) != want:
+    for project in _active(repo_root):
+        try:
+            versions = load(repo_root, project)
+        except (OSError, ValueError, yaml.YAMLError) as exc:
+            errors.append(str(exc))
+            continue
+        for path in _files(repo_root, project):
+            rel = path.relative_to(repo_root).as_posix()
+            text = path.read_text()
+            for rule in project.rules:
+                if not _applies(rule, rel):
+                    continue
+                want = versions[rule.key]
+                for m in rule.pattern.finditer(text):
+                    if m.group(1) != want:
+                        errors.append(
+                            f"{rel}:{_line(text, m.start())}: {m.group(0).strip()} "
+                            f"should be {want} ({project.manifest} {rule.key}); "
+                            f"run `{project.bump}`"
+                        )
+            if path.suffix == ".md":
+                for m in project.ranged_install.finditer(text):
                     errors.append(
-                        f"{rel}:{_line(text, m.start())}: {m.group(0).strip()} "
-                        f"should be {want} ({MANIFEST} {rule.key}); run `just bump-uc`"
+                        f"{rel}:{_line(text, m.start())}: pin {m.group(0).strip()}… "
+                        "exactly (==), to the version CI tests"
                     )
-        if path.name == "index.md":
-            for m in _RANGE_RE.finditer(text):
-                errors.append(
-                    f"{rel}:{_line(text, m.start())}: pin {m.group(0).strip()}… "
-                    "exactly (==), to the version CI tests"
-                )
     return errors
 
 
 def fix(repo_root: Path) -> list[Path]:
-    """Rewrite every pin to the manifest; returns the files changed."""
-    versions = load(repo_root)
+    """Rewrite every pin to its manifest; returns the files changed."""
     changed: list[Path] = []
-    for path in _files(repo_root):
-        rel = path.relative_to(repo_root).as_posix()
-        text = path.read_text()
-        new = text
-        for rule in RULES:
-            if not _applies(rule, rel):
-                continue
-            want = versions[rule.key]
-            new = rule.pattern.sub(
-                lambda m, want=want: (
-                    m.group(0)[: m.start(1) - m.start()]
-                    + want
-                    + m.group(0)[m.end(1) - m.start() :]
-                ),
-                new,
-            )
-        if new != text:
-            path.write_text(new)
-            changed.append(path)
+    for project in _active(repo_root):
+        versions = load(repo_root, project)
+        for path in _files(repo_root, project):
+            rel = path.relative_to(repo_root).as_posix()
+            text = path.read_text()
+            new = text
+            for rule in project.rules:
+                if not _applies(rule, rel):
+                    continue
+                want = versions[rule.key]
+                new = rule.pattern.sub(
+                    lambda m, want=want: (
+                        m.group(0)[: m.start(1) - m.start()]
+                        + want
+                        + m.group(0)[m.end(1) - m.start() :]
+                    ),
+                    new,
+                )
+            if new != text:
+                path.write_text(new)
+                changed.append(path)
     return changed
 
 
-def bump(repo_root: Path, release: str) -> list[Path]:
+def bump(repo_root: Path, release: str, project: Project = UNITYCATALOG) -> list[Path]:
     """Move the manifest to ``release`` (and every pin that tracked the old
     release, such as the Python client), then rewrite the pins."""
     if not re.fullmatch(r"\d+\.\d+\.\d+", release):
         raise ValueError(f"release must be X.Y.Z, got {release!r}")
-    path = repo_root / MANIFEST
-    old = load(repo_root)["release"]
+    path = repo_root / project.manifest
+    old = load(repo_root, project)["release"]
     text = re.sub(
         rf"^(\s*[\w-]+:\s*){re.escape(old)}\s*$",
         lambda m: f"{m.group(1)}{release}",
@@ -198,12 +250,17 @@ _FENCE_RE = re.compile(
     r"^[ \t]*(`{3,}|~{3,})[^\n]*\n.*?^[ \t]*\1", re.MULTILINE | re.DOTALL
 )
 _CODE = "\x00"
-# Wording that makes a version a boundary rather than a scope.
-_BEFORE = re.compile(
-    r"(?:since|before|fixed in|deprecated (?:in|since)|requires|from)\s+"
-    r"(?:Unity Catalog\s+(?:OSS\s+)?|release\s+|version\s+)?$",
-    re.IGNORECASE,
-)
+
+
+def _before(project: Project) -> re.Pattern[str]:
+    """Wording that makes a version a boundary rather than a scope."""
+    return re.compile(
+        r"(?:since|before|fixed in|deprecated (?:in|since)|requires|from)\s+"
+        rf"(?:{project.product}|release\s+|version\s+)?$",
+        re.IGNORECASE,
+    )
+
+
 _AFTER = re.compile(r"^\s*(?:or later|or newer|and later|or earlier)", re.IGNORECASE)
 
 
@@ -228,14 +285,24 @@ def _prose_lines(text: str):
 def prose_warnings(repo_root: Path) -> list[str]:
     """Prose that names the release without boundary wording ("In 0.6.0 the
     server…"). A client version after its package name is allowed."""
-    try:
-        release = load(repo_root)["release"]
-    except (OSError, ValueError, yaml.YAMLError):
-        return []  # reported by check()
-    number = re.compile(rf"(?<![\w.]){re.escape(release)}(?!\w|\.\d)")
-    root = repo_root / "content" / "unitycatalog"
     warnings: list[str] = []
-    for md in sorted(root.rglob("index.md")):
+    for project in _active(repo_root):
+        try:
+            release = load(repo_root, project)["release"]
+        except (OSError, ValueError, yaml.YAMLError):
+            continue  # reported by check()
+        warnings += _project_prose_warnings(repo_root, project, release)
+    return warnings
+
+
+def _project_prose_warnings(
+    repo_root: Path, project: Project, release: str
+) -> list[str]:
+    number = re.compile(rf"(?<![\w.]){re.escape(release)}(?!\w|\.\d)")
+    before_re = _before(project)
+    root = repo_root / "content" / project.name
+    warnings: list[str] = []
+    for md in sorted(root.rglob("*.md")):
         if md.relative_to(root).parts[0] not in _PROSE_BUCKETS:
             continue
         prev = ""
@@ -244,7 +311,7 @@ def prose_warnings(repo_root: Path) -> list[str]:
                 before, after = line[: m.start()], line[m.end() :]
                 if not before.strip():  # wrapped: "`unitycatalog-client`\n  0.6.0"
                     before = prev
-                if _BEFORE.search(before) or _AFTER.match(after):
+                if before_re.search(before) or _AFTER.match(after):
                     continue
                 if before.rstrip().removesuffix("]").endswith(_CODE):
                     continue  # a package's version: "`unitycatalog-client` 0.6.0"

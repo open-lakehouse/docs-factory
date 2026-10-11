@@ -1,0 +1,13 @@
+# The Delta Lake release these docs describe, and the companion versions they
+# pin. `docsnip check` fails on any pin under content/delta that disagrees with
+# this file, and `just bump-delta <version>` moves the release and rewrites
+# them. See docs/design/docs-versioning.md.
+#
+# `release` is Delta Spark (`delta-spark`, `io.delta:delta-spark_2.13`).
+release: 4.4.0
+pins:
+  # The Spark version the release's unsuffixed artifacts are built for.
+  pyspark: 4.2.0
+  # deltalake (delta-rs) and DuckDB version independently of Delta Spark.
+  deltalake: 1.6.6
+  duckdb: 1.5.6

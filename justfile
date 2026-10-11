@@ -215,6 +215,12 @@ compat:
 bump-uc VERSION:
     uv run docsnip bump-uc {{VERSION}}
 
+# Move the Delta docs to a new Delta Spark release: rewrite content/delta/release.yml
+# and every pin matching it. deltalake and DuckDB pins: edit release.yml, then
+# `uv run docsnip versions --fix`.
+bump-delta VERSION:
+    uv run docsnip bump-delta {{VERSION}}
+
 # Validate frontmatter, snippets, and nav.yml manifests (CI gate).
 check: _site-deps
     uv run docsnip check

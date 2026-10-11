@@ -3,8 +3,9 @@
 # arranges links to them. Contract: content/README.md § "Curated navigation".
 #
 # `id:` / `planned:` values are backlog ids from
-# docs/design/delta-documentation-plan.md §6. Planned slots render for
-# reviewers only. List P0/P1 slots here; P2 and later stay in the plan.
+# docs/design/delta-documentation-plan.md §7. Planned slots render for
+# reviewers only. List P0/P1 slots here; P2 and later-phase engines stay in
+# the plan.
 nav:
   - section: Start here
     items:
@@ -15,8 +16,21 @@ nav:
       - page: tutorials/your-first-delta-table
         id: T01
         label: Create your first Delta table
+      - planned: T11
+        title: Build a Delta table in Python and query it with DuckDB
       - planned: R10
         title: Choose an engine or client
+
+  - section: Set up an engine
+    items:
+      - planned: H38
+        title: Configure Spark SQL and PySpark for Delta Lake
+      - planned: H52
+        title: Set up the deltalake Python package
+      - planned: H40
+        title: Query and append to Delta tables from DuckDB
+      - planned: H53
+        title: Read and write one table from several engines
 
   - section: Use Delta tables
     items:
@@ -31,10 +45,8 @@ nav:
             title: Evolve a table's schema without breaking readers
           - planned: T05
             title: Keep a table fast with compaction, clustering, and vacuum
-          - planned: T06
-            title: Create your first Delta table with Spark SQL
           - planned: T07
-            title: Stream changes between tables with Spark
+            title: Stream changes between tables with PySpark
       - section: How-to guides
         items:
           - section: Read and query
@@ -53,6 +65,8 @@ nav:
                 title: Upsert and deduplicate with MERGE
               - planned: H06
                 title: Update and delete rows
+              - planned: H54
+                title: Write idempotently and attach commit metadata
               - planned: H07
                 title: Convert Parquet data to a Delta table
               - planned: H08
@@ -71,18 +85,18 @@ nav:
                 title: Use generated, identity, and default columns
           - section: History and changes
             items:
+              - planned: H18
+                title: Inspect table history, details, and files
               - planned: H16
                 title: Read the change data feed
               - planned: H17
-                title: Stream from and to Delta tables with Spark
-              - planned: H18
-                title: Inspect table history and audit operations
+                title: Stream from and to Delta tables with PySpark
           - section: Layout and maintenance
             items:
-              - planned: H19
-                title: Choose and change liquid clustering keys
               - planned: H20
                 title: Compact small files and Z-order
+              - planned: H19
+                title: Choose and change liquid clustering keys
               - planned: H21
                 title: Vacuum unreferenced files safely
               - planned: H22
@@ -131,34 +145,6 @@ nav:
               - planned: H36
                 title: Troubleshoot unsupported-feature and protocol errors
 
-  - section: Engines and integrations
-    items:
-      - planned: H38
-        title: Configure Spark for Delta Lake
-      - planned: H40
-        title: Query Delta tables from DuckDB
-      - planned: H41
-        title: Read and write Delta tables with Polars
-      - planned: H42
-        title: Use Delta tables with pandas, Daft, and DataFusion
-      - planned: H43
-        title: Use the deltalake crate from Rust
-      - planned: H44
-        title: Read Delta tables from Trino
-      - planned: H47
-        title: Expose a Delta table to Iceberg readers with UniForm
-
-  - section: Build connectors
-    items:
-      - page: explanation/delta-kernel-architecture
-        id: E09
-      - planned: T09
-        title: Read your first table with Delta Kernel (Rust)
-      - planned: H50
-        title: Write and commit to a table with Delta Kernel
-      - planned: H51
-        title: Test a connector with the Delta Acceptance Tests
-
   - section: Concepts
     items:
       - page: explanation/what-is-delta-lake
@@ -176,34 +162,45 @@ nav:
         title: Schema evolution and column mapping
       - planned: E08
         title: Object-store guarantees and multi-writer safety
-      - planned: E10
-        title: Catalog-managed tables and catalog commits
-      - planned: E11
-        title: Delta, Iceberg, and UniForm
       - planned: E12
         title: Retention, time travel, and VACUUM
+      - planned: E13
+        title: Why engine support differs
+      - planned: E10
+        title: Catalog-managed tables and catalog commits
+      # E09 is written; its connector-author journey is deferred with Kernel.
+      - page: explanation/delta-kernel-architecture
+        id: E09
 
   - section: Reference
     items:
       # R01 and R10 are listed under Start here; a planned id appears once, so
       # repeat them here as `page:` entries once written.
+      - planned: R14
+        title: Operation equivalents across engines
       - page: reference/table-features
         id: R02
       - planned: R03
         title: Table properties
-      - planned: R04
-        title: Protocol specification index
       - planned: R05
         title: Spark SQL commands for Delta
       - planned: R06
         title: Spark configuration
       - planned: R07
         title: deltalake storage options
-      - planned: R08
-        title: Python, Rust, and Spark API references
       - planned: R09
         title: Concurrency conflict exceptions
-      - planned: R11
-        title: Releases and version compatibility
       - planned: R12
         title: Data types
+      - planned: R11
+        title: Releases and version compatibility
+      - planned: R04
+        title: Protocol specification index
+      - planned: R08
+        title: API references for Spark, deltalake, and DuckDB
+
+  # Private: reviewers only, never emitted. R01 and R10 derive from it.
+  - section: Internal
+    items:
+      - page: reference/coverage
+        label: Coverage (internal)

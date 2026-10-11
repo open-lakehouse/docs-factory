@@ -130,7 +130,9 @@ shell.
 - A link to a page this emit doesn't publish (an unready page, another project,
   a typo) **fails a publish emit**. With `--drafts` the emit only warns. Either
   way the link is unwrapped to its label, so the site never ships a 404.
-  `model:` links become plain text until the site has model pages.
+  A `model:` link goes to the published page that `explains:` the element, else
+  the element's external link, else it becomes plain text (see
+  [`model-leverage.md`](./model-leverage.md) §4).
 
 ## Full regeneration, minimal writes
 

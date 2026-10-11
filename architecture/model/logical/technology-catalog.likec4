@@ -61,7 +61,8 @@ model {
 
   parquetSpec = openSpecification "Apache Parquet" {
     description "
-      OpenSharing - The open sharing protocol for the agentic era.
+      Open columnar file format: column-wise storage with compression and
+      statistics, the data-file layer most table formats are written in.
     "
 
     link https://parquet.apache.org

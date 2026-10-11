@@ -284,8 +284,10 @@ preview; every id is validated against the built model by `docsnip validate`.
   ```
 
   On GitHub this is an ordinary link; in the preview it renders the label plus a
-  small graph icon that pops open the element's focused view. Use it for
-  positional mentions, exactly where the concept appears in the prose.
+  small graph icon that pops open the element's focused view. On an emitted
+  site it links to the page that `explains:` the element, else to the element's
+  external link, else it is plain text. Use it for positional mentions, exactly
+  where the concept appears in the prose.
 
 - **Page-level** — declare the concepts a page is *about* in frontmatter:
 

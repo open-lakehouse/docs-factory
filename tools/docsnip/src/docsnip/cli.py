@@ -32,6 +32,7 @@ from .frontmatter import (
     iter_pages,
     load_model_element_ids,
     load_page_worthy_elements,
+    model_quality_gaps,
     validate,
 )
 from .scriptmeta import ScriptMetaError
@@ -122,6 +123,11 @@ def cmd_validate(p) -> int:
                 file=sys.stderr,
             )
             print("\n".join(f"  - {u}" for u in uncovered), file=sys.stderr)
+
+    quality = model_quality_gaps(p["arch_model"])
+    if quality:
+        print(f"model quality: {len(quality)} gap(s) (not failing):", file=sys.stderr)
+        print("\n".join(quality), file=sys.stderr)
 
     if errors:
         print("\n".join(errors), file=sys.stderr)

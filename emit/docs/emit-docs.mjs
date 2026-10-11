@@ -57,7 +57,7 @@ import { walkContent } from "../../site/src/content-core/walk.mjs";
 import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
 import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
 import remarkAbsoluteLinks from "../plugins/remark-absolute-links.mjs";
-import remarkModelLinksText from "../plugins/remark-model-links-text.mjs";
+import remarkModelLinks from "../plugins/remark-model-links.mjs";
 import remarkPrerequisitesEnv from "../plugins/remark-prerequisites-env.mjs";
 import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
@@ -74,6 +74,7 @@ import {
   toEntry,
 } from "./discovery.mjs";
 import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
+import { loadModel, modelLinkResolver, viewAltText } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
 import { searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
@@ -226,11 +227,20 @@ export async function emitDocs({ site, drafts = false }) {
 
     // 3. Pages.
     const links = linkErrors();
-    const linkPlugins = [
+    const model = loadModel();
+    const explainers = new Map(
+      selected
+        .filter((p) => typeof p.meta.explains === "string")
+        .map((p) => [p.meta.explains, hrefFor(p.identity)]),
+    );
+    const resolveModelLink = modelLinkResolver(model, explainers);
+    const linkPlugins = (route) => [
       [remarkSourceLinks, { hrefFor, knownHrefs: routes, onUnresolved: links.onUnresolved }],
       [remarkUnwrapDeadLinks],
-      [remarkModelLinksText],
+      [remarkModelLinks, { resolve: (id) => resolveModelLink(id, { route }) }],
     ];
+    const altText = (entry) =>
+      entry.altText || (entry.likec4 && viewAltText(model, entry.likec4)) || "";
     const pages = [];
     const search = [];
     const manifestPages = {};
@@ -267,9 +277,9 @@ export async function emitDocs({ site, drafts = false }) {
 
       const rendered = await emitOne({
         ...common,
-        target: docsSiteTarget({ assetBase }),
+        target: docsSiteTarget({ assetBase, altText }),
         plugins: [
-          ...linkPlugins,
+          ...linkPlugins(route),
           [remarkScriptLinks, { scripts: scriptUrls }],
           [remarkStripSourceMeta],
           [remarkPrerequisitesEnv, { environment, guide: guideAt("") }],
@@ -300,7 +310,7 @@ export async function emitDocs({ site, drafts = false }) {
               url: entry.likec4
                 ? `${origin}${LIKEC4_ASSET_BASE}/${entry.likec4}.png`
                 : `${origin}${assetBase}/${entry.filename}`,
-              alt: entry.altText,
+              alt: altText(entry),
               title: null,
             },
           ],
@@ -310,7 +320,7 @@ export async function emitDocs({ site, drafts = false }) {
         ...common,
         target: twinTarget,
         plugins: [
-          ...linkPlugins,
+          ...linkPlugins(route),
           [remarkAbsoluteLinks, { origin }],
           [remarkPrerequisitesEnv, { environment, guide: guideAt(origin) }],
         ],

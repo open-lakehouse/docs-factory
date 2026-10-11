@@ -85,6 +85,51 @@ def load_page_worthy_elements(model_json: Path) -> dict[str, str]:
     }
 
 
+# The edges that anchor a concrete element to the concept it stands for. A spec or
+# implementation with none floats free of the logical layer, so nothing can
+# navigate to it from a capability.
+_ANCHOR_EDGES = {
+    "openSpecification": {"specifies"},
+    "implementation": {"implements", "realizes"},
+}
+
+
+def model_quality_gaps(model_json: Path) -> list[str]:
+    """Gaps in the model's reader-facing facts, one line per element.
+
+    Emitted sites turn ``model:`` links into links to an element's explanation
+    page or external ``link``, with its summary as the tooltip, so a page-worthy
+    element needs a description, a spec or implementation needs an external
+    link, and both need an edge to the concept they realize. Reported, not
+    failing: the model grows ahead of its facts.
+    """
+    if not model_json.is_file():
+        return []
+    data = json.loads(model_json.read_text())
+    outgoing: dict[str, set[str]] = {}
+    for rel in (data.get("relations") or {}).values():
+        source = (rel.get("source") or {}).get("model")
+        if source:
+            outgoing.setdefault(source, set()).add(rel.get("kind") or "")
+    gaps = []
+    for eid, el in sorted((data.get("elements") or {}).items()):
+        kind = el.get("kind")
+        if kind not in PAGE_WORTHY_KINDS:
+            continue
+        missing = []
+        if not el.get("description") and not el.get("summary"):
+            missing.append("no description")
+        if kind in _ANCHOR_EDGES:
+            if not el.get("links"):
+                missing.append("no external link")
+            if not outgoing.get(eid, set()) & _ANCHOR_EDGES[kind]:
+                edges = "/".join(sorted(_ANCHOR_EDGES[kind]))
+                missing.append(f"no {edges} edge")
+        if missing:
+            gaps.append(f"  - {eid} ({kind}): {', '.join(missing)}")
+    return gaps
+
+
 def _as_str_list(value: object) -> list[str]:
     if isinstance(value, list):
         return [v for v in value if isinstance(v, str)]

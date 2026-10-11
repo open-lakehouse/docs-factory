@@ -1,6 +1,7 @@
 // The docs-site target + link plugins over a fixture: directives survive as
 // authored (the target site renders them), snippets inline, source-only fence
-// meta goes, cross-page links map to target routes, and dead/model links unwrap.
+// meta goes, cross-page links map to target routes, model links resolve, and
+// dead links unwrap.
 import { expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -9,7 +10,7 @@ import { fileURLToPath } from "node:url";
 import remarkSourceLinks from "../../../site/src/plugins/remark-source-links.mjs";
 import { emitOne } from "../../emit.mjs";
 import remarkAbsoluteLinks from "../../plugins/remark-absolute-links.mjs";
-import remarkModelLinksText from "../../plugins/remark-model-links-text.mjs";
+import remarkModelLinks from "../../plugins/remark-model-links.mjs";
 import remarkScriptLinks from "../../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../../plugins/remark-unwrap-dead-links.mjs";
@@ -34,7 +35,7 @@ Read [the basics](../../explanation/basics/index.md#why) first.
 \`\`\`
 :::
 
-See [the catalog](model:lakehouse.catalog) and [a stub](../stub/index.md).
+See [the catalog](model:lakehouse.catalog), [an unmodeled thing](model:nope), and [a stub](../stub/index.md).
 `;
 
 test("docs-site target keeps directives and rewrites what the site can't resolve", async () => {
@@ -63,7 +64,15 @@ test("docs-site target keeps directives and rewrites what the site can't resolve
           },
         ],
         [remarkUnwrapDeadLinks],
-        [remarkModelLinksText],
+        [
+          remarkModelLinks,
+          {
+            resolve: (id) =>
+              id === "lakehouse.catalog"
+                ? { url: "/explanation/basics", title: "The catalog." }
+                : null,
+          },
+        ],
         [
           remarkScriptLinks,
           {
@@ -88,7 +97,9 @@ test("docs-site target keeps directives and rewrites what the site can't resolve
       '```bash title="steps.sh" script="/how-to/thing/snippets/steps.sh"\nuc catalog list\n```',
     );
     expect(output).not.toContain("srcpath");
-    expect(output).toContain("See the catalog and a stub.");
+    expect(output).toContain(
+      'See [the catalog](/explanation/basics "The catalog."), an unmodeled thing, and a stub.',
+    );
     expect(unresolved).toEqual(["../stub/index.md"]);
   } finally {
     rmSync(root, { recursive: true, force: true });

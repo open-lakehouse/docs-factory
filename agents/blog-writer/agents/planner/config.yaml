@@ -1,0 +1,54 @@
+spec_version: 1
+name: planner
+description: >-
+  Plan phase: turns the author's dump into a plan (thesis, audience, stance,
+  outline, reader questions, sources, tags) and creates the outline skeleton
+  in blogs/<slug>/index.md.
+
+executor:
+  type: omnigent
+  config:
+    harness: claude-sdk
+
+instructions: prompt.md
+
+skills: [blog-post]
+
+os_env:
+  type: caller_process
+  cwd: .
+  sandbox:
+    type: none
+
+tools:
+  builtins:
+    # Keyless, so the agent runs without a search API key; swap in a keyed
+    # provider (perplexity, tavily, google) for better recall.
+    - name: web_search
+      search_provider: duckduckgo
+    - web_fetch
+
+guardrails:
+  policies:
+    blast_radius:
+      type: function
+      on: [tool_call]
+      function:
+        path: omnigent.inner.nessie.policies.blast_radius
+        arguments:
+          gate_pushes: true
+    writes_under_blogs:
+      type: function
+      on: [tool_call]
+      function:
+        path: omnigent.policies.builtins.cel.cel_policy
+        arguments:
+          expression: >-
+            event.type != "tool_call"
+            || !(event.data.name in ["sys_os_write", "sys_os_edit", "Write", "Edit", "MultiEdit", "NotebookEdit"])
+            ? {"result": "ALLOW"}
+            : (has(event.data.arguments.path) ? event.data.arguments.path
+               : has(event.data.arguments.file_path) ? event.data.arguments.file_path
+               : "").matches("(^|/)blogs/")
+            ? {"result": "ALLOW"}
+            : {"result": "DENY", "reason": "planner may only write under blogs/."}

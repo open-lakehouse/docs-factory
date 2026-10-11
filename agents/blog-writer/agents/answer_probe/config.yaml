@@ -1,0 +1,21 @@
+spec_version: 1
+name: answer_probe
+description: >-
+  GEO input: puts the plan's reader questions to an answer engine and reports
+  what it answers and which sources it cites. Read-only, no file access.
+
+# The codex harness's web_search is OpenAI's own answer-engine retrieval, so
+# what it cites is a direct sample of how a generative engine answers the
+# reader questions today.
+executor:
+  type: omnigent
+  config:
+    harness: codex
+
+instructions: prompt.md
+
+skills: none
+
+tools:
+  builtins:
+    - web_search

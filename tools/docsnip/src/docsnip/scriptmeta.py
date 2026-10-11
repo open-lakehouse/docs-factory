@@ -32,11 +32,16 @@ _BLOCK_RE = r"(?m)^# /// (?P<type>[a-zA-Z0-9-]+)$\s(?P<content>(^#(| .*)$\s)+)^#
 # The namespaced table our tooling owns inside a script's PEP 723 metadata.
 TOOL_TABLE = "docs-factory"
 
-# A script importing docsnip.shellregions is a harness driving a shell snippet.
-_SHELL_HARNESS_RE = re.compile(
-    r"^\s*(?:from\s+docsnip\.shellregions\s+import|import\s+docsnip\.shellregions)\b",
+# A script importing docsnip.shellregions or docsnip.sqlregions is a harness
+# driving a shell or SQL snippet.
+_HARNESS_RE = re.compile(
+    r"^\s*(?:from\s+docsnip\.(shell|sql)regions\s+import"
+    r"|import\s+docsnip\.(shell|sql)regions)\b",
     re.MULTILINE,
 )
+
+# The snippet kinds a harness may publish in its place.
+_VERIFIABLE = (".sh", ".sql")
 
 
 class ScriptMetaError(Exception):
@@ -138,9 +143,9 @@ class DocsFactoryMeta:
     ``AWS_ENDPOINT_URL`` that points host-side clients at ``envs/aws-sim``
     while the snippet code stays endpoint-free. ``verifies`` (relative to the
     script's directory) marks the script as a test harness for a non-Python
-    snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh``: the
-    published runnable example is that file, not the harness. ``claims`` feed
-    the compatibility matrices (see :class:`Claim`).
+    snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh`` or
+    ``foo.sql``: the published runnable example is that file, not the harness.
+    ``claims`` feed the compatibility matrices (see :class:`Claim`).
     """
 
     compose: str | None = None
@@ -308,8 +313,9 @@ def check(content_root: Path) -> list[str]:
     Asserts each script parses, that every declared ``compose`` file exists on
     disk, and that a ``verifies`` target exists and is quoted by some page fence
     (otherwise the published example would be a file no reader sees). A script
-    that drives a shell snippet through ``docsnip.shellregions`` must declare
-    ``verifies``, or the site publishes the harness instead of the script. Malformed
+    that drives a shell or SQL snippet through ``docsnip.shellregions`` or
+    ``docsnip.sqlregions`` must declare ``verifies``, or the site publishes the
+    harness instead of the snippet. Malformed
     metadata is turned into an error string rather than a raised exception so it
     aggregates with the rest of ``docsnip check``.
     """
@@ -333,10 +339,12 @@ def check(content_root: Path) -> list[str]:
             )
         verified = meta.verifies_path()
         if verified is None:
-            if _SHELL_HARNESS_RE.search(path.read_text()):
+            if harness := _HARNESS_RE.search(path.read_text()):
+                kind = harness.group(1) or harness.group(2)
+                ext = "sh" if kind == "shell" else "sql"
                 errors.append(
-                    f"{path}: drives a shell snippet via docsnip.shellregions but "
-                    '[tool.docs-factory] has no verifies = "<name>.sh"'
+                    f"{path}: drives a {kind} snippet via docsnip.{kind}regions but "
+                    f'[tool.docs-factory] has no verifies = "<name>.{ext}"'
                 )
             continue
         if not verified.is_file():
@@ -345,11 +353,11 @@ def check(content_root: Path) -> list[str]:
                 f"{meta.docs_factory.verifies}"
             )
             continue
-        if verified.suffix != ".sh":
-            # The published runnable example's run instructions are shell-specific.
+        if verified.suffix not in _VERIFIABLE:
+            # The site publishes the target with run instructions for its kind.
             errors.append(
-                f"{path}: [tool.docs-factory].verifies must name a .sh script: "
-                f"{meta.docs_factory.verifies}"
+                f"{path}: [tool.docs-factory].verifies must name a .sh or .sql "
+                f"snippet: {meta.docs_factory.verifies}"
             )
             continue
         if fence_sources is None:

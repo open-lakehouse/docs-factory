@@ -164,6 +164,11 @@ time with `docsnip.shellregions.run` and asserts on server state in between.
 The driver names its script with `verifies = "<name>.sh"` in that table, so the
 site publishes the `.sh` readers see as the runnable example, not the driver.
 `docsnip check` fails a `docsnip.shellregions` driver that leaves it out.
+SQL a reader types into an engine's shell (`spark-sql`, the DuckDB CLI) works
+the same way: a region-marked `snippets/*.sql` (markers are `-- --8<-- …`
+comments) and a `*_cli.py` driver that opens the engine and runs one region at
+a time with `docsnip.sqlregions.run`, or pipes `sqlregions.text(...)` into the
+shell itself, with `verifies = "<name>.sql"`.
 Every Unity Catalog page runs against the shared environment in
 [`envs/unitycatalog/`](../envs/unitycatalog/README.md): `compose.yaml` for the
 server, `compose.aws.yaml` for the server plus aws-sim, `compose.postgres.yaml`

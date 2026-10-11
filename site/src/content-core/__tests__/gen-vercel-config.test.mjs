@@ -39,6 +39,13 @@ test(".sh rule sets noindex + text/x-shellscript and continues", () => {
   expect(sh.continue).toBe(true);
 });
 
+test(".sql rule sets noindex + application/sql and continues", () => {
+  const sql = routes.find((r) => r.src === "/(.*)\\.sql");
+  expect(sql.headers["X-Robots-Tag"]).toBe("noindex");
+  expect(sql.headers["Content-Type"]).toBe("application/sql; charset=utf-8");
+  expect(sql.continue).toBe(true);
+});
+
 test("companion-file misses 404 AFTER filesystem and BEFORE the SPA catch-all", () => {
   // A .md/.py/scripts.json request the filesystem didn't resolve must return a real
   // 404, never fall through to /index.html — otherwise the app-shell HTML gets
@@ -46,7 +53,7 @@ test("companion-file misses 404 AFTER filesystem and BEFORE the SPA catch-all", 
   // companion URL's key, permanently poisoning the review workspace's twin fetch.
   const fsIdx = routes.findIndex((r) => r.handle === "filesystem");
   const catchAll = routes.findIndex((r) => r.src === "/.*");
-  const mdPy404 = routes.findIndex((r) => r.src === "/(.*)\\.(md|py|sh)" && r.status === 404);
+  const mdPy404 = routes.findIndex((r) => r.src === "/(.*)\\.(md|py|sh|sql)" && r.status === 404);
   const jsonMiss404 = routes.findIndex((r) => r.src === "/scripts\\.json" && r.status === 404);
 
   for (const idx of [mdPy404, jsonMiss404]) {

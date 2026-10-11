@@ -63,10 +63,11 @@ export function runDocsnipScripts(root = repoRoot) {
 }
 
 // A pymdownx/mkdocs snippet marker line, e.g. `# --8<-- [start:attach]` or
-// `# --8<-- [end:attach]`. These are whole-line Python comments that delimit the
-// regions `file=… start=… end=…` fences inline (see fences.mjs / snippetcheck.py).
-// Anchored to a full line so we never clip a `--8<--` that appears inside a string.
-const SECTION_MARKER_LINE_RE = /^\s*#\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
+// `-- --8<-- [end:attach]`. These are whole-line Python/shell (`#`) or SQL (`--`)
+// comments that delimit the regions `file=… start=… end=…` fences inline (see
+// fences.mjs / snippetcheck.py). Anchored to a full line so we never clip a
+// `--8<--` that appears inside a string.
+const SECTION_MARKER_LINE_RE = /^\s*(?:#|--)\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
 
 /**
  * Strip `--8<--` section-marker comment lines from a served script (pure, for
@@ -131,14 +132,15 @@ export function publishScript(text) {
 
 /**
  * A script's one-line purpose (pure, for testing): the first line of a Python
- * module docstring, or the first comment paragraph after a shell shebang. Null
- * when the script has neither.
+ * module docstring, or the first comment paragraph of a shell script (after its
+ * shebang) or SQL file. Null when the script has neither.
  */
 export function scriptSummary(text, kind) {
-  if (kind === "shell") {
+  if (kind === "shell" || kind === "sql") {
+    const comment = kind === "sql" ? /^--(?: (.*))?$/ : /^#(?: (.*))?$/;
     const para = [];
     for (const line of text.split("\n").slice(text.startsWith("#!") ? 1 : 0)) {
-      const m = /^#(?: (.*))?$/.exec(line);
+      const m = comment.exec(line);
       if (!m || m[1] === undefined || line.includes("--8<--")) break;
       para.push(m[1].trim());
     }
@@ -178,10 +180,10 @@ function servedPaths(path, slug, hrefFor) {
  *            → `/blog/<slug>`
  * The fetch URL serves the file under that route, preserving any subpath + name.
  *
- * A harness entry (`verifies` set, e.g. `foo_cli.py` driving `foo.sh`) publishes
- * the verified `.sh` the page quotes instead of itself. It keeps the harness's
- * compose contract (the stack the script talks to) but not its Python deps, which
- * are the harness's own.
+ * A harness entry (`verifies` set, e.g. `foo_cli.py` driving `foo.sh` or
+ * `foo.sql`) publishes the verified file the page quotes instead of itself, as
+ * kind `shell` or `sql`. It keeps the harness's compose contract (the stack the
+ * script talks to) but not its Python deps, which are the harness's own.
  *
  * `environment` is the compose's `envs/environments.yml` key and `env` that
  * entry's client variables: what a reader exports, never the harness-only
@@ -193,21 +195,21 @@ function servedPaths(path, slug, hrefFor) {
  */
 export function scriptEntry(entry, { hrefFor = hrefFromIdentity } = {}) {
   const slug = entry.tutorial_slug;
-  const shell = Boolean(entry.verifies);
-  const gitPath = shell ? entry.verifies : entry.path;
+  const harness = Boolean(entry.verifies);
+  const gitPath = harness ? entry.verifies : entry.path;
   return {
-    kind: shell ? "shell" : "python",
+    kind: !harness ? "python" : gitPath.endsWith(".sql") ? "sql" : "shell",
     gitPath,
     ...servedPaths(gitPath, slug, hrefFor),
     tutorialSlug: slug,
-    requiresPython: shell ? null : entry.requires_python,
-    dependencies: shell ? [] : entry.dependencies,
+    requiresPython: harness ? null : entry.requires_python,
+    dependencies: harness ? [] : entry.dependencies,
     compose: entry.compose,
     environment: entry.environment ?? null,
     services: entry.services,
     baseUrlEnv: entry.base_url_env,
     env: entry.client_env ?? {},
-    helpers: shell
+    helpers: harness
       ? []
       : (entry.helpers ?? []).map((path) => ({
           gitPath: path,

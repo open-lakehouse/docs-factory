@@ -45,11 +45,11 @@ const stripHost = (v) => v.replace(/^https?:\/\//, "").replace(/\/+$/, "");
  *   1. `/api/(.*)` proxies RPCs to the Function, stripping the `/api` prefix (the
  *      Hono app mounts Connect at root). MUST precede filesystem so POSTs aren't
  *      swallowed by the SPA fallback.
- *   2. `.md` / `.py` / `.sh` header rules: noindex + Content-Type, with
+ *   2. `.md` / `.py` / `.sh` / `.sql` header rules: noindex + Content-Type, with
  *      `continue: true` so the filesystem handler still serves the actual file.
  *   3. `handle: filesystem` serves the built static assets (incl. the .md twins
- *      and .py/.sh scripts the review workspace fetches).
- *   4. A companion-file miss guard: any `.md`/`.py`/`.sh`/`scripts.json` request the
+ *      and .py/.sh/.sql scripts the review workspace fetches).
+ *   4. A companion-file miss guard: any `.md`/`.py`/`.sh`/`.sql`/`scripts.json` request the
  *      filesystem DIDN'T resolve returns a real 404 — it must NOT reach the SPA
  *      catch-all below. Without this, a miss falls through to `/index.html`, and
  *      because the step-2 header rule already stamped `Content-Type: text/markdown`
@@ -81,9 +81,14 @@ export function buildRoutes({ fnHost }) {
       headers: { "X-Robots-Tag": "noindex", "Content-Type": "text/x-shellscript; charset=utf-8" },
       continue: true,
     },
+    {
+      src: "/(.*)\\.sql",
+      headers: { "X-Robots-Tag": "noindex", "Content-Type": "application/sql; charset=utf-8" },
+      continue: true,
+    },
 
     { handle: "filesystem" },
-    { src: "/(.*)\\.(md|py|sh)", status: 404 },
+    { src: "/(.*)\\.(md|py|sh|sql)", status: 404 },
     { src: "/scripts\\.json", status: 404 },
     { src: "/.*", dest: "/index.html" },
   ];

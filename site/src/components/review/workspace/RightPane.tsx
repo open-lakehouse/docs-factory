@@ -2,8 +2,8 @@
 //   1. A portal slot the ACTIVE tab fills with its own comment view (from
 //      inside that tab's ReviewProvider).
 //   2. Per-page Activity for the active content tab.
-// Cross-tab inbox (latest comments) lives on Overview → Latest comments;
-// requested-from-me lives on the left tree (UserCheck indicators).
+// Cross-content activity (latest comments, requests to me) lives on the Inbox
+// item; the left tree also marks requested pages (UserCheck indicators).
 import { PanelRightClose } from "lucide-react";
 import ContentEventTimeline from "../ContentEventTimeline";
 import { useWorkspaceTabs } from "./workspace-tabs-context";

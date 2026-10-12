@@ -462,20 +462,20 @@ body {
 .review-dashboard { max-width: 52rem; }
 /* Blog pipeline (RevOps) table: priority order, target dates, reorder controls. */
 .revops-dashboard { max-width: 60rem; }
-.overview-tab-panel {
+.workspace-panel {
   background: var(--background);
 }
-.overview-tab-body {
+.workspace-panel-body {
   max-width: 60rem;
   padding: 1.25rem 1.5rem 2rem;
 }
-.overview-tab-body h1 {
+.workspace-panel-body h1 {
   margin: 0 0 0.35rem;
   font-size: 1.35rem;
   font-weight: 650;
   color: var(--heading);
 }
-.overview-tab-body > .muted {
+.workspace-panel-body > .muted {
   margin: 0 0 1rem;
   font-size: 0.85rem;
 }

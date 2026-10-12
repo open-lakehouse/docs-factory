@@ -26,7 +26,7 @@ import {
 import { formatRequests, formatStatuses, formatThread, formatThreads } from "./format.js";
 import { browserLogin } from "./login.js";
 import { repoRoot } from "./repo.js";
-import { completeRequest, listRequests, type RequestFilter } from "./requests.js";
+import { completeRequest, listRequests, type RequestFilter, type RequestKind } from "./requests.js";
 import { checkReady, listStatus, type PageStatusFilter } from "./status.js";
 
 const USAGE = `review-feedback: read and answer docs-factory review threads
@@ -41,7 +41,8 @@ Usage:
   review-feedback reply <thread-id> (--body <md> | --file <path|->) [--applied]
   review-feedback status [--filter awaiting-ready|unapproved-ready|in-review|all]
                          [--area docs|blogs] [--project p] [--slug s] [--json]
-  review-feedback requests [--filter accepted|open|all] [--project p] [--json]
+  review-feedback requests [--filter accepted|open|all] [--kind page|journey]
+                           [--project p] [--json]
   review-feedback complete-request <id> --planned <backlog-id> [--pr <url>]
   review-feedback check-ready [--base origin/main]
 
@@ -65,6 +66,7 @@ const { values: flags, positionals } = parseArgs({
     file: { type: "string" },
     applied: { type: "boolean" },
     filter: { type: "string" },
+    kind: { type: "string" },
     planned: { type: "string" },
     pr: { type: "string" },
     base: { type: "string" },
@@ -242,7 +244,15 @@ async function main() {
       if (!["accepted", "open", "all"].includes(filter)) {
         throw new ConfigError("--filter must be accepted, open, or all");
       }
-      const requests = await listRequests(connection(), { filter, project: flags.project });
+      const kind = flags.kind as RequestKind | undefined;
+      if (kind && !["page", "journey"].includes(kind)) {
+        throw new ConfigError("--kind must be page or journey");
+      }
+      const requests = await listRequests(connection(), {
+        filter,
+        kind,
+        project: flags.project,
+      });
       return flags.json ? json(requests) : print(formatRequests(requests));
     }
     case "complete-request": {

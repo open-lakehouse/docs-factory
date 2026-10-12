@@ -161,8 +161,8 @@ just arch-dev                          # LikeC4 architecture model at :5173
    script's `main()`, entry point, and teardown stay outside the regions, and
    no step says "create the script" or "run the script".
 6. If the script proves what an engine or client can do (read, append, create
-   a managed table, …), claim it in `[tool.docs-factory] claims.<interface>`
-   and run `uv run docsnip compat --fix`: compatibility tables such as R10's
+   a managed table, …), claim that journey in
+   `[tool.docs-factory] claims.<interface>` and run `uv run docsnip compat --fix`: compatibility tables such as R10's
    are rendered from claims, never edited by hand. Only scripts on `ready`
    pages gate CI, so only their claims render. See `content/README.md`
    "Compatibility claims".

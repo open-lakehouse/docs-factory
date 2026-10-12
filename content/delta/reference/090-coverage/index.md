@@ -20,22 +20,27 @@ come from the [documentation plan][plan].
 
 ## How to read and update this page
 
+The journey tables below are generated from
+[`compatibility.yml`](../../compatibility.yml) and the claims in each page's
+scripts (`uv run docsnip compat --fix`); edit those, never the tables. The
+factory app's Overview → Compatibility panel shows the same cells with each
+one's proofs and evidence.
+
 | Cell | Meaning |
 | --- | --- |
-| `tested` | A page in this repo runs a script that asserts it. The link goes to that page. |
-| `documented` | The engine's docs or source say so. The link goes there. Not verified here. |
-| `no` | Evidence that it doesn't work: a doc statement, a missing API, or a test that asserts the failure. |
-| `?` | Unknown. The [open checks](#open-checks) list the ones that matter most. |
-| — | Writer-only feature, so it never blocks a reader. |
+| ✓ | A script on the linked page does the journey. "(draft)": that page isn't `ready`, so its script doesn't gate CI yet. |
+| ✗ | It doesn't work: a script asserts the failure and its error string (linked to its page), or `evidence` says so (linked to the source). |
+| docs | The engine's docs or source say it works. Not verified here. |
+| — | Unknown. The [open checks](#open-checks) list the ones that matter most. |
 
-- Only a script makes a cell `tested`. A PR that adds or changes a script
-  updates the cells that script proves.
-- A negative becomes `tested` only when a test asserts the failure and its
-  error string, so CI flags the cell when an engine adds support.
-- A `tested` cell names the versions it ran with when they differ from the
-  pins below.
-- A `documented` cell without a link takes its source from the nearest link
-  in its row, or from [tables.py][pys] and [table.py][dr-table] for API names.
+- Only a script makes a cell ✓. A PR that adds or changes a script adds the
+  `claims` for what it proves.
+- A negative is tested only when a script asserts the failure and its error
+  string, so CI flags the cell when an engine adds support.
+- Unproven cells come from `evidence` in `compatibility.yml`, each with the
+  source it came from and the API the engine's docs name.
+- The hand-written grids further down (round trips, table features) still use
+  `tested`, `documented`, `no`, and `?` in the same senses.
 - Spark SQL and PySpark run on the same engine, so the table-features section
   has one Spark column.
 
@@ -55,102 +60,117 @@ them unless it says otherwise.
 Not tracked yet: Polars, pandas, Daft, DataFusion, the Rust `deltalake` crate,
 Delta Kernel (Rust and Java), Trino, Flink, Iceberg readers through UniForm.
 
-## Scenarios by engine
+## Journeys by engine
 
-The keys are stable ids for R01 rows and for the docs that cover them. The Docs
-column gives the backlog id and its status.
+The keys are stable ids for R01 rows and for the docs that cover them.
 
 ### Create and write
 
-| Key | Spark SQL | PySpark | Python | DuckDB | Docs |
-| --- | --- | --- | --- | --- | --- |
-| `create.table` | `tested`: `CREATE TABLE delta.\`<path>\`` ([T01](../../tutorials/your-first-delta-table/index.md)); `CREATE TABLE` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md), catalog-managed) | `documented`: `DeltaTable.create()` ([tables.py][pys]) | `tested`: `DeltaTable.create()` ([T11](../../tutorials/python-to-duckdb/index.md)) | `no`: `Delta tables do not support creating tables` ([H04](../../how-to/append-and-overwrite-data/index.md)) | H03 planned |
-| `create.ctas` | `documented`: `CREATE TABLE … AS SELECT` ([batch][dd-batch]) | `documented`: `df.write.format("delta")` ([batch][dd-batch]) | `documented`: `write_deltalake()` to a new path ([writer][dr-writer]) | `?` | H03 planned |
-| `create.partitioned` | `documented`: `PARTITIONED BY` ([batch][dd-batch]) | `documented`: `partitionBy()` | `documented`: `partition_by=` | `?` | H03 planned |
-| `write.append` | `tested`: `INSERT INTO` ([T01](../../tutorials/your-first-delta-table/index.md), [H04](../../how-to/append-and-overwrite-data/index.md), [UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: `mode("append")` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `mode="append"` ([T11](../../tutorials/python-to-duckdb/index.md), [H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `INSERT INTO` an attached path ([H04](../../how-to/append-and-overwrite-data/index.md)); catalog-managed ([UC DuckDB](../../../unitycatalog/how-to/duckdb/index.md)). History shows operation `UNKNOWN`. | H04 draft |
-| `write.overwrite` | `tested`: `INSERT OVERWRITE` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `mode("overwrite")` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `mode="overwrite"` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `no`: appends only; `DELETE` fails with `Can only delete from base table` ([H04](../../how-to/append-and-overwrite-data/index.md)) | H04 draft |
-| `write.replace-where` | `documented`: `REPLACE WHERE` ([batch][dd-batch]) | `documented`: `replaceWhere` option | `documented`: `mode="overwrite", predicate=` | `no` | H04 later section |
-| `write.dynamic-partitions` | `documented`: `partitionOverwriteMode=dynamic` ([batch][dd-batch]) | `documented`: same conf | `?`: no option found | `no` | H04 later section |
-| `write.enforce-schema` | `?`: same engine as PySpark | `tested`: other columns fail with `DELTA_METADATA_MISMATCH` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: other columns fail with `SchemaMismatchError` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `?` | H04 draft; H10 planned |
-| `write.idempotent` | `documented`: `txnAppId`/`txnVersion` session confs ([batch][dd-batch]) | `documented`: writer options | `documented`: `CommitProperties(app_transactions=…)` ([transaction.py][dr-txn]) | `documented`: `delta_set_transaction_version()` ([extension][duck]) | H54 planned |
-| `write.commit-metadata` | `documented`: `commitInfo.userMetadata` conf | `documented`: `userMetadata` option | `documented`: `CommitProperties(custom_metadata=…)` | `?` | H54 planned |
+<!-- compat:create-and-write generated by `uv run docsnip compat --fix` from ../../compatibility.yml and script claims; edit those, not this table -->
+| Operation | [Spark SQL 4.2](model:deltaSpark) | [PySpark 4.2](model:deltaSpark) | [Python 1.6](model:deltaRs) | [DuckDB](model:duckdb) |
+| --- | --- | --- | --- | --- |
+| Create a table (`create.table`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#create-the-table) `CREATE TABLE` through Unity Catalog | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `DeltaTable.create()` | [✓](../../tutorials/python-to-duckdb/index.md#create-a-table) `DeltaTable.create()` (draft) | [✗](../../how-to/append-and-overwrite-data/index.md#append-rows) (draft) |
+| Create from select (`create.ctas`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `CREATE TABLE … AS SELECT` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `df.write.format("delta")` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/writer/writer.py) `write_deltalake()` | — |
+| Create partitioned table (`create.partitioned`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `PARTITIONED BY` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `partitionBy()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `partition_by=` | — |
+| Append rows (`write.append`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#write-some-rows) `INSERT INTO` through Unity Catalog | [✓](../../how-to/append-and-overwrite-data/index.md#append-rows) `mode("append")` (draft) | [✓](../../how-to/append-and-overwrite-data/index.md#append-rows) `write_deltalake(mode="append")` (draft) | [✓](../../../unitycatalog/how-to/duckdb/index.md#append-rows) `INSERT INTO` through Unity Catalog |
+| Overwrite rows (`write.overwrite`) | [✓](../../how-to/append-and-overwrite-data/index.md#overwrite-a-table) `INSERT OVERWRITE` (draft) | [✓](../../how-to/append-and-overwrite-data/index.md#overwrite-a-table) `mode("overwrite")` (draft) | [✓](../../how-to/append-and-overwrite-data/index.md#overwrite-a-table) `write_deltalake(mode="overwrite")` (draft) | [✗](../../how-to/append-and-overwrite-data/index.md#overwrite-a-table) appends only (draft) |
+| Replace where (`write.replace-where`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `REPLACE WHERE` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `replaceWhere` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `mode="overwrite", predicate=` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Dynamic partitions (`write.dynamic-partitions`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `partitionOverwriteMode=dynamic` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) | — | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Enforce schema (`write.enforce-schema`) | — | [✓](../../how-to/append-and-overwrite-data/index.md#append-rows) other columns fail with `DELTA_METADATA_MISMATCH` (draft) | [✓](../../how-to/append-and-overwrite-data/index.md#append-rows) other columns fail with `SchemaMismatchError` (draft) | — |
+| Idempotent writes (`write.idempotent`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `txnAppId` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/transaction.py) `CommitProperties(app_transactions=…)` | [docs](https://duckdb.org/docs/current/core_extensions/delta.html) `delta_set_transaction_version()` |
+| Commit metadata (`write.commit-metadata`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `commitInfo.userMetadata` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `userMetadata` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `CommitProperties(custom_metadata=…)` | — |
+<!-- /compat:create-and-write -->
 
 ### Modify rows
 
-| Key | Spark SQL | PySpark | Python | DuckDB | Docs |
-| --- | --- | --- | --- | --- | --- |
-| `dml.update` | `tested`: `UPDATE` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `DeltaTable.update()` ([update][dd-update]) | `documented`: `DeltaTable.update()` | `no`: `Can only update base table` ([H04](../../how-to/append-and-overwrite-data/index.md)) | H06 planned |
-| `dml.delete` | `tested`: `DELETE FROM` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `DeltaTable.delete()` | `documented`: `DeltaTable.delete()` | `no`: `Can only delete from base table` ([H04](../../how-to/append-and-overwrite-data/index.md)) | H06 planned |
-| `merge.upsert` | `documented`: `MERGE INTO` ([update][dd-update]) | `documented`: `merge()` builder | `documented`: `merge()` + `when_matched_*`/`when_not_matched_*` | `no` | H05, T03 planned |
-| `merge.not-matched-by-source` | `documented` ([update][dd-update]) | `documented` | `documented`: `when_not_matched_by_source_*` | `no` | H05 planned |
-| `merge.schema-evolution` | `documented`: `schema.autoMerge.enabled` conf | `documented`: `withSchemaEvolution()` | `documented`: `merge(merge_schema=True)` | `no` | H05, H10 planned |
+<!-- compat:modify-rows generated by `uv run docsnip compat --fix` from ../../compatibility.yml and script claims; edit those, not this table -->
+| Operation | [Spark SQL 4.2](model:deltaSpark) | [PySpark 4.2](model:deltaSpark) | [Python 1.6](model:deltaRs) | [DuckDB](model:duckdb) |
+| --- | --- | --- | --- | --- |
+| Update rows (`dml.update`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#change-rows) `UPDATE` through Unity Catalog | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx) `DeltaTable.update()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `DeltaTable.update()` | [✗](../../how-to/append-and-overwrite-data/index.md#overwrite-a-table) (draft) |
+| Delete rows (`dml.delete`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#change-rows) `DELETE FROM` through Unity Catalog | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `DeltaTable.delete()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `DeltaTable.delete()` | [✗](../../how-to/append-and-overwrite-data/index.md#overwrite-a-table) (draft) |
+| Merge upsert (`merge.upsert`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx) `MERGE INTO` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `merge()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `merge()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Merge not matched by source (`merge.not-matched-by-source`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx) | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `when_not_matched_by_source_*` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Merge schema evolution (`merge.schema-evolution`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `schema.autoMerge.enabled` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `withSchemaEvolution()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `merge(merge_schema=True)` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+<!-- /compat:modify-rows -->
 
 ### Read and history
 
-| Key | Spark SQL | PySpark | Python | DuckDB | Docs |
-| --- | --- | --- | --- | --- | --- |
-| `read.scan` | `tested`: `SELECT` by path ([H01](../../how-to/read-a-delta-table/index.md), [T01](../../tutorials/your-first-delta-table/index.md)); by name ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: `spark.read.format("delta").load()` ([H01](../../how-to/read-a-delta-table/index.md)) | `tested`: `DeltaTable(path).to_pandas()` ([H01](../../how-to/read-a-delta-table/index.md), [T11](../../tutorials/python-to-duckdb/index.md)) | `tested`: `delta_scan()` ([H01](../../how-to/read-a-delta-table/index.md), [T11](../../tutorials/python-to-duckdb/index.md)); through `unity_catalog` ([UC DuckDB](../../../unitycatalog/how-to/duckdb/index.md)) | H01 draft |
-| `read.pushdown` | `documented`: data skipping ([optimizations][dd-opt]); filters `tested` ([H01](../../how-to/read-a-delta-table/index.md)) | `documented`; filters `tested` ([H01](../../how-to/read-a-delta-table/index.md)) | `documented`: `to_pyarrow_dataset()`; `to_pandas(filters=…)` `tested` ([H01](../../how-to/read-a-delta-table/index.md)) | `documented`: filter and projection pushdown ([extension][duck]); filters `tested` ([H01](../../how-to/read-a-delta-table/index.md)) | H01 draft (results tested, skipping not measured) |
-| `read.version` | `tested`: `VERSION AS OF` ([H02](../../how-to/query-a-table-as-of-version/index.md), [T01](../../tutorials/your-first-delta-table/index.md), [UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: `versionAsOf` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: `DeltaTable(path, version=n)` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: `AT (VERSION => n)`, `ATTACH … (VERSION n)` ([H02](../../how-to/query-a-table-as-of-version/index.md), [T11](../../tutorials/python-to-duckdb/index.md)) | H02 draft |
-| `read.timestamp` | `tested`: `TIMESTAMP AS OF <expression>` on a named table; on a path only a string, else `UNSUPPORTED_DATASOURCE_FOR_DIRECT_QUERY` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: `timestampAsOf` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: `load_as_version(datetime)` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `no`: `only support at_clause with unit 'version'` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | H02 draft |
-| `read.past-retention` | `no`: a version older than `deletedFileRetentionDuration` fails with `DELTA_UNSUPPORTED_TIME_TRAVEL_BEYOND_DELETED_FILE_RETENTION_DURATION` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `no`: same check | `tested`: reads it while its files exist ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: reads it while its files exist ([H02](../../how-to/query-a-table-as-of-version/index.md)) | H02 draft; E12 planned |
-| `history.list` | `tested`: `DESCRIBE HISTORY` ([T01](../../tutorials/your-first-delta-table/index.md), [H02](../../how-to/query-a-table-as-of-version/index.md), [H04](../../how-to/append-and-overwrite-data/index.md), [UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: `DeltaTable.forPath().history()` ([H02](../../how-to/query-a-table-as-of-version/index.md), [H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `history()` ([T11](../../tutorials/python-to-duckdb/index.md), [H02](../../how-to/query-a-table-as-of-version/index.md), [H04](../../how-to/append-and-overwrite-data/index.md), [T02](../../tutorials/explore-table-history/index.md)) | `no`: no history function ([extension][duck]) | H02 draft (to pick a version); H18 planned |
-| `history.detail` | `tested`: `DESCRIBE DETAIL`, `SHOW TBLPROPERTIES` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `detail()` | `documented`: `metadata()`, `protocol()`, `get_add_actions()` | `documented`: `delta_list_files()` (files only) | H18 planned |
-| `history.restore` | `documented`: `RESTORE TABLE` ([utility][dd-utility]) | `documented`: `restoreToVersion()`/`restoreToTimestamp()` | `documented`: `restore()` | `no` | H08 planned |
-| `history.shallow-clone` | `documented`: `SHALLOW CLONE` ([utility][dd-utility]) | `documented`: `clone(isShallow=True)` | `no`: no API | `no` | H09 later |
+<!-- compat:read-and-history generated by `uv run docsnip compat --fix` from ../../compatibility.yml and script claims; edit those, not this table -->
+| Operation | [Spark SQL 4.2](model:deltaSpark) | [PySpark 4.2](model:deltaSpark) | [Python 1.6](model:deltaRs) | [DuckDB](model:duckdb) |
+| --- | --- | --- | --- | --- |
+| Scan table (`read.scan`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#write-some-rows) `spark.table()` through Unity Catalog | [✓](../../how-to/read-a-delta-table/index.md#read-a-table) `spark.read.format("delta").load()` (draft) | [✓](../../how-to/read-a-delta-table/index.md#read-a-table) `DeltaTable(path).to_pandas()` (draft) | [✓](../../../unitycatalog/how-to/duckdb/index.md#query-a-table) through Unity Catalog |
+| Filter pushdown (`read.pushdown`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/optimizations-oss/index.mdx) | [docs](../../how-to/read-a-delta-table/index.md) | [docs](../../how-to/read-a-delta-table/index.md) `to_pyarrow_dataset()` | [docs](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Read version (`read.version`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#read-an-earlier-version) `VERSION AS OF` through Unity Catalog | [✓](../../how-to/query-a-table-as-of-version/index.md#query-a-version) `versionAsOf` (draft) | [✓](../../how-to/query-a-table-as-of-version/index.md#query-a-version) `DeltaTable(path, version=n)` (draft) | [✓](../../how-to/query-a-table-as-of-version/index.md#query-a-version) `AT (VERSION => n)` (draft) |
+| Read timestamp (`read.timestamp`) | [✓](../../how-to/query-a-table-as-of-version/index.md#query-a-timestamp) `TIMESTAMP AS OF` (draft) | [✓](../../how-to/query-a-table-as-of-version/index.md#query-a-timestamp) `timestampAsOf` (draft) | [✓](../../how-to/query-a-table-as-of-version/index.md#query-a-timestamp) `load_as_version(datetime)` (draft) | [✗](../../how-to/query-a-table-as-of-version/index.md#query-a-timestamp) (draft) |
+| Read past retention (`read.past-retention`) | [✗](../../how-to/query-a-table-as-of-version/index.md#retention-limits-time-travel) (draft) | [✗](../../how-to/query-a-table-as-of-version/index.md) | [✓](../../how-to/query-a-table-as-of-version/index.md#retention-limits-time-travel) while its files exist (draft) | [✓](../../how-to/query-a-table-as-of-version/index.md#retention-limits-time-travel) while its files exist (draft) |
+| List history (`history.list`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#change-rows) `DESCRIBE HISTORY` through Unity Catalog | [✓](../../how-to/query-a-table-as-of-version/index.md#find-the-version-to-read) `DeltaTable.forPath().history()` (draft) | [✓](../../how-to/query-a-table-as-of-version/index.md#find-the-version-to-read) `history()` (draft) | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| History detail (`history.detail`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#see-where-the-table-lives) `DESCRIBE DETAIL` through Unity Catalog | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `detail()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `metadata()` | [docs](https://duckdb.org/docs/current/core_extensions/delta.html) `delta_list_files()` |
+| Restore version (`history.restore`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx) `RESTORE TABLE` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `restoreToVersion()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `restore()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Shallow clone (`history.shallow-clone`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx) `SHALLOW CLONE` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `clone(isShallow=True)` | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx) | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+<!-- /compat:read-and-history -->
 
 ### Schema and data quality
 
-| Key | Spark SQL | PySpark | Python | DuckDB | Docs |
-| --- | --- | --- | --- | --- | --- |
-| `schema.merge-on-write` | `documented`: `autoMerge` conf ([batch][dd-batch]) | `documented`: `mergeSchema` option | `documented`: `schema_mode="merge"` | `no` | H10 planned |
-| `schema.overwrite` | `documented`: `CREATE OR REPLACE TABLE` | `documented`: `overwriteSchema` option | `documented`: `schema_mode="overwrite"` | `no` | H10 planned |
-| `schema.add-column` | `documented`: `ALTER TABLE ADD COLUMNS` | via `spark.sql` | `documented`: `alter.add_columns()` | `no` | H10 planned |
-| `schema.rename-drop` | `documented`: `RENAME`/`DROP COLUMN` ([column mapping][dd-colmap]) | via `spark.sql` | `no`: no API | `no` | H11 planned |
-| `schema.type-widening` | `documented`: `ALTER COLUMN … TYPE` ([type widening][dd-widen]) | via `spark.sql` | `no`: no API | `no` | H12 planned |
-| `quality.check` | `documented`: `ADD CONSTRAINT … CHECK` ([constraints][dd-constraints]) | via `spark.sql` | `documented`: `alter.add_constraint()` | `?`: enforced on append? | H13 planned |
-| `quality.not-null` | `documented`: `NOT NULL` ([constraints][dd-constraints]) | `documented`: schema nullability | `documented`: schema nullability, `alter.drop_column_not_null()` | `?` | H13 planned |
-| `columns.generated` | `documented`: `GENERATED ALWAYS AS` ([batch][dd-batch]) | `documented`: builder `generatedAlwaysAs` | `documented`: writer v4 ([feature table][dr-features]) | `?` | H14 planned |
-| `columns.identity` | `documented`: `GENERATED … AS IDENTITY` DDL ([4.4.0][dd-4.4]) | `documented`: `IdentityGenerator` | `no`: writer v6 marked unsupported ([feature table][dr-features]) | `?` | H14 planned |
-| `columns.default` | `documented`: `DEFAULT` ([defaults][dd-defaults]) | via `spark.sql` | `?`: not in the feature table | `?` | H14 planned |
+<!-- compat:schema-and-quality generated by `uv run docsnip compat --fix` from ../../compatibility.yml and script claims; edit those, not this table -->
+| Operation | [Spark SQL 4.2](model:deltaSpark) | [PySpark 4.2](model:deltaSpark) | [Python 1.6](model:deltaRs) | [DuckDB](model:duckdb) |
+| --- | --- | --- | --- | --- |
+| Merge on write (`schema.merge-on-write`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `autoMerge` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `mergeSchema` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `schema_mode="merge"` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Overwrite schema (`schema.overwrite`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `CREATE OR REPLACE TABLE` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `overwriteSchema` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `schema_mode="overwrite"` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Add column (`schema.add-column`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `ALTER TABLE ADD COLUMNS` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `spark.sql(...)` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `alter.add_columns()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Rename/drop column (`schema.rename-drop`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx) `RENAME` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx) `spark.sql(...)` | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx) | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Type widening (`schema.type-widening`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx) `ALTER COLUMN … TYPE` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx) `spark.sql(...)` | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx) | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Check constraint (`quality.check`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx) `ADD CONSTRAINT … CHECK` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx) `spark.sql(...)` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `alter.add_constraint()` | — |
+| Not null constraint (`quality.not-null`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx) `NOT NULL` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx) | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `alter.drop_column_not_null()` | — |
+| Generated columns (`columns.generated`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `GENERATED ALWAYS AS` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `generatedAlwaysAs` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md) | — |
+| Identity columns (`columns.identity`) | [docs](https://github.com/delta-io/delta/releases/tag/v4.4.0) `GENERATED … AS IDENTITY` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `IdentityGenerator` | [✗](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md) | — |
+| Default columns (`columns.default`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx) `DEFAULT` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx) `spark.sql(...)` | — | — |
+<!-- /compat:schema-and-quality -->
 
 ### Change data and streaming
 
-| Key | Spark SQL | PySpark | Python | DuckDB | Docs |
-| --- | --- | --- | --- | --- | --- |
-| `cdf.read` | `documented`: `table_changes()` ([CDF][dd-cdf]) | `documented`: `readChangeFeed` option | `documented`: `load_cdf()` | `no` | H16 planned |
-| `stream.source-sink` | `no`: no OSS SQL streaming | `documented`: `readStream`/`writeStream` ([streaming][dd-streaming]) | `no` | `no` | H17, T07 planned |
-| `stream.foreach-batch-merge` | `no` | `documented`: `foreachBatch` + `merge()` ([streaming][dd-streaming]) | `no` | `no` | H17 planned |
+<!-- compat:cdf-and-streaming generated by `uv run docsnip compat --fix` from ../../compatibility.yml and script claims; edit those, not this table -->
+| Operation | [Spark SQL 4.2](model:deltaSpark) | [PySpark 4.2](model:deltaSpark) | [Python 1.6](model:deltaRs) | [DuckDB](model:duckdb) |
+| --- | --- | --- | --- | --- |
+| Read change data (`cdf.read`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-change-data-feed.mdx) `table_changes()` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `readChangeFeed` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `load_cdf()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Stream source/sink (`stream.source-sink`) | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx) `readStream` | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx) | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Stream foreach batch merge (`stream.foreach-batch-merge`) | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx) `foreachBatch` | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx) | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+<!-- /compat:cdf-and-streaming -->
 
 ### Layout and maintenance
 
-| Key | Spark SQL | PySpark | Python | DuckDB | Docs |
-| --- | --- | --- | --- | --- | --- |
-| `layout.compact` | `documented`: `OPTIMIZE` ([optimizations][dd-opt]) | `documented`: `optimize().executeCompaction()` | `documented`: `optimize.compact()` | `no` | H20, T05 planned |
-| `layout.zorder` | `documented`: `OPTIMIZE … ZORDER BY` | `documented`: `executeZOrderBy()` | `documented`: `optimize.z_order()` | `no` | H20 planned |
-| `layout.clustering` | `documented`: `CLUSTER BY`, `ALTER TABLE … CLUSTER BY`, `OPTIMIZE FULL` ([clustering][dd-cluster]) | `documented`: builder `clusterBy()` at create; key changes via `spark.sql` | `no`: no API | `no` | H19 planned |
-| `maint.vacuum` | `documented`: `VACUUM … DRY RUN`/`LITE`/`RETAIN` ([utility][dd-utility]) | `documented`: `vacuum(hours)` | `documented`: `vacuum(dry_run=…)` | `no` | H21 planned |
-| `maint.checkpoint` | `documented`: automatic, by interval | `documented`: automatic | `documented`: `create_checkpoint()`, `cleanup_metadata()` | `no` | H22 planned |
-| `maint.purge-dvs` | `documented`: `REORG TABLE … APPLY (PURGE)` ([grammar][g4]) | via `spark.sql` | `?` | `no` | H23 planned |
-| `maint.manifest` | `documented`: `GENERATE symlink_format_manifest` ([utility][dd-utility]) | `documented`: `generate()` | `documented`: `generate()` | `no` | R05 planned |
-| `maint.repair` | `no`: no `FSCK` in the grammar ([grammar][g4]) | `no` | `documented`: `repair()` | `no` | R05 planned |
-| `migrate.convert-parquet` | `documented`: `CONVERT TO DELTA` ([utility][dd-utility]) | `documented`: `convertToDelta()` | `documented`: `convert_to_deltalake()` | `no` | H07 planned |
+<!-- compat:layout-and-maintenance generated by `uv run docsnip compat --fix` from ../../compatibility.yml and script claims; edit those, not this table -->
+| Operation | [Spark SQL 4.2](model:deltaSpark) | [PySpark 4.2](model:deltaSpark) | [Python 1.6](model:deltaRs) | [DuckDB](model:duckdb) |
+| --- | --- | --- | --- | --- |
+| Compact/optimize (`layout.compact`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/optimizations-oss/index.mdx) `OPTIMIZE` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `optimize().executeCompaction()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `optimize.compact()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Z-order (`layout.zorder`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) `OPTIMIZE … ZORDER BY` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `executeZOrderBy()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `optimize.z_order()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Clustering (`layout.clustering`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx) `CLUSTER BY` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `clusterBy()` | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx) | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Vacuum (`maint.vacuum`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx) `VACUUM … DRY RUN` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `vacuum(hours)` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `vacuum(dry_run=…)` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Checkpoint (`maint.checkpoint`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `create_checkpoint()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Purge deletion vectors (`maint.purge-dvs`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4) `REORG TABLE … APPLY (PURGE)` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4) `spark.sql(...)` | — | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Generate manifest (`maint.manifest`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx) `GENERATE symlink_format_manifest` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `generate()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `generate()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Repair table (`maint.repair`) | [✗](https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4) `FSCK` | [✗](https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4) | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `repair()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Convert to Delta (`migrate.convert-parquet`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx) `CONVERT TO DELTA` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `convertToDelta()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `convert_to_deltalake()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+<!-- /compat:layout-and-maintenance -->
 
 ### Table features and protocol
 
-| Key | Spark SQL | PySpark | Python | DuckDB | Docs |
-| --- | --- | --- | --- | --- | --- |
-| `feature.enable` | `documented`: `delta.feature.<name> = 'supported'` ([versioning][dd-versioning]) | `documented`: `addFeatureSupport()` | `documented`: `alter.add_feature()` | `no` | H24 planned |
-| `feature.drop` | `documented`: `DROP FEATURE … [TRUNCATE HISTORY]` ([drop feature][dd-drop]) | `documented`: `dropFeatureSupport()` | `no`: no API | `no` | H25 planned |
-| `feature.properties` | `tested`: `SHOW TBLPROPERTIES` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)); `documented`: `SET TBLPROPERTIES` | via `spark.sql` | `documented`: `alter.set_table_properties()` | `no` | R03 planned |
+<!-- compat:features-and-protocol generated by `uv run docsnip compat --fix` from ../../compatibility.yml and script claims; edit those, not this table -->
+| Operation | [Spark SQL 4.2](model:deltaSpark) | [PySpark 4.2](model:deltaSpark) | [Python 1.6](model:deltaRs) | [DuckDB](model:duckdb) |
+| --- | --- | --- | --- | --- |
+| Enable feature (`feature.enable`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/versioning.mdx) `delta.feature.<name> = 'supported'` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `addFeatureSupport()` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `alter.add_feature()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Drop feature (`feature.drop`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx) `DROP FEATURE … [TRUNCATE HISTORY]` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py) `dropFeatureSupport()` | [✗](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx) | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Feature properties (`feature.properties`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#see-where-the-table-lives) `SHOW TBLPROPERTIES` through Unity Catalog | [docs](../../../unitycatalog/tutorials/managed-delta-table/index.md) `spark.sql(...)` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py) `alter.set_table_properties()` | [✗](https://duckdb.org/docs/current/core_extensions/delta.html) |
+<!-- /compat:features-and-protocol -->
 
 ### Storage and catalogs
 
-| Key | Spark SQL | PySpark | Python | DuckDB | Docs |
-| --- | --- | --- | --- | --- | --- |
-| `storage.s3-multi-writer` | `documented`: `S3DynamoDBLogStore` ([storage][dd-storage]) | same | `documented`: DynamoDB lock or conditional put ([S3 locking][dr-s3]) | `?`: no locking documented for appends | H27 planned |
-| `storage.azure-gcs` | `documented` ([storage][dd-storage]) | same | `documented` ([feature table][dr-features]) | `documented`: secrets ([extension][duck]) | H29, H30 planned |
-| `catalog.unity` | `tested` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: session config (same page) | `no` for catalog-managed tables ([UC known issues](../../../unitycatalog/reference/features-and-limitations/index.md)) | `tested` ([UC DuckDB](../../../unitycatalog/how-to/duckdb/index.md), nightly `unity_catalog`) | H31 planned; setup lives in the UC docs |
+<!-- compat:storage-and-catalogs generated by `uv run docsnip compat --fix` from ../../compatibility.yml and script claims; edit those, not this table -->
+| Operation | [Spark SQL 4.2](model:deltaSpark) | [PySpark 4.2](model:deltaSpark) | [Python 1.6](model:deltaRs) | [DuckDB](model:duckdb) |
+| --- | --- | --- | --- | --- |
+| S3 multi-writer (`storage.s3-multi-writer`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx) `S3DynamoDBLogStore` | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx) `S3DynamoDBLogStore` | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/usage/writing/writing-to-s3-with-locking-provider.md) | — |
+| Azure/GCS (`storage.azure-gcs`) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx) | [docs](https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx) | [docs](https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md) | [docs](https://duckdb.org/docs/current/core_extensions/delta.html) |
+| Unity Catalog (`catalog.unity`) | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#create-the-table) catalog-managed | [✓](../../../unitycatalog/tutorials/managed-delta-table/index.md#connect-spark) session config | [✗](../../../unitycatalog/reference/features-and-limitations/index.md) | [✓](../../../unitycatalog/how-to/duckdb/index.md#attach-a-catalog) `ATTACH … (TYPE unity_catalog)` nightly `unity_catalog` |
+<!-- /compat:storage-and-catalogs -->
 
 ## Cross-engine round trips
 
@@ -193,7 +213,7 @@ the features that are specified elsewhere (last three rows).
 | `variantType` (spec body) | `?`: no docs page | `?` | `?` | `?` | `documented`: VARIANT reads | `?` |
 | `variantShredding` (RFC) | `?` | `?` | `?` | `?` | `?` | `?` |
 
-## Journeys
+## Reader paths
 
 | Journey | Path | Written | Engines covered | Blocking gap |
 | --- | --- | --- | --- | --- |

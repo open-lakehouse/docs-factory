@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -12,18 +13,16 @@ spec: ucSpec
 interfaces:
   spark: {label: Spark, pin: pyspark, package: pyspark, model: apacheSpark}
   duckdb: {label: DuckDB, package: duckdb}
-operations:
-  table.read: Read a table
-  table.write: Write a table
+journeys:
+  table.read: Read
+  table.write: {title: Write, summary: Append rows}
 tables:
   ops:
     columns: [spark, duckdb]
-    rows:
-      - {label: Read, ops: [table.read]}
-      - {label: Write, ops: [table.write]}
+    rows: [table.read, table.write]
 evidence:
   - interfaces: [duckdb]
-    ops: [table.write]
+    journeys: [table.write]
     outcome: fails
     why: "Not implemented"
     source: how-to/engine#read-it
@@ -96,9 +95,13 @@ def _table(root: Path) -> list[str]:
 
 def test_fix_renders_claims_evidence_and_unknowns(tmp_path) -> None:
     root = _repo(
-        tmp_path, _claims('claims.spark = [{ op = "table.read", region = "read" }]')
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
     )
-    assert compat.fix(root) == [root / "content/proj/reference/002-matrix/index.md"]
+    assert compat.fix(root) == [
+        root / "content/proj/reference/002-matrix/index.md",
+        root / "content/proj/compatibility.json",
+    ]
     assert _table(root) == [
         "| Operation | [Spark 4.1](model:apacheSpark) | DuckDB |",
         "| --- | --- | --- |",
@@ -111,19 +114,43 @@ def test_fix_renders_claims_evidence_and_unknowns(tmp_path) -> None:
 
 def test_a_hand_edit_is_stale(tmp_path) -> None:
     root = _repo(
-        tmp_path, _claims('claims.spark = [{ op = "table.read", region = "read" }]')
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
     )
     compat.fix(root)
     page = root / "content/proj/reference/002-matrix/index.md"
     page.write_text(page.read_text().replace("| Write | — |", "| Write | ✓ |"))
     errors, _ = compat.check(root)
-    assert len(errors) == 1 and "is stale" in errors[0]
+    assert len(errors) == 1 and "table is stale" in errors[0]
+
+
+def test_the_artifact_resolves_cells_and_goes_stale(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
+    )
+    compat.fix(root)
+    path = root / "content/proj/compatibility.json"
+    data = json.loads(path.read_text())
+    read, write = data["journeys"]
+    assert read["cells"]["spark"]["status"] == "tested"
+    assert read["cells"]["spark"]["proofs"][0]["page"] == {
+        "project": "proj",
+        "bucket": "how-to",
+        "slug": "engine",
+    }
+    assert write["summary"] == "Append rows"
+    assert write["cells"]["duckdb"]["evidence"][0]["page"]["slug"] == "engine"
+    assert data["interfaces"][0]["version"] == "4.1.0"
+    path.write_text("{}")
+    errors, _ = compat.check(root)
+    assert any("compatibility.json is stale" in e for e in errors), errors
 
 
 def test_a_draft_page_claim_is_pending(tmp_path) -> None:
     root = _repo(
         tmp_path,
-        _claims('claims.spark = [{ op = "table.read", region = "read" }]'),
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
         status="draft",
     )
     compat.fix(root)
@@ -137,7 +164,7 @@ def test_an_asserted_failure_links_its_anchor_and_note(tmp_path) -> None:
         tmp_path,
         _claims(
             "claims.duckdb = [",
-            '  { op = "table.read", fails = "boom", anchor = "read-it", note = "on S3" },',
+            '  { journey = "table.read", fails = "boom", anchor = "read-it", note = "on S3" },',
             "]",
         ),
     )
@@ -153,17 +180,29 @@ def test_an_asserted_failure_links_its_anchor_and_note(tmp_path) -> None:
 @pytest.mark.parametrize(
     ("claims", "message"),
     [
-        ('claims.spark = [{ op = "table.drop", region = "read" }]', "not an operation"),
-        ('claims.trino = [{ op = "table.read", region = "read" }]', "not an interface"),
-        ('claims.spark = [{ op = "table.read", region = "nope" }]', "no region 'nope'"),
         (
-            'claims.spark = [{ op = "table.read", region = "read", anchor = "x" }]',
+            'claims.spark = [{ journey = "table.drop", region = "read" }]',
+            "not a journey",
+        ),
+        (
+            'claims.trino = [{ journey = "table.read", region = "read" }]',
+            "not an interface",
+        ),
+        (
+            'claims.spark = [{ journey = "table.read", region = "nope" }]',
+            "no region 'nope'",
+        ),
+        (
+            'claims.spark = [{ journey = "table.read", region = "read", anchor = "x" }]',
             "no heading '#x'",
         ),
-        ('claims.spark = [{ op = "table.read", fails = "oops" }]', "doesn't assert"),
         (
-            'claims.duckdb = [{ op = "table.write", region = "read" }]',
-            "proves it works",
+            'claims.spark = [{ journey = "table.read", fails = "oops" }]',
+            "doesn't assert",
+        ),
+        (
+            'claims.duckdb = [{ journey = "table.write", region = "read" }]',
+            "proves otherwise",
         ),
     ],
 )
@@ -177,7 +216,8 @@ def test_bad_claims_are_errors(tmp_path, claims: str, message: str) -> None:
 
 def test_a_region_the_page_doesnt_show_is_an_error(tmp_path) -> None:
     root = _repo(
-        tmp_path, _claims('claims.spark = [{ op = "table.read", region = "read" }]')
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
     )
     page = root / "content/proj/how-to/001-engine/index.md"
     page.write_text(page.read_text().split("```python")[0])
@@ -185,29 +225,83 @@ def test_a_region_the_page_doesnt_show_is_an_error(tmp_path) -> None:
     assert any("shows no region 'read'" in e for e in errors), errors
 
 
-def test_a_row_whose_operations_differ_is_an_error(tmp_path) -> None:
-    root = _repo(
-        tmp_path, _claims('claims.spark = [{ op = "table.read", region = "read" }]')
-    )
+def test_a_journey_on_no_table_is_an_error(tmp_path) -> None:
+    root = _repo(tmp_path, "")
     matrix = root / "content/proj/compatibility.yml"
     matrix.write_text(
         matrix.read_text().replace(
-            "      - {label: Read, ops: [table.read]}\n",
-            "      - {label: Read, ops: [table.read, table.write]}\n",
+            "  table.read: Read\n", "  table.read: Read\n  x: X\n"
         )
     )
     errors, _ = compat.check(root)
-    assert any("split the row" in e for e in errors), errors
+    assert any("journeys.x is on no table" in e for e in errors), errors
+
+
+def test_documented_evidence_shows_only_where_the_table_asks(tmp_path) -> None:
+    root = _repo(tmp_path, "")
+    matrix = root / "content/proj/compatibility.yml"
+    text = matrix.read_text() + (
+        "  - interfaces: [spark]\n"
+        "    journeys: [table.read]\n"
+        "    outcome: works\n"
+        "    why: The docs say so\n"
+        "    source: https://example.com/read\n"
+        "    api: {spark: spark.read}\n"
+    )
+    matrix.write_text(text)
+    compat.fix(root)
+    assert _table(root)[2] == "| Read | — | — |"
+    matrix.write_text(text.replace("rows: [", "documented: true\n    rows: ["))
+    compat.fix(root)
+    assert _table(root)[2] == "| Read | [docs](https://example.com/read) | — |"
+
+
+def test_a_private_page_shows_draft_claims_and_apis(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims(
+            'claims.spark = [{ journey = "table.read", region = "read", api = "spark.read" }]'
+        ),
+        status="draft",
+    )
+    page = root / "content/proj/reference/002-matrix/index.md"
+    page.write_text(page.read_text().replace("status: ready", "status: private"))
+    compat.fix(root)
+    assert _table(root)[2:] == [
+        "| Read (`table.read`) | [✓](../../how-to/engine/index.md#read-it) "
+        "`spark.read` (draft) | — |",
+        "| Write (`table.write`) | — | [✗](../../how-to/engine/index.md#read-it) |",
+    ]
+
+
+def test_another_projects_scripts_pin_their_own_versions(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
+    )
+    other = root / "content/other/how-to/001-engine"
+    (other / "snippets").mkdir(parents=True)
+    (other / "index.md").write_text(_PAGE.format(status="ready", script="x.py"))
+    (other / "snippets" / "x.py").write_text(
+        _SCRIPT.format(
+            claims=_claims(
+                'claims."proj:spark" = [{ journey = "table.read", region = "read" }]'
+            )
+        ).replace("4.1.0", "4.2.0")
+    )
+    errors, _ = compat.check(root)
+    assert not any("different" in e for e in errors), errors
 
 
 def test_scripts_that_disagree_are_an_error(tmp_path) -> None:
     root = _repo(
-        tmp_path, _claims('claims.spark = [{ op = "table.read", region = "read" }]')
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
     )
     other = root / "content/proj/how-to/001-engine/snippets/y.py"
     other.write_text(
         _SCRIPT.format(
-            claims=_claims('claims.spark = [{ op = "table.read", fails = true }]')
+            claims=_claims('claims.spark = [{ journey = "table.read", fails = true }]')
         )
     )
     errors, _ = compat.check(root)
@@ -218,3 +312,23 @@ def test_the_repo_tables_are_current() -> None:
     root = Path(__file__).resolve().parents[3]
     errors, _ = compat.check(root)
     assert errors == [], "\n".join(errors)
+
+
+def test_evidence_can_cite_another_projects_page(tmp_path) -> None:
+    root = _repo(tmp_path, "")
+    other = root / "content/other/how-to/001-limits"
+    other.mkdir(parents=True)
+    (other / "index.md").write_text(_PAGE.format(status="ready", script="x.py"))
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text().replace(
+            "source: how-to/engine#read-it", "source: other:how-to/limits#read-it"
+        )
+    )
+    compat.fix(root)
+    assert compat.check(root)[0] == []
+    matrix.write_text(
+        matrix.read_text().replace("other:how-to/limits", "other:how-to/nope")
+    )
+    errors, _ = compat.check(root)
+    assert any("no such page" in e for e in errors), errors

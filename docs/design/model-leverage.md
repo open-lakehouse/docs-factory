@@ -165,15 +165,19 @@ external link, wait on the emitted sites having a glossary.
 ## 4b. Phase 2: the verified compatibility matrix (shipped for UC)
 
 - **Claims live on the script.** `[tool.docs-factory] claims.<interface>` lists
-  what a script proves: `{ op, region }` that an operation works, as shown in
-  that region on its page, or `{ op, fails }` that it doesn't, with `fails` the
+  what a script proves: `{ journey, region }` that a journey works, as shown in
+  that region on its page, or `{ journey, fails }` that it doesn't, with `fails` the
   error text the script asserts. The interface is a declared column, never
   inferred from the language or the dependencies, which is what sank the old
   `engines:` field (`build-pipeline.md` §10).
 - **The vocabulary is per project.** `content/<project>/compatibility.yml`
   declares interfaces (with the release.yml pin their header shows and their
-  model element), `family.scenario` operations, the tables pages embed, and
-  evidence for cells no script proves. `<project>:<interface>` claims let a UC
+  model element), `family.task` journeys, the tables pages embed (rows of
+  journey ids), and evidence for cells no script proves. A journey is the only
+  tracked unit: the calls a client makes inside it aren't modeled, because
+  doing the journey implies them. (Until October 2026 the file had atomic
+  `operations` plus table rows that grouped them; the two collapsed into
+  journeys, which removed the "split the row" error.) `<project>:<interface>` claims let a UC
   script fill a Delta cell, for the coverage page's migration.
 - **Only gating scripts count.** A claim renders once its page is `status:
   ready`, and since PR #190 the service lane fails on exactly those scripts
@@ -190,8 +194,22 @@ external link, wait on the emitted sites having a glossary.
   or no `consumes`/`implements` edge to the matrix's spec. That report added
   Spark, DuckDB, and Polars `consumes ucSpec` edges.
 
-Next: derive R10's "Query engines" labels from claims, migrate the Delta
-coverage page (`content/delta/reference/090-coverage`), and project the
+- **Delta joined in October 2026.** `content/delta/compatibility.yml` renders
+  the private coverage page's journey tables. Evidence gained `outcome: works`
+  for cells the engine's own docs vouch for (`docs` on tables that set
+  `documented: true`), and an `api` per interface. A table on a `private`
+  page also shows draft pages' claims, marked, so the coverage record is
+  complete before the Delta pages are ready.
+- **The review app reads the same resolution.** `compat --fix` also writes
+  `content/<project>/compatibility.json`, and `docsnip check` fails when it's
+  stale. It's committed because the bare Vercel build has no `uv`. Overview →
+  Compatibility renders it with each cell's proofs and evidence. "Track a
+  journey" files a `JOURNEY` content request; accepting it lands a
+  `journeys:` entry carrying `request: <id>` in a PR, so git stays the
+  authority.
+
+Next: derive R10's "Query engines" labels from claims, move the coverage
+page's round-trip and table-feature grids onto the matrix, and project the
 matrix into `concepts.json` (§3.4).
 
 ## 5. Open questions

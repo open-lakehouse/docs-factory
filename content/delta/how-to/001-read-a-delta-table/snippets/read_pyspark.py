@@ -4,6 +4,9 @@
 #
 # [tool.docs-factory]
 # lane = "spark"
+# claims.pyspark = [
+#   { journey = "read.scan", region = "read", api = 'spark.read.format("delta").load()' },
+# ]
 # ///
 """Read a Delta table with PySpark.
 

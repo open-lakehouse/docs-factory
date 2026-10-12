@@ -15,7 +15,8 @@
       "!**/src/gen",
       "!**/*.min.*",
       "!site/public/**",
-      "!architecture/dist/**"
+      "!architecture/dist/**",
+      "!content/*/compatibility.json"
     ]
   },
   "formatter": {

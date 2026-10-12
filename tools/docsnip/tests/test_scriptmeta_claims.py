@@ -24,10 +24,10 @@ def test_claims_parse_per_interface(tmp_path) -> None:
             tmp_path,
             """
 claims.duckdb = [
-  { op = "table.list", region = "list" },
-  { op = "managed.create", fails = true, anchor = "create" },
+  { journey = "table.list", region = "list" },
+  { journey = "managed.create", fails = true, anchor = "create" },
 ]
-claims."delta:spark-sql" = [{ op = "dml.update", region = "change", note = "managed" }]
+claims."delta:spark-sql" = [{ journey = "dml.update", region = "change", note = "managed" }]
 """,
         )
     )
@@ -50,12 +50,12 @@ def test_no_claims_is_an_empty_list(tmp_path) -> None:
     [
         ('claims = ["x"]', "must be a table"),
         ('claims.duckdb = "x"', "must be an array"),
-        ('claims.duckdb = [{ region = "r" }]', "needs an op"),
-        ('claims.duckdb = [{ op = "a", where = "r" }]', "unknown key(s) where"),
-        ('claims.duckdb = [{ op = "a" }]', "names the region"),
-        ('claims.duckdb = [{ op = "a", fails = "" }]', "fails is true"),
-        ('claims.duckdb = [{ op = "a", fails = 1 }]', "fails is true"),
-        ('claims.duckdb = [{ op = "a", region = 1 }]', "region must be a string"),
+        ('claims.duckdb = [{ region = "r" }]', "names a journey"),
+        ('claims.duckdb = [{ journey = "a", where = "r" }]', "unknown key(s) where"),
+        ('claims.duckdb = [{ journey = "a" }]', "names the region"),
+        ('claims.duckdb = [{ journey = "a", fails = "" }]', "fails is true"),
+        ('claims.duckdb = [{ journey = "a", fails = 1 }]', "fails is true"),
+        ('claims.duckdb = [{ journey = "a", region = 1 }]', "region must be a string"),
     ],
 )
 def test_malformed_claims_are_errors(tmp_path, claims: str, message: str) -> None:

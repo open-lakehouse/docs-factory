@@ -703,6 +703,62 @@ body {
 }
 /* Role chips use the shared shadcn <Badge> (see ROLE_VARIANT in AdminDashboard). */
 
+/* Compatibility matrix (Overview → Compatibility). Tones reuse the status-badge
+ * greens and slates so "tested" reads like "ready". */
+.compat-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.compat-projects { display: inline-flex; gap: 0.35rem; border: 0; margin: 0; padding: 0; }
+.compat-project {
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.85rem;
+  color: var(--muted-foreground);
+}
+.compat-project.is-active { color: var(--foreground); border-color: var(--muted-foreground); }
+.compat-table-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.compat-gaps-toggle { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; }
+.compat-table th[scope="row"] { font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 0.9rem; color: var(--foreground); }
+.compat-table th[scope="row"] p { font-weight: 400; margin: 0.15rem 0 0; font-size: 0.8rem; }
+.compat-version {
+  display: block;
+  font-family: var(--font-mono);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.compat-cell {
+  min-width: 2.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  padding: 0.1rem 0.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+}
+.compat-cell.is-selected { border-color: var(--muted-foreground); }
+.compat-cell.is-draft { border-style: dashed; border-color: var(--border); }
+.compat-tested { color: #4f9c5a; }
+.compat-fails,
+.compat-missing { color: #c2410c; }
+.compat-documented { color: #64748b; }
+.compat-unknown { color: var(--muted-foreground); }
+.compat-draft {
+  margin-left: 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.compat-detail-row > td { background: color-mix(in srgb, var(--surface) 55%, transparent); }
+.compat-detail { font-size: 0.85rem; }
+.compat-detail-list { list-style: none; padding: 0; margin: 0.4rem 0 0; display: grid; gap: 0.5rem; }
+.compat-link { text-decoration: underline; text-underline-offset: 2px; }
+
 .content { max-width: 60rem; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
 .muted { color: var(--muted-foreground); }
 

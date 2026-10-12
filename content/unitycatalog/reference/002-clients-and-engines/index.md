@@ -87,8 +87,11 @@ a missing API. "—" means these docs don't test it.
 | Read with vended S3 credentials | — | — | [✓](../../how-to/python-dataframes/index.md#read-a-table) | — | [✓](../../how-to/python-dataframes/index.md#read-a-table) |
 | Append to an external table | — | — | [✓](../../how-to/python-dataframes/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#append-rows) on local storage | [✓](../../how-to/python-dataframes/index.md#append-rows) |
 | Create a managed table | [✓](../../tutorials/managed-delta-table/index.md#create-the-table) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — |
-| Read or append to a managed table | [✓](../../tutorials/managed-delta-table/index.md#write-some-rows) | [✓](../../how-to/duckdb/index.md#query-a-table) | ✗ | ✗ | ✗ |
-| Update, delete, or drop a managed table | [✓](../../tutorials/managed-delta-table/index.md#change-rows) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — |
+| Read a managed table | [✓](../../tutorials/managed-delta-table/index.md#write-some-rows) | [✓](../../how-to/duckdb/index.md#query-a-table) | ✗ | ✗ | ✗ |
+| Append to a managed table | [✓](../../tutorials/managed-delta-table/index.md#write-some-rows) | [✓](../../how-to/duckdb/index.md#append-rows) | ✗ | ✗ | ✗ |
+| Update rows in a managed table | [✓](../../tutorials/managed-delta-table/index.md#change-rows) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — |
+| Delete rows from a managed table | [✓](../../tutorials/managed-delta-table/index.md#change-rows) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — |
+| Drop a managed table | [✓](../../tutorials/managed-delta-table/index.md#clean-up) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — |
 <!-- /compat:table-operations -->
 
 pandas lists tables only through the

@@ -122,7 +122,12 @@ export function formatRequests(requests: FeedbackRequest[]): string {
   if (!requests.length) return "No matching content requests.";
   return requests
     .map((r) => {
-      const where = r.area === "docs" ? `${r.project} nav section “${r.placement}”` : r.placement;
+      const where =
+        r.kind === "journey"
+          ? `content/${r.project}/compatibility.yml: a journey on table “${r.placement}”`
+          : r.area === "docs"
+            ? `${r.project} nav section “${r.placement}”`
+            : r.placement;
       const out = [
         `### ${r.id}`,
         `- ${r.title}${r.diataxis ? ` (${r.diataxis})` : ""}`,

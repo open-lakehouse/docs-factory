@@ -292,31 +292,39 @@ declared `compose` file exists.
 
 A script can also say what it proves about an engine or client, so a
 compatibility table can cite it. `content/<project>/compatibility.yml` declares
-the project's interfaces (the columns), its operations (`family.scenario` keys),
-the tables pages embed, and evidence for cells no script here proves. A script
-claims cells in its `[tool.docs-factory]` table, one array per interface:
+the project's interfaces (the columns), its journeys (`family.task` keys), the
+tables pages embed (rows of journeys), and evidence for cells no script here
+proves. A journey is what a reader sets out to do, such as "append to a managed
+table", however many calls the client makes along the way: if a script can do
+the journey, the client does what it needs to. A script claims cells in its
+`[tool.docs-factory]` table, one array per interface:
 
 ```python
 # claims.duckdb = [
-#   { op = "table.list", region = "list" },        # works, as region "list" shows
-#   { op = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "table.list", region = "list" },        # works, as region "list" shows
+#   { journey = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
 # ]
 # claims.daft = [
-#   { op = "external.append", fails = "io_config was not provided", note = "on local storage" },
+#   { journey = "external.append", fails = "io_config was not provided", note = "on local storage" },
 # ]
 ```
 
-- A claim that an operation works names the `region` its page shows; the cell
-  links to the heading above that fence. `anchor` overrides the heading.
+- A claim that a journey works names the `region` its page shows; the cell
+  links to the heading above that fence. `anchor` overrides the heading, and
+  `api` names the call the reader writes (`INSERT INTO`, `mode="append"`).
 - `fails` is `true`, or the error text the script asserts (it must appear in
   the script's code). Assert the failure, so CI flags the cell when the engine
   adds support.
 - Name the interface the reader picks, never one inferred from the language or
   the dependencies. `<project>:<interface>` claims a cell in another project's
-  matrix.
+  matrix; its package pin is checked against the claiming project's scripts.
 - A claim counts once its page is `ready`. Cells nothing proves come from
-  `evidence` (`outcome: fails` or `missing`, with `why` and a `source`) and
-  render as an unlinked ✗.
+  `evidence`: `outcome: fails` or `missing` renders an unlinked ✗, and
+  `outcome: works` (the engine's own docs or source say so, with `why` and a
+  `source`) renders as `docs` on tables that set `documented: true`.
+- A table embedded on a `private` page also shows draft pages' claims, marked
+  "(draft)", with each cell's `api` and links to its evidence. Private pages are
+  never emitted, so nothing unreviewed reaches readers.
 
 A page embeds a table between `<!-- compat:<table> -->` and
 `<!-- /compat:<table> -->`. `uv run docsnip compat --fix` renders it; don't edit

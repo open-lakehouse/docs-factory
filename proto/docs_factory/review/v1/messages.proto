@@ -571,31 +571,44 @@ enum ContentRequestStatus {
   CONTENT_REQUEST_STATUS_DONE = 4;
 }
 
+// What a content request asks for. A PAGE lands as a `planned:` nav slot; a
+// JOURNEY asks to track one more thing readers do across engines and clients,
+// and lands as a `journeys:` entry in content/<project>/compatibility.yml.
+enum ContentRequestKind {
+  CONTENT_REQUEST_KIND_UNSPECIFIED = 0;
+  CONTENT_REQUEST_KIND_PAGE = 1;
+  CONTENT_REQUEST_KIND_JOURNEY = 2;
+}
+
 // A reviewer's request for content that doesn't exist yet, anchored where it
 // should live: a docs project's nav section, or (for blogs) a tag or series.
 // The accepted backlog stays git's: accepting a request means a `planned:`
-// slot carrying `request: <id>` gets written into nav.yml (or blogs/IDEAS.md).
+// slot carrying `request: <id>` gets written into nav.yml (or blogs/IDEAS.md),
+// or, for a JOURNEY, a journey carrying it into compatibility.yml.
 message ContentRequest {
   string id = 1;
   ContentArea area = 2;
   // Docs project (content/<project>); absent for blogs.
   optional string project = 3;
-  // The nav.yml section label (docs) or tag/series (blogs) it belongs under.
+  // The nav.yml section label (docs) or tag/series (blogs) it belongs under;
+  // for a JOURNEY, the compatibility table id.
   string placement = 4;
-  // Diátaxis quadrant for docs (tutorial | how-to | reference | explanation);
-  // empty for blogs.
+  // Diátaxis quadrant for docs pages (tutorial | how-to | reference |
+  // explanation); empty for blogs and journeys.
   string diataxis = 5;
   string title = 6;
   string body_md = 7;
   ContentRequestStatus status = 8;
   string requested_by_login = 9;
-  // Set on DONE: the backlog id of the planned slot, and the PR that added it.
+  // Set on DONE: the backlog id of the planned slot (a JOURNEY's journey id),
+  // and the PR that added it.
   optional string planned_id = 10;
   optional string pr_url = 11;
   // A maintainer's reason when declining.
   optional string resolution_note = 12;
   google.protobuf.Timestamp created_at = 13;
   google.protobuf.Timestamp updated_at = 14;
+  ContentRequestKind kind = 15;
 }
 
 // A personal access token's metadata. The secret itself is returned exactly

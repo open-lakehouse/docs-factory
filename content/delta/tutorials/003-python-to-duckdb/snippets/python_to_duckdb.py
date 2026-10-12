@@ -1,6 +1,18 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = ["deltalake[pandas,pyarrow]==1.6.6", "duckdb==1.5.6"]
+#
+# [tool.docs-factory]
+# claims.deltalake = [
+#   { journey = "create.table", region = "create", api = "DeltaTable.create()" },
+#   { journey = "write.append", region = "append-first", api = 'write_deltalake(mode="append")' },
+#   { journey = "read.scan", region = "read", api = "DeltaTable(path).to_pandas()" },
+#   { journey = "history.list", region = "history", api = "history()" },
+# ]
+# claims.duckdb = [
+#   { journey = "read.scan", region = "duckdb-scan", api = "delta_scan()" },
+#   { journey = "read.version", region = "duckdb-version", api = "AT (VERSION => n)" },
+# ]
 # ///
 """Build a Delta table with the deltalake package, then query it with DuckDB.
 

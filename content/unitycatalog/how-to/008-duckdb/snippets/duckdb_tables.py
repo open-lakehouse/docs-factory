@@ -6,13 +6,18 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # claims.duckdb = [
-#   { op = "table.list", region = "list" },
-#   { op = "managed.read", region = "query" },
-#   { op = "managed.append", region = "append" },
-#   { op = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
-#   { op = "managed.update", fails = true, anchor = "create-change-and-drop-tables" },
-#   { op = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
-#   { op = "managed.drop", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "table.list", region = "list" },
+#   { journey = "managed.read", region = "query" },
+#   { journey = "managed.append", region = "append" },
+#   { journey = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "managed.update", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "managed.drop", fails = true, anchor = "create-change-and-drop-tables" },
+# ]
+# claims."delta:duckdb" = [
+#   { journey = "write.append", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
+#   { journey = "read.scan", region = "query", note = "through Unity Catalog" },
+#   { journey = "catalog.unity", region = "attach", api = "ATTACH … (TYPE unity_catalog)", note = "nightly `unity_catalog`" },
 # ]
 # ///
 """Read and append to a Unity Catalog managed Delta table from DuckDB.

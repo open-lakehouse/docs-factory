@@ -6,12 +6,27 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # claims.spark = [
-#   { op = "managed.create", region = "create-table" },
-#   { op = "managed.read", region = "write-rows" },
-#   { op = "managed.append", region = "write-rows" },
-#   { op = "managed.update", region = "change-rows" },
-#   { op = "managed.delete", region = "change-rows" },
-#   { op = "managed.drop", region = "clean-up" },
+#   { journey = "managed.create", region = "create-table" },
+#   { journey = "managed.read", region = "write-rows" },
+#   { journey = "managed.append", region = "write-rows" },
+#   { journey = "managed.update", region = "change-rows" },
+#   { journey = "managed.delete", region = "change-rows" },
+#   { journey = "managed.drop", region = "clean-up" },
+# ]
+# claims."delta:spark-sql" = [
+#   { journey = "create.table", region = "create-table", api = "CREATE TABLE", note = "through Unity Catalog" },
+#   { journey = "write.append", region = "write-rows", api = "INSERT INTO", note = "through Unity Catalog" },
+#   { journey = "read.scan", region = "write-rows", api = "spark.table()", note = "through Unity Catalog" },
+#   { journey = "history.detail", region = "inspect", api = "DESCRIBE DETAIL", note = "through Unity Catalog" },
+#   { journey = "feature.properties", region = "inspect", api = "SHOW TBLPROPERTIES", note = "through Unity Catalog" },
+#   { journey = "dml.update", region = "change-rows", api = "UPDATE", note = "through Unity Catalog" },
+#   { journey = "dml.delete", region = "change-rows", api = "DELETE FROM", note = "through Unity Catalog" },
+#   { journey = "history.list", region = "change-rows", api = "DESCRIBE HISTORY", note = "through Unity Catalog" },
+#   { journey = "read.version", region = "time-travel", api = "VERSION AS OF", note = "through Unity Catalog" },
+#   { journey = "catalog.unity", region = "create-table", note = "catalog-managed" },
+# ]
+# claims."delta:pyspark" = [
+#   { journey = "catalog.unity", region = "session", note = "session config" },
 # ]
 # ///
 """Create a catalog-managed Delta table with Spark, change it, and drop it.

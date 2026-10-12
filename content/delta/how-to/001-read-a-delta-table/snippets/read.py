@@ -1,6 +1,11 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = ["deltalake[pandas,pyarrow]==1.6.6"]
+#
+# [tool.docs-factory]
+# claims.deltalake = [
+#   { journey = "read.scan", region = "read", api = "DeltaTable(path).to_pandas()" },
+# ]
 # ///
 """Read a Delta table with the deltalake package.
 

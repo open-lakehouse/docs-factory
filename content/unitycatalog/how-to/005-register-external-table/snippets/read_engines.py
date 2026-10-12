@@ -13,9 +13,9 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
-# claims.polars = [{ op = "external.read", region = "polars" }]
-# claims.daft = [{ op = "external.read", region = "daft" }]
-# claims.duckdb = [{ op = "external.read", region = "duckdb" }]
+# claims.polars = [{ journey = "external.read", region = "polars" }]
+# claims.daft = [{ journey = "external.read", region = "daft" }]
+# claims.duckdb = [{ journey = "external.read", region = "duckdb" }]
 # ///
 """Read the registered external table by name from Polars, Daft, and DuckDB.
 

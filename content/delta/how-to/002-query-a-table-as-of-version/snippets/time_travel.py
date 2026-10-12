@@ -1,6 +1,14 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = ["deltalake[pandas,pyarrow]==1.6.6"]
+#
+# [tool.docs-factory]
+# claims.deltalake = [
+#   { journey = "read.version", region = "version", api = "DeltaTable(path, version=n)" },
+#   { journey = "read.timestamp", region = "timestamp", api = "load_as_version(datetime)" },
+#   { journey = "history.list", region = "history", api = "history()" },
+#   { journey = "read.past-retention", region = "version", anchor = "retention-limits-time-travel", note = "while its files exist" },
+# ]
 # ///
 """Query earlier versions of a Delta table with the deltalake package.
 

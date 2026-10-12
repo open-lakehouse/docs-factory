@@ -7,6 +7,9 @@
 #
 # [tool.docs-factory]
 # verifies = "read_duckdb.sql"
+# claims.duckdb = [
+#   { journey = "read.scan", region = "read", api = "delta_scan()" },
+# ]
 # ///
 """Run read_duckdb.sql region by region against a table deltalake wrote, then
 once through the DuckDB CLI the page starts."""

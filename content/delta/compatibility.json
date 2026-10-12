@@ -1,0 +1,4282 @@
+{
+  "generated": "by `uv run docsnip compat --fix`; edit compatibility.yml and script claims, not this file",
+  "project": "delta",
+  "spec": "deltaSpec",
+  "interfaces": [
+    {
+      "key": "spark-sql",
+      "label": "Spark SQL",
+      "version": "4.2.0",
+      "package": "pyspark",
+      "model": "deltaSpark"
+    },
+    {
+      "key": "pyspark",
+      "label": "PySpark",
+      "version": "4.2.0",
+      "package": "pyspark",
+      "model": "deltaSpark"
+    },
+    {
+      "key": "deltalake",
+      "label": "Python",
+      "version": "1.6.6",
+      "package": "deltalake",
+      "model": "deltaRs"
+    },
+    {
+      "key": "duckdb",
+      "label": "DuckDB",
+      "version": "1.5.6",
+      "package": "duckdb",
+      "model": "duckdb"
+    }
+  ],
+  "tables": [
+    {
+      "id": "create-and-write",
+      "title": "Create and write",
+      "columns": [
+        "spark-sql",
+        "pyspark",
+        "deltalake",
+        "duckdb"
+      ],
+      "rows": [
+        "create.table",
+        "create.ctas",
+        "create.partitioned",
+        "write.append",
+        "write.overwrite",
+        "write.replace-where",
+        "write.dynamic-partitions",
+        "write.enforce-schema",
+        "write.idempotent",
+        "write.commit-metadata"
+      ]
+    },
+    {
+      "id": "modify-rows",
+      "title": "Modify rows",
+      "columns": [
+        "spark-sql",
+        "pyspark",
+        "deltalake",
+        "duckdb"
+      ],
+      "rows": [
+        "dml.update",
+        "dml.delete",
+        "merge.upsert",
+        "merge.not-matched-by-source",
+        "merge.schema-evolution"
+      ]
+    },
+    {
+      "id": "read-and-history",
+      "title": "Read and history",
+      "columns": [
+        "spark-sql",
+        "pyspark",
+        "deltalake",
+        "duckdb"
+      ],
+      "rows": [
+        "read.scan",
+        "read.pushdown",
+        "read.version",
+        "read.timestamp",
+        "read.past-retention",
+        "history.list",
+        "history.detail",
+        "history.restore",
+        "history.shallow-clone"
+      ]
+    },
+    {
+      "id": "schema-and-quality",
+      "title": "Schema and data quality",
+      "columns": [
+        "spark-sql",
+        "pyspark",
+        "deltalake",
+        "duckdb"
+      ],
+      "rows": [
+        "schema.merge-on-write",
+        "schema.overwrite",
+        "schema.add-column",
+        "schema.rename-drop",
+        "schema.type-widening",
+        "quality.check",
+        "quality.not-null",
+        "columns.generated",
+        "columns.identity",
+        "columns.default"
+      ]
+    },
+    {
+      "id": "cdf-and-streaming",
+      "title": "Change data and streaming",
+      "columns": [
+        "spark-sql",
+        "pyspark",
+        "deltalake",
+        "duckdb"
+      ],
+      "rows": [
+        "cdf.read",
+        "stream.source-sink",
+        "stream.foreach-batch-merge"
+      ]
+    },
+    {
+      "id": "layout-and-maintenance",
+      "title": "Layout and maintenance",
+      "columns": [
+        "spark-sql",
+        "pyspark",
+        "deltalake",
+        "duckdb"
+      ],
+      "rows": [
+        "layout.compact",
+        "layout.zorder",
+        "layout.clustering",
+        "maint.vacuum",
+        "maint.checkpoint",
+        "maint.purge-dvs",
+        "maint.manifest",
+        "maint.repair",
+        "migrate.convert-parquet"
+      ]
+    },
+    {
+      "id": "features-and-protocol",
+      "title": "Table features and protocol",
+      "columns": [
+        "spark-sql",
+        "pyspark",
+        "deltalake",
+        "duckdb"
+      ],
+      "rows": [
+        "feature.enable",
+        "feature.drop",
+        "feature.properties"
+      ]
+    },
+    {
+      "id": "storage-and-catalogs",
+      "title": "Storage and catalogs",
+      "columns": [
+        "spark-sql",
+        "pyspark",
+        "deltalake",
+        "duckdb"
+      ],
+      "rows": [
+        "storage.s3-multi-writer",
+        "storage.azure-gcs",
+        "catalog.unity"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "create.table",
+      "title": "Create a table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/delta/tutorials/001-your-first-delta-table/snippets/first_table_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "your-first-delta-table"
+              },
+              "anchor": "create-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "CREATE TABLE delta.`<path>`",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "create-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable.create` (tables.py)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "DeltaTable.create()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "python-to-duckdb"
+              },
+              "anchor": "create-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "DeltaTable.create()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "append-rows",
+              "ready": false,
+              "works": false,
+              "fails": "Delta tables do not support creating tables",
+              "version": "1.5.6",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "create.ctas",
+      "title": "Create from select",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`CREATE TABLE … AS SELECT` (batch)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "CREATE TABLE … AS SELECT",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`df.write.format(\"delta\")` (batch)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "df.write.format(\"delta\")",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`write_deltalake` to a new path (writer)",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/writer/writer.py",
+              "api": "write_deltalake()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "create.partitioned",
+      "title": "Create partitioned table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`PARTITIONED BY` (batch)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "PARTITIONED BY",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`partitionBy`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "partitionBy()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`partition_by=`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "partition_by=",
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "write.append",
+      "title": "Append rows",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_spark_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "append-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "INSERT INTO",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/001-your-first-delta-table/snippets/first_table_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "your-first-delta-table"
+              },
+              "anchor": "insert-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "INSERT INTO",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "write-some-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT INTO",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_pyspark.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "append-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "mode(\"append\")",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "append-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "write_deltalake(mode=\"append\")",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "python-to-duckdb"
+              },
+              "anchor": "append-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "write_deltalake(mode=\"append\")",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "append-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": "INSERT INTO",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "append-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "INSERT INTO",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "write.overwrite",
+      "title": "Overwrite rows",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_spark_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "overwrite-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "INSERT OVERWRITE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_pyspark.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "overwrite-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "mode(\"overwrite\")",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "overwrite-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "write_deltalake(mode=\"overwrite\")",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "overwrite-a-table",
+              "ready": false,
+              "works": false,
+              "fails": "Can only delete from base table",
+              "version": "1.5.6",
+              "api": null,
+              "note": "appends only"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "write.replace-where",
+      "title": "Replace where",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`REPLACE WHERE` (batch)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "REPLACE WHERE",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`replaceWhere` option",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "replaceWhere",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`mode=\"overwrite\", predicate=`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "mode=\"overwrite\", predicate=",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "write.dynamic-partitions",
+      "title": "Dynamic partitions",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`partitionOverwriteMode=dynamic` (batch)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "partitionOverwriteMode=dynamic",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "same conf",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "write.enforce-schema",
+      "title": "Enforce schema",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "pyspark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_pyspark.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "append-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": null,
+              "note": "other columns fail with `DELTA_METADATA_MISMATCH`"
+            }
+          ],
+          "evidence": []
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "append-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": null,
+              "note": "other columns fail with `SchemaMismatchError`"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "write.idempotent",
+      "title": "Idempotent writes",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`txnAppId`/`txnVersion` session confs (batch)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "txnAppId",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "writer options",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`CommitProperties(app_transactions=…)` (transaction.py)",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/transaction.py",
+              "api": "CommitProperties(app_transactions=…)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`delta_set_transaction_version` (extension)",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": "delta_set_transaction_version()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "write.commit-metadata",
+      "title": "Commit metadata",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`commitInfo.userMetadata` conf",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "commitInfo.userMetadata",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`userMetadata` option",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "userMetadata",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`CommitProperties(custom_metadata=…)`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "CommitProperties(custom_metadata=…)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "dml.update",
+      "title": "Update rows",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "change-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "UPDATE",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable.update` (update)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx",
+              "api": "DeltaTable.update()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable.update`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "DeltaTable.update()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "overwrite-a-table",
+              "ready": false,
+              "works": false,
+              "fails": "Can only update base table",
+              "version": "1.5.6",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "dml.delete",
+      "title": "Delete rows",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "change-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DELETE FROM",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable.delete`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "DeltaTable.delete()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable.delete`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "DeltaTable.delete()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "overwrite-a-table",
+              "ready": false,
+              "works": false,
+              "fails": "Can only delete from base table",
+              "version": "1.5.6",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "merge.upsert",
+      "title": "Merge upsert",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`MERGE INTO` (update)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx",
+              "api": "MERGE INTO",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`merge` builder",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "merge()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`merge` + `when_matched_*`/`when_not_matched_*`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "merge()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "merge.not-matched-by-source",
+      "title": "Merge not matched by source",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "(update)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "The engine's docs say so.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`when_not_matched_by_source_*`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "when_not_matched_by_source_*",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "merge.schema-evolution",
+      "title": "Merge schema evolution",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`schema.autoMerge.enabled` conf",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "schema.autoMerge.enabled",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`withSchemaEvolution`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "withSchemaEvolution()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`merge(merge_schema=True)`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "merge(merge_schema=True)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "read.scan",
+      "title": "Scan table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/001-read-a-delta-table/snippets/read_spark_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "anchor": "read-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "SELECT … FROM delta.`<path>`",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/001-your-first-delta-table/snippets/first_table_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "your-first-delta-table"
+              },
+              "anchor": "query-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "SELECT",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "write-some-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "spark.table()",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/001-read-a-delta-table/snippets/read_pyspark.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "anchor": "read-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "spark.read.format(\"delta\").load()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/001-read-a-delta-table/snippets/read.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "anchor": "read-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "DeltaTable(path).to_pandas()",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "python-to-duckdb"
+              },
+              "anchor": "read-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "DeltaTable(path).to_pandas()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/001-read-a-delta-table/snippets/read_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "anchor": "read-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": "delta_scan()",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "python-to-duckdb"
+              },
+              "anchor": "query-the-table-with-duckdb",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": "delta_scan()",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "query-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "read.pushdown",
+      "title": "Filter pushdown",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "data skipping (optimizations); filters `tested` (H01)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/optimizations-oss/index.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "why": "filters `tested` (H01)",
+              "source": "how-to/read-a-delta-table",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "why": "`to_pyarrow_dataset`; `to_pandas(filters=…)` `tested` (H01)",
+              "source": "how-to/read-a-delta-table",
+              "api": "to_pyarrow_dataset()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "filter and projection pushdown (extension); filters `tested` (H01)",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "read.version",
+      "title": "Read version",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_spark_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "query-a-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "VERSION AS OF",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/001-your-first-delta-table/snippets/first_table_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "your-first-delta-table"
+              },
+              "anchor": "query-an-earlier-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "VERSION AS OF",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "read-an-earlier-version",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "VERSION AS OF",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_pyspark.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "query-a-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "versionAsOf",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "query-a-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "DeltaTable(path, version=n)",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/002-explore-table-history/snippets/explore_delta_history.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "explore-table-history"
+              },
+              "anchor": "time-travel-to-an-earlier-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "DeltaTable(path, version=n)",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "query-a-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": "AT (VERSION => n)",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "python-to-duckdb"
+              },
+              "anchor": "query-an-earlier-version-with-duckdb",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": "AT (VERSION => n)",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "read.timestamp",
+      "title": "Read timestamp",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_spark_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "query-a-timestamp",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "TIMESTAMP AS OF",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_pyspark.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "query-a-timestamp",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "timestampAsOf",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "query-a-timestamp",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "load_as_version(datetime)",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "query-a-timestamp",
+              "ready": false,
+              "works": false,
+              "fails": "only support at_clause with unit 'version'",
+              "version": "1.5.6",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "read.past-retention",
+      "title": "Read past retention",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_spark_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "retention-limits-time-travel",
+              "ready": false,
+              "works": false,
+              "fails": "DELTA_UNSUPPORTED_TIME_TRAVEL_BEYOND_DELETED_FILE_RETENTION_DURATION",
+              "version": "4.2.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "why": "same check",
+              "source": "how-to/query-a-table-as-of-version",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "retention-limits-time-travel",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": null,
+              "note": "while its files exist"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_duckdb_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "retention-limits-time-travel",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": null,
+              "note": "while its files exist"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "history.list",
+      "title": "List history",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_spark_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "find-the-version-to-read",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DESCRIBE HISTORY",
+              "note": null
+            },
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_spark_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "check-the-write-in-the-history",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DESCRIBE HISTORY",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/001-your-first-delta-table/snippets/first_table_cli.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "your-first-delta-table"
+              },
+              "anchor": "look-at-the-tables-history",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "DESCRIBE HISTORY",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "change-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DESCRIBE HISTORY",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel_pyspark.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "find-the-version-to-read",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DeltaTable.forPath().history()",
+              "note": null
+            },
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_pyspark.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "check-the-write-in-the-history",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DeltaTable.forPath().history()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "deltalake": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/002-query-a-table-as-of-version/snippets/time_travel.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "query-a-table-as-of-version"
+              },
+              "anchor": "find-the-version-to-read",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "history()",
+              "note": null
+            },
+            {
+              "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "append-and-overwrite-data"
+              },
+              "anchor": "check-the-write-in-the-history",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "history()",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/002-explore-table-history/snippets/explore_delta_history.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "explore-table-history"
+              },
+              "anchor": "inspect-the-commit-history",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "history()",
+              "note": null
+            },
+            {
+              "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "python-to-duckdb"
+              },
+              "anchor": "look-at-the-tables-history",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "history()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no history function (extension)",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "history.detail",
+      "title": "History detail",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "see-where-the-table-lives",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DESCRIBE DETAIL",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`detail`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "detail()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`metadata`, `protocol`, `get_add_actions`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "metadata()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`delta_list_files` (files only)",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": "delta_list_files()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "history.restore",
+      "title": "Restore version",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`RESTORE TABLE` (utility)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
+              "api": "RESTORE TABLE",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`restoreToVersion`/`restoreToTimestamp`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "restoreToVersion()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`restore`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "restore()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "history.shallow-clone",
+      "title": "Shallow clone",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`SHALLOW CLONE` (utility)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
+              "api": "SHALLOW CLONE",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`clone(isShallow=True)`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "clone(isShallow=True)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "schema.merge-on-write",
+      "title": "Merge on write",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`autoMerge` conf (batch)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "autoMerge",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`mergeSchema` option",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "mergeSchema",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`schema_mode=\"merge\"`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "schema_mode=\"merge\"",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "schema.overwrite",
+      "title": "Overwrite schema",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`CREATE OR REPLACE TABLE`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "CREATE OR REPLACE TABLE",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`overwriteSchema` option",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "overwriteSchema",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`schema_mode=\"overwrite\"`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "schema_mode=\"overwrite\"",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "schema.add-column",
+      "title": "Add column",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`ALTER TABLE ADD COLUMNS`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "ALTER TABLE ADD COLUMNS",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "via `spark.sql`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "spark.sql(...)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`alter.add_columns`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "alter.add_columns()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "schema.rename-drop",
+      "title": "Rename/drop column",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`RENAME`/`DROP COLUMN` (column mapping)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
+              "api": "RENAME",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "via `spark.sql`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
+              "api": "spark.sql(...)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "schema.type-widening",
+      "title": "Type widening",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`ALTER COLUMN … TYPE` (type widening)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
+              "api": "ALTER COLUMN … TYPE",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "via `spark.sql`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
+              "api": "spark.sql(...)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "quality.check",
+      "title": "Check constraint",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`ADD CONSTRAINT … CHECK` (constraints)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
+              "api": "ADD CONSTRAINT … CHECK",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "via `spark.sql`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
+              "api": "spark.sql(...)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`alter.add_constraint`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "alter.add_constraint()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "quality.not-null",
+      "title": "Not null constraint",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`NOT NULL` (constraints)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
+              "api": "NOT NULL",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "schema nullability",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "schema nullability, `alter.drop_column_not_null`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "alter.drop_column_not_null()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "columns.generated",
+      "title": "Generated columns",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`GENERATED ALWAYS AS` (batch)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "GENERATED ALWAYS AS",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "builder `generatedAlwaysAs`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "generatedAlwaysAs",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "writer v4 (feature table)",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "columns.identity",
+      "title": "Identity columns",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`GENERATED … AS IDENTITY` DDL (4.4.0)",
+              "source": "https://github.com/delta-io/delta/releases/tag/v4.4.0",
+              "api": "GENERATED … AS IDENTITY",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`IdentityGenerator`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "IdentityGenerator",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "writer v6 marked unsupported (feature table)",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "columns.default",
+      "title": "Default columns",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DEFAULT` (defaults)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx",
+              "api": "DEFAULT",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "via `spark.sql`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx",
+              "api": "spark.sql(...)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cdf.read",
+      "title": "Read change data",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`table_changes` (CDF)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-change-data-feed.mdx",
+              "api": "table_changes()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`readChangeFeed` option",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "readChangeFeed",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`load_cdf`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "load_cdf()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "stream.source-sink",
+      "title": "Stream source/sink",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "no OSS SQL streaming",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`readStream`/`writeStream` (streaming)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
+              "api": "readStream",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "stream.foreach-batch-merge",
+      "title": "Stream foreach batch merge",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`foreachBatch` + `merge` (streaming)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
+              "api": "foreachBatch",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "layout.compact",
+      "title": "Compact/optimize",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`OPTIMIZE` (optimizations)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/optimizations-oss/index.mdx",
+              "api": "OPTIMIZE",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`optimize.executeCompaction`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "optimize().executeCompaction()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`optimize.compact`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "optimize.compact()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "layout.zorder",
+      "title": "Z-order",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`OPTIMIZE … ZORDER BY`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": "OPTIMIZE … ZORDER BY",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`executeZOrderBy`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "executeZOrderBy()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`optimize.z_order`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "optimize.z_order()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "layout.clustering",
+      "title": "Clustering",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`CLUSTER BY`, `ALTER TABLE … CLUSTER BY`, `OPTIMIZE FULL` (clustering)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx",
+              "api": "CLUSTER BY",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "builder `clusterBy` at create; key changes via `spark.sql`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "clusterBy()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "maint.vacuum",
+      "title": "Vacuum",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`VACUUM … DRY RUN`/`LITE`/`RETAIN` (utility)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
+              "api": "VACUUM … DRY RUN",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`vacuum(hours)`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "vacuum(hours)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`vacuum(dry_run=…)`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "vacuum(dry_run=…)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "maint.checkpoint",
+      "title": "Checkpoint",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "automatic, by interval",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "automatic",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`create_checkpoint`, `cleanup_metadata`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "create_checkpoint()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "maint.purge-dvs",
+      "title": "Purge deletion vectors",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`REORG TABLE … APPLY (PURGE)` (grammar)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4",
+              "api": "REORG TABLE … APPLY (PURGE)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "via `spark.sql`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4",
+              "api": "spark.sql(...)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "maint.manifest",
+      "title": "Generate manifest",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`GENERATE symlink_format_manifest` (utility)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
+              "api": "GENERATE symlink_format_manifest",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`generate`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "generate()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`generate`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "generate()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "maint.repair",
+      "title": "Repair table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "no `FSCK` in the grammar (grammar)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4",
+              "api": "FSCK",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`repair`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "repair()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "migrate.convert-parquet",
+      "title": "Convert to Delta",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`CONVERT TO DELTA` (utility)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
+              "api": "CONVERT TO DELTA",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`convertToDelta`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "convertToDelta()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`convert_to_deltalake`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "convert_to_deltalake()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "feature.enable",
+      "title": "Enable feature",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`delta.feature.<name> = 'supported'` (versioning)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/versioning.mdx",
+              "api": "delta.feature.<name> = 'supported'",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`addFeatureSupport`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "addFeatureSupport()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`alter.add_feature`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "alter.add_feature()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "feature.drop",
+      "title": "Drop feature",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DROP FEATURE … [TRUNCATE HISTORY]` (drop feature)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
+              "api": "DROP FEATURE … [TRUNCATE HISTORY]",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`dropFeatureSupport`",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
+              "api": "dropFeatureSupport()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "feature.properties",
+      "title": "Feature properties",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "see-where-the-table-lives",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SHOW TBLPROPERTIES",
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "why": "via `spark.sql`",
+              "source": "unitycatalog:tutorials/managed-delta-table",
+              "api": "spark.sql(...)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`alter.set_table_properties`",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "alter.set_table_properties()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "Doesn't work.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "storage.s3-multi-writer",
+      "title": "S3 multi-writer",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`S3DynamoDBLogStore` (storage)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx",
+              "api": "S3DynamoDBLogStore",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`S3DynamoDBLogStore` (storage)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx",
+              "api": "S3DynamoDBLogStore",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "DynamoDB lock or conditional put (S3 locking)",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/usage/writing/writing-to-s3-with-locking-provider.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "storage.azure-gcs",
+      "title": "Azure/GCS",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "(storage)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyspark": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "(storage)",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "deltalake": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "(feature table)",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "secrets (extension)",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "catalog.unity",
+      "title": "Unity Catalog",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "create-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": "catalog-managed"
+            }
+          ],
+          "evidence": []
+        },
+        "pyspark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "connect-spark",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": "session config"
+            }
+          ],
+          "evidence": []
+        },
+        "deltalake": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "for catalog-managed tables (UC known issues)",
+              "source": "unitycatalog:reference/features-and-limitations",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "attach-a-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "ATTACH … (TYPE unity_catalog)",
+              "note": "nightly `unity_catalog`"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

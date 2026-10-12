@@ -1,20 +1,26 @@
 // Content requests as agent work: an ACCEPTED request is a slot to add to the
 // backlog. The agent writes a `planned:` entry (with `request: <id>`) into the
-// project's nav.yml section, or blogs/IDEAS.md, then marks the request done.
+// project's nav.yml section, or blogs/IDEAS.md, then marks the request done. A
+// journey request becomes a `journeys:` entry (with `request: <id>`) and a row
+// of the named table in content/<project>/compatibility.yml instead.
 import type { ReviewClient } from "./client.js";
 import {
   ContentArea,
   type ContentRequest,
+  ContentRequestKind,
   ContentRequestStatus,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
 
 export type RequestFilter = "accepted" | "open" | "all";
+export type RequestKind = "page" | "journey";
 
 export interface FeedbackRequest {
   id: string;
+  kind: RequestKind;
   area: "docs" | "blogs";
   project?: string;
-  /** Docs: the nav.yml section trail (`A › B`). Blogs: the series (or `Blog`). */
+  /** Docs: the nav.yml section trail (`A › B`). Blogs: the series (or `Blog`).
+   * Journeys: the compatibility.yml table id. */
   placement: string;
   diataxis?: string;
   title: string;
@@ -41,6 +47,7 @@ const FILTER: Record<RequestFilter, ContentRequestStatus[]> = {
 export function toFeedbackRequest(r: ContentRequest): FeedbackRequest {
   return {
     id: r.id,
+    kind: r.kind === ContentRequestKind.JOURNEY ? "journey" : "page",
     area: r.area === ContentArea.BLOGS ? "blogs" : "docs",
     project: r.project,
     placement: r.placement,
@@ -56,16 +63,23 @@ export function toFeedbackRequest(r: ContentRequest): FeedbackRequest {
 
 export async function listRequests(
   client: ReviewClient,
-  opts: { filter?: RequestFilter; project?: string } = {},
+  opts: { filter?: RequestFilter; project?: string; kind?: RequestKind } = {},
 ): Promise<FeedbackRequest[]> {
   const { requests } = await client.listContentRequests({
     project: opts.project,
     statuses: FILTER[opts.filter ?? "accepted"],
+    kind:
+      opts.kind === "journey"
+        ? ContentRequestKind.JOURNEY
+        : opts.kind === "page"
+          ? ContentRequestKind.PAGE
+          : undefined,
   });
   return requests.map(toFeedbackRequest);
 }
 
-/** Mark an accepted request done once its planned slot landed (needs `requests:write`). */
+/** Mark an accepted request done once its planned slot (or journey) landed
+ * (needs `requests:write`). */
 export async function completeRequest(
   client: ReviewClient,
   id: string,

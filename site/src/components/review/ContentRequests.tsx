@@ -1,6 +1,7 @@
 // Content requests: reviewers ask for missing content where it should live (a
-// docs nav section, a blog series). Maintainers accept or decline; an agent
-// marks an accepted request done once a `planned:` slot for it lands in git.
+// docs nav section, a blog series), or for a journey to track in a project's
+// compatibility matrix. Maintainers accept or decline; an agent marks an
+// accepted request done once its `planned:` slot (or journey) lands in git.
 import { useMutation, useQuery } from "@connectrpc/connect-query";
 import { MessageSquarePlus } from "lucide-react";
 import { useState } from "react";
@@ -25,6 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   ContentArea,
   type ContentRequest,
+  ContentRequestKind,
   ContentRequestStatus,
 } from "../../gen/docs_factory/review/v1/messages_pb";
 import {
@@ -36,17 +38,24 @@ import { useAuth } from "../../lib/auth-context";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { vocab } from "../../vocab";
 
-/** Where a request belongs: a docs nav section trail, or a blog series. */
+/** Where a request belongs: a docs nav section trail, a blog series, or (for a
+ * journey) a compatibility table id. */
 export interface RequestPlacement {
   area: ContentArea;
   project?: string;
   placement: string;
+  /** Absent is a page. */
+  kind?: ContentRequestKind;
+}
+
+function isJourney(p: { kind?: ContentRequestKind }): boolean {
+  return p.kind === ContentRequestKind.JOURNEY;
 }
 
 export const OPEN_REQUEST_STATUSES = [ContentRequestStatus.OPEN, ContentRequestStatus.ACCEPTED];
 
 export function placementKey(p: RequestPlacement): string {
-  return `${p.area}\0${p.project ?? ""}\0${p.placement}`;
+  return `${isJourney(p) ? "journey" : "page"}\0${p.area}\0${p.project ?? ""}\0${p.placement}`;
 }
 
 const STATUS_LABEL: Record<number, string> = {
@@ -92,6 +101,29 @@ export function RequestContentButton({ target }: { target: RequestPlacement }) {
   );
 }
 
+export function TrackJourneyButton({ project, table }: { project: string; table: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button size="xs" variant="outline" onClick={() => setOpen(true)}>
+        <MessageSquarePlus aria-hidden="true" />
+        Track a journey
+      </Button>
+      {open && (
+        <ContentRequestDialog
+          target={{
+            area: ContentArea.DOCS,
+            project,
+            placement: table,
+            kind: ContentRequestKind.JOURNEY,
+          }}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
 function ContentRequestDialog({
   target,
   onClose,
@@ -103,7 +135,8 @@ function ContentRequestDialog({
   const create = useMutation(createContentRequest, {
     onSuccess: () => void invalidateContentRequests(),
   });
-  const isDocs = target.area === ContentArea.DOCS;
+  const journey = isJourney(target);
+  const isDocs = target.area === ContentArea.DOCS && !journey;
   const [title, setTitle] = useState("");
   const [diataxis, setDiataxis] = useState<string>(isDocs ? "how-to" : "");
   const [body, setBody] = useState("");
@@ -116,6 +149,7 @@ function ContentRequestDialog({
       diataxis: isDocs ? diataxis : "",
       title,
       bodyMd: body,
+      kind: journey ? ContentRequestKind.JOURNEY : ContentRequestKind.PAGE,
     });
     onClose();
   }
@@ -124,10 +158,20 @@ function ContentRequestDialog({
     <Dialog open onOpenChange={(next) => !next && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Request content</DialogTitle>
+          <DialogTitle>{journey ? "Track a journey" : "Request content"}</DialogTitle>
           <DialogDescription>
-            In <strong>{target.placement}</strong>. A maintainer triages it; once accepted it
-            becomes a planned slot in the backlog.
+            {journey ? (
+              <>
+                Something readers do, tracked per engine and client in{" "}
+                <strong>{target.placement}</strong>. A maintainer triages it; once accepted it
+                becomes a row in the compatibility matrix.
+              </>
+            ) : (
+              <>
+                In <strong>{target.placement}</strong>. A maintainer triages it; once accepted it
+                becomes a planned slot in the backlog.
+              </>
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="request-review-field">
@@ -136,7 +180,9 @@ function ContentRequestDialog({
             id="content-request-title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="e.g. Grant access with row filters"
+            placeholder={
+              journey ? "e.g. Vacuum a managed table" : "e.g. Grant access with row filters"
+            }
             autoFocus
           />
         </div>
@@ -158,7 +204,11 @@ function ContentRequestDialog({
           </div>
         )}
         <div className="request-review-field">
-          <label htmlFor="content-request-body">What should it cover? (optional)</label>
+          <label htmlFor="content-request-body">
+            {journey
+              ? "Which engines or clients, and what counts as done? (optional)"
+              : "What should it cover? (optional)"}
+          </label>
           <Textarea
             id="content-request-body"
             value={body}
@@ -203,7 +253,9 @@ export function ContentRequestList() {
           </span>
           <span className="review-dash-meta">
             <span className="review-dash-count">
-              {[r.project, r.placement, r.diataxis].filter(Boolean).join(" · ")}
+              {[isJourney(r) && "journey", r.project, r.placement, r.diataxis]
+                .filter(Boolean)
+                .join(" · ")}
             </span>
             <span className="review-dash-count">
               {requestStatusLabel(r.status)} by {r.requestedByLogin}

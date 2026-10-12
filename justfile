@@ -207,6 +207,10 @@ aws-sim-logs:
 aws-sim-down:
     cd envs/aws-sim/example && docker compose down -v
 
+# Re-render compatibility tables (e.g. R10's) from script claims.
+compat:
+    uv run docsnip compat --fix
+
 # Move the UC docs to a new release: rewrite release.yml and every pin matching it.
 bump-uc VERSION:
     uv run docsnip bump-uc {{VERSION}}

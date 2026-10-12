@@ -82,7 +82,9 @@ Follow `AGENTS.md`:
 - Set `status: ready` only on a page `review_status` lists as approved, and only
   once its open threads are answered (`next:` says so). Never set `ready` on an
   unapproved page or a `private` one, and never move a page off `ready` unless
-  the user asks: that unpublishes it.
+  the user asks: that unpublishes it. Promoting a page makes its scripts gate
+  CI and its compatibility claims render, so run `uv run docsnip compat --fix`
+  and commit the tables it rewrites.
 - For each accepted content request, add a `planned:` slot under the section its
   placement names (`A › B` is the section trail in `content/<project>/nav.yml`):
   a fresh backlog id from the project's documentation plan numbering, the

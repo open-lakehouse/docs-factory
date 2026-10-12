@@ -128,7 +128,8 @@ just emit-docs <site> [--drafts]       # emit a project's docs into sites/<site>
 just uc-docs                           # emit UC docs (with drafts), build + preview the static site at :4322
 uv run pytest                          # docsnip tests + colocated tutorial scripts
 cd site && bun test src/content-core   # content-core parsing-contract drift tests
-uv run docsnip check                   # frontmatter + snippets
+uv run docsnip check                   # frontmatter + snippets + pins + compat tables
+uv run docsnip compat --fix            # re-render compatibility tables from script claims
 uv run ruff check . && uv run ty check # lint + types
 cargo build                            # compile the Rust seed helper
 just arch-dev                          # LikeC4 architecture model at :5173
@@ -159,7 +160,13 @@ just arch-dev                          # LikeC4 architecture model at :5173
    clients) and each step's region is exactly what the reader enters. The
    script's `main()`, entry point, and teardown stay outside the regions, and
    no step says "create the script" or "run the script".
-6. Lead with what works. A page states one limitation inline only when it
+6. If the script proves what an engine or client can do (read, append, create
+   a managed table, …), claim it in `[tool.docs-factory] claims.<interface>`
+   and run `uv run docsnip compat --fix`: compatibility tables such as R10's
+   are rendered from claims, never edited by hand. Only scripts on `ready`
+   pages gate CI, so only their claims render. See `content/README.md`
+   "Compatibility claims".
+7. Lead with what works. A page states one limitation inline only when it
    blocks that page's task. Version quirks and their error strings go in R01's
    "Known issues" section (`reference/features-and-limitations`), and pages
    link there. Pages don't restate the release: it lives in

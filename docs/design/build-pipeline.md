@@ -205,11 +205,13 @@ the two frontmatter splitters, among others).
   `content/**/snippets/` as PEP 723 scripts (tested by the same `content/conftest.py`
   lane); its `examples/rust` crate (a future UC-client stub) was dropped from the
   Cargo workspace.
-- **Deferred: a real coverage model.** When the Rust + TypeScript client/example
-  machinery is built, reintroduce a deliberate **language × engine × client**
-  coverage model — one that distinguishes the language a snippet is written in, the
-  engine it drives (if any), and the client library it uses — rather than the flat
-  language==engine==implementation mapping removed here.
+- **A coverage model, by declaration.** Compatibility claims
+  (`[tool.docs-factory] claims.<interface>` against
+  `content/<project>/compatibility.yml`, rendered by `docsnip compat`) replace
+  the removed mapping: a script names the reader-facing interface it proves
+  (`duckdb`, `pandas`, …), and nothing is derived from its language or its
+  dependencies. See `content/README.md` "Compatibility claims" and
+  `model-leverage.md` §4b.
 
 ## 11. Open questions
 

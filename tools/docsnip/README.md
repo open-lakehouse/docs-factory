@@ -6,8 +6,15 @@ consistent and agent-discoverable, without coupling to any static-site generator
 ```console
 $ docsnip validate       # check frontmatter (controlled vocabularies, required fields)
 $ docsnip snippetcheck   # verify every snippet fence resolves to a unique source region
-$ docsnip check          # CI: validate + snippetcheck
+$ docsnip versions       # UC pins against content/unitycatalog/release.yml (--fix)
+$ docsnip compat         # compatibility tables against script claims (--fix)
+$ docsnip check          # CI: all of the above
 ```
+
+`docsnip compat --fix` is the one command that writes content: it renders each
+compatibility table (`content/<project>/compatibility.yml` plus the
+`[tool.docs-factory] claims` of scripts on ready pages) between its markers.
+See `content/README.md` "Compatibility claims".
 
 `docsnip` is the content-contract **validator**; it does not emit build
 artifacts. `docsnip` does **not** expand snippets into the markdown — the

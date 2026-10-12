@@ -132,7 +132,13 @@ class TutorialScriptItem(pytest.Item):
                 env["PYTHONPATH"] = os.pathsep.join(
                     p for p in (str(_HARNESS_DIR), env.get("PYTHONPATH")) if p
                 )
-            proc = _run_script(self.script_meta, env)
+            # Unbuffered, so a killed script's report shows how far it got.
+            env.setdefault("PYTHONUNBUFFERED", "1")
+            try:
+                proc = _run_script(self.script_meta, env)
+            except TutorialScriptTimeout as exc:
+                exc.server_log = _server_log(self.script_meta)
+                raise
             if proc.returncode < 0 or proc.returncode in _NATIVE_ABORT_CODES:
                 # A native crash in the deltalake/pyarrow layer (SIGABRT/SIGSEGV,
                 # surfaced as exit 134/139 or a negative signal code) aborts the
@@ -276,8 +282,11 @@ class TutorialScriptTimeout(TutorialScriptFailure):
     """A tutorial script ran past the harness timeout and was killed."""
 
     def __str__(self) -> str:
-        return (
+        text = (
             f"`uv run {self.meta.path.name}` ran past {_SCRIPT_TIMEOUT_S}s and was "
             f"killed\n--- stdout ---\n{self.proc.stdout}\n"
             f"--- stderr ---\n{self.proc.stderr}"
         )
+        if self.server_log:
+            text += f"\n--- unitycatalog log (tail) ---\n{self.server_log}"
+        return text

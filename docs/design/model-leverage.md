@@ -194,8 +194,22 @@ external link, wait on the emitted sites having a glossary.
   or no `consumes`/`implements` edge to the matrix's spec. That report added
   Spark, DuckDB, and Polars `consumes ucSpec` edges.
 
-Next: derive R10's "Query engines" labels from claims, migrate the Delta
-coverage page (`content/delta/reference/090-coverage`), and project the
+- **Delta joined in October 2026.** `content/delta/compatibility.yml` renders
+  the private coverage page's journey tables. Evidence gained `outcome: works`
+  for cells the engine's own docs vouch for (`docs` on tables that set
+  `documented: true`), and an `api` per interface. A table on a `private`
+  page also shows draft pages' claims, marked, so the coverage record is
+  complete before the Delta pages are ready.
+- **The review app reads the same resolution.** `compat --fix` also writes
+  `content/<project>/compatibility.json`, and `docsnip check` fails when it's
+  stale. It's committed because the bare Vercel build has no `uv`. Overview →
+  Compatibility renders it with each cell's proofs and evidence. "Track a
+  journey" files a `JOURNEY` content request; accepting it lands a
+  `journeys:` entry carrying `request: <id>` in a PR, so git stays the
+  authority.
+
+Next: derive R10's "Query engines" labels from claims, move the coverage
+page's round-trip and table-feature grids onto the matrix, and project the
 matrix into `concepts.json` (§3.4).
 
 ## 5. Open questions

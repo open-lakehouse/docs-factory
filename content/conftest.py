@@ -14,6 +14,10 @@ hand-written), so the default ``pytest`` — which the root config filters with
 ``-m "not needs_docker and not needs_uc_server"`` — skips them on a Docker-less
 machine, while the opt-in service lane runs them for real and fails hard if the
 compose can't start.
+
+Only scripts on ``status: ready`` pages gate. A script whose page is still a
+draft runs as a non-strict ``xfail``, so the docs can say "tested here" about
+exactly the scripts a red run would block, and in-progress pages can't.
 """
 
 from __future__ import annotations
@@ -32,6 +36,7 @@ if TYPE_CHECKING:
 # tools/docsnip is a workspace package; its scriptmeta reader is the single
 # source of truth for discovering + parsing a script's inline metadata.
 from docsnip.environments import client_env
+from docsnip.frontmatter import page_status
 from docsnip.scriptmeta import ScriptMeta, parse_script
 
 # Exit codes a process reports when killed by a native abort/segfault signal
@@ -60,6 +65,21 @@ def pytest_collect_file(parent, file_path):
     return TutorialScriptFile.from_parent(parent, path=file_path, script_meta=meta)
 
 
+def pytest_terminal_summary(terminalreporter):
+    """On GitHub Actions, annotate what ran but didn't gate.
+
+    A draft page's failing script (xfailed) and a native-crash skip both leave
+    the job green, so neither should go unnoticed.
+    """
+    if not os.environ.get("GITHUB_ACTIONS"):
+        return
+    for report in terminalreporter.stats.get("xfailed", []):
+        print(f"::warning file={report.fspath}::failed, not gating: {report.wasxfail}")
+    for report in terminalreporter.stats.get("skipped", []):
+        if isinstance(report.longrepr, tuple):
+            print(f"::warning file={report.fspath}::skipped: {report.longrepr[2]}")
+
+
 class TutorialScriptFile(pytest.File):
     """A discovered tutorial script, collected as a single runnable test."""
 
@@ -83,6 +103,15 @@ class TutorialScriptItem(pytest.Item):
         # default lane's -m filter deselects it without any hand-marking.
         if script_meta.docs_factory.needs_services:
             self.add_marker(pytest.mark.needs_uc_server)
+        page = script_meta.owning_page()
+        status = page_status(page) if page else "draft"
+        if status != "ready":
+            where = page.relative_to(_REPO_ROOT) if page else "no page"
+            self.add_marker(
+                pytest.mark.xfail(
+                    strict=False, reason=f"{where} is status: {status}; non-gating"
+                )
+            )
 
     def runtest(self):
         # The registry's client-env is what the page tells a reader to export;

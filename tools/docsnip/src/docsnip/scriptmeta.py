@@ -93,6 +93,20 @@ class ScriptMeta:
             return None
         return (self.path.parent / self.docs_factory.verifies).resolve()
 
+    def owning_page(self) -> Path | None:
+        """The page this script belongs to: the nearest ``index.md`` above it.
+
+        ``<slug>/snippets/x.py`` and ``<slug>/x.py`` both belong to
+        ``<slug>/index.md``. The search stops at the ``content/`` root.
+        """
+        for parent in self.path.resolve().parents:
+            if parent.name == "content":
+                return None
+            for name in ("index.md", "index.mdx"):
+                if (parent / name).is_file():
+                    return parent / name
+        return None
+
 
 def _read_block(text: str) -> dict | None:
     """Return the parsed PEP 723 ``script`` metadata dict, or ``None`` if absent.

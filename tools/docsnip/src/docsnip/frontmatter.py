@@ -203,6 +203,11 @@ def parse(path: Path) -> Page:
     return Page(path=path, meta=meta, body=body.lstrip("\n"))
 
 
+def page_status(path: Path) -> str:
+    """A page's ``status``, with the same ``draft`` default ``validate`` applies."""
+    return str(parse(path).meta.get("status", "draft"))
+
+
 def effective_reference_ids(meta: dict) -> set[str]:
     """Model element ids a page effectively references.
 

@@ -101,6 +101,7 @@ link here.
 | Changing an external location's URL | 0.6.0 | Tables, volumes, and storage roots under the old URL lose their credential; vending fails with `FAILED_PRECONDITION`. | Create the new location next to the old one and move the data first. |
 | SSE-KMS buckets | 0.6.0 | Vended S3 credentials can't read or write SSE-KMS objects; the session policy has no KMS actions. | Use SSE-S3. Fixed upstream in [#1774](https://github.com/unitycatalog/unitycatalog/pull/1774), not yet in a release. |
 | Schema updates | 0.6.0 | Any principal with `USE CATALOG` and `USE SCHEMA` can update or rename a schema, not only its owner. | Grant those privileges with that in mind. |
+| The upstream image on Linux, with a bind-mounted folder | 0.6.0 | The server runs as uid 100, so it can't write into folders your user created there, and dropping a managed table leaves the files your engine wrote. | Use the [local environment](../../how-to/run-local-server/index.md), which runs the server as the owner of its folder. |
 | CLI help for `credential` and `external_location` | 0.6.0 | `--help` crashes with a `NullPointerException`. The commands work. | See the flags in [Configure AWS storage credentials](../../how-to/configure-aws-storage/index.md#view-storage-credentials-and-external-locations). |
 
 ### Clients and engines
@@ -118,6 +119,7 @@ link here.
 | DuckDB 1.5.4, stable `unity_catalog` | Tables with `DECIMAL` columns | `Invalid field found while parsing field: type_precision`. Install the extension from `core_nightly`. |
 | Polars 1.44.2 | `Catalog.scan_table` on non-Delta tables | `Object at location … not found: is directory`: it reads the location as a single file. Read the folder with `scan_parquet`, `scan_csv`, or `scan_ndjson`; see [Register non-Delta external tables](../../how-to/table-storage-formats/index.md#read-the-data). |
 | DuckDB 1.5.4, `unity_catalog` | Non-Delta tables | `Table '…' is of unsupported format 'PARQUET'` (or `CSV`, …). Read the location with `read_parquet`, `read_csv`, or `read_json`. |
+| `uc` CLI 0.6.0, upstream image on x86-64 | `table read`, `table write` | `UnsatisfiedLinkError: … libsnappyjava.so: Error loading shared library ld-linux-x86-64.so.2`: the image is Alpine, and the CLI's snappy library needs glibc. The [local environment](../../how-to/run-local-server/index.md) adds `gcompat`. |
 | `uc` CLI 0.6.0 | `table read` on non-Delta tables | `Only Delta tables are supported for read operations`. |
 | `unitycatalog-ai` 0.4.0 | Functions that return a falsy value, such as `0` or `""` | `result.value` holds a "no output was produced" message instead of the value. |
 

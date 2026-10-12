@@ -1,0 +1,10 @@
+#!/bin/sh
+# Run the server as the user who owns this environment's folder. On Linux a
+# bind mount keeps host ownership, so the server can then delete the files your
+# engines write under UC_DOCS_ROOT, and you can delete the files it writes.
+# Docker Desktop and Colima show the mount as root's; the image's user stays.
+uid=$(stat -c %u /home/unitycatalog/etc/conf/server.properties)
+if [ "$uid" != 0 ]; then
+  sed -i -E "s/^(unitycatalog:x:)[0-9]+:/\1$uid:/" /etc/passwd
+fi
+exec su-exec unitycatalog "$@"

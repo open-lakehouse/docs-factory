@@ -11,8 +11,8 @@ x-docs-root: &docs-root
   target: ${UC_DOCS_ROOT:-/tmp/uc-docs}
 
 services:
-  # On Linux the bind mount keeps host ownership; open it up so both your user
-  # and the server's (uid 100) can write there.
+  # Docker creates a missing UC_DOCS_ROOT as root; open it up so both you and
+  # the server can write there.
   init-storage:
     image: unitycatalog/unitycatalog:v0.6.0
     user: root
@@ -21,7 +21,10 @@ services:
       - *docs-root
 
   unitycatalog:
-    image: unitycatalog/unitycatalog:v0.6.0
+    # The 0.6.0 image with local fixes (image/Dockerfile), rebuilt from cache on
+    # every `up` so a newer copy of this folder never runs an older build.
+    build: image
+    pull_policy: build
     # A fixed name lets `docker exec unitycatalog bin/uc` work from any folder.
     container_name: unitycatalog
     depends_on:

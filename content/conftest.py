@@ -119,7 +119,9 @@ class TutorialScriptItem(pytest.Item):
                     "crash, not a content-drift failure"
                 )
             if proc.returncode != 0:
-                raise TutorialScriptFailure(self.script_meta, proc)
+                raise TutorialScriptFailure(
+                    self.script_meta, proc, server_log=_server_log(self.script_meta)
+                )
         finally:
             _stop_services(self.script_meta)
 
@@ -162,22 +164,34 @@ def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedPr
 class TutorialScriptFailure(Exception):
     """A tutorial script exited non-zero; carries its captured output."""
 
-    def __init__(self, meta: ScriptMeta, proc: subprocess.CompletedProcess):
+    def __init__(
+        self,
+        meta: ScriptMeta,
+        proc: subprocess.CompletedProcess,
+        server_log: str | None = None,
+    ):
         self.meta = meta
         self.proc = proc
+        self.server_log = server_log
 
     def __str__(self) -> str:
-        return (
+        text = (
             f"`uv run {self.meta.path.name}` exited {self.proc.returncode}\n"
             f"--- stdout ---\n{self.proc.stdout}\n"
             f"--- stderr ---\n{self.proc.stderr}"
         )
+        if self.server_log:
+            text += f"\n--- unitycatalog log (tail) ---\n{self.server_log}"
+        return text
 
 
 # --- compose lifecycle, keyed on the script's [tool.docs-factory] --------------
 #
 # Cached per compose file so several scripts sharing one compose start it once.
 _ACTIVE: dict[str, DockerCompose] = {}
+# Compose files whose images this session already pulled. Every script starts a
+# fresh stack, and pulling once keeps a long run under Docker Hub's rate limit.
+_PULLED: set[str] = set()
 
 
 def _start_services(meta: ScriptMeta) -> str | None:
@@ -197,13 +211,27 @@ def _start_services(meta: ScriptMeta) -> str | None:
     compose = DockerCompose(
         context=str(compose_path.parent),
         compose_file_name=compose_path.name,
-        pull=True,
+        pull=key not in _PULLED,
         wait=True,
     )
     compose.start()
+    _PULLED.add(key)
     _ACTIVE[key] = compose
     host, port = compose.get_service_host_and_port("unitycatalog", 8080)
     return f"http://{host}:{port}/api/2.1/unity-catalog"
+
+
+def _server_log(meta: ScriptMeta, lines: int = 80) -> str | None:
+    """The last lines of the running server's log, for a failing script's report."""
+    compose_path = meta.compose_path()
+    compose = _ACTIVE.get(str(compose_path)) if compose_path else None
+    if compose is None:
+        return None
+    try:
+        stdout, stderr = compose.get_logs("unitycatalog")
+    except Exception as exc:  # the report must not hide the script's own failure
+        return f"(could not read the server log: {exc})"
+    return "\n".join((stdout + stderr).splitlines()[-lines:])
 
 
 def _stop_services(meta: ScriptMeta) -> None:

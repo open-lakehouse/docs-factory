@@ -3,8 +3,9 @@
 Subcommands:
   validate      — check frontmatter on all content pages
   snippetcheck  — verify every snippet fence resolves to a unique source region
-  versions      — UC pins against content/unitycatalog/release.yml (--fix rewrites)
+  versions      — pins against each content/<project>/release.yml (--fix rewrites)
   bump-uc       — move the docs to a new UC release and rewrite every pin
+  bump-delta    — move the Delta docs to a new Delta release and rewrite every pin
   compat        — compatibility tables from script claims (--fix rewrites)
   check         — validate + snippetcheck + versions + compat (CI entry)
 
@@ -274,8 +275,8 @@ def cmd_versions(p, fix: bool = False) -> int:
     return 0
 
 
-def cmd_bump_uc(p, release: str) -> int:
-    for path in versions.bump(p["root"], release):
+def cmd_bump(p, release: str, project: versions.Project) -> int:
+    for path in versions.bump(p["root"], release, project):
         print(f"rewrote {path.relative_to(p['root'])}")
     # Table headers show pinned versions.
     return cmd_versions(p) or cmd_compat(p, fix=True)
@@ -341,6 +342,8 @@ def main(argv: list[str] | None = None) -> int:
     )
     sp_bump = sub.add_parser("bump-uc")
     sp_bump.add_argument("release", help="the new Unity Catalog release, X.Y.Z")
+    sp_bump_delta = sub.add_parser("bump-delta")
+    sp_bump_delta.add_argument("release", help="the new Delta Lake release, X.Y.Z")
 
     args = parser.parse_args(argv)
     p = _paths(args.root)
@@ -352,7 +355,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "compat":
         return cmd_compat(p, fix=args.fix)
     if args.cmd == "bump-uc":
-        return cmd_bump_uc(p, args.release)
+        return cmd_bump(p, args.release, versions.UNITYCATALOG)
+    if args.cmd == "bump-delta":
+        return cmd_bump(p, args.release, versions.DELTA)
 
     dispatch = {
         "validate": cmd_validate,

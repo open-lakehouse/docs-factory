@@ -402,7 +402,7 @@ is missing, propose a model change instead of inventing an id.
 | H01 | Read a Delta table *(exists)* | P0 / J01 | SQL, PyS, Py, Duck | Projection, filters, partition filters; DuckDB pushdown modes. |
 | H02 | Query a Delta table as of a version *(exists)* | P0 / J03 | SQL, PyS, Py, Duck | Version and timestamp; retention boundary. DuckDB: version only. |
 | H03 | Create a table with a schema, partitioning, and properties | P0 / J02 | SQL, PyS, Py; Duck ? | Explicit schema, partition columns, properties at create, create-if-not-exists, CTAS, comments. |
-| H04 | Append, overwrite, and selectively overwrite data | P0 / J02 | SQL, PyS, Py, Duck (append) | Append/overwrite, `REPLACE WHERE`/`predicate=`, dynamic partition overwrite, how each shows in history. |
+| H04 | Append and overwrite data *(draft; selective overwrite to come)* | P0 / J02 | SQL, PyS, Py, Duck (append) | Append/overwrite, `REPLACE WHERE`/`predicate=`, dynamic partition overwrite, how each shows in history. The page is titled for what it covers until the selective-overwrite section lands. |
 | H05 | Upsert and deduplicate with MERGE | P0 / J02 | SQL, PyS, Py; ✗ Duck | All clauses, by-source clauses, multiple source matches, schema evolution in MERGE; per-engine differences. |
 | H06 | Update and delete rows | P0 / J02 | SQL, PyS, Py; ✗ Duck | Predicates, metrics, copy-on-write versus DVs, physical deletion only after VACUUM. |
 | H07 | Convert Parquet data to a Delta table | P1 / J10 | SQL, PyS, Py; ✗ Duck | `CONVERT TO DELTA`/`convert_to_deltalake`, partition schema, statistics, what isn't converted. |
@@ -502,9 +502,9 @@ owner and tests.
 | --- | --- | --- |
 | `explanation/001-what-is-delta-lake.md` | Keep; add the implementations section and link R01. | E01 |
 | `explanation/002-delta-kernel-architecture.md` | Keep in Concepts; recheck against the Kernel guide when J09 starts. | E09 |
-| `how-to/001-read-a-delta-table/` | Keep; add Spark SQL (first), PySpark, and DuckDB tabs. | H01 |
-| `how-to/002-query-a-table-as-of-version/` | Keep; add the tabs, timestamp reads, and the retention boundary. | H02 |
-| `tutorials/001-your-first-delta-table.md` | Rewrite as the Spark SQL tutorial, folder-mode with snippets. | T01 |
+| `how-to/001-read-a-delta-table/` | Done: four tabs (draft). | H01 |
+| `how-to/002-query-a-table-as-of-version/` | Done: four tabs, timestamp reads, and the retention boundary (draft). | H02 |
+| `tutorials/001-your-first-delta-table/` | Done: the Spark SQL tutorial, folder-mode (draft). | T01 |
 | `tutorials/002-explore-table-history/` | Rewrite in Spark SQL; move its `deltalake` steps to H02/H18 tabs. | T02 |
 | `reference/001-table-features.md` | Expand per R02; reconcile the spec sources. | R02 |
 | `reference/090-coverage/` | Private coverage page; R01 and R10 derive from it. | — |
@@ -590,6 +590,14 @@ Patterns worth adopting:
 ## 10. Delivery sequence and decisions
 
 ### Phase 0: agree the boundary and settle the open checks
+
+Items 1–4 are done (2026-10-12): Delta Spark 4.4.0 on PySpark 4.2.0,
+`deltalake` 1.6.6, and DuckDB 1.5.6, pinned in `content/delta/release.yml`.
+`spark-sql` from the pip wheel runs headless in CI, through `uvx`, in the
+Spark lane (`lane = "spark"`, `just test-spark`). Displayed SQL lives in
+`.sql` files that `docsnip.sqlregions` drivers run through `spark.sql()` or
+the `duckdb` package, or pipe into the real shell (T01). The first pages
+using them are T01, T11, H01, H02, and H04.
 
 1. Pin the Spark tuple. Recommended: PySpark 4.2.x with `delta-spark` 4.4.0,
    because `configure_spark_with_delta_pip` and the unsuffixed
@@ -687,7 +695,9 @@ updates the cells that script proves.
    that order, so the tab sync in `content/README.md` § "Interface tabs" works
    across the site.
 2. **`engines:` frontmatter.** A vocab-checked list (`spark-sql`, `pyspark`,
-   `deltalake`, `duckdb`) of the interfaces a page covers.
+   `deltalake`, `duckdb`) of the interfaces a page covers. `docsnip` rejects
+   `engines:` today (the earlier engine-coverage machinery was removed), so
+   this needs a validator change first; the first pages don't use it.
 3. **`delta_features:` is the R01 join key.** Constrain its values to protocol
    feature names, with a short list of non-feature topics (`time-travel`). The
    existing values `time-travel` and `table-features` need that list. This

@@ -20,6 +20,9 @@ greet() { echo "hi $1"; }
 greet docs
 pwd
 # --8<-- [end:ok]
+# --8<-- [start:echo-stdin]
+cat
+# --8<-- [end:echo-stdin]
 # --8<-- [start:fails]
 false
 echo unreachable
@@ -29,7 +32,7 @@ echo unreachable
 
 def test_regions_are_parsed_by_name(tmp_path):
     script = _page(tmp_path, SCRIPT)
-    assert set(regions(script)) == {"setup", "ok", "fails"}
+    assert set(regions(script)) == {"setup", "ok", "echo-stdin", "fails"}
 
 
 def test_run_prepends_setup_and_runs_from_the_page_folder(tmp_path):
@@ -50,3 +53,9 @@ def test_run_honors_an_explicit_cwd(tmp_path):
     elsewhere.mkdir()
     out = run(_page(tmp_path, SCRIPT), "ok", cwd=elsewhere)
     assert str(elsewhere.resolve()) in out
+
+
+def test_run_feeds_input_and_defaults_to_empty_stdin(tmp_path):
+    script = _page(tmp_path, SCRIPT)
+    assert run(script, "echo-stdin", input="SELECT 1;\n") == "SELECT 1;\n"
+    assert run(script, "echo-stdin") == ""

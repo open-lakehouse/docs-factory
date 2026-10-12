@@ -138,6 +138,39 @@ test("runnableExamplesSection tells readers to run a shell example with bash", (
   expect(md).toContain("needs Docker Compose `../compose.yaml` (services: `unitycatalog`)");
 });
 
+test("runnableExamplesSection sends a SQL example to the page's shell, not a runner", () => {
+  const md = runnableExamplesSection([
+    {
+      kind: "sql",
+      fetchUrl: "/docs/delta/how-to/read-a-delta-table/snippets/read_spark.sql",
+      requiresPython: null,
+      dependencies: [],
+      compose: null,
+      services: [],
+    },
+  ]);
+  expect(md).toContain("enter its statements in the SQL shell the page opens");
+  expect(md).not.toContain("uv run");
+  expect(md).not.toContain("bash ");
+});
+
+test("companions list a SQL file without a run command", () => {
+  const sql = {
+    kind: "sql",
+    fetchUrl: "/docs/delta/how-to/read/snippets/read_duckdb.sql",
+    summary: "Read the orders table with DuckDB.",
+    requiresPython: null,
+    services: [],
+    env: {},
+  };
+  const yaml = companionsFrontmatter([sql], "https://x.test");
+  expect(yaml).toContain("    kind: sql");
+  expect(yaml).not.toContain("    run:");
+  const md = companionsSection([sql], "https://x.test");
+  expect(md).toContain("(SQL): Read the orders table with DuckDB.");
+  expect(md).toContain("  - run: enter its statements in the SQL shell the page opens");
+});
+
 const COMPANIONS = [
   {
     kind: "python",

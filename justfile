@@ -186,6 +186,11 @@ test:
 test-services:
     uv run --group test-services pytest -m "needs_docker or needs_uc_server"
 
+# Run the Spark tests (opt-in): scripts with `lane = "spark"`. Needs Java 17 and
+# Maven; behind a proxy, set DOCS_FACTORY_MAVEN_MIRROR to a Maven mirror URL.
+test-spark:
+    uv run pytest -m "needs_spark and not needs_uc_server"
+
 # --- aws-sim (pretend-AWS S3/STS for UC; see envs/aws-sim/README.md) --------
 
 # Start the example stack: UC + RustFS + Envoy answering *.amazonaws.com.
@@ -214,6 +219,12 @@ compat:
 # Move the UC docs to a new release: rewrite release.yml and every pin matching it.
 bump-uc VERSION:
     uv run docsnip bump-uc {{VERSION}}
+
+# Move the Delta docs to a new Delta Spark release: rewrite content/delta/release.yml
+# and every pin matching it. deltalake and DuckDB pins: edit release.yml, then
+# `uv run docsnip versions --fix`.
+bump-delta VERSION:
+    uv run docsnip bump-delta {{VERSION}}
 
 # Validate frontmatter, snippets, and nav.yml manifests (CI gate).
 check: _site-deps

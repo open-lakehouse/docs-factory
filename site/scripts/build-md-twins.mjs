@@ -72,10 +72,12 @@ export function injectFrontmatter(output, lines) {
  * The command that runs a published script: a Python script straight from its
  * URL (uv fetches it), a shell script, or one that imports a helper module,
  * from the folder it was saved into. `env` is the stack's client env, so the
- * command works in a fresh terminal.
+ * command works in a fresh terminal. Null for SQL: its statements go into the
+ * engine shell the page opens, which the page, not the file, names.
  */
 export function companionRun(s, origin = "") {
   const file = s.fetchUrl.split("/").pop();
+  if (s.kind === "sql") return null;
   if (s.kind === "shell") return `bash ${file}`;
   const env = Object.entries(s.env ?? {}).map(([k, v]) => `${k}=${v} `);
   const target = s.helpers?.length ? file : `${origin}${s.fetchUrl}`;
@@ -94,7 +96,8 @@ export function companionsFrontmatter(scripts, origin = "") {
   for (const s of scripts) {
     lines.push(`  - url: ${q(`${origin}${s.fetchUrl}`)}`, `    kind: ${s.kind}`);
     if (s.summary) lines.push(`    purpose: ${q(s.summary)}`);
-    lines.push(`    run: ${q(companionRun(s, origin))}`);
+    const run = companionRun(s, origin);
+    if (run) lines.push(`    run: ${q(run)}`);
     if (s.helpers?.length)
       lines.push(`    helpers: [${s.helpers.map((h) => q(`${origin}${h.fetchUrl}`)).join(", ")}]`);
     if (s.requiresPython) lines.push(`    requires-python: ${q(s.requiresPython)}`);
@@ -144,13 +147,17 @@ export function companionsSection(scripts, origin = "", environment = null) {
   }
   for (const s of scripts) {
     const file = s.fetchUrl.split("/").pop();
-    const lang = s.kind === "shell" ? "Shell" : "Python";
+    const lang = { shell: "Shell", sql: "SQL" }[s.kind] ?? "Python";
     lines.push(
       `- [\`${file}\`](${origin}${s.fetchUrl}) (${lang})${s.summary ? `: ${s.summary}` : ""}`,
     );
-    // A shell script reaches the server through `docker compose exec`.
-    const where = s.kind === "shell" && environment ? ` from \`${environment.dir}\`` : "";
-    lines.push(`  - run: \`${companionRun(s, origin)}\`${where}`);
+    if (s.kind === "sql") {
+      lines.push("  - run: enter its statements in the SQL shell the page opens");
+    } else {
+      // A shell script reaches the server through `docker compose exec`.
+      const where = s.kind === "shell" && environment ? ` from \`${environment.dir}\`` : "";
+      lines.push(`  - run: \`${companionRun(s, origin)}\`${where}`);
+    }
     for (const h of s.helpers ?? []) {
       const name = h.fetchUrl.split("/").pop();
       lines.push(
@@ -173,7 +180,8 @@ export function prependSection(output, section) {
  * Render the "Runnable examples" section body for a tutorial from its scripts
  * (Phase 3, pure for testing). Each script → its same-origin fetch URL, how to run
  * it, and its runtime contract (deps `uv run` resolves, compose services needed).
- * A `shell` entry is a `.sh` the page quotes; a PEP 723 harness verifies it in CI.
+ * A `shell` or `sql` entry is a `.sh` or `.sql` the page quotes; a PEP 723
+ * harness verifies it in CI.
  * Empty string if no scripts.
  */
 export function runnableExamplesSection(scripts) {
@@ -188,6 +196,8 @@ export function runnableExamplesSection(scripts) {
         `  - run with \`bash ${file}\` from the compose file's folder after \`docker compose up -d\`;`,
         "    it runs every step in order, including clean-up",
       );
+    } else if (s.kind === "sql") {
+      lines.push("  - enter its statements in the SQL shell the page opens, in order");
     } else {
       lines.push(
         `  - run with \`uv run ${file}\`: uv builds an ephemeral environment from the`,

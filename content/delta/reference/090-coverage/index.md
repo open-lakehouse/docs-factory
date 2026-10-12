@@ -41,12 +41,16 @@ come from the [documentation plan][plan].
 
 ## Engines and versions
 
+The pins live in [`release.yml`](../../release.yml): Delta Spark 4.4.0 on
+PySpark 4.2.0, `deltalake` 1.6.6, and DuckDB 1.5.6. A `tested` cell ran with
+them unless it says otherwise.
+
 | Interface | Install | Cells refer to |
 | --- | --- | --- |
-| Spark SQL | `spark-sql` from the pip `pyspark` wheel, with `io.delta:delta-spark_2.13` | `documented`: Delta 4.4.0 ([release][dd-4.4]). `tested`: the UC pages pin `delta-spark` 4.3.1 on PySpark 4.1.0. |
+| Spark SQL | `spark-sql` from the pip `pyspark` wheel, with `io.delta:delta-spark_2.13` | `tested`: the Delta pages, path-based tables. Also `tested` through UC, where the UC pages pin `delta-spark` 4.3.1 on PySpark 4.1.0. `documented`: Delta 4.4.0 ([release][dd-4.4]). |
 | PySpark | `pip install delta-spark`, then `configure_spark_with_delta_pip` | Same as Spark SQL. |
-| Python | `pip install deltalake` | `documented`: 1.6.6 source ([table.py][dr-table], [feature table][dr-features]). `tested`: the Delta pages require `deltalake>=0.20`, so they run the newest release. |
-| DuckDB | `INSTALL delta; LOAD delta;` | `documented`: the [`delta` extension page][duck]. `tested`: `duckdb==1.5.4` with `unity_catalog` from `core_nightly` (UC pages). |
+| Python | `pip install deltalake` | `tested`: the Delta pages. `documented`: 1.6.6 source ([table.py][dr-table], [feature table][dr-features]). |
+| DuckDB | `INSTALL delta; LOAD delta;` | `tested`: the Delta pages, core `delta` extension, path-based tables. Also `tested` through UC: DuckDB 1.5.4 with `unity_catalog` from `core_nightly`. `documented`: the [`delta` extension page][duck]. |
 
 Not tracked yet: Polars, pandas, Daft, DataFusion, the Rust `deltalake` crate,
 Delta Kernel (Rust and Java), Trino, Flink, Iceberg readers through UniForm.
@@ -60,13 +64,14 @@ column gives the backlog id and its status.
 
 | Key | Spark SQL | PySpark | Python | DuckDB | Docs |
 | --- | --- | --- | --- | --- | --- |
-| `create.table` | `tested`: `CREATE TABLE` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md), catalog-managed) | `documented`: `DeltaTable.create()` ([tables.py][pys]) | `documented`: `DeltaTable.create()` ([table.py][dr-table]) | `?`: not documented | H03 planned |
+| `create.table` | `tested`: `CREATE TABLE delta.\`<path>\`` ([T01](../../tutorials/your-first-delta-table/index.md)); `CREATE TABLE` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md), catalog-managed) | `documented`: `DeltaTable.create()` ([tables.py][pys]) | `tested`: `DeltaTable.create()` ([T11](../../tutorials/python-to-duckdb/index.md)) | `no`: `Delta tables do not support creating tables` ([H04](../../how-to/append-and-overwrite-data/index.md)) | H03 planned |
 | `create.ctas` | `documented`: `CREATE TABLE … AS SELECT` ([batch][dd-batch]) | `documented`: `df.write.format("delta")` ([batch][dd-batch]) | `documented`: `write_deltalake()` to a new path ([writer][dr-writer]) | `?` | H03 planned |
 | `create.partitioned` | `documented`: `PARTITIONED BY` ([batch][dd-batch]) | `documented`: `partitionBy()` | `documented`: `partition_by=` | `?` | H03 planned |
-| `write.append` | `tested`: `INSERT INTO` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `mode("append")` | `documented`: `mode="append"` | `tested`: `INSERT INTO` an attached table ([UC DuckDB](../../../unitycatalog/how-to/duckdb/index.md), catalog-managed) | H04 planned |
-| `write.overwrite` | `documented`: `INSERT OVERWRITE` | `documented`: `mode("overwrite")` | `documented`: `mode="overwrite"` | `no`: appends only ([extension][duck]) | H04 planned |
-| `write.replace-where` | `documented`: `REPLACE WHERE` ([batch][dd-batch]) | `documented`: `replaceWhere` option | `documented`: `mode="overwrite", predicate=` | `no` | H04 planned |
-| `write.dynamic-partitions` | `documented`: `partitionOverwriteMode=dynamic` ([batch][dd-batch]) | `documented`: same conf | `?`: no option found | `no` | H04 planned |
+| `write.append` | `tested`: `INSERT INTO` ([T01](../../tutorials/your-first-delta-table/index.md), [H04](../../how-to/append-and-overwrite-data/index.md), [UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: `mode("append")` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `mode="append"` ([T11](../../tutorials/python-to-duckdb/index.md), [H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `INSERT INTO` an attached path ([H04](../../how-to/append-and-overwrite-data/index.md)); catalog-managed ([UC DuckDB](../../../unitycatalog/how-to/duckdb/index.md)). History shows operation `UNKNOWN`. | H04 draft |
+| `write.overwrite` | `tested`: `INSERT OVERWRITE` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `mode("overwrite")` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `mode="overwrite"` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `no`: appends only; `DELETE` fails with `Can only delete from base table` ([H04](../../how-to/append-and-overwrite-data/index.md)) | H04 draft |
+| `write.replace-where` | `documented`: `REPLACE WHERE` ([batch][dd-batch]) | `documented`: `replaceWhere` option | `documented`: `mode="overwrite", predicate=` | `no` | H04 later section |
+| `write.dynamic-partitions` | `documented`: `partitionOverwriteMode=dynamic` ([batch][dd-batch]) | `documented`: same conf | `?`: no option found | `no` | H04 later section |
+| `write.enforce-schema` | `?`: same engine as PySpark | `tested`: other columns fail with `DELTA_METADATA_MISMATCH` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: other columns fail with `SchemaMismatchError` ([H04](../../how-to/append-and-overwrite-data/index.md)) | `?` | H04 draft; H10 planned |
 | `write.idempotent` | `documented`: `txnAppId`/`txnVersion` session confs ([batch][dd-batch]) | `documented`: writer options | `documented`: `CommitProperties(app_transactions=…)` ([transaction.py][dr-txn]) | `documented`: `delta_set_transaction_version()` ([extension][duck]) | H54 planned |
 | `write.commit-metadata` | `documented`: `commitInfo.userMetadata` conf | `documented`: `userMetadata` option | `documented`: `CommitProperties(custom_metadata=…)` | `?` | H54 planned |
 
@@ -74,8 +79,8 @@ column gives the backlog id and its status.
 
 | Key | Spark SQL | PySpark | Python | DuckDB | Docs |
 | --- | --- | --- | --- | --- | --- |
-| `dml.update` | `tested`: `UPDATE` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `DeltaTable.update()` ([update][dd-update]) | `documented`: `DeltaTable.update()` | `no` ([extension][duck]) | H06 planned |
-| `dml.delete` | `tested`: `DELETE FROM` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `DeltaTable.delete()` | `documented`: `DeltaTable.delete()` | `no` | H06 planned |
+| `dml.update` | `tested`: `UPDATE` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `DeltaTable.update()` ([update][dd-update]) | `documented`: `DeltaTable.update()` | `no`: `Can only update base table` ([H04](../../how-to/append-and-overwrite-data/index.md)) | H06 planned |
+| `dml.delete` | `tested`: `DELETE FROM` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `DeltaTable.delete()` | `documented`: `DeltaTable.delete()` | `no`: `Can only delete from base table` ([H04](../../how-to/append-and-overwrite-data/index.md)) | H06 planned |
 | `merge.upsert` | `documented`: `MERGE INTO` ([update][dd-update]) | `documented`: `merge()` builder | `documented`: `merge()` + `when_matched_*`/`when_not_matched_*` | `no` | H05, T03 planned |
 | `merge.not-matched-by-source` | `documented` ([update][dd-update]) | `documented` | `documented`: `when_not_matched_by_source_*` | `no` | H05 planned |
 | `merge.schema-evolution` | `documented`: `schema.autoMerge.enabled` conf | `documented`: `withSchemaEvolution()` | `documented`: `merge(merge_schema=True)` | `no` | H05, H10 planned |
@@ -84,11 +89,12 @@ column gives the backlog id and its status.
 
 | Key | Spark SQL | PySpark | Python | DuckDB | Docs |
 | --- | --- | --- | --- | --- | --- |
-| `read.scan` | `tested`: `SELECT` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `spark.read.format("delta")` | `tested`: `DeltaTable(path).to_pandas()` ([H01](../../how-to/read-a-delta-table/index.md)) | `tested`: `SELECT` through `unity_catalog` ([UC DuckDB](../../../unitycatalog/how-to/duckdb/index.md)) | H01 ready |
-| `read.pushdown` | `documented`: data skipping ([optimizations][dd-opt]) | `documented` | `documented`: `to_pyarrow_dataset()` filters | `documented`: filter and projection pushdown ([extension][duck]) | H01 ready (no pushdown yet) |
-| `read.version` | `tested`: `VERSION AS OF` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `versionAsOf` | `tested`: `DeltaTable(path, version=0)` ([H02](../../how-to/query-a-table-as-of-version/index.md), [T02](../../tutorials/explore-table-history/index.md)) | `documented`: `AT (VERSION => n)`, `ATTACH … (VERSION n)` | H02 ready |
-| `read.timestamp` | `documented`: `TIMESTAMP AS OF` | `documented`: `timestampAsOf` | `documented`: `load_as_version(datetime)` | `no`: version only ([extension][duck]) | H02 ready (version only) |
-| `history.list` | `tested`: `DESCRIBE HISTORY` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `history()` | `tested`: `history()` ([T02](../../tutorials/explore-table-history/index.md)) | `no` | H18 planned |
+| `read.scan` | `tested`: `SELECT` by path ([H01](../../how-to/read-a-delta-table/index.md), [T01](../../tutorials/your-first-delta-table/index.md)); by name ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: `spark.read.format("delta").load()` ([H01](../../how-to/read-a-delta-table/index.md)) | `tested`: `DeltaTable(path).to_pandas()` ([H01](../../how-to/read-a-delta-table/index.md), [T11](../../tutorials/python-to-duckdb/index.md)) | `tested`: `delta_scan()` ([H01](../../how-to/read-a-delta-table/index.md), [T11](../../tutorials/python-to-duckdb/index.md)); through `unity_catalog` ([UC DuckDB](../../../unitycatalog/how-to/duckdb/index.md)) | H01 draft |
+| `read.pushdown` | `documented`: data skipping ([optimizations][dd-opt]); filters `tested` ([H01](../../how-to/read-a-delta-table/index.md)) | `documented`; filters `tested` ([H01](../../how-to/read-a-delta-table/index.md)) | `documented`: `to_pyarrow_dataset()`; `to_pandas(filters=…)` `tested` ([H01](../../how-to/read-a-delta-table/index.md)) | `documented`: filter and projection pushdown ([extension][duck]); filters `tested` ([H01](../../how-to/read-a-delta-table/index.md)) | H01 draft (results tested, skipping not measured) |
+| `read.version` | `tested`: `VERSION AS OF` ([H02](../../how-to/query-a-table-as-of-version/index.md), [T01](../../tutorials/your-first-delta-table/index.md), [UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: `versionAsOf` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: `DeltaTable(path, version=n)` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: `AT (VERSION => n)`, `ATTACH … (VERSION n)` ([H02](../../how-to/query-a-table-as-of-version/index.md), [T11](../../tutorials/python-to-duckdb/index.md)) | H02 draft |
+| `read.timestamp` | `tested`: `TIMESTAMP AS OF <expression>` on a named table; on a path only a string, else `UNSUPPORTED_DATASOURCE_FOR_DIRECT_QUERY` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: `timestampAsOf` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: `load_as_version(datetime)` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `no`: `only support at_clause with unit 'version'` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | H02 draft |
+| `read.past-retention` | `no`: a version older than `deletedFileRetentionDuration` fails with `DELTA_UNSUPPORTED_TIME_TRAVEL_BEYOND_DELETED_FILE_RETENTION_DURATION` ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `no`: same check | `tested`: reads it while its files exist ([H02](../../how-to/query-a-table-as-of-version/index.md)) | `tested`: reads it while its files exist ([H02](../../how-to/query-a-table-as-of-version/index.md)) | H02 draft; E12 planned |
+| `history.list` | `tested`: `DESCRIBE HISTORY` ([T01](../../tutorials/your-first-delta-table/index.md), [H02](../../how-to/query-a-table-as-of-version/index.md), [H04](../../how-to/append-and-overwrite-data/index.md), [UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: `DeltaTable.forPath().history()` ([H02](../../how-to/query-a-table-as-of-version/index.md), [H04](../../how-to/append-and-overwrite-data/index.md)) | `tested`: `history()` ([T11](../../tutorials/python-to-duckdb/index.md), [H02](../../how-to/query-a-table-as-of-version/index.md), [H04](../../how-to/append-and-overwrite-data/index.md), [T02](../../tutorials/explore-table-history/index.md)) | `no`: no history function ([extension][duck]) | H02 draft (to pick a version); H18 planned |
 | `history.detail` | `tested`: `DESCRIBE DETAIL`, `SHOW TBLPROPERTIES` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `documented`: `detail()` | `documented`: `metadata()`, `protocol()`, `get_add_actions()` | `documented`: `delta_list_files()` (files only) | H18 planned |
 | `history.restore` | `documented`: `RESTORE TABLE` ([utility][dd-utility]) | `documented`: `restoreToVersion()`/`restoreToTimestamp()` | `documented`: `restore()` | `no` | H08 planned |
 | `history.shallow-clone` | `documented`: `SHALLOW CLONE` ([utility][dd-utility]) | `documented`: `clone(isShallow=True)` | `no`: no API | `no` | H09 later |
@@ -146,6 +152,17 @@ column gives the backlog id and its status.
 | `storage.azure-gcs` | `documented` ([storage][dd-storage]) | same | `documented` ([feature table][dr-features]) | `documented`: secrets ([extension][duck]) | H29, H30 planned |
 | `catalog.unity` | `tested` ([UC T03](../../../unitycatalog/tutorials/managed-delta-table/index.md)) | `tested`: session config (same page) | `no` for catalog-managed tables ([UC known issues](../../../unitycatalog/reference/features-and-limitations/index.md)) | `tested` ([UC DuckDB](../../../unitycatalog/how-to/duckdb/index.md), nightly `unity_catalog`) | H31 planned; setup lives in the UC docs |
 
+## Cross-engine round trips
+
+A table with no table features (protocol 1/2) written by one interface and
+read by another. Spark covers Spark SQL and PySpark.
+
+| Writer → reader | Spark | Python | DuckDB |
+| --- | --- | --- | --- |
+| Spark | — | `tested` ([T01](../../tutorials/your-first-delta-table/index.md)) | `tested` ([T01](../../tutorials/your-first-delta-table/index.md)) |
+| Python | `tested` ([H01](../../how-to/read-a-delta-table/index.md), [H02](../../how-to/query-a-table-as-of-version/index.md), [H04](../../how-to/append-and-overwrite-data/index.md)) | — | `tested` ([T11](../../tutorials/python-to-duckdb/index.md), [H01](../../how-to/read-a-delta-table/index.md), [H02](../../how-to/query-a-table-as-of-version/index.md), [H04](../../how-to/append-and-overwrite-data/index.md)) |
+| DuckDB (append) | `?` | `tested` ([H04](../../how-to/append-and-overwrite-data/index.md)) | — |
+
 ## Table features by engine
 
 Read: can the engine open a table that has the feature. Write: can it commit
@@ -180,9 +197,9 @@ the features that are specified elsewhere (last three rows).
 
 | Journey | Path | Written | Engines covered | Blocking gap |
 | --- | --- | --- | --- | --- |
-| J01 Evaluate | E01 → R01 → T01 → T11 → R10 | E01 | — | T01 is a stub; no R01 or R10. |
-| J02 Build and modify a table | T01 → T03 → H03–H06 → E03 | — | — | Nothing written. |
-| J03 History and changes | T02 → H02/H18 → H16 → H08 → E12 | T02 (draft), H02 | Python | No Spark SQL or DuckDB tabs; no CDF or restore. |
+| J01 Evaluate | E01 → R01 → T01 → T11 → R10 | E01, T01 (draft), T11 (draft) | Spark SQL, Python, DuckDB | No R01 or R10. |
+| J02 Build and modify a table | T01 → T03 → H03–H06 → E03 | T01 (draft), H04 (draft) | All four (append); three (overwrite) | No create, MERGE, update, or delete pages. |
+| J03 History and changes | T02 → H02/H18 → H16 → H08 → E12 | T02 (draft), H02 (draft) | All four in H02; T02 is Python only | No CDF or restore; T02 not yet in Spark SQL. |
 | J04 Keep it fast | E05 → T05 → H19–H22 → R03 | — | — | Nothing written. |
 | J05 Evolve safely | E04/E07 → T04 → H10–H14 → H24/H25 → R01/R02 | R02 (stub) | — | Feature-by-engine reads are mostly `?`. |
 | J06 Use an engine | R10 → H38/H52/H40 → H53 | — | — | No setup pages. |
@@ -216,12 +233,12 @@ Ordered by how many pages or decisions they unblock.
    tracking, and column mapping (seen in the 2026-10-03 spike). Asserting
    them there turns the DuckDB read and write cells for those features into
    `tested`.
-6. **Pin `deltalake` exactly** in the Delta scripts (`>=0.20` today), so
-   `tested` cells name a version.
-7. **Whether DuckDB can create a table** through `ATTACH … (TYPE delta)`.
-8. **Spark `timestampNtz` and `variantType`**: Spark is the reference writer,
+6. **Spark `timestampNtz` and `variantType`**: Spark is the reference writer,
    but docs.delta.io has no page for either. Find the release that added
    each, then test it.
+7. **Whether Spark reads a table after a DuckDB append.** DuckDB's commit
+   records operation `UNKNOWN` and no `isBlindAppend`; deltalake reads it.
+   One more driver step settles the last `?` in the round-trip table.
 
 [plan]: https://github.com/open-lakehouse/docs-factory/blob/main/docs/design/delta-documentation-plan.md
 [dd-4.4]: https://github.com/delta-io/delta/releases/tag/v4.4.0

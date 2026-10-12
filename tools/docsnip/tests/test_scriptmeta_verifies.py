@@ -76,12 +76,25 @@ def test_check_rejects_an_unfenced_target(tmp_path) -> None:
     assert "not referenced by any page's file= fence" in errors
 
 
-def test_check_rejects_a_non_shell_target(tmp_path) -> None:
-    _, harness = _page(tmp_path, fence=True)
-    (harness.parent / "steps.sql").write_text("select 1;\n")
+def test_check_accepts_a_sql_target(tmp_path) -> None:
+    page, harness = _page(tmp_path, fence=True)
+    (harness.parent / "steps.sql").write_text(
+        "-- --8<-- [start:q]\nSELECT 1;\n-- --8<-- [end:q]\n"
+    )
+    (page / "index.md").write_text(
+        (page / "index.md").read_text()
+        + "```sql file=./snippets/steps.sql start=start:q end=end:q\n```\n"
+    )
     harness.write_text(_HARNESS.format(verifies='# verifies = "steps.sql"\n'))
+    assert check(tmp_path) == []
+
+
+def test_check_rejects_another_snippet_kind(tmp_path) -> None:
+    _, harness = _page(tmp_path, fence=True)
+    (harness.parent / "steps.json").write_text("{}\n")
+    harness.write_text(_HARNESS.format(verifies='# verifies = "steps.json"\n'))
     (errors,) = check(tmp_path)
-    assert "verifies must name a .sh script: steps.sql" in errors
+    assert "verifies must name a .sh or .sql snippet: steps.json" in errors
 
 
 def test_check_requires_verifies_on_a_shell_harness(tmp_path) -> None:
@@ -91,3 +104,15 @@ def test_check_requires_verifies_on_a_shell_harness(tmp_path) -> None:
     )
     (errors,) = check(tmp_path)
     assert "drives a shell snippet via docsnip.shellregions" in errors
+
+
+def test_check_requires_verifies_on_a_sql_harness(tmp_path) -> None:
+    _, harness = _page(tmp_path, fence=True)
+    harness.write_text(
+        _HARNESS.format(verifies="") + "from docsnip.sqlregions import run\n"
+    )
+    (errors,) = check(tmp_path)
+    assert (
+        'via docsnip.sqlregions but [tool.docs-factory] has no verifies = "<name>.sql"'
+        in errors
+    )

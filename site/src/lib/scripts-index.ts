@@ -10,8 +10,8 @@ import { useQuery } from "@tanstack/react-query";
 
 /** One script entry, mirroring `scriptEntry()` in scripts/build-script-index.mjs. */
 export interface ScriptEntry {
-  /** `shell` = a `.sh` the page quotes, verified by a PEP 723 harness. */
-  kind: "python" | "shell";
+  /** `shell` / `sql` = a `.sh` / `.sql` the page quotes, verified by a PEP 723 harness. */
+  kind: "python" | "shell" | "sql";
   /** Repo-relative path — the key GetSourceFile resolves against for comments. */
   gitPath: string;
   /** Served URL of the raw script, e.g. /docs/delta/tutorials/<slug>/snippets/x.py. */

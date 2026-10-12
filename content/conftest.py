@@ -11,9 +11,13 @@ So there are no per-tutorial ``test_*.py`` files — this plugin discovers every
 
 Scripts that declare a ``compose`` are marked ``needs_uc_server`` (derived, not
 hand-written), so the default ``pytest`` — which the root config filters with
-``-m "not needs_docker and not needs_uc_server"`` — skips them on a Docker-less
-machine, while the opt-in service lane runs them for real and fails hard if the
-compose can't start.
+``-m "not needs_docker and not needs_uc_server and not needs_spark"`` — skips
+them on a Docker-less machine, while the opt-in service lane runs them for real
+and fails hard if the compose can't start. Scripts with ``lane = "spark"`` are
+marked ``needs_spark`` the same way and run in the Spark lane, which needs Java
+and Maven. Where Maven Central is unreachable, set ``DOCS_FACTORY_MAVEN_MIRROR``
+to a mirror URL; the harness hands Spark a ``spark-defaults.conf`` that resolves
+packages through it, so the scripts and the commands they show stay unchanged.
 
 Only scripts on ``status: ready`` pages gate. A script whose page is still a
 draft runs as a non-strict ``xfail``, so the docs can say "tested here" about
@@ -22,9 +26,12 @@ exactly the scripts a red run would block, and in-progress pages can't.
 
 from __future__ import annotations
 
+import fcntl
 import os
 import signal
 import subprocess
+import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -49,6 +56,11 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 # Holds sitecustomize.py, which skips pyarrow's native teardown once a script has
 # finished (see that module). Harness-only: readers never get it.
 _HARNESS_DIR = Path(__file__).resolve().parent / "_harness"
+
+# Delta pages share one sample table path (/tmp/delta/orders) that every script
+# resets; the lock serializes them across concurrent runs, e.g. two worktrees.
+_DELTA_DIR = _REPO_ROOT / "content" / "delta"
+_DELTA_LOCK = Path(tempfile.gettempdir()) / "docs-factory-delta.lock"
 
 # A script that outlives this is killed and fails, instead of hanging the job.
 # Generous: a service-backed script may pull wheels and seed data on a cold cache.
@@ -103,6 +115,8 @@ class TutorialScriptItem(pytest.Item):
         # default lane's -m filter deselects it without any hand-marking.
         if script_meta.docs_factory.needs_services:
             self.add_marker(pytest.mark.needs_uc_server)
+        if script_meta.docs_factory.lane == "spark":
+            self.add_marker(pytest.mark.needs_spark)
         page = script_meta.owning_page()
         status = page_status(page) if page else "draft"
         if status != "ready":
@@ -120,6 +134,7 @@ class TutorialScriptItem(pytest.Item):
             **os.environ,
             **client_env(self.script_meta.compose_path(), _REPO_ROOT),
             **self.script_meta.docs_factory.env,
+            **_maven_mirror_env(),
         }
         base_url = _start_services(self.script_meta)
         try:
@@ -135,11 +150,14 @@ class TutorialScriptItem(pytest.Item):
             # Unbuffered, so a killed script's report shows how far it got.
             env.setdefault("PYTHONUNBUFFERED", "1")
             try:
-                proc = _run_script(self.script_meta, env)
+                with _delta_lock(self.script_meta.path):
+                    proc = _run_script(self.script_meta, env)
             except TutorialScriptTimeout as exc:
                 exc.server_log = _server_log(self.script_meta)
                 raise
-            if proc.returncode < 0 or proc.returncode in _NATIVE_ABORT_CODES:
+            native_abort = proc.returncode < 0 or proc.returncode in _NATIVE_ABORT_CODES
+            # A JVM that dies by a signal is a real failure, not the pyarrow flake.
+            if native_abort and self.script_meta.docs_factory.lane != "spark":
                 # A native crash in the deltalake/pyarrow layer (SIGABRT/SIGSEGV,
                 # surfaced as exit 134/139 or a negative signal code) aborts the
                 # process before any Python `assert` in the script can run — so
@@ -167,6 +185,32 @@ class TutorialScriptItem(pytest.Item):
 
     def reportinfo(self):
         return self.path, 0, f"tutorial script: {self.path.name}"
+
+
+def _maven_mirror_env() -> dict[str, str]:
+    """``SPARK_CONF_DIR`` pointing Spark's package resolution at the mirror in
+    ``DOCS_FACTORY_MAVEN_MIRROR``, or nothing when it's unset (as in CI)."""
+    mirror = os.environ.get("DOCS_FACTORY_MAVEN_MIRROR")
+    if not mirror:
+        return {}
+    conf_dir = Path(tempfile.gettempdir()) / "docs-factory-spark-conf"
+    conf_dir.mkdir(exist_ok=True)
+    (conf_dir / "spark-defaults.conf").write_text(f"spark.jars.repositories {mirror}\n")
+    return {"SPARK_CONF_DIR": str(conf_dir)}
+
+
+@contextmanager
+def _delta_lock(path: Path):
+    """Hold an exclusive lock while a Delta page's script runs."""
+    if not path.resolve().is_relative_to(_DELTA_DIR):
+        yield
+        return
+    with _DELTA_LOCK.open("w") as fh:
+        fcntl.flock(fh, fcntl.LOCK_EX)
+        try:
+            yield
+        finally:
+            fcntl.flock(fh, fcntl.LOCK_UN)
 
 
 def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedProcess:

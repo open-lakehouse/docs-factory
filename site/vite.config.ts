@@ -110,7 +110,7 @@ function buildKnownHrefs(): Set<string> {
 const knownHrefs = buildKnownHrefs();
 
 // Dev-only static serving for build-emitted companion files. `.md` twins,
-// served `.py`/`.sh` scripts, and scripts.json are written to dist/ by build:artifacts
+// served `.py`/`.sh`/`.sql` scripts, and scripts.json are written to dist/ by build:artifacts
 // (never to public/), so `vite dev` would 404 them and the review workspace's
 // Markdown/script tabs couldn't load. In production Vercel serves these from the
 // prebuilt dist/ directly (with the same content-types); this middleware mirrors
@@ -122,6 +122,7 @@ function devCompanionFiles(): Plugin {
     ".md": "text/markdown; charset=utf-8",
     ".py": "text/x-python; charset=utf-8",
     ".sh": "text/x-shellscript; charset=utf-8",
+    ".sql": "application/sql; charset=utf-8",
     ".json": "application/json; charset=utf-8",
   };
   return {
@@ -134,6 +135,7 @@ function devCompanionFiles(): Plugin {
           url.endsWith(".md") ||
           url.endsWith(".py") ||
           url.endsWith(".sh") ||
+          url.endsWith(".sql") ||
           url === "/scripts.json";
         if (!isCompanion) return next();
 

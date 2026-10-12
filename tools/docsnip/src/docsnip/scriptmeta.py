@@ -32,11 +32,22 @@ _BLOCK_RE = r"(?m)^# /// (?P<type>[a-zA-Z0-9-]+)$\s(?P<content>(^#(| .*)$\s)+)^#
 # The namespaced table our tooling owns inside a script's PEP 723 metadata.
 TOOL_TABLE = "docs-factory"
 
-# A script importing docsnip.shellregions is a harness driving a shell snippet.
-_SHELL_HARNESS_RE = re.compile(
-    r"^\s*(?:from\s+docsnip\.shellregions\s+import|import\s+docsnip\.shellregions)\b",
+# A script importing docsnip.shellregions or docsnip.sqlregions is a harness
+# driving a shell or SQL snippet.
+_HARNESS_RE = re.compile(
+    r"^\s*(?:from\s+docsnip\.(shell|sql)regions\s+import"
+    r"|import\s+docsnip\.(shell|sql)regions)\b",
     re.MULTILINE,
 )
+
+# The snippet kinds a harness may publish in its place.
+_VERIFIABLE = (".sh", ".sql")
+
+# Opt-in test lanes beyond the default (no services, no JVM) one.
+LANES = ("spark",)
+
+# A dependency that starts a JVM, so its script belongs in the spark lane.
+_SPARK_DEP_RE = re.compile(r"^\s*(?:pyspark|delta-spark)\b")
 
 
 class ScriptMetaError(Exception):
@@ -138,9 +149,11 @@ class DocsFactoryMeta:
     ``AWS_ENDPOINT_URL`` that points host-side clients at ``envs/aws-sim``
     while the snippet code stays endpoint-free. ``verifies`` (relative to the
     script's directory) marks the script as a test harness for a non-Python
-    snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh``: the
-    published runnable example is that file, not the harness. ``claims`` feed
-    the compatibility matrices (see :class:`Claim`).
+    snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh`` or
+    ``foo.sql``: the published runnable example is that file, not the harness.
+    ``lane`` puts the script in an opt-in test lane: ``"spark"`` for one that
+    needs Java and Maven (PySpark, or the ``spark-sql`` shell).
+    ``claims`` feed the compatibility matrices (see :class:`Claim`).
     """
 
     compose: str | None = None
@@ -149,6 +162,7 @@ class DocsFactoryMeta:
     env: dict[str, str] = dataclasses.field(default_factory=dict)
     verifies: str | None = None
     claims: list[Claim] = dataclasses.field(default_factory=list)
+    lane: str | None = None
 
     @property
     def needs_services(self) -> bool:
@@ -232,6 +246,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
     base_url_env = tool.get("base-url-env")
     env = tool.get("env", {}) or {}
     verifies = tool.get("verifies")
+    lane = tool.get("lane")
 
     if compose is not None and not isinstance(compose, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].compose must be a string")
@@ -249,6 +264,10 @@ def parse_script(path: Path) -> ScriptMeta | None:
         )
     if verifies is not None and not isinstance(verifies, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].verifies must be a string")
+    if lane is not None and lane not in LANES:
+        raise ScriptMetaError(
+            f"{path}: [tool.docs-factory].lane must be one of {', '.join(LANES)}"
+        )
 
     return ScriptMeta(
         path=path,
@@ -261,6 +280,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
             env=dict(env),
             verifies=verifies,
             claims=_parse_claims(path, tool.get("claims")),
+            lane=lane,
         ),
     )
 
@@ -308,8 +328,9 @@ def check(content_root: Path) -> list[str]:
     Asserts each script parses, that every declared ``compose`` file exists on
     disk, and that a ``verifies`` target exists and is quoted by some page fence
     (otherwise the published example would be a file no reader sees). A script
-    that drives a shell snippet through ``docsnip.shellregions`` must declare
-    ``verifies``, or the site publishes the harness instead of the script. Malformed
+    that drives a shell or SQL snippet through ``docsnip.shellregions`` or
+    ``docsnip.sqlregions`` must declare ``verifies``, or the site publishes the
+    harness instead of the snippet. Malformed
     metadata is turned into an error string rather than a raised exception so it
     aggregates with the rest of ``docsnip check``.
     """
@@ -325,6 +346,15 @@ def check(content_root: Path) -> list[str]:
             continue
         if meta is None:
             continue
+        # A service-lane script already runs where CI has Java and Docker.
+        default_lane = (
+            meta.docs_factory.lane is None and not meta.docs_factory.needs_services
+        )
+        if default_lane and any(_SPARK_DEP_RE.match(dep) for dep in meta.dependencies):
+            errors.append(
+                f"{path}: depends on Spark but [tool.docs-factory] has no "
+                'lane = "spark", so the default lane would need Java'
+            )
         compose = meta.compose_path()
         if compose is not None and not compose.is_file():
             errors.append(
@@ -333,10 +363,12 @@ def check(content_root: Path) -> list[str]:
             )
         verified = meta.verifies_path()
         if verified is None:
-            if _SHELL_HARNESS_RE.search(path.read_text()):
+            if harness := _HARNESS_RE.search(path.read_text()):
+                kind = harness.group(1) or harness.group(2)
+                ext = "sh" if kind == "shell" else "sql"
                 errors.append(
-                    f"{path}: drives a shell snippet via docsnip.shellregions but "
-                    '[tool.docs-factory] has no verifies = "<name>.sh"'
+                    f"{path}: drives a {kind} snippet via docsnip.{kind}regions but "
+                    f'[tool.docs-factory] has no verifies = "<name>.{ext}"'
                 )
             continue
         if not verified.is_file():
@@ -345,11 +377,11 @@ def check(content_root: Path) -> list[str]:
                 f"{meta.docs_factory.verifies}"
             )
             continue
-        if verified.suffix != ".sh":
-            # The published runnable example's run instructions are shell-specific.
+        if verified.suffix not in _VERIFIABLE:
+            # The site publishes the target with run instructions for its kind.
             errors.append(
-                f"{path}: [tool.docs-factory].verifies must name a .sh script: "
-                f"{meta.docs_factory.verifies}"
+                f"{path}: [tool.docs-factory].verifies must name a .sh or .sql "
+                f"snippet: {meta.docs_factory.verifies}"
             )
             continue
         if fence_sources is None:

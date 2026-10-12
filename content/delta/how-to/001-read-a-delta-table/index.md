@@ -1,35 +1,139 @@
 ---
 title: Read a Delta table
-summary: Load a Delta table into a dataframe with the deltalake Python package.
+summary: Read a Delta table by its path with Spark SQL, PySpark, the deltalake Python package, or DuckDB, and select only the columns and rows you need.
 diataxis: how-to
 project: delta
 delta_features: []
-prerequisites:
-  packages:
-    python: [deltalake, pandas]
-  datasets: [orders]
 references:
   - deltaSpec
+  - deltaSpark
   - deltaRs
-status: ready
+  - duckdb
+status: draft
 ---
 
-Reading a Delta table means loading its current version into an in-memory
-dataframe. [Delta Lake](model:deltaSpec) is an open table format; this guide
-uses [delta-rs](model:deltaRs) via its `deltalake` Python package.
+You read a [Delta Lake](model:deltaSpec) table by its path, or by its name
+when a catalog registers it. The engine reads the table's transaction log to
+find its current version, then scans only the Parquet files in that version.
+This guide reads a table with Spark SQL, PySpark, the `deltalake` Python
+package, and DuckDB, all of which read Delta tables.
 
-The example reads the `orders` sample table. To create it locally, first
-bootstrap the data (this is the same table our CI reads):
+:::prerequisites
+- A Delta table. The examples read `orders` at `/tmp/delta/orders`, which
+  [Create your first Delta table](../../tutorials/your-first-delta-table/index.md)
+  and [Build a Delta table in Python and query it with DuckDB](../../tutorials/python-to-duckdb/index.md)
+  create. To read your own table, change the path.
+- [uv](https://docs.astral.sh/uv/), and Java 17 for Spark SQL and PySpark.
+:::
 
-```console
-pip install docs-factory-seed
-docs-factory-seed orders   # prints the table path
+## Set up the client
+
+:::tab[Spark SQL]
+Start the Spark SQL shell with [Delta Spark](model:deltaSpark):
+
+```bash file=../../tutorials/001-your-first-delta-table/snippets/spark_sql.sh start=start:launch end=end:launch
+```
+:::
+
+:::tab[PySpark]
+Open a Python session with PySpark and Delta Spark:
+
+```bash
+uv run --with pyspark==4.2.0 --with delta-spark==4.4.0 python
 ```
 
-```python file=./snippets/read_delta_table.py start=start:read-delta-table end=end:read-delta-table
+Then start a Spark session with Delta's SQL support:
+
+```python file=./snippets/read_pyspark.py start=start:session end=end:session
 ```
 
-## Related
+`configure_spark_with_delta_pip` adds the Delta Spark package that matches
+your `delta-spark` install. Any Spark SQL statement also runs in PySpark as
+`spark.sql("…")`.
+:::
 
-- [Query a Delta table as of a version](../query-a-table-as-of-version/index.md) — read historical versions.
-- [What is Delta Lake?](../../explanation/what-is-delta-lake.md) — the concepts behind the format.
+:::tab[Python]
+Open a Python session with the `deltalake` package from
+[delta-rs](model:deltaRs):
+
+```bash
+uv run --with "deltalake[pandas,pyarrow]==1.6.6" python
+```
+:::
+
+:::tab[DuckDB]
+Start the [DuckDB](model:duckdb) CLI:
+
+```bash file=./snippets/duckdb.sh start=start:launch end=end:launch
+```
+
+Then install and load its `delta` extension:
+
+```sql file=./snippets/read_duckdb.sql start=start:setup end=end:setup
+```
+:::
+
+## Read a table
+
+Query the table's latest version:
+
+:::tab[Spark SQL]
+```sql file=./snippets/read_spark.sql start=start:read end=end:read
+```
+:::
+
+:::tab[PySpark]
+```python file=./snippets/read_pyspark.py start=start:read end=end:read
+```
+:::
+
+:::tab[Python]
+```python file=./snippets/read.py start=start:read end=end:read
+```
+:::
+
+:::tab[DuckDB]
+```sql file=./snippets/read_duckdb.sql start=start:read end=end:read
+```
+:::
+
+Each returns the five orders. In Spark SQL, `` delta.`<path>` `` names a table
+by its path. DuckDB's `delta_scan` takes the path as a string.
+
+## Select columns and filter rows
+
+Name only the columns you need, and filter the rows:
+
+:::tab[Spark SQL]
+```sql file=./snippets/read_spark.sql start=start:filter end=end:filter
+```
+:::
+
+:::tab[PySpark]
+```python file=./snippets/read_pyspark.py start=start:filter end=end:filter
+```
+:::
+
+:::tab[Python]
+```python file=./snippets/read.py start=start:filter end=end:filter
+```
+
+`filters` takes a list of `(column, operator, value)` conditions that must all
+hold.
+:::
+
+:::tab[DuckDB]
+```sql file=./snippets/read_duckdb.sql start=start:filter end=end:filter
+```
+:::
+
+Each returns orders 1, 2, and 5, with three columns. The transaction log
+records statistics for each data file, such as each column's minimum and
+maximum value, so an engine can skip files whose rows can't match the filter.
+
+## Next steps
+
+- [Query an earlier version of a table](../query-a-table-as-of-version/index.md)
+  by version or timestamp.
+- [What is Delta Lake?](../../explanation/what-is-delta-lake.md): the
+  transaction log and what it adds to Parquet.

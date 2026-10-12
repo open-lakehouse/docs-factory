@@ -110,7 +110,7 @@ function ScriptViewBody({
   // line numbers, comment affordances, and highlighted tokens stay aligned.
   const code = (raw ?? "").replace(/\n$/, "");
   const lines = code.split("\n");
-  const shikiLines = useShikiLines(code, entry.kind === "shell" ? "bash" : "python");
+  const shikiLines = useShikiLines(code, SHIKI_LANG[entry.kind]);
   // Only trust the highlight when it splits into exactly the same line count;
   // otherwise fall back to plain text rather than misalign rows.
   const highlighted = shikiLines && shikiLines.length === lines.length ? shikiLines : null;
@@ -229,7 +229,12 @@ function ContractHeader({ entry }: { entry: ScriptEntry }) {
  * <li>-per-line structure). Returns null until highlighting resolves, so callers
  * fall back to plain text meanwhile.
  */
-function useShikiLines(code: string, lang: "python" | "bash"): string[] | null {
+const SHIKI_LANG = { python: "python", shell: "bash", sql: "sql" } as const;
+
+function useShikiLines(
+  code: string,
+  lang: (typeof SHIKI_LANG)[keyof typeof SHIKI_LANG],
+): string[] | null {
   const [lines, setLines] = useState<string[] | null>(null);
   useEffect(() => {
     let alive = true;

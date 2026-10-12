@@ -164,6 +164,11 @@ time with `docsnip.shellregions.run` and asserts on server state in between.
 The driver names its script with `verifies = "<name>.sh"` in that table, so the
 site publishes the `.sh` readers see as the runnable example, not the driver.
 `docsnip check` fails a `docsnip.shellregions` driver that leaves it out.
+SQL a reader types into an engine's shell (`spark-sql`, the DuckDB CLI) works
+the same way: a region-marked `snippets/*.sql` (markers are `-- --8<-- …`
+comments) and a `*_cli.py` driver that opens the engine and runs one region at
+a time with `docsnip.sqlregions.run`, or pipes `sqlregions.text(...)` into the
+shell itself, with `verifies = "<name>.sql"`.
 Every Unity Catalog page runs against the shared environment in
 [`envs/unitycatalog/`](../envs/unitycatalog/README.md): `compose.yaml` for the
 server, `compose.aws.yaml` for the server plus aws-sim, `compose.postgres.yaml`
@@ -259,14 +264,20 @@ and passes if it exits 0. Put assertions in the script — the `if __name__ ==
 every `uv run` (turning a silent regression into a non-zero exit) without
 appearing in the docs.
 
-Two lanes:
+Three lanes:
 
 - **Default** (`just test`): engine examples + tutorial scripts that need no
-  services. Stays green with no Docker.
+  services. Stays green with no Docker and no Java.
 - **Service** (`just test-services`, opt-in): scripts that declare a `compose`
   are auto-marked `needs_uc_server`, so they're deselected by default and run
   here. The plugin **fails hard** (never skips) if Docker is unavailable, so an
   opted-in CI run can't quietly pass.
+- **Spark** (`just test-spark`, opt-in): scripts with `lane = "spark"` in
+  `[tool.docs-factory]` (PySpark, or a driver for the `spark-sql` shell) are
+  marked `needs_spark`. They need Java 17 and Maven; behind a proxy, set
+  `DOCS_FACTORY_MAVEN_MIRROR` to a Maven mirror URL and the harness points
+  Spark at it. `docsnip check` fails a script that depends on `pyspark` or
+  `delta-spark` without the lane, unless it runs in the service lane.
 
 In both lanes only scripts on `status: ready` pages gate. A script whose page
 (the nearest `index.md` above it) is a draft runs as a non-strict `xfail`, and

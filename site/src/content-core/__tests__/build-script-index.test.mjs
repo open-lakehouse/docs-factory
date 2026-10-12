@@ -64,6 +64,18 @@ test("scriptEntry publishes the .sh a harness verifies, not the harness", () => 
   expect(e.services).toEqual(["unitycatalog"]);
 });
 
+test("scriptEntry publishes a verified .sql as kind sql", () => {
+  const snippets = "content/delta/how-to/001-read-a-delta-table/snippets";
+  const e = scriptEntry({
+    ...DOCSNIP_ENTRY,
+    path: `${snippets}/read_spark_cli.py`,
+    verifies: `${snippets}/read_spark.sql`,
+  });
+  expect(e.kind).toBe("sql");
+  expect(e.fetchUrl).toBe("/docs/delta/how-to/read-a-delta-table/snippets/read_spark.sql");
+  expect(e.dependencies).toEqual([]);
+});
+
 test("scriptEntry handles a script directly in the tutorial dir (no snippets/)", () => {
   const e = scriptEntry({
     ...DOCSNIP_ENTRY,
@@ -245,6 +257,17 @@ test("scriptSummary reads a python docstring's first line, after the PEP 723 blo
   expect(scriptSummary(src, "python")).toBe("Read a table.");
   expect(scriptSummary('"""One line."""\n', "python")).toBe("One line.");
   expect(scriptSummary("import os\n", "python")).toBeNull();
+});
+
+test("stripSectionMarkers drops SQL comment markers too", () => {
+  const src = "-- Read it.\n-- --8<-- [start:read]\nSELECT 1;\n-- --8<-- [end:read]\n";
+  expect(stripSectionMarkers(src)).toBe("-- Read it.\nSELECT 1;\n");
+});
+
+test("scriptSummary reads a SQL file's first comment paragraph", () => {
+  const src = "-- Read the orders table\n-- with spark-sql.\n\n-- --8<-- [start:a]\nSELECT 1;\n";
+  expect(scriptSummary(src, "sql")).toBe("Read the orders table with spark-sql.");
+  expect(scriptSummary("-- --8<-- [start:a]\nSELECT 1;\n", "sql")).toBeNull();
 });
 
 test("scriptSummary reads a shell script's first comment paragraph", () => {

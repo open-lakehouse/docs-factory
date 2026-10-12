@@ -27,13 +27,21 @@ def regions(script: Path) -> dict[str, str]:
 
 
 def run(
-    script: Path, name: str, *, expect_failure: bool = False, cwd: Path | None = None
+    script: Path,
+    name: str,
+    *,
+    expect_failure: bool = False,
+    cwd: Path | None = None,
+    input: str | None = None,
 ) -> str:
     """Run one region and return its combined output.
 
     ``cwd`` defaults to the script's grandparent, the page folder: snippets live
     in ``<page>/snippets/``. Pass the folder the page tells the reader to run
-    the region from when that differs, such as ``envs/unitycatalog``.
+    the region from when that differs, such as ``envs/unitycatalog``. ``input``
+    is the region's stdin, such as the statements an interactive shell like
+    ``spark-sql`` reads; without it stdin is empty, so a shell exits instead of
+    waiting on the terminal.
     """
     blocks = regions(script)
     proc = subprocess.run(
@@ -41,6 +49,8 @@ def run(
         cwd=cwd or script.parent.parent,
         capture_output=True,
         text=True,
+        input=input,
+        stdin=subprocess.DEVNULL if input is None else None,
     )
     output = proc.stdout + proc.stderr
     if expect_failure:

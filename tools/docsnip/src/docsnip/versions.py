@@ -21,7 +21,7 @@ MANIFEST = Path("content") / "unitycatalog" / "release.yml"
 # keep the versions they were written against.
 _SCAN = (
     ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml")),
-    ("envs", ("*.yaml", "*.yml", "*.md", "*.py")),
+    ("envs", ("*.yaml", "*.yml", "*.md", "*.py", "Dockerfile")),
     ("emit/docs/sites", ("unitycatalog-docs.mjs",)),
 )
 

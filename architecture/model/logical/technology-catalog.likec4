@@ -101,6 +101,7 @@ model {
   }
   apacheSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
   apacheSpark -[consumes]-> icebergRestSpec "reads via"
+  apacheSpark -[consumes]-> ucSpec "resolves tables via"
 
   deltaRs = implementation "delta-rs" {
     #library
@@ -132,6 +133,7 @@ model {
   duckdb -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
   duckdb -[consumes]-> deltaSpec "reads Delta tables via"
   duckdb -[consumes]-> icebergRestSpec "reads Iceberg tables via"
+  duckdb -[consumes]-> ucSpec "resolves tables via"
 
   polars = implementation "Polars" {
     #library
@@ -147,6 +149,7 @@ model {
   polars -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
   // impl -> impl is a DEPENDENCY, not spec-consumption (`consumes` is impl -> spec). See ADR-0006.
   polars -[dependsOn]-> deltaRs "reads/writes Delta via"
+  polars -[consumes]-> ucSpec "resolves tables via"
 
   // Catalog implementations --------------------------------------------------
   lakekeeper = implementation "Lakekeeper" {

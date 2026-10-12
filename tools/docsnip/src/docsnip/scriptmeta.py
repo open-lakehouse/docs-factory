@@ -43,6 +43,87 @@ class ScriptMetaError(Exception):
     """Raised when a script's inline metadata is malformed or contradictory."""
 
 
+# The fields of one ``claims.<interface>`` entry.
+_CLAIM_KEYS = frozenset({"op", "region", "anchor", "fails", "note"})
+
+
+@dataclasses.dataclass(frozen=True)
+class Claim:
+    """One ``claims.<interface>`` entry: what the script proves about an interface.
+
+    ``interface`` is a column of a compatibility matrix (``content/<project>/
+    compatibility.yml``), as written: bare for the script's own project, or
+    ``<project>:<interface>`` for another's. A claim says ``op`` works and names
+    the ``region`` a page shows doing it, or, with ``fails`` (``True`` or the
+    error text the script asserts), that it doesn't. ``anchor`` overrides the
+    heading the matrix links to; ``note`` qualifies the cell, as in "on local
+    storage".
+    """
+
+    interface: str
+    op: str
+    region: str | None = None
+    anchor: str | None = None
+    fails: bool | str = False
+    note: str | None = None
+
+    @property
+    def works(self) -> bool:
+        return self.fails is False
+
+
+def _parse_claims(path: Path, raw: object) -> list[Claim]:
+    where = f"{path}: [tool.docs-factory].claims"
+    if raw is None:
+        return []
+    if not isinstance(raw, dict):
+        raise ScriptMetaError(f"{where} must be a table of <interface> = [claims]")
+    claims: list[Claim] = []
+    for interface, entries in raw.items():
+        if not isinstance(entries, list):
+            raise ScriptMetaError(f"{where}.{interface} must be an array of tables")
+        for entry in entries:
+            if not isinstance(entry, dict):
+                raise ScriptMetaError(f"{where}.{interface}: each claim is a table")
+            unknown = sorted(set(entry) - _CLAIM_KEYS)
+            if unknown:
+                raise ScriptMetaError(
+                    f"{where}.{interface}: unknown key(s) {', '.join(unknown)}"
+                )
+            op = entry.get("op")
+            if not isinstance(op, str) or not op:
+                raise ScriptMetaError(f"{where}.{interface}: every claim needs an op")
+            text: dict[str, str | None] = {}
+            for key in ("region", "anchor", "note"):
+                value = entry.get(key)
+                if value is not None and not isinstance(value, str):
+                    raise ScriptMetaError(
+                        f"{where}.{interface}: {op}: {key} must be a string"
+                    )
+                text[key] = value
+            fails = entry.get("fails", False)
+            if not isinstance(fails, bool | str) or fails == "":
+                raise ScriptMetaError(
+                    f"{where}.{interface}: {op}: fails is true or the asserted error"
+                )
+            if fails is False and text["region"] is None:
+                raise ScriptMetaError(
+                    f"{where}.{interface}: {op}: a claim that it works names the "
+                    "region that shows it"
+                )
+            claims.append(
+                Claim(
+                    interface=str(interface),
+                    op=op,
+                    region=text["region"],
+                    anchor=text["anchor"],
+                    fails=fails,
+                    note=text["note"],
+                )
+            )
+    return claims
+
+
 @dataclasses.dataclass
 class DocsFactoryMeta:
     """The ``[tool.docs-factory]`` runtime contract parsed from a script.
@@ -58,7 +139,8 @@ class DocsFactoryMeta:
     while the snippet code stays endpoint-free. ``verifies`` (relative to the
     script's directory) marks the script as a test harness for a non-Python
     snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh``: the
-    published runnable example is that file, not the harness.
+    published runnable example is that file, not the harness. ``claims`` feed
+    the compatibility matrices (see :class:`Claim`).
     """
 
     compose: str | None = None
@@ -66,6 +148,7 @@ class DocsFactoryMeta:
     base_url_env: str | None = None
     env: dict[str, str] = dataclasses.field(default_factory=dict)
     verifies: str | None = None
+    claims: list[Claim] = dataclasses.field(default_factory=list)
 
     @property
     def needs_services(self) -> bool:
@@ -92,6 +175,25 @@ class ScriptMeta:
         if self.docs_factory.verifies is None:
             return None
         return (self.path.parent / self.docs_factory.verifies).resolve()
+
+    def owning_page(self) -> Path | None:
+        """The page this script belongs to: the nearest ``index.md`` above it.
+
+        ``<slug>/snippets/x.py`` and ``<slug>/x.py`` both belong to
+        ``<slug>/index.md``. The search stops at the ``content/`` root.
+        """
+        for parent in self.path.resolve().parents:
+            if parent.name == "content":
+                return None
+            for name in ("index.md", "index.mdx"):
+                if (parent / name).is_file():
+                    return parent / name
+        return None
+
+
+def without_metadata(text: str) -> str:
+    """The script's text without its ``# /// script`` block."""
+    return re.sub(_BLOCK_RE, "", text)
 
 
 def _read_block(text: str) -> dict | None:
@@ -158,6 +260,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
             base_url_env=base_url_env,
             env=dict(env),
             verifies=verifies,
+            claims=_parse_claims(path, tool.get("claims")),
         ),
     )
 

@@ -5,7 +5,8 @@ Subcommands:
   snippetcheck  — verify every snippet fence resolves to a unique source region
   versions      — UC pins against content/unitycatalog/release.yml (--fix rewrites)
   bump-uc       — move the docs to a new UC release and rewrite every pin
-  check         — validate + snippetcheck + versions (CI entry)
+  compat        — compatibility tables from script claims (--fix rewrites)
+  check         — validate + snippetcheck + versions + compat (CI entry)
 
 llms.txt generation lives in the docs-site emitter (emit/docs), which re-uses
 content-core for content discovery, identity, and URL derivation instead of
@@ -21,7 +22,7 @@ import re
 import sys
 from pathlib import Path
 
-from . import environments, published, versions
+from . import compat, environments, published, versions
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -124,7 +125,7 @@ def cmd_validate(p) -> int:
             )
             print("\n".join(f"  - {u}" for u in uncovered), file=sys.stderr)
 
-    quality = model_quality_gaps(p["arch_model"])
+    quality = model_quality_gaps(p["arch_model"]) + compat.model_gaps(p["root"])
     if quality:
         print(f"model quality: {len(quality)} gap(s) (not failing):", file=sys.stderr)
         print("\n".join(quality), file=sys.stderr)
@@ -276,12 +277,34 @@ def cmd_versions(p, fix: bool = False) -> int:
 def cmd_bump_uc(p, release: str) -> int:
     for path in versions.bump(p["root"], release):
         print(f"rewrote {path.relative_to(p['root'])}")
-    return cmd_versions(p)
+    # Table headers show pinned versions.
+    return cmd_versions(p) or cmd_compat(p, fix=True)
+
+
+def cmd_compat(p, fix: bool = False) -> int:
+    if fix:
+        try:
+            changed = compat.fix(p["root"])
+        except ValueError as exc:
+            print(exc, file=sys.stderr)
+            print("\ncompatibility tables not rewritten", file=sys.stderr)
+            return 1
+        for path in changed:
+            print(f"rewrote {path.relative_to(p['root'])}")
+    errors, warnings = compat.check(p["root"])
+    for warning in warnings:
+        print(f"warning: {warning}", file=sys.stderr)
+    if errors:
+        print("\n".join(errors), file=sys.stderr)
+        print(f"\n{len(errors)} compatibility error(s)", file=sys.stderr)
+        return 1
+    print("compat OK")
+    return 0
 
 
 def cmd_check(p) -> int:
-    """CI entry point: validate + snippetcheck + versions."""
-    rc = cmd_validate(p) or cmd_snippetcheck(p) or cmd_versions(p)
+    """CI entry point: validate + snippetcheck + versions + compat."""
+    rc = cmd_validate(p) or cmd_snippetcheck(p) or cmd_versions(p) or cmd_compat(p)
     if rc == 0:
         print("check OK")
     return rc
@@ -312,6 +335,10 @@ def main(argv: list[str] | None = None) -> int:
     sp_versions.add_argument(
         "--fix", action="store_true", help="rewrite pins to the manifest first"
     )
+    sp_compat = sub.add_parser("compat")
+    sp_compat.add_argument(
+        "--fix", action="store_true", help="rewrite the embedded tables first"
+    )
     sp_bump = sub.add_parser("bump-uc")
     sp_bump.add_argument("release", help="the new Unity Catalog release, X.Y.Z")
 
@@ -322,6 +349,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_scripts(p, as_json=args.json)
     if args.cmd == "versions":
         return cmd_versions(p, fix=args.fix)
+    if args.cmd == "compat":
+        return cmd_compat(p, fix=args.fix)
     if args.cmd == "bump-uc":
         return cmd_bump_uc(p, args.release)
 

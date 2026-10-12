@@ -33,13 +33,15 @@ if __name__ == "__main__":
         table = get(BASE_URL, f"tables/retail.sales.orders_{fmt}")
         assert table["data_source_format"] == fmt.upper(), table
         assert table["storage_location"] == f"file://{ff.ROOT}/orders_{fmt}", table
-        # The CLI only creates files for Delta; the sample files stay as written.
+        # The CLI writes a Delta log next to the files, whatever the format, and
+        # the page's readers skip it.
         assert sorted(p.name for p in (ff.ROOT / f"orders_{fmt}").iterdir()) == [
-            f"part-0.{fmt}"
+            "_delta_log",
+            f"part-0.{fmt}",
         ]
-        assert (
-            ff.read_duckdb(fmt, table["storage_location"].removeprefix("file://")) == 3
-        )
+        location = table["storage_location"].removeprefix("file://")
+        assert ff.read_pyarrow(fmt, location) == 3
+        assert ff.read_duckdb(fmt, location) == 3
 
     assert '"CSV"' in run(SCRIPT, "view")
 

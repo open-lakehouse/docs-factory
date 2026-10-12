@@ -14,6 +14,10 @@ hand-written), so the default ``pytest`` — which the root config filters with
 ``-m "not needs_docker and not needs_uc_server"`` — skips them on a Docker-less
 machine, while the opt-in service lane runs them for real and fails hard if the
 compose can't start.
+
+Only scripts on ``status: ready`` pages gate. A script whose page is still a
+draft runs as a non-strict ``xfail``, so the docs can say "tested here" about
+exactly the scripts a red run would block, and in-progress pages can't.
 """
 
 from __future__ import annotations
@@ -32,6 +36,7 @@ if TYPE_CHECKING:
 # tools/docsnip is a workspace package; its scriptmeta reader is the single
 # source of truth for discovering + parsing a script's inline metadata.
 from docsnip.environments import client_env
+from docsnip.frontmatter import page_status
 from docsnip.scriptmeta import ScriptMeta, parse_script
 
 # Exit codes a process reports when killed by a native abort/segfault signal
@@ -60,6 +65,21 @@ def pytest_collect_file(parent, file_path):
     return TutorialScriptFile.from_parent(parent, path=file_path, script_meta=meta)
 
 
+def pytest_terminal_summary(terminalreporter):
+    """On GitHub Actions, annotate what ran but didn't gate.
+
+    A draft page's failing script (xfailed) and a native-crash skip both leave
+    the job green, so neither should go unnoticed.
+    """
+    if not os.environ.get("GITHUB_ACTIONS"):
+        return
+    for report in terminalreporter.stats.get("xfailed", []):
+        print(f"::warning file={report.fspath}::failed, not gating: {report.wasxfail}")
+    for report in terminalreporter.stats.get("skipped", []):
+        if isinstance(report.longrepr, tuple):
+            print(f"::warning file={report.fspath}::skipped: {report.longrepr[2]}")
+
+
 class TutorialScriptFile(pytest.File):
     """A discovered tutorial script, collected as a single runnable test."""
 
@@ -83,6 +103,15 @@ class TutorialScriptItem(pytest.Item):
         # default lane's -m filter deselects it without any hand-marking.
         if script_meta.docs_factory.needs_services:
             self.add_marker(pytest.mark.needs_uc_server)
+        page = script_meta.owning_page()
+        status = page_status(page) if page else "draft"
+        if status != "ready":
+            where = page.relative_to(_REPO_ROOT) if page else "no page"
+            self.add_marker(
+                pytest.mark.xfail(
+                    strict=False, reason=f"{where} is status: {status}; non-gating"
+                )
+            )
 
     def runtest(self):
         # The registry's client-env is what the page tells a reader to export;
@@ -103,7 +132,13 @@ class TutorialScriptItem(pytest.Item):
                 env["PYTHONPATH"] = os.pathsep.join(
                     p for p in (str(_HARNESS_DIR), env.get("PYTHONPATH")) if p
                 )
-            proc = _run_script(self.script_meta, env)
+            # Unbuffered, so a killed script's report shows how far it got.
+            env.setdefault("PYTHONUNBUFFERED", "1")
+            try:
+                proc = _run_script(self.script_meta, env)
+            except TutorialScriptTimeout as exc:
+                exc.server_log = _server_log(self.script_meta)
+                raise
             if proc.returncode < 0 or proc.returncode in _NATIVE_ABORT_CODES:
                 # A native crash in the deltalake/pyarrow layer (SIGABRT/SIGSEGV,
                 # surfaced as exit 134/139 or a negative signal code) aborts the
@@ -119,7 +154,9 @@ class TutorialScriptItem(pytest.Item):
                     "crash, not a content-drift failure"
                 )
             if proc.returncode != 0:
-                raise TutorialScriptFailure(self.script_meta, proc)
+                raise TutorialScriptFailure(
+                    self.script_meta, proc, server_log=_server_log(self.script_meta)
+                )
         finally:
             _stop_services(self.script_meta)
 
@@ -162,22 +199,34 @@ def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedPr
 class TutorialScriptFailure(Exception):
     """A tutorial script exited non-zero; carries its captured output."""
 
-    def __init__(self, meta: ScriptMeta, proc: subprocess.CompletedProcess):
+    def __init__(
+        self,
+        meta: ScriptMeta,
+        proc: subprocess.CompletedProcess,
+        server_log: str | None = None,
+    ):
         self.meta = meta
         self.proc = proc
+        self.server_log = server_log
 
     def __str__(self) -> str:
-        return (
+        text = (
             f"`uv run {self.meta.path.name}` exited {self.proc.returncode}\n"
             f"--- stdout ---\n{self.proc.stdout}\n"
             f"--- stderr ---\n{self.proc.stderr}"
         )
+        if self.server_log:
+            text += f"\n--- unitycatalog log (tail) ---\n{self.server_log}"
+        return text
 
 
 # --- compose lifecycle, keyed on the script's [tool.docs-factory] --------------
 #
 # Cached per compose file so several scripts sharing one compose start it once.
 _ACTIVE: dict[str, DockerCompose] = {}
+# Compose files whose images this session already pulled. Every script starts a
+# fresh stack, and pulling once keeps a long run under Docker Hub's rate limit.
+_PULLED: set[str] = set()
 
 
 def _start_services(meta: ScriptMeta) -> str | None:
@@ -197,13 +246,27 @@ def _start_services(meta: ScriptMeta) -> str | None:
     compose = DockerCompose(
         context=str(compose_path.parent),
         compose_file_name=compose_path.name,
-        pull=True,
+        pull=key not in _PULLED,
         wait=True,
     )
     compose.start()
+    _PULLED.add(key)
     _ACTIVE[key] = compose
     host, port = compose.get_service_host_and_port("unitycatalog", 8080)
     return f"http://{host}:{port}/api/2.1/unity-catalog"
+
+
+def _server_log(meta: ScriptMeta, lines: int = 80) -> str | None:
+    """The last lines of the running server's log, for a failing script's report."""
+    compose_path = meta.compose_path()
+    compose = _ACTIVE.get(str(compose_path)) if compose_path else None
+    if compose is None:
+        return None
+    try:
+        stdout, stderr = compose.get_logs("unitycatalog")
+    except Exception as exc:  # the report must not hide the script's own failure
+        return f"(could not read the server log: {exc})"
+    return "\n".join((stdout + stderr).splitlines()[-lines:])
 
 
 def _stop_services(meta: ScriptMeta) -> None:
@@ -219,8 +282,11 @@ class TutorialScriptTimeout(TutorialScriptFailure):
     """A tutorial script ran past the harness timeout and was killed."""
 
     def __str__(self) -> str:
-        return (
+        text = (
             f"`uv run {self.meta.path.name}` ran past {_SCRIPT_TIMEOUT_S}s and was "
             f"killed\n--- stdout ---\n{self.proc.stdout}\n"
             f"--- stderr ---\n{self.proc.stderr}"
         )
+        if self.server_log:
+            text += f"\n--- unitycatalog log (tail) ---\n{self.server_log}"
+        return text

@@ -5,6 +5,14 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
+# claims.spark = [
+#   { op = "managed.create", region = "create-table" },
+#   { op = "managed.read", region = "write-rows" },
+#   { op = "managed.append", region = "write-rows" },
+#   { op = "managed.update", region = "change-rows" },
+#   { op = "managed.delete", region = "change-rows" },
+#   { op = "managed.drop", region = "clean-up" },
+# ]
 # ///
 """Create a catalog-managed Delta table with Spark, change it, and drop it.
 

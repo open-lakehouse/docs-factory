@@ -1,6 +1,6 @@
 # Getting value out of the estate model
 
-**Status:** design. Phase 1 shipped (see §4); later phases proposed.
+**Status:** design. Phases 1 and 2 shipped (see §4, §4b); later phases proposed.
 **Scope:** how the LikeC4 estate model (`architecture/model`, exported to
 `architecture/dist/model.json`) reaches readers, search engines, and agents.
 Builds on [ADR-0001](../decisions/ADR-0001-model-driven-information-system.md)
@@ -45,7 +45,7 @@ priorities:
 |---|---|---|---|
 | Resolved `model:` links | Modest: internal links, topic clusters | Real, when the target is substantive | Shipped (§4) |
 | Diagram alt text | Real: the only part of a diagram machines read | Real: accessibility | Shipped (§4) |
-| Verified compatibility matrix | High: matches real queries, unique, checkable | High | Build next (§3.1) |
+| Verified compatibility matrix | High: matches real queries, unique, checkable | High | Shipped for UC (§4b) |
 | Concept cards / "concepts on this page" | Small | Moderate | Cheap once links resolve (§3.2) |
 | JSON-LD `about` / `mentions` / `sameAs` | Small to modest: entity disambiguation | None | Cheap, low risk (§3.3) |
 | Interactive LikeC4 embeds | About zero; a heavy bundle can hurt Core Web Vitals | Good for flows in explanations, mostly ignored elsewhere | Explanation pages only, PNG first |
@@ -74,8 +74,12 @@ CI-backed claims, and it stays honest by construction. It would turn the
 hand-maintained parts of R01 (features and limitations) and the Delta coverage
 page into derived artifacts.
 
-Open: the snippet → (engine, operation) mapping. `[tool.docs-factory]` script
-metadata is the likely home.
+As built (§4b), a cell is ✓ (a gating CI script runs it, linked), ✗ (a gating
+script asserts the failure, linked; or recorded evidence, unlinked), or "—"
+(untested). There is no "modeled but untested" state: the model has no
+operation-level edges, so the matrix can't derive one, and the join with the
+model is a report instead (a tested interface the model doesn't connect to the
+matrix's spec).
 
 ### 3.2 Concept cards and "concepts on this page"
 
@@ -158,6 +162,38 @@ them. Reconsider if a page embeds a flow without narrating it.
 Glossary anchors as a link target, between the explaining page and the
 external link, wait on the emitted sites having a glossary.
 
+## 4b. Phase 2: the verified compatibility matrix (shipped for UC)
+
+- **Claims live on the script.** `[tool.docs-factory] claims.<interface>` lists
+  what a script proves: `{ op, region }` that an operation works, as shown in
+  that region on its page, or `{ op, fails }` that it doesn't, with `fails` the
+  error text the script asserts. The interface is a declared column, never
+  inferred from the language or the dependencies, which is what sank the old
+  `engines:` field (`build-pipeline.md` §10).
+- **The vocabulary is per project.** `content/<project>/compatibility.yml`
+  declares interfaces (with the release.yml pin their header shows and their
+  model element), `family.scenario` operations, the tables pages embed, and
+  evidence for cells no script proves. `<project>:<interface>` claims let a UC
+  script fill a Delta cell, for the coverage page's migration.
+- **Only gating scripts count.** A claim renders once its page is `status:
+  ready`, and since PR #190 the service lane fails on exactly those scripts
+  (drafts run as non-strict xfails). That lane had been red, behind
+  `continue-on-error`, since early October; the fixes were in the reader-facing
+  environment, not CI (`envs/unitycatalog/image`).
+- **Committed and checked.** `docsnip compat --fix` renders each table between
+  `<!-- compat:<id> -->` markers; `docsnip check` fails on a stale table or a
+  claim that doesn't hold up (missing region, anchor, or asserted text;
+  scripts that disagree; evidence contradicting a ✓). The table reads in
+  review, on GitHub, and in twins with no new renderer; emit strips the markers.
+- **The model joins as a check.** Header cells are `model:` links, and
+  `docsnip validate` reports tested interfaces with no element (Daft, pandas)
+  or no `consumes`/`implements` edge to the matrix's spec. That report added
+  Spark, DuckDB, and Polars `consumes ucSpec` edges.
+
+Next: derive R10's "Query engines" labels from claims, migrate the Delta
+coverage page (`content/delta/reference/090-coverage`), and project the
+matrix into `concepts.json` (§3.4).
+
 ## 5. Open questions
 
 - **Why does the interactive diagram misbehave?** Candidates: the web
@@ -166,6 +202,7 @@ external link, wait on the emitted sites having a glossary.
   a shadow-DOM host collapsing. Diagnose before investing in more embeds.
 - **Which elements are public?** The public projection (§3.4) needs an explicit
   rule, likely a tag, rather than "everything outside the deployment layer".
-- **Snippet → capability mapping** for the compatibility matrix (§3.1).
+- ~~Snippet → capability mapping~~ for the compatibility matrix (§3.1):
+  per-script `claims` against a per-project vocabulary (§4b).
 - **Alias map** (`information-system.md` §4) is still unbuilt; the public
   projection and entity linking both want it.

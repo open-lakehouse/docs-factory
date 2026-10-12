@@ -60,8 +60,8 @@ nav:
             items:
               - planned: H03
                 title: Create a table with a schema, partitioning, and properties
-              - planned: H04
-                title: Append, overwrite, and selectively overwrite data
+              - page: how-to/append-and-overwrite-data
+                id: H04
               - planned: H05
                 title: Upsert and deduplicate with MERGE
               - planned: H06

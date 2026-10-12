@@ -13,6 +13,12 @@
 # [tool.docs-factory]
 # lane = "spark"
 # verifies = "time_travel_spark.sql"
+# claims.spark-sql = [
+#   { journey = "read.version", region = "version", api = "VERSION AS OF" },
+#   { journey = "read.timestamp", region = "timestamp", api = "TIMESTAMP AS OF" },
+#   { journey = "history.list", region = "history", api = "DESCRIBE HISTORY" },
+#   { journey = "read.past-retention", fails = "DELTA_UNSUPPORTED_TIME_TRAVEL_BEYOND_DELETED_FILE_RETENTION_DURATION", anchor = "retention-limits-time-travel" },
+# ]
 # ///
 """Run time_travel_spark.sql region by region against a table deltalake wrote,
 then pin the two limits the page states."""

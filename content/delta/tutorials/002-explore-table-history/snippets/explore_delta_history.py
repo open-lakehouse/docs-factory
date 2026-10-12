@@ -4,6 +4,12 @@
 #
 # [tool.uv.sources]
 # docs-factory-seed = { path = "../../../../../seed/python", editable = true }
+#
+# [tool.docs-factory]
+# claims.deltalake = [
+#   { journey = "history.list", region = "history", api = "history()" },
+#   { journey = "read.version", region = "time-travel", api = "DeltaTable(path, version=n)" },
+# ]
 # ///
 """Explore a Delta table's version history end to end, with the deltalake package.
 

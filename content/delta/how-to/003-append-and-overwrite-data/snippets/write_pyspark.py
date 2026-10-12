@@ -4,6 +4,12 @@
 #
 # [tool.docs-factory]
 # lane = "spark"
+# claims.pyspark = [
+#   { journey = "write.append", region = "append", api = 'mode("append")' },
+#   { journey = "write.overwrite", region = "overwrite", api = 'mode("overwrite")' },
+#   { journey = "write.enforce-schema", region = "append", note = "other columns fail with `DELTA_METADATA_MISMATCH`" },
+#   { journey = "history.list", region = "history", api = "DeltaTable.forPath().history()" },
+# ]
 # ///
 """Append rows to a Delta table with PySpark, then overwrite it.
 

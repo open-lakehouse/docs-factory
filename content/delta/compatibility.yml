@@ -1,0 +1,1450 @@
+# Which journeys engines and clients can do with Delta tables. A journey
+# is what a reader sets out to do, however many calls it takes. Scripts claim
+# cells with `[tool.docs-factory] claims.<interface>`; a claim counts once its
+# page is `status: ready`, because only those scripts gate CI. `evidence` holds
+# the cells no script here proves. `uv run docsnip compat --fix` renders each
+# table into the page that embeds it, and `docsnip check` fails when one is
+# stale.
+# See content/README.md, "Compatibility claims".
+spec: deltaSpec
+
+interfaces:
+  spark-sql:
+    label: Spark SQL
+    pin: pyspark
+    package: pyspark
+    model: deltaSpark
+  pyspark:
+    label: PySpark
+    pin: pyspark
+    package: pyspark
+    model: deltaSpark
+  deltalake:
+    label: Python
+    pin: deltalake
+    package: deltalake
+    model: deltaRs
+  duckdb:
+    label: DuckDB
+    package: duckdb
+    model: duckdb
+
+journeys:
+  create.table: Create a table
+  create.ctas: Create from select
+  create.partitioned: Create partitioned table
+  write.append: Append rows
+  write.overwrite: Overwrite rows
+  write.replace-where: Replace where
+  write.dynamic-partitions: Dynamic partitions
+  write.enforce-schema: Enforce schema
+  write.idempotent: Idempotent writes
+  write.commit-metadata: Commit metadata
+  dml.update: Update rows
+  dml.delete: Delete rows
+  merge.upsert: Merge upsert
+  merge.not-matched-by-source: Merge not matched by source
+  merge.schema-evolution: Merge schema evolution
+  read.scan: Scan table
+  read.pushdown: Filter pushdown
+  read.version: Read version
+  read.timestamp: Read timestamp
+  read.past-retention: Read past retention
+  history.list: List history
+  history.detail: History detail
+  history.restore: Restore version
+  history.shallow-clone: Shallow clone
+  schema.merge-on-write: Merge on write
+  schema.overwrite: Overwrite schema
+  schema.add-column: Add column
+  schema.rename-drop: Rename/drop column
+  schema.type-widening: Type widening
+  quality.check: Check constraint
+  quality.not-null: Not null constraint
+  columns.generated: Generated columns
+  columns.identity: Identity columns
+  columns.default: Default columns
+  cdf.read: Read change data
+  stream.source-sink: Stream source/sink
+  stream.foreach-batch-merge: Stream foreach batch merge
+  layout.compact: Compact/optimize
+  layout.zorder: Z-order
+  layout.clustering: Clustering
+  maint.vacuum: Vacuum
+  maint.checkpoint: Checkpoint
+  maint.purge-dvs: Purge deletion vectors
+  maint.manifest: Generate manifest
+  maint.repair: Repair table
+  migrate.convert-parquet: Convert to Delta
+  feature.enable: Enable feature
+  feature.drop: Drop feature
+  feature.properties: Feature properties
+  storage.s3-multi-writer: S3 multi-writer
+  storage.azure-gcs: Azure/GCS
+  catalog.unity: Unity Catalog
+
+tables:
+  create-and-write:
+    title: Create and write
+    columns: [spark-sql, pyspark, deltalake, duckdb]
+    rows:
+      - create.table
+      - create.ctas
+      - create.partitioned
+      - write.append
+      - write.overwrite
+      - write.replace-where
+      - write.dynamic-partitions
+      - write.enforce-schema
+      - write.idempotent
+      - write.commit-metadata
+    documented: true
+  modify-rows:
+    title: Modify rows
+    columns: [spark-sql, pyspark, deltalake, duckdb]
+    rows:
+      - dml.update
+      - dml.delete
+      - merge.upsert
+      - merge.not-matched-by-source
+      - merge.schema-evolution
+    documented: true
+  read-and-history:
+    title: Read and history
+    columns: [spark-sql, pyspark, deltalake, duckdb]
+    rows:
+      - read.scan
+      - read.pushdown
+      - read.version
+      - read.timestamp
+      - read.past-retention
+      - history.list
+      - history.detail
+      - history.restore
+      - history.shallow-clone
+    documented: true
+  schema-and-quality:
+    title: Schema and data quality
+    columns: [spark-sql, pyspark, deltalake, duckdb]
+    rows:
+      - schema.merge-on-write
+      - schema.overwrite
+      - schema.add-column
+      - schema.rename-drop
+      - schema.type-widening
+      - quality.check
+      - quality.not-null
+      - columns.generated
+      - columns.identity
+      - columns.default
+    documented: true
+  cdf-and-streaming:
+    title: Change data and streaming
+    columns: [spark-sql, pyspark, deltalake, duckdb]
+    rows:
+      - cdf.read
+      - stream.source-sink
+      - stream.foreach-batch-merge
+    documented: true
+  layout-and-maintenance:
+    title: Layout and maintenance
+    columns: [spark-sql, pyspark, deltalake, duckdb]
+    rows:
+      - layout.compact
+      - layout.zorder
+      - layout.clustering
+      - maint.vacuum
+      - maint.checkpoint
+      - maint.purge-dvs
+      - maint.manifest
+      - maint.repair
+      - migrate.convert-parquet
+    documented: true
+  features-and-protocol:
+    title: Table features and protocol
+    columns: [spark-sql, pyspark, deltalake, duckdb]
+    rows:
+      - feature.enable
+      - feature.drop
+      - feature.properties
+    documented: true
+  storage-and-catalogs:
+    title: Storage and catalogs
+    columns: [spark-sql, pyspark, deltalake, duckdb]
+    rows:
+      - storage.s3-multi-writer
+      - storage.azure-gcs
+      - catalog.unity
+    documented: true
+
+evidence:
+- interfaces:
+  - pyspark
+  journeys:
+  - create.table
+  outcome: works
+  why: '`DeltaTable.create` (tables.py)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: DeltaTable.create()
+- interfaces:
+  - spark-sql
+  journeys:
+  - create.ctas
+  outcome: works
+  why: '`CREATE TABLE … AS SELECT` (batch)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: CREATE TABLE … AS SELECT
+- interfaces:
+  - pyspark
+  journeys:
+  - create.ctas
+  outcome: works
+  why: '`df.write.format("delta")` (batch)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    pyspark: df.write.format("delta")
+- interfaces:
+  - deltalake
+  journeys:
+  - create.ctas
+  outcome: works
+  why: '`write_deltalake` to a new path (writer)'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/writer/writer.py
+  api:
+    deltalake: write_deltalake()
+- interfaces:
+  - spark-sql
+  journeys:
+  - create.partitioned
+  outcome: works
+  why: '`PARTITIONED BY` (batch)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: PARTITIONED BY
+- interfaces:
+  - pyspark
+  journeys:
+  - create.partitioned
+  outcome: works
+  why: '`partitionBy`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: partitionBy()
+- interfaces:
+  - deltalake
+  journeys:
+  - create.partitioned
+  outcome: works
+  why: '`partition_by=`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: partition_by=
+- interfaces:
+  - spark-sql
+  journeys:
+  - write.replace-where
+  outcome: works
+  why: '`REPLACE WHERE` (batch)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: REPLACE WHERE
+- interfaces:
+  - pyspark
+  journeys:
+  - write.replace-where
+  outcome: works
+  why: '`replaceWhere` option'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: replaceWhere
+- interfaces:
+  - deltalake
+  journeys:
+  - write.replace-where
+  outcome: works
+  why: '`mode="overwrite", predicate=`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: mode="overwrite", predicate=
+- interfaces:
+  - duckdb
+  journeys:
+  - write.replace-where
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - write.dynamic-partitions
+  outcome: works
+  why: '`partitionOverwriteMode=dynamic` (batch)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: partitionOverwriteMode=dynamic
+- interfaces:
+  - pyspark
+  journeys:
+  - write.dynamic-partitions
+  outcome: works
+  why: same conf
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+- interfaces:
+  - duckdb
+  journeys:
+  - write.dynamic-partitions
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - write.idempotent
+  outcome: works
+  why: '`txnAppId`/`txnVersion` session confs (batch)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: txnAppId
+- interfaces:
+  - pyspark
+  journeys:
+  - write.idempotent
+  outcome: works
+  why: writer options
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+- interfaces:
+  - deltalake
+  journeys:
+  - write.idempotent
+  outcome: works
+  why: '`CommitProperties(app_transactions=…)` (transaction.py)'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/transaction.py
+  api:
+    deltalake: CommitProperties(app_transactions=…)
+- interfaces:
+  - duckdb
+  journeys:
+  - write.idempotent
+  outcome: works
+  why: '`delta_set_transaction_version` (extension)'
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+  api:
+    duckdb: delta_set_transaction_version()
+- interfaces:
+  - spark-sql
+  journeys:
+  - write.commit-metadata
+  outcome: works
+  why: '`commitInfo.userMetadata` conf'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: commitInfo.userMetadata
+- interfaces:
+  - pyspark
+  journeys:
+  - write.commit-metadata
+  outcome: works
+  why: '`userMetadata` option'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: userMetadata
+- interfaces:
+  - deltalake
+  journeys:
+  - write.commit-metadata
+  outcome: works
+  why: '`CommitProperties(custom_metadata=…)`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: CommitProperties(custom_metadata=…)
+- interfaces:
+  - pyspark
+  journeys:
+  - dml.update
+  outcome: works
+  why: '`DeltaTable.update` (update)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx
+  api:
+    pyspark: DeltaTable.update()
+- interfaces:
+  - deltalake
+  journeys:
+  - dml.update
+  outcome: works
+  why: '`DeltaTable.update`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: DeltaTable.update()
+- interfaces:
+  - pyspark
+  journeys:
+  - dml.delete
+  outcome: works
+  why: '`DeltaTable.delete`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: DeltaTable.delete()
+- interfaces:
+  - deltalake
+  journeys:
+  - dml.delete
+  outcome: works
+  why: '`DeltaTable.delete`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: DeltaTable.delete()
+- interfaces:
+  - spark-sql
+  journeys:
+  - merge.upsert
+  outcome: works
+  why: '`MERGE INTO` (update)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx
+  api:
+    spark-sql: MERGE INTO
+- interfaces:
+  - pyspark
+  journeys:
+  - merge.upsert
+  outcome: works
+  why: '`merge` builder'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: merge()
+- interfaces:
+  - deltalake
+  journeys:
+  - merge.upsert
+  outcome: works
+  why: '`merge` + `when_matched_*`/`when_not_matched_*`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: merge()
+- interfaces:
+  - duckdb
+  journeys:
+  - merge.upsert
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - merge.not-matched-by-source
+  outcome: works
+  why: (update)
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx
+- interfaces:
+  - pyspark
+  journeys:
+  - merge.not-matched-by-source
+  outcome: works
+  why: The engine's docs say so.
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx
+- interfaces:
+  - deltalake
+  journeys:
+  - merge.not-matched-by-source
+  outcome: works
+  why: '`when_not_matched_by_source_*`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: when_not_matched_by_source_*
+- interfaces:
+  - duckdb
+  journeys:
+  - merge.not-matched-by-source
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - merge.schema-evolution
+  outcome: works
+  why: '`schema.autoMerge.enabled` conf'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: schema.autoMerge.enabled
+- interfaces:
+  - pyspark
+  journeys:
+  - merge.schema-evolution
+  outcome: works
+  why: '`withSchemaEvolution`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: withSchemaEvolution()
+- interfaces:
+  - deltalake
+  journeys:
+  - merge.schema-evolution
+  outcome: works
+  why: '`merge(merge_schema=True)`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: merge(merge_schema=True)
+- interfaces:
+  - duckdb
+  journeys:
+  - merge.schema-evolution
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - read.pushdown
+  outcome: works
+  why: data skipping (optimizations); filters `tested` (H01)
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/optimizations-oss/index.mdx
+- interfaces:
+  - pyspark
+  journeys:
+  - read.pushdown
+  outcome: works
+  why: filters `tested` (H01)
+  source: how-to/read-a-delta-table
+- interfaces:
+  - deltalake
+  journeys:
+  - read.pushdown
+  outcome: works
+  why: '`to_pyarrow_dataset`; `to_pandas(filters=…)` `tested` (H01)'
+  source: how-to/read-a-delta-table
+  api:
+    deltalake: to_pyarrow_dataset()
+- interfaces:
+  - duckdb
+  journeys:
+  - read.pushdown
+  outcome: works
+  why: filter and projection pushdown (extension); filters `tested` (H01)
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - pyspark
+  journeys:
+  - read.past-retention
+  outcome: fails
+  why: same check
+  source: how-to/query-a-table-as-of-version
+- interfaces:
+  - duckdb
+  journeys:
+  - history.list
+  outcome: missing
+  why: no history function (extension)
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - pyspark
+  journeys:
+  - history.detail
+  outcome: works
+  why: '`detail`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: detail()
+- interfaces:
+  - deltalake
+  journeys:
+  - history.detail
+  outcome: works
+  why: '`metadata`, `protocol`, `get_add_actions`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: metadata()
+- interfaces:
+  - duckdb
+  journeys:
+  - history.detail
+  outcome: works
+  why: '`delta_list_files` (files only)'
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+  api:
+    duckdb: delta_list_files()
+- interfaces:
+  - spark-sql
+  journeys:
+  - history.restore
+  outcome: works
+  why: '`RESTORE TABLE` (utility)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx
+  api:
+    spark-sql: RESTORE TABLE
+- interfaces:
+  - pyspark
+  journeys:
+  - history.restore
+  outcome: works
+  why: '`restoreToVersion`/`restoreToTimestamp`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: restoreToVersion()
+- interfaces:
+  - deltalake
+  journeys:
+  - history.restore
+  outcome: works
+  why: '`restore`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: restore()
+- interfaces:
+  - duckdb
+  journeys:
+  - history.restore
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - history.shallow-clone
+  outcome: works
+  why: '`SHALLOW CLONE` (utility)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx
+  api:
+    spark-sql: SHALLOW CLONE
+- interfaces:
+  - pyspark
+  journeys:
+  - history.shallow-clone
+  outcome: works
+  why: '`clone(isShallow=True)`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: clone(isShallow=True)
+- interfaces:
+  - deltalake
+  journeys:
+  - history.shallow-clone
+  outcome: missing
+  why: no API
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx
+- interfaces:
+  - duckdb
+  journeys:
+  - history.shallow-clone
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - schema.merge-on-write
+  outcome: works
+  why: '`autoMerge` conf (batch)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: autoMerge
+- interfaces:
+  - pyspark
+  journeys:
+  - schema.merge-on-write
+  outcome: works
+  why: '`mergeSchema` option'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: mergeSchema
+- interfaces:
+  - deltalake
+  journeys:
+  - schema.merge-on-write
+  outcome: works
+  why: '`schema_mode="merge"`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: schema_mode="merge"
+- interfaces:
+  - duckdb
+  journeys:
+  - schema.merge-on-write
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - schema.overwrite
+  outcome: works
+  why: '`CREATE OR REPLACE TABLE`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: CREATE OR REPLACE TABLE
+- interfaces:
+  - pyspark
+  journeys:
+  - schema.overwrite
+  outcome: works
+  why: '`overwriteSchema` option'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: overwriteSchema
+- interfaces:
+  - deltalake
+  journeys:
+  - schema.overwrite
+  outcome: works
+  why: '`schema_mode="overwrite"`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: schema_mode="overwrite"
+- interfaces:
+  - duckdb
+  journeys:
+  - schema.overwrite
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - schema.add-column
+  outcome: works
+  why: '`ALTER TABLE ADD COLUMNS`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: ALTER TABLE ADD COLUMNS
+- interfaces:
+  - pyspark
+  journeys:
+  - schema.add-column
+  outcome: works
+  why: via `spark.sql`
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    pyspark: spark.sql(...)
+- interfaces:
+  - deltalake
+  journeys:
+  - schema.add-column
+  outcome: works
+  why: '`alter.add_columns`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: alter.add_columns()
+- interfaces:
+  - duckdb
+  journeys:
+  - schema.add-column
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - schema.rename-drop
+  outcome: works
+  why: '`RENAME`/`DROP COLUMN` (column mapping)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx
+  api:
+    spark-sql: RENAME
+- interfaces:
+  - pyspark
+  journeys:
+  - schema.rename-drop
+  outcome: works
+  why: via `spark.sql`
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx
+  api:
+    pyspark: spark.sql(...)
+- interfaces:
+  - deltalake
+  journeys:
+  - schema.rename-drop
+  outcome: missing
+  why: no API
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx
+- interfaces:
+  - duckdb
+  journeys:
+  - schema.rename-drop
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - schema.type-widening
+  outcome: works
+  why: '`ALTER COLUMN … TYPE` (type widening)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx
+  api:
+    spark-sql: ALTER COLUMN … TYPE
+- interfaces:
+  - pyspark
+  journeys:
+  - schema.type-widening
+  outcome: works
+  why: via `spark.sql`
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx
+  api:
+    pyspark: spark.sql(...)
+- interfaces:
+  - deltalake
+  journeys:
+  - schema.type-widening
+  outcome: missing
+  why: no API
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx
+- interfaces:
+  - duckdb
+  journeys:
+  - schema.type-widening
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - quality.check
+  outcome: works
+  why: '`ADD CONSTRAINT … CHECK` (constraints)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx
+  api:
+    spark-sql: ADD CONSTRAINT … CHECK
+- interfaces:
+  - pyspark
+  journeys:
+  - quality.check
+  outcome: works
+  why: via `spark.sql`
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx
+  api:
+    pyspark: spark.sql(...)
+- interfaces:
+  - deltalake
+  journeys:
+  - quality.check
+  outcome: works
+  why: '`alter.add_constraint`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: alter.add_constraint()
+- interfaces:
+  - spark-sql
+  journeys:
+  - quality.not-null
+  outcome: works
+  why: '`NOT NULL` (constraints)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx
+  api:
+    spark-sql: NOT NULL
+- interfaces:
+  - pyspark
+  journeys:
+  - quality.not-null
+  outcome: works
+  why: schema nullability
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx
+- interfaces:
+  - deltalake
+  journeys:
+  - quality.not-null
+  outcome: works
+  why: schema nullability, `alter.drop_column_not_null`
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: alter.drop_column_not_null()
+- interfaces:
+  - spark-sql
+  journeys:
+  - columns.generated
+  outcome: works
+  why: '`GENERATED ALWAYS AS` (batch)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: GENERATED ALWAYS AS
+- interfaces:
+  - pyspark
+  journeys:
+  - columns.generated
+  outcome: works
+  why: builder `generatedAlwaysAs`
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: generatedAlwaysAs
+- interfaces:
+  - deltalake
+  journeys:
+  - columns.generated
+  outcome: works
+  why: writer v4 (feature table)
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md
+- interfaces:
+  - spark-sql
+  journeys:
+  - columns.identity
+  outcome: works
+  why: '`GENERATED … AS IDENTITY` DDL (4.4.0)'
+  source: https://github.com/delta-io/delta/releases/tag/v4.4.0
+  api:
+    spark-sql: GENERATED … AS IDENTITY
+- interfaces:
+  - pyspark
+  journeys:
+  - columns.identity
+  outcome: works
+  why: '`IdentityGenerator`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: IdentityGenerator
+- interfaces:
+  - deltalake
+  journeys:
+  - columns.identity
+  outcome: fails
+  why: writer v6 marked unsupported (feature table)
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md
+- interfaces:
+  - spark-sql
+  journeys:
+  - columns.default
+  outcome: works
+  why: '`DEFAULT` (defaults)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx
+  api:
+    spark-sql: DEFAULT
+- interfaces:
+  - pyspark
+  journeys:
+  - columns.default
+  outcome: works
+  why: via `spark.sql`
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx
+  api:
+    pyspark: spark.sql(...)
+- interfaces:
+  - spark-sql
+  journeys:
+  - cdf.read
+  outcome: works
+  why: '`table_changes` (CDF)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-change-data-feed.mdx
+  api:
+    spark-sql: table_changes()
+- interfaces:
+  - pyspark
+  journeys:
+  - cdf.read
+  outcome: works
+  why: '`readChangeFeed` option'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: readChangeFeed
+- interfaces:
+  - deltalake
+  journeys:
+  - cdf.read
+  outcome: works
+  why: '`load_cdf`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: load_cdf()
+- interfaces:
+  - duckdb
+  journeys:
+  - cdf.read
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - stream.source-sink
+  outcome: fails
+  why: no OSS SQL streaming
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx
+- interfaces:
+  - pyspark
+  journeys:
+  - stream.source-sink
+  outcome: works
+  why: '`readStream`/`writeStream` (streaming)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx
+  api:
+    pyspark: readStream
+- interfaces:
+  - deltalake
+  journeys:
+  - stream.source-sink
+  outcome: fails
+  why: Doesn't work.
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx
+- interfaces:
+  - duckdb
+  journeys:
+  - stream.source-sink
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - stream.foreach-batch-merge
+  outcome: fails
+  why: Doesn't work.
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx
+- interfaces:
+  - pyspark
+  journeys:
+  - stream.foreach-batch-merge
+  outcome: works
+  why: '`foreachBatch` + `merge` (streaming)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx
+  api:
+    pyspark: foreachBatch
+- interfaces:
+  - deltalake
+  journeys:
+  - stream.foreach-batch-merge
+  outcome: fails
+  why: Doesn't work.
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx
+- interfaces:
+  - duckdb
+  journeys:
+  - stream.foreach-batch-merge
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - layout.compact
+  outcome: works
+  why: '`OPTIMIZE` (optimizations)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/optimizations-oss/index.mdx
+  api:
+    spark-sql: OPTIMIZE
+- interfaces:
+  - pyspark
+  journeys:
+  - layout.compact
+  outcome: works
+  why: '`optimize.executeCompaction`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: optimize().executeCompaction()
+- interfaces:
+  - deltalake
+  journeys:
+  - layout.compact
+  outcome: works
+  why: '`optimize.compact`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: optimize.compact()
+- interfaces:
+  - duckdb
+  journeys:
+  - layout.compact
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - layout.zorder
+  outcome: works
+  why: '`OPTIMIZE … ZORDER BY`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+  api:
+    spark-sql: OPTIMIZE … ZORDER BY
+- interfaces:
+  - pyspark
+  journeys:
+  - layout.zorder
+  outcome: works
+  why: '`executeZOrderBy`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: executeZOrderBy()
+- interfaces:
+  - deltalake
+  journeys:
+  - layout.zorder
+  outcome: works
+  why: '`optimize.z_order`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: optimize.z_order()
+- interfaces:
+  - duckdb
+  journeys:
+  - layout.zorder
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - layout.clustering
+  outcome: works
+  why: '`CLUSTER BY`, `ALTER TABLE … CLUSTER BY`, `OPTIMIZE FULL` (clustering)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx
+  api:
+    spark-sql: CLUSTER BY
+- interfaces:
+  - pyspark
+  journeys:
+  - layout.clustering
+  outcome: works
+  why: builder `clusterBy` at create; key changes via `spark.sql`
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: clusterBy()
+- interfaces:
+  - deltalake
+  journeys:
+  - layout.clustering
+  outcome: missing
+  why: no API
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx
+- interfaces:
+  - duckdb
+  journeys:
+  - layout.clustering
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - maint.vacuum
+  outcome: works
+  why: '`VACUUM … DRY RUN`/`LITE`/`RETAIN` (utility)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx
+  api:
+    spark-sql: VACUUM … DRY RUN
+- interfaces:
+  - pyspark
+  journeys:
+  - maint.vacuum
+  outcome: works
+  why: '`vacuum(hours)`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: vacuum(hours)
+- interfaces:
+  - deltalake
+  journeys:
+  - maint.vacuum
+  outcome: works
+  why: '`vacuum(dry_run=…)`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: vacuum(dry_run=…)
+- interfaces:
+  - duckdb
+  journeys:
+  - maint.vacuum
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - maint.checkpoint
+  outcome: works
+  why: automatic, by interval
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx
+- interfaces:
+  - pyspark
+  journeys:
+  - maint.checkpoint
+  outcome: works
+  why: automatic
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+- interfaces:
+  - deltalake
+  journeys:
+  - maint.checkpoint
+  outcome: works
+  why: '`create_checkpoint`, `cleanup_metadata`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: create_checkpoint()
+- interfaces:
+  - duckdb
+  journeys:
+  - maint.checkpoint
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - maint.purge-dvs
+  outcome: works
+  why: '`REORG TABLE … APPLY (PURGE)` (grammar)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4
+  api:
+    spark-sql: REORG TABLE … APPLY (PURGE)
+- interfaces:
+  - pyspark
+  journeys:
+  - maint.purge-dvs
+  outcome: works
+  why: via `spark.sql`
+  source: https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4
+  api:
+    pyspark: spark.sql(...)
+- interfaces:
+  - duckdb
+  journeys:
+  - maint.purge-dvs
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - maint.manifest
+  outcome: works
+  why: '`GENERATE symlink_format_manifest` (utility)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx
+  api:
+    spark-sql: GENERATE symlink_format_manifest
+- interfaces:
+  - pyspark
+  journeys:
+  - maint.manifest
+  outcome: works
+  why: '`generate`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: generate()
+- interfaces:
+  - deltalake
+  journeys:
+  - maint.manifest
+  outcome: works
+  why: '`generate`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: generate()
+- interfaces:
+  - duckdb
+  journeys:
+  - maint.manifest
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - maint.repair
+  outcome: fails
+  why: no `FSCK` in the grammar (grammar)
+  source: https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4
+  api:
+    spark-sql: FSCK
+- interfaces:
+  - pyspark
+  journeys:
+  - maint.repair
+  outcome: fails
+  why: Doesn't work.
+  source: https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4
+- interfaces:
+  - deltalake
+  journeys:
+  - maint.repair
+  outcome: works
+  why: '`repair`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: repair()
+- interfaces:
+  - duckdb
+  journeys:
+  - maint.repair
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - migrate.convert-parquet
+  outcome: works
+  why: '`CONVERT TO DELTA` (utility)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx
+  api:
+    spark-sql: CONVERT TO DELTA
+- interfaces:
+  - pyspark
+  journeys:
+  - migrate.convert-parquet
+  outcome: works
+  why: '`convertToDelta`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: convertToDelta()
+- interfaces:
+  - deltalake
+  journeys:
+  - migrate.convert-parquet
+  outcome: works
+  why: '`convert_to_deltalake`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: convert_to_deltalake()
+- interfaces:
+  - duckdb
+  journeys:
+  - migrate.convert-parquet
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - feature.enable
+  outcome: works
+  why: '`delta.feature.<name> = ''supported''` (versioning)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/versioning.mdx
+  api:
+    spark-sql: delta.feature.<name> = 'supported'
+- interfaces:
+  - pyspark
+  journeys:
+  - feature.enable
+  outcome: works
+  why: '`addFeatureSupport`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: addFeatureSupport()
+- interfaces:
+  - deltalake
+  journeys:
+  - feature.enable
+  outcome: works
+  why: '`alter.add_feature`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: alter.add_feature()
+- interfaces:
+  - duckdb
+  journeys:
+  - feature.enable
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys:
+  - feature.drop
+  outcome: works
+  why: '`DROP FEATURE … [TRUNCATE HISTORY]` (drop feature)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx
+  api:
+    spark-sql: DROP FEATURE … [TRUNCATE HISTORY]
+- interfaces:
+  - pyspark
+  journeys:
+  - feature.drop
+  outcome: works
+  why: '`dropFeatureSupport`'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py
+  api:
+    pyspark: dropFeatureSupport()
+- interfaces:
+  - deltalake
+  journeys:
+  - feature.drop
+  outcome: missing
+  why: no API
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx
+- interfaces:
+  - duckdb
+  journeys:
+  - feature.drop
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - pyspark
+  journeys:
+  - feature.properties
+  outcome: works
+  why: via `spark.sql`
+  source: unitycatalog:tutorials/managed-delta-table
+  api:
+    pyspark: spark.sql(...)
+- interfaces:
+  - deltalake
+  journeys:
+  - feature.properties
+  outcome: works
+  why: '`alter.set_table_properties`'
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py
+  api:
+    deltalake: alter.set_table_properties()
+- interfaces:
+  - duckdb
+  journeys:
+  - feature.properties
+  outcome: fails
+  why: Doesn't work.
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - spark-sql
+  journeys: &id001
+  - storage.s3-multi-writer
+  outcome: works
+  why: '`S3DynamoDBLogStore` (storage)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx
+  api:
+    spark-sql: S3DynamoDBLogStore
+- interfaces:
+  - pyspark
+  journeys: *id001
+  outcome: works
+  why: '`S3DynamoDBLogStore` (storage)'
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx
+  api:
+    pyspark: S3DynamoDBLogStore
+- interfaces:
+  - deltalake
+  journeys:
+  - storage.s3-multi-writer
+  outcome: works
+  why: DynamoDB lock or conditional put (S3 locking)
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/usage/writing/writing-to-s3-with-locking-provider.md
+- interfaces:
+  - spark-sql
+  journeys: &id002
+  - storage.azure-gcs
+  outcome: works
+  why: (storage)
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx
+- interfaces:
+  - pyspark
+  journeys: *id002
+  outcome: works
+  why: (storage)
+  source: https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx
+- interfaces:
+  - deltalake
+  journeys:
+  - storage.azure-gcs
+  outcome: works
+  why: (feature table)
+  source: https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md
+- interfaces:
+  - duckdb
+  journeys:
+  - storage.azure-gcs
+  outcome: works
+  why: secrets (extension)
+  source: https://duckdb.org/docs/current/core_extensions/delta.html
+- interfaces:
+  - deltalake
+  journeys:
+  - catalog.unity
+  outcome: fails
+  why: for catalog-managed tables (UC known issues)
+  source: unitycatalog:reference/features-and-limitations

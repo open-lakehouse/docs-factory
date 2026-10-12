@@ -14,6 +14,11 @@
 #   { journey = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
 #   { journey = "managed.drop", fails = true, anchor = "create-change-and-drop-tables" },
 # ]
+# claims."delta:duckdb" = [
+#   { journey = "write.append", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
+#   { journey = "read.scan", region = "query", note = "through Unity Catalog" },
+#   { journey = "catalog.unity", region = "attach", api = "ATTACH … (TYPE unity_catalog)", note = "nightly `unity_catalog`" },
+# ]
 # ///
 """Read and append to a Unity Catalog managed Delta table from DuckDB.
 

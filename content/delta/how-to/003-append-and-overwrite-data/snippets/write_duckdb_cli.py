@@ -7,6 +7,13 @@
 #
 # [tool.docs-factory]
 # verifies = "write_duckdb.sql"
+# claims.duckdb = [
+#   { journey = "write.append", region = "append", api = "INSERT INTO" },
+#   { journey = "write.overwrite", fails = "Can only delete from base table", anchor = "overwrite-a-table", note = "appends only" },
+#   { journey = "dml.delete", fails = "Can only delete from base table", anchor = "overwrite-a-table" },
+#   { journey = "dml.update", fails = "Can only update base table", anchor = "overwrite-a-table" },
+#   { journey = "create.table", fails = "Delta tables do not support creating tables", anchor = "append-rows" },
+# ]
 # ///
 """Run write_duckdb.sql against a table deltalake wrote, read DuckDB's commit
 back with deltalake, then pin what DuckDB can't write."""

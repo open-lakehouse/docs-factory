@@ -1,6 +1,14 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = ["deltalake[pandas,pyarrow]==1.6.6"]
+#
+# [tool.docs-factory]
+# claims.deltalake = [
+#   { journey = "write.append", region = "append", api = 'write_deltalake(mode="append")' },
+#   { journey = "write.overwrite", region = "overwrite", api = 'write_deltalake(mode="overwrite")' },
+#   { journey = "write.enforce-schema", region = "append", note = "other columns fail with `SchemaMismatchError`" },
+#   { journey = "history.list", region = "history", api = "history()" },
+# ]
 # ///
 """Append rows to a Delta table with the deltalake package, then overwrite it.
 

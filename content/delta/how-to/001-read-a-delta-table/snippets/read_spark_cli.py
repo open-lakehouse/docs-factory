@@ -13,6 +13,9 @@
 # [tool.docs-factory]
 # lane = "spark"
 # verifies = "read_spark.sql"
+# claims.spark-sql = [
+#   { journey = "read.scan", region = "read", api = "SELECT … FROM delta.`<path>`" },
+# ]
 # ///
 """Run read_spark.sql region by region against a table deltalake wrote."""
 

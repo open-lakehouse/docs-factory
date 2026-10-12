@@ -13,6 +13,11 @@
 # [tool.docs-factory]
 # lane = "spark"
 # verifies = "write_spark.sql"
+# claims.spark-sql = [
+#   { journey = "write.append", region = "append", api = "INSERT INTO" },
+#   { journey = "write.overwrite", region = "overwrite", api = "INSERT OVERWRITE" },
+#   { journey = "history.list", region = "history", api = "DESCRIBE HISTORY" },
+# ]
 # ///
 """Run write_spark.sql region by region against a table deltalake wrote."""
 

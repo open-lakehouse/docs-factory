@@ -4,6 +4,11 @@
 #
 # [tool.docs-factory]
 # lane = "spark"
+# claims.pyspark = [
+#   { journey = "read.version", region = "version", api = "versionAsOf" },
+#   { journey = "read.timestamp", region = "timestamp", api = "timestampAsOf" },
+#   { journey = "history.list", region = "history", api = "DeltaTable.forPath().history()" },
+# ]
 # ///
 """Query earlier versions of a Delta table with PySpark.
 

@@ -8,6 +8,13 @@
 # [tool.docs-factory]
 # lane = "spark"
 # verifies = "first_table.sql"
+# claims.spark-sql = [
+#   { journey = "create.table", region = "create", api = "CREATE TABLE delta.`<path>`" },
+#   { journey = "write.append", region = "insert-first", api = "INSERT INTO" },
+#   { journey = "read.scan", region = "select", api = "SELECT" },
+#   { journey = "history.list", region = "history", api = "DESCRIBE HISTORY" },
+#   { journey = "read.version", region = "time-travel", api = "VERSION AS OF" },
+# ]
 # ///
 """Enter first_table.sql in the spark-sql shell the tutorial starts, then read
 the table it leaves with deltalake and DuckDB."""

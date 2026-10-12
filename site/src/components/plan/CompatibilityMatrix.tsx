@@ -1,8 +1,8 @@
 // Which engines and clients can do which journeys, per project, from the
 // committed compatibility.json artifacts. Draft pages' claims show here (marked)
 // although public tables wait for `ready`.
-import { type ReactNode, useState } from "react";
-import { Link } from "react-router-dom";
+import type { ReactNode } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import {
@@ -21,6 +21,7 @@ import { PROJECT_LABELS } from "../../doc-nav";
 import { ContentRequestKind } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { docRef, refHref } from "../../lib/content-ref";
+import { answeredShare, columnCounts, matrixCounts, totalCells } from "../../lib/plan/compat-stats";
 import {
   requestStatusLabel,
   TrackJourneyButton,
@@ -48,43 +49,89 @@ interface Selected {
   iface: string;
 }
 
+// `?cell=<journey>:<iface>`; journey ids are dotted and interface keys dashed.
+function parseCell(raw: string | null): Selected | null {
+  const i = raw?.lastIndexOf(":") ?? -1;
+  if (!raw || i <= 0) return null;
+  return { journey: raw.slice(0, i), iface: raw.slice(i + 1) };
+}
+
 export default function CompatibilityMatrix() {
-  const [project, setProject] = useState(matrices[0]?.project ?? "");
-  const [gapsOnly, setGapsOnly] = useState(false);
-  const [selected, setSelected] = useState<Selected | null>(null);
-  const matrix = matrices.find((m) => m.project === project);
+  const [params, setParams] = useSearchParams();
+  const matrix = matrices.find((m) => m.project === params.get("project")) ?? matrices[0];
+  const gapsOnly = params.get("gaps") === "1";
+  const selected = parseCell(params.get("cell"));
+  const set = (patch: Record<string, string | null>) =>
+    setParams(
+      (prev) => {
+        const p = new URLSearchParams(prev);
+        for (const [k, v] of Object.entries(patch)) {
+          if (v) p.set(k, v);
+          else p.delete(k);
+        }
+        return p;
+      },
+      { replace: true },
+    );
+  const counts = matrix ? matrixCounts(matrix) : null;
 
   return (
     <div className="compat">
-      <div className="compat-toolbar">
-        <fieldset className="compat-projects">
+      <div className="plan-toolbar">
+        <fieldset className="plan-chips">
           <legend className="sr-only">Project</legend>
           {matrices.map((m) => (
             <button
               key={m.project}
               type="button"
-              aria-pressed={m.project === project}
-              className={cn("compat-project", m.project === project && "is-active")}
-              onClick={() => {
-                setProject(m.project);
-                setSelected(null);
-              }}
+              aria-pressed={m.project === matrix?.project}
+              className={cn("plan-chip", m.project === matrix?.project && "is-active")}
+              onClick={() => set({ project: m.project, cell: null })}
             >
               {PROJECT_LABELS[m.project] ?? m.project}
             </button>
           ))}
         </fieldset>
         <span className="compat-gaps-toggle">
-          <Switch id="compat-gaps" checked={gapsOnly} onCheckedChange={setGapsOnly} />
+          <Switch
+            id="compat-gaps"
+            checked={gapsOnly}
+            onCheckedChange={(on) => set({ gaps: on ? "1" : null })}
+          />
           <label htmlFor="compat-gaps">Gaps only</label>
         </span>
       </div>
+      {counts && (
+        <p className="compat-summary muted">
+          {Math.round(answeredShare(counts) * 100)}% of cells answered by a ready page ·{" "}
+          {counts.draft} draft-only · {counts.documented} documented upstream · {counts.unknown}{" "}
+          unknown
+        </p>
+      )}
+      <ul className="compat-legend" aria-label="Legend">
+        {(Object.keys(SYMBOL) as CellStatus[])
+          .filter((s) => s !== "missing")
+          .map((s) => (
+            <li key={s}>
+              <span className={cn("compat-cell", `compat-${s}`)} aria-hidden="true">
+                {SYMBOL[s]}
+              </span>
+              {s === "fails" ? "Fails or missing API" : STATUS_LABEL[s]}
+            </li>
+          ))}
+        <li>
+          <span className="compat-cell is-draft" aria-hidden="true">
+            ✓<span className="compat-draft">draft</span>
+          </span>
+          Only a draft page proves it
+        </li>
+      </ul>
       {matrix ? (
         <MatrixTables
           matrix={matrix}
           gapsOnly={gapsOnly}
           selected={selected}
-          onSelect={setSelected}
+          onSelect={(s) => set({ cell: s ? `${s.journey}:${s.iface}` : null })}
         />
       ) : (
         <p className="review-empty">No compatibility matrix yet.</p>
@@ -117,6 +164,7 @@ function MatrixTables({
           .map((id) => journeys.get(id))
           .filter((j): j is CompatJourney => !!j && (!gapsOnly || isGap(j, table.columns)));
         const asked = requested.filter((r) => r.placement === table.id);
+        const columnStats = columnCounts(matrix, table);
         if (rows.length === 0 && asked.length === 0) return null;
         return (
           <div key={table.id} className="mt-6">
@@ -130,10 +178,23 @@ function MatrixTables({
                   <th scope="col">Journey</th>
                   {table.columns.map((key) => {
                     const iface = interfaces.get(key);
+                    const stat = columnStats.get(key);
+                    const total = stat ? totalCells(stat) : 0;
                     return (
                       <th key={key} scope="col">
                         {iface?.label ?? key}
                         {iface?.version && <span className="compat-version">{iface.version}</span>}
+                        {stat && total > 0 && (
+                          <span
+                            className="compat-col-stat"
+                            title={`${stat.proven} of ${total} proven by a ready page`}
+                          >
+                            <span className="compat-col-bar" aria-hidden="true">
+                              <span style={{ width: `${(stat.proven / total) * 100}%` }} />
+                            </span>
+                            {stat.proven}/{total}
+                          </span>
+                        )}
                       </th>
                     );
                   })}

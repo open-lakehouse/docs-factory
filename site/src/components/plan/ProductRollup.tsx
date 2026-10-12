@@ -10,7 +10,7 @@
 
 import { useQuery } from "@connectrpc/connect-query";
 import { MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -38,7 +38,9 @@ function shortSha(sha: string): string {
 
 export default function ProductRollup() {
   const { reviewActive } = useAuth();
-  const [topic, setTopic] = useState(TOPICS[0] ?? "");
+  const [params, setParams] = useSearchParams();
+  const topic = TOPICS.find((t) => t === params.get("topic")) ?? TOPICS[0] ?? "";
+  const setTopic = (t: string) => setParams({ topic: t }, { replace: true });
 
   const { data, isLoading } = useQuery(
     productChanges,

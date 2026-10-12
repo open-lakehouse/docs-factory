@@ -4,6 +4,7 @@ import AgentTokens from "./pages/AgentTokens";
 import CliAuth from "./pages/CliAuth";
 import OpenInWorkspace from "./pages/OpenInWorkspace";
 import PlanLayout from "./pages/plan/PlanLayout";
+import Roadmap from "./pages/plan/Roadmap";
 import { ChangesPage, CompatPage, CoveragePage, PipelinePage } from "./pages/plan/SectionPages";
 import ReviewDashboard from "./pages/ReviewDashboard";
 import ReviewWorkspace from "./pages/ReviewWorkspace";
@@ -20,7 +21,8 @@ export default function App() {
       {/* Planning: roadmap, compatibility, blog pipeline, backlog. Reviewer-only;
             PlanLayout guards every section. */}
       <Route path="/plan" element={<PlanLayout />}>
-        <Route index element={<Navigate replace to="compat" />} />
+        <Route index element={<Navigate replace to="roadmap" />} />
+        <Route path="roadmap" element={<Roadmap />} />
         <Route path="compat" element={<CompatPage />} />
         <Route path="pipeline" element={<PipelinePage />} />
         <Route path="coverage" element={<CoveragePage />} />

@@ -1,5 +1,12 @@
 // The Plan section's pages, in sub-nav order. `path` is relative to /plan.
-import { BookOpen, GitCompareArrows, Grid3x3, type LucideIcon, Newspaper } from "lucide-react";
+import {
+  BookOpen,
+  GitCompareArrows,
+  Grid3x3,
+  type LucideIcon,
+  Map as MapIcon,
+  Newspaper,
+} from "lucide-react";
 
 export interface PlanSection {
   path: string;
@@ -8,6 +15,7 @@ export interface PlanSection {
 }
 
 export const PLAN_SECTIONS: readonly PlanSection[] = [
+  { path: "roadmap", label: "Docs roadmap", icon: MapIcon },
   { path: "compat", label: "Compatibility", icon: Grid3x3 },
   { path: "pipeline", label: "Blog pipeline", icon: Newspaper },
   { path: "coverage", label: "Coverage gaps", icon: BookOpen },

@@ -4,6 +4,7 @@ import AgentTokens from "./pages/AgentTokens";
 import CliAuth from "./pages/CliAuth";
 import OpenInWorkspace from "./pages/OpenInWorkspace";
 import PlanLayout from "./pages/plan/PlanLayout";
+import Requests from "./pages/plan/Requests";
 import Roadmap from "./pages/plan/Roadmap";
 import { ChangesPage, CompatPage, CoveragePage, PipelinePage } from "./pages/plan/SectionPages";
 import ReviewDashboard from "./pages/ReviewDashboard";
@@ -25,6 +26,7 @@ export default function App() {
         <Route path="roadmap" element={<Roadmap />} />
         <Route path="compat" element={<CompatPage />} />
         <Route path="pipeline" element={<PipelinePage />} />
+        <Route path="requests" element={<Requests />} />
         <Route path="coverage" element={<CoveragePage />} />
         <Route path="changes" element={<ChangesPage />} />
         <Route path="*" element={<Navigate replace to="/plan" />} />

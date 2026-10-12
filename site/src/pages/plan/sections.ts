@@ -5,8 +5,11 @@ import {
   Grid3x3,
   type LucideIcon,
   Map as MapIcon,
+  MessageSquarePlus,
   Newspaper,
 } from "lucide-react";
+
+export { planHref } from "../../lib/plan/href";
 
 export interface PlanSection {
   path: string;
@@ -18,12 +21,7 @@ export const PLAN_SECTIONS: readonly PlanSection[] = [
   { path: "roadmap", label: "Docs roadmap", icon: MapIcon },
   { path: "compat", label: "Compatibility", icon: Grid3x3 },
   { path: "pipeline", label: "Blog pipeline", icon: Newspaper },
+  { path: "requests", label: "Content requests", icon: MessageSquarePlus },
   { path: "coverage", label: "Coverage gaps", icon: BookOpen },
   { path: "changes", label: "Product changes", icon: GitCompareArrows },
 ];
-
-export function planHref(path: string, params?: Record<string, string>): string {
-  const base = path ? `/plan/${path}` : "/plan";
-  const search = params ? new URLSearchParams(params).toString() : "";
-  return search ? `${base}?${search}` : base;
-}

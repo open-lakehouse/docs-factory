@@ -32,7 +32,6 @@ import {
 import {
   createContentRequest,
   listContentRequests,
-  updateContentRequest,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
 import { useReviewInvalidation } from "../../lib/review-queries";
@@ -229,64 +228,5 @@ function ContentRequestDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-/** Dashboard list: every open or accepted request, with maintainer triage. */
-export function ContentRequestList() {
-  const { isMaintainer } = useAuth();
-  const requests = useOpenContentRequests();
-  const { invalidateContentRequests } = useReviewInvalidation();
-  const update = useMutation(updateContentRequest, {
-    onSuccess: () => void invalidateContentRequests(),
-  });
-
-  if (requests.length === 0) {
-    return <p className="review-empty">No open content requests.</p>;
-  }
-  return (
-    <ul className="review-dash-list">
-      {requests.map((r) => (
-        <li key={r.id} className="review-dash-row">
-          <span className="review-dash-title" title={r.bodyMd || undefined}>
-            {r.title}
-          </span>
-          <span className="review-dash-meta">
-            <span className="review-dash-count">
-              {[isJourney(r) && "journey", r.project, r.placement, r.diataxis]
-                .filter(Boolean)
-                .join(" · ")}
-            </span>
-            <span className="review-dash-count">
-              {requestStatusLabel(r.status)} by {r.requestedByLogin}
-            </span>
-            {isMaintainer && r.status === ContentRequestStatus.OPEN && (
-              <>
-                <Button
-                  size="xs"
-                  variant="outline"
-                  disabled={update.isPending}
-                  onClick={() =>
-                    void update.mutateAsync({ id: r.id, status: ContentRequestStatus.ACCEPTED })
-                  }
-                >
-                  Accept
-                </Button>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  disabled={update.isPending}
-                  onClick={() =>
-                    void update.mutateAsync({ id: r.id, status: ContentRequestStatus.DECLINED })
-                  }
-                >
-                  Decline
-                </Button>
-              </>
-            )}
-          </span>
-        </li>
-      ))}
-    </ul>
   );
 }

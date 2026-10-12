@@ -543,6 +543,34 @@ body {
 .plan-chip:hover { color: var(--foreground); }
 .plan-chip.is-active { color: var(--foreground); border-color: var(--muted-foreground); }
 
+.plan-chip-count { margin-left: 0.2rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted-foreground); }
+.plan-filters { display: grid; gap: 0.5rem; margin-bottom: 1rem; }
+
+/* Content requests triage */
+.request-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.request-row {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 0.7rem 0.9rem;
+}
+.request-row-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.75rem; }
+.request-row-title { font-weight: 500; color: var(--foreground); }
+.request-row-status {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+.request-row.is-requested .request-row-status { color: var(--accent); }
+.request-row.is-declined { opacity: 0.7; }
+.request-row-meta { margin-top: 0.2rem; font-size: 0.8rem; }
+.request-row-body { margin-top: 0.4rem; font-size: 0.85rem; }
+.request-row-body summary { cursor: pointer; color: var(--muted-foreground); font-size: 0.8rem; }
+.request-row-body p { margin: 0.3rem 0 0; white-space: pre-wrap; }
+.request-row-actions { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
+
 /* Stage progress: one hue, fading toward the surface as a slot is less done.
  * Mixing with --background flips the ramp's anchor in dark mode for free. */
 .stage-ready { --stage-fill: var(--accent); }

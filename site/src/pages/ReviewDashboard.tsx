@@ -14,7 +14,7 @@
 import { useQuery } from "@connectrpc/connect-query";
 import { Link } from "react-router-dom";
 import Shell from "../components/layout/Shell";
-import { ContentRequestList } from "../components/review/ContentRequests";
+import { useOpenContentRequests } from "../components/review/ContentRequests";
 import {
   type DraftSummary,
   type ReviewRequest,
@@ -62,6 +62,7 @@ function requestTargetLabel(r: ReviewRequest): string {
 
 export default function ReviewDashboard() {
   const { isLoading: authLoading, isAllowlisted } = useAuth();
+  const openRequests = useOpenContentRequests();
   const { data: draftsData, isLoading: draftsLoading } = useQuery(
     listDrafts,
     {},
@@ -252,10 +253,11 @@ export default function ReviewDashboard() {
         <section className="review-dash-section">
           <h2>Content requests</h2>
           <p className="muted review-dash-hint">
-            Missing content reviewers asked for. Request more from a nav section or blog series in
-            the workspace tree.
+            {openRequests.length === 0
+              ? "No open content requests."
+              : `${openRequests.length} open or accepted.`}{" "}
+            <Link to="/plan/requests">Triage in Plan →</Link>
           </p>
-          <ContentRequestList />
         </section>
 
         <section className="review-dash-section">

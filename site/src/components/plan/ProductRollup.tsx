@@ -10,7 +10,7 @@
 
 import { useQuery } from "@connectrpc/connect-query";
 import { MessageSquare } from "lucide-react";
-import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -22,7 +22,7 @@ import { productChanges } from "../../gen/docs_factory/review/v1/review_service-
 import { useAuth } from "../../lib/auth-context";
 import { changeKindFromProto, type DiffEntry } from "../../lib/tree-diff";
 import { TOPICS } from "../../vocab";
-import StructuralDiff from "./StructuralDiff";
+import StructuralDiff from "../review/StructuralDiff";
 
 /** Pretty product label from a topic id (e.g. "unity-catalog" → "Unity Catalog"). */
 function topicLabel(topic: string): string {
@@ -38,7 +38,9 @@ function shortSha(sha: string): string {
 
 export default function ProductRollup() {
   const { reviewActive } = useAuth();
-  const [topic, setTopic] = useState(TOPICS[0] ?? "");
+  const [params, setParams] = useSearchParams();
+  const topic = TOPICS.find((t) => t === params.get("topic")) ?? TOPICS[0] ?? "";
+  const setTopic = (t: string) => setParams({ topic: t }, { replace: true });
 
   const { data, isLoading } = useQuery(
     productChanges,

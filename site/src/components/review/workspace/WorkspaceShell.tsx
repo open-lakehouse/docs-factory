@@ -15,7 +15,7 @@ import {
 } from "../../../lib/review-display-mode";
 import { useSidebarWidth } from "../../../lib/useSidebarWidth";
 import { ExpansionProvider } from "./expansion-context";
-import OverviewTab from "./OverviewTab";
+import InboxTab from "./InboxTab";
 import ReviewTab from "./ReviewTab";
 import ReviewTree from "./ReviewTree";
 import RightPane from "./RightPane";
@@ -197,17 +197,12 @@ function WorkspaceLayout() {
           <TabBar />
           {tabs.length === 0 ? (
             <div className="flex flex-1 items-center justify-center p-8 text-center text-muted-foreground">
-              Select Overview or a page from the tree to open it here.
+              Select Inbox or a page from the tree to open it here.
             </div>
           ) : (
             tabs.map((tab) =>
-              tab.kind === "overview" ? (
-                <OverviewTab
-                  key={tab.token}
-                  token={tab.token}
-                  view={tab.overviewView}
-                  isActive={tab.token === activeToken}
-                />
+              tab.kind === "inbox" ? (
+                <InboxTab key={tab.token} token={tab.token} isActive={tab.token === activeToken} />
               ) : (
                 <ReviewTab
                   key={tab.token}

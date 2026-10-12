@@ -1,4 +1,4 @@
-// Latest-comments inbox for the Overview workspace tab. Cross-content recent
+// Latest comments for the workspace Inbox. Cross-content recent
 // activity; clicking a row opens that page with a deep-link to the thread.
 // Cards for content with an open review request to the viewer get a highlight
 // matching the left-tree UserCheck signal.
@@ -46,7 +46,7 @@ export default function LatestComments() {
   };
 
   return (
-    <section aria-label="Latest comments">
+    <>
       {isLoading ? (
         <p className="muted">Loading…</p>
       ) : recent.length === 0 ? (
@@ -104,6 +104,6 @@ export default function LatestComments() {
           })}
         </ul>
       )}
-    </section>
+    </>
   );
 }

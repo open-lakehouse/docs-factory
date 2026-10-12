@@ -3,19 +3,17 @@
 // the query string so a workspace layout is shareable and back/forward-navigable:
 //
 //   /review?tabs=docs:slug:project:bucket,docs:slug:project:bucket#md,…&active=<token>&thread=<id>&anchor=<slug>
-//   /review?tabs=overview#pipeline,overview#product,overview#comments,overview#coverage&active=overview#pipeline
+//   /review?tabs=inbox&active=inbox
 //
 // Opening a sidebar ITEM opens a GROUP of tabs — for content, the rendered page
-// plus companion views (`.md` twin, each runnable script); for Overview, the
-// blog pipeline + ProductChanges + latest-comments + coverage-gap panels. Every
-// content tab token is `refToParam(ref)` optionally suffixed with `#<view>`;
-// Overview tokens use the synthetic group key `overview`. Tabs sharing a
-// groupKey belong to one item.
+// plus companion views (`.md` twin, each runnable script); the Inbox is a single
+// synthetic `inbox` tab. Every content tab token is `refToParam(ref)` optionally
+// suffixed with `#<view>`. Tabs sharing a groupKey belong to one item.
 // The rendered content view has no suffix, so old shared links (bare ref tokens)
 // still parse.
 //
-// Bare `/review` (no `tabs`) soft-defaults to Overview and writes that into the
-// URL with replace, so the left-nav Overview row is selected on entry.
+// Bare `/review` (no `tabs`) soft-defaults to the Inbox and writes that into the
+// URL with replace, so the left-nav Inbox row is selected on entry.
 //
 // The workspace shows ONE item at a time: opening an item REPLACES the open set
 // with just that item's group, so clicking around the tree navigates rather than
@@ -39,14 +37,8 @@ import { type ContentPage, findBlog, findDoc } from "../../../content";
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../../lib/auth-context";
 import { type ScriptsIndex, useScriptsIndex } from "../../../lib/scripts-index";
+import { INBOX_TOKEN, isInboxToken } from "./inbox-token";
 import { viewsFor } from "./item-views";
-import {
-  OVERVIEW_VIEWS,
-  type OverviewView,
-  overviewTabsParam,
-  overviewToken,
-  parseOverviewToken,
-} from "./overview-token";
 import { parseTabToken, refTokenOf, type TabView, tabTokenFor } from "./view-token";
 
 export type OpenTab =
@@ -59,10 +51,9 @@ export type OpenTab =
       groupKey: string;
     }
   | {
-      kind: "overview";
-      token: string;
-      overviewView: OverviewView;
-      groupKey: "overview";
+      kind: "inbox";
+      token: typeof INBOX_TOKEN;
+      groupKey: typeof INBOX_TOKEN;
     };
 
 /** A deep-link intent attached when opening a tab from a cross-nav row. */
@@ -80,8 +71,8 @@ interface TabsValue {
   openTab: (ref: ContentRef, intent?: OpenIntent) => void;
   /** Activate a specific view of an item (opening it if not already open). */
   openView: (ref: ContentRef, view: TabView, intent?: OpenIntent) => void;
-  /** Open the Overview item (pipeline + product + comments). */
-  openOverview: (view?: OverviewView) => void;
+  /** Open the Inbox item (requests to me + latest comments). */
+  openInbox: () => void;
   /** Close a single view tab. */
   closeTab: (token: string) => void;
   /** Close a whole item group (every view sharing the groupKey). */
@@ -98,23 +89,18 @@ function pageFor(ref: ContentRef): ContentPage | undefined {
     : findDoc(ref.project ?? "", ref.bucket ?? "", ref.slug);
 }
 
+const INBOX_TAB: OpenTab = { kind: "inbox", token: INBOX_TOKEN, groupKey: INBOX_TOKEN };
+
 function parseTabs(raw: string | null): OpenTab[] {
   if (!raw) return [];
   const out: OpenTab[] = [];
   const seen = new Set<string>();
   for (const token of raw.split(",")) {
     if (!token || seen.has(token)) continue;
-    const overviewView = parseOverviewToken(token);
-    if (overviewView) {
-      const normalized = overviewToken(overviewView);
-      if (seen.has(normalized)) continue;
-      seen.add(normalized);
-      out.push({
-        kind: "overview",
-        token: normalized,
-        overviewView,
-        groupKey: "overview",
-      });
+    if (isInboxToken(token)) {
+      if (seen.has(INBOX_TOKEN)) continue;
+      seen.add(INBOX_TOKEN);
+      out.push(INBOX_TAB);
       continue;
     }
     const parsed = parseTabToken(token);
@@ -131,16 +117,6 @@ function parseTabs(raw: string | null): OpenTab[] {
   return out;
 }
 
-/** Default landing when /review has no `tabs` — Overview (pipeline + product). */
-function defaultOverviewTabs(): OpenTab[] {
-  return OVERVIEW_VIEWS.map((view) => ({
-    kind: "overview" as const,
-    token: overviewToken(view),
-    overviewView: view,
-    groupKey: "overview" as const,
-  }));
-}
-
 /** Every view token of one item, rendered view first (the group openTab opens). */
 export function itemGroupTokens(ref: ContentRef, scriptsIndex: ScriptsIndex): string[] {
   return viewsFor(ref, pageFor(ref), scriptsIndex).map((v) => tabTokenFor(ref, v));
@@ -154,34 +130,25 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
   const scriptsRef = useRef(scriptsIndex);
   scriptsRef.current = scriptsIndex;
 
-  // Overview is reviewer-only; an invited contributor lands on an empty pane.
+  // The Inbox is reviewer-only; an invited contributor lands on an empty pane.
   const { isAllowlisted } = useAuth();
   const rawTabs = params.get("tabs");
   const parsedTabs = useMemo(
     () => parseTabs(rawTabs).filter((t) => isAllowlisted || t.kind === "content"),
     [rawTabs, isAllowlisted],
   );
-  // Soft-default Overview on first paint when the URL has no tabs yet (the
+  // Soft-default the Inbox on first paint when the URL has no tabs yet (the
   // effect below writes that into the query string with replace).
-  const tabs = parsedTabs.length > 0 ? parsedTabs : isAllowlisted ? defaultOverviewTabs() : [];
+  const tabs = parsedTabs.length > 0 ? parsedTabs : isAllowlisted ? [INBOX_TAB] : [];
   const activeParam = params.get("active");
-  // Normalize bare `overview` → `overview#pipeline` so active matches parsed tabs.
-  const normalizedActive = useMemo(() => {
-    if (!activeParam) return null;
-    const overviewView = parseOverviewToken(activeParam);
-    return overviewView ? overviewToken(overviewView) : activeParam;
-  }, [activeParam]);
+  // A legacy `overview#comments` active token names the Inbox.
+  const normalizedActive = activeParam && isInboxToken(activeParam) ? INBOX_TOKEN : activeParam;
   // Keep `active` valid: fall back to the last tab if the param is stale/missing.
-  // When soft-defaulting Overview, land on pipeline (first Overview view).
   const activeToken =
     (normalizedActive && tabs.some((t) => t.token === normalizedActive) && normalizedActive) ||
-    (parsedTabs.length > 0
-      ? parsedTabs[parsedTabs.length - 1].token
-      : isAllowlisted
-        ? overviewToken("pipeline")
-        : null);
+    (tabs.length > 0 ? tabs[tabs.length - 1].token : null);
 
-  // Bare /review (no tabs) → Overview selected. replace:true so back doesn't
+  // Bare /review (no tabs) → Inbox selected. replace:true so back doesn't
   // bounce through the empty landing state.
   useEffect(() => {
     if (!isAllowlisted) return;
@@ -189,8 +156,8 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
       (prev) => {
         if (prev.get("tabs")) return prev;
         const p = new URLSearchParams(prev);
-        p.set("tabs", overviewTabsParam());
-        p.set("active", overviewToken("pipeline"));
+        p.set("tabs", INBOX_TOKEN);
+        p.set("active", INBOX_TOKEN);
         return p;
       },
       { replace: true },
@@ -256,22 +223,19 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
     [setParams, applyIntent],
   );
 
-  const openOverview = useCallback(
-    (view: OverviewView = "pipeline") => {
-      setParams(
-        (prev) => {
-          const p = new URLSearchParams(prev);
-          p.set("tabs", overviewTabsParam());
-          p.set("active", overviewToken(view));
-          p.delete("thread");
-          p.delete("anchor");
-          return p;
-        },
-        { replace: false },
-      );
-    },
-    [setParams],
-  );
+  const openInbox = useCallback(() => {
+    setParams(
+      (prev) => {
+        const p = new URLSearchParams(prev);
+        p.set("tabs", INBOX_TOKEN);
+        p.set("active", INBOX_TOKEN);
+        p.delete("thread");
+        p.delete("anchor");
+        return p;
+      },
+      { replace: false },
+    );
+  }, [setParams]);
 
   const closeTokens = useCallback(
     (drop: (t: OpenTab) => boolean) => {
@@ -347,7 +311,7 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
       intent,
       openTab,
       openView,
-      openOverview,
+      openInbox,
       closeTab,
       closeGroup,
       setActive,
@@ -359,7 +323,7 @@ export function WorkspaceTabsProvider({ children }: { children: ReactNode }) {
       intent,
       openTab,
       openView,
-      openOverview,
+      openInbox,
       closeTab,
       closeGroup,
       setActive,

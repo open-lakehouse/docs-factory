@@ -11,8 +11,10 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ContentRequestStatus } from "../../gen/docs_factory/review/v1/messages_pb";
 import { listReviewRequests } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
+import { useOpenContentRequests } from "../review/ContentRequests";
 import StatusMenu from "./StatusMenu";
 
 // Reviewer-only top-nav entry linking to the /review workspace. Badges the
@@ -31,6 +33,22 @@ function ReviewNavItem() {
     <NavLink to="/review" className={({ isActive }) => (isActive ? "active" : undefined)}>
       Review
       {requested > 0 && <span className="topnav-badge">{requested}</span>}
+    </NavLink>
+  );
+}
+
+// Reviewer-only entry for the planning pages (/plan/*). Badges maintainers with
+// the content requests waiting for their triage.
+function PlanNavItem() {
+  const { reviewActive, isMaintainer } = useAuth();
+  const untriaged = useOpenContentRequests().filter(
+    (r) => r.status === ContentRequestStatus.OPEN,
+  ).length;
+  if (!reviewActive) return null;
+  return (
+    <NavLink to="/plan" className={({ isActive }) => (isActive ? "active" : undefined)}>
+      Plan
+      {isMaintainer && untriaged > 0 && <span className="topnav-badge">{untriaged}</span>}
     </NavLink>
   );
 }
@@ -116,6 +134,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         </nav>
         <nav className="topnav">
           <ReviewNavItem />
+          <PlanNavItem />
           <AdminNavItem />
         </nav>
         <ThemeToggle />

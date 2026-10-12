@@ -1,4 +1,4 @@
-// The workspace's left navigation: Overview (pipeline + product + comments)
+// The workspace's left navigation: the Inbox (requests to me + latest comments)
 // above a file-explorer-style tree of all reviewable content. Branches
 // (project → bucket or nav.yml section, blog series) expand/collapse; leaves
 // open the page in a middle-pane tab. Built from build-time content (tree-model.ts), expansion
@@ -13,8 +13,8 @@ import {
   Files,
   FileText,
   FolderTree,
+  Inbox,
   Layers3,
-  LayoutDashboard,
   ListTree,
   MessageSquarePlus,
   Newspaper,
@@ -50,7 +50,7 @@ import {
   useOpenContentRequests,
 } from "../ContentRequests";
 import { useExpansion } from "./expansion-context";
-import { isOverviewGroup } from "./overview-token";
+import { INBOX_TOKEN } from "./inbox-token";
 import { TreeRow } from "./TreeRow";
 import { type TreeMode, type TreeNode, useReviewTree } from "./tree-model";
 import { refTokenOf } from "./view-token";
@@ -306,7 +306,7 @@ export default function ReviewTree() {
     { mine: true, openOnly: true },
     { enabled: isAllowlisted },
   );
-  const { openOverview, activeToken } = useWorkspaceTabs();
+  const { openInbox, activeToken } = useWorkspaceTabs();
   const contentRequests = useOpenContentRequests();
   const requestsByPlacement = useMemo(() => {
     const map = new Map<string, ContentRequest[]>();
@@ -333,17 +333,27 @@ export default function ReviewTree() {
     return refs;
   }, [requestData?.requests]);
 
-  const overviewSelected = activeToken !== null && isOverviewGroup(refTokenOf(activeToken));
+  const inboxSelected = activeToken === INBOX_TOKEN;
 
   return (
     <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto p-2" aria-label="Review">
       {isAllowlisted && (
         <TreeRow
           depth={0}
-          icon={<LayoutDashboard className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
-          label="Overview"
-          selected={overviewSelected}
-          onSelect={() => openOverview()}
+          icon={<Inbox className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+          label="Inbox"
+          afterLabel={
+            (requestData?.requests.length ?? 0) > 0 && (
+              <span
+                className="ml-1.5 rounded-full bg-primary/15 px-1.5 font-mono text-[0.65rem] text-primary"
+                title="Review requests addressed to you"
+              >
+                {requestData?.requests.length}
+              </span>
+            )
+          }
+          selected={inboxSelected}
+          onSelect={openInbox}
         />
       )}
       <p className="mt-2 flex items-center gap-1.5 px-2 py-1 font-mono text-xs uppercase tracking-[0.06em] text-muted-foreground">

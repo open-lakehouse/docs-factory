@@ -23,7 +23,7 @@ come from the [documentation plan][plan].
 The journey tables below are generated from
 [`compatibility.yml`](../../compatibility.yml) and the claims in each page's
 scripts (`uv run docsnip compat --fix`); edit those, never the tables. The
-factory app's Overview → Compatibility panel shows the same cells with each
+factory app's Plan → Compatibility page shows the same cells with each
 one's proofs and evidence.
 
 | Cell | Meaning |

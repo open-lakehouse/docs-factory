@@ -4,8 +4,9 @@
 // three-pane editor doesn't fit a phone) until a page is opened. The dashboard
 // also stays reachable at /review/dashboard.
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useSearchParams } from "react-router-dom";
 import Shell from "../components/layout/Shell";
+import { legacyOverviewPlanPath } from "../components/review/workspace/inbox-token";
 import WorkspaceShell from "../components/review/workspace/WorkspaceShell";
 import { useAuth } from "../lib/auth-context";
 import ReviewDashboard from "./ReviewDashboard";
@@ -29,6 +30,8 @@ export default function ReviewWorkspace() {
   const isNarrow = useIsNarrow();
   const [params] = useSearchParams();
   const opensContent = /(^|,)(docs|blogs):/.test(params.get("tabs") ?? "");
+  const movedToPlan = legacyOverviewPlanPath(params.get("active") ?? "");
+  if (movedToPlan) return <Navigate replace to={movedToPlan} />;
 
   // Narrow screens: reuse the classic dashboard wholesale (it owns its own Shell
   // and auth guard) until a page is opened — the workspace is the only page

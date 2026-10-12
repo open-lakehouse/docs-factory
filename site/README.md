@@ -5,8 +5,13 @@ builder-agnostic content in place and renders it with build-time Shiki code
 blocks and interactive LikeC4 diagrams, inside the review workspace:
 
 - **`/review`**: the 3-pane workspace (content tree, page tabs, comment rail).
-  Narrow screens get the dashboard until a page is opened.
+  It opens on the Inbox: review requests addressed to you and the latest
+  comments. Narrow screens get the dashboard until a page is opened.
 - **`/review/dashboard`**: pending work, latest comments, review requests.
+- **`/plan`**: planning, reviewer-only. A summary of every project, then the
+  docs roadmap (`nav.yml` slots by stage), the compatibility matrix, the blog
+  pipeline, content-request triage, coverage gaps, and product changes. Filters
+  live in the query string, so a view can be shared.
 - **`/admin`**: allowlist and user roster (site admins only).
 
 It reads `content/` (Diátaxis docs), `blogs/` (narrative drafts), and the

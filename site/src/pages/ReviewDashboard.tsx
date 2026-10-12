@@ -14,10 +14,7 @@
 import { useQuery } from "@connectrpc/connect-query";
 import { Link } from "react-router-dom";
 import Shell from "../components/layout/Shell";
-import BlogPipeline from "../components/review/BlogPipeline";
-import { ContentRequestList } from "../components/review/ContentRequests";
-import ProductRollup from "../components/review/ProductRollup";
-import { overviewTabsParam, overviewToken } from "../components/review/workspace/overview-token";
+import { useOpenContentRequests } from "../components/review/ContentRequests";
 import {
   type DraftSummary,
   type ReviewRequest,
@@ -32,16 +29,6 @@ import { useAuth } from "../lib/auth-context";
 import { refHref } from "../lib/content-ref";
 import { ratingLabel } from "../lib/rating";
 import { ReviewRequestBadge, ReviewStateBadge } from "../lib/review-status";
-
-/** Deep-link into the desktop workspace Overview (ignored on narrow, where this
- *  dashboard itself surfaces the pipeline + rollup below). */
-function overviewHref(): string {
-  const search = new URLSearchParams({
-    tabs: overviewTabsParam(),
-    active: overviewToken("pipeline"),
-  });
-  return `/review?${search.toString()}`;
-}
 
 /** Review states that count as active pending work for a reviewer. */
 const PENDING_STATES = new Set<ReviewState>([
@@ -75,6 +62,7 @@ function requestTargetLabel(r: ReviewRequest): string {
 
 export default function ReviewDashboard() {
   const { isLoading: authLoading, isAllowlisted } = useAuth();
+  const openRequests = useOpenContentRequests();
   const { data: draftsData, isLoading: draftsLoading } = useQuery(
     listDrafts,
     {},
@@ -130,8 +118,7 @@ export default function ReviewDashboard() {
       <div className="review-dashboard">
         <h1>Review</h1>
         <p className="muted">
-          Pending work and recent activity across all content.{" "}
-          <Link to={overviewHref()}>Overview →</Link>
+          Pending work and recent activity across all content. <Link to="/plan">Plan →</Link>
         </p>
 
         <section className="review-dash-section">
@@ -266,10 +253,11 @@ export default function ReviewDashboard() {
         <section className="review-dash-section">
           <h2>Content requests</h2>
           <p className="muted review-dash-hint">
-            Missing content reviewers asked for. Request more from a nav section or blog series in
-            the workspace tree.
+            {openRequests.length === 0
+              ? "No open content requests."
+              : `${openRequests.length} open or accepted.`}{" "}
+            <Link to="/plan/requests">Triage in Plan →</Link>
           </p>
-          <ContentRequestList />
         </section>
 
         <section className="review-dash-section">
@@ -326,18 +314,6 @@ export default function ReviewDashboard() {
               ))}
             </ul>
           )}
-        </section>
-
-        {/* Narrow / classic dashboard: Overview lives here because the 3-pane
-            workspace (and its sidebar Overview item) only mounts on desktop. */}
-        <section className="review-dash-section" aria-label="Blog pipeline">
-          <BlogPipeline />
-        </section>
-        <section
-          className="review-dash-section revops-product-rollup"
-          aria-label="What changed by product"
-        >
-          <ProductRollup />
         </section>
       </div>
     </Shell>

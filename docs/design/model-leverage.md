@@ -202,7 +202,7 @@ external link, wait on the emitted sites having a glossary.
   complete before the Delta pages are ready.
 - **The review app reads the same resolution.** `compat --fix` also writes
   `content/<project>/compatibility.json`, and `docsnip check` fails when it's
-  stale. It's committed because the bare Vercel build has no `uv`. Overview →
+  stale. It's committed because the bare Vercel build has no `uv`. Plan →
   Compatibility renders it with each cell's proofs and evidence. "Track a
   journey" files a `JOURNEY` content request; accepting it lands a
   `journeys:` entry carrying `request: <id>` in a PR, so git stays the

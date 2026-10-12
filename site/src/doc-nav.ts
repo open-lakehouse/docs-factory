@@ -168,7 +168,7 @@ export const docNav = buildDocNav();
 export type NavNode =
   | { kind: "section"; label: string; children: NavNode[] }
   | { kind: "page"; bucket: string; slug: string; label: string; id?: string; primary: boolean }
-  | { kind: "planned"; id: string; title: string };
+  | { kind: "planned"; id: string; title: string; request?: string };
 
 const navManifests = import.meta.glob<string>("../../content/*/nav.yml", {
   query: "?raw",

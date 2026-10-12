@@ -8,8 +8,6 @@
 // last and get a dense rank the first time they're moved into the ranked list.
 //
 // Rows expand (one at a time) to show the blog metadata header + event timeline.
-// Used by the Review workspace Overview tab (and the classic review dashboard on
-// narrow screens); the old standalone /review/revops page redirects into Overview.
 
 import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { useMutation, useQuery } from "@connectrpc/connect-query";
@@ -32,7 +30,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { ChevronDown, ChevronRight, GripVertical } from "lucide-react";
 import { type MouseEvent, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { findBlog } from "../../content";
@@ -40,6 +38,7 @@ import {
   ContentArea,
   type ContentRef,
   type DraftSummary,
+  ReviewState,
 } from "../../gen/docs_factory/review/v1/messages_pb";
 import {
   listDrafts,
@@ -48,11 +47,12 @@ import {
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
 import { refHref } from "../../lib/content-ref";
+import { type DateFlag, dateFlag, daysUntil, SOON_DAYS } from "../../lib/plan/pipeline-dates";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { ReviewStateBadge } from "../../lib/review-status";
 import BlogPostDetail from "../BlogPostDetail";
+import ContentEventTimeline from "../review/ContentEventTimeline";
 import { FrontmatterStatusBadge } from "../StatusBadge";
-import ContentEventTimeline from "./ContentEventTimeline";
 
 /** Columns in the main row (for detail colspan). */
 const COL_COUNT = 7;
@@ -71,15 +71,45 @@ function toDateInput(ts: DraftSummary["targetReleaseDate"]): string {
   return timestampDate(ts).toISOString().slice(0, 10);
 }
 
+const STATUS_FILTERS = ["all", "idea", "draft", "ready"] as const;
+type StatusFilter = (typeof STATUS_FILTERS)[number];
+
+function flagOf(d: DraftSummary, now: Date): DateFlag {
+  const target = d.targetReleaseDate ? timestampDate(d.targetReleaseDate) : undefined;
+  return dateFlag(target, d.reviewState === ReviewState.RELEASED, now);
+}
+
+function DateFlagChip({ draft: d, now }: { draft: DraftSummary; now: Date }) {
+  const flag = flagOf(d, now);
+  if (!d.targetReleaseDate || (flag !== "overdue" && flag !== "soon")) return null;
+  const days = daysUntil(timestampDate(d.targetReleaseDate), now);
+  return (
+    <span className={cn("revops-flag", `is-${flag}`)}>
+      {flag === "overdue" ? `${-days}d overdue` : days === 0 ? "today" : `in ${days}d`}
+    </span>
+  );
+}
+
 type SortableRowProps = {
   draft: DraftSummary;
   busy: boolean;
+  /** Reorder off: a filtered list can't assign a dense rank to the whole backlog. */
+  locked: boolean;
+  now: Date;
   isOpen: boolean;
   onToggle: () => void;
   onDateChange: (ref: ContentRef | undefined, value: string) => void;
 };
 
-function SortableRow({ draft: d, busy, isOpen, onToggle, onDateChange }: SortableRowProps) {
+function SortableRow({
+  draft: d,
+  busy,
+  locked,
+  now,
+  isOpen,
+  onToggle,
+  onDateChange,
+}: SortableRowProps) {
   const id = rowId(d);
   const {
     attributes,
@@ -89,7 +119,7 @@ function SortableRow({ draft: d, busy, isOpen, onToggle, onDateChange }: Sortabl
     transform,
     transition,
     isDragging,
-  } = useSortable({ id, disabled: busy });
+  } = useSortable({ id, disabled: busy || locked });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -124,7 +154,8 @@ function SortableRow({ draft: d, busy, isOpen, onToggle, onDateChange }: Sortabl
               "revops-drag-handle",
             )}
             aria-label={`Reorder ${draftLabel(d)}`}
-            disabled={busy}
+            title={locked ? "Clear the status filter to reorder" : undefined}
+            disabled={busy || locked}
             {...attributes}
             {...listeners}
           >
@@ -173,6 +204,7 @@ function SortableRow({ draft: d, busy, isOpen, onToggle, onDateChange }: Sortabl
               }
             }}
           />
+          <DateFlagChip draft={d} now={now} />
         </td>
       </tr>
       {isOpen && (
@@ -197,15 +229,11 @@ function SortableRow({ draft: d, busy, isOpen, onToggle, onDateChange }: Sortabl
   );
 }
 
-export default function BlogPipeline({
-  heading = "Blog pipeline",
-  showIntro = true,
-}: {
-  heading?: string;
-  /** When false, omit the explanatory paragraph (e.g. Overview tab chrome). */
-  showIntro?: boolean;
-}) {
+export default function BlogPipeline() {
   const { isAllowlisted } = useAuth();
+  const [params, setParams] = useSearchParams();
+  const status: StatusFilter = STATUS_FILTERS.find((f) => f === params.get("status")) ?? "all";
+  const now = useMemo(() => new Date(), []);
   const { invalidateDrafts } = useReviewInvalidation();
   const { data, isLoading: draftsLoading } = useQuery(
     listDrafts,
@@ -232,6 +260,9 @@ export default function BlogPipeline({
   }, [serverRows]);
 
   const busy = prioritize.isPending || retarget.isPending;
+  const shown = status === "all" ? rows : rows.filter((d) => d.frontmatterStatus === status);
+  const flags = rows.map((d) => flagOf(d, now));
+  const count = (f: DateFlag) => flags.filter((x) => x === f).length;
   const rowIds = useMemo(() => rows.map(rowId), [rows]);
 
   const sensors = useSensors(
@@ -280,19 +311,35 @@ export default function BlogPipeline({
 
   return (
     <div className="revops-dashboard">
-      {heading ? <h1>{heading}</h1> : null}
-      {showIntro && (
-        <p className="muted">
-          The blog backlog in priority order. Rank posts and set target release dates — including
-          early <code>idea</code> folders, so the pipeline reflects what's coming before it's fully
-          drafted.
-        </p>
-      )}
-
+      <div className="plan-toolbar">
+        <fieldset className="plan-chips">
+          <legend className="sr-only">Status</legend>
+          {STATUS_FILTERS.map((f) => (
+            <button
+              key={f}
+              type="button"
+              aria-pressed={f === status}
+              className={cn("plan-chip", f === status && "is-active")}
+              onClick={() => setParams(f === "all" ? {} : { status: f }, { replace: true })}
+            >
+              {f === "all" ? "All" : f}{" "}
+              <span className="plan-chip-count">
+                {f === "all" ? rows.length : rows.filter((d) => d.frontmatterStatus === f).length}
+              </span>
+            </button>
+          ))}
+        </fieldset>
+        <span className="muted text-sm">
+          {count("overdue")} overdue · {count("soon")} due within {SOON_DAYS} days ·{" "}
+          {count("unscheduled")} unscheduled
+        </span>
+      </div>
       {draftsLoading ? (
         <p className="muted">Loading…</p>
-      ) : rows.length === 0 ? (
-        <p className="review-empty">No blog posts yet.</p>
+      ) : shown.length === 0 ? (
+        <p className="review-empty">
+          {rows.length === 0 ? "No blog posts yet." : `No ${status} posts.`}
+        </p>
       ) : (
         <table className="revops-table">
           <thead>
@@ -315,13 +362,15 @@ export default function BlogPipeline({
           >
             <SortableContext items={rowIds} strategy={verticalListSortingStrategy}>
               <tbody>
-                {rows.map((d) => {
+                {shown.map((d) => {
                   const id = rowId(d);
                   return (
                     <SortableRow
                       key={id}
                       draft={d}
                       busy={busy}
+                      locked={status !== "all"}
+                      now={now}
                       isOpen={openId === id}
                       onToggle={() => setOpenId((cur) => (cur === id ? null : id))}
                       onDateChange={onDateChange}

@@ -23,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { PROJECT_LABELS, projectNav } from "../../doc-nav";
 import {
   ContentArea,
   type ContentRequest,
@@ -32,11 +33,12 @@ import {
 import {
   createContentRequest,
   listContentRequests,
-  updateContentRequest,
 } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { vocab } from "../../vocab";
+
+const DOC_PROJECTS = Object.keys(projectNav).sort();
 
 /** Where a request belongs: a docs nav section trail, a blog series, or (for a
  * journey) a compatibility table id. */
@@ -124,11 +126,39 @@ export function TrackJourneyButton({ project, table }: { project: string; table:
   );
 }
 
+/** The body line that ties an explanation request to its model concept. */
+export function explainsLine(conceptId: string): string {
+  return `explains: ${conceptId}`;
+}
+
+/** Ask for an explanation page for a model concept; the requester picks the project. */
+export function RequestExplanationButton({ id, title }: { id: string; title: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button size="xs" variant="ghost" onClick={() => setOpen(true)}>
+        <MessageSquarePlus aria-hidden="true" />
+        Request explanation
+      </Button>
+      {open && (
+        <ContentRequestDialog
+          target={{ area: ContentArea.DOCS, placement: "Explanation" }}
+          initial={{ title, diataxis: "explanation", body: `${explainsLine(id)}\n\n` }}
+          onClose={() => setOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
 function ContentRequestDialog({
   target,
+  initial,
   onClose,
 }: {
+  /** Without a `project`, a docs request asks for one. */
   target: RequestPlacement;
+  initial?: { title: string; diataxis: string; body: string };
   onClose: () => void;
 }) {
   const { invalidateContentRequests } = useReviewInvalidation();
@@ -137,14 +167,16 @@ function ContentRequestDialog({
   });
   const journey = isJourney(target);
   const isDocs = target.area === ContentArea.DOCS && !journey;
-  const [title, setTitle] = useState("");
-  const [diataxis, setDiataxis] = useState<string>(isDocs ? "how-to" : "");
-  const [body, setBody] = useState("");
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [diataxis, setDiataxis] = useState<string>(initial?.diataxis ?? (isDocs ? "how-to" : ""));
+  const [body, setBody] = useState(initial?.body ?? "");
+  const pickProject = isDocs && !target.project;
+  const [project, setProject] = useState(target.project ?? DOC_PROJECTS[0] ?? "");
 
   async function submit() {
     await create.mutateAsync({
       area: target.area,
-      project: target.project,
+      project: target.area === ContentArea.DOCS ? project : target.project,
       placement: target.placement,
       diataxis: isDocs ? diataxis : "",
       title,
@@ -186,6 +218,23 @@ function ContentRequestDialog({
             autoFocus
           />
         </div>
+        {pickProject && (
+          <div className="request-review-field">
+            <label htmlFor="content-request-project">Project</label>
+            <Select value={project} onValueChange={setProject}>
+              <SelectTrigger id="content-request-project">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {DOC_PROJECTS.map((p) => (
+                  <SelectItem key={p} value={p}>
+                    {PROJECT_LABELS[p] ?? p}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
         {isDocs && (
           <div className="request-review-field">
             <label htmlFor="content-request-kind">Kind</label>
@@ -229,64 +278,5 @@ function ContentRequestDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
-
-/** Dashboard list: every open or accepted request, with maintainer triage. */
-export function ContentRequestList() {
-  const { isMaintainer } = useAuth();
-  const requests = useOpenContentRequests();
-  const { invalidateContentRequests } = useReviewInvalidation();
-  const update = useMutation(updateContentRequest, {
-    onSuccess: () => void invalidateContentRequests(),
-  });
-
-  if (requests.length === 0) {
-    return <p className="review-empty">No open content requests.</p>;
-  }
-  return (
-    <ul className="review-dash-list">
-      {requests.map((r) => (
-        <li key={r.id} className="review-dash-row">
-          <span className="review-dash-title" title={r.bodyMd || undefined}>
-            {r.title}
-          </span>
-          <span className="review-dash-meta">
-            <span className="review-dash-count">
-              {[isJourney(r) && "journey", r.project, r.placement, r.diataxis]
-                .filter(Boolean)
-                .join(" · ")}
-            </span>
-            <span className="review-dash-count">
-              {requestStatusLabel(r.status)} by {r.requestedByLogin}
-            </span>
-            {isMaintainer && r.status === ContentRequestStatus.OPEN && (
-              <>
-                <Button
-                  size="xs"
-                  variant="outline"
-                  disabled={update.isPending}
-                  onClick={() =>
-                    void update.mutateAsync({ id: r.id, status: ContentRequestStatus.ACCEPTED })
-                  }
-                >
-                  Accept
-                </Button>
-                <Button
-                  size="xs"
-                  variant="ghost"
-                  disabled={update.isPending}
-                  onClick={() =>
-                    void update.mutateAsync({ id: r.id, status: ContentRequestStatus.DECLINED })
-                  }
-                >
-                  Decline
-                </Button>
-              </>
-            )}
-          </span>
-        </li>
-      ))}
-    </ul>
   );
 }

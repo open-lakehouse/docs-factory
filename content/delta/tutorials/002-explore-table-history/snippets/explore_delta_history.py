@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["deltalake>=0.20", "pyarrow>=14", "docs-factory-seed"]
+# dependencies = ["deltalake==1.6.6", "pyarrow>=14", "docs-factory-seed"]
 #
 # [tool.uv.sources]
 # docs-factory-seed = { path = "../../../../../seed/python", editable = true }

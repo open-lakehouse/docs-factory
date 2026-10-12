@@ -66,3 +66,13 @@ test("section anchors are URL-safe and follow the label trail", () => {
     "section-start-here-engines-clients",
   );
 });
+
+test("private pages are listed but never count toward progress", () => {
+  const root = buildRoadmap(
+    [{ kind: "section", label: "Internal", children: [page("reference", "coverage")] }],
+    () => "private",
+    [],
+  );
+  expect(root.sections[0].slots).toHaveLength(1);
+  expect(root.counts).toEqual({ ready: 0, draft: 0, planned: 0, requested: 0 });
+});

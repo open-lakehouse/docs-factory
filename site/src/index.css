@@ -574,6 +574,51 @@ body {
 .request-row-body p { margin: 0.3rem 0 0; white-space: pre-wrap; }
 .request-row-actions { display: flex; gap: 0.4rem; margin-top: 0.5rem; }
 
+/* Plan summary tiles */
+.plan-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.plan-tile {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 1rem 1.1rem;
+}
+.plan-tile h2 { margin: 0 0 0.6rem; font-size: 1rem; font-weight: 600; }
+.plan-tile h2 a { color: var(--heading); text-decoration: none; }
+.plan-tile h2 a:hover { color: var(--accent); }
+.plan-tile-lead { margin: 0 0 0.4rem; font-size: 0.85rem; color: var(--muted-foreground); }
+.plan-tile-lead strong { color: var(--foreground); font-size: 1.1rem; font-weight: 600; }
+.plan-stats { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; margin-top: 0.85rem; }
+.plan-stat { display: grid; text-decoration: none; }
+.plan-stat-value {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+.plan-stat-label { font-size: 0.75rem; color: var(--muted-foreground); }
+.plan-stat:hover .plan-stat-label { color: var(--accent); }
+.plan-meter {
+  position: relative;
+  display: inline-block;
+  width: 3rem;
+  height: 0.35rem;
+  border-radius: 4px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.plan-meter > span { position: absolute; inset: 0 auto 0 0; border-radius: 4px; background: var(--accent); }
+.plan-next { margin: 0.85rem 0 0; padding: 0; list-style: none; display: grid; gap: 0.25rem; font-size: 0.85rem; }
+.plan-next li { display: flex; justify-content: space-between; gap: 0.75rem; }
+.plan-next time { font-family: var(--font-mono); font-size: 0.75rem; white-space: nowrap; }
+
 /* Stage progress: one hue, fading toward the surface as a slot is less done.
  * Mixing with --background flips the ramp's anchor in dark mode for free. */
 .stage-ready { --stage-fill: var(--accent); }
@@ -627,6 +672,7 @@ body {
 .roadmap-section-toggle { display: inline-flex; align-items: center; gap: 0.35rem; text-align: left; }
 .roadmap-section-toggle h2 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--heading); }
 .roadmap-section-toggle h3 { margin: 0; font-size: 0.9rem; font-weight: 600; color: var(--foreground); }
+.roadmap-unplaced-title { margin: 0; font-size: 1rem; font-weight: 600; color: var(--heading); grid-column: 1 / -1; }
 .roadmap-section-pct { font-family: var(--font-mono); font-size: 0.75rem; text-align: right; }
 .roadmap-slots { list-style: none; margin: 0.35rem 0 0; padding: 0; }
 .roadmap-slot {

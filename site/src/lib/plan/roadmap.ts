@@ -29,7 +29,10 @@ export interface RoadmapSection {
   placement: string;
   slots: RoadmapSlot[];
   sections: RoadmapSection[];
-  /** Over this section and every section beneath it; secondary placements excluded. */
+  /**
+   * Over this section and every section beneath it. Secondary placements and
+   * `private` pages (never released) are left out.
+   */
   counts: StageCounts;
 }
 
@@ -118,7 +121,7 @@ export function buildRoadmap(
           ...(status ? { status } : {}),
           primary: n.primary,
         });
-        if (n.primary) section.counts[stage]++;
+        if (n.primary && status !== "private") section.counts[stage]++;
       }
     }
     for (const r of byPlacement.get(placement) ?? []) {

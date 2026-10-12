@@ -3,6 +3,7 @@ import {
   BookOpen,
   GitCompareArrows,
   Grid3x3,
+  LayoutDashboard,
   type LucideIcon,
   Map as MapIcon,
   MessageSquarePlus,
@@ -18,6 +19,7 @@ export interface PlanSection {
 }
 
 export const PLAN_SECTIONS: readonly PlanSection[] = [
+  { path: "", label: "Summary", icon: LayoutDashboard },
   { path: "roadmap", label: "Docs roadmap", icon: MapIcon },
   { path: "compat", label: "Compatibility", icon: Grid3x3 },
   { path: "pipeline", label: "Blog pipeline", icon: Newspaper },

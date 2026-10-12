@@ -35,6 +35,8 @@ import { planHref } from "./sections";
 
 export const ROADMAP_PROJECTS = Object.keys(projectNav).sort();
 
+const UNPLACED_ANCHOR = "section-unplaced";
+
 function statusOf(project: string) {
   return (bucket: string, slug: string) => findDoc(project, bucket, slug)?.frontmatter.status;
 }
@@ -73,7 +75,11 @@ export default function Roadmap() {
   // The router doesn't scroll to a fragment on client navigation.
   const { hash } = useLocation();
   useEffect(() => {
-    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ block: "start" });
+    if (!hash) return;
+    // A request for a section that isn't in nav.yml is listed with the unplaced ones.
+    const target =
+      document.getElementById(hash.slice(1)) ?? document.getElementById(UNPLACED_ANCHOR);
+    target?.scrollIntoView({ block: "start" });
   }, [hash]);
 
   return (
@@ -106,7 +112,12 @@ export default function Roadmap() {
       </div>
       <StageBar counts={root.counts} className="mt-3" />
       {root.slots.length > 0 && (
-        <SlotList project={project} slots={root.slots} reviewByRef={reviewByRef} />
+        <div id={UNPLACED_ANCHOR} className="roadmap-section">
+          <div className="roadmap-section-head">
+            <h2 className="roadmap-unplaced-title">Not in a section yet</h2>
+          </div>
+          <SlotList project={project} slots={root.slots} reviewByRef={reviewByRef} />
+        </div>
       )}
       {root.sections.map((s) => (
         <Section

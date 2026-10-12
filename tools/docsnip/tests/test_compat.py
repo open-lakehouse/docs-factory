@@ -312,3 +312,23 @@ def test_the_repo_tables_are_current() -> None:
     root = Path(__file__).resolve().parents[3]
     errors, _ = compat.check(root)
     assert errors == [], "\n".join(errors)
+
+
+def test_evidence_can_cite_another_projects_page(tmp_path) -> None:
+    root = _repo(tmp_path, "")
+    other = root / "content/other/how-to/001-limits"
+    other.mkdir(parents=True)
+    (other / "index.md").write_text(_PAGE.format(status="ready", script="x.py"))
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text().replace(
+            "source: how-to/engine#read-it", "source: other:how-to/limits#read-it"
+        )
+    )
+    compat.fix(root)
+    assert compat.check(root)[0] == []
+    matrix.write_text(
+        matrix.read_text().replace("other:how-to/limits", "other:how-to/nope")
+    )
+    errors, _ = compat.check(root)
+    assert any("no such page" in e for e in errors), errors

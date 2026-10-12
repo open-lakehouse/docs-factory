@@ -26,7 +26,7 @@ from pathlib import Path
 
 import yaml
 
-from . import shellregions
+from . import shellregions, sqlregions
 from .anchors import headings
 from .frontmatter import iter_content_files, page_status
 from .frontmatter import parse as parse_page
@@ -417,7 +417,8 @@ def _resolve(
         return None
     if claim.region is not None:
         shown = meta.verifies_path() or meta.path.resolve()
-        if claim.region not in shellregions.regions(shown):
+        parser = sqlregions if shown.suffix == ".sql" else shellregions
+        if claim.region not in parser.regions(shown):
             errors.append(f"{where}: no region '{claim.region}' in {shown.name}")
             return None
         fences = [
@@ -449,12 +450,15 @@ def _resolve(
 
 
 def _source_page(source: str, project_dir: Path) -> tuple[Path | None, str | None]:
-    """The page and anchor of a ``<bucket>/<slug>[#anchor]`` source, the page
+    """The page of a ``[<project>:]<bucket>/<slug>[#anchor]`` source, the page
     identity nav.yml uses, and why it doesn't resolve (None when it does).
     A URL resolves to no page and no problem."""
     if not source or re.match(r"^https?://", source):
         return None, None
     path, _, anchor = source.partition("#")
+    project, _, path = path.rpartition(":")
+    if project:
+        project_dir = project_dir.parent / project
     bucket, _, slug = path.partition("/")
     pages = [
         page

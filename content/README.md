@@ -264,14 +264,20 @@ and passes if it exits 0. Put assertions in the script — the `if __name__ ==
 every `uv run` (turning a silent regression into a non-zero exit) without
 appearing in the docs.
 
-Two lanes:
+Three lanes:
 
 - **Default** (`just test`): engine examples + tutorial scripts that need no
-  services. Stays green with no Docker.
+  services. Stays green with no Docker and no Java.
 - **Service** (`just test-services`, opt-in): scripts that declare a `compose`
   are auto-marked `needs_uc_server`, so they're deselected by default and run
   here. The plugin **fails hard** (never skips) if Docker is unavailable, so an
   opted-in CI run can't quietly pass.
+- **Spark** (`just test-spark`, opt-in): scripts with `lane = "spark"` in
+  `[tool.docs-factory]` (PySpark, or a driver for the `spark-sql` shell) are
+  marked `needs_spark`. They need Java 17 and Maven; behind a proxy, set
+  `DOCS_FACTORY_MAVEN_MIRROR` to a Maven mirror URL and the harness points
+  Spark at it. `docsnip check` fails a script that depends on `pyspark` or
+  `delta-spark` without the lane, unless it runs in the service lane.
 
 In both lanes only scripts on `status: ready` pages gate. A script whose page
 (the nearest `index.md` above it) is a draft runs as a non-strict `xfail`, and

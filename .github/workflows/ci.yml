@@ -54,6 +54,35 @@ jobs:
         # in tutorials-services).
         run: uv run --python ${{ matrix.python-version }} pytest -v
 
+  spark-tests:
+    # Spark lane: scripts with `lane = "spark"` (PySpark, and the spark-sql
+    # shell the Delta pages start). Needs Java; Spark resolves Delta Spark
+    # from Maven Central.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+          # Keep the large pyspark wheel, which pruning would evict.
+          prune-cache: false
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          # Spark 4 keeps the jars it resolves for --packages here.
+          path: ~/.ivy2.5.2
+          key: ivy-${{ hashFiles('content/delta/release.yml') }}
+      - uses: ./.github/actions/pypi-public
+      - run: uv sync --all-packages
+      - name: Run Spark tests
+        run: uv run pytest -m "needs_spark and not needs_uc_server" -v
+
   tutorials-services:
     # Service-backed tutorial tests: start the Unity Catalog server each script
     # declares (via testcontainers) and run the opt-in lane. Docker is available

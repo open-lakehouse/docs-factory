@@ -43,6 +43,12 @@ _HARNESS_RE = re.compile(
 # The snippet kinds a harness may publish in its place.
 _VERIFIABLE = (".sh", ".sql")
 
+# Opt-in test lanes beyond the default (no services, no JVM) one.
+LANES = ("spark",)
+
+# A dependency that starts a JVM, so its script belongs in the spark lane.
+_SPARK_DEP_RE = re.compile(r"^\s*(?:pyspark|delta-spark)\b")
+
 
 class ScriptMetaError(Exception):
     """Raised when a script's inline metadata is malformed or contradictory."""
@@ -145,6 +151,8 @@ class DocsFactoryMeta:
     script's directory) marks the script as a test harness for a non-Python
     snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh`` or
     ``foo.sql``: the published runnable example is that file, not the harness.
+    ``lane`` puts the script in an opt-in test lane: ``"spark"`` for one that
+    needs Java and Maven (PySpark, or the ``spark-sql`` shell).
     ``claims`` feed the compatibility matrices (see :class:`Claim`).
     """
 
@@ -154,6 +162,7 @@ class DocsFactoryMeta:
     env: dict[str, str] = dataclasses.field(default_factory=dict)
     verifies: str | None = None
     claims: list[Claim] = dataclasses.field(default_factory=list)
+    lane: str | None = None
 
     @property
     def needs_services(self) -> bool:
@@ -237,6 +246,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
     base_url_env = tool.get("base-url-env")
     env = tool.get("env", {}) or {}
     verifies = tool.get("verifies")
+    lane = tool.get("lane")
 
     if compose is not None and not isinstance(compose, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].compose must be a string")
@@ -254,6 +264,10 @@ def parse_script(path: Path) -> ScriptMeta | None:
         )
     if verifies is not None and not isinstance(verifies, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].verifies must be a string")
+    if lane is not None and lane not in LANES:
+        raise ScriptMetaError(
+            f"{path}: [tool.docs-factory].lane must be one of {', '.join(LANES)}"
+        )
 
     return ScriptMeta(
         path=path,
@@ -266,6 +280,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
             env=dict(env),
             verifies=verifies,
             claims=_parse_claims(path, tool.get("claims")),
+            lane=lane,
         ),
     )
 
@@ -331,6 +346,15 @@ def check(content_root: Path) -> list[str]:
             continue
         if meta is None:
             continue
+        # A service-lane script already runs where CI has Java and Docker.
+        default_lane = (
+            meta.docs_factory.lane is None and not meta.docs_factory.needs_services
+        )
+        if default_lane and any(_SPARK_DEP_RE.match(dep) for dep in meta.dependencies):
+            errors.append(
+                f"{path}: depends on Spark but [tool.docs-factory] has no "
+                'lane = "spark", so the default lane would need Java'
+            )
         compose = meta.compose_path()
         if compose is not None and not compose.is_file():
             errors.append(

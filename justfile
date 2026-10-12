@@ -186,6 +186,11 @@ test:
 test-services:
     uv run --group test-services pytest -m "needs_docker or needs_uc_server"
 
+# Run the Spark tests (opt-in): scripts with `lane = "spark"`. Needs Java 17 and
+# Maven; behind a proxy, set DOCS_FACTORY_MAVEN_MIRROR to a Maven mirror URL.
+test-spark:
+    uv run pytest -m "needs_spark and not needs_uc_server"
+
 # --- aws-sim (pretend-AWS S3/STS for UC; see envs/aws-sim/README.md) --------
 
 # Start the example stack: UC + RustFS + Envoy answering *.amazonaws.com.

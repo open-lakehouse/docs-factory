@@ -49,7 +49,8 @@ def run(
         cwd=cwd or script.parent.parent,
         capture_output=True,
         text=True,
-        **({"input": input} if input is not None else {"stdin": subprocess.DEVNULL}),
+        input=input,
+        stdin=subprocess.DEVNULL if input is None else None,
     )
     output = proc.stdout + proc.stderr
     if expect_failure:

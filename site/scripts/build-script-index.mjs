@@ -93,10 +93,10 @@ export function stripSectionMarkers(text) {
   return `${out.join("\n")}\n`;
 }
 
-// PEP 723 tables only the factory reads: the test harness contract and local-path
-// package sources. Neither resolves outside this repo; uv ignores the first and
-// fails on the second.
-const FACTORY_TABLE_RE = /^\[tool\.(?:docs-factory|uv\.sources)\]$/;
+// PEP 723 tables only the factory reads, with any sub-tables: the test harness
+// contract and local-path package sources. Neither resolves outside this repo;
+// uv ignores the first and fails on the second.
+const FACTORY_TABLE_RE = /^\[\[?tool\.(?:docs-factory|uv\.sources)(?:\.[^\]]+)?\]\]?$/;
 
 /**
  * The served copy of a script (pure, for testing): `stripSectionMarkers`, plus the

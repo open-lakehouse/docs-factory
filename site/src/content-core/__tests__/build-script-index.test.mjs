@@ -216,6 +216,25 @@ test("publishScript drops factory-only PEP 723 tables and keeps the runtime ones
   );
 });
 
+test("publishScript drops compatibility claims and factory sub-tables", () => {
+  const src = [
+    "# /// script",
+    "# dependencies = []",
+    "#",
+    "# [tool.docs-factory]",
+    "# claims.duckdb = [",
+    '#   { op = "table.list", region = "list" },',
+    "# ]",
+    "# [tool.docs-factory.extra]",
+    '# key = "x"',
+    "# [[tool.docs-factory.items]]",
+    '# key = "y"',
+    "# ///",
+    "",
+  ].join("\n");
+  expect(publishScript(src)).toBe("# /// script\n# dependencies = []\n# ///\n");
+});
+
 test("publishScript keeps a [tool.*] table the factory doesn't own", () => {
   const src = "# /// script\n# dependencies = []\n#\n# [tool.ruff]\n# line-length = 99\n# ///\n";
   expect(publishScript(src)).toBe(src);

@@ -38,6 +38,7 @@ class Fence:
     file: str
     start: str | None
     end: str | None
+    line: int = 0  # 1-based line of the opening fence in the page
 
     @property
     def region(self) -> str | None:
@@ -54,7 +55,7 @@ class Fence:
 
 def iter_fences(md_path: Path) -> Iterator[Fence]:
     """Yield every ``file=`` code fence in a markdown page, in document order."""
-    for line in md_path.read_text().splitlines():
+    for number, line in enumerate(md_path.read_text().splitlines(), start=1):
         if not line.startswith("```") or "file=" not in line:
             continue
         file_m = _FENCE_FILE_RE.match(line)
@@ -68,6 +69,7 @@ def iter_fences(md_path: Path) -> Iterator[Fence]:
             file=file_m.group("file"),
             start=start_m.group("start") if start_m else None,
             end=end_m.group("end") if end_m else None,
+            line=number,
         )
 
 

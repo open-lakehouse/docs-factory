@@ -29,10 +29,14 @@ import yaml
 from . import shellregions
 from .anchors import headings
 from .frontmatter import iter_content_files, page_status
+from .frontmatter import parse as parse_page
 from .scriptmeta import Claim, ScriptMeta, discover, without_metadata
 from .snippetcheck import iter_fences
 
 FILE = "compatibility.yml"
+# The resolved matrix the review app loads (site/src/compat.ts); committed, so
+# the site builds without uv.
+ARTIFACT = "compatibility.json"
 # `works` is evidence that a journey works without a script here to prove it:
 # the engine's docs or source say so.
 OUTCOMES = ("works", "fails", "missing")
@@ -775,6 +779,132 @@ def _rendered(
                 )
 
 
+# --- the review app's artifact -------------------------------------------------
+
+
+def _page_ref(page: Path, content_root: Path) -> dict[str, str]:
+    """The page's doc identity as the site resolves it (content-core/identity)."""
+    project, bucket, folder = (
+        page.resolve().relative_to(content_root.resolve()).parts[:3]
+    )
+    slug = parse_page(page).meta.get("slug") or re.sub(r"^\d+-", "", folder)
+    return {"project": project, "bucket": bucket, "slug": str(slug)}
+
+
+def _evidence_ref(
+    ev: Evidence, matrix: Matrix, content_root: Path
+) -> dict[str, str] | None:
+    page, _ = _source_page(ev.source, content_root / matrix.project)
+    return _page_ref(page, content_root) if page else None
+
+
+def _proof_json(proof: Proof, content_root: Path) -> dict[str, object]:
+    claim = proof.claim
+    return {
+        "script": proof.script,
+        "page": _page_ref(proof.page, content_root),
+        "anchor": proof.anchor,
+        "ready": proof.ready,
+        "works": claim.works,
+        "fails": claim.fails if isinstance(claim.fails, str) else None,
+        "version": proof.version,
+        "api": claim.api,
+        "note": claim.note,
+    }
+
+
+def _tested_version(result: Result, matrix: Matrix, iface: str) -> str | None:
+    """The one version the project's own claiming scripts pin, if they agree."""
+    seen = {
+        p.version
+        for (project, key, _), cell in result.proofs.items()
+        if project == matrix.project and key == iface
+        for p in cell
+        if p.project == project and p.version
+    }
+    return seen.pop() if len(seen) == 1 else None
+
+
+def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, object]:
+    """The matrix with every cell resolved, draft claims included and flagged."""
+    journeys = []
+    for journey in matrix.journeys.values():
+        cells: dict[str, object] = {}
+        for iface in matrix.interfaces:
+            found = cell(result, matrix, iface, journey.id, drafts=True)
+            every = result.proofs.get((matrix.project, iface, journey.id), [])
+            if found.status == "unknown" and not every:
+                continue
+            cells[iface] = {
+                "status": found.status,
+                "draft": found.draft,
+                "proofs": [_proof_json(p, content_root) for p in every],
+                "evidence": [
+                    {
+                        "outcome": e.outcome,
+                        "page": _evidence_ref(e, matrix, content_root),
+                        "why": e.why,
+                        "source": e.source,
+                        "api": e.api.get(iface),
+                        "verified": e.verified.get(iface),
+                        "note": e.note,
+                    }
+                    for e in found.evidence
+                ],
+            }
+        journeys.append(
+            {
+                "id": journey.id,
+                "title": journey.title,
+                "summary": journey.summary,
+                "request": journey.request,
+                "cells": cells,
+            }
+        )
+    return {
+        "generated": "by `uv run docsnip compat --fix`; edit compatibility.yml "
+        "and script claims, not this file",
+        "project": matrix.project,
+        "spec": matrix.spec,
+        "interfaces": [
+            {
+                "key": i.key,
+                "label": i.label,
+                "version": (matrix.pins.get(i.pin) if i.pin else None)
+                or _tested_version(result, matrix, i.key),
+                "package": i.package,
+                "model": i.model,
+            }
+            for i in matrix.interfaces.values()
+        ],
+        "tables": [
+            {
+                "id": t.id,
+                "title": t.title,
+                "columns": list(t.columns),
+                "rows": list(t.rows),
+            }
+            for t in matrix.tables.values()
+        ],
+        "journeys": journeys,
+    }
+
+
+def _artifacts(repo_root: Path, result: Result) -> Iterable[tuple[Path, str, str]]:
+    """Each matrix's artifact: its path, current text, and rendered text."""
+    content_root = repo_root / "content"
+    for matrix in result.matrices.values():
+        path = matrix.path.parent / ARTIFACT
+        old = path.read_text() if path.is_file() else ""
+        new = (
+            json.dumps(
+                artifact(result, matrix, content_root), indent=2, ensure_ascii=False
+            )
+            + "\n"
+        )
+        yield path, old, new
+
+
 def check(repo_root: Path) -> tuple[list[str], list[str]]:
     """Errors (claims, vocabulary, stale tables) and report-only warnings."""
     result = resolve(repo_root)
@@ -789,11 +919,17 @@ def check(repo_root: Path) -> tuple[list[str], list[str]]:
                 f"{rel}: compatibility table is stale; run "
                 f"`uv run docsnip compat --fix`\n{diff}"
             )
+    for path, old, new in _artifacts(repo_root, result):
+        if old != new:
+            errors.append(
+                f"{path.relative_to(repo_root)} is stale; run "
+                "`uv run docsnip compat --fix`"
+            )
     return errors, result.warnings
 
 
 def fix(repo_root: Path) -> list[Path]:
-    """Rewrite every embedded table; returns the pages changed.
+    """Rewrite every embedded table and artifact; returns the files changed.
 
     Raises:
         ValueError: when the claims or vocabulary have errors, so a broken
@@ -806,11 +942,13 @@ def fix(repo_root: Path) -> list[Path]:
         for page, lines, new in _rendered(repo_root, result, errors)
         if lines != new
     ]
+    files = [(page, "\n".join(new)) for page, new in changed]
+    files += [(p, new) for p, old, new in _artifacts(repo_root, result) if old != new]
     if errors:
         raise ValueError("\n".join(errors))
-    for page, new in changed:
-        page.write_text("\n".join(new))
-    return [page for page, _ in changed]
+    for path, text in files:
+        path.write_text(text)
+    return [path for path, _ in files]
 
 
 # --- the estate model ---------------------------------------------------------

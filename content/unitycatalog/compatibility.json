@@ -1,0 +1,847 @@
+{
+  "generated": "by `uv run docsnip compat --fix`; edit compatibility.yml and script claims, not this file",
+  "project": "unitycatalog",
+  "spec": "ucSpec",
+  "interfaces": [
+    {
+      "key": "spark",
+      "label": "Spark",
+      "version": "4.1.0",
+      "package": "pyspark",
+      "model": "apacheSpark"
+    },
+    {
+      "key": "duckdb",
+      "label": "DuckDB",
+      "version": "1.5.4",
+      "package": "duckdb",
+      "model": "duckdb"
+    },
+    {
+      "key": "polars",
+      "label": "Polars",
+      "version": "1.44.2",
+      "package": "polars",
+      "model": "polars"
+    },
+    {
+      "key": "daft",
+      "label": "Daft",
+      "version": "0.7.25",
+      "package": "daft",
+      "model": null
+    },
+    {
+      "key": "pandas",
+      "label": "pandas",
+      "version": "2.3.3",
+      "package": "pandas",
+      "model": null
+    }
+  ],
+  "tables": [
+    {
+      "id": "table-operations",
+      "title": "Table operations",
+      "columns": [
+        "spark",
+        "duckdb",
+        "polars",
+        "daft",
+        "pandas"
+      ],
+      "rows": [
+        "table.list",
+        "external.read",
+        "external.read-vended",
+        "external.append",
+        "managed.create",
+        "managed.read",
+        "managed.append",
+        "managed.update",
+        "managed.delete",
+        "managed.drop"
+      ]
+    }
+  ],
+  "journeys": [
+    {
+      "id": "table.list",
+      "title": "List tables",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "list-tables",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "polars": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/polars_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "list-tables",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.44.2",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "daft": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/daft_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "list-tables",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.7.25",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pandas": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "why": "`deltalake` resolves `uc://` names but has no call that lists a schema's tables.",
+              "source": "how-to/python-dataframes#list-tables",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "external.read",
+      "title": "Read an external table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/read_engines.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "read-the-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "polars": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/read_engines.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "read-the-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.44.2",
+              "api": null,
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/polars_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "read-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.44.2",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "daft": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/read_engines.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "read-the-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.7.25",
+              "api": null,
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/daft_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "read-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.7.25",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pandas": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/pandas_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "read-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "2.3.3",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "external.read-vended",
+      "title": "Read with vended S3 credentials",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "polars": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/polars_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "read-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.44.2",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pandas": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/pandas_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "read-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "2.3.3",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "external.append",
+      "title": "Append to an external table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "polars": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/polars_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "append-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.44.2",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "daft": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/daft_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "append-rows",
+              "ready": true,
+              "works": false,
+              "fails": "io_config was not provided",
+              "version": "0.7.25",
+              "api": null,
+              "note": "on local storage"
+            }
+          ],
+          "evidence": []
+        },
+        "pandas": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/pandas_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "python-dataframes"
+              },
+              "anchor": "append-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "2.3.3",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.create",
+      "title": "Create a managed table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "create-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "create-change-and-drop-tables",
+              "ready": true,
+              "works": false,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.read",
+      "title": "Read a managed table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "write-some-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "query-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "polars": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "1.44.2",
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "0.7.25",
+              "note": null
+            }
+          ]
+        },
+        "pandas": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "2.3.3",
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "managed.append",
+      "title": "Append to a managed table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "write-some-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "append-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "polars": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "1.44.2",
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "0.7.25",
+              "note": null
+            }
+          ]
+        },
+        "pandas": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "2.3.3",
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "managed.update",
+      "title": "Update rows in a managed table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "change-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "create-change-and-drop-tables",
+              "ready": true,
+              "works": false,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.delete",
+      "title": "Delete rows from a managed table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "change-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "create-change-and-drop-tables",
+              "ready": true,
+              "works": false,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.drop",
+      "title": "Drop a managed table",
+      "summary": null,
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "clean-up",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "create-change-and-drop-tables",
+              "ready": true,
+              "works": false,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

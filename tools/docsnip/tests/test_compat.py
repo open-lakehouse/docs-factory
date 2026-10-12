@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -97,7 +98,10 @@ def test_fix_renders_claims_evidence_and_unknowns(tmp_path) -> None:
         tmp_path,
         _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
     )
-    assert compat.fix(root) == [root / "content/proj/reference/002-matrix/index.md"]
+    assert compat.fix(root) == [
+        root / "content/proj/reference/002-matrix/index.md",
+        root / "content/proj/compatibility.json",
+    ]
     assert _table(root) == [
         "| Operation | [Spark 4.1](model:apacheSpark) | DuckDB |",
         "| --- | --- | --- |",
@@ -117,7 +121,30 @@ def test_a_hand_edit_is_stale(tmp_path) -> None:
     page = root / "content/proj/reference/002-matrix/index.md"
     page.write_text(page.read_text().replace("| Write | — |", "| Write | ✓ |"))
     errors, _ = compat.check(root)
-    assert len(errors) == 1 and "is stale" in errors[0]
+    assert len(errors) == 1 and "table is stale" in errors[0]
+
+
+def test_the_artifact_resolves_cells_and_goes_stale(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
+    )
+    compat.fix(root)
+    path = root / "content/proj/compatibility.json"
+    data = json.loads(path.read_text())
+    read, write = data["journeys"]
+    assert read["cells"]["spark"]["status"] == "tested"
+    assert read["cells"]["spark"]["proofs"][0]["page"] == {
+        "project": "proj",
+        "bucket": "how-to",
+        "slug": "engine",
+    }
+    assert write["summary"] == "Append rows"
+    assert write["cells"]["duckdb"]["evidence"][0]["page"]["slug"] == "engine"
+    assert data["interfaces"][0]["version"] == "4.1.0"
+    path.write_text("{}")
+    errors, _ = compat.check(root)
+    assert any("compatibility.json is stale" in e for e in errors), errors
 
 
 def test_a_draft_page_claim_is_pending(tmp_path) -> None:

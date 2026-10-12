@@ -118,3 +118,5 @@ each version.
   SQL, PySpark, Python, or DuckDB.
 - [Query an earlier version of a table](../../how-to/query-a-table-as-of-version/index.md)
   by version or timestamp.
+- [Build a Delta table in Python and query it with DuckDB](../python-to-duckdb/index.md):
+  the same table, without a JVM.

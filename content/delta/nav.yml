@@ -16,8 +16,8 @@ nav:
       - page: tutorials/your-first-delta-table
         id: T01
         label: Create your first Delta table
-      - planned: T11
-        title: Build a Delta table in Python and query it with DuckDB
+      - page: tutorials/python-to-duckdb
+        id: T11
       - planned: R10
         title: Choose an engine or client
 
@@ -37,6 +37,7 @@ nav:
       - section: Tutorials
         items:
           - page: tutorials/your-first-delta-table
+          - page: tutorials/python-to-duckdb
           - page: tutorials/explore-table-history
             id: T02
           - planned: T03

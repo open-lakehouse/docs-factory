@@ -10,6 +10,11 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
+# claims.pandas = [
+#   { op = "external.read", region = "read" },
+#   { op = "external.read-vended", region = "read" },
+#   { op = "external.append", region = "append" },
+# ]
 # ///
 """Read and append to a Unity Catalog table on S3 from pandas, through deltalake.
 

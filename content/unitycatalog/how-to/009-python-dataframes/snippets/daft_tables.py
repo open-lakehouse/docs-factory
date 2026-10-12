@@ -11,6 +11,11 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
+# claims.daft = [
+#   { op = "table.list", region = "list" },
+#   { op = "external.read", region = "read" },
+#   { op = "external.append", fails = "io_config was not provided", anchor = "append-rows", note = "on local storage" },
+# ]
 # ///
 """List and read a Unity Catalog table on local storage from Daft.
 

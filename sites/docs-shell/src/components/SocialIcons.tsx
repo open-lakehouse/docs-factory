@@ -29,11 +29,3 @@ export function RedditIcon(props: IconProps) {
     </svg>
   );
 }
-
-export const GITHUB = "https://github.com/unitycatalog/unitycatalog";
-
-export const SOCIAL = [
-  { label: "GitHub", href: GITHUB, Icon: GitHubIcon },
-  { label: "Slack", href: "https://go.unitycatalog.io/slack", Icon: SlackIcon },
-  { label: "Reddit", href: "https://www.reddit.com/r/UnityCatalog/", Icon: RedditIcon },
-] as const;

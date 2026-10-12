@@ -1,19 +1,13 @@
-/* Unity Catalog docs theme: GitHub Primer neutrals laid out like an editor
-   (title bar, project panel, status bar), with UC yellow as the one accent.
-   This site owns its look; what it shares with the docs-factory preview is the
-   class contract the vendored plugins and components emit (.cb, .callout, .jr,
-   .tabs-*, .diagram-frame), not the styling. */
+/* Docs-site theme: GitHub Primer neutrals laid out like an editor (title bar,
+   project panel, status bar), with the brand color as the one accent. Each
+   site's src/brand/theme.css sets the --accent* tokens. The sites own their
+   look; what they share with the docs-factory preview is the class contract the
+   vendored plugins and components emit (.cb, .callout, .jr, .tabs-*,
+   .diagram-frame), not the styling. */
 
 @import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
-  /* `--accent` is for text and must pass contrast; `--accent-fill` is the raw
-     brand yellow for bars, dots, and the cursor, where contrast doesn't apply. */
-  --accent: #9a6700;
-  --accent-hover: #7d4e00;
-  --accent-fill: #ffbc00;
-  --accent-fg: #1f2328;
-
   --background: #ffffff;
   --panel: #f6f8fa;
   --surface: #eff2f5;
@@ -48,11 +42,6 @@
 }
 
 :root.dark {
-  --accent: #ffbc00;
-  --accent-hover: #ffd451;
-  --accent-fill: #ffbc00;
-  --accent-fg: #0d1117;
-
   --background: #0d1117;
   --panel: #010409;
   --surface: #151b23;
@@ -514,11 +503,6 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 /* --- Home --- */
 .hero { max-width: 48rem; margin: 1rem 0 3rem; }
 .hero-mark { flex: none; width: 0.9em; height: 0.9em; }
-/* Brand colors from the unitycatalog.io glyph; the navy core would vanish on dark. */
-.hero-mark .uc-mark-core { fill: #163357; }
-.hero-mark .uc-mark-triangles { fill: #ffbc00; }
-.hero-mark .uc-mark-squares { fill: #f43ba6; }
-:root.dark .hero-mark .uc-mark-core { fill: var(--heading); }
 .hero h1 {
   display: flex;
   align-items: center;

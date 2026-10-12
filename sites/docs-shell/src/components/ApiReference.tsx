@@ -2,7 +2,7 @@ import { ApiReferenceReact } from "@scalar/api-reference-react";
 import "@scalar/api-reference-react/style.css";
 import "./api-reference.css";
 import { useDarkMode } from "../lib/theme";
-import type { ApiSpec } from "../site";
+import { type ApiSpec, site } from "../site";
 
 export default function ApiReference({ api }: { api: ApiSpec }) {
   const dark = useDarkMode();
@@ -12,7 +12,7 @@ export default function ApiReference({ api }: { api: ApiSpec }) {
         url: api.specUrl,
         title: api.title,
         slug: api.slug,
-        ...(api.serverUrl && { servers: [{ url: api.serverUrl, description: "Unity Catalog" }] }),
+        ...(api.serverUrl && { servers: [{ url: api.serverUrl, description: site.title }] }),
         layout: "modern",
         // Colors and fonts come from api-reference.css, which maps Scalar's
         // variables onto the site's tokens.

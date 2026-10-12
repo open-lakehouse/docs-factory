@@ -1,0 +1,6 @@
+{
+  "name": "docs-shell",
+  "private": true,
+  "type": "module",
+  "description": "The docs-site shell every sites/<name>/ reaches through its `shell` symlink. Not installed or built on its own: its dependencies live in each site package.json."
+}

@@ -1,7 +1,7 @@
+import HomePage from "@brand/HomePage";
 import { Route, Routes } from "react-router-dom";
 import ApiPage from "./pages/ApiPage";
 import DocPage from "./pages/DocPage";
-import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
 import { defaultApi, site } from "./site";
 

@@ -24,8 +24,10 @@ dest=${dest%/}
 git -C "$dest" rev-parse --git-dir >/dev/null
 
 # A leading `/` anchors a pattern at the transfer root, so `src/content/README.md`
-# style paths deeper in the tree are still mirrored.
-rsync -a --delete \
+# style paths deeper in the tree are still mirrored. The site's `shell` symlink
+# points outside the site (at sites/docs-shell), so --copy-unsafe-links lands it
+# upstream as real files.
+rsync -a --copy-unsafe-links --delete \
   --exclude=/.git/ \
   --exclude=/.github/ \
   --exclude=/LICENSE \

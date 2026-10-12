@@ -2,11 +2,17 @@
 // file per route (dist/<route>.html) with that route's <head> from the
 // emitter's src/generated/heads.json. The client bundle hydrates the markup.
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
-import { build } from "vite";
+import { pathToFileURL } from "node:url";
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
+// Run from the site directory. Node resolves the `shell` symlink, so this file's
+// own location is the shared shell, which has no node_modules: take the site
+// from the cwd and Vite from the site's dependencies.
+const root = process.cwd();
+const { build } = await import(
+  pathToFileURL(createRequire(resolve(root, "package.json")).resolve("vite")).href
+);
 const distDir = resolve(root, "dist");
 const ssrDir = resolve(root, ".ssr");
 const headsPath = resolve(root, "src/generated/heads.json");
@@ -60,7 +66,7 @@ await build({ root, logLevel: "warn" });
 await build({
   root,
   logLevel: "warn",
-  build: { ssr: "src/entry-server.tsx", outDir: ssrDir, emptyOutDir: true },
+  build: { ssr: "shell/src/entry-server.tsx", outDir: ssrDir, emptyOutDir: true },
 });
 
 const { render, routes } = await import(pathToFileURL(resolve(ssrDir, "entry-server.js")).href);

@@ -55,7 +55,7 @@ class ScriptMetaError(Exception):
 
 
 # The fields of one ``claims.<interface>`` entry.
-_CLAIM_KEYS = frozenset({"op", "region", "anchor", "fails", "note"})
+_CLAIM_KEYS = frozenset({"journey", "region", "anchor", "fails", "note", "api"})
 
 
 @dataclasses.dataclass(frozen=True)
@@ -64,19 +64,20 @@ class Claim:
 
     ``interface`` is a column of a compatibility matrix (``content/<project>/
     compatibility.yml``), as written: bare for the script's own project, or
-    ``<project>:<interface>`` for another's. A claim says ``op`` works and names
-    the ``region`` a page shows doing it, or, with ``fails`` (``True`` or the
-    error text the script asserts), that it doesn't. ``anchor`` overrides the
+    ``<project>:<interface>`` for another's. A claim says ``journey`` works and
+    names the ``region`` a page shows doing it, or, with ``fails`` (``True`` or
+    the error text the script asserts), that it doesn't. ``anchor`` overrides the
     heading the matrix links to; ``note`` qualifies the cell, as in "on local
-    storage".
+    storage"; ``api`` is the call the reader writes, as in ``INSERT INTO``.
     """
 
     interface: str
-    op: str
+    journey: str
     region: str | None = None
     anchor: str | None = None
     fails: bool | str = False
     note: str | None = None
+    api: str | None = None
 
     @property
     def works(self) -> bool:
@@ -101,35 +102,39 @@ def _parse_claims(path: Path, raw: object) -> list[Claim]:
                 raise ScriptMetaError(
                     f"{where}.{interface}: unknown key(s) {', '.join(unknown)}"
                 )
-            op = entry.get("op")
-            if not isinstance(op, str) or not op:
-                raise ScriptMetaError(f"{where}.{interface}: every claim needs an op")
+            journey = entry.get("journey")
+            if not isinstance(journey, str) or not journey:
+                raise ScriptMetaError(
+                    f"{where}.{interface}: every claim names a journey"
+                )
             text: dict[str, str | None] = {}
-            for key in ("region", "anchor", "note"):
+            for key in ("region", "anchor", "note", "api"):
                 value = entry.get(key)
                 if value is not None and not isinstance(value, str):
                     raise ScriptMetaError(
-                        f"{where}.{interface}: {op}: {key} must be a string"
+                        f"{where}.{interface}: {journey}: {key} must be a string"
                     )
                 text[key] = value
             fails = entry.get("fails", False)
             if not isinstance(fails, bool | str) or fails == "":
                 raise ScriptMetaError(
-                    f"{where}.{interface}: {op}: fails is true or the asserted error"
+                    f"{where}.{interface}: {journey}: fails is true or the asserted "
+                    "error"
                 )
             if fails is False and text["region"] is None:
                 raise ScriptMetaError(
-                    f"{where}.{interface}: {op}: a claim that it works names the "
-                    "region that shows it"
+                    f"{where}.{interface}: {journey}: a claim that it works names "
+                    "the region that shows it"
                 )
             claims.append(
                 Claim(
                     interface=str(interface),
-                    op=op,
+                    journey=journey,
                     region=text["region"],
                     anchor=text["anchor"],
                     fails=fails,
                     note=text["note"],
+                    api=text["api"],
                 )
             )
     return claims

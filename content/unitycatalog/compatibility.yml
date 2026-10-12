@@ -1,8 +1,10 @@
-# What engines and clients can do with Unity Catalog tables. Scripts claim cells
-# with `[tool.docs-factory] claims.<interface>`; a claim counts once its page is
-# `status: ready`, because only those scripts gate CI. `evidence` holds the
-# cells no script here proves. `uv run docsnip compat --fix` renders each table
-# into the page that embeds it, and `docsnip check` fails when one is stale.
+# Which journeys engines and clients can do with Unity Catalog tables. A journey
+# is what a reader sets out to do, however many calls it takes. Scripts claim
+# cells with `[tool.docs-factory] claims.<interface>`; a claim counts once its
+# page is `status: ready`, because only those scripts gate CI. `evidence` holds
+# the cells no script here proves. `uv run docsnip compat --fix` renders each
+# table into the page that embeds it, and `docsnip check` fails when one is
+# stale.
 # See content/README.md, "Compatibility claims".
 spec: ucSpec
 
@@ -27,45 +29,42 @@ interfaces:
     label: pandas
     package: pandas
 
-operations:
-  table.list: List the tables in a schema
-  external.read: Read an external Delta table by name
-  external.read-vended: Read an external table on S3 with vended credentials
-  external.append: Append rows to an external Delta table
-  managed.create: Create a catalog-managed Delta table
-  managed.read: Read a catalog-managed table
-  managed.append: Append rows to a catalog-managed table
-  managed.update: Update rows in a catalog-managed table
-  managed.delete: Delete rows from a catalog-managed table
-  managed.drop: Drop a catalog-managed table
+journeys:
+  table.list: List tables
+  external.read: Read an external table
+  external.read-vended: Read with vended S3 credentials
+  external.append: Append to an external table
+  managed.create: Create a managed table
+  managed.read: Read a managed table
+  managed.append: Append to a managed table
+  managed.update: Update rows in a managed table
+  managed.delete: Delete rows from a managed table
+  managed.drop: Drop a managed table
 
 tables:
   table-operations:
+    title: Table operations
     columns: [spark, duckdb, polars, daft, pandas]
     rows:
-      - label: List tables
-        ops: [table.list]
-      - label: Read an external table
-        ops: [external.read]
-      - label: Read with vended S3 credentials
-        ops: [external.read-vended]
-      - label: Append to an external table
-        ops: [external.append]
-      - label: Create a managed table
-        ops: [managed.create]
-      - label: Read or append to a managed table
-        ops: [managed.read, managed.append]
-      - label: Update, delete, or drop a managed table
-        ops: [managed.update, managed.delete, managed.drop]
+      - table.list
+      - external.read
+      - external.read-vended
+      - external.append
+      - managed.create
+      - managed.read
+      - managed.append
+      - managed.update
+      - managed.delete
+      - managed.drop
 
 evidence:
   - interfaces: [pandas]
-    ops: [table.list]
+    journeys: [table.list]
     outcome: missing
     why: "`deltalake` resolves `uc://` names but has no call that lists a schema's tables."
     source: how-to/python-dataframes#list-tables
   - interfaces: [polars, daft, pandas]
-    ops: [managed.read, managed.append]
+    journeys: [managed.read, managed.append]
     outcome: fails
     why: "Max catalog version is required when loading a catalog-managed table"
     source: reference/features-and-limitations#clients-and-engines

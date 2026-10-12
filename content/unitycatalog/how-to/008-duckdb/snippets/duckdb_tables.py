@@ -6,13 +6,13 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # claims.duckdb = [
-#   { op = "table.list", region = "list" },
-#   { op = "managed.read", region = "query" },
-#   { op = "managed.append", region = "append" },
-#   { op = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
-#   { op = "managed.update", fails = true, anchor = "create-change-and-drop-tables" },
-#   { op = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
-#   { op = "managed.drop", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "table.list", region = "list" },
+#   { journey = "managed.read", region = "query" },
+#   { journey = "managed.append", region = "append" },
+#   { journey = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "managed.update", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
+#   { journey = "managed.drop", fails = true, anchor = "create-change-and-drop-tables" },
 # ]
 # ///
 """Read and append to a Unity Catalog managed Delta table from DuckDB.

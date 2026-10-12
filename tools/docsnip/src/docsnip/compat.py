@@ -1,15 +1,17 @@
-"""Compatibility matrices: what each engine or client can do, proven by CI.
+"""Compatibility matrices: which journeys each engine or client can do, proven by CI.
 
 ``content/<project>/compatibility.yml`` declares a project's matrix: its
-interfaces (the columns), its operations, the tables pages embed (rows of
-operations), and evidence for cells no script here proves. Scripts claim cells
-through ``[tool.docs-factory].claims`` (see :class:`docsnip.scriptmeta.Claim`).
+interfaces (the columns), its journeys (what a reader sets out to do, however
+many calls it takes), the tables pages embed (rows of journeys), and evidence
+for cells no script here proves. Scripts claim cells through
+``[tool.docs-factory].claims`` (see :class:`docsnip.scriptmeta.Claim`).
 
-A cell is ✓ or ✗ from a claim only when the claiming script's page is
-``status: ready``, because only those scripts gate CI (content/conftest.py). So
-a ✓ means a test that blocks merges runs the operation. ``fix`` renders each
-table between its markers in the page that embeds it; ``check`` reports what's
-inconsistent or stale. See docs/design/model-leverage.md §3.1.
+A cell is tested or failing from a claim only when the claiming script's page
+is ``status: ready``, because only those scripts gate CI (content/conftest.py).
+So a ✓ means a test that blocks merges runs the journey. Tables on a
+``private`` page, which is never emitted, also show draft pages' claims. ``fix``
+renders each table between its markers in the page that embeds it; ``check``
+reports what's inconsistent or stale. See docs/design/model-leverage.md §3.1.
 """
 
 from __future__ import annotations
@@ -31,13 +33,25 @@ from .scriptmeta import Claim, ScriptMeta, discover, without_metadata
 from .snippetcheck import iter_fences
 
 FILE = "compatibility.yml"
-OUTCOMES = ("fails", "missing")
+# `works` is evidence that a journey works without a script here to prove it:
+# the engine's docs or source say so.
+OUTCOMES = ("works", "fails", "missing")
 
-_MATRIX_KEYS = {"spec", "interfaces", "operations", "tables", "evidence"}
+_MATRIX_KEYS = {"spec", "interfaces", "journeys", "tables", "evidence"}
 _INTERFACE_KEYS = {"label", "pin", "package", "model"}
-_TABLE_KEYS = {"columns", "rows"}
-_ROW_KEYS = {"label", "ops"}
-_EVIDENCE_KEYS = {"interfaces", "ops", "outcome", "why", "source", "verified", "note"}
+_JOURNEY_KEYS = {"title", "summary", "request"}
+_TABLE_KEYS = {"title", "columns", "rows", "documented"}
+_EVIDENCE_KEYS = {
+    "interfaces",
+    "journeys",
+    "outcome",
+    "why",
+    "source",
+    "verified",
+    "note",
+    "api",
+}
+_UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
 _OPEN_RE = re.compile(r"^<!-- compat:(?P<table>[\w.-]+)\b.*-->\s*$")
 _CLOSE = "<!-- /compat:{table} -->"
@@ -58,26 +72,31 @@ class Interface:
 
 
 @dataclasses.dataclass(frozen=True)
-class Row:
-    label: str
-    ops: tuple[str, ...]
+class Journey:
+    id: str
+    title: str
+    summary: str | None = None
+    request: str | None = None  # uuid of the review-app request that asked for it
 
 
 @dataclasses.dataclass(frozen=True)
 class Table:
     id: str
+    title: str
     columns: tuple[str, ...]
-    rows: tuple[Row, ...]
+    rows: tuple[str, ...]  # journey ids
+    documented: bool = False  # render evidence `works` cells
 
 
 @dataclasses.dataclass(frozen=True)
 class Evidence:
     interfaces: tuple[str, ...]
-    ops: tuple[str, ...]
+    journeys: tuple[str, ...]
     outcome: str
     why: str
     source: str
     verified: dict[str, str]
+    api: dict[str, str]
     note: str | None = None
 
 
@@ -87,7 +106,7 @@ class Matrix:
     path: Path
     spec: str | None
     interfaces: dict[str, Interface]
-    operations: dict[str, str]
+    journeys: dict[str, Journey]
     tables: dict[str, Table]
     evidence: list[Evidence]
     pins: dict[str, str]  # from content/<project>/release.yml
@@ -98,16 +117,19 @@ class Proof:
     """A claim with what the matrix needs to render it."""
 
     script: str  # repo-relative POSIX path
+    project: str  # the script's own project, which may differ from the matrix's
     page: Path
     claim: Claim
     anchor: str | None
     ready: bool
+    version: str | None  # the interface package the script pins
 
 
 @dataclasses.dataclass
 class Result:
     matrices: dict[str, Matrix]
-    proofs: dict[tuple[str, str, str], list[Proof]]  # (project, interface, op)
+    # (project, interface, journey) → every resolved claim, ready or not
+    proofs: dict[tuple[str, str, str], list[Proof]]
     errors: list[str]
     warnings: list[str]
 
@@ -130,6 +152,30 @@ def _release_pins(project_dir: Path) -> dict[str, str]:
     if raw.get("release"):
         pins["release"] = str(raw["release"])
     return pins
+
+
+def _load_journeys(raw: dict, where: str, errors: list[str]) -> dict[str, Journey]:
+    journeys: dict[str, Journey] = {}
+    for key, entry in raw.items():
+        at = f"journeys.{key}"
+        if isinstance(entry, str):
+            journeys[str(key)] = Journey(id=str(key), title=entry)
+            continue
+        if not isinstance(entry, dict) or not isinstance(entry.get("title"), str):
+            errors.append(f"{where}: {at} needs a title")
+            continue
+        for extra in sorted(set(entry) - _JOURNEY_KEYS):
+            errors.append(f"{where}: {at}: unknown key '{extra}'")
+        request = entry.get("request")
+        if request is not None and not _UUID_RE.match(str(request)):
+            errors.append(f"{where}: {at}.request must be a request uuid")
+        journeys[str(key)] = Journey(
+            id=str(key),
+            title=entry["title"],
+            summary=entry.get("summary"),
+            request=str(request) if request is not None else None,
+        )
+    return journeys
 
 
 def _load_matrix(path: Path, model_ids: set[str], errors: list[str]) -> Matrix | None:
@@ -176,11 +222,7 @@ def _load_matrix(path: Path, model_ids: set[str], errors: list[str]) -> Matrix |
             model=entry.get("model"),
         )
 
-    operations: dict[str, str] = {}
-    for key, meaning in (raw.get("operations") or {}).items():
-        if not isinstance(meaning, str):
-            errors.append(f"{where}: operations.{key} must say what it means")
-        operations[str(key)] = str(meaning)
+    journeys = _load_journeys(raw.get("journeys") or {}, where, errors)
 
     tables: dict[str, Table] = {}
     for tid, entry in (raw.get("tables") or {}).items():
@@ -194,23 +236,23 @@ def _load_matrix(path: Path, model_ids: set[str], errors: list[str]) -> Matrix |
         for col in columns:
             if col not in interfaces:
                 errors.append(f"{where}: {at}: column '{col}' is not an interface")
-        rows: list[Row] = []
-        for i, row in enumerate(entry.get("rows") or []):
-            ops = _strs(row.get("ops")) if isinstance(row, dict) else None
-            if not ops or not isinstance(row.get("label"), str):
-                errors.append(f"{where}: {at}.rows[{i}] needs a label and ops")
-                continue
-            for extra in sorted(set(row) - _ROW_KEYS):
-                errors.append(f"{where}: {at}.rows[{i}]: unknown key '{extra}'")
-            for op in ops:
-                if op not in operations:
-                    errors.append(
-                        f"{where}: {at}.rows[{i}]: '{op}' is not an operation"
-                    )
-            rows.append(Row(label=row["label"], ops=ops))
+        rows = _strs(entry.get("rows")) or ()
+        for row in rows:
+            if row not in journeys:
+                errors.append(f"{where}: {at}: row '{row}' is not a journey")
         if not columns or not rows:
-            errors.append(f"{where}: {at} needs columns and rows")
-        tables[str(tid)] = Table(id=str(tid), columns=columns, rows=tuple(rows))
+            errors.append(f"{where}: {at} needs columns and rows of journey ids")
+        tables[str(tid)] = Table(
+            id=str(tid),
+            title=str(entry.get("title") or tid),
+            columns=columns,
+            rows=tuple(r for r in rows if r in journeys),
+            documented=entry.get("documented") is True,
+        )
+    tabled = {row for table in tables.values() for row in table.rows}
+    for key in journeys:
+        if key not in tabled:
+            errors.append(f"{where}: journeys.{key} is on no table")
 
     evidence: list[Evidence] = []
     for i, entry in enumerate(raw.get("evidence") or []):
@@ -221,16 +263,16 @@ def _load_matrix(path: Path, model_ids: set[str], errors: list[str]) -> Matrix |
         for extra in sorted(set(entry) - _EVIDENCE_KEYS):
             errors.append(f"{where}: {at}: unknown key '{extra}'")
         ifaces = _strs(entry.get("interfaces")) or ()
-        ops = _strs(entry.get("ops")) or ()
+        names = _strs(entry.get("journeys")) or ()
         outcome = entry.get("outcome")
-        if not ifaces or not ops:
-            errors.append(f"{where}: {at} needs interfaces and ops")
+        if not ifaces or not names:
+            errors.append(f"{where}: {at} needs interfaces and journeys")
         for iface in ifaces:
             if iface not in interfaces:
                 errors.append(f"{where}: {at}: '{iface}' is not an interface")
-        for op in ops:
-            if op not in operations:
-                errors.append(f"{where}: {at}: '{op}' is not an operation")
+        for name in names:
+            if name not in journeys:
+                errors.append(f"{where}: {at}: '{name}' is not a journey")
         if outcome not in OUTCOMES:
             errors.append(
                 f"{where}: {at}: outcome must be one of {', '.join(OUTCOMES)}"
@@ -238,18 +280,25 @@ def _load_matrix(path: Path, model_ids: set[str], errors: list[str]) -> Matrix |
         for key in ("why", "source"):
             if not isinstance(entry.get(key), str) or not entry[key]:
                 errors.append(f"{where}: {at} needs a {key}")
-        verified = entry.get("verified") or {}
-        if not isinstance(verified, dict):
-            errors.append(f"{where}: {at}: verified maps interfaces to versions")
-            verified = {}
+        maps: dict[str, dict[str, str]] = {}
+        for key in ("verified", "api"):
+            value = entry.get(key) or {}
+            if not isinstance(value, dict):
+                errors.append(f"{where}: {at}: {key} maps interfaces to text")
+                value = {}
+            for iface in value:
+                if iface not in ifaces:
+                    errors.append(f"{where}: {at}: {key}.{iface} isn't in interfaces")
+            maps[key] = {str(k): str(v) for k, v in value.items()}
         evidence.append(
             Evidence(
                 interfaces=ifaces,
-                ops=ops,
+                journeys=names,
                 outcome=str(outcome),
                 why=str(entry.get("why", "")),
                 source=str(entry.get("source", "")),
-                verified={str(k): str(v) for k, v in verified.items()},
+                verified=maps["verified"],
+                api=maps["api"],
                 note=entry.get("note"),
             )
         )
@@ -259,7 +308,7 @@ def _load_matrix(path: Path, model_ids: set[str], errors: list[str]) -> Matrix |
         path=path,
         spec=spec if isinstance(spec, str) else None,
         interfaces=interfaces,
-        operations=operations,
+        journeys=journeys,
         tables=tables,
         evidence=evidence,
         pins=pins,
@@ -318,6 +367,15 @@ def _project_of(path: Path, content_root: Path) -> str | None:
         return None
 
 
+def _package_pins(meta: ScriptMeta) -> dict[str, str]:
+    pins: dict[str, str] = {}
+    for dep in meta.dependencies:
+        m = re.match(r"^\s*([A-Za-z0-9_.-]+)(?:\[[^\]]*\])?\s*==\s*([\w.]+)\s*$", dep)
+        if m:
+            pins[m.group(1).lower()] = m.group(2)
+    return pins
+
+
 def _resolve(
     meta: ScriptMeta,
     claim: Claim,
@@ -327,9 +385,10 @@ def _resolve(
 ) -> tuple[str, Proof] | None:
     content_root = repo_root / "content"
     rel = meta.path.resolve().relative_to(repo_root.resolve()).as_posix()
-    where = f"{rel}: claims.{claim.interface}: {claim.op}"
+    where = f"{rel}: claims.{claim.interface}: {claim.journey}"
+    own = _project_of(meta.path, content_root) or ""
     project, _, iface = claim.interface.rpartition(":")
-    project = project or _project_of(meta.path, content_root) or ""
+    project = project or own
     matrix = matrices.get(project)
     if matrix is None:
         errors.append(f"{where}: no content/{project}/{FILE}")
@@ -337,9 +396,9 @@ def _resolve(
     if iface not in matrix.interfaces:
         errors.append(f"{where}: '{iface}' is not an interface in {matrix.path.name}")
         return None
-    if claim.op not in matrix.operations:
+    if claim.journey not in matrix.journeys:
         errors.append(
-            f"{where}: '{claim.op}' is not an operation in {matrix.path.name}"
+            f"{where}: '{claim.journey}' is not a journey in {matrix.path.name}"
         )
         return None
     page = meta.owning_page()
@@ -372,21 +431,25 @@ def _resolve(
         errors.append(f"{where}: the script doesn't assert '{claim.fails}'")
         return None
 
+    package = matrix.interfaces[iface].package
     proof = Proof(
         script=rel,
+        project=own,
         page=page,
         claim=dataclasses.replace(claim, interface=iface),
         anchor=anchor,
         ready=page_status(page) == "ready",
+        version=_package_pins(meta).get(package.lower()) if package else None,
     )
     return project, proof
 
 
-def _source_problem(source: str, project_dir: Path) -> str | None:
-    """Why an evidence ``source`` doesn't resolve, or None. A source is a URL or
-    ``<bucket>/<slug>[#anchor]``, the page identity nav.yml uses."""
+def _source_page(source: str, project_dir: Path) -> tuple[Path | None, str | None]:
+    """The page and anchor of a ``<bucket>/<slug>[#anchor]`` source, the page
+    identity nav.yml uses, and why it doesn't resolve (None when it does).
+    A URL resolves to no page and no problem."""
     if not source or re.match(r"^https?://", source):
-        return None
+        return None, None
     path, _, anchor = source.partition("#")
     bucket, _, slug = path.partition("/")
     pages = [
@@ -395,21 +458,12 @@ def _source_problem(source: str, project_dir: Path) -> str | None:
         if re.sub(r"^\d+-", "", page.parent.name) == slug
     ]
     if not pages:
-        return "no such page"
+        return None, "no such page"
     if anchor and anchor not in {
         h.id for h in headings(_without_frontmatter(pages[0].read_text()))
     }:
-        return f"no heading '#{anchor}' on it"
-    return None
-
-
-def _package_pins(meta: ScriptMeta) -> dict[str, str]:
-    pins: dict[str, str] = {}
-    for dep in meta.dependencies:
-        m = re.match(r"^\s*([A-Za-z0-9_.-]+)(?:\[[^\]]*\])?\s*==\s*([\w.]+)\s*$", dep)
-        if m:
-            pins[m.group(1).lower()] = m.group(2)
-    return pins
+        return pages[0], f"no heading '#{anchor}' on it"
+    return pages[0], None
 
 
 def resolve(repo_root: Path) -> Result:
@@ -425,76 +479,130 @@ def resolve(repo_root: Path) -> Result:
 
     for matrix in matrices.values():
         for ev in matrix.evidence:
-            problem = _source_problem(ev.source, content_root / matrix.project)
+            _, problem = _source_page(ev.source, content_root / matrix.project)
             if problem:
                 errors.append(f"{matrix.path}: evidence source {ev.source}: {problem}")
 
     proofs: dict[tuple[str, str, str], list[Proof]] = {}
-    versions: dict[tuple[str, str], dict[str, list[str]]] = {}
+    # (script project, matrix project, interface) → version → scripts. A UC
+    # script claiming a Delta cell pins UC's companions, not Delta's.
+    versions: dict[tuple[str, str, str], dict[str, list[str]]] = {}
     for meta in discover(content_root):
         for claim in meta.docs_factory.claims:
             resolved = _resolve(meta, claim, matrices, repo_root, errors)
             if resolved is None:
                 continue
             project, proof = resolved
-            iface = matrices[project].interfaces[proof.claim.interface]
-            if iface.package:
-                pin = _package_pins(meta).get(iface.package.lower())
-                if pin:
-                    seen = versions.setdefault((project, iface.key), {})
-                    seen.setdefault(pin, [])
-                    if proof.script not in seen[pin]:
-                        seen[pin].append(proof.script)
+            iface = proof.claim.interface
+            if proof.version:
+                seen = versions.setdefault((proof.project, project, iface), {})
+                seen.setdefault(proof.version, [])
+                if proof.script not in seen[proof.version]:
+                    seen[proof.version].append(proof.script)
             if not proof.ready:
                 warnings.append(
-                    f"{proof.script}: {proof.claim.interface} {proof.claim.op} "
+                    f"{proof.script}: {iface} {proof.claim.journey} "
                     f"renders once {proof.page.parent.name} is ready"
                 )
-                continue
-            proofs.setdefault((project, iface.key, proof.claim.op), []).append(proof)
+            proofs.setdefault((project, iface, proof.claim.journey), []).append(proof)
 
-    for (project, iface), seen in sorted(versions.items()):
+    for (own, project, iface), seen in sorted(versions.items()):
+        matrix = matrices[project]
         if len(seen) > 1:
             listed = "; ".join(f"{v}: {', '.join(s)}" for v, s in sorted(seen.items()))
             errors.append(
-                f"{project} {iface}: claiming scripts pin different "
-                f"{matrices[project].interfaces[iface].package} versions ({listed})"
+                f"{project} {iface}: claiming {own} scripts pin different "
+                f"{matrix.interfaces[iface].package} versions ({listed})"
             )
-        matrix = matrices[project]
-        tested = next(iter(seen)) if len(seen) == 1 else None
+        tested = next(iter(seen)) if len(seen) == 1 and own == project else None
         for ev in matrix.evidence:
             verified = ev.verified.get(iface)
             if tested and verified and verified != tested:
                 warnings.append(
-                    f"{matrix.path.name}: {iface} {', '.join(ev.ops)} was verified "
-                    f"with {verified}, scripts now pin {tested}; re-verify"
+                    f"{matrix.path.name}: {iface} {', '.join(ev.journeys)} was "
+                    f"verified with {verified}, scripts now pin {tested}; re-verify"
                 )
 
-    for (project, iface, op), cell in proofs.items():
-        cell.sort(key=lambda p: p.script)
-        if len({p.claim.works for p in cell}) > 1:
+    for key, cell in proofs.items():
+        # The matrix's own project first, so its proof is the one a cell shows.
+        cell.sort(key=lambda p: (p.project != key[0], p.script))
+        ready = [p for p in cell if p.ready]
+        if len({p.claim.works for p in ready}) > 1:
+            project, iface, journey = key
             errors.append(
-                f"{project} {iface} {op}: scripts disagree whether it works "
-                f"({', '.join(p.script for p in cell)})"
+                f"{project} {iface} {journey}: scripts disagree whether it works "
+                f"({', '.join(p.script for p in ready)})"
             )
     for project, matrix in matrices.items():
         for ev in matrix.evidence:
             for iface in ev.interfaces:
-                for op in ev.ops:
-                    cell = proofs.get((project, iface, op))
-                    if not cell:
+                for journey in ev.journeys:
+                    ready = [
+                        p for p in proofs.get((project, iface, journey), []) if p.ready
+                    ]
+                    if not ready:
                         continue
-                    if cell[0].claim.works:
-                        errors.append(
-                            f"{matrix.path.name}: evidence says {iface} {op} "
-                            f"{ev.outcome}, but {cell[0].script} proves it works"
+                    proven = ready[0]
+                    if proven.claim.works == (ev.outcome == "works"):
+                        warnings.append(
+                            f"{matrix.path.name}: evidence for {iface} {journey} "
+                            f"is redundant; {proven.script} proves it"
                         )
                     else:
-                        warnings.append(
-                            f"{matrix.path.name}: evidence for {iface} {op} is "
-                            f"redundant; {cell[0].script} asserts the failure"
+                        errors.append(
+                            f"{matrix.path.name}: evidence says {iface} {journey} "
+                            f"{ev.outcome}, but {proven.script} proves otherwise"
                         )
     return Result(matrices=matrices, proofs=proofs, errors=errors, warnings=warnings)
+
+
+# --- cells --------------------------------------------------------------------
+
+
+@dataclasses.dataclass(frozen=True)
+class Cell:
+    """What a matrix says about one interface doing one journey."""
+
+    # tested | fails | missing | documented | unknown
+    status: str
+    draft: bool  # only a draft page's claim says so
+    proofs: tuple[Proof, ...]  # the ones counted, the shown one first
+    evidence: tuple[Evidence, ...]
+
+    @property
+    def shown(self) -> Proof | None:
+        return self.proofs[0] if self.proofs else None
+
+
+def cell(
+    result: Result, matrix: Matrix, iface: str, journey: str, *, drafts: bool
+) -> Cell:
+    """A cell's status. Ready claims beat draft claims (counted only with
+    ``drafts``), which beat evidence."""
+    every = result.proofs.get((matrix.project, iface, journey), [])
+    evidence = tuple(
+        e for e in matrix.evidence if iface in e.interfaces and journey in e.journeys
+    )
+    counted = [p for p in every if p.ready] or (
+        [p for p in every if not p.ready] if drafts else []
+    )
+    if counted:
+        works = counted[0].claim.works
+        return Cell(
+            status="tested" if works else "fails",
+            draft=not counted[0].ready,
+            proofs=tuple(p for p in counted if p.claim.works == works),
+            evidence=evidence,
+        )
+    if evidence:
+        outcome = evidence[0].outcome
+        return Cell(
+            status="documented" if outcome == "works" else outcome,
+            draft=False,
+            proofs=(),
+            evidence=evidence,
+        )
+    return Cell(status="unknown", draft=False, proofs=(), evidence=())
 
 
 # --- rendering ----------------------------------------------------------------
@@ -507,81 +615,84 @@ def _header(iface: Interface, matrix: Matrix) -> str:
     return f"[{label}](model:{iface.model})" if iface.model else label
 
 
-def _cell(
-    result: Result,
-    matrix: Matrix,
-    row: Row,
+def _evidence_link(
+    ev: Evidence, matrix: Matrix, embed: Path, content_root: Path
+) -> str:
+    page, _ = _source_page(ev.source, content_root / matrix.project)
+    if page is None:
+        return ev.source
+    return _link(page, ev.source.partition("#")[2] or None, embed, content_root)
+
+
+def _render_cell(
+    found: Cell,
     iface: str,
+    matrix: Matrix,
+    table: Table,
     embed: Path,
     content_root: Path,
-    where: str,
-    errors: list[str],
+    detailed: bool,
 ) -> str:
-    states: list[str] = []
-    links: list[str | None] = []
-    notes: set[str] = set()
-    for op in row.ops:
-        cell = result.proofs.get((matrix.project, iface, op))
-        evidence = [e for e in matrix.evidence if iface in e.interfaces and op in e.ops]
-        if cell:
-            first = cell[0]
-            states.append("works" if first.claim.works else "fails")
-            notes.update(p.claim.note for p in cell if p.claim.note)
-            anchored = (
-                first
-                if first.claim.works
-                else next((p for p in cell if p.anchor), None)
-            )
-            links.append(
-                _link(anchored.page, anchored.anchor, embed, content_root)
-                if anchored
-                else None
-            )
-        elif evidence:
-            states.append("fails")
-            notes.update(e.note for e in evidence if e.note)
-            links.append(None)
-        else:
-            states.append("unknown")
-            links.append(None)
-    kinds = set(states)
-    if len(kinds) > 1:
-        errors.append(
-            f"{where}: row '{row.label}', {iface}: its operations differ "
-            f"({', '.join(f'{o} {s}' for o, s in zip(row.ops, states, strict=True))}); "
-            "split the row"
-        )
-        return "?"
-    if len(notes) > 1:
-        errors.append(f"{where}: row '{row.label}', {iface}: more than one note")
-        return "?"
-    kind = states[0]
-    if kind == "unknown":
+    """One cell. ``detailed`` (a private page) adds draft markers, the API, and
+    evidence links, and always shows documented cells."""
+    if found.status == "unknown" or (
+        found.status == "documented" and not (table.documented or detailed)
+    ):
         return "—"
-    symbol = "✓" if kind == "works" else "✗"
-    link = next((link for link in links if link), None)
-    text = f"[{symbol}]({link})" if link else symbol
-    return f"{text} {notes.pop()}" if notes else text
+    shown = found.shown
+    link: str | None = None
+    if shown is not None:
+        anchored = (
+            shown
+            if shown.claim.works
+            else next((p for p in found.proofs if p.anchor), None)
+        )
+        if anchored is not None:
+            link = _link(anchored.page, anchored.anchor, embed, content_root)
+        note, api = shown.claim.note, shown.claim.api
+    else:
+        ev = found.evidence[0]
+        note, api = ev.note, ev.api.get(iface)
+        if found.status == "documented" or detailed:
+            link = _evidence_link(ev, matrix, embed, content_root)
+    symbol = {"tested": "✓", "documented": "docs"}.get(found.status, "✗")
+    parts = [f"[{symbol}]({link})" if link else symbol]
+    if detailed and api:
+        parts.append(f"`{api}`")
+    if note:
+        parts.append(note)
+    if detailed and found.draft:
+        parts.append("(draft)")
+    return " ".join(parts)
 
 
 def render(
     result: Result, matrix: Matrix, table: Table, embed: Path, content_root: Path
-) -> tuple[list[str], list[str]]:
-    """The table's Markdown lines for a page that embeds it, and any errors."""
-    errors: list[str] = []
-    where = f"{matrix.path.name} tables.{table.id}"
+) -> list[str]:
+    """The table's Markdown lines for a page that embeds it."""
+    detailed = page_status(embed) == "private"
     ifaces = [matrix.interfaces[c] for c in table.columns if c in matrix.interfaces]
     lines = [
         "| Operation | " + " | ".join(_header(i, matrix) for i in ifaces) + " |",
         "| --- |" + " --- |" * len(ifaces),
     ]
     for row in table.rows:
+        journey = matrix.journeys[row]
+        label = f"{journey.title} (`{row}`)" if detailed else journey.title
         cells = [
-            _cell(result, matrix, row, i.key, embed, content_root, where, errors)
+            _render_cell(
+                cell(result, matrix, i.key, row, drafts=detailed),
+                i.key,
+                matrix,
+                table,
+                embed,
+                content_root,
+                detailed,
+            )
             for i in ifaces
         ]
-        lines.append(f"| {row.label} | " + " | ".join(cells) + " |")
-    return lines, errors
+        lines.append(f"| {label} | " + " | ".join(cells) + " |")
+    return lines
 
 
 # --- embedding: check and fix -------------------------------------------------
@@ -640,8 +751,7 @@ def _rendered(
                 )
                 continue
             embedded.setdefault((project, embed.table), []).append(page)
-            body, render_errors = render(result, matrix, table, page, content_root)
-            errors.extend(render_errors)
+            body = render(result, matrix, table, page, content_root)
             source = posixpath.relpath(
                 f"{project}/{FILE}", posixpath.dirname(_page_route(page, content_root))
             )
@@ -727,7 +837,11 @@ def model_gaps(repo_root: Path) -> list[str]:
         if rel.get("kind") in _SPEC_EDGES:
             edges.add((str(source.get("model")), str(target.get("model"))))
     gaps: list[str] = []
-    tested = {(project, iface) for project, iface, _ in result.proofs}
+    tested = {
+        (project, iface)
+        for (project, iface, _), cell in result.proofs.items()
+        if any(p.ready for p in cell)
+    }
     for project, iface in sorted(tested):
         matrix = result.matrices[project]
         entry = matrix.interfaces[iface]

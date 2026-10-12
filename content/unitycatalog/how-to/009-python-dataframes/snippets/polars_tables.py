@@ -11,10 +11,10 @@
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
 # claims.polars = [
-#   { op = "table.list", region = "list" },
-#   { op = "external.read", region = "read" },
-#   { op = "external.read-vended", region = "read" },
-#   { op = "external.append", region = "append" },
+#   { journey = "table.list", region = "list" },
+#   { journey = "external.read", region = "read" },
+#   { journey = "external.read-vended", region = "read" },
+#   { journey = "external.append", region = "append" },
 # ]
 # ///
 """List, read, and append to a Unity Catalog table on S3 from Polars.

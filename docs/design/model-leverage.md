@@ -165,15 +165,19 @@ external link, wait on the emitted sites having a glossary.
 ## 4b. Phase 2: the verified compatibility matrix (shipped for UC)
 
 - **Claims live on the script.** `[tool.docs-factory] claims.<interface>` lists
-  what a script proves: `{ op, region }` that an operation works, as shown in
-  that region on its page, or `{ op, fails }` that it doesn't, with `fails` the
+  what a script proves: `{ journey, region }` that a journey works, as shown in
+  that region on its page, or `{ journey, fails }` that it doesn't, with `fails` the
   error text the script asserts. The interface is a declared column, never
   inferred from the language or the dependencies, which is what sank the old
   `engines:` field (`build-pipeline.md` §10).
 - **The vocabulary is per project.** `content/<project>/compatibility.yml`
   declares interfaces (with the release.yml pin their header shows and their
-  model element), `family.scenario` operations, the tables pages embed, and
-  evidence for cells no script proves. `<project>:<interface>` claims let a UC
+  model element), `family.task` journeys, the tables pages embed (rows of
+  journey ids), and evidence for cells no script proves. A journey is the only
+  tracked unit: the calls a client makes inside it aren't modeled, because
+  doing the journey implies them. (Until October 2026 the file had atomic
+  `operations` plus table rows that grouped them; the two collapsed into
+  journeys, which removed the "split the row" error.) `<project>:<interface>` claims let a UC
   script fill a Delta cell, for the coverage page's migration.
 - **Only gating scripts count.** A claim renders once its page is `status:
   ready`, and since PR #190 the service lane fails on exactly those scripts

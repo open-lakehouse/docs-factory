@@ -2,6 +2,7 @@
 // committed compatibility.json artifacts. Draft pages' claims show here (marked)
 // although public tables wait for `ready`.
 import { type ReactNode, useState } from "react";
+import { Link } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import {
@@ -19,9 +20,12 @@ import {
 import { PROJECT_LABELS } from "../../doc-nav";
 import { ContentRequestKind } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
-import { docRef } from "../../lib/content-ref";
-import { requestStatusLabel, TrackJourneyButton, useOpenContentRequests } from "./ContentRequests";
-import { useWorkspaceTabs } from "./workspace/workspace-tabs-context";
+import { docRef, refHref } from "../../lib/content-ref";
+import {
+  requestStatusLabel,
+  TrackJourneyButton,
+  useOpenContentRequests,
+} from "../review/ContentRequests";
 
 const SYMBOL: Record<CellStatus, string> = {
   tested: "✓",
@@ -51,12 +55,7 @@ export default function CompatibilityMatrix() {
   const matrix = matrices.find((m) => m.project === project);
 
   return (
-    <section aria-label="Compatibility" className="compat">
-      <h1>Compatibility</h1>
-      <p className="muted">
-        Which engines and clients can do each journey. ✓ links to the page whose CI-tested script
-        does it; “docs” means the engine&apos;s own docs say so; claims from draft pages are marked.
-      </p>
+    <div className="compat">
       <div className="compat-toolbar">
         <fieldset className="compat-projects">
           <legend className="sr-only">Project</legend>
@@ -90,7 +89,7 @@ export default function CompatibilityMatrix() {
       ) : (
         <p className="review-empty">No compatibility matrix yet.</p>
       )}
-    </section>
+    </div>
   );
 }
 
@@ -270,17 +269,13 @@ function PageLink({
   anchor: string | null;
   children: ReactNode;
 }) {
-  const { openTab } = useWorkspaceTabs();
   return (
-    <button
-      type="button"
+    <Link
       className="compat-link"
-      onClick={() =>
-        openTab(docRef(page.project, page.bucket, page.slug), { anchor: anchor ?? undefined })
-      }
+      to={refHref(docRef(page.project, page.bucket, page.slug), anchor ?? undefined)}
     >
       {children}
-    </button>
+    </Link>
   );
 }
 

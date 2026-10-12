@@ -22,7 +22,7 @@ import { productChanges } from "../../gen/docs_factory/review/v1/review_service-
 import { useAuth } from "../../lib/auth-context";
 import { changeKindFromProto, type DiffEntry } from "../../lib/tree-diff";
 import { TOPICS } from "../../vocab";
-import StructuralDiff from "./StructuralDiff";
+import StructuralDiff from "../review/StructuralDiff";
 
 /** Pretty product label from a topic id (e.g. "unity-catalog" → "Unity Catalog"). */
 function topicLabel(topic: string): string {

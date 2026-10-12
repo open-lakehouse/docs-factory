@@ -8,11 +8,7 @@ export default function CoverageGaps() {
   const kinds = [...new Set(gaps.map((e) => e.kind))];
 
   return (
-    <section aria-label="Coverage gaps">
-      <h1>Coverage gaps</h1>
-      <p className="muted">
-        Concepts in the Open Lakehouse reference model with no explanation page yet.
-      </p>
+    <>
       {gaps.length === 0 ? (
         <p className="review-empty">Every concept has an explanation page.</p>
       ) : (
@@ -32,6 +28,6 @@ export default function CoverageGaps() {
           </div>
         ))
       )}
-    </section>
+    </>
   );
 }

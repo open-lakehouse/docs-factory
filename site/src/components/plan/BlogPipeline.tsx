@@ -8,8 +8,6 @@
 // last and get a dense rank the first time they're moved into the ranked list.
 //
 // Rows expand (one at a time) to show the blog metadata header + event timeline.
-// Used by the Review workspace Overview tab (and the classic review dashboard on
-// narrow screens); the old standalone /review/revops page redirects into Overview.
 
 import { timestampDate, timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { useMutation, useQuery } from "@connectrpc/connect-query";
@@ -51,8 +49,8 @@ import { refHref } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { ReviewStateBadge } from "../../lib/review-status";
 import BlogPostDetail from "../BlogPostDetail";
+import ContentEventTimeline from "../review/ContentEventTimeline";
 import { FrontmatterStatusBadge } from "../StatusBadge";
-import ContentEventTimeline from "./ContentEventTimeline";
 
 /** Columns in the main row (for detail colspan). */
 const COL_COUNT = 7;
@@ -197,14 +195,7 @@ function SortableRow({ draft: d, busy, isOpen, onToggle, onDateChange }: Sortabl
   );
 }
 
-export default function BlogPipeline({
-  heading = "Blog pipeline",
-  showIntro = true,
-}: {
-  heading?: string;
-  /** When false, omit the explanatory paragraph (e.g. Overview tab chrome). */
-  showIntro?: boolean;
-}) {
+export default function BlogPipeline() {
   const { isAllowlisted } = useAuth();
   const { invalidateDrafts } = useReviewInvalidation();
   const { data, isLoading: draftsLoading } = useQuery(
@@ -280,15 +271,6 @@ export default function BlogPipeline({
 
   return (
     <div className="revops-dashboard">
-      {heading ? <h1>{heading}</h1> : null}
-      {showIntro && (
-        <p className="muted">
-          The blog backlog in priority order. Rank posts and set target release dates — including
-          early <code>idea</code> folders, so the pipeline reflects what's coming before it's fully
-          drafted.
-        </p>
-      )}
-
       {draftsLoading ? (
         <p className="muted">Loading…</p>
       ) : rows.length === 0 ? (

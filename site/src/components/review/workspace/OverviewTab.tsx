@@ -3,10 +3,10 @@
 // pipeline, ProductChanges rollup, latest-comments inbox, coverage gaps, or
 // compatibility matrix instead of a page.
 import { cn } from "@/lib/utils";
-import BlogPipeline from "../BlogPipeline";
-import CompatibilityMatrix from "../CompatibilityMatrix";
-import CoverageGaps from "../CoverageGaps";
-import ProductRollup from "../ProductRollup";
+import BlogPipeline from "../../plan/BlogPipeline";
+import CompatibilityMatrix from "../../plan/CompatibilityMatrix";
+import CoverageGaps from "../../plan/CoverageGaps";
+import ProductRollup from "../../plan/ProductRollup";
 import LatestComments from "./LatestComments";
 import { type OverviewView, overviewViewLabel } from "./overview-token";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
@@ -33,7 +33,7 @@ export default function OverviewTab({
     >
       <div className="overview-tab-body">
         {view === "pipeline" ? (
-          <BlogPipeline heading="" showIntro={false} />
+          <BlogPipeline />
         ) : view === "product" ? (
           <section aria-label="What changed by product">
             <h1>Product changes</h1>

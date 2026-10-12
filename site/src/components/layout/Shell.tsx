@@ -35,6 +35,17 @@ function ReviewNavItem() {
   );
 }
 
+// Reviewer-only entry for the planning pages (/plan/*).
+function PlanNavItem() {
+  const { reviewActive } = useAuth();
+  if (!reviewActive) return null;
+  return (
+    <NavLink to="/plan" className={({ isActive }) => (isActive ? "active" : undefined)}>
+      Plan
+    </NavLink>
+  );
+}
+
 // Site-admin-only top-nav entry linking to the admin roster (/admin): allowlist
 // management + registered-user discovery. Gated on isSiteAdmin (Neon Auth's
 // admin role, not reviewActive) so it's reachable whenever a site admin is
@@ -116,6 +127,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         </nav>
         <nav className="topnav">
           <ReviewNavItem />
+          <PlanNavItem />
           <AdminNavItem />
         </nav>
         <ThemeToggle />

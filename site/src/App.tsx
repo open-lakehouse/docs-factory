@@ -3,6 +3,8 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AgentTokens from "./pages/AgentTokens";
 import CliAuth from "./pages/CliAuth";
 import OpenInWorkspace from "./pages/OpenInWorkspace";
+import PlanLayout from "./pages/plan/PlanLayout";
+import { ChangesPage, CompatPage, CoveragePage, PipelinePage } from "./pages/plan/SectionPages";
 import ReviewDashboard from "./pages/ReviewDashboard";
 import ReviewWorkspace from "./pages/ReviewWorkspace";
 
@@ -14,6 +16,17 @@ export default function App() {
             access inside the page. */}
       <Route path="/review" element={<ReviewWorkspace />} />
       <Route path="/review/dashboard" element={<ReviewDashboard />} />
+
+      {/* Planning: roadmap, compatibility, blog pipeline, backlog. Reviewer-only;
+            PlanLayout guards every section. */}
+      <Route path="/plan" element={<PlanLayout />}>
+        <Route index element={<Navigate replace to="compat" />} />
+        <Route path="compat" element={<CompatPage />} />
+        <Route path="pipeline" element={<PipelinePage />} />
+        <Route path="coverage" element={<CoveragePage />} />
+        <Route path="changes" element={<ChangesPage />} />
+        <Route path="*" element={<Navigate replace to="/plan" />} />
+      </Route>
 
       {/* Maintainer-only admin roster: allowlist management + registered-user
             discovery + erasure. Guards maintainer-only access inside the page. */}

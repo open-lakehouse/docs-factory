@@ -1,0 +1,19 @@
+/* Delta Lake teal. `--accent` is for text and must pass contrast (light #00728f
+   is 5.5:1 on white); `--accent-fill` is the raw brand teal for bars, dots, and
+   the cursor, where contrast doesn't apply. Text on the fill stays dark: white
+   on #00ADD4 is only 2.6:1. */
+:root {
+  --accent: #00728f;
+  --accent-hover: #005a71;
+  --accent-fill: #00add4;
+  --accent-fg: #1f2328;
+}
+
+:root.dark {
+  --accent: #00add4;
+  --accent-hover: #4fd0ea;
+  --accent-fill: #00add4;
+  --accent-fg: #0d1117;
+}
+
+.hero-mark { color: #00add4; }

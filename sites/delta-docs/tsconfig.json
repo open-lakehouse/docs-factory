@@ -1,0 +1,11 @@
+{
+  "extends": "./shell/tsconfig.base.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./shell/src/*"],
+      "@brand/*": ["./src/brand/*"]
+    }
+  },
+  "include": ["shell/src", "shell/vite.base.ts", "src", "vite.config.ts"],
+  "exclude": ["src/vendor"]
+}

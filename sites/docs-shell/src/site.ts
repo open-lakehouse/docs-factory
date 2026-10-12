@@ -20,7 +20,7 @@ export interface PageScript {
   /** Served path of the runnable file. */
   url: string;
   file: string;
-  kind: "python" | "shell";
+  kind: "python" | "shell" | "sql";
   summary: string | null;
 }
 

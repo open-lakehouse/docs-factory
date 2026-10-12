@@ -1,7 +1,13 @@
-// The site configs: one route scheme across sites.
+// The site configs and the shells they emit into: one route scheme, and shells
+// that share sites/docs-shell/ install the same dependencies.
 import { expect, test } from "bun:test";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import delta from "../sites/delta-docs.mjs";
 import { projectRoutes } from "../sites/routes.mjs";
+import uc from "../sites/unitycatalog-docs.mjs";
+
+const SITES_DIR = join(import.meta.dir, "../../../sites");
 
 test("projectRoutes maps a project's pages, the home page, and API references", () => {
   const href = projectRoutes("delta");
@@ -26,4 +32,12 @@ test("the Delta site emits content/delta with no env bundle or REST APIs", () =>
   expect(delta.env).toBeUndefined();
   expect(delta.api).toBeUndefined();
   expect(delta.origin).not.toMatch(/\/$/);
+});
+
+test("every site shell installs the dependencies the shared shell needs", () => {
+  const deps = (name) => {
+    const pkg = JSON.parse(readFileSync(join(SITES_DIR, name, "package.json"), "utf8"));
+    return { dependencies: pkg.dependencies, devDependencies: pkg.devDependencies };
+  };
+  expect(deps(delta.name)).toEqual(deps(uc.name));
 });

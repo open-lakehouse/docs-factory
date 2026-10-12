@@ -93,29 +93,32 @@ def _parse_claims(path: Path, raw: object) -> list[Claim]:
             op = entry.get("op")
             if not isinstance(op, str) or not op:
                 raise ScriptMetaError(f"{where}.{interface}: every claim needs an op")
+            text: dict[str, str | None] = {}
             for key in ("region", "anchor", "note"):
-                if key in entry and not isinstance(entry[key], str):
+                value = entry.get(key)
+                if value is not None and not isinstance(value, str):
                     raise ScriptMetaError(
                         f"{where}.{interface}: {op}: {key} must be a string"
                     )
+                text[key] = value
             fails = entry.get("fails", False)
             if not isinstance(fails, bool | str) or fails == "":
                 raise ScriptMetaError(
                     f"{where}.{interface}: {op}: fails is true or the asserted error"
                 )
-            if fails is False and "region" not in entry:
+            if fails is False and text["region"] is None:
                 raise ScriptMetaError(
                     f"{where}.{interface}: {op}: a claim that it works names the "
                     "region that shows it"
                 )
             claims.append(
                 Claim(
-                    interface=interface,
+                    interface=str(interface),
                     op=op,
-                    region=entry.get("region"),
-                    anchor=entry.get("anchor"),
+                    region=text["region"],
+                    anchor=text["anchor"],
                     fails=fails,
-                    note=entry.get("note"),
+                    note=text["note"],
                 )
             )
     return claims
@@ -186,6 +189,11 @@ class ScriptMeta:
                 if (parent / name).is_file():
                     return parent / name
         return None
+
+
+def without_metadata(text: str) -> str:
+    """The script's text without its ``# /// script`` block."""
+    return re.sub(_BLOCK_RE, "", text)
 
 
 def _read_block(text: str) -> dict | None:

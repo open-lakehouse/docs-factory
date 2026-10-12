@@ -73,7 +73,9 @@ Read the schema from one of the files and register each folder:
 ```bash file=./snippets/file_formats.sh start=start:register end=end:register
 ```
 
-For any format other than `DELTA`, the CLI writes nothing to the location.
+Whatever the format, the CLI also writes a Delta transaction log,
+`_delta_log/`, into the location. It lists no data files, and the readers
+below skip it.
 :::
 
 :::warning

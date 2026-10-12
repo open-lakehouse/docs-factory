@@ -1,6 +1,7 @@
 # Docs-site emission
 
-**Status:** built for Unity Catalog (`sites/unitycatalog-docs/`, `emit/docs/`).
+**Status:** built for Unity Catalog (`sites/unitycatalog-docs/`) and Delta Lake
+(`sites/delta-docs/`, local preview only), sharing `sites/docs-shell/`; emitter in `emit/docs/`.
 **Scope:** `emit/docs/`, `emit/targets/docs-site.mjs`, `sites/`.
 
 We used to plan on emitting `content/unitycatalog/` into the upstream UC MkDocs
@@ -30,6 +31,32 @@ from docs-factory, so it can move to another repo unchanged.
 The shell owns everything else: layout, components, styles, and the prerender
 build. Each route is rendered to `dist/<route>.html` with its head tags and full
 content, then hydrated.
+
+## One shell, many brands
+
+The sites are the same product with different branding, so they share one shell
+in `sites/docs-shell/` and keep only their brand. Each site has a committed
+`shell -> ../docs-shell` symlink beside its own `src/brand/`:
+
+| Brand file | What it sets |
+| --- | --- |
+| `brand.ts` | The `Brand` contract (`docs-shell/src/brand.ts`): topbar wordmark, status-bar label, repository, social links. |
+| `Logo.tsx` | The monochrome mark in the topbar and hero (default export). |
+| `theme.css` | The `--accent*` tokens for light and dark, plus any mark styling. |
+| `HomePage.tsx` | The curated home page, composed from `docs-shell/src/pages/home.tsx` blocks. Entries are routes, so an unpublished page drops out. |
+
+The shell imports these as `@brand/*`; `@` is the shell itself (the vendored
+plugins' `@/components/…` contract), and the emitted files are read with
+root-relative globs (`/src/generated/site.json`). Vite keeps symlinked paths
+(`preserveSymlinks`), so the shell's imports resolve against the site's
+`node_modules` and there is one React. The two scripts that run from the
+shell's real path, `vite.base.ts` and `prerender.mjs`, load their tooling from
+the site's dependencies explicitly. That is why every site's `package.json` has
+the same dependencies, which `emit/docs/__tests__/sites.test.mjs` enforces.
+
+A site's `vite.config.ts` is one `docsSiteConfig({ root, port })` call. The
+mirror copies the symlink as real files (below), so an upstream repo builds the
+same paths with no docs-factory checkout.
 
 ## Agent surfaces
 
@@ -176,7 +203,8 @@ file in it except `.git/`, `.github/`, and `LICENSE`:
 2. Run a publish emit (`ready` pages only, no DB), then `bun run build` as a
    gate.
 3. Run `scripts/mirror-site.sh`, which does an `rsync --delete` of the shell
-   minus build output, then copies the `sites/<name>/upstream/` overlay (README,
+   minus build output (dereferencing the out-of-tree `shell` symlink into real
+   files), then copies the `sites/<name>/upstream/` overlay (README,
    `.gitignore`) onto the root.
 4. Force-push the result to `docs-factory/sync` and open or update one PR
    whose body is the change report and the source commits since the last
@@ -192,6 +220,10 @@ bun alone, because uv, Chromium, and `envs/` are needed only to emit, and
 
 ## Deferred
 
+- **Delta delivery:** a sync workflow and upstream repo for `sites/delta-docs/`,
+  likely by turning `uc-docs-sync.yml` into a per-site matrix. A publish emit of
+  Delta fails today, and that is intended: its two `ready` pages link to draft
+  pages.
 - **Search:** Pagefind over the built `dist/`.
 - **Redirects:** for legacy MkDocs paths (plan §7 migration map) and for renames
   the manifest records.

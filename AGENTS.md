@@ -29,7 +29,7 @@ seed/             docs-factory-seed: deterministic Delta-table seeder (Python + 
 envs/             reusable compose fragments for test stacks (aws-sim: fake AWS S3/STS for UC)
 tools/docsnip/    content validation tooling (frontmatter validate, snippet check)
 agents/           Omnigent agents for factory workflows (blog-writer: dump → reviewed blog draft)
-site/             review + admin app (Vite + React + MDX): renders docs + blogs in the review workspace; site/src/content-core is the shared parsing authority
+site/             review + planning + admin app (Vite + React + MDX): renders docs + blogs in the review workspace, roadmap/compat/backlog under /plan; site/src/content-core is the shared parsing authority
 architecture/     LAKEHOUSE FACT: LikeC4 model + design docs + ADRs + estate facts (estate.yml, glossary)
 docs/             FACTORY META: design + decisions about the factory itself (site/emit/server/authoring)
 server/           review/release backend (Connect RPC + Postgres) for the in-app review layer

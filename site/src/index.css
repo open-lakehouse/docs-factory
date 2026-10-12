@@ -722,6 +722,7 @@ body {
   color: var(--muted-foreground);
 }
 .compat-project.is-active { color: var(--foreground); border-color: var(--muted-foreground); }
+.compat-table-head { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
 .compat-gaps-toggle { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; }
 .compat-table th[scope="row"] { font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 0.9rem; color: var(--foreground); }
 .compat-table th[scope="row"] p { font-weight: 400; margin: 0.15rem 0 0; font-size: 0.8rem; }

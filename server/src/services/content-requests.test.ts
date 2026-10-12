@@ -1,7 +1,11 @@
 // Content-request validation and lifecycle (pure; no DB).
 import { describe, expect, test } from "bun:test";
 import { create } from "@bufbuild/protobuf";
-import { ContentArea, ContentRequestStatus } from "../gen/docs_factory/review/v1/messages_pb.js";
+import {
+  ContentArea,
+  ContentRequestKind,
+  ContentRequestStatus,
+} from "../gen/docs_factory/review/v1/messages_pb.js";
 import {
   CreateContentRequestRequestSchema,
   UpdateContentRequestRequestSchema,
@@ -35,6 +39,25 @@ describe("contentRequestError", () => {
     expect(contentRequestError(docs({ ...blog, diataxis: "" }))).toBeNull();
     expect(contentRequestError(docs(blog))).toBe("blog requests carry no diataxis");
   });
+});
+
+test("a journey request belongs to a docs project's table, with no quadrant", () => {
+  const journey = {
+    kind: ContentRequestKind.JOURNEY,
+    placement: "table-operations",
+    diataxis: "",
+    title: "Vacuum a managed table",
+  };
+  expect(contentRequestError(docs(journey))).toBeNull();
+  expect(contentRequestError(docs({ ...journey, diataxis: "how-to" }))).toBe(
+    "journey requests carry no diataxis",
+  );
+  expect(contentRequestError(docs({ ...journey, project: "" }))).toBe(
+    "project is required for docs",
+  );
+  expect(
+    contentRequestError(docs({ ...journey, area: ContentArea.BLOGS, project: undefined })),
+  ).toBe("journeys are tracked per docs project");
 });
 
 describe("contentRequestUpdateError", () => {

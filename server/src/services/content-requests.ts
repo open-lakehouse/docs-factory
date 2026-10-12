@@ -1,7 +1,8 @@
 // Content requests (CreateContentRequest / ListContentRequests /
 // UpdateContentRequest): reviewers ask for content that doesn't exist yet,
 // placed where it should live. The accepted backlog stays git's — DONE means a
-// `planned:` slot carrying `request: <id>` landed in nav.yml (or blogs/IDEAS.md).
+// `planned:` slot carrying `request: <id>` landed in nav.yml (or blogs/IDEAS.md),
+// or for a journey, a `journeys:` entry carrying it in compatibility.yml.
 import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type HandlerContext } from "@connectrpc/connect";
@@ -11,6 +12,7 @@ import { areaFromDb, areaToDb } from "../db-map.js";
 import {
   ContentArea,
   type ContentRequest,
+  ContentRequestKind,
   ContentRequestSchema,
   ContentRequestStatus,
 } from "../gen/docs_factory/review/v1/messages_pb.js";
@@ -35,6 +37,16 @@ const STATUS_TO_DB: Record<number, string> = {
   [ContentRequestStatus.DECLINED]: "declined",
   [ContentRequestStatus.DONE]: "done",
 };
+const KIND_TO_DB: Record<number, string> = {
+  [ContentRequestKind.UNSPECIFIED]: "page",
+  [ContentRequestKind.PAGE]: "page",
+  [ContentRequestKind.JOURNEY]: "journey",
+};
+const KIND_FROM_DB: Record<string, ContentRequestKind> = {
+  page: ContentRequestKind.PAGE,
+  journey: ContentRequestKind.JOURNEY,
+};
+
 const STATUS_FROM_DB: Record<string, ContentRequestStatus> = Object.fromEntries(
   Object.entries(STATUS_TO_DB).map(([k, v]) => [v, Number(k) as ContentRequestStatus]),
 );
@@ -50,6 +62,7 @@ const ALLOWED: Record<string, string[]> = {
 
 export interface ContentRequestRow {
   id: string;
+  kind: string;
   area: string;
   project: string | null;
   placement: string;
@@ -68,6 +81,7 @@ export interface ContentRequestRow {
 export function contentRequestFromRow(r: ContentRequestRow): ContentRequest {
   return create(ContentRequestSchema, {
     id: r.id,
+    kind: KIND_FROM_DB[r.kind] ?? ContentRequestKind.PAGE,
     area: areaFromDb(r.area),
     project: r.project ?? undefined,
     placement: r.placement,
@@ -91,7 +105,12 @@ export function contentRequestError(req: CreateContentRequestRequest): string | 
   const title = req.title.trim();
   if (!title || title.length > MAX_TITLE_LEN) return `title must be 1..${MAX_TITLE_LEN} characters`;
   if (req.bodyMd.length > MAX_BODY_LEN) return `body_md exceeds ${MAX_BODY_LEN} characters`;
-  if (req.area === ContentArea.DOCS) {
+  if (!(req.kind in KIND_TO_DB)) return "invalid kind";
+  if (req.kind === ContentRequestKind.JOURNEY) {
+    if (req.area !== ContentArea.DOCS) return "journeys are tracked per docs project";
+    if (!req.project?.trim()) return "project is required for docs";
+    if (req.diataxis) return "journey requests carry no diataxis";
+  } else if (req.area === ContentArea.DOCS) {
     if (!req.project?.trim()) return "project is required for docs";
     if (!DIATAXIS.has(req.diataxis)) return `diataxis must be one of ${[...DIATAXIS].join(", ")}`;
   } else if (req.diataxis) {
@@ -117,7 +136,7 @@ export function contentRequestUpdateError(
   return null;
 }
 
-const RETURNING = `id, area, project, placement, diataxis, title, body_md, status,
+const RETURNING = `id, kind, area, project, placement, diataxis, title, body_md, status,
   requested_by_login, planned_id, pr_url, resolution_note, created_at, updated_at`;
 
 export const contentRequestHandlers = {
@@ -128,10 +147,10 @@ export const contentRequestHandlers = {
     const sql = db();
     const [row] = await sql<ContentRequestRow[]>`
       insert into content_request
-        (area, project, placement, diataxis, title, body_md,
+        (kind, area, project, placement, diataxis, title, body_md,
          requested_by_user_id, requested_by_login)
       values
-        (${areaToDb(req.area)}, ${req.area === ContentArea.DOCS ? req.project!.trim() : null},
+        (${KIND_TO_DB[req.kind]}, ${areaToDb(req.area)}, ${req.area === ContentArea.DOCS ? req.project!.trim() : null},
          ${req.placement.trim()}, ${req.diataxis}, ${req.title.trim()}, ${req.bodyMd},
          ${viewer.userId ?? viewer.login ?? "unknown"}, ${viewer.login ?? "unknown"})
       returning ${sql.unsafe(RETURNING)}
@@ -145,10 +164,15 @@ export const contentRequestHandlers = {
     const area = req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
     const project = req.project?.trim() || null;
     const statuses = req.statuses.map((s) => STATUS_TO_DB[s]).filter(Boolean);
+    const kind =
+      req.kind !== undefined && req.kind !== ContentRequestKind.UNSPECIFIED
+        ? (KIND_TO_DB[req.kind] ?? null)
+        : null;
     const rows = await sql<ContentRequestRow[]>`
       select ${sql.unsafe(RETURNING)} from content_request
       where (${area}::text is null or area = ${area})
         and (${project}::text is null or project = ${project})
+        and (${kind}::text is null or kind = ${kind})
         and (${statuses.length === 0} or status = any(${statuses}::text[]))
       order by created_at desc
     `;

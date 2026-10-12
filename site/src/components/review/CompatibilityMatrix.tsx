@@ -17,7 +17,10 @@ import {
   type PageRef,
 } from "../../compat";
 import { PROJECT_LABELS } from "../../doc-nav";
+import { ContentRequestKind } from "../../gen/docs_factory/review/v1/messages_pb";
+import { useAuth } from "../../lib/auth-context";
 import { docRef } from "../../lib/content-ref";
+import { requestStatusLabel, TrackJourneyButton, useOpenContentRequests } from "./ContentRequests";
 import { useWorkspaceTabs } from "./workspace/workspace-tabs-context";
 
 const SYMBOL: Record<CellStatus, string> = {
@@ -104,16 +107,24 @@ function MatrixTables({
 }) {
   const journeys = new Map(matrix.journeys.map((j) => [j.id, j]));
   const interfaces = new Map(matrix.interfaces.map((i) => [i.key, i]));
+  const { isAllowlisted } = useAuth();
+  const requested = useOpenContentRequests().filter(
+    (r) => r.kind === ContentRequestKind.JOURNEY && r.project === matrix.project,
+  );
   return (
     <>
       {matrix.tables.map((table) => {
         const rows = table.rows
           .map((id) => journeys.get(id))
           .filter((j): j is CompatJourney => !!j && (!gapsOnly || isGap(j, table.columns)));
-        if (rows.length === 0) return null;
+        const asked = requested.filter((r) => r.placement === table.id);
+        if (rows.length === 0 && asked.length === 0) return null;
         return (
           <div key={table.id} className="mt-6">
-            <h2 className="blog-aside-title">{table.title}</h2>
+            <div className="compat-table-head">
+              <h2 className="blog-aside-title">{table.title}</h2>
+              {isAllowlisted && <TrackJourneyButton project={matrix.project} table={table.id} />}
+            </div>
             <table className="admin-table compat-table">
               <thead>
                 <tr>
@@ -148,6 +159,18 @@ function MatrixTables({
                 ))}
               </tbody>
             </table>
+            {asked.length > 0 && (
+              <ul className="draft-list compact">
+                {asked.map((r) => (
+                  <li key={r.id} title={r.bodyMd || undefined}>
+                    {r.title}{" "}
+                    <span className="muted">
+                      {requestStatusLabel(r.status)} by {r.requestedByLogin}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         );
       })}

@@ -427,6 +427,8 @@ message CreateContentRequestRequest {
   string diataxis = 4;
   string title = 5;
   string body_md = 6;
+  // UNSPECIFIED is a PAGE.
+  ContentRequestKind kind = 7;
 }
 message CreateContentRequestResponse {
   ContentRequest request = 1;
@@ -437,6 +439,8 @@ message ListContentRequestsRequest {
   optional string project = 2;
   // Empty = every status.
   repeated ContentRequestStatus statuses = 3;
+  // Absent = every kind.
+  optional ContentRequestKind kind = 4;
 }
 message ListContentRequestsResponse {
   repeated ContentRequest requests = 1;

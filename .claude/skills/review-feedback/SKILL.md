@@ -4,7 +4,7 @@ description: |
   Process reviewer feedback from the docs-factory review site: fetch open review
   threads, locate each in this checkout, edit the docs or blog source, set
   approved pages to `status: ready`, turn accepted content requests into planned
-  nav slots, open a PR, and reply on each thread. Use when the user asks to
+  nav slots or tracked compatibility journeys, open a PR, and reply on each thread. Use when the user asks to
   process, address, or work through review comments, feedback, approvals, or
   content requests, for one page, a project, or everything.
 argument-hint: 'Optional scope: a page slug, a project (unitycatalog, delta), docs, or blogs'
@@ -90,6 +90,13 @@ Follow `AGENTS.md`:
   a fresh backlog id from the project's documentation plan numbering, the
   request's title, and `request: <request id>`. Blog requests become an entry in
   `blogs/IDEAS.md` with `request: <id>`. Don't write the page itself.
+- A `journey` request asks to track one more thing readers do, across the
+  project's engines and clients. Add it to `journeys:` in
+  `content/<project>/compatibility.yml` with a `family.task` id, the request's
+  title, and `request: <request id>`, append the id to the `rows` of the table
+  its placement names, and run `uv run docsnip compat --fix`. Its cells start
+  unknown. Add `evidence` only from a source you can cite, and leave claims to
+  the scripts that prove them.
 - Blog posts follow `blogs/CONVENTIONS.md`.
 
 Then run `uv run docsnip check`, `cd site && node scripts/check-nav.mjs` if you
@@ -102,7 +109,7 @@ Work on a branch (`feedback/<scope>-<date>`), never `main`. Make one commit per
 page or concern, following the repo's commit contract, and list the thread ids
 addressed in the body. Push and open a PR whose description lists each thread
 (page, one-line summary, what changed), each page set to `ready` (with its
-approvers), and each planned slot added (with its request id). CI warns on the PR
+approvers), and each planned slot or journey added (with its request id). CI warns on the PR
 if a page went `ready` without an approval; treat that as a mistake to fix.
 
 ## 5. Reply
@@ -114,8 +121,9 @@ if a page went `ready` without an approval; treat that as a mistake to fix.
   (CLI: `--applied`) so it shows as applied.
 - Not changed: why, briefly and respectfully, so the reviewer can push back.
 
-For each content request whose planned slot is in the PR, call
-`complete_content_request` with its backlog id and the PR link. That needs a
+For each content request whose planned slot or journey is in the PR, call
+`complete_content_request` with its backlog id (a journey's id) and the PR
+link. That needs a
 token with the `requests:write` scope; if it's refused, list the request ids in
 your report for the user instead.
 

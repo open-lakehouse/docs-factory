@@ -171,12 +171,16 @@ server.registerTool(
   {
     title: "List content requests",
     description:
-      "Requests for new content filed in the review app. An `accepted` request is work: add " +
-      "a `planned:` slot (a fresh backlog id, the request's title, and `request: <id>`) " +
-      "under the named section of `content/<project>/nav.yml`, or to `blogs/IDEAS.md` for " +
-      "blogs, open a PR, then call complete_content_request.",
+      "Requests for new content filed in the review app. An `accepted` request is work. A " +
+      "`page` request: add a `planned:` slot (a fresh backlog id, the request's title, and " +
+      "`request: <id>`) under the named section of `content/<project>/nav.yml`, or to " +
+      "`blogs/IDEAS.md` for blogs. A `journey` request: add a `journeys:` entry (a " +
+      "`family.task` id, the title, and `request: <id>`) to " +
+      "`content/<project>/compatibility.yml` and its id to the named table's rows, then run " +
+      "`uv run docsnip compat --fix`. Open a PR, then call complete_content_request.",
     inputSchema: {
       filter: z.enum(["accepted", "open", "all"]).optional().describe("Default `accepted`."),
+      kind: z.enum(["page", "journey"]).optional().describe("Default: both."),
       project: z.string().optional(),
     },
     annotations: { readOnlyHint: true },
@@ -189,11 +193,14 @@ server.registerTool(
   {
     title: "Complete a content request",
     description:
-      "Mark an accepted content request done once its planned slot is in a PR. Needs a " +
-      "token with the `requests:write` scope.",
+      "Mark an accepted content request done once its planned slot (or journey) is in a PR. " +
+      "Needs a token with the `requests:write` scope.",
     inputSchema: {
       request_id: z.string().describe("Request id from list_content_requests."),
-      planned_id: z.string().min(1).describe("The backlog id of the planned slot you added."),
+      planned_id: z
+        .string()
+        .min(1)
+        .describe("The backlog id of the planned slot you added, or the journey id."),
       pr_url: z.string().url().optional().describe("The PR that adds it."),
     },
   },

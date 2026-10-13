@@ -1829,6 +1829,21 @@
           "draft": true,
           "proofs": [
             {
+              "script": "content/delta/how-to/001-read-a-delta-table/snippets/read_duckdb.py",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "anchor": "read-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": "con.sql(\"FROM delta_scan(…)\")",
+              "note": null
+            },
+            {
               "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
               "page": {
                 "project": "delta",

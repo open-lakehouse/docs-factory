@@ -1,6 +1,6 @@
 ---
 title: Read a Delta table
-summary: Read a Delta table by its path with Spark (SQL, Python, Scala, or Java), delta-rs (Python or Rust), or DuckDB, and select only the columns and rows you need.
+summary: Read a Delta table by its path with Spark (SQL, Python, Scala, or Java), delta-rs (Python or Rust), or DuckDB (SQL or Python), and select only the columns and rows you need.
 diataxis: how-to
 project: delta
 delta_features: []
@@ -16,8 +16,8 @@ You read a [Delta Lake](model:deltaSpec) table by its path, or by its name
 when a catalog registers it. The engine reads the table's transaction log to
 find its current version, then scans only the Parquet files in that version.
 This guide reads a table with Spark (in SQL, Python, Scala, or Java),
-delta-rs (the `deltalake` Python package or Rust crate), and DuckDB, all of
-which read Delta tables.
+delta-rs (the `deltalake` Python package or Rust crate), and DuckDB (in SQL
+or Python), all of which read Delta tables.
 
 :::prerequisites
 - A Delta table. The examples read `orders` at `/tmp/delta/orders`, which
@@ -121,6 +121,19 @@ Then install and load its `delta` extension:
 ```
 :::
 
+:::tab[DuckDB · Python]
+Open a Python session with DuckDB:
+
+```bash
+uv run --with duckdb==1.5.6 python
+```
+
+Then connect, and install and load the `delta` extension:
+
+```python file=./snippets/read_duckdb.py start=start:session end=end:session
+```
+:::
+
 ## Read a table
 
 Query the table's latest version:
@@ -161,6 +174,14 @@ in its current version.
 :::tab[DuckDB · SQL]
 ```sql file=./snippets/read_duckdb.sql start=start:read end=end:read
 ```
+:::
+
+:::tab[DuckDB · Python]
+```python file=./snippets/read_duckdb.py start=start:read end=end:read
+```
+
+`con.sql` returns a relation, which DuckDB evaluates only when you show or
+fetch it.
 :::
 
 Each returns the five orders. In Spark SQL, `` delta.`<path>` `` names a table
@@ -208,6 +229,13 @@ Filter before you select, so the filter can still see `status`.
 :::tab[DuckDB · SQL]
 ```sql file=./snippets/read_duckdb.sql start=start:filter end=end:filter
 ```
+:::
+
+:::tab[DuckDB · Python]
+```python file=./snippets/read_duckdb.py start=start:filter end=end:filter
+```
+
+Each call builds on the relation before it, and DuckDB runs them as one query.
 :::
 
 Each returns orders 1, 2, and 5, with three columns. The transaction log

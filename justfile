@@ -202,6 +202,12 @@ test-spark:
 test-jvm:
     uv run pytest content -m needs_jvm
 
+# Run the Rust scripts (opt-in): builds the snippets crate (content/_rust), whose
+# examples they are, then runs each.
+test-rust:
+    cargo build --locked --package docs-factory-snippets --examples
+    uv run pytest content -m needs_rust
+
 # Fold the script durations a CI run measured into .github/script-durations.json,
 # which `docsnip plan` packs shards by. Use a full run (main or nightly).
 ci-durations run-id:

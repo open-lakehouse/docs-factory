@@ -70,8 +70,9 @@ export function injectFrontmatter(output, lines) {
 
 /**
  * The command that runs a published script: a Python script straight from its
- * URL (uv fetches it), a shell, Scala (scala-cli), or Java (JBang) script, or one
- * that imports a helper module, from the folder it was saved into. `env` is the stack's client env, so the
+ * URL (uv fetches it), a shell, Scala (scala-cli), or Java (JBang) script, a
+ * Rust script saved as a Cargo project's src/main.rs, or one that imports a
+ * helper module, from the folder it was saved into. `env` is the stack's client env, so the
  * command works in a fresh terminal. Null for SQL: its statements go into the
  * engine shell the page opens, which the page, not the file, names.
  */
@@ -81,6 +82,9 @@ export function companionRun(s, origin = "") {
   if (s.kind === "shell") return `bash ${file}`;
   if (s.kind === "scala") return `scala-cli run ${file}`;
   if (s.kind === "java") return `jbang ${file}`;
+  // A Rust script is a Cargo project's src/main.rs; `cargo add` sets the project up.
+  if (s.kind === "rust")
+    return [...(s.dependencies ?? []).map((d) => `cargo add ${d}`), "cargo run"].join(" && ");
   const env = Object.entries(s.env ?? {}).map(([k, v]) => `${k}=${v} `);
   const target = s.helpers?.length ? file : `${origin}${s.fetchUrl}`;
   return `${env.join("")}uv run ${target}`;
@@ -149,7 +153,9 @@ export function companionsSection(scripts, origin = "", environment = null) {
   }
   for (const s of scripts) {
     const file = s.fetchUrl.split("/").pop();
-    const lang = { shell: "Shell", sql: "SQL", scala: "Scala", java: "Java" }[s.kind] ?? "Python";
+    const lang =
+      { shell: "Shell", sql: "SQL", scala: "Scala", java: "Java", rust: "Rust" }[s.kind] ??
+      "Python";
     lines.push(
       `- [\`${file}\`](${origin}${s.fetchUrl}) (${lang})${s.summary ? `: ${s.summary}` : ""}`,
     );
@@ -157,7 +163,12 @@ export function companionsSection(scripts, origin = "", environment = null) {
       lines.push("  - run: enter its statements in the SQL shell the page opens");
     } else {
       // A shell script reaches the server through `docker compose exec`.
-      const where = s.kind === "shell" && environment ? ` from \`${environment.dir}\`` : "";
+      const where =
+        s.kind === "shell" && environment
+          ? ` from \`${environment.dir}\``
+          : s.kind === "rust"
+            ? `, in a new Cargo project with it as \`src/main.rs\``
+            : "";
       lines.push(`  - run: \`${companionRun(s, origin)}\`${where}`);
     }
     for (const h of s.helpers ?? []) {
@@ -200,6 +211,11 @@ export function runnableExamplesSection(scripts) {
       );
     } else if (s.kind === "sql") {
       lines.push("  - enter its statements in the SQL shell the page opens, in order");
+    } else if (s.kind === "rust") {
+      lines.push(
+        `  - save it as \`src/main.rs\` in a new Cargo project, then run`,
+        `    \`${companionRun(s)}\`; the script *is* the test`,
+      );
     } else if (s.kind === "scala" || s.kind === "java") {
       lines.push(
         `  - run with \`${companionRun(s)}\`: it resolves its dependencies from the`,

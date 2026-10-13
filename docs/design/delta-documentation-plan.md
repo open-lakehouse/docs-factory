@@ -4,10 +4,11 @@ Date: 2026-10-11 (v2; supersedes the 2026-10-04 draft from #160)
 
 Status: Proposal for scope and sequencing; not an implementation commitment
 
-Scope: The Delta Lake table format as used through four interfaces: **Spark
-SQL**, **PySpark**, the Python **`deltalake`** package (delta-rs), and
-**DuckDB** (the `delta` extension). Other engines, the Rust crate, and Delta
-Kernel are later phases (§10).
+Scope: The Delta Lake table format as used through three engines, each
+through its language bindings: **Spark** (SQL and Python, with Scala and Java
+tabs starting on H01), **delta-rs** (the Python **`deltalake`** package, with a
+Rust tab starting on H01), and **DuckDB** (SQL through the `delta` extension).
+Other engines and Delta Kernel are later phases (§10).
 
 Baselines (recheck before pinning examples):
 
@@ -71,8 +72,8 @@ Four decisions shape everything else:
    never has to say "not supported". `Spark · Python` (PySpark) covers the
    DataFrame reader and writer, `DeltaTable`, and Structured Streaming.
    `delta-rs · Python` is the `deltalake` package. DuckDB is SQL through the
-   `delta` extension. `Spark · Scala`, `Spark · Java`, and `delta-rs · Rust`
-   join the same order when their runners land.
+   `delta` extension. `Spark · Scala` and `Spark · Java` follow
+   `Spark · Python`, and `delta-rs · Rust` follows `delta-rs · Python`.
 2. **Spark SQL leads.** Tutorials use Spark SQL unless the task has no SQL
    form (streaming uses PySpark). T11 gives readers who don't want a JVM their
    own path: write with `deltalake`, query with DuckDB.
@@ -640,7 +641,7 @@ URL until then).
 
 ### Phase 3: more engines and depth
 
-Polars, pandas/Daft/DataFusion, the Rust crate, Trino, Flink, UniForm readers,
+Polars, pandas/Daft/DataFusion, Scala/Java/Rust beyond H01, Trino, Flink, UniForm readers,
 Kernel and connector authoring (J09), Delta Sharing, Spark Connect, VARIANT,
 and the remaining P2 entries. Each new engine adds a column to the coverage
 page first.

@@ -39,6 +39,13 @@ interfaces:
     pin: deltalake
     package: deltalake
     model: deltaRs
+  # The crate the Python package wraps. Its column is its own: the two expose
+  # the shared engine through different APIs, and support differs.
+  delta-rs-rust:
+    label: delta-rs · Rust
+    pin: deltalake-rs
+    package: deltalake
+    model: deltaRs
   duckdb-sql:
     label: DuckDB · SQL
     package: duckdb
@@ -107,7 +114,7 @@ journeys:
 tables:
   create-and-write:
     title: Create and write
-    columns: [spark-sql, spark-python, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - create.table
       - create.ctas
@@ -122,7 +129,7 @@ tables:
     documented: true
   modify-rows:
     title: Modify rows
-    columns: [spark-sql, spark-python, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - dml.update
       - dml.delete
@@ -132,7 +139,7 @@ tables:
     documented: true
   read-and-history:
     title: Read and history
-    columns: [spark-sql, spark-python, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - read.scan
       - read.pushdown
@@ -146,7 +153,7 @@ tables:
     documented: true
   schema-and-quality:
     title: Schema and data quality
-    columns: [spark-sql, spark-python, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - schema.merge-on-write
       - schema.overwrite
@@ -161,7 +168,7 @@ tables:
     documented: true
   cdf-and-streaming:
     title: Change data and streaming
-    columns: [spark-sql, spark-python, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - cdf.read
       - stream.source-sink
@@ -169,7 +176,7 @@ tables:
     documented: true
   layout-and-maintenance:
     title: Layout and maintenance
-    columns: [spark-sql, spark-python, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - layout.compact
       - layout.zorder
@@ -183,7 +190,7 @@ tables:
     documented: true
   features-and-protocol:
     title: Table features and protocol
-    columns: [spark-sql, spark-python, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - feature.enable
       - feature.drop
@@ -191,7 +198,7 @@ tables:
     documented: true
   storage-and-catalogs:
     title: Storage and catalogs
-    columns: [spark-sql, spark-python, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - storage.s3-multi-writer
       - storage.azure-gcs
@@ -1469,3 +1476,394 @@ evidence:
   outcome: fails
   why: for catalog-managed tables (UC known issues)
   source: unitycatalog:reference/features-and-limitations
+# The deltalake crate, from its own source at the release the docs pin.
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - create.table
+  outcome: works
+  why: '`DeltaTable::create` (create.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/create.rs
+  api:
+    delta-rs-rust: 'DeltaTable::create()'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - create.ctas
+  outcome: works
+  why: '`write` to a new path creates the table (write)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs
+  api:
+    delta-rs-rust: 'DeltaTable::write()'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - create.partitioned
+  outcome: works
+  why: '`with_partition_columns` (create.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/create.rs
+  api:
+    delta-rs-rust: with_partition_columns()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - write.append
+  outcome: works
+  why: '`write` with `SaveMode::Append` (write)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs
+  api:
+    delta-rs-rust: 'with_save_mode(SaveMode::Append)'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - write.overwrite
+  outcome: works
+  why: '`write` with `SaveMode::Overwrite` (write)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs
+  api:
+    delta-rs-rust: 'with_save_mode(SaveMode::Overwrite)'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - write.replace-where
+  outcome: works
+  why: '`with_replace_where` (write)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs
+  api:
+    delta-rs-rust: with_replace_where()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - write.enforce-schema
+  outcome: works
+  why: 'a mismatched batch fails unless `with_schema_mode` allows it (write)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - write.idempotent
+  outcome: works
+  why: '`CommitProperties::with_application_transaction` (transaction)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/mod.rs
+  api:
+    delta-rs-rust: with_application_transaction()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - write.commit-metadata
+  outcome: works
+  why: '`CommitProperties::with_metadata` (transaction)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/mod.rs
+  api:
+    delta-rs-rust: with_metadata()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - dml.update
+  outcome: works
+  why: '`DeltaTable::update` (update.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/update.rs
+  api:
+    delta-rs-rust: 'DeltaTable::update()'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - dml.delete
+  outcome: works
+  why: '`DeltaTable::delete` (delete.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/delete.rs
+  api:
+    delta-rs-rust: 'DeltaTable::delete()'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - merge.upsert
+  outcome: works
+  why: '`merge` + `when_matched_*`/`when_not_matched_*` (merge)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs
+  api:
+    delta-rs-rust: 'DeltaTable::merge()'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - merge.not-matched-by-source
+  outcome: works
+  why: '`when_not_matched_by_source_*` (merge)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs
+  api:
+    delta-rs-rust: 'when_not_matched_by_source_*()'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - merge.schema-evolution
+  outcome: works
+  why: '`with_merge_schema(true)` (merge)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs
+  api:
+    delta-rs-rust: with_merge_schema()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - read.pushdown
+  outcome: works
+  why: DataFusion pushes filters into the scan (table provider)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/delta_datafusion/table_provider.rs
+  api:
+    delta-rs-rust: table_provider()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - read.version
+  outcome: works
+  why: '`load_version`, `open_table_with_version` (table)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs
+  api:
+    delta-rs-rust: load_version()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - read.timestamp
+  outcome: works
+  why: '`load_with_datetime`, `open_table_with_ds` (table)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs
+  api:
+    delta-rs-rust: load_with_datetime()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - history.list
+  outcome: works
+  why: '`DeltaTable::history` (table)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs
+  api:
+    delta-rs-rust: history()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - history.detail
+  outcome: works
+  why: '`snapshot`: metadata, protocol, add actions (table)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs
+  api:
+    delta-rs-rust: snapshot()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - history.restore
+  outcome: works
+  why: '`DeltaTable::restore` (restore.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/restore.rs
+  api:
+    delta-rs-rust: 'DeltaTable::restore()'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - history.shallow-clone
+  outcome: missing
+  why: no API (the operations `DeltaTable` offers)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - schema.merge-on-write
+  outcome: works
+  why: '`with_schema_mode(SchemaMode::Merge)` (write)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs
+  api:
+    delta-rs-rust: 'with_schema_mode(SchemaMode::Merge)'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - schema.overwrite
+  outcome: works
+  why: '`with_schema_mode(SchemaMode::Overwrite)` (write)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs
+  api:
+    delta-rs-rust: 'with_schema_mode(SchemaMode::Overwrite)'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - schema.add-column
+  outcome: works
+  why: '`DeltaTable::add_columns` (add_column.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/add_column.rs
+  api:
+    delta-rs-rust: add_columns()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - schema.rename-drop
+  outcome: missing
+  why: no API (the operations `DeltaTable` offers)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - schema.type-widening
+  outcome: missing
+  why: no API (the operations `DeltaTable` offers)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - quality.check
+  outcome: works
+  why: '`DeltaTable::add_constraint` (constraints.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/constraints.rs
+  api:
+    delta-rs-rust: add_constraint()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - quality.not-null
+  outcome: works
+  why: 'schema nullability, `drop_column_not_null` (drop_column_not_null.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/drop_column_not_null.rs
+  api:
+    delta-rs-rust: drop_column_not_null()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - columns.generated
+  outcome: works
+  why: writes compute and check generation expressions (generated_columns.rs)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/generated_columns.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - columns.identity
+  outcome: fails
+  why: not in the writer's supported features (protocol checker)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/protocol.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - cdf.read
+  outcome: works
+  why: '`DeltaTable::scan_cdf` (load_cdf.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/load_cdf.rs
+  api:
+    delta-rs-rust: scan_cdf()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - stream.source-sink
+  outcome: missing
+  why: no streaming API (the operations `DeltaTable` offers)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - stream.foreach-batch-merge
+  outcome: missing
+  why: no streaming API (the operations `DeltaTable` offers)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - layout.compact
+  outcome: works
+  why: '`optimize` with `OptimizeType::Compact` (optimize.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/optimize.rs
+  api:
+    delta-rs-rust: optimize()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - layout.zorder
+  outcome: works
+  why: '`optimize` with `OptimizeType::ZOrder` (optimize.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/optimize.rs
+  api:
+    delta-rs-rust: 'with_type(OptimizeType::ZOrder)'
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - layout.clustering
+  outcome: missing
+  why: no API (the operations `DeltaTable` offers)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - maint.vacuum
+  outcome: works
+  why: '`DeltaTable::vacuum` with `with_dry_run` (vacuum.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/vacuum.rs
+  api:
+    delta-rs-rust: vacuum()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - maint.checkpoint
+  outcome: works
+  why: '`checkpoints::create_checkpoint` (checkpoints.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/protocol/checkpoints.rs
+  api:
+    delta-rs-rust: create_checkpoint()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - maint.manifest
+  outcome: works
+  why: '`DeltaTable::generate` (generate.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/generate.rs
+  api:
+    delta-rs-rust: generate()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - maint.repair
+  outcome: works
+  why: '`DeltaTable::filesystem_check` (filesystem_check.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/filesystem_check.rs
+  api:
+    delta-rs-rust: filesystem_check()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - migrate.convert-parquet
+  outcome: works
+  why: '`ConvertToDeltaBuilder` (convert_to_delta.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/convert_to_delta.rs
+  api:
+    delta-rs-rust: ConvertToDeltaBuilder
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - feature.enable
+  outcome: works
+  why: '`DeltaTable::add_feature` (add_feature.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/add_feature.rs
+  api:
+    delta-rs-rust: add_feature()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - feature.drop
+  outcome: missing
+  why: no API (the operations `DeltaTable` offers)
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - feature.properties
+  outcome: works
+  why: '`DeltaTable::set_tbl_properties` (set_tbl_properties.rs)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/set_tbl_properties.rs
+  api:
+    delta-rs-rust: set_tbl_properties()
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - storage.s3-multi-writer
+  outcome: works
+  why: 'DynamoDB lock or conditional put (`s3` feature, deltalake-aws)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/aws/src/lib.rs
+- interfaces:
+  - delta-rs-rust
+  journeys:
+  - storage.azure-gcs
+  outcome: works
+  why: '`azure` and `gcs` features (deltalake-azure, deltalake-gcp)'
+  source: https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/azure/src/lib.rs

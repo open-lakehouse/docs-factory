@@ -10,4 +10,6 @@ pins:
   pyspark: 4.2.0
   # deltalake (delta-rs) and DuckDB version independently of Delta Spark.
   deltalake: 1.6.6
+  # The deltalake Rust crate, which versions apart from the Python package.
+  deltalake-rs: 1.1.1
   duckdb: 1.5.6

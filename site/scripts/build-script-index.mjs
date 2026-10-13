@@ -139,10 +139,16 @@ export function publishScript(text) {
 /**
  * A script's one-line purpose (pure, for testing): the first line of a Python
  * module docstring, the first comment paragraph of a shell script (after its
- * shebang) or SQL file, or a Scala or Java script's first `//` comment line
- * after its runner directives. Null when the script has none.
+ * shebang) or SQL file, a Scala or Java script's first `//` comment line after
+ * its runner directives, or a Rust script's first `//!` line. Null when the
+ * script has none.
  */
 export function scriptSummary(text, kind) {
+  if (kind === "rust") {
+    // A Rust script's purpose is its crate doc comment.
+    const m = /^\/\/! (.+)$/m.exec(text);
+    return m ? m[1].trim() : null;
+  }
   if (kind === "scala" || kind === "java") {
     const body = text.replace(/\r\n/g, "\n").replace(JVM_BLOCK_RE, "");
     for (const line of body.split("\n")) {

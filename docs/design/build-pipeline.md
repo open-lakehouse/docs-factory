@@ -190,8 +190,9 @@ the two frontmatter splitters, among others).
   page folder, project `release.yml`, or (for service scripts) `envs/` changed;
   a change to the harness, docsnip, `seed/`, or the lockfile selects all of
   them, and so do main, the nightly run, and manual runs.
-- **`scripts-default` / `scripts-spark` / `scripts-jvm` / `scripts-services`** —
-  one job per toolchain (none; Java; Java with scala-cli and JBang; Docker), one runner per shard, each running its shard's
+- **`scripts-default` / `scripts-spark` / `scripts-jvm` / `scripts-rust` /
+  `scripts-services`** — one job per toolchain (none; Java; Java with scala-cli
+  and JBang; Rust, building the snippets crate once; Docker), one runner per shard, each running its shard's
   scripts to completion (`uv run`) through `DOCS_FACTORY_SELECT`. A lane with
   nothing selected is skipped. Each shard uploads the durations it measured;
   `just ci-durations <run-id>` folds a run's into the durations file.

@@ -22,6 +22,7 @@ release: 4.4.0
 pins:
   pyspark: 4.2.0
   deltalake: 1.6.6
+  deltalake-rs: 1.1.1
   duckdb: 1.5.6
 """
 

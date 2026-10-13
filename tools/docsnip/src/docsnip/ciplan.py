@@ -2,7 +2,7 @@
 
 A script belongs to exactly one lane, the toolchain its job installs: ``services``
 (it declares a compose), ``spark`` (``lane = "spark"``), ``jvm`` (a Scala or Java
-script), or ``default``. On a pull
+script), ``rust`` (an example of the snippets crate), or ``default``. On a pull
 request only the scripts whose inputs changed run; a change to anything every
 script depends on (the harness, docsnip, the lockfile) selects them all. Each
 lane's selection is then packed into shards by recorded duration, and every
@@ -23,11 +23,12 @@ from pathlib import Path
 
 from .scriptmeta import ScriptMeta
 
-LANES = ("default", "spark", "jvm", "services")
+LANES = ("default", "spark", "jvm", "rust", "services")
 
 # Per-lane shard cap. Every shard pays its own setup (the toolchain, the
 # ~1 GB UC image build), so a shard should carry at least TARGET_S of scripts.
-_MAX_SHARDS = {"default": 1, "spark": 2, "jvm": 2, "services": 4}
+# One rust shard: building the snippets crate dominates, and every shard repeats it.
+_MAX_SHARDS = {"default": 1, "spark": 2, "jvm": 2, "rust": 1, "services": 4}
 TARGET_S = 120
 
 # Seconds assumed for a script with no recorded duration.
@@ -51,7 +52,7 @@ GLOBAL_INPUTS = (
 def lane_of(meta: ScriptMeta) -> str:
     if meta.docs_factory.needs_services:
         return "services"
-    if meta.docs_factory.lane in ("spark", "jvm"):
+    if meta.docs_factory.lane in ("spark", "jvm", "rust"):
         return meta.docs_factory.lane
     return "default"
 
@@ -77,6 +78,9 @@ def inputs(meta: ScriptMeta, repo_root: Path) -> list[str]:
     if meta.docs_factory.needs_services:
         # Compose files include and extend each other across envs/.
         paths.append("envs/")
+    if meta.runner == "rust":
+        # The snippets crate's dependencies, and the workspace that locks them.
+        paths += ["content/_rust/", "Cargo.toml", "Cargo.lock"]
     return paths
 
 

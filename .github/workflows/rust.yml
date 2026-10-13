@@ -3,15 +3,15 @@ name: Rust
 on:
   push:
     branches: [main]
-    paths:
+    paths: &rust-paths
       - "seed/rust/**"
+      - "content/_rust/**"
+      - "content/**/*.rs"
       - "Cargo.toml"
+      - "Cargo.lock"
       - ".github/workflows/rust.yml"
   pull_request:
-    paths:
-      - "seed/rust/**"
-      - "Cargo.toml"
-      - ".github/workflows/rust.yml"
+    paths: *rust-paths
 
 concurrency:
   group: rust-${{ github.ref }}

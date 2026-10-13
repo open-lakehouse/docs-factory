@@ -20,6 +20,11 @@ JVM scripts (Scala run by scala-cli, Java run by JBang) declare their
 dependencies the way those tools read them (``//> using dep`` and ``//DEPS``),
 and carry the same ``[tool.docs-factory]`` keys in a ``// /// docs-factory``
 comment block. They always run in the ``jvm`` lane.
+
+Rust scripts (``*.rs``) carry the same block, but their dependencies live in the
+snippets crate (``content/_rust/Cargo.toml``), which builds each script as one
+``[[example]]``: the crate's dependencies compile once for every script. They
+run in the ``rust`` lane.
 """
 
 from __future__ import annotations
@@ -68,8 +73,13 @@ RUNNERS = (
         lane="jvm",
         deps_re=re.compile(r"^//DEPS (?P<deps>.+)$", re.MULTILINE),
     ),
+    Runner("rust", (".rs",), lane="rust"),
 )
 _RUNNER_BY_SUFFIX = {suffix: r for r in RUNNERS for suffix in r.suffixes}
+
+
+# The lanes a runner implies, and whose scripts they hold.
+_RUNNER_LANES = {"jvm": "Scala and Java scripts", "rust": "Rust scripts"}
 
 
 def runner_for(path: Path) -> Runner | None:
@@ -88,8 +98,9 @@ _HARNESS_RE = re.compile(
 _VERIFIABLE = (".sh", ".sql")
 
 # Opt-in test lanes beyond the default (no services, no JVM) one: `spark` for
-# Python scripts that start Spark, `jvm` for Scala and Java scripts.
-LANES = ("spark", "jvm")
+# Python scripts that start Spark, `jvm` for Scala and Java scripts, `rust` for
+# the snippets crate's examples.
+LANES = ("spark", "jvm", "rust")
 
 # A dependency that starts a JVM, so its script belongs in the spark lane.
 _SPARK_DEP_RE = re.compile(r"^\s*(?:pyspark|delta-spark)\b")
@@ -226,10 +237,13 @@ class ScriptMeta:
 
     path: Path
     requires_python: str | None
-    # PEP 723 requirements, or Maven coordinates for a JVM script.
+    # PEP 723 requirements, Maven coordinates for a JVM script, or `cargo add`
+    # arguments (`deltalake@1.1.1 --features datafusion`) for a Rust one.
     dependencies: list[str]
     docs_factory: DocsFactoryMeta
     runner: str = "python"
+    # The snippets crate's `[[example]]` that builds a Rust script.
+    cargo_example: str | None = None
 
     def compose_path(self) -> Path | None:
         """Absolute path to the compose file this script declares, if any."""
@@ -292,6 +306,40 @@ def _read_block(text: str) -> dict | None:
     return tomllib.loads(content)
 
 
+# The crate that builds every Rust script, relative to the content root.
+SNIPPETS_CRATE = Path("_rust") / "Cargo.toml"
+
+
+@dataclasses.dataclass(frozen=True)
+class _Crate:
+    examples: dict[Path, str]  # script path → example name
+    dependencies: list[str]
+
+
+def _crate_for(path: Path) -> _Crate | None:
+    for parent in path.resolve().parents:
+        if parent.name == "content":
+            manifest = parent / SNIPPETS_CRATE
+            return _load_crate(manifest) if manifest.is_file() else None
+    return None
+
+
+def _load_crate(manifest: Path) -> _Crate:
+    raw = tomllib.loads(manifest.read_text())
+    examples = {
+        (manifest.parent / e["path"]).resolve(): e["name"]
+        for e in raw.get("example", [])
+    }
+    deps = []
+    for name, spec in (raw.get("dependencies") or {}).items():
+        spec = {"version": spec} if isinstance(spec, str) else spec
+        arg = f"{name}@{str(spec.get('version', '')).lstrip('=')}".rstrip("@")
+        if spec.get("features"):
+            arg += f" --features {','.join(spec['features'])}"
+        deps.append(arg)
+    return _Crate(examples=examples, dependencies=deps)
+
+
 def _read_jvm_block(text: str) -> dict | None:
     matches = list(re.finditer(_JVM_BLOCK_RE, text))
     if len(matches) > 1:
@@ -330,13 +378,17 @@ def parse_script(path: Path) -> ScriptMeta | None:
         if tool is None:
             return None
         block = {}
-        assert runner.deps_re is not None
-        dependencies = [
-            dep
-            for m in runner.deps_re.finditer(text)
-            for dep in re.split(r"[\s,]+", m.group("deps").strip())
-            if dep
-        ]
+        if runner.name == "rust":
+            crate = _crate_for(path)
+            dependencies = crate.dependencies if crate else []
+        else:
+            assert runner.deps_re is not None
+            dependencies = [
+                dep
+                for m in runner.deps_re.finditer(text)
+                for dep in re.split(r"[\s,]+", m.group("deps").strip())
+                if dep
+            ]
     compose = tool.get("compose")
     services = tool.get("services", []) or []
     base_url_env = tool.get("base-url-env")
@@ -371,8 +423,9 @@ def parse_script(path: Path) -> ScriptMeta | None:
                 f"lane, not {lane}"
             )
         lane = runner.lane
-    elif lane == "jvm":
-        raise ScriptMetaError(f"{path}: the jvm lane is for Scala and Java scripts")
+    elif lane in _RUNNER_LANES:
+        raise ScriptMetaError(f"{path}: the {lane} lane is for {_RUNNER_LANES[lane]}")
+    crate = _crate_for(path) if runner.name == "rust" else None
 
     return ScriptMeta(
         path=path,
@@ -388,6 +441,7 @@ def parse_script(path: Path) -> ScriptMeta | None:
             lane=lane,
         ),
         runner=runner.name,
+        cargo_example=crate.examples.get(path.resolve()) if crate else None,
     )
 
 
@@ -465,6 +519,12 @@ def check(content_root: Path) -> list[str]:
             continue
         if meta is None:
             continue
+        if meta.runner == "rust" and meta.cargo_example is None:
+            rel = path.resolve().relative_to(content_root.resolve())
+            errors.append(
+                f"{path}: no [[example]] in content/{SNIPPETS_CRATE.as_posix()} builds it; "
+                f'add one with path = "../{rel.as_posix()}"'
+            )
         # A service-lane script already runs where CI has Java and Docker.
         default_lane = (
             meta.docs_factory.lane is None and not meta.docs_factory.needs_services

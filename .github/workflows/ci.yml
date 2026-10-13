@@ -65,6 +65,7 @@ jobs:
       default: ${{ steps.plan.outputs.default }}
       spark: ${{ steps.plan.outputs.spark }}
       jvm: ${{ steps.plan.outputs.jvm }}
+      rust: ${{ steps.plan.outputs.rust }}
       services: ${{ steps.plan.outputs.services }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -210,6 +211,44 @@ jobs:
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
       - run: uv run pytest content -m needs_jvm -v -rxXs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: durations-${{ matrix.id }}
+          path: durations.json
+          if-no-files-found: ignore
+
+  scripts-rust:
+    # Rust scripts, each an example of the snippets crate (content/_rust). The
+    # crate's dependencies build once; each script then only links and runs.
+    name: scripts-rust (${{ matrix.shard }})
+    needs: plan
+    if: needs.plan.outputs.rust != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.rust) }}
+    env:
+      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
+      DOCS_FACTORY_DURATIONS_OUT: durations.json
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      # rustup ships on the runner (see rust.yml).
+      - run: rustup toolchain install stable --profile minimal && rustup default stable
+      - uses: Swatinem/rust-cache@c19371144df3bb44fab255c43d04cbc2ab54d1c4 # v2.9.1
+        with:
+          shared-key: snippets
+      - run: cargo build --locked --package docs-factory-snippets --examples
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+      - uses: ./.github/actions/pypi-public
+      - run: uv sync --all-packages
+      - run: uv run pytest content -m needs_rust -v -rxXs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

@@ -379,7 +379,8 @@ _MAVEN_RE = re.compile(
 
 
 def _package_pins(meta: ScriptMeta) -> dict[str, str]:
-    """Package → pinned version; a Maven coordinate's package is its artifact."""
+    """Package → pinned version; a Maven coordinate's package is its artifact, and
+    a Rust script's `cargo add` argument reads `<crate>@<version>`."""
     pins: dict[str, str] = {}
     for dep in meta.dependencies:
         m = re.match(r"^\s*([A-Za-z0-9_.-]+)(?:\[[^\]]*\])?\s*==\s*([\w.]+)\s*$", dep)
@@ -387,10 +388,12 @@ def _package_pins(meta: ScriptMeta) -> dict[str, str]:
             pins[m.group(1).lower()] = m.group(2)
         elif m := _MAVEN_RE.match(dep.strip()):
             pins[m.group("artifact").lower()] = m.group("version")
+        elif m := re.match(r"^([\w-]+)@([\w.]+)(?:\s|$)", dep.strip()):
+            pins[m.group(1).lower()] = m.group(2)
     return pins
 
 
-# Region markers in a `//`-comment language (Scala, Java).
+# Region markers in a `//`-comment language (Scala, Java, Rust).
 _SLASH_REGION_RE = re.compile(
     r"^[ \t]*//[ \t]*--8<-- \[start:([\w-]+)\][^\n]*\n(.*?)"
     r"^[ \t]*//[ \t]*--8<-- \[end:\1\]",
@@ -401,7 +404,7 @@ _SLASH_REGION_RE = re.compile(
 def _regions(path: Path) -> dict[str, str]:
     if path.suffix == ".sql":
         return sqlregions.regions(path)
-    if path.suffix in (".sc", ".scala", ".java"):
+    if path.suffix in (".sc", ".scala", ".java", ".rs"):
         return dict(_SLASH_REGION_RE.findall(path.read_text()))
     return shellregions.regions(path)
 

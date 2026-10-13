@@ -190,6 +190,24 @@ test("Scala and Java companions run with scala-cli and JBang", () => {
   );
 });
 
+test("a Rust companion is a Cargo project's main.rs, set up with cargo add", () => {
+  const rust = {
+    kind: "rust",
+    fetchUrl: "/how-to/read/snippets/read.rs",
+    summary: "Read a Delta table.",
+    dependencies: ["deltalake@1.1.1 --features datafusion", "tokio@1 --features macros"],
+    requiresPython: null,
+    services: [],
+    env: {},
+  };
+  const run =
+    "cargo add deltalake@1.1.1 --features datafusion && cargo add tokio@1 --features macros && cargo run";
+  const md = companionsSection([rust]);
+  expect(md).toContain("(Rust): Read a Delta table.");
+  expect(md).toContain(`  - run: \`${run}\`, in a new Cargo project with it as \`src/main.rs\``);
+  expect(runnableExamplesSection([rust])).toContain(`\`${run}\``);
+});
+
 const COMPANIONS = [
   {
     kind: "python",

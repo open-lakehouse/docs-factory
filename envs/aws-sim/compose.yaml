@@ -47,6 +47,8 @@ services:
   sts-shim:
     image: python:3.13-alpine
     command: ["python", "/sts_shim.py"]
+    # Python ignores SIGTERM as PID 1; an init forwards it so `down` is quick.
+    init: true
     environment:
       STS_UPSTREAM: http://rustfs:9000
       STS_ACCESS_KEY: aws-sim-root

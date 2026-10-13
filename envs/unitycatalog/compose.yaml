@@ -27,6 +27,9 @@ services:
     pull_policy: build
     # A fixed name lets `docker exec unitycatalog bin/uc` work from any folder.
     container_name: unitycatalog
+    # The server ignores SIGTERM as PID 1; an init forwards it, so `down` takes
+    # a second instead of the 10-second kill timeout.
+    init: true
     depends_on:
       init-storage:
         condition: service_completed_successfully

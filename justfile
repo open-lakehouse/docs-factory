@@ -71,9 +71,15 @@ emit slug target: _emit-deps
 emit-docs site *flags: _emit-deps _site-deps
     cd emit && bun docs/emit-docs.mjs --site {{site}} {{flags}}
 
-# Emit the UC docs (drafts included), build the static site, preview on :4322.
-uc-docs: (emit-docs "unitycatalog-docs" "--drafts")
-    cd sites/unitycatalog-docs && bun install && bun run build && bun run preview
+# Emit one site's docs (drafts included), then build and preview its static site.
+docs-site site: (emit-docs site "--drafts")
+    cd sites/{{site}} && bun install && bun run build && bun run preview
+
+# The UC docs site, previewed on :4322.
+uc-docs: (docs-site "unitycatalog-docs")
+
+# The Delta Lake docs site, previewed on :4323.
+delta-docs: (docs-site "delta-docs")
 
 _emit-deps:
     #!/usr/bin/env bash

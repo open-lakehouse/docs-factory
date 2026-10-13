@@ -9,7 +9,7 @@ import {
   useSyncExternalStore,
 } from "react";
 
-const STORAGE_KEY = "unitycatalog-docs:content-tab";
+const STORAGE_KEY = "docs:content-tab";
 const listeners = new Set<() => void>();
 
 function readPreferred(): string | null {

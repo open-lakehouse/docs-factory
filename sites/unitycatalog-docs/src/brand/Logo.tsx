@@ -6,7 +6,7 @@ import type { SVGProps } from "react";
 // and recolor with the surrounding text color. The groups let CSS restore the
 // brand colors where wanted (see .hero-mark). Trademark usage:
 // https://www.linuxfoundation.org/trademark-usage
-export function UnityCatalogIcon(props: SVGProps<SVGSVGElement>) {
+export default function Logo(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 639 650.5"

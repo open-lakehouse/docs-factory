@@ -5,7 +5,6 @@
   "files": {
     "includes": [
       "src/**",
-      "scripts/**",
       "vite.config.ts",
       "!src/content",
       "!src/generated",

@@ -6,7 +6,7 @@
   "description": "Static Unity Catalog documentation site. Content, generated data, vendored remark plugins, and public/ are written by the docs-factory emitter (emit/docs); this package only renders them. Every route is prerendered to HTML and hydrated.",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/prerender.mjs",
+    "build": "node shell/scripts/prerender.mjs",
     "preview": "vite preview --port 4322",
     "typecheck": "tsc --noEmit"
   },

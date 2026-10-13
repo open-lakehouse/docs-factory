@@ -19,20 +19,25 @@ paths and overwrites them on every run. Don't edit them by hand:
 | `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + runnable scripts, `search-index.json` (per-section text for the ⌘K palette), images, LikeC4 PNGs and web component. |
 | `.docs-emit.json` | Emit manifest: per-page source hashes and per-file output hashes. The next emit diffs against it to write only what changed. |
 
-Everything else (layout, components, styles, the build) belongs to this site.
+Layout, components, styles, and the build come from the shared
+[docs shell](../docs-shell/README.md), linked here as `shell`. The Delta Lake
+site renders through the same shell. What is this site's own is its brand in
+`src/brand/`: `brand.ts` (wordmark, socials), `Logo.tsx`, `theme.css` (the UC
+yellow accent), and `HomePage.tsx`.
 
 The site ships from its own upstream repo, which is a mirror of this directory
 (see [Delivery](../../docs/design/docs-site-emission.md#delivery)). Vercel
 builds it from `vercel.json`. `upstream/` holds the files that replace this
 README and the repo-level `.gitignore` there.
 
-The vendored plugins import their components from `@/components/{callout,tldr,content-tabs,journey,LikeC4View}`,
-so those module paths and export names are part of the contract with the emitter.
+The vendored plugins import their components from `@/components/{callout,tldr,content-tabs,journey,LikeC4View}`
+(`@` is the shell), so those module paths and export names are part of the
+contract with the emitter.
 
 REST API pages (`/reference/api/<slug>`) render the spec at `specUrl` with
-Scalar, client-side and lazily loaded: `src/pages/ApiPage.tsx` and
-`src/components/ApiReference.tsx`, themed onto the site tokens in
-`src/components/api-reference.css`.
+Scalar, client-side and lazily loaded: `shell/src/pages/ApiPage.tsx` and
+`shell/src/components/ApiReference.tsx`, themed onto the site tokens in
+`shell/src/components/api-reference.css`.
 
 ## Commands
 

@@ -1,4 +1,5 @@
-// Typed access to what the emitter writes into src/generated/ and src/content/.
+// Typed access to what the emitter writes into the site's src/generated/ and
+// src/content/. Root-relative globs: the files live in the site, not the shell.
 // The globs tolerate a not-yet-emitted checkout (empty site, no pages) so the
 // shell still typechecks and boots before the first emit.
 import type { MDXContent } from "mdx/types";
@@ -19,7 +20,7 @@ export interface PageScript {
   /** Served path of the runnable file. */
   url: string;
   file: string;
-  kind: "python" | "shell";
+  kind: "python" | "shell" | "sql";
   summary: string | null;
 }
 
@@ -83,7 +84,7 @@ export interface SiteData {
 }
 
 const EMPTY: SiteData = {
-  title: "Unity Catalog",
+  title: "",
   tagline: "",
   nav: [],
   pages: [],
@@ -91,11 +92,11 @@ const EMPTY: SiteData = {
   apiIndex: null,
 };
 
-const data = import.meta.glob<SiteData>("./generated/site.json", {
+const data = import.meta.glob<SiteData>("/src/generated/site.json", {
   eager: true,
   import: "default",
 });
-export const site: SiteData = data["./generated/site.json"] ?? EMPTY;
+export const site: SiteData = data["/src/generated/site.json"] ?? EMPTY;
 
 export const defaultApi: ApiSpec | undefined = site.apis.find((a) => a.default) ?? site.apis[0];
 
@@ -108,13 +109,13 @@ export function apiFor(pathname: string): ApiSpec | undefined {
 // One chunk per page. Prerender and first hydration load the route's module up
 // front (preloadRoute), so the synchronous render below always finds it there;
 // later client navigations load it on demand (useContent).
-const loaders = import.meta.glob<MDXContent>("./content/**/*.md", { import: "default" });
+const loaders = import.meta.glob<MDXContent>("/src/content/**/*.md", { import: "default" });
 const loaded = new Map<string, MDXContent>();
 
 async function load(file: string): Promise<MDXContent | undefined> {
   const cached = loaded.get(file);
   if (cached) return cached;
-  const loader = loaders[`./content/${file}`];
+  const loader = loaders[`/src/content/${file}`];
   if (!loader) return undefined;
   const content = await loader();
   loaded.set(file, content);

@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import { preloadRoute } from "./site";
 import "./styles.css";
+import "@brand/theme.css";
 
 const root = document.getElementById("root") as HTMLElement;
 const app = (

@@ -1,0 +1,25 @@
+/* Unity Catalog yellow. `--accent` is for text and must pass contrast;
+   `--accent-fill` is the raw brand yellow for bars, dots, and the cursor, where
+   contrast doesn't apply. */
+:root {
+  --accent: #9a6700;
+  --accent-hover: #7d4e00;
+  --accent-fill: #ffbc00;
+  --accent-fg: #1f2328;
+}
+
+:root.dark {
+  --accent: #ffbc00;
+  --accent-hover: #ffd451;
+  --accent-fill: #ffbc00;
+  --accent-fg: #0d1117;
+}
+
+/* The hexagonal mark turns onto itself. */
+.brand:hover .brand-mark { transform: rotate(60deg); }
+
+/* Brand colors from the unitycatalog.io glyph; the navy core would vanish on dark. */
+.hero-mark .uc-mark-core { fill: #163357; }
+.hero-mark .uc-mark-triangles { fill: #ffbc00; }
+.hero-mark .uc-mark-squares { fill: #f43ba6; }
+:root.dark .hero-mark .uc-mark-core { fill: var(--heading); }

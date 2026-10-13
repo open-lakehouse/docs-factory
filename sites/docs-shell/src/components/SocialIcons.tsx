@@ -1,8 +1,10 @@
 import type { SVGProps } from "react";
 
 // Brand marks as monochrome currentColor paths (lucide ships no brand icons).
-// GitHub and Reddit from Simple Icons 16.34 (CC0); Slack from Simple Icons
-// 15.0.0 (CC0), the last release before the brand was removed.
+// GitHub and Reddit from Simple Icons 16.34 (CC0), YouTube from 16.33 (CC0);
+// Slack from Simple Icons 15.0.0 (CC0), the last release before the brand was
+// removed. LinkedIn, which Simple Icons doesn't carry, from Tabler Icons 3.44
+// (MIT, filled/brand-linkedin).
 
 type IconProps = SVGProps<SVGSVGElement>;
 
@@ -30,10 +32,18 @@ export function RedditIcon(props: IconProps) {
   );
 }
 
-export const GITHUB = "https://github.com/unitycatalog/unitycatalog";
+export function YouTubeIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="YouTube" {...props}>
+      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+    </svg>
+  );
+}
 
-export const SOCIAL = [
-  { label: "GitHub", href: GITHUB, Icon: GitHubIcon },
-  { label: "Slack", href: "https://go.unitycatalog.io/slack", Icon: SlackIcon },
-  { label: "Reddit", href: "https://www.reddit.com/r/UnityCatalog/", Icon: RedditIcon },
-] as const;
+export function LinkedInIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="LinkedIn" {...props}>
+      <path d="M17 2a5 5 0 0 1 5 5v10a5 5 0 0 1 -5 5h-10a5 5 0 0 1 -5 -5v-10a5 5 0 0 1 5 -5zm-9 8a1 1 0 0 0 -1 1v5a1 1 0 0 0 2 0v-5a1 1 0 0 0 -1 -1m6 0a3 3 0 0 0 -1.168 .236l-.125 .057a1 1 0 0 0 -1.707 .707v5a1 1 0 0 0 2 0v-3a1 1 0 0 1 2 0v3a1 1 0 0 0 2 0v-3a3 3 0 0 0 -3 -3m-6 -3a1 1 0 0 0 -.993 .883l-.007 .127a1 1 0 0 0 1.993 .117l.007 -.127a1 1 0 0 0 -1 -1" />
+    </svg>
+  );
+}

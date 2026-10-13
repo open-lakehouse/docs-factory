@@ -1,8 +1,10 @@
 /**
  * The static Unity Catalog docs site (sites/unitycatalog-docs/). This file is
  * the only place its URLs are defined: every route, canonical, twin, sitemap
- * entry, and rewritten link goes through `hrefFor`.
+ * entry, and rewritten link goes through `hrefFor` (routes.mjs).
  */
+import { projectRoutes } from "./routes.mjs";
+
 const PROJECT = "unitycatalog";
 
 export default {
@@ -66,17 +68,5 @@ export default {
       },
     ],
   },
-  /**
-   * identity → route: `/` for the home page, `/<bucket>/<slug>` for a page,
-   * `/reference/api/<slug>` for a REST API reference, `/reference/api` for
-   * the API section (which shows the default API).
-   */
-  hrefFor(identity) {
-    if (identity?.area === "site") return "/";
-    if (identity?.area === "api")
-      return identity.slug ? `/reference/api/${identity.slug}` : "/reference/api";
-    if (identity?.area !== "docs" || identity.project !== PROJECT) return null;
-    const { bucket, slug } = identity;
-    return bucket && slug ? `/${bucket}/${slug}` : null;
-  },
+  hrefFor: projectRoutes(PROJECT),
 };

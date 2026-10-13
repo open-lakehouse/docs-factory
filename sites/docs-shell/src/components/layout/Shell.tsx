@@ -1,3 +1,5 @@
+import { brand } from "@brand/brand";
+import Logo from "@brand/Logo";
 import { Check, ChevronDown, Menu, Monitor, Moon, Search, Sun, X } from "lucide-react";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -6,8 +8,6 @@ import { loadIndex } from "../../lib/search";
 import { setTheme, useThemePreference } from "../../lib/theme";
 import { apiFor, defaultApi, site } from "../../site";
 import CommandPalette from "../CommandPalette";
-import { GITHUB, SOCIAL } from "../SocialIcons";
-import { UnityCatalogIcon } from "../UnityCatalogIcon";
 import Sidebar from "./Sidebar";
 
 type Section = "docs" | "api";
@@ -279,15 +279,15 @@ export default function Shell({
           </button>
         )}
         <Link to="/" className="brand">
-          <UnityCatalogIcon className="brand-mark" aria-hidden="true" />
-          <span>{site.title.toLowerCase()}</span>
+          <Logo className="brand-mark" aria-hidden="true" />
+          <span>{brand.wordmark}</span>
           {!site.apis.length && <span className="brand-path">/ docs</span>}
         </Link>
         {site.apis.length > 0 && <Breadcrumbs />}
         {site.apis.length > 0 && <SectionTabs />}
         <nav className="topbar-links">
           <SearchTrigger onOpen={openPalette} />
-          {SOCIAL.map(({ label, href, Icon }) => (
+          {brand.social.map(({ label, href, Icon }) => (
             <a
               key={label}
               className="icon-button social"
@@ -308,10 +308,10 @@ export default function Shell({
         <footer className="statusbar">
           <span className="statusbar-item">
             <span className="statusbar-dot" aria-hidden="true" />
-            unity catalog oss
+            {brand.statusLabel}
           </span>
           <span className="statusbar-links">
-            <a href={GITHUB}>github</a>
+            <a href={brand.github}>github</a>
           </span>
         </footer>
       </div>

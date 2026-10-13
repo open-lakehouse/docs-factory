@@ -28,7 +28,11 @@ export function LikeC4View({
   return (
     <div className="diagram-frame">
       <likec4-view view-id={viewId} dynamic-variant={dynamicViewVariant} className="likec4-view">
-        <img src={`/assets/likec4/${viewId}.png`} alt={alt || `Diagram: ${viewId}`} loading="lazy" />
+        <img
+          src={`/assets/likec4/${viewId}.png`}
+          alt={alt || `Diagram: ${viewId}`}
+          loading="lazy"
+        />
       </likec4-view>
     </div>
   );

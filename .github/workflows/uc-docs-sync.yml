@@ -19,6 +19,7 @@ on:
       - content/unitycatalog/**
       - envs/**
       - sites/unitycatalog-docs/**
+      - sites/docs-shell/**
       - emit/**
       - site/src/content-core/**
       - site/src/plugins/**
@@ -141,7 +142,7 @@ jobs:
               echo "### Source commits since the last merged sync"
               echo
               git log --no-merges --format="- \`%h\` %s" "$PREV_COMMIT..$GITHUB_SHA" -- \
-                content/unitycatalog envs sites/unitycatalog-docs emit site/src/content-core \
+                content/unitycatalog envs sites/unitycatalog-docs sites/docs-shell emit site/src/content-core \
                 site/src/plugins architecture/model | head -n 100
               echo
             fi

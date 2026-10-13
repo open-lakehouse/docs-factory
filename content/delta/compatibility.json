@@ -68,6 +68,7 @@
         "spark-sql",
         "spark-python",
         "delta-rs-python",
+        "delta-rs-rust",
         "duckdb-sql"
       ],
       "rows": [
@@ -90,6 +91,7 @@
         "spark-sql",
         "spark-python",
         "delta-rs-python",
+        "delta-rs-rust",
         "duckdb-sql"
       ],
       "rows": [
@@ -107,6 +109,7 @@
         "spark-sql",
         "spark-python",
         "delta-rs-python",
+        "delta-rs-rust",
         "duckdb-sql"
       ],
       "rows": [
@@ -128,6 +131,7 @@
         "spark-sql",
         "spark-python",
         "delta-rs-python",
+        "delta-rs-rust",
         "duckdb-sql"
       ],
       "rows": [
@@ -150,6 +154,7 @@
         "spark-sql",
         "spark-python",
         "delta-rs-python",
+        "delta-rs-rust",
         "duckdb-sql"
       ],
       "rows": [
@@ -165,6 +170,7 @@
         "spark-sql",
         "spark-python",
         "delta-rs-python",
+        "delta-rs-rust",
         "duckdb-sql"
       ],
       "rows": [
@@ -186,6 +192,7 @@
         "spark-sql",
         "spark-python",
         "delta-rs-python",
+        "delta-rs-rust",
         "duckdb-sql"
       ],
       "rows": [
@@ -201,6 +208,7 @@
         "spark-sql",
         "spark-python",
         "delta-rs-python",
+        "delta-rs-rust",
         "duckdb-sql"
       ],
       "rows": [
@@ -292,6 +300,22 @@
           ],
           "evidence": []
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::create` (create.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/create.rs",
+              "api": "DeltaTable::create()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": true,
@@ -369,6 +393,22 @@
               "note": null
             }
           ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`write` to a new path creates the table (write)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
+              "api": "DeltaTable::write()",
+              "verified": null,
+              "note": null
+            }
+          ]
         }
       }
     },
@@ -421,6 +461,22 @@
               "why": "`partition_by=`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "partition_by=",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`with_partition_columns` (create.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/create.rs",
+              "api": "with_partition_columns()",
               "verified": null,
               "note": null
             }
@@ -545,6 +601,22 @@
           ],
           "evidence": []
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`write` with `SaveMode::Append` (write)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
+              "api": "with_save_mode(SaveMode::Append)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "tested",
           "draft": false,
@@ -656,6 +728,22 @@
           ],
           "evidence": []
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`write` with `SaveMode::Overwrite` (write)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
+              "api": "with_save_mode(SaveMode::Overwrite)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": true,
@@ -729,6 +817,22 @@
               "why": "`mode=\"overwrite\", predicate=`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "mode=\"overwrite\", predicate=",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`with_replace_where` (write)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
+              "api": "with_replace_where()",
               "verified": null,
               "note": null
             }
@@ -857,6 +961,22 @@
             }
           ],
           "evidence": []
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "a mismatched batch fails unless `with_schema_mode` allows it (write)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
         }
       }
     },
@@ -909,6 +1029,22 @@
               "why": "`CommitProperties(app_transactions=…)` (transaction.py)",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/transaction.py",
               "api": "CommitProperties(app_transactions=…)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`CommitProperties::with_application_transaction` (transaction)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/mod.rs",
+              "api": "with_application_transaction()",
               "verified": null,
               "note": null
             }
@@ -985,6 +1121,22 @@
               "note": null
             }
           ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`CommitProperties::with_metadata` (transaction)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/mod.rs",
+              "api": "with_metadata()",
+              "verified": null,
+              "note": null
+            }
+          ]
         }
       }
     },
@@ -1043,6 +1195,22 @@
               "why": "`DeltaTable.update`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "DeltaTable.update()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::update` (update.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/update.rs",
+              "api": "DeltaTable::update()",
               "verified": null,
               "note": null
             }
@@ -1132,6 +1300,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::delete` (delete.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/delete.rs",
+              "api": "DeltaTable::delete()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": true,
@@ -1210,6 +1394,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`merge` + `when_matched_*`/`when_not_matched_*` (merge)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs",
+              "api": "DeltaTable::merge()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -1282,6 +1482,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`when_not_matched_by_source_*` (merge)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs",
+              "api": "when_not_matched_by_source_*()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -1349,6 +1565,22 @@
               "why": "`merge(merge_schema=True)`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "merge(merge_schema=True)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`with_merge_schema(true)` (merge)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs",
+              "api": "with_merge_schema()",
               "verified": null,
               "note": null
             }
@@ -1678,6 +1910,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "DataFusion pushes filters into the scan (table provider)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/delta_datafusion/table_provider.rs",
+              "api": "table_provider()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "documented",
           "draft": false,
@@ -1813,6 +2061,22 @@
           ],
           "evidence": []
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`load_version`, `open_table_with_version` (table)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs",
+              "api": "load_version()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "tested",
           "draft": true,
@@ -1930,6 +2194,22 @@
             }
           ],
           "evidence": []
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`load_with_datetime`, `open_table_with_ds` (table)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs",
+              "api": "load_with_datetime()",
+              "verified": null,
+              "note": null
+            }
+          ]
         },
         "duckdb-sql": {
           "status": "fails",
@@ -2226,6 +2506,22 @@
           ],
           "evidence": []
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::history` (table)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs",
+              "api": "history()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "missing",
           "draft": false,
@@ -2304,6 +2600,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`snapshot`: metadata, protocol, add actions (table)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs",
+              "api": "snapshot()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "documented",
           "draft": false,
@@ -2376,6 +2688,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::restore` (restore.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/restore.rs",
+              "api": "DeltaTable::restore()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -2442,6 +2770,22 @@
               "page": null,
               "why": "no API",
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API (the operations `DeltaTable` offers)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
               "note": null
@@ -2520,6 +2864,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`with_schema_mode(SchemaMode::Merge)` (write)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
+              "api": "with_schema_mode(SchemaMode::Merge)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -2587,6 +2947,22 @@
               "why": "`schema_mode=\"overwrite\"`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "schema_mode=\"overwrite\"",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`with_schema_mode(SchemaMode::Overwrite)` (write)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
+              "api": "with_schema_mode(SchemaMode::Overwrite)",
               "verified": null,
               "note": null
             }
@@ -2664,6 +3040,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::add_columns` (add_column.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/add_column.rs",
+              "api": "add_columns()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -2730,6 +3122,22 @@
               "page": null,
               "why": "no API",
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API (the operations `DeltaTable` offers)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
               "note": null
@@ -2808,6 +3216,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API (the operations `DeltaTable` offers)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -2879,6 +3303,22 @@
               "note": null
             }
           ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::add_constraint` (constraints.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/constraints.rs",
+              "api": "add_constraint()",
+              "verified": null,
+              "note": null
+            }
+          ]
         }
       }
     },
@@ -2931,6 +3371,22 @@
               "why": "schema nullability, `alter.drop_column_not_null`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "alter.drop_column_not_null()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "schema nullability, `drop_column_not_null` (drop_column_not_null.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/drop_column_not_null.rs",
+              "api": "drop_column_not_null()",
               "verified": null,
               "note": null
             }
@@ -2991,6 +3447,22 @@
               "note": null
             }
           ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "writes compute and check generation expressions (generated_columns.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/generated_columns.rs",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
         }
       }
     },
@@ -3042,6 +3514,22 @@
               "page": null,
               "why": "writer v6 marked unsupported (feature table)",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": null,
+              "why": "not in the writer's supported features (protocol checker)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/protocol.rs",
               "api": null,
               "verified": null,
               "note": null
@@ -3144,6 +3632,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::scan_cdf` (load_cdf.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/load_cdf.rs",
+              "api": "scan_cdf()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -3210,6 +3714,22 @@
               "page": null,
               "why": "Doesn't work.",
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no streaming API (the operations `DeltaTable` offers)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
               "note": null
@@ -3288,6 +3808,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no streaming API (the operations `DeltaTable` offers)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -3355,6 +3891,22 @@
               "why": "`optimize.compact`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "optimize.compact()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`optimize` with `OptimizeType::Compact` (optimize.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/optimize.rs",
+              "api": "optimize()",
               "verified": null,
               "note": null
             }
@@ -3432,6 +3984,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`optimize` with `OptimizeType::ZOrder` (optimize.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/optimize.rs",
+              "api": "with_type(OptimizeType::ZOrder)",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -3498,6 +4066,22 @@
               "page": null,
               "why": "no API",
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API (the operations `DeltaTable` offers)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
               "note": null
@@ -3576,6 +4160,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::vacuum` with `with_dry_run` (vacuum.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/vacuum.rs",
+              "api": "vacuum()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -3642,6 +4242,22 @@
               "page": null,
               "why": "`create_checkpoint`, `cleanup_metadata`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
+              "api": "create_checkpoint()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`checkpoints::create_checkpoint` (checkpoints.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/protocol/checkpoints.rs",
               "api": "create_checkpoint()",
               "verified": null,
               "note": null
@@ -3776,6 +4392,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::generate` (generate.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/generate.rs",
+              "api": "generate()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -3843,6 +4475,22 @@
               "why": "`repair`",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "repair()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::filesystem_check` (filesystem_check.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/filesystem_check.rs",
+              "api": "filesystem_check()",
               "verified": null,
               "note": null
             }
@@ -3920,6 +4568,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`ConvertToDeltaBuilder` (convert_to_delta.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/convert_to_delta.rs",
+              "api": "ConvertToDeltaBuilder",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -3992,6 +4656,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::add_feature` (add_feature.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/add_feature.rs",
+              "api": "add_feature()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -4058,6 +4738,22 @@
               "page": null,
               "why": "no API",
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "no API (the operations `DeltaTable` offers)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
               "note": null
@@ -4146,6 +4842,22 @@
             }
           ]
         },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`DeltaTable::set_tbl_properties` (set_tbl_properties.rs)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/set_tbl_properties.rs",
+              "api": "set_tbl_properties()",
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
         "duckdb-sql": {
           "status": "fails",
           "draft": false,
@@ -4217,6 +4929,22 @@
               "note": null
             }
           ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "DynamoDB lock or conditional put (`s3` feature, deltalake-aws)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/aws/src/lib.rs",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
         }
       }
     },
@@ -4268,6 +4996,22 @@
               "page": null,
               "why": "(feature table)",
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "`azure` and `gcs` features (deltalake-azure, deltalake-gcp)",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/azure/src/lib.rs",
               "api": null,
               "verified": null,
               "note": null

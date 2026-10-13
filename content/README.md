@@ -254,6 +254,31 @@ anything; only `prerequisites.datasets` is, for seed-dataset examples). The test
 harness reads `[tool.docs-factory]` to know which compose to start; omit the
 whole table if the script needs no services.
 
+Scala and Java scripts follow the same contract with their own tools' headers.
+A Scala script (`*.sc`) is run by `scala-cli run`, a Java one (`*.java`) by
+`jbang`; their dependencies are the directives those tools read, and the
+`[tool.docs-factory]` keys sit in a `// /// docs-factory` comment block that the
+served copy drops (in Java, the dependency line reads
+`//DEPS io.delta:delta-spark_2.13:4.4.0`):
+
+```scala
+//> using scala 2.13
+//> using dep io.delta::delta-spark:4.4.0
+
+// /// docs-factory
+// claims.spark-scala = [
+//   { journey = "read.scan", region = "read" },
+// ]
+// ///
+```
+
+They always run in the `jvm` lane (`just test-jvm`, which needs Java 17,
+scala-cli, and jbang), mark regions with `// --8<-- [start:name]`, and assert
+at the end of the file (Scala's `assert`; Java needs an explicit check, since
+`assert` is off without `-ea`). A Scala tutorial step is what the reader types
+into `spark-shell`, where `spark` already exists, so build the session outside
+the regions. Java has no shell: its steps are regions of one JBang script.
+
 Structure a script as a flat, top-to-bottom program with the flow in one
 `main()` function (`async def` for async SDKs) plus an
 `if __name__ == "__main__":` footer. Each region holds exactly what a reader

@@ -143,7 +143,11 @@ just arch-dev                          # LikeC4 architecture model at :5173
 2. Put the runnable code in `snippets/<name>.py` with a PEP 723 `# /// script`
    block (its deps, and `[tool.uv.sources]` for the local `docs-factory-seed`),
    region markers wrapping only what the reader should see, and inline `assert`s
-   in `__main__` so running it to completion is its test.
+   in `__main__` so running it to completion is its test. Scala (`<name>.sc`, run
+   by scala-cli) and Java (`<Name>.java`, run by JBang) work the same way: their
+   deps are `//> using dep` or `//DEPS` lines, the `[tool.docs-factory]` keys go
+   in a `// /// docs-factory` block, regions use `// --8<--` markers, and they
+   run in the `jvm` lane (see `content/README.md`).
 3. Reference it from `index.md` with a fence
    (`file=./snippets/<name>.py start=... end=...`), then `uv run docsnip check`.
    `content/conftest.py` runs the script in the default test lane.

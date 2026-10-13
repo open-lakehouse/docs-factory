@@ -18,6 +18,20 @@
       "model": "deltaSpark"
     },
     {
+      "key": "spark-scala",
+      "label": "Spark · Scala",
+      "version": "4.2.0",
+      "package": "delta-spark",
+      "model": "deltaSpark"
+    },
+    {
+      "key": "spark-java",
+      "label": "Spark · Java",
+      "version": "4.2.0",
+      "package": "delta-spark",
+      "model": "deltaSpark"
+    },
+    {
       "key": "delta-rs-python",
       "label": "delta-rs · Python",
       "version": "1.6.6",
@@ -1426,6 +1440,50 @@
               "fails": null,
               "version": "4.2.0",
               "api": "spark.read.format(\"delta\").load()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-scala": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/001-read-a-delta-table/snippets/read.sc",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "anchor": "read-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.4.0",
+              "api": "spark.read.format(\"delta\").load()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-java": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/how-to/001-read-a-delta-table/snippets/Read.java",
+              "page": {
+                "project": "delta",
+                "bucket": "how-to",
+                "slug": "read-a-delta-table"
+              },
+              "anchor": "read-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.4.0",
+              "api": "spark.read().format(\"delta\").load()",
               "note": null
             }
           ],

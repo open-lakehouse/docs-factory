@@ -69,3 +69,7 @@ sites/*/.ssr/
 
 # review-feedback pull output (per-page snapshots of open review threads)
 .review/
+
+# scala-cli build state, next to any Scala script it runs
+.scala-build/
+.bsp/

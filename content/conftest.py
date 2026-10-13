@@ -10,14 +10,16 @@ So there are no per-tutorial ``test_*.py`` files — this plugin discovers every
     start the declared compose (if any) → `uv run script.py` → assert exit 0
 
 Scripts that declare a ``compose`` are marked ``needs_uc_server`` (derived, not
-hand-written), so the default ``pytest`` — which the root config filters with
-``-m "not needs_docker and not needs_uc_server and not needs_spark"`` — skips
-them on a Docker-less machine, while the opt-in service lane runs them for real
+hand-written), so the default ``pytest`` — whose root config deselects every
+``needs_*`` marker — skips them on a Docker-less machine, while the opt-in service lane runs them for real
 and fails hard if the compose can't start. Scripts with ``lane = "spark"`` are
 marked ``needs_spark`` the same way and run in the Spark lane, which needs Java
-and Maven. Where Maven Central is unreachable, set ``DOCS_FACTORY_MAVEN_MIRROR``
-to a mirror URL; the harness hands Spark a ``spark-defaults.conf`` that resolves
-packages through it, so the scripts and the commands they show stay unchanged.
+and Maven. Scala and Java scripts (``*.sc``/``*.scala`` run by ``scala-cli``,
+``*.java`` by ``jbang``) carry the same table in a ``// /// docs-factory`` block
+and are marked ``needs_jvm``. Where Maven Central is unreachable, set
+``DOCS_FACTORY_MAVEN_MIRROR`` to a mirror URL; the harness points Spark's
+``spark-defaults.conf``, Coursier, and JBang at it, so the scripts and the
+commands they show stay unchanged.
 
 CI runs a shard of scripts per runner: ``DOCS_FACTORY_SELECT`` holds a JSON list
 of repo-relative script paths (from ``docsnip plan``), and every other script is
@@ -50,7 +52,7 @@ if TYPE_CHECKING:
 # source of truth for discovering + parsing a script's inline metadata.
 from docsnip.environments import client_env
 from docsnip.frontmatter import page_status
-from docsnip.scriptmeta import ScriptMeta, parse_script
+from docsnip.scriptmeta import ScriptMeta, parse_script, runner_for
 
 # Exit codes a process reports when killed by a native abort/segfault signal
 # (128 + signal number): SIGABRT (134) and SIGSEGV (139). subprocess also
@@ -74,8 +76,8 @@ _SCRIPT_TIMEOUT_S = int(os.environ.get("DOCS_FACTORY_SCRIPT_TIMEOUT", "600"))
 
 
 def pytest_collect_file(parent, file_path):
-    """Collect any ``*.py`` under content/ that carries a PEP 723 script block."""
-    if file_path.suffix != ".py":
+    """Collect any script under content/ that carries its runner's metadata block."""
+    if runner_for(file_path) is None:
         return None
     meta = parse_script(file_path)
     if meta is None:
@@ -156,6 +158,8 @@ class TutorialScriptItem(pytest.Item):
             self.add_marker(pytest.mark.needs_uc_server)
         if script_meta.docs_factory.lane == "spark":
             self.add_marker(pytest.mark.needs_spark)
+        if script_meta.docs_factory.lane == "jvm":
+            self.add_marker(pytest.mark.needs_jvm)
         page = script_meta.owning_page()
         status = page_status(page) if page else "draft"
         if status != "ready":
@@ -182,7 +186,8 @@ class TutorialScriptItem(pytest.Item):
             # sitecustomize can't see a bare `raise SystemExit(n)`, so such a
             # script keeps the normal (slow, hang-prone) teardown rather than
             # risk reporting its failure as a pass.
-            if "SystemExit" not in self.script_meta.path.read_text():
+            python = self.script_meta.runner == "python"
+            if python and "SystemExit" not in self.script_meta.path.read_text():
                 env["PYTHONPATH"] = os.pathsep.join(
                     p for p in (str(_HARNESS_DIR), env.get("PYTHONPATH")) if p
                 )
@@ -196,7 +201,11 @@ class TutorialScriptItem(pytest.Item):
                 raise
             native_abort = proc.returncode < 0 or proc.returncode in _NATIVE_ABORT_CODES
             # A JVM that dies by a signal is a real failure, not the pyarrow flake.
-            if native_abort and self.script_meta.docs_factory.lane != "spark":
+            if (
+                native_abort
+                and python
+                and self.script_meta.docs_factory.lane != "spark"
+            ):
                 # A native crash in the deltalake/pyarrow layer (SIGABRT/SIGSEGV,
                 # surfaced as exit 134/139 or a negative signal code) aborts the
                 # process before any Python `assert` in the script can run — so
@@ -227,15 +236,17 @@ class TutorialScriptItem(pytest.Item):
 
 
 def _maven_mirror_env() -> dict[str, str]:
-    """``SPARK_CONF_DIR`` pointing Spark's package resolution at the mirror in
-    ``DOCS_FACTORY_MAVEN_MIRROR``, or nothing when it's unset (as in CI)."""
+    """Package resolution through the mirror in ``DOCS_FACTORY_MAVEN_MIRROR``, or
+    nothing when it's unset (as in CI): ``SPARK_CONF_DIR`` for Spark's
+    ``--packages``, ``COURSIER_REPOSITORIES`` for scala-cli. JBang takes the
+    mirror as a flag (:func:`_command`)."""
     mirror = os.environ.get("DOCS_FACTORY_MAVEN_MIRROR")
     if not mirror:
         return {}
     conf_dir = Path(tempfile.gettempdir()) / "docs-factory-spark-conf"
     conf_dir.mkdir(exist_ok=True)
     (conf_dir / "spark-defaults.conf").write_text(f"spark.jars.repositories {mirror}\n")
-    return {"SPARK_CONF_DIR": str(conf_dir)}
+    return {"SPARK_CONF_DIR": str(conf_dir), "COURSIER_REPOSITORIES": mirror}
 
 
 @contextmanager
@@ -252,14 +263,25 @@ def _delta_lock(path: Path):
             fcntl.flock(fh, fcntl.LOCK_UN)
 
 
-def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedProcess:
-    """`uv run` the script, killing its whole process group on timeout.
+def _command(meta: ScriptMeta) -> list[str]:
+    """The command a reader runs the script with, minus the path."""
+    if meta.runner == "scala":
+        # No Bloop daemon: it would outlive the run, holding the output pipes.
+        return ["scala-cli", "run", "--server=false"]
+    if meta.runner == "java":
+        mirror = os.environ.get("DOCS_FACTORY_MAVEN_MIRROR")
+        return ["jbang", "run", *([f"--repos={mirror}"] if mirror else [])]
+    return ["uv", "run", "--no-project"]
 
-    ``subprocess.run(timeout=)`` would kill only uv and then block reading pipes
-    the orphaned interpreter still holds open; a session of its own lets the
-    harness kill the interpreter too.
+
+def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedProcess:
+    """Run the script, killing its whole process group on timeout.
+
+    ``subprocess.run(timeout=)`` would kill only the launcher (uv, scala-cli,
+    jbang) and then block reading pipes the orphaned interpreter or JVM still
+    holds open; a session of its own lets the harness kill that too.
     """
-    args = ["uv", "run", "--no-project", str(meta.path)]
+    args = [*_command(meta), str(meta.path)]
     with subprocess.Popen(
         args,
         stdout=subprocess.PIPE,
@@ -294,7 +316,8 @@ class TutorialScriptFailure(Exception):
 
     def __str__(self) -> str:
         text = (
-            f"`uv run {self.meta.path.name}` exited {self.proc.returncode}\n"
+            f"`{_command(self.meta)[0]} run {self.meta.path.name}` exited "
+            f"{self.proc.returncode}\n"
             f"--- stdout ---\n{self.proc.stdout}\n"
             f"--- stderr ---\n{self.proc.stderr}"
         )
@@ -366,7 +389,8 @@ class TutorialScriptTimeout(TutorialScriptFailure):
 
     def __str__(self) -> str:
         text = (
-            f"`uv run {self.meta.path.name}` ran past {_SCRIPT_TIMEOUT_S}s and was "
+            f"`{_command(self.meta)[0]} run {self.meta.path.name}` ran past "
+            f"{_SCRIPT_TIMEOUT_S}s and was "
             f"killed\n--- stdout ---\n{self.proc.stdout}\n"
             f"--- stderr ---\n{self.proc.stderr}"
         )

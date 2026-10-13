@@ -101,14 +101,22 @@ UNITYCATALOG = Project(
 DELTA = Project(
     name="delta",
     product=r"Delta(?:\s+Lake|\s+Spark)?\s+",
-    scan=(("content/delta", ("*.md", "*.py", "*.sh", "*.sql", "*.yaml")),),
+    scan=(
+        (
+            "content/delta",
+            ("*.md", "*.py", "*.sh", "*.sql", "*.yaml", "*.sc", "*.scala", "*.java"),
+        ),
+    ),
     rules=(
         # Unsuffixed artifacts target the release's default Spark version.
         Rule("release", re.compile(rf"io\.delta:delta-spark_2\.13:{_V}")),
         Rule("release", re.compile(rf"\bdelta-spark=={_V}")),
+        Rule("release", re.compile(rf"io\.delta::delta-spark:{_V}")),
         Rule("release", re.compile(rf"delta-io/delta/(?:blob|tree)/v{_V}")),
         _prose_pin("release", "delta-spark", "delta"),
         Rule("pyspark", re.compile(rf"\bpyspark=={_V}")),
+        # The Spark release the JVM examples compile against.
+        Rule("pyspark", re.compile(rf"org\.apache\.spark::?spark-sql(?:_2\.13)?:{_V}")),
         _prose_pin("pyspark", "pyspark", "delta"),
         Rule("deltalake", re.compile(rf"\bdeltalake(?:\[[^\]]*\])?=={_V}")),
         Rule("deltalake", re.compile(rf"delta-rs/(?:blob|tree)/python-v{_V}")),

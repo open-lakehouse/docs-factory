@@ -1,7 +1,8 @@
 """Which tutorial scripts a CI run executes, and how they split across runners.
 
 A script belongs to exactly one lane, the toolchain its job installs: ``services``
-(it declares a compose), ``spark`` (``lane = "spark"``), or ``default``. On a pull
+(it declares a compose), ``spark`` (``lane = "spark"``), ``jvm`` (a Scala or Java
+script), or ``default``. On a pull
 request only the scripts whose inputs changed run; a change to anything every
 script depends on (the harness, docsnip, the lockfile) selects them all. Each
 lane's selection is then packed into shards by recorded duration, and every
@@ -22,11 +23,11 @@ from pathlib import Path
 
 from .scriptmeta import ScriptMeta
 
-LANES = ("default", "spark", "services")
+LANES = ("default", "spark", "jvm", "services")
 
 # Per-lane shard cap. Every shard pays its own setup (the toolchain, the
 # ~1 GB UC image build), so a shard should carry at least TARGET_S of scripts.
-_MAX_SHARDS = {"default": 1, "spark": 2, "services": 4}
+_MAX_SHARDS = {"default": 1, "spark": 2, "jvm": 2, "services": 4}
 TARGET_S = 120
 
 # Seconds assumed for a script with no recorded duration.
@@ -50,8 +51,8 @@ GLOBAL_INPUTS = (
 def lane_of(meta: ScriptMeta) -> str:
     if meta.docs_factory.needs_services:
         return "services"
-    if meta.docs_factory.lane == "spark":
-        return "spark"
+    if meta.docs_factory.lane in ("spark", "jvm"):
+        return meta.docs_factory.lane
     return "default"
 
 

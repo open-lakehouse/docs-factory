@@ -39,9 +39,10 @@ testpaths = ["tools/docsnip/tests", "content"]
 # Service-backed and Spark tests are opt-in: excluded by default so a pytest
 # without Docker or Java stays green; CI's tutorials-services and spark-tests
 # jobs select them with `-m`.
-addopts = "-m 'not needs_docker and not needs_uc_server and not needs_spark'"
+addopts = "-m 'not needs_docker and not needs_uc_server and not needs_spark and not needs_jvm'"
 markers = [
     "needs_docker: requires a running Docker daemon (opt-in)",
     "needs_uc_server: requires a Unity Catalog server via docker-compose (opt-in)",
     "needs_spark: requires Java 17 and Maven for Spark (opt-in)",
+    "needs_jvm: requires Java 17, scala-cli, and jbang (opt-in)",
 ]

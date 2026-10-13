@@ -197,6 +197,11 @@ test-services:
 test-spark:
     uv run pytest -m "needs_spark and not needs_uc_server"
 
+# Run the Scala and Java scripts (opt-in): needs Java 17, scala-cli, and jbang.
+# Behind a proxy, DOCS_FACTORY_MAVEN_MIRROR reaches them too.
+test-jvm:
+    uv run pytest content -m needs_jvm
+
 # Fold the script durations a CI run measured into .github/script-durations.json,
 # which `docsnip plan` packs shards by. Use a full run (main or nightly).
 ci-durations run-id:

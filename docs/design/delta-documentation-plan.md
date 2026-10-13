@@ -62,12 +62,17 @@ Reader-facing sections:
 
 Four decisions shape everything else:
 
-1. **Four interfaces, fixed tab order.** `Spark SQL`, `PySpark`, `Python`,
-   `DuckDB`. Spark SQL is the reference writer and supports every feature, so
-   the first tab almost never has to say "not supported". PySpark covers the
+1. **Interfaces are an engine through a language, in a fixed tab order.**
+   `Spark · SQL`, `Spark · Python`, `delta-rs · Python`, `DuckDB · SQL`, with
+   `DuckDB · Python` for pages that drive DuckDB from Python. The examples are
+   about the engine; the language is the binding the reader uses, and the site
+   picks tabs on both axes (`content/README.md`, "Interface tabs"). Spark SQL is
+   the reference writer and supports every feature, so the first tab almost
+   never has to say "not supported". `Spark · Python` (PySpark) covers the
    DataFrame reader and writer, `DeltaTable`, and Structured Streaming.
-   `Python` is the `deltalake` package. DuckDB is SQL through the `delta`
-   extension.
+   `delta-rs · Python` is the `deltalake` package. DuckDB is SQL through the
+   `delta` extension. `Spark · Scala`, `Spark · Java`, and `delta-rs · Rust`
+   join the same order when their runners land.
 2. **Spark SQL leads.** Tutorials use Spark SQL unless the task has no SQL
    form (streaming uses PySpark). T11 gives readers who don't want a JVM their
    own path: write with `deltalake`, query with DuckDB.

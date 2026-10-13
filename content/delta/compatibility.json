@@ -5,28 +5,35 @@
   "interfaces": [
     {
       "key": "spark-sql",
-      "label": "Spark SQL",
+      "label": "Spark · SQL",
       "version": "4.2.0",
       "package": "pyspark",
       "model": "deltaSpark"
     },
     {
-      "key": "pyspark",
-      "label": "PySpark",
+      "key": "spark-python",
+      "label": "Spark · Python",
       "version": "4.2.0",
       "package": "pyspark",
       "model": "deltaSpark"
     },
     {
-      "key": "deltalake",
-      "label": "Python",
+      "key": "delta-rs-python",
+      "label": "delta-rs · Python",
       "version": "1.6.6",
       "package": "deltalake",
       "model": "deltaRs"
     },
     {
-      "key": "duckdb",
-      "label": "DuckDB",
+      "key": "duckdb-sql",
+      "label": "DuckDB · SQL",
+      "version": "1.5.6",
+      "package": "duckdb",
+      "model": "duckdb"
+    },
+    {
+      "key": "duckdb-python",
+      "label": "DuckDB · Python",
       "version": "1.5.6",
       "package": "duckdb",
       "model": "duckdb"
@@ -38,9 +45,9 @@
       "title": "Create and write",
       "columns": [
         "spark-sql",
-        "pyspark",
-        "deltalake",
-        "duckdb"
+        "spark-python",
+        "delta-rs-python",
+        "duckdb-sql"
       ],
       "rows": [
         "create.table",
@@ -60,9 +67,9 @@
       "title": "Modify rows",
       "columns": [
         "spark-sql",
-        "pyspark",
-        "deltalake",
-        "duckdb"
+        "spark-python",
+        "delta-rs-python",
+        "duckdb-sql"
       ],
       "rows": [
         "dml.update",
@@ -77,9 +84,9 @@
       "title": "Read and history",
       "columns": [
         "spark-sql",
-        "pyspark",
-        "deltalake",
-        "duckdb"
+        "spark-python",
+        "delta-rs-python",
+        "duckdb-sql"
       ],
       "rows": [
         "read.scan",
@@ -98,9 +105,9 @@
       "title": "Schema and data quality",
       "columns": [
         "spark-sql",
-        "pyspark",
-        "deltalake",
-        "duckdb"
+        "spark-python",
+        "delta-rs-python",
+        "duckdb-sql"
       ],
       "rows": [
         "schema.merge-on-write",
@@ -120,9 +127,9 @@
       "title": "Change data and streaming",
       "columns": [
         "spark-sql",
-        "pyspark",
-        "deltalake",
-        "duckdb"
+        "spark-python",
+        "delta-rs-python",
+        "duckdb-sql"
       ],
       "rows": [
         "cdf.read",
@@ -135,9 +142,9 @@
       "title": "Layout and maintenance",
       "columns": [
         "spark-sql",
-        "pyspark",
-        "deltalake",
-        "duckdb"
+        "spark-python",
+        "delta-rs-python",
+        "duckdb-sql"
       ],
       "rows": [
         "layout.compact",
@@ -156,9 +163,9 @@
       "title": "Table features and protocol",
       "columns": [
         "spark-sql",
-        "pyspark",
-        "deltalake",
-        "duckdb"
+        "spark-python",
+        "delta-rs-python",
+        "duckdb-sql"
       ],
       "rows": [
         "feature.enable",
@@ -171,9 +178,9 @@
       "title": "Storage and catalogs",
       "columns": [
         "spark-sql",
-        "pyspark",
-        "deltalake",
-        "duckdb"
+        "spark-python",
+        "delta-rs-python",
+        "duckdb-sql"
       ],
       "rows": [
         "storage.s3-multi-writer",
@@ -226,7 +233,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -242,7 +249,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -264,7 +271,7 @@
           ],
           "evidence": []
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": true,
           "proofs": [
@@ -310,7 +317,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -326,7 +333,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -366,7 +373,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -382,7 +389,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -458,7 +465,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -480,7 +487,7 @@
           ],
           "evidence": []
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -517,7 +524,7 @@
           ],
           "evidence": []
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -584,7 +591,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -606,7 +613,7 @@
           ],
           "evidence": []
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -628,7 +635,7 @@
           ],
           "evidence": []
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": true,
           "proofs": [
@@ -674,7 +681,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -690,7 +697,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -706,7 +713,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -746,7 +753,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -762,7 +769,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -786,7 +793,7 @@
       "summary": null,
       "request": null,
       "cells": {
-        "pyspark": {
+        "spark-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -808,7 +815,7 @@
           ],
           "evidence": []
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -854,7 +861,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -870,7 +877,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -886,7 +893,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -926,7 +933,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -942,7 +949,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -988,7 +995,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1004,7 +1011,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1020,7 +1027,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": true,
           "proofs": [
@@ -1072,7 +1079,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1088,7 +1095,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1104,7 +1111,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": true,
           "proofs": [
@@ -1150,7 +1157,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1166,7 +1173,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1182,7 +1189,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -1222,7 +1229,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1238,7 +1245,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1254,7 +1261,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -1294,7 +1301,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1310,7 +1317,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1326,7 +1333,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -1402,7 +1409,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -1424,7 +1431,7 @@
           ],
           "evidence": []
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -1461,7 +1468,7 @@
           ],
           "evidence": []
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -1473,21 +1480,6 @@
                 "slug": "read-a-delta-table"
               },
               "anchor": "read-a-table",
-              "ready": false,
-              "works": true,
-              "fails": null,
-              "version": "1.5.6",
-              "api": "delta_scan()",
-              "note": null
-            },
-            {
-              "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
-              "page": {
-                "project": "delta",
-                "bucket": "tutorials",
-                "slug": "python-to-duckdb"
-              },
-              "anchor": "query-the-table-with-duckdb",
               "ready": false,
               "works": true,
               "fails": null,
@@ -1509,6 +1501,28 @@
               "version": "1.5.4",
               "api": null,
               "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
+              "page": {
+                "project": "delta",
+                "bucket": "tutorials",
+                "slug": "python-to-duckdb"
+              },
+              "anchor": "query-the-table-with-duckdb",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": "delta_scan()",
+              "note": null
             }
           ],
           "evidence": []
@@ -1537,7 +1551,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1557,7 +1571,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1577,7 +1591,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -1653,7 +1667,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -1675,7 +1689,7 @@
           ],
           "evidence": []
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -1712,7 +1726,7 @@
           ],
           "evidence": []
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -1730,7 +1744,14 @@
               "version": "1.5.6",
               "api": "AT (VERSION => n)",
               "note": null
-            },
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
             {
               "script": "content/delta/tutorials/003-python-to-duckdb/snippets/python_to_duckdb.py",
               "page": {
@@ -1779,7 +1800,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -1801,7 +1822,7 @@
           ],
           "evidence": []
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -1823,7 +1844,7 @@
           ],
           "evidence": []
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": true,
           "proofs": [
@@ -1875,7 +1896,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -1895,7 +1916,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -1917,7 +1938,7 @@
           ],
           "evidence": []
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -2014,7 +2035,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -2051,7 +2072,7 @@
           ],
           "evidence": []
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "tested",
           "draft": true,
           "proofs": [
@@ -2118,7 +2139,7 @@
           ],
           "evidence": []
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -2164,7 +2185,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2180,7 +2201,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2196,7 +2217,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2236,7 +2257,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2252,7 +2273,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2268,7 +2289,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -2308,7 +2329,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2324,7 +2345,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -2340,7 +2361,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -2380,7 +2401,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2396,7 +2417,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2412,7 +2433,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -2452,7 +2473,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2468,7 +2489,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2484,7 +2505,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -2524,7 +2545,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2540,7 +2561,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2556,7 +2577,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -2596,7 +2617,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2612,7 +2633,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -2628,7 +2649,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -2668,7 +2689,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2684,7 +2705,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -2700,7 +2721,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -2740,7 +2761,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2756,7 +2777,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2796,7 +2817,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2812,7 +2833,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2852,7 +2873,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2868,7 +2889,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2908,7 +2929,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -2924,7 +2945,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -2964,7 +2985,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3004,7 +3025,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3020,7 +3041,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3036,7 +3057,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3076,7 +3097,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3092,7 +3113,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3108,7 +3129,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3148,7 +3169,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3164,7 +3185,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3180,7 +3201,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3220,7 +3241,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3236,7 +3257,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3252,7 +3273,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3292,7 +3313,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3308,7 +3329,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3324,7 +3345,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3364,7 +3385,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3380,7 +3401,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -3396,7 +3417,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3436,7 +3457,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3452,7 +3473,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3468,7 +3489,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3508,7 +3529,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3524,7 +3545,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3540,7 +3561,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3580,7 +3601,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3596,7 +3617,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3636,7 +3657,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3652,7 +3673,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3668,7 +3689,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3708,7 +3729,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3724,7 +3745,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3740,7 +3761,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3780,7 +3801,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3796,7 +3817,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3812,7 +3833,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3852,7 +3873,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3868,7 +3889,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3884,7 +3905,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -3924,7 +3945,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -3940,7 +3961,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -3956,7 +3977,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -4002,7 +4023,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -4022,7 +4043,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -4038,7 +4059,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -4078,7 +4099,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -4094,7 +4115,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -4134,7 +4155,7 @@
             }
           ]
         },
-        "pyspark": {
+        "spark-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -4150,7 +4171,7 @@
             }
           ]
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -4166,7 +4187,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "documented",
           "draft": false,
           "proofs": [],
@@ -4212,7 +4233,7 @@
           ],
           "evidence": []
         },
-        "pyspark": {
+        "spark-python": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -4234,7 +4255,7 @@
           ],
           "evidence": []
         },
-        "deltalake": {
+        "delta-rs-python": {
           "status": "fails",
           "draft": false,
           "proofs": [],
@@ -4254,7 +4275,7 @@
             }
           ]
         },
-        "duckdb": {
+        "duckdb-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [

@@ -7,7 +7,7 @@
 #
 # [tool.docs-factory]
 # verifies = "write_duckdb.sql"
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "write.append", region = "append", api = "INSERT INTO" },
 #   { journey = "write.overwrite", fails = "Can only delete from base table", anchor = "overwrite-a-table", note = "appends only" },
 #   { journey = "dml.delete", fails = "Can only delete from base table", anchor = "overwrite-a-table" },

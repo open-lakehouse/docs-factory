@@ -7,7 +7,7 @@
 #
 # [tool.docs-factory]
 # verifies = "read_duckdb.sql"
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "read.scan", region = "read", api = "delta_scan()" },
 # ]
 # ///

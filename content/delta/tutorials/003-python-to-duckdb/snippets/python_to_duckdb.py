@@ -3,13 +3,13 @@
 # dependencies = ["deltalake[pandas,pyarrow]==1.6.6", "duckdb==1.5.6"]
 #
 # [tool.docs-factory]
-# claims.deltalake = [
+# claims.delta-rs-python = [
 #   { journey = "create.table", region = "create", api = "DeltaTable.create()" },
 #   { journey = "write.append", region = "append-first", api = 'write_deltalake(mode="append")' },
 #   { journey = "read.scan", region = "read", api = "DeltaTable(path).to_pandas()" },
 #   { journey = "history.list", region = "history", api = "history()" },
 # ]
-# claims.duckdb = [
+# claims.duckdb-python = [
 #   { journey = "read.scan", region = "duckdb-scan", api = "delta_scan()" },
 #   { journey = "read.version", region = "duckdb-version", api = "AT (VERSION => n)" },
 # ]

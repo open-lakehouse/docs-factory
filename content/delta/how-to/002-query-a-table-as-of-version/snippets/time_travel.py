@@ -3,7 +3,7 @@
 # dependencies = ["deltalake[pandas,pyarrow]==1.6.6"]
 #
 # [tool.docs-factory]
-# claims.deltalake = [
+# claims.delta-rs-python = [
 #   { journey = "read.version", region = "version", api = "DeltaTable(path, version=n)" },
 #   { journey = "read.timestamp", region = "timestamp", api = "load_as_version(datetime)" },
 #   { journey = "history.list", region = "history", api = "history()" },

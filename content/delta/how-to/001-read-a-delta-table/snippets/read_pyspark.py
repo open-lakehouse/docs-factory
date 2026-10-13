@@ -4,7 +4,7 @@
 #
 # [tool.docs-factory]
 # lane = "spark"
-# claims.pyspark = [
+# claims.spark-python = [
 #   { journey = "read.scan", region = "read", api = 'spark.read.format("delta").load()' },
 # ]
 # ///

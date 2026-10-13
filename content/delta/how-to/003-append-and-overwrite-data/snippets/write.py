@@ -3,7 +3,7 @@
 # dependencies = ["deltalake[pandas,pyarrow]==1.6.6"]
 #
 # [tool.docs-factory]
-# claims.deltalake = [
+# claims.delta-rs-python = [
 #   { journey = "write.append", region = "append", api = 'write_deltalake(mode="append")' },
 #   { journey = "write.overwrite", region = "overwrite", api = 'write_deltalake(mode="overwrite")' },
 #   { journey = "write.enforce-schema", region = "append", note = "other columns fail with `SchemaMismatchError`" },

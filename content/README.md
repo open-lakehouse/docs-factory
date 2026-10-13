@@ -279,6 +279,16 @@ at the end of the file (Scala's `assert`; Java needs an explicit check, since
 into `spark-shell`, where `spark` already exists, so build the session outside
 the regions. Java has no shell: its steps are regions of one JBang script.
 
+Rust scripts (`*.rs`) carry the same `// /// docs-factory` block and `//`
+region markers, but declare no dependencies of their own: each is an
+`[[example]]` of the snippets crate, `content/_rust/Cargo.toml`, so the crate's
+dependencies (`deltalake`, `tokio`) compile once for every script, and
+`docsnip check` fails on a script no example builds. They run in the `rust`
+lane (`just test-rust`). Rust has no shell either, so a page tells the reader
+to `cargo add` those dependencies and put the steps in `src/main.rs`; write the
+script's `//!` doc comment for that reader, and keep it clean under
+`cargo fmt` and `cargo clippy -- -D warnings`.
+
 Structure a script as a flat, top-to-bottom program with the flow in one
 `main()` function (`async def` for async SDKs) plus an
 `if __name__ == "__main__":` footer. Each region holds exactly what a reader

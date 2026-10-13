@@ -104,8 +104,10 @@ DELTA = Project(
     scan=(
         (
             "content/delta",
-            ("*.md", "*.py", "*.sh", "*.sql", "*.yaml", "*.sc", "*.scala", "*.java"),
+            ("*.md", "*.py", "*.sh", "*.sql", "*.yaml", "*.sc", "*.scala", "*.java")
+            + ("*.rs",),
         ),
+        ("content/_rust", ("Cargo.toml",)),
     ),
     rules=(
         # Unsuffixed artifacts target the release's default Spark version.
@@ -121,6 +123,9 @@ DELTA = Project(
         Rule("deltalake", re.compile(rf"\bdeltalake(?:\[[^\]]*\])?=={_V}")),
         Rule("deltalake", re.compile(rf"delta-rs/(?:blob|tree)/python-v{_V}")),
         _prose_pin("deltalake", "deltalake", "delta"),
+        # The deltalake crate versions apart from the Python package.
+        Rule("deltalake-rs", re.compile(rf"\bdeltalake@{_V}")),
+        Rule("deltalake-rs", re.compile(rf'^deltalake = \{{ version = "={_V}"', re.M)),
         Rule("duckdb", re.compile(rf"\bduckdb=={_V}")),
         _prose_pin("duckdb", "duckdb", "delta"),
     ),

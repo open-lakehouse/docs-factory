@@ -16,7 +16,9 @@ and fails hard if the compose can't start. Scripts with ``lane = "spark"`` are
 marked ``needs_spark`` the same way and run in the Spark lane, which needs Java
 and Maven. Scala and Java scripts (``*.sc``/``*.scala`` run by ``scala-cli``,
 ``*.java`` by ``jbang``) carry the same table in a ``// /// docs-factory`` block
-and are marked ``needs_jvm``. Where Maven Central is unreachable, set
+and are marked ``needs_jvm``; Rust scripts are examples of the snippets crate
+(``content/_rust``), run with ``cargo run --example``, and are marked
+``needs_rust``. Where Maven Central is unreachable, set
 ``DOCS_FACTORY_MAVEN_MIRROR`` to a mirror URL; the harness points Spark's
 ``spark-defaults.conf``, Coursier, and JBang at it, so the scripts and the
 commands they show stay unchanged.
@@ -163,6 +165,8 @@ class TutorialScriptItem(pytest.Item):
             self.add_marker(pytest.mark.needs_spark)
         if script_meta.docs_factory.lane == "jvm":
             self.add_marker(pytest.mark.needs_jvm)
+        if script_meta.docs_factory.lane == "rust":
+            self.add_marker(pytest.mark.needs_rust)
         page = script_meta.owning_page()
         status = page_status(page) if page else "draft"
         if status != "ready":
@@ -271,13 +275,28 @@ def _delta_lock(path: Path):
 
 
 def _command(meta: ScriptMeta) -> list[str]:
-    """The command a reader runs the script with, minus the path."""
+    """The command that runs the script; :func:`_run_script` appends the path,
+    except for a Rust script, whose example name already names it."""
     if meta.runner == "scala":
         # No Bloop daemon: it would outlive the run, holding the output pipes.
         return ["scala-cli", "run", "--server=false"]
     if meta.runner == "java":
         mirror = os.environ.get("DOCS_FACTORY_MAVEN_MIRROR")
         return ["jbang", "run", *([f"--repos={mirror}"] if mirror else [])]
+    if meta.runner == "rust":
+        # The lane builds the examples first, so this only links and runs.
+        return [
+            "cargo",
+            "run",
+            "--quiet",
+            "--locked",
+            "--manifest-path",
+            str(_REPO_ROOT / "Cargo.toml"),
+            "--package",
+            "docs-factory-snippets",
+            "--example",
+            str(meta.cargo_example),
+        ]
     return ["uv", "run", "--no-project"]
 
 
@@ -288,7 +307,7 @@ def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedPr
     jbang) and then block reading pipes the orphaned interpreter or JVM still
     holds open; a session of its own lets the harness kill that too.
     """
-    args = [*_command(meta), str(meta.path)]
+    args = [*_command(meta), *([] if meta.runner == "rust" else [str(meta.path)])]
     with subprocess.Popen(
         args,
         stdout=subprocess.PIPE,

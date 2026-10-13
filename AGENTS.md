@@ -132,7 +132,7 @@ cd site && bun test src/content-core   # content-core parsing-contract drift tes
 uv run docsnip check                   # frontmatter + snippets + pins + compat tables
 uv run docsnip compat --fix            # re-render compatibility tables from script claims
 uv run ruff check . && uv run ty check # lint + types
-cargo build                            # compile the Rust seed helper
+cargo build                            # compile the Rust seed helper and the snippets crate
 just arch-dev                          # LikeC4 architecture model at :5173
 ```
 
@@ -147,7 +147,10 @@ just arch-dev                          # LikeC4 architecture model at :5173
    by scala-cli) and Java (`<Name>.java`, run by JBang) work the same way: their
    deps are `//> using dep` or `//DEPS` lines, the `[tool.docs-factory]` keys go
    in a `// /// docs-factory` block, regions use `// --8<--` markers, and they
-   run in the `jvm` lane (see `content/README.md`).
+   run in the `jvm` lane. Rust (`<name>.rs`) uses the same block and markers,
+   but its deps live in the snippets crate, `content/_rust/Cargo.toml`, where
+   each script is an `[[example]]`; it runs in the `rust` lane. See
+   `content/README.md`.
 3. Reference it from `index.md` with a fence
    (`file=./snippets/<name>.py start=... end=...`), then `uv run docsnip check`.
    `content/conftest.py` runs the script in the default test lane.

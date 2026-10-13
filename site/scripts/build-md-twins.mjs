@@ -70,8 +70,8 @@ export function injectFrontmatter(output, lines) {
 
 /**
  * The command that runs a published script: a Python script straight from its
- * URL (uv fetches it), a shell script, or one that imports a helper module,
- * from the folder it was saved into. `env` is the stack's client env, so the
+ * URL (uv fetches it), a shell, Scala (scala-cli), or Java (JBang) script, or one
+ * that imports a helper module, from the folder it was saved into. `env` is the stack's client env, so the
  * command works in a fresh terminal. Null for SQL: its statements go into the
  * engine shell the page opens, which the page, not the file, names.
  */
@@ -79,6 +79,8 @@ export function companionRun(s, origin = "") {
   const file = s.fetchUrl.split("/").pop();
   if (s.kind === "sql") return null;
   if (s.kind === "shell") return `bash ${file}`;
+  if (s.kind === "scala") return `scala-cli run ${file}`;
+  if (s.kind === "java") return `jbang ${file}`;
   const env = Object.entries(s.env ?? {}).map(([k, v]) => `${k}=${v} `);
   const target = s.helpers?.length ? file : `${origin}${s.fetchUrl}`;
   return `${env.join("")}uv run ${target}`;
@@ -147,7 +149,7 @@ export function companionsSection(scripts, origin = "", environment = null) {
   }
   for (const s of scripts) {
     const file = s.fetchUrl.split("/").pop();
-    const lang = { shell: "Shell", sql: "SQL" }[s.kind] ?? "Python";
+    const lang = { shell: "Shell", sql: "SQL", scala: "Scala", java: "Java" }[s.kind] ?? "Python";
     lines.push(
       `- [\`${file}\`](${origin}${s.fetchUrl}) (${lang})${s.summary ? `: ${s.summary}` : ""}`,
     );
@@ -198,6 +200,11 @@ export function runnableExamplesSection(scripts) {
       );
     } else if (s.kind === "sql") {
       lines.push("  - enter its statements in the SQL shell the page opens, in order");
+    } else if (s.kind === "scala" || s.kind === "java") {
+      lines.push(
+        `  - run with \`${companionRun(s)}\`: it resolves its dependencies from the`,
+        "    directives at its top, and the script *is* the test",
+      );
     } else {
       lines.push(
         `  - run with \`uv run ${file}\`: uv builds an ephemeral environment from the`,

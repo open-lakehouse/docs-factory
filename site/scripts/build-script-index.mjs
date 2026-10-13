@@ -28,7 +28,7 @@ const repoRoot = resolve(siteRoot, "..");
 const distDir = resolve(siteRoot, "dist");
 
 // The docsnip JSON contract version this script understands (asserted below).
-const EXPECTED_VERSION = 3;
+const EXPECTED_VERSION = 4;
 
 /** Run `docsnip scripts --json` and return the parsed, version-checked payload,
  *  or null if `uv` isn't available in this environment. The script index is an
@@ -63,11 +63,11 @@ export function runDocsnipScripts(root = repoRoot) {
 }
 
 // A pymdownx/mkdocs snippet marker line, e.g. `# --8<-- [start:attach]` or
-// `-- --8<-- [end:attach]`. These are whole-line Python/shell (`#`) or SQL (`--`)
-// comments that delimit the regions `file=… start=… end=…` fences inline (see
+// `-- --8<-- [end:attach]`. These are whole-line Python/shell (`#`), SQL (`--`),
+// or Scala/Java (`//`) comments that delimit the regions `file=… start=… end=…` fences inline (see
 // fences.mjs / snippetcheck.py). Anchored to a full line so we never clip a
 // `--8<--` that appears inside a string.
-const SECTION_MARKER_LINE_RE = /^\s*(?:#|--)\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
+const SECTION_MARKER_LINE_RE = /^\s*(?:#|--|\/\/)\s*--8<--\s*\[(?:start|end):[^\]]*\]\s*$/;
 
 /**
  * Strip `--8<--` section-marker comment lines from a served script (pure, for
@@ -99,13 +99,19 @@ export function stripSectionMarkers(text) {
 // uv ignores the first and fails on the second.
 const FACTORY_TABLE_RE = /^\[\[?tool\.(?:docs-factory|uv\.sources)(?:\.[^\]]+)?\]\]?$/;
 
+// A Scala or Java script's factory metadata, kept apart from the `//> using` or
+// `//DEPS` lines its runner reads; the served copy drops it whole.
+const JVM_BLOCK_RE = /^\/\/ \/\/\/ docs-factory\n(?:\/\/(?: .*)?\n)*\/\/ \/\/\/\n/m;
+
 /**
  * The served copy of a script (pure, for testing): `stripSectionMarkers`, plus the
- * factory-only tables removed from its `# /// script` block. `requires-python` and
- * `dependencies` stay, so `uv run` still builds the environment.
+ * factory-only tables removed from its `# /// script` block (or a Scala or Java
+ * script's `// /// docs-factory` block). `requires-python` and `dependencies`
+ * stay, so `uv run` still builds the environment.
  */
 export function publishScript(text) {
-  const lines = stripSectionMarkers(text).split("\n");
+  const jvm = text.replace(/\r\n/g, "\n").replace(JVM_BLOCK_RE, "");
+  const lines = stripSectionMarkers(jvm).split("\n");
   const out = [];
   let inBlock = false;
   let dropping = false;
@@ -132,10 +138,22 @@ export function publishScript(text) {
 
 /**
  * A script's one-line purpose (pure, for testing): the first line of a Python
- * module docstring, or the first comment paragraph of a shell script (after its
- * shebang) or SQL file. Null when the script has neither.
+ * module docstring, the first comment paragraph of a shell script (after its
+ * shebang) or SQL file, or a Scala or Java script's first `//` comment line
+ * after its runner directives. Null when the script has none.
  */
 export function scriptSummary(text, kind) {
+  if (kind === "scala" || kind === "java") {
+    const body = text.replace(/\r\n/g, "\n").replace(JVM_BLOCK_RE, "");
+    for (const line of body.split("\n")) {
+      // Runner directives (`//> using`, `//DEPS`, `///usr/bin/env jbang`) and markers.
+      if (/^\/\/(?:>|[A-Z_]+ |\/)/.test(line) || line.includes("--8<--")) continue;
+      const m = /^\/\/ (.+)$/.exec(line);
+      if (m) return m[1].trim();
+      if (line.trim()) return null;
+    }
+    return null;
+  }
   if (kind === "shell" || kind === "sql") {
     const comment = kind === "sql" ? /^--(?: (.*))?$/ : /^#(?: (.*))?$/;
     const para = [];
@@ -198,7 +216,7 @@ export function scriptEntry(entry, { hrefFor = hrefFromIdentity } = {}) {
   const harness = Boolean(entry.verifies);
   const gitPath = harness ? entry.verifies : entry.path;
   return {
-    kind: !harness ? "python" : gitPath.endsWith(".sql") ? "sql" : "shell",
+    kind: harness ? (gitPath.endsWith(".sql") ? "sql" : "shell") : (entry.runner ?? "python"),
     gitPath,
     ...servedPaths(gitPath, slug, hrefFor),
     tutorialSlug: slug,

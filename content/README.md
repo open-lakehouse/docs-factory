@@ -110,6 +110,16 @@ group. There is no wrapper directive.
 - Groups sync by label. Choosing "CLI" switches every group on the page that has
   a "CLI" tab, and the site remembers the choice. Use the same labels, in the
   same order, throughout a page.
+- A project whose `compatibility.yml` labels its interfaces
+  `<Engine> · <Language>` (Delta Lake: `Spark · SQL`, `Spark · Python`,
+  `delta-rs · Python`, `DuckDB · SQL`, `DuckDB · Python`) uses those labels as its
+  tabs. The site then shows an engine row and that engine's languages, and it
+  remembers both choices: pick `Spark · Python` once and every Spark group opens
+  on Python, while DuckDB keeps its own choice. A reader who hasn't chosen a
+  language for an engine gets the one they last chose anywhere, when the engine
+  offers it. `docsnip check` fails on an axis label that isn't an interface
+  label, on a group out of the interfaces' order, and on a group that mixes axis
+  labels with plain ones (which would render as one flat row).
 - A callout inside a tab needs one more colon on the tab: `::::tab[CLI]` around
   `:::note`.
 - Inside a `::::journey`, don't put `###` headings in a tab; the journey splits

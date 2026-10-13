@@ -11,7 +11,8 @@ is ``status: ready``, because only those scripts gate CI (content/conftest.py).
 So a ✓ means a test that blocks merges runs the journey. Tables on a
 ``private`` page, which is never emitted, also show draft pages' claims. ``fix``
 renders each table between its markers in the page that embeds it; ``check``
-reports what's inconsistent or stale. See docs/design/model-leverage.md §3.1.
+reports what's inconsistent or stale, including page tabs that disagree with
+the interface labels (:mod:`docsnip.tabs`). See docs/design/model-leverage.md §3.1.
 """
 
 from __future__ import annotations
@@ -26,7 +27,7 @@ from pathlib import Path
 
 import yaml
 
-from . import shellregions, sqlregions
+from . import shellregions, sqlregions, tabs
 from .anchors import headings
 from .frontmatter import iter_content_files, page_status
 from .frontmatter import parse as parse_page
@@ -913,6 +914,13 @@ def check(repo_root: Path) -> tuple[list[str], list[str]]:
     """Errors (claims, vocabulary, stale tables) and report-only warnings."""
     result = resolve(repo_root)
     errors = list(result.errors)
+    errors += tabs.check(
+        repo_root,
+        {
+            project: [i.label for i in matrix.interfaces.values()]
+            for project, matrix in result.matrices.items()
+        },
+    )
     for page, lines, new in _rendered(repo_root, result, errors):
         if lines != new:
             diff = "\n".join(

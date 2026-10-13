@@ -319,3 +319,11 @@ test("scriptSummary reads a JVM script's first comment after its directives", ()
   expect(scriptSummary(JAVA, "java")).toBe("Read a Delta table with Spark in Java.");
   expect(scriptSummary("//> using scala 2.13\n\nval x = 1\n", "scala")).toBeNull();
 });
+
+test("scriptSummary reads a Rust script's crate doc comment", () => {
+  const src =
+    "// /// docs-factory\n// ///\n\n//! Read a Delta table in Rust.\n//!\n//! More.\n\nfn main() {}\n";
+  expect(scriptSummary(src, "rust")).toBe("Read a Delta table in Rust.");
+  expect(publishScript(src)).not.toContain("docs-factory");
+  expect(scriptSummary("fn main() {}\n", "rust")).toBeNull();
+});

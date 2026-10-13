@@ -1091,6 +1091,20 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 .prose .tabs-trigger:hover { color: var(--foreground); }
 .prose .tabs-trigger[aria-selected="true"] { color: var(--heading); border-bottom-color: var(--accent-fill); }
 .prose [role="tabpanel"] > .cb:first-child { margin-top: 0.75rem; }
+/* An engine's languages: a quieter second row, so the two read as levels. */
+.prose .tabs-list-languages { border-bottom: 0; gap: 0.25rem; padding: 0.5rem 0 0; }
+.prose .tabs-list-languages .tabs-trigger {
+  padding: 0.15rem 0.6rem;
+  margin-bottom: 0;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.72rem;
+}
+.prose .tabs-list-languages .tabs-trigger[aria-selected="true"] {
+  border-color: var(--border);
+  background: var(--surface);
+  color: var(--heading);
+}
 
 /* --- Journeys --- */
 .prose .jr {

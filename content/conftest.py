@@ -167,9 +167,13 @@ class TutorialScriptItem(pytest.Item):
         status = page_status(page) if page else "draft"
         if status != "ready":
             where = page.relative_to(_REPO_ROOT) if page else "no page"
+            # Only the script's own failure is excused: a missing runner or a
+            # harness error still fails the lane.
             self.add_marker(
                 pytest.mark.xfail(
-                    strict=False, reason=f"{where} is status: {status}; non-gating"
+                    strict=False,
+                    raises=TutorialScriptFailure,
+                    reason=f"{where} is status: {status}; non-gating",
                 )
             )
 

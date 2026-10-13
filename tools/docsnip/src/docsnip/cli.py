@@ -8,6 +8,8 @@ Subcommands:
   bump-delta    — move the Delta docs to a new Delta release and rewrite every pin
   compat        — compatibility tables from script claims (--fix rewrites)
   check         — validate + snippetcheck + versions + compat (CI entry)
+  plan          — which tutorial scripts a CI run executes, per lane and shard
+  durations     — fold CI-recorded script durations into the shard plan's input
 
 llms.txt generation lives in the docs-site emitter (emit/docs), which re-uses
 content-core for content discovery, identity, and URL derivation instead of
@@ -23,7 +25,7 @@ import re
 import sys
 from pathlib import Path
 
-from . import compat, environments, published, versions
+from . import ciplan, compat, environments, published, versions
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -311,6 +313,38 @@ def cmd_check(p) -> int:
     return rc
 
 
+def cmd_plan(p, changed_from: str | None, github_output: str | None) -> int:
+    """Print the CI shard matrix per lane; with ``github_output``, also append
+    one ``<lane>=<json>`` line per lane to that file for the workflow."""
+    changed = None
+    if changed_from is not None:
+        text = (
+            sys.stdin.read() if changed_from == "-" else Path(changed_from).read_text()
+        )
+        changed = [line.strip() for line in text.splitlines() if line.strip()]
+    try:
+        scripts = discover_scripts(p["content"])
+    except ScriptMetaError as exc:
+        print(f"docsnip plan: {exc}", file=sys.stderr)
+        return 1
+    matrix = ciplan.plan(scripts, p["root"], changed)
+    print(json.dumps(matrix, indent=2))
+    if github_output:
+        with open(github_output, "a") as fh:
+            for lane, shards in matrix.items():
+                fh.write(f"{lane}={json.dumps(shards)}\n")
+    return 0
+
+
+def cmd_durations(p, recorded: list[Path]) -> int:
+    files = [
+        f for r in recorded for f in (sorted(r.rglob("*.json")) if r.is_dir() else [r])
+    ]
+    merged = ciplan.merge_durations(p["root"], files)
+    print(f"{ciplan.DURATIONS_FILE}: {len(merged)} scripts from {len(files)} file(s)")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="docsnip")
     parser.add_argument(
@@ -340,6 +374,20 @@ def main(argv: list[str] | None = None) -> int:
     sp_compat.add_argument(
         "--fix", action="store_true", help="rewrite the embedded tables first"
     )
+    sp_plan = sub.add_parser("plan")
+    sp_plan.add_argument(
+        "--changed-from",
+        default=None,
+        help="file listing changed repo paths, one per line (- for stdin); "
+        "omit to select every script",
+    )
+    sp_plan.add_argument(
+        "--github-output", default=None, help="append <lane>=<json> lines here"
+    )
+    sp_durations = sub.add_parser("durations")
+    sp_durations.add_argument(
+        "recorded", nargs="+", type=Path, help="duration JSON files or dirs of them"
+    )
     sp_bump = sub.add_parser("bump-uc")
     sp_bump.add_argument("release", help="the new Unity Catalog release, X.Y.Z")
     sp_bump_delta = sub.add_parser("bump-delta")
@@ -354,6 +402,10 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_versions(p, fix=args.fix)
     if args.cmd == "compat":
         return cmd_compat(p, fix=args.fix)
+    if args.cmd == "plan":
+        return cmd_plan(p, args.changed_from, args.github_output)
+    if args.cmd == "durations":
+        return cmd_durations(p, args.recorded)
     if args.cmd == "bump-uc":
         return cmd_bump(p, args.release, versions.UNITYCATALOG)
     if args.cmd == "bump-delta":

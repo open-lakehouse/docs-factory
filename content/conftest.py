@@ -19,6 +19,11 @@ and Maven. Where Maven Central is unreachable, set ``DOCS_FACTORY_MAVEN_MIRROR``
 to a mirror URL; the harness hands Spark a ``spark-defaults.conf`` that resolves
 packages through it, so the scripts and the commands they show stay unchanged.
 
+CI runs a shard of scripts per runner: ``DOCS_FACTORY_SELECT`` holds a JSON list
+of repo-relative script paths (from ``docsnip plan``), and every other script is
+deselected. ``DOCS_FACTORY_DURATIONS_OUT`` names a JSON file to record each
+script's duration in, which ``docsnip durations`` folds into the next plan.
+
 Only scripts on ``status: ready`` pages gate. A script whose page is still a
 draft runs as a non-strict ``xfail``, so the docs can say "tested here" about
 exactly the scripts a red run would block, and in-progress pages can't.
@@ -27,6 +32,7 @@ exactly the scripts a red run would block, and in-progress pages can't.
 from __future__ import annotations
 
 import fcntl
+import json
 import os
 import signal
 import subprocess
@@ -75,6 +81,39 @@ def pytest_collect_file(parent, file_path):
     if meta is None:
         return None
     return TutorialScriptFile.from_parent(parent, path=file_path, script_meta=meta)
+
+
+def pytest_collection_modifyitems(config, items):
+    """Keep only the scripts ``DOCS_FACTORY_SELECT`` lists, when it is set."""
+    selected = os.environ.get("DOCS_FACTORY_SELECT")
+    if selected is None:
+        return
+    wanted = set(json.loads(selected))
+    keep, drop = [], []
+    for item in items:
+        if isinstance(item, TutorialScriptItem):
+            path = item.script_meta.path.resolve().relative_to(_REPO_ROOT).as_posix()
+            (keep if path in wanted else drop).append(item)
+        else:
+            keep.append(item)
+    if drop:
+        config.hook.pytest_deselected(items=drop)
+        items[:] = keep
+
+
+_DURATIONS: dict[str, float] = {}
+
+
+def pytest_runtest_logreport(report):
+    # Setup and teardown are pytest's; the compose start and stop run in `call`.
+    if report.when == "call" and report.nodeid.startswith("content/"):
+        _DURATIONS[report.nodeid.split("::")[0]] = report.duration
+
+
+def pytest_sessionfinish(session):
+    out = os.environ.get("DOCS_FACTORY_DURATIONS_OUT")
+    if out and _DURATIONS:
+        Path(out).write_text(json.dumps(_DURATIONS, indent=2, sort_keys=True) + "\n")
 
 
 def pytest_terminal_summary(terminalreporter):

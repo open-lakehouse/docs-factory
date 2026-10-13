@@ -30,14 +30,14 @@ earlier versions by number only, and doesn't list a table's history.
 
 ## Set up the client
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 Start the Spark SQL shell with [Delta Spark](model:deltaSpark):
 
 ```bash file=../../tutorials/001-your-first-delta-table/snippets/spark_sql.sh start=start:launch end=end:launch
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 Open a Python session with PySpark and Delta Spark:
 
 ```bash
@@ -50,7 +50,7 @@ Then start a Spark session with Delta's SQL support:
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 Open a Python session with the `deltalake` package from
 [delta-rs](model:deltaRs):
 
@@ -59,7 +59,7 @@ uv run --with "deltalake[pandas,pyarrow]==1.6.6" python
 ```
 :::
 
-:::tab[DuckDB]
+:::tab[DuckDB · SQL]
 Start the [DuckDB](model:duckdb) CLI:
 
 ```bash file=../001-read-a-delta-table/snippets/duckdb.sh start=start:launch end=end:launch
@@ -76,17 +76,17 @@ Then install and load its `delta` extension:
 List the table's history to see each version, when it was committed, and the
 operation that created it:
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 ```sql file=./snippets/time_travel_spark.sql start=start:history end=end:history
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 ```python file=./snippets/time_travel_pyspark.py start=start:history end=end:history
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 ```python file=./snippets/time_travel.py start=start:history end=end:history
 ```
 :::
@@ -99,22 +99,22 @@ history, so find the version with one of the other interfaces.
 
 Read the table as it was at version 1, before the second write:
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 ```sql file=./snippets/time_travel_spark.sql start=start:version end=end:version
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 ```python file=./snippets/time_travel_pyspark.py start=start:version end=end:version
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 ```python file=./snippets/time_travel.py start=start:version end=end:version
 ```
 :::
 
-:::tab[DuckDB]
+:::tab[DuckDB · SQL]
 ```sql file=./snippets/time_travel_duckdb.sql start=start:version end=end:version
 ```
 
@@ -128,7 +128,7 @@ Each returns the first three orders. The latest version still has all five.
 
 Read the table as it was a day ago:
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 ```sql file=./snippets/time_travel_spark.sql start=start:timestamp end=end:timestamp
 ```
 
@@ -138,12 +138,12 @@ On a path, `TIMESTAMP AS OF` takes only a timestamp string, such as one from
 statement registers the path as `orders` in the shell's metastore.
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 ```python file=./snippets/time_travel_pyspark.py start=start:timestamp end=end:timestamp
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 ```python file=./snippets/time_travel.py start=start:timestamp end=end:timestamp
 ```
 :::

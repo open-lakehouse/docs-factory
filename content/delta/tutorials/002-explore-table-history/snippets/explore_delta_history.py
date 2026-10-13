@@ -6,7 +6,7 @@
 # docs-factory-seed = { path = "../../../../../seed/python", editable = true }
 #
 # [tool.docs-factory]
-# claims.deltalake = [
+# claims.delta-rs-python = [
 #   { journey = "history.list", region = "history", api = "history()" },
 #   { journey = "read.version", region = "time-travel", api = "DeltaTable(path, version=n)" },
 # ]

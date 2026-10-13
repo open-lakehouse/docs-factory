@@ -7,7 +7,7 @@
 #
 # [tool.docs-factory]
 # verifies = "time_travel_duckdb.sql"
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "read.version", region = "version", api = "AT (VERSION => n)" },
 #   { journey = "read.past-retention", region = "version", anchor = "retention-limits-time-travel", note = "while its files exist" },
 #   { journey = "read.timestamp", fails = "only support at_clause with unit 'version'", anchor = "query-a-timestamp" },

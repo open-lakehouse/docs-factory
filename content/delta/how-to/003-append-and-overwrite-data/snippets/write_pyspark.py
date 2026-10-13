@@ -4,7 +4,7 @@
 #
 # [tool.docs-factory]
 # lane = "spark"
-# claims.pyspark = [
+# claims.spark-python = [
 #   { journey = "write.append", region = "append", api = 'mode("append")' },
 #   { journey = "write.overwrite", region = "overwrite", api = 'mode("overwrite")' },
 #   { journey = "write.enforce-schema", region = "append", note = "other columns fail with `DELTA_METADATA_MISMATCH`" },

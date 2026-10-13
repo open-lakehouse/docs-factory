@@ -25,7 +25,7 @@
 #   { journey = "read.version", region = "time-travel", api = "VERSION AS OF", note = "through Unity Catalog" },
 #   { journey = "catalog.unity", region = "create-table", note = "catalog-managed" },
 # ]
-# claims."delta:pyspark" = [
+# claims."delta:spark-python" = [
 #   { journey = "catalog.unity", region = "session", note = "session config" },
 # ]
 # ///

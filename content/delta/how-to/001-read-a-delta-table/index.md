@@ -28,14 +28,14 @@ package, and DuckDB, all of which read Delta tables.
 
 ## Set up the client
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 Start the Spark SQL shell with [Delta Spark](model:deltaSpark):
 
 ```bash file=../../tutorials/001-your-first-delta-table/snippets/spark_sql.sh start=start:launch end=end:launch
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 Open a Python session with PySpark and Delta Spark:
 
 ```bash
@@ -52,7 +52,7 @@ your `delta-spark` install. Any Spark SQL statement also runs in PySpark as
 `spark.sql("…")`.
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 Open a Python session with the `deltalake` package from
 [delta-rs](model:deltaRs):
 
@@ -61,7 +61,7 @@ uv run --with "deltalake[pandas,pyarrow]==1.6.6" python
 ```
 :::
 
-:::tab[DuckDB]
+:::tab[DuckDB · SQL]
 Start the [DuckDB](model:duckdb) CLI:
 
 ```bash file=./snippets/duckdb.sh start=start:launch end=end:launch
@@ -77,22 +77,22 @@ Then install and load its `delta` extension:
 
 Query the table's latest version:
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 ```sql file=./snippets/read_spark.sql start=start:read end=end:read
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 ```python file=./snippets/read_pyspark.py start=start:read end=end:read
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 ```python file=./snippets/read.py start=start:read end=end:read
 ```
 :::
 
-:::tab[DuckDB]
+:::tab[DuckDB · SQL]
 ```sql file=./snippets/read_duckdb.sql start=start:read end=end:read
 ```
 :::
@@ -104,17 +104,17 @@ by its path. DuckDB's `delta_scan` takes the path as a string.
 
 Name only the columns you need, and filter the rows:
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 ```sql file=./snippets/read_spark.sql start=start:filter end=end:filter
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 ```python file=./snippets/read_pyspark.py start=start:filter end=end:filter
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 ```python file=./snippets/read.py start=start:filter end=end:filter
 ```
 
@@ -122,7 +122,7 @@ Name only the columns you need, and filter the rows:
 hold.
 :::
 
-:::tab[DuckDB]
+:::tab[DuckDB · SQL]
 ```sql file=./snippets/read_duckdb.sql start=start:filter end=end:filter
 ```
 :::

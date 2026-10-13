@@ -29,14 +29,14 @@ overwrite, update, or delete rows.
 
 ## Set up the client
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 Start the Spark SQL shell with [Delta Spark](model:deltaSpark):
 
 ```bash file=../../tutorials/001-your-first-delta-table/snippets/spark_sql.sh start=start:launch end=end:launch
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 Open a Python session with PySpark and Delta Spark:
 
 ```bash
@@ -49,7 +49,7 @@ Then start a Spark session with Delta's SQL support:
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 Open a Python session with the `deltalake` package from
 [delta-rs](model:deltaRs):
 
@@ -58,7 +58,7 @@ uv run --with "deltalake[pandas,pyarrow]==1.6.6" python
 ```
 :::
 
-:::tab[DuckDB]
+:::tab[DuckDB · SQL]
 Start the [DuckDB](model:duckdb) CLI:
 
 ```bash file=../001-read-a-delta-table/snippets/duckdb.sh start=start:launch end=end:launch
@@ -74,22 +74,22 @@ Then install and load its `delta` extension:
 
 Add a sixth order to the table:
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 ```sql file=./snippets/write_spark.sql start=start:append end=end:append
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 ```python file=./snippets/write_pyspark.py start=start:append end=end:append
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 ```python file=./snippets/write.py start=start:append end=end:append
 ```
 :::
 
-:::tab[DuckDB]
+:::tab[DuckDB · SQL]
 ```sql file=./snippets/write_duckdb.sql start=start:append end=end:append
 ```
 
@@ -105,17 +105,17 @@ columns unless you evolve the schema.
 
 Replace every row in the table with two new orders:
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 ```sql file=./snippets/write_spark.sql start=start:overwrite end=end:overwrite
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 ```python file=./snippets/write_pyspark.py start=start:overwrite end=end:overwrite
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 ```python file=./snippets/write.py start=start:overwrite end=end:overwrite
 ```
 :::
@@ -133,17 +133,17 @@ table fail with `Can only delete from base table` and
 
 Each write is one entry in the table's history:
 
-:::tab[Spark SQL]
+:::tab[Spark · SQL]
 ```sql file=./snippets/write_spark.sql start=start:history end=end:history
 ```
 :::
 
-:::tab[PySpark]
+:::tab[Spark · Python]
 ```python file=./snippets/write_pyspark.py start=start:history end=end:history
 ```
 :::
 
-:::tab[Python]
+:::tab[delta-rs · Python]
 ```python file=./snippets/write.py start=start:history end=end:history
 ```
 :::

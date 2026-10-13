@@ -197,6 +197,15 @@ test-services:
 test-spark:
     uv run pytest -m "needs_spark and not needs_uc_server"
 
+# Fold the script durations a CI run measured into .github/script-durations.json,
+# which `docsnip plan` packs shards by. Use a full run (main or nightly).
+ci-durations run-id:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    dir=$(mktemp -d)
+    gh run download {{run-id}} --pattern 'durations-*' --dir "$dir"
+    uv run docsnip durations "$dir"
+
 # --- aws-sim (pretend-AWS S3/STS for UC; see envs/aws-sim/README.md) --------
 
 # Start the example stack: UC + RustFS + Envoy answering *.amazonaws.com.

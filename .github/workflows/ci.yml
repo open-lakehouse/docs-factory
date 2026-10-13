@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Every script, nightly: the docs pin their releases, but images such as
+  # amazon/aws-cli:latest and the Maven/PyPI mirrors can still move under them.
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -32,9 +37,10 @@ jobs:
         run: uv run ty check
 
   python-tests:
+    # docsnip's own tests, on every Python the workspace supports. The tutorial
+    # scripts pin their own Python and run in the scripts-* lanes.
     runs-on: ubuntu-latest
-    # Backstop: content/conftest.py already kills a script after 10 minutes.
-    timeout-minutes: 30
+    timeout-minutes: 10
     strategy:
       matrix:
         python-version: ["3.11", "3.12"]
@@ -47,19 +53,88 @@ jobs:
           enable-cache: true
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages --python ${{ matrix.python-version }}
-      - name: Run docsnip tests + service-free tutorial scripts
-        # Default lane: docsnip drift/vocab tests plus the colocated tutorial
-        # scripts under content/ (run to completion via `uv run`). The pytest
-        # addopts marker filter excludes the service-backed tutorials (those run
-        # in tutorials-services).
-        run: uv run --python ${{ matrix.python-version }} pytest -v
+      - run: uv run --python ${{ matrix.python-version }} pytest tools/docsnip/tests -v
 
-  spark-tests:
-    # Spark lane: scripts with `lane = "spark"` (PySpark, and the spark-sql
-    # shell the Delta pages start). Needs Java; Spark resolves Delta Spark
-    # from Maven Central.
+  plan:
+    # Which tutorial scripts this run executes, per lane, packed into shards by
+    # recorded duration (`docsnip plan`). A pull request runs the scripts its
+    # changes reach; main, the nightly run, and manual runs execute them all.
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      default: ${{ steps.plan.outputs.default }}
+      spark: ${{ steps.plan.outputs.spark }}
+      services: ${{ steps.plan.outputs.services }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+          # A pull request checks out its merge commit; HEAD^1 is the base.
+          fetch-depth: 2
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+      - uses: ./.github/actions/pypi-public
+      - run: uv sync --all-packages
+      - id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          if [ "$EVENT" = pull_request ]; then
+            git diff --name-only HEAD^1 HEAD | tee "$RUNNER_TEMP/changed.txt"
+            uv run docsnip plan --changed-from "$RUNNER_TEMP/changed.txt" --github-output "$GITHUB_OUTPUT"
+          else
+            uv run docsnip plan --github-output "$GITHUB_OUTPUT"
+          fi
+
+  scripts-default:
+    # Scripts that need neither Java nor Docker. Scripts on draft pages run as
+    # non-strict xfails (content/conftest.py), so only `status: ready` gates.
+    name: scripts-default (${{ matrix.shard }})
+    needs: plan
+    if: needs.plan.outputs.default != '[]'
+    runs-on: ubuntu-latest
+    # Backstop: content/conftest.py already kills a script after 10 minutes.
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.default) }}
+    env:
+      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
+      DOCS_FACTORY_DURATIONS_OUT: durations.json
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+      - uses: ./.github/actions/pypi-public
+      - run: uv sync --all-packages
+      - run: uv run pytest content -v -rxXs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: durations-${{ matrix.id }}
+          path: durations.json
+          if-no-files-found: ignore
+
+  scripts-spark:
+    # Scripts with `lane = "spark"` (PySpark, and the spark-sql shell the Delta
+    # pages start). Needs Java; Spark resolves Delta Spark from Maven Central.
+    name: scripts-spark (${{ matrix.shard }})
+    needs: plan
+    if: needs.plan.outputs.spark != '[]'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.spark) }}
+    env:
+      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
+      DOCS_FACTORY_DURATIONS_OUT: durations.json
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -80,16 +155,29 @@ jobs:
           key: ivy-${{ hashFiles('content/delta/release.yml') }}
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
-      - name: Run Spark tests
-        run: uv run pytest -m "needs_spark and not needs_uc_server" -v
+      - run: uv run pytest content -m "needs_spark and not needs_uc_server" -v -rxXs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: durations-${{ matrix.id }}
+          path: durations.json
+          if-no-files-found: ignore
 
-  tutorials-services:
-    # Service-backed tutorial tests: start the Unity Catalog server each script
-    # declares (via testcontainers) and run the opt-in lane. Docker is available
-    # on ubuntu-latest runners. Scripts on draft pages run as non-strict xfails
-    # (content/conftest.py), so only `status: ready` pages gate this job.
+  scripts-services:
+    # Scripts that declare a compose: the harness starts the Unity Catalog stack
+    # each one names (via testcontainers). Docker is on ubuntu-latest runners.
+    name: scripts-services (${{ matrix.shard }})
+    needs: plan
+    if: needs.plan.outputs.services != '[]'
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.services) }}
+    env:
+      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
+      DOCS_FACTORY_DURATIONS_OUT: durations.json
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
@@ -99,8 +187,13 @@ jobs:
           enable-cache: true
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages --group test-services
-      - name: Run service-backed tutorial tests
-        run: uv run --group test-services pytest -m "needs_docker or needs_uc_server" -v -rxXs
+      - run: uv run --group test-services pytest content -m "needs_docker or needs_uc_server" -v -rxXs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: durations-${{ matrix.id }}
+          path: durations.json
+          if-no-files-found: ignore
 
   content:
     runs-on: ubuntu-latest

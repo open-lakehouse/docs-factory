@@ -1,14 +1,14 @@
 # Rust workspace for docs-factory.
 #
-# Holds the Rust seed helper. (The former examples/rust crate — a stub for a
-# future Unity Catalog Rust client — was removed with the examples/ tree; the
-# Rust + TypeScript example/client machinery will be rebuilt deliberately later.
-# See docs/design/build-pipeline.md.) This workspace is intentionally separate
-# from the uv (Python) workspace — the two toolchains do not share dependencies.
+# Holds the Rust seed helper and the snippets crate (content/_rust), which builds
+# every Rust tutorial script as an example so their dependencies compile once.
+# This workspace is intentionally separate from the uv (Python) workspace: the
+# two toolchains do not share dependencies.
 [workspace]
 resolver = "2"
 members = [
     "seed/rust",
+    "content/_rust",
 ]
 
 [workspace.package]

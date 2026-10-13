@@ -39,6 +39,13 @@ interfaces:
     pin: deltalake
     package: deltalake
     model: deltaRs
+  # The crate the Python package wraps. It gets no table column yet: the Python
+  # column covers the shared engine, and this one labels the tab.
+  delta-rs-rust:
+    label: delta-rs · Rust
+    pin: deltalake-rs
+    package: deltalake
+    model: deltaRs
   duckdb-sql:
     label: DuckDB · SQL
     package: duckdb

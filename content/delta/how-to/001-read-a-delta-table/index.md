@@ -1,6 +1,6 @@
 ---
 title: Read a Delta table
-summary: Read a Delta table by its path with Spark (SQL, Python, Scala, or Java), the deltalake Python package, or DuckDB, and select only the columns and rows you need.
+summary: Read a Delta table by its path with Spark (SQL, Python, Scala, or Java), delta-rs (Python or Rust), or DuckDB, and select only the columns and rows you need.
 diataxis: how-to
 project: delta
 delta_features: []
@@ -15,8 +15,9 @@ status: draft
 You read a [Delta Lake](model:deltaSpec) table by its path, or by its name
 when a catalog registers it. The engine reads the table's transaction log to
 find its current version, then scans only the Parquet files in that version.
-This guide reads a table with Spark (in SQL, Python, Scala, or Java), the
-`deltalake` Python package, and DuckDB, all of which read Delta tables.
+This guide reads a table with Spark (in SQL, Python, Scala, or Java),
+delta-rs (the `deltalake` Python package or Rust crate), and DuckDB, all of
+which read Delta tables.
 
 :::prerequisites
 - A Delta table. The examples read `orders` at `/tmp/delta/orders`, which
@@ -24,7 +25,8 @@ This guide reads a table with Spark (in SQL, Python, Scala, or Java), the
   and [Build a Delta table in Python and query it with DuckDB](../../tutorials/python-to-duckdb/index.md)
   create. To read your own table, change the path.
 - [uv](https://docs.astral.sh/uv/), and Java 17 for Spark. The Java examples
-  also need [JBang](https://www.jbang.dev/).
+  also need [JBang](https://www.jbang.dev/), and the Rust ones
+  [Rust and Cargo](https://www.rust-lang.org/tools/install).
 :::
 
 ## Set up the client
@@ -89,6 +91,24 @@ uv run --with "deltalake[pandas,pyarrow]==1.6.6" python
 ```
 :::
 
+:::tab[delta-rs · Rust]
+Create a Cargo project with the `deltalake` crate from delta-rs, its
+DataFusion query engine, and the Tokio runtime:
+
+```bash
+cargo new read-delta && cd read-delta
+cargo add deltalake@1.1.1 --features datafusion
+cargo add tokio --features macros,rt-multi-thread
+```
+
+Rust has no shell, so the steps below go into `src/main.rs`, in a
+`#[tokio::main] async fn main() -> Result<(), Box<dyn std::error::Error>>`.
+Run them with `cargo run`. They use these imports:
+
+```rust file=./snippets/read.rs start=start:imports end=end:imports
+```
+:::
+
 :::tab[DuckDB · SQL]
 Start the [DuckDB](model:duckdb) CLI:
 
@@ -130,6 +150,14 @@ Query the table's latest version:
 ```
 :::
 
+:::tab[delta-rs · Rust]
+```rust file=./snippets/read.rs start=start:read end=end:read
+```
+
+`table_provider` hands the table to DataFusion, which reads only the files
+in its current version.
+:::
+
 :::tab[DuckDB · SQL]
 ```sql file=./snippets/read_duckdb.sql start=start:read end=end:read
 ```
@@ -168,6 +196,13 @@ Name only the columns you need, and filter the rows:
 
 `filters` takes a list of `(column, operator, value)` conditions that must all
 hold.
+:::
+
+:::tab[delta-rs · Rust]
+```rust file=./snippets/read.rs start=start:filter end=end:filter
+```
+
+Filter before you select, so the filter can still see `status`.
 :::
 
 :::tab[DuckDB · SQL]

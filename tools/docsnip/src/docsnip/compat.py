@@ -372,13 +372,38 @@ def _project_of(path: Path, content_root: Path) -> str | None:
         return None
 
 
+# `group::artifact:version` (scala-cli) or `group:artifact_<scala>:version`.
+_MAVEN_RE = re.compile(
+    r"^[\w.-]+::?(?P<artifact>[\w.-]+?)(?:_2\.1[0-9])?:(?P<version>[\w.-]+)$"
+)
+
+
 def _package_pins(meta: ScriptMeta) -> dict[str, str]:
+    """Package → pinned version; a Maven coordinate's package is its artifact."""
     pins: dict[str, str] = {}
     for dep in meta.dependencies:
         m = re.match(r"^\s*([A-Za-z0-9_.-]+)(?:\[[^\]]*\])?\s*==\s*([\w.]+)\s*$", dep)
         if m:
             pins[m.group(1).lower()] = m.group(2)
+        elif m := _MAVEN_RE.match(dep.strip()):
+            pins[m.group("artifact").lower()] = m.group("version")
     return pins
+
+
+# Region markers in a `//`-comment language (Scala, Java).
+_SLASH_REGION_RE = re.compile(
+    r"^[ \t]*//[ \t]*--8<-- \[start:([\w-]+)\][^\n]*\n(.*?)"
+    r"^[ \t]*//[ \t]*--8<-- \[end:\1\]",
+    re.S | re.M,
+)
+
+
+def _regions(path: Path) -> dict[str, str]:
+    if path.suffix == ".sql":
+        return sqlregions.regions(path)
+    if path.suffix in (".sc", ".scala", ".java"):
+        return dict(_SLASH_REGION_RE.findall(path.read_text()))
+    return shellregions.regions(path)
 
 
 def _resolve(
@@ -418,8 +443,7 @@ def _resolve(
         return None
     if claim.region is not None:
         shown = meta.verifies_path() or meta.path.resolve()
-        parser = sqlregions if shown.suffix == ".sql" else shellregions
-        if claim.region not in parser.regions(shown):
+        if claim.region not in _regions(shown):
             errors.append(f"{where}: no region '{claim.region}' in {shown.name}")
             return None
         fences = [

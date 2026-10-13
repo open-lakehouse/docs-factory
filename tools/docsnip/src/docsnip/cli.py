@@ -46,7 +46,7 @@ from .snippetcheck import check_blogs, check_content
 
 # The docsnip scripts --json output is a build contract consumed by the site's
 # build-script-index.mjs; bump when the shape changes so the JS side can assert it.
-SCRIPTS_JSON_VERSION = 3
+SCRIPTS_JSON_VERSION = 4
 
 
 def _repo_root() -> Path:
@@ -210,10 +210,11 @@ def cmd_scripts(p, as_json: bool = True) -> int:
 
     Wraps scriptmeta.discover() — the one authoritative parser — so the site build
     (build-script-index.mjs) never re-implements PEP 723 parsing in JS. Output is a
-    versioned object: ``{"version": N, "scripts": [{path, requires_python,
+    versioned object: ``{"version": N, "scripts": [{runner, path, requires_python,
     dependencies, compose, environment, client_env, services, base_url_env, env,
     verifies, tutorial_slug}]}``. ``path`` and ``verifies`` (the snippet a harness
-    tests, or null) are repo-relative POSIX. ``environment`` is the compose's
+    tests, or null) are repo-relative POSIX; ``runner`` is ``python``, ``scala``, or
+    ``java``. ``environment`` is the compose's
     ``envs/environments.yml`` key (or null) and ``client_env`` that entry's
     reader-facing variables; ``env`` stays harness-only. ``helpers`` are the
     sibling modules a script imports, which the site serves beside it.
@@ -234,6 +235,7 @@ def cmd_scripts(p, as_json: bool = True) -> int:
             registered = registry.get(env_key) if env_key else None
             scripts.append(
                 {
+                    "runner": meta.runner,
                     "path": meta.path.resolve()
                     .relative_to(repo_root.resolve())
                     .as_posix(),

@@ -15,6 +15,11 @@ through here, so the two can never disagree about what a script needs.
 
 Parsing uses only the standard library: the PEP 723 reference regex plus
 ``tomllib`` (stdlib on 3.11+). No third-party parser.
+
+JVM scripts (Scala run by scala-cli, Java run by JBang) declare their
+dependencies the way those tools read them (``//> using dep`` and ``//DEPS``),
+and carry the same ``[tool.docs-factory]`` keys in a ``// /// docs-factory``
+comment block. They always run in the ``jvm`` lane.
 """
 
 from __future__ import annotations
@@ -32,6 +37,45 @@ _BLOCK_RE = r"(?m)^# /// (?P<type>[a-zA-Z0-9-]+)$\s(?P<content>(^#(| .*)$\s)+)^#
 # The namespaced table our tooling owns inside a script's PEP 723 metadata.
 TOOL_TABLE = "docs-factory"
 
+# A JVM script's metadata: the [tool.docs-factory] keys as `//` comment lines.
+_JVM_BLOCK_RE = r"(?m)^// /// docs-factory$\s(?P<content>(^//(| .*)$\s)*)^// ///$"
+_JVM_BLOCK_OPEN = "// /// docs-factory"
+
+
+@dataclasses.dataclass(frozen=True)
+class Runner:
+    """How a script of one kind declares its dependencies and runs."""
+
+    name: str
+    suffixes: tuple[str, ...]
+    # Every script of this runner runs in this lane; None leaves it to the script.
+    lane: str | None = None
+    # Captures one dependency directive's coordinates (JVM runners).
+    deps_re: re.Pattern[str] | None = None
+
+
+RUNNERS = (
+    Runner("python", (".py",)),
+    Runner(
+        "scala",
+        (".sc", ".scala"),
+        lane="jvm",
+        deps_re=re.compile(r"^//> using deps? (?P<deps>.+)$", re.MULTILINE),
+    ),
+    Runner(
+        "java",
+        (".java",),
+        lane="jvm",
+        deps_re=re.compile(r"^//DEPS (?P<deps>.+)$", re.MULTILINE),
+    ),
+)
+_RUNNER_BY_SUFFIX = {suffix: r for r in RUNNERS for suffix in r.suffixes}
+
+
+def runner_for(path: Path) -> Runner | None:
+    return _RUNNER_BY_SUFFIX.get(path.suffix)
+
+
 # A script importing docsnip.shellregions or docsnip.sqlregions is a harness
 # driving a shell or SQL snippet.
 _HARNESS_RE = re.compile(
@@ -43,8 +87,9 @@ _HARNESS_RE = re.compile(
 # The snippet kinds a harness may publish in its place.
 _VERIFIABLE = (".sh", ".sql")
 
-# Opt-in test lanes beyond the default (no services, no JVM) one.
-LANES = ("spark",)
+# Opt-in test lanes beyond the default (no services, no JVM) one: `spark` for
+# Python scripts that start Spark, `jvm` for Scala and Java scripts.
+LANES = ("spark", "jvm")
 
 # A dependency that starts a JVM, so its script belongs in the spark lane.
 _SPARK_DEP_RE = re.compile(r"^\s*(?:pyspark|delta-spark)\b")
@@ -157,7 +202,8 @@ class DocsFactoryMeta:
     snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh`` or
     ``foo.sql``: the published runnable example is that file, not the harness.
     ``lane`` puts the script in an opt-in test lane: ``"spark"`` for one that
-    needs Java and Maven (PySpark, or the ``spark-sql`` shell).
+    needs Java and Maven (PySpark, or the ``spark-sql`` shell), ``"jvm"`` for
+    every Scala and Java script.
     ``claims`` feed the compatibility matrices (see :class:`Claim`).
     """
 
@@ -180,8 +226,10 @@ class ScriptMeta:
 
     path: Path
     requires_python: str | None
+    # PEP 723 requirements, or Maven coordinates for a JVM script.
     dependencies: list[str]
     docs_factory: DocsFactoryMeta
+    runner: str = "python"
 
     def compose_path(self) -> Path | None:
         """Absolute path to the compose file this script declares, if any."""
@@ -211,8 +259,18 @@ class ScriptMeta:
 
 
 def without_metadata(text: str) -> str:
-    """The script's text without its ``# /// script`` block."""
-    return re.sub(_BLOCK_RE, "", text)
+    """The script's text without its ``# /// script`` or docs-factory block."""
+    return re.sub(_JVM_BLOCK_RE, "", re.sub(_BLOCK_RE, "", text))
+
+
+def metadata_spans(text: str) -> list[tuple[int, int]]:
+    """Character spans of the factory metadata blocks in a script's text."""
+    spans = [
+        m.span()
+        for pattern in (_BLOCK_RE, _JVM_BLOCK_RE)
+        for m in re.finditer(pattern, text)
+    ]
+    return sorted(spans)
 
 
 def _read_block(text: str) -> dict | None:
@@ -234,6 +292,19 @@ def _read_block(text: str) -> dict | None:
     return tomllib.loads(content)
 
 
+def _read_jvm_block(text: str) -> dict | None:
+    matches = list(re.finditer(_JVM_BLOCK_RE, text))
+    if len(matches) > 1:
+        raise ScriptMetaError(f"multiple '{_JVM_BLOCK_OPEN}' blocks found")
+    if not matches:
+        return None
+    content = "".join(
+        line[3:] if line.startswith("// ") else line[2:]
+        for line in matches[0].group("content").splitlines(keepends=True)
+    )
+    return tomllib.loads(content)
+
+
 def parse_script(path: Path) -> ScriptMeta | None:
     """Parse one script's inline metadata, or ``None`` if it has no block.
 
@@ -241,11 +312,31 @@ def parse_script(path: Path) -> ScriptMeta | None:
         ScriptMetaError: on a malformed block or a bad ``[tool.docs-factory]``
             table (e.g. ``services`` present without ``compose``).
     """
-    block = _read_block(path.read_text())
-    if block is None:
+    runner = runner_for(path)
+    if runner is None:
         return None
-
-    tool = (block.get("tool") or {}).get(TOOL_TABLE, {}) or {}
+    text = path.read_text()
+    if runner.name == "python":
+        block = _read_block(text)
+        if block is None:
+            return None
+        tool = (block.get("tool") or {}).get(TOOL_TABLE, {}) or {}
+        dependencies = list(block.get("dependencies", []) or [])
+    else:
+        try:
+            tool = _read_jvm_block(text)
+        except tomllib.TOMLDecodeError as exc:
+            raise ScriptMetaError(f"{path}: {_JVM_BLOCK_OPEN}: {exc}") from None
+        if tool is None:
+            return None
+        block = {}
+        assert runner.deps_re is not None
+        dependencies = [
+            dep
+            for m in runner.deps_re.finditer(text)
+            for dep in re.split(r"[\s,]+", m.group("deps").strip())
+            if dep
+        ]
     compose = tool.get("compose")
     services = tool.get("services", []) or []
     base_url_env = tool.get("base-url-env")
@@ -273,11 +364,20 @@ def parse_script(path: Path) -> ScriptMeta | None:
         raise ScriptMetaError(
             f"{path}: [tool.docs-factory].lane must be one of {', '.join(LANES)}"
         )
+    if runner.lane is not None:
+        if lane not in (None, runner.lane):
+            raise ScriptMetaError(
+                f"{path}: a {runner.name} script always runs in the {runner.lane} "
+                f"lane, not {lane}"
+            )
+        lane = runner.lane
+    elif lane == "jvm":
+        raise ScriptMetaError(f"{path}: the jvm lane is for Scala and Java scripts")
 
     return ScriptMeta(
         path=path,
         requires_python=block.get("requires-python"),
-        dependencies=list(block.get("dependencies", []) or []),
+        dependencies=dependencies,
         docs_factory=DocsFactoryMeta(
             compose=compose,
             services=list(services),
@@ -287,14 +387,32 @@ def parse_script(path: Path) -> ScriptMeta | None:
             claims=_parse_claims(path, tool.get("claims")),
             lane=lane,
         ),
+        runner=runner.name,
     )
 
 
 def has_script_block(path: Path) -> bool:
-    """Cheap check: does this ``.py`` file carry a ``# /// script`` header?"""
+    """Cheap check: does this file carry its runner's metadata header?"""
+    runner = runner_for(path)
+    if runner is None:
+        return False
     # The block must appear before any code; reading the whole file is fine for
     # the small tutorial scripts we scan.
-    return "# /// script" in path.read_text()
+    opener = "# /// script" if runner.name == "python" else _JVM_BLOCK_OPEN
+    return opener in path.read_text()
+
+
+def _candidates(content_root: Path) -> list[Path]:
+    # Hidden folders hold tool output, such as scala-cli's generated `.scala-build/`.
+    return sorted(
+        path
+        for suffix in _RUNNER_BY_SUFFIX
+        for path in content_root.rglob(f"*{suffix}")
+        if not any(
+            part.startswith(".") for part in path.relative_to(content_root).parts
+        )
+        and has_script_block(path)
+    )
 
 
 def discover(content_root: Path) -> list[ScriptMeta]:
@@ -306,9 +424,7 @@ def discover(content_root: Path) -> list[ScriptMeta]:
     malformed script so ``docsnip check`` surfaces it.
     """
     scripts: list[ScriptMeta] = []
-    for path in sorted(content_root.rglob("*.py")):
-        if not has_script_block(path):
-            continue
+    for path in _candidates(content_root):
         meta = parse_script(path)
         if meta is not None:
             scripts.append(meta)
@@ -341,9 +457,7 @@ def check(content_root: Path) -> list[str]:
     """
     errors: list[str] = []
     fence_sources: set[Path] | None = None
-    for path in sorted(content_root.rglob("*.py")):
-        if not has_script_block(path):
-            continue
+    for path in _candidates(content_root):
         try:
             meta = parse_script(path)
         except ScriptMetaError as exc:

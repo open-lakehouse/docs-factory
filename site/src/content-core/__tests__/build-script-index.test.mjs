@@ -276,3 +276,46 @@ test("scriptSummary reads a shell script's first comment paragraph", () => {
   expect(scriptSummary(src, "shell")).toBe("Create a catalog with the CLI.");
   expect(scriptSummary("#!/usr/bin/env bash\n# --8<-- [start:a]\n", "shell")).toBeNull();
 });
+
+const JAVA = [
+  '///usr/bin/env jbang "$0" "$@" ; exit $?',
+  "// --8<-- [start:deps]",
+  "//DEPS io.delta:delta-spark_2.13:4.4.0",
+  "// --8<-- [end:deps]",
+  "",
+  "// /// docs-factory",
+  "// claims.spark-java = [",
+  '//   { journey = "read.scan", region = "read" },',
+  "// ]",
+  "// ///",
+  "",
+  "// Read a Delta table with Spark in Java.",
+  "//",
+  "// More detail.",
+  "",
+  "public class Read {}",
+  "",
+].join("\n");
+
+test("scriptEntry takes a Scala or Java script's kind from its runner", () => {
+  const entry = {
+    ...DOCSNIP_ENTRY,
+    runner: "java",
+    path: DOCSNIP_ENTRY.path.replace(/[^/]+$/, "Read.java"),
+  };
+  expect(scriptEntry(entry).kind).toBe("java");
+  expect(scriptEntry({ ...entry, runner: "scala" }).kind).toBe("scala");
+});
+
+test("publishScript drops a JVM script's docs-factory block and // markers, keeping its directives", () => {
+  const out = publishScript(JAVA);
+  expect(out).not.toContain("docs-factory");
+  expect(out).not.toContain("--8<--");
+  expect(out).toContain("//DEPS io.delta:delta-spark_2.13:4.4.0");
+  expect(out).toContain("public class Read {}");
+});
+
+test("scriptSummary reads a JVM script's first comment after its directives", () => {
+  expect(scriptSummary(JAVA, "java")).toBe("Read a Delta table with Spark in Java.");
+  expect(scriptSummary("//> using scala 2.13\n\nval x = 1\n", "scala")).toBeNull();
+});

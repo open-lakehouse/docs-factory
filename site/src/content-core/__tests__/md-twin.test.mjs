@@ -171,6 +171,25 @@ test("companions list a SQL file without a run command", () => {
   expect(md).toContain("  - run: enter its statements in the SQL shell the page opens");
 });
 
+test("Scala and Java companions run with scala-cli and JBang", () => {
+  const script = (kind, file) => ({
+    kind,
+    fetchUrl: `/how-to/read/snippets/${file}`,
+    summary: "Read a Delta table.",
+    requiresPython: null,
+    services: [],
+    env: {},
+  });
+  const md = companionsSection([script("scala", "read.sc"), script("java", "Read.java")]);
+  expect(md).toContain("(Scala): Read a Delta table.");
+  expect(md).toContain("  - run: `scala-cli run read.sc`");
+  expect(md).toContain("(Java): Read a Delta table.");
+  expect(md).toContain("  - run: `jbang Read.java`");
+  expect(runnableExamplesSection([script("java", "Read.java")])).toContain(
+    "run with `jbang Read.java`",
+  );
+});
+
 const COMPANIONS = [
   {
     kind: "python",

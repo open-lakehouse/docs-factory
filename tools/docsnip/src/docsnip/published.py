@@ -11,7 +11,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from .scriptmeta import _BLOCK_RE, ScriptMeta, has_script_block
+from .scriptmeta import ScriptMeta, has_script_block, metadata_spans
 
 _IMPORT_RE = re.compile(r"^\s*(?:from\s+(\w+)\s+import|import\s+(\w+))", re.MULTILINE)
 
@@ -30,6 +30,8 @@ def helpers(script: Path) -> list[Path]:
     A helper has no PEP 723 block of its own: it is published beside the
     script and runs under the script's dependencies.
     """
+    if script.suffix != ".py":
+        return []
     found = set()
     for m in _IMPORT_RE.finditer(script.read_text()):
         sibling = script.parent / f"{m.group(1) or m.group(2)}.py"
@@ -45,8 +47,10 @@ def served_files(meta: ScriptMeta) -> list[Path]:
 
 
 def _body(text: str) -> str:
-    """The text with its PEP 723 block blanked (same line count), as served."""
-    return re.sub(_BLOCK_RE, lambda m: "\n" * m.group(0).count("\n"), text, count=1)
+    """The text with its metadata block blanked (same line count), as served."""
+    for start, end in reversed(metadata_spans(text)):
+        text = text[:start] + "\n" * text.count("\n", start, end) + text[end:]
+    return text
 
 
 def check(scripts: list[ScriptMeta]) -> tuple[list[str], list[str]]:

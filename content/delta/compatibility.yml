@@ -22,6 +22,18 @@ interfaces:
     pin: pyspark
     package: pyspark
     model: deltaSpark
+  # Scala and Java reach the same Delta Spark API PySpark wraps, so no table
+  # gives them a column; they label the tabs and hold their scripts' claims.
+  spark-scala:
+    label: Spark · Scala
+    pin: pyspark
+    package: delta-spark
+    model: deltaSpark
+  spark-java:
+    label: Spark · Java
+    pin: pyspark
+    package: delta-spark
+    model: deltaSpark
   delta-rs-python:
     label: delta-rs · Python
     pin: deltalake

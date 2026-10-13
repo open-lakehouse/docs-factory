@@ -64,6 +64,7 @@ jobs:
     outputs:
       default: ${{ steps.plan.outputs.default }}
       spark: ${{ steps.plan.outputs.spark }}
+      jvm: ${{ steps.plan.outputs.jvm }}
       services: ${{ steps.plan.outputs.services }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -156,6 +157,59 @@ jobs:
       - uses: ./.github/actions/pypi-public
       - run: uv sync --all-packages
       - run: uv run pytest content -m "needs_spark and not needs_uc_server" -v -rxXs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: durations-${{ matrix.id }}
+          path: durations.json
+          if-no-files-found: ignore
+
+  scripts-jvm:
+    # Scala scripts run by scala-cli and Java scripts run by JBang. Both resolve
+    # Spark and Delta Spark from Maven Central through Coursier or Maven.
+    name: scripts-jvm (${{ matrix.shard }})
+    needs: plan
+    if: needs.plan.outputs.jvm != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.jvm) }}
+    env:
+      DOCS_FACTORY_SELECT: ${{ toJSON(matrix.scripts) }}
+      DOCS_FACTORY_DURATIONS_OUT: durations.json
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@de7274f081f381c8f8158605e0321c36c376e2e6 # v6.0.1
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: VirtusLab/scala-cli-setup@3f5bf11a33bb88343238780c18257c8fa43789e1 # v1.18.0
+        with:
+          scala-cli-version: "1.18.0"
+          # The JVM comes from setup-java. `apps` stays at its default: emptying
+          # it skips installing scala-cli too.
+          jvm: ""
+      - uses: jbangdev/setup-jbang@2b1b465a7b75f4222b81426f23a01e013aa7b95c # v0.1.1
+        with:
+          version: "0.132.1"
+          setup-java: "false"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          # Coursier's cache (scala-cli) and Maven's local repository (JBang).
+          path: |
+            ~/.cache/coursier
+            ~/.m2/repository
+          key: jvm-deps-${{ hashFiles('content/delta/release.yml') }}
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+      - uses: ./.github/actions/pypi-public
+      - run: uv sync --all-packages
+      - run: uv run pytest content -m needs_jvm -v -rxXs
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:

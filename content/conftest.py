@@ -128,6 +128,9 @@ def pytest_terminal_summary(terminalreporter):
         return
     for report in terminalreporter.stats.get("xfailed", []):
         print(f"::warning file={report.fspath}::failed, not gating: {report.wasxfail}")
+        # pytest reports an xfail's reason, not its output; the author needs both.
+        tail = "\n".join(report.longreprtext.splitlines()[-60:])
+        print(f"::group::{report.fspath} output (tail)\n{tail}\n::endgroup::")
     for report in terminalreporter.stats.get("skipped", []):
         if isinstance(report.longrepr, tuple):
             print(f"::warning file={report.fspath}::skipped: {report.longrepr[2]}")

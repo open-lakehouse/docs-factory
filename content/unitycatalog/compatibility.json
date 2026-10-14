@@ -39,6 +39,13 @@
       "model": null
     },
     {
+      "key": "pyiceberg",
+      "label": "PyIceberg",
+      "version": "0.12.0",
+      "package": "pyiceberg",
+      "model": null
+    },
+    {
       "key": "cli",
       "label": "uc CLI",
       "version": "0.7.0",
@@ -84,6 +91,26 @@
         "managed.drop",
         "managed.time-travel",
         "external.read-format"
+      ]
+    },
+    {
+      "id": "iceberg-rest",
+      "title": "Iceberg tables through Iceberg REST",
+      "columns": [
+        "spark",
+        "duckdb",
+        "pyiceberg"
+      ],
+      "rows": [
+        "iceberg.schema-create",
+        "iceberg.create",
+        "iceberg.append",
+        "iceberg.read",
+        "iceberg.update",
+        "iceberg.delete",
+        "iceberg.rename",
+        "iceberg.drop",
+        "iceberg.join-delta"
       ]
     },
     {
@@ -1054,6 +1081,628 @@
               "version": "1.44.2",
               "api": null,
               "note": "by path from the table's location"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.schema-create",
+      "title": "Create a schema through Iceberg REST",
+      "summary": "Create a schema as an Iceberg namespace, under the catalog the client names as its warehouse.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE NAMESPACE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "CREATE SCHEMA",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "create_namespace",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.create",
+      "title": "Create a managed Iceberg table",
+      "summary": "Create an Iceberg table through Iceberg REST, with storage the catalog allocates.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "CREATE TABLE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "create_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.append",
+      "title": "Append to an Iceberg table",
+      "summary": "Append rows to an Iceberg table, with credentials the catalog vends for its storage.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT INTO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "INSERT INTO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "Table.append",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.read",
+      "title": "Read an Iceberg table",
+      "summary": "Read an Iceberg table by its catalog name, with credentials the catalog vends.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "Table.scan",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.update",
+      "title": "Update rows in an Iceberg table",
+      "summary": "Change rows that match a condition in an Iceberg table, committed through the catalog.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "UPDATE, MERGE INTO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "UPDATE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "Table.overwrite(overwrite_filter=)",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.delete",
+      "title": "Delete rows from an Iceberg table",
+      "summary": "Remove rows that match a condition from an Iceberg table, committed through the catalog.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DELETE FROM",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "DELETE FROM",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "Table.delete",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.rename",
+      "title": "Rename an Iceberg table",
+      "summary": "Give an Iceberg table a new name in its schema.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … RENAME TO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "ALTER TABLE … RENAME TO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "rename_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.drop",
+      "title": "Drop an Iceberg table",
+      "summary": "Drop an Iceberg table, and for a managed one its data.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DROP TABLE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "DROP TABLE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "drop_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.join-delta",
+      "title": "Join Delta and Iceberg tables",
+      "summary": "Query a Delta table and an Iceberg table from the same catalog together in one session.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_cross_format.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "join-delta-and-iceberg-tables-in-spark",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": "UC connector and Iceberg REST catalogs in one session"
             }
           ],
           "evidence": []

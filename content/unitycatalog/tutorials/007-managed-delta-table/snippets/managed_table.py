@@ -178,8 +178,8 @@ spark.sql("DROP SCHEMA sales")
 spark.stop()
 # --8<-- [end:clean-up]
 
-# The server deletes a managed table's files when the table is dropped.
+# The files outlive the drop until `server.storage-cleanup.initial-delay` passes.
 table_dir = detail.location.removeprefix("file:")
-assert not os.path.exists(table_dir), os.listdir(table_dir)
+assert os.path.exists(table_dir), table_dir
 
 asyncio.run(_drop_catalog())

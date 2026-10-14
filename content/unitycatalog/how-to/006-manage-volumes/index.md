@@ -120,9 +120,6 @@ external-location check.
 ```
 :::
 
-To check whether a volume exists, list the schema's volumes; see
-[Known issues](../../reference/features-and-limitations/index.md#known-issues).
-
 **Required privileges:** `READ_VOLUME` or ownership on the volume, plus
 `USE_SCHEMA` and `USE_CATALOG`. Owners of the schema (with `USE_CATALOG`), the
 catalog, or the metastore can also view it. A list returns only the volumes you
@@ -190,13 +187,13 @@ What happens to the files depends on the volume type:
 | Volume type | Catalog entry | Files |
 | --- | --- | --- |
 | External | Deleted | Left in place. Delete them with your storage tools if you no longer need them. |
-| Managed | Deleted | The server deletes the volume's directory. |
+| Managed | Deleted | The server deletes the volume's directory after `server.storage-cleanup.initial-delay`, 7 days by default. |
 
 :::warning
-Managed-volume file deletion is best effort. If the server can't delete the
-directory, for example because of storage permissions, it logs the error and
-still deletes the volume. The files then remain without a catalog entry, so
-check storage after deleting volumes that matter.
+The delay isn't a recovery window: the volume can't be restored, and when the
+delay passes the files are deleted for good. Copy anything you still need out
+of the directory first. If a deletion fails, the server retries it after
+`server.storage-cleanup.retry-backoff`, an hour by default.
 :::
 
 **Required privileges:** ownership of the catalog; or ownership of the schema

@@ -42,7 +42,7 @@ Delta 4.3 or later, makes it catalog-managed. External tables never are.
 | Location | You supply it | The catalog allocates it |
 | Who accepts commits | The files, first writer wins | The Unity Catalog server |
 | Formats | Delta, Parquet, CSV, and others | Delta only |
-| Dropping the table | Removes the catalog entry, keeps the files | Deletes the files too |
+| Dropping the table | Removes the catalog entry, keeps the files | Deletes the files too, after a cleanup delay |
 | Path-based clients | Can read and write the location | Can't load it without the catalog |
 | How to create one | [Register it](../../how-to/register-external-table/index.md) | [`CREATE TABLE` without a location](../../tutorials/managed-delta-table/index.md) |
 

@@ -66,4 +66,4 @@ if __name__ == "__main__":
 
     run(SCRIPT, "delete")
     assert (ROOT / "landing" / "2026" / "orders.csv").exists()
-    assert not managed_dir.exists()
+    assert managed_dir.exists()  # until `server.storage-cleanup.initial-delay` passes

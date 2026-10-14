@@ -163,7 +163,9 @@ Drop the table and the schema, and stop Spark. Then leave the session with
 ```
 
 :::warning
-Dropping a managed table deletes its files. This is the opposite of an
+Dropping a managed table deletes its files once
+`server.storage-cleanup.initial-delay` passes, 7 days by default. The table
+can't be restored in the meantime. This is the opposite of an
 [external table](../../how-to/register-external-table/index.md), whose files
 stay where they are.
 :::

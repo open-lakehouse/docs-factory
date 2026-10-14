@@ -6,6 +6,15 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# claims."python-sdk" = [
+#   { journey = "storage.managed-root", region = "managed-root", api = "SchemasApi.create_schema(storage_root=)" },
+#   { journey = "volume.create-external", region = "create-external", api = "VolumesApi.create_volume" },
+#   { journey = "volume.create-managed", region = "create-managed", api = "VolumesApi.create_volume" },
+#   { journey = "volume.view", region = "view", api = "VolumesApi.get_volume" },
+#   { journey = "volume.list-files", region = "list-files", note = "on local storage, from the volume's location" },
+#   { journey = "volume.update", region = "update", api = "VolumesApi.update_volume" },
+#   { journey = "volume.delete", region = "delete", api = "VolumesApi.delete_volume" },
+# ]
 # ///
 """Create, inspect, update, and delete external and managed volumes.
 

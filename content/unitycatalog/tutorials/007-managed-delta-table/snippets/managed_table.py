@@ -12,6 +12,7 @@
 #   { journey = "managed.update", region = "change-rows" },
 #   { journey = "managed.delete", region = "change-rows" },
 #   { journey = "managed.drop", region = "clean-up" },
+#   { journey = "managed.time-travel", region = "time-travel", api = "VERSION AS OF" },
 # ]
 # claims."delta:spark-sql" = [
 #   { journey = "create.table", region = "create-table", api = "CREATE TABLE", note = "through Unity Catalog" },

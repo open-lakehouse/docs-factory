@@ -10,6 +10,12 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "external_table.sh"
+# claims.cli = [
+#   { journey = "table.register-external", region = "register", api = "uc table create" },
+#   { journey = "table.describe", region = "view", api = "uc table get" },
+#   { journey = "table.read", region = "read", api = "uc table read" },
+#   { journey = "table.drop", region = "drop", api = "uc table delete" },
+# ]
 # ///
 """Run external_table.sh task by task and check what each command changed."""
 

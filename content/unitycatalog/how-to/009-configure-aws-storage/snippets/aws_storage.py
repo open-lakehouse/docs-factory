@@ -6,6 +6,15 @@
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# claims."python-sdk" = [
+#   { journey = "credential.create", region = "create-credential", api = "CredentialsApi.create_credential" },
+#   { journey = "location.create", region = "create-location", api = "ExternalLocationsApi.create_external_location" },
+#   { journey = "credentials.vend-path", region = "verify", api = "generate_temporary_path_credentials" },
+#   { journey = "storage.view", region = "view" },
+#   { journey = "credential.update", region = "update-credential", api = "CredentialsApi.update_credential" },
+#   { journey = "location.update", region = "update-location", api = "ExternalLocationsApi.update_external_location" },
+#   { journey = "storage.delete", region = "delete" },
+# ]
 # ///
 """Register an S3 storage credential and external location, and check vending.
 

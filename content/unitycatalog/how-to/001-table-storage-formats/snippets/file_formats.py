@@ -11,6 +11,17 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# claims."python-sdk" = [
+#   { journey = "table.register-format", region = "register", api = "TablesApi.create_table" },
+#   { journey = "table.describe", region = "lookup", api = "TablesApi.get_table" },
+#   { journey = "table.drop", region = "drop", api = "TablesApi.delete_table" },
+# ]
+# claims.polars = [
+#   { journey = "external.read-format", region = "polars", note = "by path from the table's location" },
+# ]
+# claims.duckdb = [
+#   { journey = "external.read-format", region = "duckdb", note = "by path from the table's location" },
+# ]
 # ///
 """Register Parquet, CSV, and JSON files as external tables, read them, and drop them.
 

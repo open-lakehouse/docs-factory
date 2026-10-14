@@ -6,6 +6,12 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# claims."python-sdk" = [
+#   { journey = "volume.create-external", region = "register", api = "VolumesApi.create_volume" },
+#   { journey = "volume.view", region = "find", api = "VolumesApi.get_volume" },
+#   { journey = "credentials.vend-volume", region = "credentials", api = "generate_temporary_volume_credentials" },
+#   { journey = "volume.read-files", region = "read", note = "with obstore" },
+# ]
 # ///
 """Register a folder of files as a volume, then find and read it by name.
 

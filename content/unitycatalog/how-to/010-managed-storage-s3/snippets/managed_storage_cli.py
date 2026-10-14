@@ -10,6 +10,10 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "managed_storage.sh"
+# claims.cli = [
+#   { journey = "storage.managed-root", region = "catalog-root", api = "uc catalog create --storage_root" },
+#   { journey = "volume.create-managed", region = "managed-volume", api = "uc volume create --volume_type MANAGED" },
+# ]
 # ///
 """Run managed_storage.sh task by task and check where managed data lands."""
 

@@ -10,6 +10,12 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "first_catalog.sh"
+# claims.cli = [
+#   { journey = "table.list", region = "browse", api = "uc table list" },
+#   { journey = "table.register-external", region = "create-table", api = "uc table create" },
+#   { journey = "table.write-sample", region = "write-rows", api = "uc table write" },
+#   { journey = "table.read", region = "read-rows", api = "uc table read" },
+# ]
 # ///
 """Run first_catalog.sh step by step and check what each command changed."""
 

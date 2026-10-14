@@ -37,6 +37,27 @@
       "version": "2.3.3",
       "package": "pandas",
       "model": null
+    },
+    {
+      "key": "cli",
+      "label": "uc CLI",
+      "version": "0.6.0",
+      "package": null,
+      "model": null
+    },
+    {
+      "key": "python-sdk",
+      "label": "Python SDK",
+      "version": "0.6.0",
+      "package": "unitycatalog-client",
+      "model": null
+    },
+    {
+      "key": "unitycatalog-ai",
+      "label": "unitycatalog-ai",
+      "version": "0.4.0",
+      "package": "unitycatalog-ai",
+      "model": null
     }
   ],
   "tables": [
@@ -60,7 +81,77 @@
         "managed.append",
         "managed.update",
         "managed.delete",
-        "managed.drop"
+        "managed.drop",
+        "managed.time-travel",
+        "external.read-format"
+      ]
+    },
+    {
+      "id": "catalog-objects",
+      "title": "Catalog objects",
+      "columns": [
+        "cli",
+        "python-sdk"
+      ],
+      "rows": [
+        "catalog.create",
+        "catalog.list",
+        "catalog.update",
+        "catalog.delete",
+        "schema.create",
+        "schema.list",
+        "schema.update",
+        "schema.delete",
+        "table.register-external",
+        "table.register-format",
+        "table.list",
+        "table.describe",
+        "table.read",
+        "table.write-sample",
+        "table.drop",
+        "volume.create-external",
+        "volume.create-managed",
+        "volume.view",
+        "volume.list-files",
+        "volume.update",
+        "volume.delete"
+      ]
+    },
+    {
+      "id": "storage-and-access",
+      "title": "Storage and credentials",
+      "columns": [
+        "cli",
+        "python-sdk"
+      ],
+      "rows": [
+        "credential.create",
+        "credential.update",
+        "location.create",
+        "location.update",
+        "storage.view",
+        "storage.delete",
+        "storage.managed-root",
+        "credentials.vend-path",
+        "credentials.vend-volume",
+        "volume.read-files",
+        "volume.write-files"
+      ]
+    },
+    {
+      "id": "functions",
+      "title": "Functions",
+      "columns": [
+        "cli",
+        "python-sdk",
+        "unitycatalog-ai"
+      ],
+      "rows": [
+        "function.create",
+        "function.describe",
+        "function.execute",
+        "function.list",
+        "function.delete"
       ]
     }
   ],
@@ -68,9 +159,31 @@
     {
       "id": "table.list",
       "title": "List tables",
-      "summary": null,
+      "summary": "List the tables in a schema from the engine, by their catalog names.",
       "request": null,
       "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/007-configure-spark/snippets/spark_session.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-spark"
+              },
+              "anchor": "check-the-connection",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SHOW TABLES",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "duckdb": {
           "status": "tested",
           "draft": false,
@@ -156,13 +269,35 @@
               "note": null
             }
           ]
+        },
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/001-getting-started/snippets/first_catalog_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "getting-started"
+              },
+              "anchor": "browse-the-sample-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table list",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
     {
       "id": "external.read",
       "title": "Read an external table",
-      "summary": null,
+      "summary": "Read an external table by its catalog name, from files the reader can already reach.",
       "request": null,
       "cells": {
         "duckdb": {
@@ -288,7 +423,7 @@
     {
       "id": "external.read-vended",
       "title": "Read with vended S3 credentials",
-      "summary": null,
+      "summary": "Read an external table on S3 with the short-lived credentials the server vends for it.",
       "request": null,
       "cells": {
         "polars": {
@@ -340,7 +475,7 @@
     {
       "id": "external.append",
       "title": "Append to an external table",
-      "summary": null,
+      "summary": "Append rows to an external table, named through the catalog.",
       "request": null,
       "cells": {
         "polars": {
@@ -414,7 +549,7 @@
     {
       "id": "managed.create",
       "title": "Create a managed table",
-      "summary": null,
+      "summary": "Create a catalog-managed Delta table, with storage the catalog allocates.",
       "request": null,
       "cells": {
         "spark": {
@@ -466,7 +601,7 @@
     {
       "id": "managed.read",
       "title": "Read a managed table",
-      "summary": null,
+      "summary": "Read a catalog-managed table through the catalog.",
       "request": null,
       "cells": {
         "spark": {
@@ -578,7 +713,7 @@
     {
       "id": "managed.append",
       "title": "Append to a managed table",
-      "summary": null,
+      "summary": "Append rows to a catalog-managed table, with the catalog accepting the commit.",
       "request": null,
       "cells": {
         "spark": {
@@ -690,7 +825,7 @@
     {
       "id": "managed.update",
       "title": "Update rows in a managed table",
-      "summary": null,
+      "summary": "Change rows that match a condition in a catalog-managed table.",
       "request": null,
       "cells": {
         "spark": {
@@ -742,7 +877,7 @@
     {
       "id": "managed.delete",
       "title": "Delete rows from a managed table",
-      "summary": null,
+      "summary": "Remove rows that match a condition from a catalog-managed table.",
       "request": null,
       "cells": {
         "spark": {
@@ -794,7 +929,7 @@
     {
       "id": "managed.drop",
       "title": "Drop a managed table",
-      "summary": null,
+      "summary": "Drop a catalog-managed table and its data.",
       "request": null,
       "cells": {
         "spark": {
@@ -836,6 +971,1970 @@
               "fails": null,
               "version": "1.5.4",
               "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.time-travel",
+      "title": "Read an earlier version of a managed table",
+      "summary": "Query a catalog-managed table as it was at an earlier version.",
+      "request": null,
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "read-an-earlier-version",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "VERSION AS OF",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "external.read-format",
+      "title": "Read a Parquet, CSV, or JSON table",
+      "summary": "Read a non-Delta external table, using the format and location the catalog records.",
+      "request": null,
+      "cells": {
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/001-table-storage-formats/snippets/file_formats.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "table-storage-formats"
+              },
+              "anchor": "read-the-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": "by path from the table's location"
+            }
+          ],
+          "evidence": []
+        },
+        "polars": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/001-table-storage-formats/snippets/file_formats.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "table-storage-formats"
+              },
+              "anchor": "read-the-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.44.2",
+              "api": null,
+              "note": "by path from the table's location"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "catalog.create",
+      "title": "Create a catalog",
+      "summary": "Create a catalog, the top level of the three-level namespace.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "create-a-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc catalog create",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "create-a-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "CatalogsApi.create_catalog",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "catalog.list",
+      "title": "View catalogs",
+      "summary": "List catalogs or get one by name, with its properties.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "view-catalogs",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc catalog list",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "view-catalogs",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "CatalogsApi.list_catalogs",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "catalog.update",
+      "title": "Update a catalog",
+      "summary": "Change a catalog's comment, properties, or name.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "update-a-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc catalog update",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "update-a-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "CatalogsApi.update_catalog",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "catalog.delete",
+      "title": "Delete a catalog",
+      "summary": "Delete a catalog, including everything in it when forced.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "delete-a-schema-or-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc catalog delete --force",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "delete-a-schema-or-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "CatalogsApi.delete_catalog(force=True)",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "schema.create",
+      "title": "Create a schema",
+      "summary": "Create a schema inside a catalog.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc schema create",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "SchemasApi.create_schema",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "schema.list",
+      "title": "View schemas",
+      "summary": "List a catalog's schemas or get one by its full name.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "view-schemas",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc schema list",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "view-schemas",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "SchemasApi.list_schemas",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "schema.update",
+      "title": "Update or rename a schema",
+      "summary": "Change a schema's comment, properties, or name.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "update-or-rename-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc schema update",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "update-or-rename-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "SchemasApi.update_schema",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "schema.delete",
+      "title": "Delete a schema",
+      "summary": "Delete an empty schema.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "delete-a-schema-or-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc schema delete",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/004-manage-catalogs-and-schemas/snippets/catalogs.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-catalogs-and-schemas"
+              },
+              "anchor": "delete-a-schema-or-catalog",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "SchemasApi.delete_schema",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "table.register-external",
+      "title": "Register an external Delta table",
+      "summary": "Register Delta files that already exist in storage as a table, without copying them.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/external_table_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "register-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table create",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/001-getting-started/snippets/first_catalog_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "getting-started"
+              },
+              "anchor": "create-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table create",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/external_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "register-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "TablesApi.create_table",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/002-python-client/snippets/catalog_flow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "python-client"
+              },
+              "anchor": "create-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "TablesApi.create_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "table.register-format",
+      "title": "Register a Parquet, CSV, or JSON table",
+      "summary": "Register files in another format as an external table, with its columns declared.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/001-table-storage-formats/snippets/file_formats_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "table-storage-formats"
+              },
+              "anchor": "register-the-tables",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table create --format",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/001-table-storage-formats/snippets/file_formats.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "table-storage-formats"
+              },
+              "anchor": "register-the-tables",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "TablesApi.create_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "table.describe",
+      "title": "View a table",
+      "summary": "Get a table's columns, format, type, and storage location by its full name.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/external_table_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "view-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table get",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/001-table-storage-formats/snippets/file_formats.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "table-storage-formats"
+              },
+              "anchor": "read-the-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "TablesApi.get_table",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/external_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "view-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "TablesApi.get_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "table.read",
+      "title": "Read a table's rows from a client",
+      "summary": "Read rows of a registered Delta table without starting an engine.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/external_table_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "read-the-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table read",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/001-getting-started/snippets/first_catalog_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "getting-started"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table read",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/external_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "read-the-data",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "DeltaTable(storage_location)",
+              "note": "with deltalake"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "table.write-sample",
+      "title": "Write sample rows",
+      "summary": "Write generated rows into a table to try things out.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/001-getting-started/snippets/first_catalog_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "getting-started"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table write",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "table.drop",
+      "title": "Drop a table",
+      "summary": "Remove a table from the catalog. Data files of an external table stay in place.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/001-table-storage-formats/snippets/file_formats_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "table-storage-formats"
+              },
+              "anchor": "drop-the-tables",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table delete",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/external_table_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "drop-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table delete",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/001-table-storage-formats/snippets/file_formats.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "table-storage-formats"
+              },
+              "anchor": "drop-the-tables",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "TablesApi.delete_table",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/005-register-external-table/snippets/external_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "register-external-table"
+              },
+              "anchor": "drop-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "TablesApi.delete_table",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/002-python-client/snippets/catalog_flow.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "python-client"
+              },
+              "anchor": "clean-up",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "TablesApi.delete_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "volume.create-external",
+      "title": "Create an external volume",
+      "summary": "Register an existing storage folder as a volume.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "create-an-external-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc volume create --volume_type EXTERNAL",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "create-an-external-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "VolumesApi.create_volume",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/006-read-volume-files/snippets/volume_files.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "read-volume-files"
+              },
+              "anchor": "register-the-folder-as-a-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "VolumesApi.create_volume",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "volume.create-managed",
+      "title": "Create a managed volume",
+      "summary": "Create a volume whose storage the catalog allocates under a managed storage root.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "create-a-managed-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc volume create --volume_type MANAGED",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-storage-s3"
+              },
+              "anchor": "create-managed-objects",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc volume create --volume_type MANAGED",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "create-a-managed-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "VolumesApi.create_volume",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-storage-s3"
+              },
+              "anchor": "create-managed-objects",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "VolumesApi.create_volume",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "volume.view",
+      "title": "View volumes",
+      "summary": "List a schema's volumes or get one by its full name, with its storage location.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "view-volumes",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc volume get",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "view-volumes",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "VolumesApi.get_volume",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/006-read-volume-files/snippets/volume_files.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "read-volume-files"
+              },
+              "anchor": "find-the-volume-by-name",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "VolumesApi.get_volume",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "volume.list-files",
+      "title": "List a volume's files",
+      "summary": "See which files a volume holds.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "work-with-the-files",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc volume read",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "work-with-the-files",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": null,
+              "note": "on local storage, from the volume's location"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "volume.update",
+      "title": "Rename or update a volume",
+      "summary": "Change a volume's comment or name.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "rename-or-update-a-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc volume update",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "rename-or-update-a-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "VolumesApi.update_volume",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "volume.delete",
+      "title": "Delete a volume",
+      "summary": "Remove a volume from the catalog.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "delete-a-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc volume delete",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "delete-a-volume",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "VolumesApi.delete_volume",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "credential.create",
+      "title": "Create a storage credential",
+      "summary": "Store the cloud identity the server assumes to reach a bucket.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "create-a-storage-credential",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc credential create",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "create-a-storage-credential",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "CredentialsApi.create_credential",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "location.create",
+      "title": "Create an external location",
+      "summary": "Pair a storage path with the credential that can access it.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "create-an-external-location",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc external_location create",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "create-an-external-location",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "ExternalLocationsApi.create_external_location",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "storage.view",
+      "title": "View credentials and external locations",
+      "summary": "List or get the storage credentials and external locations the server holds.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "view-storage-credentials-and-external-locations",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "view-storage-credentials-and-external-locations",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "credential.update",
+      "title": "Update a storage credential",
+      "summary": "Change a storage credential's role, comment, or name.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "update-a-credential-or-external-location",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc credential update",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "update-a-credential-or-external-location",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "CredentialsApi.update_credential",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "location.update",
+      "title": "Update an external location",
+      "summary": "Change an external location's URL, credential, or name.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "update-a-credential-or-external-location",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc external_location update",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "update-a-credential-or-external-location",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "ExternalLocationsApi.update_external_location",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "storage.delete",
+      "title": "Delete an external location and its credential",
+      "summary": "Remove an external location, then the credential nothing else uses.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "delete-an-external-location-and-credential",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "delete-an-external-location-and-credential",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "storage.managed-root",
+      "title": "Give a catalog or schema managed storage",
+      "summary": "Set the storage root under which the catalog allocates managed tables and volumes.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "set-up-the-client",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc schema create --storage_root",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-storage-s3"
+              },
+              "anchor": "create-a-catalog-with-a-storage-root",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc catalog create --storage_root",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-volumes"
+              },
+              "anchor": "set-up-the-client",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "SchemasApi.create_schema(storage_root=)",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-storage-s3"
+              },
+              "anchor": "create-a-catalog-with-a-storage-root",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "CatalogsApi.create_catalog(storage_root=)",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "credentials.vend-path",
+      "title": "Get credentials for a storage path",
+      "summary": "Ask the server for short-lived credentials scoped to a path under an external location.",
+      "request": null,
+      "cells": {
+        "cli": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "why": "The `uc` CLI has no command for temporary path credentials; the page calls the REST API.",
+              "source": "how-to/configure-aws-storage#check-that-the-server-vends-credentials",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-aws-storage"
+              },
+              "anchor": "check-that-the-server-vends-credentials",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "generate_temporary_path_credentials",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "credentials.vend-volume",
+      "title": "Get credentials for a volume",
+      "summary": "Ask the server for short-lived credentials to read or write one volume's files.",
+      "request": null,
+      "cells": {
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-storage-s3"
+              },
+              "anchor": "create-managed-objects",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "generate_temporary_volume_credentials",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/006-read-volume-files/snippets/volume_files.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "read-volume-files"
+              },
+              "anchor": "ask-for-access",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": "generate_temporary_volume_credentials",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "volume.read-files",
+      "title": "Read a volume's files",
+      "summary": "Read files in a volume on object storage with credentials the server vends.",
+      "request": null,
+      "cells": {
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/006-read-volume-files/snippets/volume_files.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "read-volume-files"
+              },
+              "anchor": "read-the-files",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": null,
+              "note": "with obstore"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "volume.write-files",
+      "title": "Write files to a volume",
+      "summary": "Write files into a managed volume on object storage with vended credentials.",
+      "request": null,
+      "cells": {
+        "python-sdk": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-storage-s3"
+              },
+              "anchor": "create-managed-objects",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.6.0",
+              "api": null,
+              "note": "with obstore"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.create",
+      "title": "Register a Python function",
+      "summary": "Register a Python function in a schema, with its signature and source code.",
+      "request": null,
+      "cells": {
+        "unitycatalog-ai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-python-function"
+              },
+              "anchor": "register-the-function",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "create_python_function_async",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.describe",
+      "title": "View a function",
+      "summary": "Get a function's parameters, return type, and source code by its full name.",
+      "request": null,
+      "cells": {
+        "unitycatalog-ai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-python-function"
+              },
+              "anchor": "see-what-the-catalog-stored",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "get_function_async",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.execute",
+      "title": "Run a function by name",
+      "summary": "Run a registered function by name with typed parameters, on the caller's side.",
+      "request": null,
+      "cells": {
+        "unitycatalog-ai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-python-function"
+              },
+              "anchor": "run-the-function-by-name",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "execute_function_async",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.list",
+      "title": "List functions",
+      "summary": "List the functions in a schema.",
+      "request": null,
+      "cells": {
+        "unitycatalog-ai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-python-function"
+              },
+              "anchor": "list-and-clean-up",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "list_functions_async",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.delete",
+      "title": "Delete a function",
+      "summary": "Remove a function from the catalog.",
+      "request": null,
+      "cells": {
+        "unitycatalog-ai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-python-function"
+              },
+              "anchor": "list-and-clean-up",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "delete_function_async",
               "note": null
             }
           ],

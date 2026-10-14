@@ -24,6 +24,22 @@ class Rule:
     pattern: re.Pattern[str]  # group 1 is the version
     files: tuple[str, ...] = ()  # limit to these repo-relative paths
     skip: str | None = None  # repo-relative prefix the rule doesn't apply under
+    # Check a match against `<key>-<major.minor>` when the manifest has one, so
+    # a second Spark line can carry its own pins beside the default. The line
+    # is the pattern's `line` group, else the found version's major.minor.
+    per_line: bool = False
+
+    def version_group(self) -> int:
+        return self.pattern.groupindex.get("v", 1)
+
+    def key_for(self, m: re.Match[str], versions: dict[str, str]) -> str:
+        if not self.per_line:
+            return self.key
+        if "line" in self.pattern.groupindex:
+            line = m.group("line")
+        else:
+            line = m.group(self.version_group()).rsplit(".", 1)[0]
+        return k if (k := f"{self.key}-{line}") in versions else self.key
 
 
 @dataclasses.dataclass(frozen=True)
@@ -87,8 +103,14 @@ UNITYCATALOG = Project(
         Rule("unitycatalog-ai", re.compile(rf"\bunitycatalog-ai=={_V}")),
         _prose_pin("unitycatalog-client", "unitycatalog-client", "unitycatalog"),
         _prose_pin("unitycatalog-ai", "unitycatalog-ai", "unitycatalog"),
-        Rule("delta-spark", re.compile(rf"io\.delta:delta-spark_[\d.]+_[\d.]+:{_V}")),
-        Rule("pyspark", re.compile(rf"\bpyspark=={_V}")),
+        Rule(
+            "delta-spark",
+            re.compile(
+                r"io\.delta:delta-spark_(?P<line>\d+\.\d+)_[\d.]+:(?P<v>\d+\.\d+\.\d+)"
+            ),
+            per_line=True,
+        ),
+        Rule("pyspark", re.compile(rf"\bpyspark=={_V}"), per_line=True),
         Rule("iceberg", re.compile(rf"apache-iceberg-{_V}")),
         Rule(
             "iceberg",
@@ -200,12 +222,14 @@ def check(repo_root: Path) -> list[str]:
             for rule in project.rules:
                 if not _applies(rule, rel):
                     continue
-                want = versions[rule.key]
+                g = rule.version_group()
                 for m in rule.pattern.finditer(text):
-                    if m.group(1) != want:
+                    key = rule.key_for(m, versions)
+                    want = versions[key]
+                    if m.group(g) != want:
                         errors.append(
                             f"{rel}:{_line(text, m.start())}: {m.group(0).strip()} "
-                            f"should be {want} ({project.manifest} {rule.key}); "
+                            f"should be {want} ({project.manifest} {key}); "
                             f"run `{project.bump}`"
                         )
             if path.suffix == ".md":
@@ -229,12 +253,12 @@ def fix(repo_root: Path) -> list[Path]:
             for rule in project.rules:
                 if not _applies(rule, rel):
                     continue
-                want = versions[rule.key]
+                g = rule.version_group()
                 new = rule.pattern.sub(
-                    lambda m, want=want: (
-                        m.group(0)[: m.start(1) - m.start()]
-                        + want
-                        + m.group(0)[m.end(1) - m.start() :]
+                    lambda m, rule=rule, g=g, versions=versions: (
+                        m.group(0)[: m.start(g) - m.start()]
+                        + versions[rule.key_for(m, versions)]
+                        + m.group(0)[m.end(g) - m.start() :]
                     ),
                     new,
                 )

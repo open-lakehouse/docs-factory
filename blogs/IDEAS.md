@@ -262,6 +262,11 @@ work*, engine by engine, from a runnable example up to the harder cases the simp
 demo hides. The `unity-catalog-storage` post is the exemplar. Prefer real,
 verified `snippets/` (§5) over sketches; be honest about pre-release status (§6).
 
+- [x] **Iceberg REST: one catalog, both formats** — UC 0.7 opens native Iceberg
+  writes over Iceberg REST; show four engines passing one table around next to a
+  Delta table. → graduated to a brief: `blogs/uc-iceberg-rest/`.
+  `repos:` unitycatalog (v0.7.0) · docs: H21 `how-to/012-iceberg-rest`
+
 - [ ] **Metric views: one YAML, many engines** — translate a metric view's YAML
   definition into a portable AST (via [SQLGlot](https://github.com/tobymao/sqlglot))
   and emit dialect-correct SQL for several engines, plus a DataFusion integration —

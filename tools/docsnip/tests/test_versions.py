@@ -92,6 +92,27 @@ def test_iceberg_runtime_follows_the_iceberg_pin(tmp_path: Path) -> None:
     assert "s.py:1" in error and "should be 1.11.0" in error
 
 
+def test_a_second_spark_line_follows_its_own_pins(tmp_path: Path) -> None:
+    manifest = MANIFEST + "  pyspark-4.2: 4.2.0\n  delta-spark-4.2: 4.4.1\n"
+    page = (
+        '# dependencies = ["pyspark==4.2.0"]\n'
+        'DELTA = "io.delta:delta-spark_4.2_2.13:4.4.0"\n'
+        '# dependencies = ["pyspark==4.1.0"]\n'
+        'DELTA = "io.delta:delta-spark_4.1_2.13:4.3.1"\n'
+    )
+    repo = _repo(tmp_path, {"how-to/h/snippets/s.py": page}, manifest=manifest)
+    [error] = versions.check(repo)
+    assert (
+        "s.py:2" in error and "should be 4.4.1" in error and "delta-spark-4.2" in error
+    )
+    versions.fix(repo)
+    fixed = (repo / "content/unitycatalog/how-to/h/snippets/s.py").read_text()
+    assert (
+        "delta-spark_4.2_2.13:4.4.1" in fixed and "delta-spark_4.1_2.13:4.3.1" in fixed
+    )
+    assert versions.check(repo) == []
+
+
 def test_script_lower_bound_is_allowed(tmp_path: Path) -> None:
     repo = _repo(tmp_path, {"how-to/h/seed.py": '#   "unitycatalog-client>=0.5",\n'})
     assert versions.check(repo) == []

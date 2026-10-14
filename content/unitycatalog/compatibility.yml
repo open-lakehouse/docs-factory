@@ -14,6 +14,12 @@ interfaces:
     pin: pyspark
     package: pyspark
     model: apacheSpark
+  # Metric views need Spark 4.2; the `spark` column is the default 4.1 line.
+  spark-4.2:
+    label: Spark
+    pin: pyspark-4.2
+    package: pyspark
+    model: apacheSpark
   duckdb:
     label: DuckDB
     package: duckdb
@@ -109,6 +115,27 @@ journeys:
   iceberg.join-delta:
     title: Join Delta and Iceberg tables
     summary: Query a Delta table and an Iceberg table from the same catalog together in one session.
+  metricview.create:
+    title: Create a metric view
+    summary: Define dimensions and measures in YAML over a table or a query, and store the definition in the catalog.
+  metricview.list:
+    title: List metric views
+    summary: Find a schema's metric views by name.
+  metricview.describe:
+    title: Inspect a metric view
+    summary: Read a metric view's dimensions, measures, and stored definition.
+  metricview.query:
+    title: Query a metric view
+    summary: Compute measures with `measure()`, grouped and filtered by dimensions.
+  metricview.replace:
+    title: Change a metric view's definition
+    summary: Replace a metric view's definition in place, keeping its name.
+  metricview.rename:
+    title: Rename a metric view
+    summary: Give a metric view a new name in its schema.
+  metricview.drop:
+    title: Drop a metric view
+    summary: Remove a metric view; its source tables stay.
   catalog.create:
     title: Create a catalog
     summary: Create a catalog, the top level of the three-level namespace.
@@ -297,6 +324,17 @@ tables:
       - function.execute
       - function.list
       - function.delete
+  metric-views:
+    title: Metric views
+    columns: [spark-4.2, python-sdk]
+    rows:
+      - metricview.create
+      - metricview.list
+      - metricview.describe
+      - metricview.query
+      - metricview.replace
+      - metricview.rename
+      - metricview.drop
 
 evidence:
   - interfaces: [pandas]
@@ -315,3 +353,25 @@ evidence:
     outcome: missing
     why: "The `uc` CLI has no command for temporary path credentials; the page calls the REST API."
     source: how-to/configure-aws-storage#check-that-the-server-vends-credentials
+  - interfaces: [spark-4.2]
+    journeys: [metricview.replace]
+    outcome: fails
+    why: "`CREATE OR REPLACE VIEW … WITH METRICS` fails with `Replacing a view is not supported yet`. Drop the view and create it again."
+    source: how-to/metric-views#change-a-definition
+    verified: {spark-4.2: 4.2.0}
+  - interfaces: [spark-4.2]
+    journeys: [metricview.rename]
+    outcome: fails
+    why: "`ALTER VIEW … RENAME TO` fails with `Renaming a view is not supported yet`."
+    source: how-to/metric-views#change-a-definition
+    verified: {spark-4.2: 4.2.0}
+  - interfaces: [python-sdk]
+    journeys: [metricview.query]
+    outcome: missing
+    why: The SDK stores and returns the definition; computing measures needs an engine.
+    source: how-to/metric-views#register-a-definition-through-the-rest-api
+  - interfaces: [python-sdk]
+    journeys: [metricview.replace, metricview.rename]
+    outcome: missing
+    why: The UC REST API has no table update; delete the metric view and create it again.
+    source: reference/features-and-limitations#namespace-and-assets

@@ -13,27 +13,28 @@ target: unitycatalog
 - Metric Views as part of your semantic layer allow you to centrally
   define and govern metrics and KPIs for your business.
 - Metric views are specifically designed to also be consumed by agents.
-- You can test metric views today using Unity Catalog `0.6` with Apache Spark `4.3`.
+- You can try metric views today with Unity Catalog `0.7` and Apache Spark `4.2`:
+  [define and query your first metric view](../../content/unitycatalog/tutorials/008-first-metric-view/index.md).
 :::
 
-When people asked me in one of my previous roles as chief archirect
+When people asked me in one of my previous roles as chief architect
 for major data platform/lakehouse deployments to summarize in a few words
 what my main job was, I used to say: "fight entropy!". And while entropy
-certainly is one of the more elusive concepts that generations of studentents
+certainly is one of the more elusive concepts that generations of students
 in physics, thermodynamics, information theory, and many other fields have struggled
 with (including me) it has become my litmus test for quickly gauging
 the quality of a design.
 
-In simple terms entropy is a measure for the disorder or uncertainly in a 
+In simple terms entropy is a measure for the disorder or uncertainty in a 
 system. So how does this relate to data platforms, and more importantly, 
 what do metric views have to do with that? Coming back to the litmus test,
 try asking a number of consumers of your platform something like: 
 "What were our last quarter earnings?".
 
 If only some people can give you an answer, or you get a bunch of different answers
-there almost certainly is an unhealthy amount of uncertainlty and/or disorder in your systems.
+there almost certainly is an unhealthy amount of uncertainty and/or disorder in your systems.
 
-So without further ado, let's find out how metric views help making sense of your data estate.
+So without further ado, let's find out how metric views help make sense of your data estate.
 
 ## What are metric views?
 
@@ -56,16 +57,16 @@ The core components you define are sources, joins, filters, fields, and measures
 ### Providing Agent Metadata
 
 And while we may be glossing over some of the finer points of thermodynamic
-vs. Shannon entropy a bit, when talking about agents, the entropy analogy goes from 
-from a metaphor, so something could directly see if we were to write down the formula for
-the next output tokens probability. As such, context rot and context management are prime
+vs. Shannon entropy a bit, when talking about agents, the entropy analogy goes
+from a metaphor to something we could directly see if we were to write down the formula for
+the next output token's probability. As such, context rot and context management are prime
 examples of the effects of entropy on a system and the need to keep it in check.
 
 Metric views, especially when enriched with agent metadata can significantly reduce the
 context an LLM/Agent requires to reason about your question, which directly translates to the
 desired grounding effects we aim for in context management.
 Agent metadata includes display names, format specifications, and synonyms that provide additional context.
-This in turn grounds your agents' and natural language tools' exploration in facts, rather that it having
+This in turn grounds your agents' and natural language tools' exploration in facts, rather than having
 to research or guess as to how to interpret the users questions.
 
 We'll be diving deeper into what specifically fields are in the context of metric views,
@@ -86,21 +87,21 @@ fields:
       - date of order
 ```
 
-While we could have provided "Order Data" as the field name directly, it is often
+While we could have provided "Order Date" as the field name directly, it is often
 advantageous to keep a more engine-friendly name for the actual field, to avoid
 quirks in other processing systems that may not honor capitalization or struggle
 with spaces in field names.
 
 Dates are one of my favourites. While today this specific scenario has been solved,
 I still vividly remember debugging a data pipeline where we were parsing CSV, and the
-parser would default to "MM-DD-YYYY" format, in switch to "DD-MM-YYYY" `format` mid-parsing
-as it encountered values that could not be parsed uning the prior format. Without additional
-metadata, agents and humans alike are left to guess, especially wheb seeing only a few
+parser would default to "MM-DD-YYYY" format, then switch to "DD-MM-YYYY" `format` mid-parsing
+as it encountered values that could not be parsed using the prior format. Without additional
+metadata, agents and humans alike are left to guess, especially when seeing only a few
 ambiguous values.
 
 Last, but certainly not least, in natural language you'll encounter people referring
 to the same thing via different names - the literal definition of a synonym. However
-in your own corporate speak, we should not rely on websters dictionary alone to
+in your own corporate speak, we should not rely on Webster's dictionary alone to
 disambiguate, so explicitly providing alternative names for your KPIs again
 reduces the work an LLM needs to perform - so no loading up the context 
 with additional research and keeping entropy accumulation low in your agent loops.
@@ -114,10 +115,18 @@ However all of this is a bit abstract, so let's put it into practice.
 
 Since metric views require some tabular assets as a foundation,
 we first need some interesting data. For the remainder of this tutorial,
-we assume that you created TCP-H tables per the
-[tcp-h tutorial](../../content/unitycatalog/how-to/003-seed-tpch-data/index.md).
+we assume that you created TPC-H tables per the
+[TPC-H how-to](../../content/unitycatalog/how-to/003-seed-tpch-data/index.md).
 
 With that data in place, let's create our first metric view.
+
+:::note[Which YAML Spark reads]
+The definition below uses the version 1.1 syntax from the Databricks documentation,
+with `joins`, `fields`, and agent metadata. Apache Spark 4.2, the engine that runs
+metric views against Unity Catalog OSS, reads only version `"0.1"` so far:
+`source`, `filter`, `dimensions`, and `measures`, with the join written in the
+`source` query. [Create and maintain metric views](../../content/unitycatalog/how-to/013-metric-views/index.md) shows this view in that form.
+:::
 
 ::::journey
 
@@ -126,7 +135,7 @@ With that data in place, let's create our first metric view.
 The definition of a metric-view is just yaml data.
 
 The source data is defined via the `source` field. So lets
-define the base for our batric view along with some common metadata.
+define the base for our metric view along with some common metadata.
 
 ```yaml file=./metric-view.yaml start=start:source end=end:source
 ```
@@ -145,7 +154,7 @@ scenarios, like warehouses built on [star or snowflake schemas](https://docs.dat
 ### Define relevant fields
 
 Fields are essentially projections (i.e by row computations) we apply to process the data
-we within our metric view along with additional metadata as we saw earlier. 
+within our metric view along with additional metadata as we saw earlier. 
 
 ```yaml file=./metric-view.yaml start=start:fields end=end:fields
 ```
@@ -158,8 +167,8 @@ to steer our business.
 ```yaml file=./metric-view.yaml start=start:measures end=end:measures
 ```
 
-They mainly differ from from fields in that the expressions for a measure
-are aggregates over some group vs. projections. The SQL statements 
+They mainly differ from fields in that the expressions for a measure
+are aggregates over some group vs. projections.
 
 ### Register the metric view
 
@@ -175,7 +184,8 @@ We now register the metric view as a securable in Unity Catalog.
 
 ### Query the metric view
 
-We can now query the metric view, using the latest (py)spark version
+We can now query the metric view with Apache Spark 4.2 (the
+[tutorial](../../content/unitycatalog/tutorials/008-first-metric-view/index.md) shows the session setup).
 
 ```sql
 SELECT
@@ -188,7 +198,7 @@ GROUP BY ALL
 ORDER BY `Order Month`;
 ```
 
-The `MEASURE` function is soecific to metric views and will compute the selected
+The `MEASURE` function is specific to metric views and will compute the selected
 measure/KPI based on its definition.
 
 ::::
@@ -196,9 +206,11 @@ measure/KPI based on its definition.
 ## What we learned
 
 As we have seen, defining key metrics in a way that you can centrally track and govern
-can have a tremendous effect on in reducing friction (yet another great energy dissipation/entropy
-analogy :D) across your orgnaization and within your agent sessions.
+can have a tremendous effect on reducing friction (yet another great energy dissipation/entropy
+analogy :D) across your organization and within your agent sessions.
 As an aside, the process of writing the metric view definitions themselves can be a great catalyst
 for internal alignment on what your actual KPIs should be.
 
-And you can get started today using the latest Unity Catalog 0.6 release.
+And you can get started today with Unity Catalog 0.7 and Apache Spark 4.2:
+[Define and query your first metric view](../../content/unitycatalog/tutorials/008-first-metric-view/index.md) walks through a first one, and
+[Create and maintain metric views](../../content/unitycatalog/how-to/013-metric-views/index.md) covers the rest.

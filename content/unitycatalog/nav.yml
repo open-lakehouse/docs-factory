@@ -34,8 +34,8 @@ nav:
             title: Build an agent tool from a catalog function
           - page: tutorials/manage-models-mlflow
             id: T07
-          - planned: T08
-            title: Define and query your first metric view
+          - page: tutorials/first-metric-view
+            id: T08
 
       - section: Guides
         items:
@@ -58,8 +58,8 @@ nav:
                 title: Replace a table or overwrite partitions
               - planned: H06
                 title: Create and query SQL views
-              - planned: H07
-                title: Create and maintain metric-view definitions
+              - page: how-to/metric-views
+                id: H07
               - page: how-to/table-storage-formats
                 id: H08
 

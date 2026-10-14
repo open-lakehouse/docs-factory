@@ -1,0 +1,2 @@
+  - name: Average Order Value
+    expr: AVG(o_totalprice)

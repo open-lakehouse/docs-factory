@@ -123,13 +123,6 @@ and the multipart actions. Actions the storage role lacks stay denied, so grant
 everything your engines need. Engines such as Spark may also call
 `s3:GetBucketLocation`.
 
-:::note
-Encrypt buckets that Unity Catalog governs with SSE-S3. The session policy has
-no KMS actions, so vended credentials can't use SSE-KMS objects. The fix
-([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)) is merged
-upstream but not yet in a release.
-:::
-
 Then register the role with Unity Catalog:
 
 :::tab[Python SDK]

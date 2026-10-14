@@ -86,8 +86,8 @@ named volume `uc-postgres`:
 ```properties file=../../../../envs/unitycatalog/hibernate.postgres.properties title="hibernate.postgres.properties"
 ```
 
-The server starts with an empty metastore. The sample catalogs `unity` and
-`production` live in the image's H2 file, so they aren't there.
+The server starts with an empty metastore. The sample catalog `unity` lives in
+the image's H2 file, so it isn't there.
 
 ## Check that metadata survives a new container
 

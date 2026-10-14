@@ -44,7 +44,7 @@ if __name__ == "__main__":
     _reset()
 
     browsed = run(SCRIPT, "browse")
-    for name in ('"unity"', '"production"', '"unity.default"', '"numbers"'):
+    for name in ('"unity"', '"unity.default"', '"numbers"'):
         assert name in browsed, name
 
     assert "as_int(integer)" in run(SCRIPT, "sample-rows")

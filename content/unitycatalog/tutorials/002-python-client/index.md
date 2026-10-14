@@ -64,7 +64,7 @@ A list call returns a response object. Its `catalogs` field holds the items:
 ```python file=./snippets/catalog_flow.py start=start:list-catalogs end=end:list-catalogs
 ```
 
-`quickstart` is listed next to the sample catalogs `unity` and `production`.
+`quickstart` is listed next to the sample catalog `unity`.
 
 ### Create a schema
 

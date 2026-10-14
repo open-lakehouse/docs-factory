@@ -44,8 +44,7 @@ down at a time, through a schema to its tables:
 ```bash file=./snippets/first_catalog.sh start=start:browse end=end:browse
 ```
 
-You see the catalogs `production` and `unity`. Inside `unity` are the schemas
-`commerce`, `consumer`, and `default`, and `unity.default` holds tables such as
+You see the sample catalog `unity`. Its schema `default` holds tables such as
 `numbers` and `marksheet`. Every table has a three-part name,
 `catalog.schema.table`.
 

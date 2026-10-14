@@ -49,6 +49,12 @@ static_resources:
                           route: { cluster: sts_shim }
                     - name: s3
                       domains: ["*"]
+                      # Real S3 names a bucket's region on every response, even
+                      # an anonymous 403; UC 0.7 discovers the region that way
+                      # before it vends Iceberg table credentials. RustFS doesn't.
+                      response_headers_to_add: &s3_region
+                        - header: { key: x-amz-bucket-region, value: us-east-1 }
+                          append_action: OVERWRITE_IF_EXISTS_OR_ADD
                       routes: &s3_routes
                         - match: { prefix: / }
                           route: { cluster: rustfs, timeout: 0s }
@@ -67,6 +73,7 @@ static_resources:
                   virtual_hosts:
                     - name: s3
                       domains: ["*"]
+                      response_headers_to_add: *s3_region
                       routes: *s3_routes
 
   clusters:

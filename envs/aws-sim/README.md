@@ -91,6 +91,13 @@ read-only credentials can't write.
 The shim doesn't verify the caller's signature. It's reachable only on the compose
 network.
 
+Two smaller gaps are closed in configuration. RustFS doesn't name a bucket's
+region in its responses, and before it vends Iceberg table credentials UC asks
+for that region with an anonymous HeadBucket, as real S3 answers on every
+response. Envoy adds `x-amz-bucket-region: us-east-1` to every S3 response.
+And the AWS SDK for Java sends host-side requests virtual-hosted, to
+`uc-docs.localhost:9000`, so `localhost:9000` is one of RustFS's server domains.
+
 ## Debugging
 
 `just aws-sim-logs` follows Envoy's access log, one line per request:

@@ -330,8 +330,12 @@ bullets. Copy this to start a post.
     # Needs:    UC_URL exported (local server via `docker compose up -d`).
     # Verified: unitycatalog v0.5.0 — HTTP 200, 12-endpoint list.
     import os, requests
-    r = requests.get(f"{os.environ['UC_URL']}/api/2.1/unity-catalog/delta/v1/config",
-                     params={"catalog": "unity"}, timeout=10)  # catalog is required
+
+    r = requests.get(
+        f"{os.environ['UC_URL']}/api/2.1/unity-catalog/delta/v1/config",
+        params={"catalog": "unity"},
+        timeout=10,
+    )  # catalog is required
     r.raise_for_status()
     print(r.json())
     ```

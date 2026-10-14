@@ -188,7 +188,9 @@ builder = (
     pyspark.sql.SparkSession.builder.appName("external-credential")
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
     .config("spark.sql.catalog.spark_catalog", "io.unitycatalog.spark.UCSingleCatalog")
-    .config(f"spark.sql.catalog.{catalog_name}", "io.unitycatalog.spark.UCSingleCatalog")
+    .config(
+        f"spark.sql.catalog.{catalog_name}", "io.unitycatalog.spark.UCSingleCatalog"
+    )
     .config(f"spark.sql.catalog.{catalog_name}.uri", f"{workspace_url}")
     .config(f"spark.sql.catalog.{catalog_name}.auth.type", "oauth")
     .config(

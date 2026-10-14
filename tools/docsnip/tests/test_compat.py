@@ -246,7 +246,9 @@ def test_a_journey_needs_a_title_and_a_summary(tmp_path) -> None:
         )
     )
     errors, _ = compat.check(root)
-    assert any("journeys.table.read needs a title and a summary" in e for e in errors), errors
+    assert any(
+        "journeys.table.read needs a title and a summary" in e for e in errors
+    ), errors
 
 
 def test_documented_evidence_shows_only_where_the_table_asks(tmp_path) -> None:

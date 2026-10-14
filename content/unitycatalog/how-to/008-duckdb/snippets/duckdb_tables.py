@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.4", "pyspark==4.1.0", "unitycatalog-client==0.6.0"]
+# dependencies = ["duckdb==1.5.4", "pyspark==4.1.0", "unitycatalog-client==0.7.0"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -81,7 +81,7 @@ def _seed_with_spark() -> None:
         SparkSession.builder.appName("duckdb-seed")
         .config(
             "spark.jars.packages",
-            "io.unitycatalog:unitycatalog-spark_4.1_2.13:0.6.0,"
+            "io.unitycatalog:unitycatalog-spark_4.1_2.13:0.7.0,"
             "io.delta:delta-spark_4.1_2.13:4.3.1",
         )
         .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")

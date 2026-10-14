@@ -11,7 +11,7 @@ status: ready
 The open source Unity Catalog server implements catalogs, schemas, external
 and managed tables, views, volumes, functions, registered models, AWS storage
 credentials, credential vending, and token-based authorization. This reference
-lists what release **0.6.0** implements per resource and API, its known issues,
+lists what release **0.7.0** implements per resource and API, its known issues,
 and what it doesn't include. Each row links to the source that establishes
 it. For what the features mean, see
 [What is Unity Catalog OSS?](../../explanation/what-is-unity-catalog.md).
@@ -25,7 +25,7 @@ Status values:
 - **Not implemented**: no API or behavior in the server.
 
 Paths below are relative to the
-[`v0.6.0` source tree](https://github.com/unitycatalog/unitycatalog/tree/v0.6.0).
+[`v0.7.0` source tree](https://github.com/unitycatalog/unitycatalog/tree/v0.7.0).
 
 ## Namespace and assets
 
@@ -78,7 +78,7 @@ Paths below are relative to the
 
 | Feature | Status | Details | Source |
 | --- | --- | --- | --- |
-| Container image | Implemented | `unitycatalog/unitycatalog:v0.6.0`; includes the `uc` CLI and sample catalogs. | `Dockerfile` |
+| Container image | Implemented | `unitycatalog/unitycatalog:v0.7.0`; includes the `uc` CLI and sample catalogs. | `Dockerfile` |
 | Metadata database | Implemented | H2 by default (in the container, lost with it); PostgreSQL and MySQL through Hibernate settings. The image bundles the PostgreSQL JDBC driver; see [Configure PostgreSQL](../../how-to/configure-backend-db/index.md). | `etc/conf/hibernate.properties`, `etc/db/*-example.yml`, `PostgresDeltaCommitsCRUDTest.java`, `MySQLDeltaCommitsCRUDTest.java` |
 | Web UI | Implemented | A separate React application. | `ui/` |
 | Helm chart | Implemented | Kubernetes chart. Its replica count is not a high-availability guarantee. | `helm/` |

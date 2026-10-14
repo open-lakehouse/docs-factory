@@ -35,7 +35,7 @@ policy that narrows access to the requested path and operation.
 :::prerequisites
 - In AWS, permission to create IAM roles and policies, and to edit the bucket's
   policy if the bucket uses one.
-- For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.6.0
+- For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.7.0
   and, to check vended credentials, `obstore`. For the CLI examples, `curl`.
 :::
 

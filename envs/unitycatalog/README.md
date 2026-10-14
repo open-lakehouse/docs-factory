@@ -6,7 +6,7 @@ readers download it as described in
 
 | File | Starts |
 | --- | --- |
-| `compose.yaml` | Unity Catalog 0.6.0 on `:8080`, authorization off, `UC_DOCS_ROOT` (default `/tmp/uc-docs`) mounted at the same path in the container. |
+| `compose.yaml` | Unity Catalog on `:8080`, authorization off, `UC_DOCS_ROOT` (default `/tmp/uc-docs`) mounted at the same path in the container. |
 | `compose.aws.yaml` | The same server with `server.aws.properties`, plus [aws-sim](../aws-sim/README.md) (S3 and STS on the real AWS hostnames, `:9000` on the host). |
 | `compose.postgres.yaml` | The same server with `hibernate.postgres.properties`, keeping its metadata in a `postgres` service (volume `uc-postgres`) instead of the container's H2 file. |
 

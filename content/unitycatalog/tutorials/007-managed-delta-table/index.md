@@ -37,7 +37,7 @@ Open a Python session with PySpark and the Unity Catalog client, from a
 terminal where `UC_DOCS_ROOT` is set the same way as for the server:
 
 ```bash
-uv run --with pyspark==4.1.0 --with unitycatalog-client==0.6.0 python
+uv run --with pyspark==4.1.0 --with unitycatalog-client==0.7.0 python
 ```
 
 Enter each of the following snippets in it, in order, starting with the

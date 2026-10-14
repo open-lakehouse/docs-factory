@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pyspark==4.1.0", "unitycatalog-client==0.6.0"]
+# dependencies = ["pyspark==4.1.0", "unitycatalog-client==0.7.0"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -88,7 +88,7 @@ spark = (
     SparkSession.builder.appName("managed-orders")
     .config(
         "spark.jars.packages",
-        "io.unitycatalog:unitycatalog-spark_4.1_2.13:0.6.0,"
+        "io.unitycatalog:unitycatalog-spark_4.1_2.13:0.7.0,"
         "io.delta:delta-spark_4.1_2.13:4.3.1",
     )
     .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")

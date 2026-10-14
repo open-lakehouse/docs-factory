@@ -29,7 +29,7 @@ include:
 
 services:
   unitycatalog:
-    image: unitycatalog/unitycatalog:v0.6.0
+    image: unitycatalog/unitycatalog:v0.7.0
     environment:
       JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/certs/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit
     volumes:

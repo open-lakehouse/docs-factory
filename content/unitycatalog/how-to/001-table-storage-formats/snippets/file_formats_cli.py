@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["docsnip", "unitycatalog-client==0.6.0", "pyarrow>=18", "duckdb==1.5.4"]
+# dependencies = ["docsnip", "unitycatalog-client==0.7.0", "pyarrow>=18", "duckdb==1.5.4"]
 #
 # [tool.uv.sources]
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }

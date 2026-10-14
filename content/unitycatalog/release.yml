@@ -3,9 +3,9 @@
 # `docsnip check` fails on any pin in content/, envs/, or the site config that
 # disagrees with this file, and `just bump-uc <version>` rewrites them all.
 # See docs/design/docs-versioning.md.
-release: 0.6.0
+release: 0.7.0
 pins:
-  unitycatalog-client: 0.6.0
+  unitycatalog-client: 0.7.0
   # The AI packages version independently; 0.4.0 is the one in the release's
   # source tree.
   unitycatalog-ai: 0.4.0

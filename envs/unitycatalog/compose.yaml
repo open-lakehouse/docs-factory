@@ -1,4 +1,4 @@
-# A local, single-user Unity Catalog 0.6.0 server for the unitycatalog docs.
+# A local, single-user Unity Catalog server for the unitycatalog docs.
 # Start it from this folder with `docker compose up -d --wait`. For pages that
 # need S3, use compose.aws.yaml instead; see README.md.
 name: uc-docs
@@ -14,14 +14,14 @@ services:
   # Docker creates a missing UC_DOCS_ROOT as root; open it up so both you and
   # the server can write there.
   init-storage:
-    image: unitycatalog/unitycatalog:v0.6.0
+    image: unitycatalog/unitycatalog:v0.7.0
     user: root
     entrypoint: ["chmod", "0777", "${UC_DOCS_ROOT:-/tmp/uc-docs}"]
     volumes:
       - *docs-root
 
   unitycatalog:
-    # The 0.6.0 image with local fixes (image/Dockerfile), rebuilt from cache on
+    # The release image with local fixes (image/Dockerfile), rebuilt from cache on
     # every `up` so a newer copy of this folder never runs an older build.
     build: image
     pull_policy: build

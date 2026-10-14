@@ -27,7 +27,7 @@ its format.
   [local server](../run-local-server/index.md), that's a folder under
   [`UC_DOCS_ROOT`](../run-local-server/index.md#share-a-folder-with-the-server).
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
-  0.6.0 and `pyarrow`. To read the tables, `polars==1.44.2` or `duckdb==1.5.4`.
+  0.7.0 and `pyarrow`. To read the tables, `polars==1.44.2` or `duckdb==1.5.4`.
 :::
 
 ## Set up the client

@@ -24,7 +24,7 @@ managed data. For the difference between managed and external objects, see
 - A server configured for AWS with a storage credential and an external
   location, as in
   [Configure AWS storage credentials and external locations](../configure-aws-storage/index.md).
-- For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.6.0
+- For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.7.0
   and `obstore`.
 :::
 

@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["unitycatalog-client==0.6.0", "deltalake==1.6.6", "pyarrow>=18"]
+# dependencies = ["unitycatalog-client==0.7.0", "deltalake==1.6.6", "pyarrow>=18"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"

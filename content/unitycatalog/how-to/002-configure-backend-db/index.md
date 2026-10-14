@@ -56,7 +56,7 @@ the password. Then restart the server.
 If you run the server from a release tarball or a source build instead of the
 image, also put the PostgreSQL JDBC driver on the server's classpath, as the
 upstream
-[deployment guide](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/server/deployment.md)
+[deployment guide](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/docs/server/deployment.md)
 describes.
 
 A server that can't reach the database doesn't start. It exits with

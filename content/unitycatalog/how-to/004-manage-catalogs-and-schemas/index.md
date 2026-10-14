@@ -18,7 +18,7 @@ volumes, functions, and registered models. For how these objects relate, see
 
 :::prerequisites
 - For the Python examples, Python 3.11 or later with
-  [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) 0.6.0.
+  [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) 0.7.0.
 :::
 
 ## Set up the client

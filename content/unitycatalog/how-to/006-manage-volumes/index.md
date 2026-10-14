@@ -29,7 +29,7 @@ For how volumes fit into the namespace, see
 :::prerequisites
 - For managed volumes, a storage root on the schema or its catalog.
 - For the Python examples, Python 3.11 or later with `unitycatalog-client`
-  0.6.0.
+  0.7.0.
 :::
 
 ## Set up the client

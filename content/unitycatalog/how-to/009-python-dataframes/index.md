@@ -140,9 +140,8 @@ the commit, so it doesn't coordinate writers on an external table.
 ## Other table operations
 
 Create and drop tables with the [Python client](../../tutorials/python-client/index.md)
-or Spark. [Clients and engines](../../reference/clients-and-engines/index.md#table-operations-by-engine)
-lists the operations each library supports with these versions, and
-[Known issues](../../reference/features-and-limitations/index.md#known-issues) lists the errors you see outside them.
+or Spark. [Known issues](../../reference/features-and-limitations/index.md#known-issues)
+lists the errors these libraries return for other operations.
 
 ## Required privileges
 

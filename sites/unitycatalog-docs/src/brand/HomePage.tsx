@@ -122,7 +122,7 @@ export default function HomePage() {
         }
       />
       <Paths paths={PATHS} />
-      <Engines title="Connect your engine" engines={ENGINES} all="/reference/clients-and-engines" />
+      <Engines title="Connect your engine" engines={ENGINES} />
       <Kinds kinds={KINDS} />
       <Community />
     </Shell>

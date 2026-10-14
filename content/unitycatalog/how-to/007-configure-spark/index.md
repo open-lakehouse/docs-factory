@@ -30,10 +30,29 @@ Spark version, and it needs a Delta Spark build for the same Spark version:
 | --- | --- | --- |
 | 4.1 (tested here: PySpark 4.1.0) | `io.unitycatalog:unitycatalog-spark_4.1_2.13:0.6.0` | `io.delta:delta-spark_4.1_2.13:4.3.1` |
 | 4.0 | `io.unitycatalog:unitycatalog-spark_4.0_2.13:0.6.0` | `io.delta:delta-spark_4.0_2.13:4.3.1` |
-| 4.2 | `io.unitycatalog:unitycatalog-spark_4.2_2.13:0.6.0` | None yet, so no Delta tables |
+| 4.2 | `io.unitycatalog:unitycatalog-spark_4.2_2.13:0.6.0` | `delta-spark_4.2_2.13` 4.4.0, named in the release notes and not tested here |
 
 With a Delta Spark release older than 4.3.0, the connector quietly skips the
 Delta API, and catalog-managed tables don't work.
+
+### Connector versions by release
+
+Each Unity Catalog release publishes one connector artifact per Spark minor
+version, named `unitycatalog-spark_<spark>_2.13`. All of them are built for
+Scala 2.13. The release notes name a Delta Spark release that the connector
+works with. The connector's own tests build against the version in the last
+column, so where the two differ, the release notes name the newer release.
+
+<!-- Historical: one row per release, from the GitHub release notes and
+build.sbt at each tag. `just bump-uc` doesn't touch it; add a row per release. -->
+| Unity Catalog | Spark 4.0 | Spark 4.1 | Spark 4.2 | Delta Spark in the release notes | Delta Spark the connector tests with |
+| --- | --- | --- | --- | --- | --- |
+| [0.7.0](https://github.com/unitycatalog/unitycatalog/releases/tag/v0.7.0) | ✓ | ✓ | ✓ | Not named | 4.3.1 |
+| [0.6.0](https://github.com/unitycatalog/unitycatalog/releases/tag/v0.6.0) | ✓ | ✓ | ✓ | 4.4.0 | 4.3.1 |
+| [0.5.1](https://github.com/unitycatalog/unitycatalog/releases/tag/v0.5.1) | ✓ | ✓ | — | Not named | 4.2.0 |
+| [0.5.0](https://github.com/unitycatalog/unitycatalog/releases/tag/v0.5.0) | ✓ | ✓ | — | 4.3.0 | 4.2.0 |
+
+Releases before 0.5.0 shipped a single `unitycatalog-spark_2.13` artifact.
 
 ## Configure the session
 
@@ -121,5 +140,6 @@ and
 
 - [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md)
   puts this session to work.
-- [Clients and engines](../../reference/clients-and-engines/index.md) lists
-  the other engines that work with Unity Catalog, and which versions.
+- [Use DuckDB with Unity Catalog](../duckdb/index.md) and
+  [Query Unity Catalog tables from Python DataFrame libraries](../python-dataframes/index.md)
+  cover other engines.

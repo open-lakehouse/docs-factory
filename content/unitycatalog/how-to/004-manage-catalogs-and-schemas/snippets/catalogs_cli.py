@@ -10,6 +10,16 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "catalogs.sh"
+# claims.cli = [
+#   { journey = "catalog.create", region = "create-catalog", api = "uc catalog create" },
+#   { journey = "catalog.list", region = "view-catalogs", api = "uc catalog list" },
+#   { journey = "catalog.update", region = "update-catalog", api = "uc catalog update" },
+#   { journey = "schema.create", region = "create-schema", api = "uc schema create" },
+#   { journey = "schema.list", region = "view-schemas", api = "uc schema list" },
+#   { journey = "schema.update", region = "update-schema", api = "uc schema update" },
+#   { journey = "schema.delete", region = "delete-inward", api = "uc schema delete" },
+#   { journey = "catalog.delete", region = "delete-force", api = "uc catalog delete --force" },
+# ]
 # ///
 """Run catalogs.sh task by task and check what each command changed."""
 

@@ -6,6 +6,16 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# claims."python-sdk" = [
+#   { journey = "catalog.create", region = "create-catalog", api = "CatalogsApi.create_catalog" },
+#   { journey = "catalog.list", region = "view-catalogs", api = "CatalogsApi.list_catalogs" },
+#   { journey = "catalog.update", region = "update-catalog", api = "CatalogsApi.update_catalog" },
+#   { journey = "schema.create", region = "create-schema", api = "SchemasApi.create_schema" },
+#   { journey = "schema.list", region = "view-schemas", api = "SchemasApi.list_schemas" },
+#   { journey = "schema.update", region = "update-schema", api = "SchemasApi.update_schema" },
+#   { journey = "schema.delete", region = "delete-inward", api = "SchemasApi.delete_schema" },
+#   { journey = "catalog.delete", region = "delete-force", api = "CatalogsApi.delete_catalog(force=True)" },
+# ]
 # ///
 """Create, inspect, update, and delete a catalog and a schema with the Python SDK.
 

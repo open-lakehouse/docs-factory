@@ -130,8 +130,8 @@ catalog has accepted, or write a version the catalog never approved.
 So for a managed table, choose a client that goes through the catalog. These
 include Spark with the Unity Catalog connector and Delta 4.3 or
 later, and DuckDB's `unity_catalog` extension for reads and appends. See
-[Clients and engines](../../reference/clients-and-engines/index.md) for the
-tested list.
+[Known issues](../../reference/features-and-limitations/index.md#known-issues)
+for what other clients return.
 
 An external table makes the opposite trade. Any client with access to the
 storage can read and write it, including tools that have never heard of

@@ -79,8 +79,8 @@ class Interface:
 @dataclasses.dataclass(frozen=True)
 class Journey:
     id: str
-    title: str
-    summary: str | None = None
+    title: str  # the row label: what the reader sets out to do
+    summary: str  # one sentence the review app shows under the title
     request: str | None = None  # uuid of the review-app request that asked for it
 
 
@@ -163,11 +163,10 @@ def _load_journeys(raw: dict, where: str, errors: list[str]) -> dict[str, Journe
     journeys: dict[str, Journey] = {}
     for key, entry in raw.items():
         at = f"journeys.{key}"
-        if isinstance(entry, str):
-            journeys[str(key)] = Journey(id=str(key), title=entry)
-            continue
-        if not isinstance(entry, dict) or not isinstance(entry.get("title"), str):
-            errors.append(f"{where}: {at} needs a title")
+        if not isinstance(entry, dict) or not all(
+            isinstance(entry.get(k), str) for k in ("title", "summary")
+        ):
+            errors.append(f"{where}: {at} needs a title and a summary")
             continue
         for extra in sorted(set(entry) - _JOURNEY_KEYS):
             errors.append(f"{where}: {at}: unknown key '{extra}'")
@@ -177,7 +176,7 @@ def _load_journeys(raw: dict, where: str, errors: list[str]) -> dict[str, Journe
         journeys[str(key)] = Journey(
             id=str(key),
             title=entry["title"],
-            summary=entry.get("summary"),
+            summary=entry["summary"],
             request=str(request) if request is not None else None,
         )
     return journeys

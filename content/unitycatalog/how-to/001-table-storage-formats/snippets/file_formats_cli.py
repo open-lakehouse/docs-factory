@@ -10,6 +10,10 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "file_formats.sh"
+# claims.cli = [
+#   { journey = "table.register-format", region = "register", api = "uc table create --format" },
+#   { journey = "table.drop", region = "drop", api = "uc table delete" },
+# ]
 # ///
 """Run file_formats.sh task by task and check what each command changed."""
 

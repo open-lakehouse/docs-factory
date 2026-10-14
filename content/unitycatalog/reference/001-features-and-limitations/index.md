@@ -85,10 +85,9 @@ Paths below are relative to the
 
 ## Known issues
 
-Behavior verified against the server and the client versions in
-[Choose a client or engine](../clients-and-engines/index.md). **Affects** lists
-the server releases an issue is verified in. The pages that cover each task
-link here.
+Behavior verified against the server and the client versions these docs
+pin. **Affects** lists the server releases an issue is verified in. The pages
+that cover each task link here.
 
 ### Server
 
@@ -140,6 +139,4 @@ several of them, so guides written for Databricks don't apply here:
 
 ## Related pages
 
-- [Choose a client or engine](../clients-and-engines/index.md): which tools
-  connect, and what each one can do.
 - [Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md)

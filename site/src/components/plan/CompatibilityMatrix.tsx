@@ -256,7 +256,7 @@ function JourneyRows({
       <tr>
         <th scope="row">
           {journey.title} <code className="muted">{journey.id}</code>
-          {journey.summary && <p className="muted">{journey.summary}</p>}
+          <p className="muted">{journey.summary}</p>
         </th>
         {columns.map((iface) => {
           const cell = cellOf(journey, iface);

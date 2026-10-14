@@ -175,7 +175,7 @@ server.registerTool(
       "`page` request: add a `planned:` slot (a fresh backlog id, the request's title, and " +
       "`request: <id>`) under the named section of `content/<project>/nav.yml`, or to " +
       "`blogs/IDEAS.md` for blogs. A `journey` request: add a `journeys:` entry (a " +
-      "`family.task` id, the title, and `request: <id>`) to " +
+      "`family.task` id, the title, a one-sentence summary, and `request: <id>`) to " +
       "`content/<project>/compatibility.yml` and its id to the named table's rows, then run " +
       "`uv run docsnip compat --fix`. Open a PR, then call complete_content_request.",
     inputSchema: {

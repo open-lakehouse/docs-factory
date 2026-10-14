@@ -14,7 +14,7 @@ interfaces:
   spark: {label: Spark, pin: pyspark, package: pyspark, model: apacheSpark}
   duckdb: {label: DuckDB, package: duckdb}
 journeys:
-  table.read: Read
+  table.read: {title: Read, summary: Read rows}
   table.write: {title: Write, summary: Append rows}
 tables:
   ops:
@@ -230,11 +230,25 @@ def test_a_journey_on_no_table_is_an_error(tmp_path) -> None:
     matrix = root / "content/proj/compatibility.yml"
     matrix.write_text(
         matrix.read_text().replace(
-            "  table.read: Read\n", "  table.read: Read\n  x: X\n"
+            "  table.write:", "  x: {title: X, summary: Do X}\n  table.write:"
         )
     )
     errors, _ = compat.check(root)
     assert any("journeys.x is on no table" in e for e in errors), errors
+
+
+def test_a_journey_needs_a_title_and_a_summary(tmp_path) -> None:
+    root = _repo(tmp_path, "")
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text().replace(
+            "  table.read: {title: Read, summary: Read rows}\n", "  table.read: Read\n"
+        )
+    )
+    errors, _ = compat.check(root)
+    assert any(
+        "journeys.table.read needs a title and a summary" in e for e in errors
+    ), errors
 
 
 def test_documented_evidence_shows_only_where_the_table_asks(tmp_path) -> None:

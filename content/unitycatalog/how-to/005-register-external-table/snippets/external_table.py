@@ -6,6 +6,12 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# claims."python-sdk" = [
+#   { journey = "table.register-external", region = "register", api = "TablesApi.create_table" },
+#   { journey = "table.describe", region = "view", api = "TablesApi.get_table" },
+#   { journey = "table.read", region = "read", api = "DeltaTable(storage_location)", note = "with deltalake" },
+#   { journey = "table.drop", region = "drop", api = "TablesApi.delete_table" },
+# ]
 # ///
 """Register an existing Delta table in Unity Catalog, read it back, and drop it.
 

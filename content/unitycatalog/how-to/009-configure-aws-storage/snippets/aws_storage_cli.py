@@ -10,6 +10,14 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "aws_storage.sh"
+# claims.cli = [
+#   { journey = "credential.create", region = "create-credential", api = "uc credential create" },
+#   { journey = "location.create", region = "create-location", api = "uc external_location create" },
+#   { journey = "storage.view", region = "view" },
+#   { journey = "credential.update", region = "update-credential", api = "uc credential update" },
+#   { journey = "location.update", region = "update-location", api = "uc external_location update" },
+#   { journey = "storage.delete", region = "delete" },
+# ]
 # ///
 """Run aws_storage.sh task by task and check what each command changed."""
 

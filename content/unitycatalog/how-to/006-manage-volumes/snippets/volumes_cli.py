@@ -10,6 +10,15 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "volumes.sh"
+# claims.cli = [
+#   { journey = "storage.managed-root", region = "managed-root", api = "uc schema create --storage_root" },
+#   { journey = "volume.create-external", region = "create-external", api = "uc volume create --volume_type EXTERNAL" },
+#   { journey = "volume.create-managed", region = "create-managed", api = "uc volume create --volume_type MANAGED" },
+#   { journey = "volume.view", region = "view", api = "uc volume get" },
+#   { journey = "volume.list-files", region = "list-files", api = "uc volume read" },
+#   { journey = "volume.update", region = "update", api = "uc volume update" },
+#   { journey = "volume.delete", region = "delete", api = "uc volume delete" },
+# ]
 # ///
 """Run volumes.sh task by task and check what each command changed."""
 

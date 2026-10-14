@@ -93,7 +93,7 @@ Follow `AGENTS.md`:
 - A `journey` request asks to track one more thing readers do, across the
   project's engines and clients. Add it to `journeys:` in
   `content/<project>/compatibility.yml` with a `family.task` id, the request's
-  title, and `request: <request id>`, append the id to the `rows` of the table
+  title, a one-sentence `summary`, and `request: <request id>`, append the id to the `rows` of the table
   its placement names, and run `uv run docsnip compat --fix`. Its cells start
   unknown. Add `evidence` only from a source you can cite, and leave claims to
   the scripts that prove them.

@@ -15,8 +15,6 @@ nav:
         id: T01
         label: Create your first catalog
       - page: how-to/run-local-server
-      - page: reference/clients-and-engines
-        id: R10
 
   - section: Use Unity Catalog
     items:
@@ -206,7 +204,6 @@ nav:
     items:
       - page: reference/features-and-limitations
         id: R01
-      - page: reference/clients-and-engines
       - planned: R02
         title: Resource model, identifiers, types, and table/view kinds
       - planned: R03
@@ -231,3 +228,11 @@ nav:
         title: SQL-view and metric-view compatibility reference
       - planned: R14
         title: Release notes and migration index
+
+  # Private: reviewers only, never emitted. The compatibility tables render
+  # here with draft claims; reader pages link the task how-tos instead.
+  - section: Internal
+    items:
+      - page: reference/clients-and-engines
+        id: R10
+        label: Clients and engines (internal)

@@ -6,6 +6,10 @@
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# claims."python-sdk" = [
+#   { journey = "table.register-external", region = "create-table", api = "TablesApi.create_table" },
+#   { journey = "table.drop", region = "cleanup", api = "TablesApi.delete_table" },
+# ]
 # ///
 """Create a catalog, schema, and table with the Unity Catalog Python client.
 

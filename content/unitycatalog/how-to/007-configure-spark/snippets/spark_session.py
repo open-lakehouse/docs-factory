@@ -5,6 +5,9 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
+# claims.spark = [
+#   { journey = "table.list", region = "check", api = "SHOW TABLES" },
+# ]
 # ///
 """Connect Spark to Unity Catalog and list what the catalog holds.
 

@@ -337,11 +337,23 @@ declared `compose` file exists.
 
 A script can also say what it proves about an engine or client, so a
 compatibility table can cite it. `content/<project>/compatibility.yml` declares
-the project's interfaces (the columns), its journeys (`family.task` keys), the
+the project's interfaces (the columns), its journeys, the
 tables pages embed (rows of journeys), and evidence for cells no script here
 proves. A journey is what a reader sets out to do, such as "append to a managed
 table", however many calls the client makes along the way: if a script can do
-the journey, the client does what it needs to. A script claims cells in its
+the journey, the client does what it needs to. Each journey has a `family.task`
+key, a `title` (the row label), and a one-sentence `summary` from the reader's
+side, which the review app shows under the title:
+
+```yaml
+journeys:
+  managed.append:
+    title: Append to a managed table
+    summary: Append rows to a catalog-managed table, with the catalog accepting the commit.
+```
+
+The journeys are exhaustive: every task a page shows an engine or client doing
+is a journey, and the script that runs it claims the cell. A script claims cells in its
 `[tool.docs-factory]` table, one array per interface:
 
 ```python

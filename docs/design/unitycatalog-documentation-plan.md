@@ -627,8 +627,10 @@ review consolidated per-page compose files into that shared environment,
 rewrote tutorials as task steps in an interactive session, and moved 0.6.0
 quirks into R01's "Known issues in 0.6.0".
 
-The learning path in `nav.yml` now runs E01 → T01 → local environment → R10,
-then T11 → T03 → T04 → T05. These gaps keep the initial version from being
+The learning path in `nav.yml` now runs E01 → T01 → local environment, then
+T11 → T03 → T04 → T05. R10 is a `private` coverage record under "Internal": its
+compatibility tables are rendered from `compatibility.yml` and reviewed in the
+app, and reader pages link the task how-tos instead. These gaps keep the initial version from being
 coherent, in priority order:
 
 1. **E05 Credential vending.** About ten pages link it (T04, H02, H09, H17,

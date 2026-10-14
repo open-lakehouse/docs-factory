@@ -6,6 +6,12 @@
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
+# claims."python-sdk" = [
+#   { journey = "storage.managed-root", region = "catalog-root", api = "CatalogsApi.create_catalog(storage_root=)" },
+#   { journey = "volume.create-managed", region = "managed-volume", api = "VolumesApi.create_volume" },
+#   { journey = "credentials.vend-volume", region = "write", api = "generate_temporary_volume_credentials" },
+#   { journey = "volume.write-files", region = "write", note = "with obstore" },
+# ]
 # ///
 """Give a catalog and a schema S3 storage roots and see where managed data lands.
 

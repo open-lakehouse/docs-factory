@@ -164,8 +164,8 @@ governed, and the caller runs them.
 
 ## Next steps
 
-- [Choose a client or engine](../../reference/clients-and-engines/index.md)
-  lists the framework integrations that turn catalog functions into agent
+- The upstream [AI quickstart](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/docs/ai/quickstart.md)
+  covers the framework integrations that turn catalog functions into agent
   tools, such as `unitycatalog-langchain` and `unitycatalog-openai`.
 - [Features, scope, and limitations](../../reference/features-and-limitations/index.md)
   covers what the server supports for functions, such as delete-and-recreate

@@ -10,7 +10,7 @@ first line of the example:
 ```python
 from docs_factory_seed import seed_dataset
 
-path = seed_dataset("orders")   # deterministic, idempotent — returns the table path
+path = seed_dataset("orders")  # deterministic, idempotent — returns the table path
 ```
 
 A reader who `pip install docs-factory-seed` and copy-pastes the snippet runs the

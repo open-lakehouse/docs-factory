@@ -11,6 +11,13 @@
 # # and the inherited address space already exceeds 100 MB, so the child can't
 # # allocate and the call times out. 1024 still failed in an arm64 repro.
 # env = { EXECUTOR_MAX_MEMORY_LIMIT = "4096" }
+# claims."unitycatalog-ai" = [
+#   { journey = "function.create", region = "register", api = "create_python_function_async" },
+#   { journey = "function.describe", region = "inspect", api = "get_function_async" },
+#   { journey = "function.execute", region = "execute", api = "execute_function_async" },
+#   { journey = "function.list", region = "list", api = "list_functions_async" },
+#   { journey = "function.delete", region = "clean-up", api = "delete_function_async" },
+# ]
 # ///
 """Register a Python function in Unity Catalog, inspect it, run it, and remove it.
 

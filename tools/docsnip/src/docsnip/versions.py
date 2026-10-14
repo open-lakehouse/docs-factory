@@ -90,6 +90,12 @@ UNITYCATALOG = Project(
         Rule("delta-spark", re.compile(rf"io\.delta:delta-spark_[\d.]+_[\d.]+:{_V}")),
         Rule("pyspark", re.compile(rf"\bpyspark=={_V}")),
         Rule("iceberg", re.compile(rf"apache-iceberg-{_V}")),
+        Rule(
+            "iceberg",
+            re.compile(
+                rf"org\.apache\.iceberg:iceberg-(?:spark-runtime-[\d.]+_[\d.]+|aws-bundle):{_V}"
+            ),
+        ),
     ),
     ranged_install=re.compile(
         r"\bunitycatalog-(?:client|ai)(?:\[[^\]]*\])?\s*(?:[<>~!]=?)"

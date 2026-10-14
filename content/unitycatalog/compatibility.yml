@@ -28,6 +28,9 @@ interfaces:
   pandas:
     label: pandas
     package: pandas
+  pyiceberg:
+    label: PyIceberg
+    package: pyiceberg
   # The catalog clients. They manage catalog objects; scripts that read or write
   # data through them pair them with a storage library, named in the claim's note.
   cli:
@@ -79,6 +82,33 @@ journeys:
   external.read-format:
     title: Read a Parquet, CSV, or JSON table
     summary: Read a non-Delta external table, using the format and location the catalog records.
+  iceberg.schema-create:
+    title: Create a schema through Iceberg REST
+    summary: Create a schema as an Iceberg namespace, under the catalog the client names as its warehouse.
+  iceberg.create:
+    title: Create a managed Iceberg table
+    summary: Create an Iceberg table through Iceberg REST, with storage the catalog allocates.
+  iceberg.append:
+    title: Append to an Iceberg table
+    summary: Append rows to an Iceberg table, with credentials the catalog vends for its storage.
+  iceberg.read:
+    title: Read an Iceberg table
+    summary: Read an Iceberg table by its catalog name, with credentials the catalog vends.
+  iceberg.update:
+    title: Update rows in an Iceberg table
+    summary: Change rows that match a condition in an Iceberg table, committed through the catalog.
+  iceberg.delete:
+    title: Delete rows from an Iceberg table
+    summary: Remove rows that match a condition from an Iceberg table, committed through the catalog.
+  iceberg.rename:
+    title: Rename an Iceberg table
+    summary: Give an Iceberg table a new name in its schema.
+  iceberg.drop:
+    title: Drop an Iceberg table
+    summary: Drop an Iceberg table, and for a managed one its data.
+  iceberg.join-delta:
+    title: Join Delta and Iceberg tables
+    summary: Query a Delta table and an Iceberg table from the same catalog together in one session.
   catalog.create:
     title: Create a catalog
     summary: Create a catalog, the top level of the three-level namespace.
@@ -205,6 +235,19 @@ tables:
       - managed.drop
       - managed.time-travel
       - external.read-format
+  iceberg-rest:
+    title: Iceberg tables through Iceberg REST
+    columns: [spark, duckdb, pyiceberg]
+    rows:
+      - iceberg.schema-create
+      - iceberg.create
+      - iceberg.append
+      - iceberg.read
+      - iceberg.update
+      - iceberg.delete
+      - iceberg.rename
+      - iceberg.drop
+      - iceberg.join-delta
   catalog-objects:
     title: Catalog objects
     columns: [cli, python-sdk]

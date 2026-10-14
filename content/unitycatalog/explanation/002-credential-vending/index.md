@@ -97,8 +97,10 @@ had asked for the object itself.
 Engines that speak the [Delta API](../external-and-managed-tables/index.md)
 get credentials from its own endpoints, with the same checks. When a client
 creates a catalog-managed table, the staging response already includes a
-read-write credential for the new table's location. The Iceberg REST API
-returns a credential with the table's storage configuration.
+read-write credential for the new table's location. The
+[Iceberg REST API](../../how-to/iceberg-rest/index.md) returns a credential
+with each table it loads, plus the endpoint the client calls to renew it before
+it expires.
 
 ## How the server mints a credential
 

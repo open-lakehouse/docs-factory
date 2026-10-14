@@ -78,6 +78,20 @@ def test_ranged_install_in_a_page_is_an_error(tmp_path: Path) -> None:
     assert "exactly (==)" in error
 
 
+def test_iceberg_runtime_follows_the_iceberg_pin(tmp_path: Path) -> None:
+    repo = _repo(
+        tmp_path,
+        {
+            "how-to/h/snippets/s.py": (
+                'ICEBERG = "org.apache.iceberg:iceberg-spark-runtime-4.1_2.13:1.10.0"\n'
+                'AWS = "org.apache.iceberg:iceberg-aws-bundle:1.11.0"\n'
+            )
+        },
+    )
+    [error] = versions.check(repo)
+    assert "s.py:1" in error and "should be 1.11.0" in error
+
+
 def test_script_lower_bound_is_allowed(tmp_path: Path) -> None:
     repo = _repo(tmp_path, {"how-to/h/seed.py": '#   "unitycatalog-client>=0.5",\n'})
     assert versions.check(repo) == []

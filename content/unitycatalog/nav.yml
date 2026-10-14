@@ -90,6 +90,8 @@ nav:
                 id: H17
               - page: how-to/duckdb
                 id: H18
+              - page: how-to/iceberg-rest
+                id: H21
               - planned: H19
                 title: Read UniForm tables from Trino through Iceberg REST
               - page: how-to/python-dataframes

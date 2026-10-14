@@ -27,7 +27,7 @@ export default {
   // search; `hint` is the few words the API switcher shows.
   api: {
     repo: "unitycatalog/unitycatalog",
-    ref: "v0.6.0",
+    ref: "v0.7.0",
     default: "catalog",
     specs: [
       {
@@ -59,7 +59,7 @@ export default {
         summary:
           "The Apache Iceberg REST Catalog spec, which Unity Catalog implements at /api/2.1/unity-catalog/iceberg.",
         hint: "Iceberg REST catalog",
-        // UC 0.6.0 builds against Iceberg 1.11.0 (build.sbt `icebergVersion`).
+        // The `iceberg` pin in release.yml: build.sbt `icebergVersion` at the release tag.
         repo: "apache/iceberg",
         ref: "apache-iceberg-1.11.0",
         file: "open-api/rest-catalog-open-api.yaml",

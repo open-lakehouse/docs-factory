@@ -4,7 +4,7 @@
 #   "polars==1.44.2",
 #   "deltalake==1.6.6",
 #   "pyarrow>=18",
-#   "unitycatalog-client==0.6.0",
+#   "unitycatalog-client==0.7.0",
 # ]
 #
 # [tool.docs-factory]

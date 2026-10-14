@@ -11,7 +11,7 @@ status: ready
 The open source Unity Catalog server implements catalogs, schemas, external
 and managed tables, views, volumes, functions, registered models, AWS storage
 credentials, credential vending, and token-based authorization. This reference
-lists what release **0.6.0** implements per resource and API, its known issues,
+lists what release **0.7.0** implements per resource and API, its known issues,
 and what it doesn't include. Each row links to the source that establishes
 it. For what the features mean, see
 [What is Unity Catalog OSS?](../../explanation/what-is-unity-catalog.md).
@@ -25,7 +25,7 @@ Status values:
 - **Not implemented**: no API or behavior in the server.
 
 Paths below are relative to the
-[`v0.6.0` source tree](https://github.com/unitycatalog/unitycatalog/tree/v0.6.0).
+[`v0.7.0` source tree](https://github.com/unitycatalog/unitycatalog/tree/v0.7.0).
 
 ## Namespace and assets
 
@@ -39,7 +39,7 @@ Paths below are relative to the
 | SQL views | Stored only | `VIEW` table type with a stored definition and optional dependencies. The engine runs the query. | `api/all.yaml` `TableType` |
 | Metric views | Stored only | `METRIC_VIEW` table type with a stored YAML definition. The engine interprets it; Spark 4.2 with the 0.6.0 connector does. | `api/all.yaml` `TableType`, `docs/usage/metric-views.md` |
 | Streaming tables, materialized views | Not implemented | Listed in the `TableType` enum and marked "not yet fully implemented". | `api/all.yaml` `TableType` |
-| Volumes | Implemented | Managed and external volumes: create, list, get, update, delete. Deleting a managed volume deletes its files. | `api/all.yaml` `/volumes` |
+| Volumes | Implemented | Managed and external volumes: create, list, get, update, delete. Deleting a managed volume deletes its files after `server.storage-cleanup.initial-delay` (7 days by default). | `api/all.yaml` `/volumes` |
 | Functions | Partial | Create, list, get, delete. No update: replace a function by deleting and recreating it. Functions run in the caller's environment, never on the server. | `api/all.yaml` `/functions` |
 | Registered models and versions | Implemented | Models: create, list, get, update, delete. Versions: create, list, get, update, finalize, delete. | `api/all.yaml` `/models` |
 | Model aliases and stages | Not implemented | No alias or stage fields on models or versions. | `api/all.yaml` `/models` |
@@ -61,7 +61,7 @@ Paths below are relative to the
 | --- | --- | --- | --- |
 | Unity Catalog REST API | Implemented | Base path `/api/2.1/unity-catalog/`. | `api/all.yaml` |
 | Delta API | Implemented | `/api/2.1/unity-catalog/delta/v1/`: configuration, staging, create, load, commit, rename, delete, table and path credentials. The earlier `/delta/preview/commits` endpoints remain. | `api/delta.yaml`, `api/all.yaml` |
-| Iceberg REST API | Partial | Read only, at `/api/2.1/unity-catalog/iceberg/`: config, list and get namespaces, list tables, table exists, load table, load view, report metrics. Serves Delta tables with Iceberg metadata (UniForm). No create, commit, or drop. | `IcebergRestCatalogService.java` |
+| Iceberg REST API | Implemented | At `/api/2.1/unity-catalog/iceberg/`: Iceberg REST clients create, write, read, rename, and drop Iceberg tables, and read Delta tables with Iceberg metadata (UniForm). Native Iceberg tables are on by default; `server.iceberg-table.enabled=false` turns creates and commits off. | `IcebergRestCatalogService.java`, `etc/conf/server.properties` |
 
 ## Identity and access
 
@@ -78,10 +78,11 @@ Paths below are relative to the
 
 | Feature | Status | Details | Source |
 | --- | --- | --- | --- |
-| Container image | Implemented | `unitycatalog/unitycatalog:v0.6.0`; includes the `uc` CLI and sample catalogs. | `Dockerfile` |
+| Container image | Implemented | `unitycatalog/unitycatalog:v0.7.0`; includes the `uc` CLI and the sample catalog `unity`. | `Dockerfile` |
 | Metadata database | Implemented | H2 by default (in the container, lost with it); PostgreSQL and MySQL through Hibernate settings. The image bundles the PostgreSQL JDBC driver; see [Configure PostgreSQL](../../how-to/configure-backend-db/index.md). | `etc/conf/hibernate.properties`, `etc/db/*-example.yml`, `PostgresDeltaCommitsCRUDTest.java`, `MySQLDeltaCommitsCRUDTest.java` |
 | Web UI | Implemented | A separate React application. | `ui/` |
 | Helm chart | Implemented | Kubernetes chart. Its replica count is not a high-availability guarantee. | `helm/` |
+| Health and metrics endpoints | Implemented | `bin/start-uc-server --obs-port <port>` serves `/livez`, `/readyz`, and Prometheus `/metrics` on a separate port. Off unless the flag is set. | `UnityCatalogServer.java` |
 
 ## Known issues
 
@@ -93,15 +94,22 @@ that cover each task link here.
 
 | Issue | Affects | What you see | Workaround |
 | --- | --- | --- | --- |
-| Getting a volume that doesn't exist | 0.6.0 | HTTP 500 with error code `INTERNAL`, not 404. The Python SDK raises `ServiceException`, not `NotFoundException`. | List the schema's volumes to check whether one exists. |
-| Deleting managed tables and volumes | 0.6.0 | File deletion is best effort. If it fails, the server logs the error and still drops the catalog entry. | Check storage after dropping managed objects that matter. |
 | Storage roots outside an external location, with authorization disabled | 0.6.0 | The server accepts the root, then fails credential requests for its objects with `FAILED_PRECONDITION` (`S3 bucket configuration not found.`). With authorization enabled, creating the catalog or schema is denied. | Check each root against `external_location list` first. |
 | Force-deleting a storage credential that an external location uses | 0.6.0 | Every list of external locations fails with HTTP 500 `Credential not found`. | Force-delete the location by name: `uc external_location delete --name <name> --force true`. |
 | Changing an external location's URL | 0.6.0 | Tables, volumes, and storage roots under the old URL lose their credential; vending fails with `FAILED_PRECONDITION`. | Create the new location next to the old one and move the data first. |
-| SSE-KMS buckets | 0.6.0 | Vended S3 credentials can't read or write SSE-KMS objects; the session policy has no KMS actions. | Use SSE-S3. Fixed upstream in [#1774](https://github.com/unitycatalog/unitycatalog/pull/1774), not yet in a release. |
 | Schema updates | 0.6.0 | Any principal with `USE CATALOG` and `USE SCHEMA` can update or rename a schema, not only its owner. | Grant those privileges with that in mind. |
-| The upstream image on Linux, with a bind-mounted folder | 0.6.0 | The server runs as uid 100, so it can't write into folders your user created there, and dropping a managed table leaves the files your engine wrote. | Use the [local environment](../../how-to/run-local-server/index.md), which runs the server as the owner of its folder. |
-| CLI help for `credential` and `external_location` | 0.6.0 | `--help` crashes with a `NullPointerException`. The commands work. | See the flags in [Configure AWS storage credentials](../../how-to/configure-aws-storage/index.md#view-storage-credentials-and-external-locations). |
+| The upstream image on Linux, with a bind-mounted folder | 0.6.0, 0.7.0 | The server runs as uid 100, so it can't write into folders your user created there, and dropping a managed table leaves the files your engine wrote. | Use the [local environment](../../how-to/run-local-server/index.md), which runs the server as the owner of its folder. |
+| CLI help for `credential` and `external_location` | 0.6.0, 0.7.0 | `--help` crashes with a `NullPointerException`. The commands work. | See the flags in [Configure AWS storage credentials](../../how-to/configure-aws-storage/index.md#view-storage-credentials-and-external-locations). |
+
+Fixed in 0.7.0, for readers upgrading from 0.6.0:
+
+- Getting a volume that doesn't exist returns 404 `NOT_FOUND`, and the Python
+  SDK raises `NotFoundException`.
+- Dropping a managed table or volume no longer drops its files on a best-effort
+  basis. A background worker deletes them after
+  `server.storage-cleanup.initial-delay` and retries failed attempts.
+- Vended S3 credentials include the KMS actions that SSE-KMS buckets need
+  ([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)).
 
 ### Clients and engines
 
@@ -119,7 +127,7 @@ that cover each task link here.
 | Polars 1.44.2 | `Catalog.scan_table` on non-Delta tables | `Object at location … not found: is directory`: it reads the location as a single file. Read the folder with `scan_parquet`, `scan_csv`, or `scan_ndjson`; see [Register non-Delta external tables](../../how-to/table-storage-formats/index.md#read-the-data). |
 | DuckDB 1.5.4, `unity_catalog` | Non-Delta tables | `Table '…' is of unsupported format 'PARQUET'` (or `CSV`, …). Read the location with `read_parquet`, `read_csv`, or `read_json`. |
 | `uc` CLI 0.6.0, upstream image on x86-64 | `table read`, `table write` | `UnsatisfiedLinkError: … libsnappyjava.so: Error loading shared library ld-linux-x86-64.so.2`: the image is Alpine, and the CLI's snappy library needs glibc. The [local environment](../../how-to/run-local-server/index.md) adds `gcompat`. |
-| `uc` CLI 0.6.0 | `table create` for a non-Delta external table | It writes a Delta transaction log, `_delta_log/`, into the location. Readers of the files skip it; see [Register external files as tables](../../how-to/table-storage-formats/index.md#register-the-tables). |
+| `uc` CLI 0.6.0, 0.7.0 | `table create` for a non-Delta external table | It writes a Delta transaction log, `_delta_log/`, into the location. Readers of the files skip it; see [Register external files as tables](../../how-to/table-storage-formats/index.md#register-the-tables). |
 | `uc` CLI 0.6.0 | `table read` on non-Delta tables | `Only Delta tables are supported for read operations`. |
 | `unitycatalog-ai` 0.4.0 | Functions that return a falsy value, such as `0` or `""` | `result.value` holds a "no output was produced" message instead of the value. |
 
@@ -133,9 +141,7 @@ several of them, so guides written for Databricks don't apply here:
 - Row filters, column masks, and attribute-based access control (ABAC)
 - SCIM groups
 - Audit logs
-- A metrics endpoint for monitoring (such as Prometheus)
 - A Delta Sharing server
-- Writing through the Iceberg REST API
 
 ## Related pages
 

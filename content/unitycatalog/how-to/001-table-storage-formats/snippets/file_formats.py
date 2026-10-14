@@ -1,7 +1,7 @@
 # /// script
 # requires-python = ">=3.11"
 # dependencies = [
-#   "unitycatalog-client==0.6.0",
+#   "unitycatalog-client==0.7.0",
 #   "pyarrow>=18",
 #   "polars==1.44.2",
 #   "duckdb==1.5.4",

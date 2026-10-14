@@ -1,5 +1,5 @@
 # The Unity Catalog server image, adjusted for a local docs environment.
-FROM unitycatalog/unitycatalog:v0.6.0
+FROM unitycatalog/unitycatalog:v0.7.0
 
 USER root
 # gcompat: on x86-64 the CLI's bundled snappy library needs glibc, and the

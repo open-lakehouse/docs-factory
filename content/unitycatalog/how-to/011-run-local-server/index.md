@@ -47,8 +47,8 @@ with this configuration:
 ```properties file=../../../../envs/unitycatalog/server.properties title="server.properties"
 ```
 
-The server ships two sample catalogs, `unity` and `production`, so there is
-something to browse right away.
+The server ships a sample catalog, `unity`, so there is something to browse
+right away.
 
 ## Start the server with simulated S3
 

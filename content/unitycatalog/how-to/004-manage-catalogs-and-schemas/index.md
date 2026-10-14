@@ -18,7 +18,7 @@ volumes, functions, and registered models. For how these objects relate, see
 
 :::prerequisites
 - For the Python examples, Python 3.11 or later with
-  [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) 0.6.0.
+  [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) 0.7.0.
 :::
 
 ## Set up the client
@@ -208,9 +208,9 @@ Or delete a catalog with everything in it:
 :::danger
 A forced delete removes every schema, table, volume, function, and model in the
 catalog, and it can't be undone. The server also deletes the directories of
-managed tables and volumes. That cleanup is best effort: if it fails, the
-server logs the error and still removes the metadata. External tables and
-volumes lose only their metadata, and their files stay where they are.
+managed tables and volumes, after `server.storage-cleanup.initial-delay`
+(7 days by default). External tables and volumes lose only their metadata, and
+their files stay where they are.
 :::
 
 **Required privileges:** to delete a catalog, you need ownership of the catalog

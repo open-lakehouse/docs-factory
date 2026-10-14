@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["unitycatalog-client==0.6.0", "obstore==0.11.1"]
+# dependencies = ["unitycatalog-client==0.7.0", "obstore==0.11.1"]
 # ///
 """End-to-end check that UC vends working, path-scoped S3 credentials via aws-sim.
 

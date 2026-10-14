@@ -101,8 +101,8 @@ up by name find it under the new name.
 volume, you supply the location and keep control of its lifecycle. Dropping the
 object deletes only the catalog entry. For a *managed* table or volume, the
 server allocates the location and treats the files as part of the object.
-Dropping it deletes them too (best effort: if the deletion fails, the server
-logs it and drops the entry anyway).
+Dropping it deletes them too, once a cleanup delay passes (7 days by
+default).
 
 **Managed storage is inherited.** A managed object's location comes from the
 nearest storage root:

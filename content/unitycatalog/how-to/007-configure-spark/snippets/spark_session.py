@@ -26,7 +26,7 @@ PYSPARK_SUBMIT_ARGS="--repositories <mirror-url> pyspark-shell" first.
 # --8<-- [start:session]
 from pyspark.sql import SparkSession
 
-UC_SPARK = "io.unitycatalog:unitycatalog-spark_4.1_2.13:0.6.0"
+UC_SPARK = "io.unitycatalog:unitycatalog-spark_4.1_2.13:0.7.0"
 DELTA_SPARK = "io.delta:delta-spark_4.1_2.13:4.3.1"
 
 spark = (

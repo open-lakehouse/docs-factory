@@ -31,7 +31,7 @@ Unity Catalog client and [obstore](https://developmentseed.org/obstore/), a
 Python library for object storage and local files:
 
 ```bash
-uv run --with unitycatalog-client==0.6.0 --with obstore==0.11.1 python -m asyncio
+uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 python -m asyncio
 ```
 
 `python -m asyncio` is a Python shell that accepts `await` at the top level,

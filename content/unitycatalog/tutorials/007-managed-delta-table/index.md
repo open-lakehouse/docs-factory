@@ -37,7 +37,7 @@ Open a Python session with PySpark and the Unity Catalog client, from a
 terminal where `UC_DOCS_ROOT` is set the same way as for the server:
 
 ```bash
-uv run --with pyspark==4.1.0 --with unitycatalog-client==0.6.0 python
+uv run --with pyspark==4.1.0 --with unitycatalog-client==0.7.0 python
 ```
 
 Enter each of the following snippets in it, in order, starting with the
@@ -163,7 +163,9 @@ Drop the table and the schema, and stop Spark. Then leave the session with
 ```
 
 :::warning
-Dropping a managed table deletes its files. This is the opposite of an
+Dropping a managed table deletes its files once
+`server.storage-cleanup.initial-delay` passes, 7 days by default. The table
+can't be restored in the meantime. This is the opposite of an
 [external table](../../how-to/register-external-table/index.md), whose files
 stay where they are.
 :::

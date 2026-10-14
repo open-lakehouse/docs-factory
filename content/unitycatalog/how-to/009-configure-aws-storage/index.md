@@ -35,7 +35,7 @@ policy that narrows access to the requested path and operation.
 :::prerequisites
 - In AWS, permission to create IAM roles and policies, and to edit the bucket's
   policy if the bucket uses one.
-- For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.6.0
+- For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.7.0
   and, to check vended credentials, `obstore`. For the CLI examples, `curl`.
 :::
 
@@ -122,13 +122,6 @@ prefix-scoped `s3:ListBucket`, or for writes, also `s3:PutO*`, `s3:DeleteO*`,
 and the multipart actions. Actions the storage role lacks stay denied, so grant
 everything your engines need. Engines such as Spark may also call
 `s3:GetBucketLocation`.
-
-:::note
-Encrypt buckets that Unity Catalog governs with SSE-S3. The session policy has
-no KMS actions, so vended credentials can't use SSE-KMS objects. The fix
-([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)) is merged
-upstream but not yet in a release.
-:::
 
 Then register the role with Unity Catalog:
 

@@ -28,9 +28,9 @@ Spark version, and it needs a Delta Spark build for the same Spark version:
 
 | Spark | Unity Catalog connector | Delta Spark |
 | --- | --- | --- |
-| 4.1 (tested here: PySpark 4.1.0) | `io.unitycatalog:unitycatalog-spark_4.1_2.13:0.6.0` | `io.delta:delta-spark_4.1_2.13:4.3.1` |
-| 4.0 | `io.unitycatalog:unitycatalog-spark_4.0_2.13:0.6.0` | `io.delta:delta-spark_4.0_2.13:4.3.1` |
-| 4.2 | `io.unitycatalog:unitycatalog-spark_4.2_2.13:0.6.0` | `delta-spark_4.2_2.13` 4.4.0, named in the release notes and not tested here |
+| 4.1 (tested here: PySpark 4.1.0) | `io.unitycatalog:unitycatalog-spark_4.1_2.13:0.7.0` | `io.delta:delta-spark_4.1_2.13:4.3.1` |
+| 4.0 | `io.unitycatalog:unitycatalog-spark_4.0_2.13:0.7.0` | `io.delta:delta-spark_4.0_2.13:4.3.1` |
+| 4.2 | `io.unitycatalog:unitycatalog-spark_4.2_2.13:0.7.0` | `delta-spark_4.2_2.13` 4.4.0, named in the release notes and not tested here |
 
 With a Delta Spark release older than 4.3.0, the connector quietly skips the
 Delta API, and catalog-managed tables don't work.
@@ -132,9 +132,9 @@ what each credential may access, see
 [Credential vending](../../explanation/credential-vending/index.md).
 
 Option names and defaults come from the connector source,
-[`OptionsUtil.java`](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/connectors/spark/src/main/java/io/unitycatalog/spark/utils/OptionsUtil.java)
+[`OptionsUtil.java`](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/connectors/spark/src/main/java/io/unitycatalog/spark/utils/OptionsUtil.java)
 and
-[`AuthConfigs.java`](https://github.com/unitycatalog/unitycatalog/blob/v0.6.0/clients/java/src/main/java/io/unitycatalog/client/auth/AuthConfigs.java).
+[`AuthConfigs.java`](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/clients/java/src/main/java/io/unitycatalog/client/auth/AuthConfigs.java).
 
 ## Next steps
 

@@ -30,7 +30,7 @@ from an earlier tutorial. Then open a Python session with the
 client installed:
 
 ```bash
-uv run --with unitycatalog-client==0.6.0 python -m asyncio
+uv run --with unitycatalog-client==0.7.0 python -m asyncio
 ```
 
 `python -m asyncio` is a Python shell that accepts `await` at the top level.
@@ -64,7 +64,7 @@ A list call returns a response object. Its `catalogs` field holds the items:
 ```python file=./snippets/catalog_flow.py start=start:list-catalogs end=end:list-catalogs
 ```
 
-`quickstart` is listed next to the sample catalogs `unity` and `production`.
+`quickstart` is listed next to the sample catalog `unity`.
 
 ### Create a schema
 

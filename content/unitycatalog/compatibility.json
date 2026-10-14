@@ -41,14 +41,14 @@
     {
       "key": "cli",
       "label": "uc CLI",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "package": null,
       "model": null
     },
     {
       "key": "python-sdk",
       "label": "Python SDK",
-      "version": "0.6.0",
+      "version": "0.7.0",
       "package": "unitycatalog-client",
       "model": null
     },
@@ -1103,7 +1103,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "CatalogsApi.create_catalog",
               "note": null
             }
@@ -1155,7 +1155,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "CatalogsApi.list_catalogs",
               "note": null
             }
@@ -1207,7 +1207,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "CatalogsApi.update_catalog",
               "note": null
             }
@@ -1259,7 +1259,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "CatalogsApi.delete_catalog(force=True)",
               "note": null
             }
@@ -1311,7 +1311,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "SchemasApi.create_schema",
               "note": null
             }
@@ -1363,7 +1363,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "SchemasApi.list_schemas",
               "note": null
             }
@@ -1415,7 +1415,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "SchemasApi.update_schema",
               "note": null
             }
@@ -1467,7 +1467,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "SchemasApi.delete_schema",
               "note": null
             }
@@ -1534,7 +1534,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "TablesApi.create_table",
               "note": null
             },
@@ -1549,7 +1549,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "TablesApi.create_table",
               "note": null
             }
@@ -1601,7 +1601,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "TablesApi.create_table",
               "note": null
             }
@@ -1653,7 +1653,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "TablesApi.get_table",
               "note": null
             },
@@ -1668,7 +1668,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "TablesApi.get_table",
               "note": null
             }
@@ -1735,7 +1735,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "DeltaTable(storage_location)",
               "note": "with deltalake"
             }
@@ -1832,7 +1832,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "TablesApi.delete_table",
               "note": null
             },
@@ -1847,7 +1847,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "TablesApi.delete_table",
               "note": null
             },
@@ -1862,7 +1862,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "TablesApi.delete_table",
               "note": null
             }
@@ -1914,7 +1914,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "VolumesApi.create_volume",
               "note": null
             },
@@ -1929,7 +1929,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "VolumesApi.create_volume",
               "note": null
             }
@@ -1996,7 +1996,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "VolumesApi.create_volume",
               "note": null
             },
@@ -2011,7 +2011,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "VolumesApi.create_volume",
               "note": null
             }
@@ -2063,7 +2063,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "VolumesApi.get_volume",
               "note": null
             },
@@ -2078,7 +2078,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "VolumesApi.get_volume",
               "note": null
             }
@@ -2130,7 +2130,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": null,
               "note": "on local storage, from the volume's location"
             }
@@ -2182,7 +2182,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "VolumesApi.update_volume",
               "note": null
             }
@@ -2234,7 +2234,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "VolumesApi.delete_volume",
               "note": null
             }
@@ -2286,7 +2286,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "CredentialsApi.create_credential",
               "note": null
             }
@@ -2338,7 +2338,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "ExternalLocationsApi.create_external_location",
               "note": null
             }
@@ -2390,7 +2390,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": null,
               "note": null
             }
@@ -2442,7 +2442,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "CredentialsApi.update_credential",
               "note": null
             }
@@ -2494,7 +2494,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "ExternalLocationsApi.update_external_location",
               "note": null
             }
@@ -2546,7 +2546,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": null,
               "note": null
             }
@@ -2613,7 +2613,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "SchemasApi.create_schema(storage_root=)",
               "note": null
             },
@@ -2628,7 +2628,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "CatalogsApi.create_catalog(storage_root=)",
               "note": null
             }
@@ -2678,7 +2678,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "generate_temporary_path_credentials",
               "note": null
             }
@@ -2708,7 +2708,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "generate_temporary_volume_credentials",
               "note": null
             },
@@ -2723,7 +2723,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": "generate_temporary_volume_credentials",
               "note": null
             }
@@ -2753,7 +2753,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": null,
               "note": "with obstore"
             }
@@ -2783,7 +2783,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "0.6.0",
+              "version": "0.7.0",
               "api": null,
               "note": "with obstore"
             }

@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["unitycatalog-client==0.6.0"]
+# dependencies = ["unitycatalog-client==0.7.0"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -136,17 +136,17 @@ async def main() -> None:
     assert (ROOT / "landing" / "2026" / "orders.csv").exists(), (
         "external files must survive"
     )
-    assert not managed_dir.exists(), "managed volume directory must be deleted"
+    # Deleted after `server.storage-cleanup.initial-delay`, not with the volume.
+    assert managed_dir.exists(), "managed files must wait out the cleanup delay"
 
 
 async def _check_missing_volume_error(volumes: VolumesApi) -> None:
-    """The page notes that 0.6.0 answers a missing volume with HTTP 500, not 404."""
-    from unitycatalog.client.exceptions import ServiceException
+    from unitycatalog.client.exceptions import NotFoundException
 
     try:
         await volumes.get_volume(name="retail.files.landing")
-    except ServiceException as exc:
-        assert exc.status == 500, exc.status
+    except NotFoundException as exc:
+        assert exc.status == 404, exc.status
     else:
         raise AssertionError("renamed volume is still reachable under its old name")
 

@@ -46,7 +46,7 @@ export interface CompatCell {
 export interface CompatJourney {
   id: string;
   title: string;
-  summary: string | null;
+  summary: string;
   request: string | null;
   /** Keyed by interface; an interface nothing says anything about is absent. */
   cells: Record<string, CompatCell>;

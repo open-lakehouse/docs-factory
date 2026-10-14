@@ -21,14 +21,14 @@ const matrix: CompatMatrix = {
     {
       id: "j1",
       title: "J1",
-      summary: null,
+      summary: "S",
       request: null,
       cells: { a: cell("tested"), b: cell("fails") },
     },
     {
       id: "j2",
       title: "J2",
-      summary: null,
+      summary: "S",
       request: null,
       cells: { a: cell("tested", true), b: cell("documented") },
     },

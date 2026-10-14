@@ -222,7 +222,7 @@
     {
       "id": "create.table",
       "title": "Create a table",
-      "summary": null,
+      "summary": "Create a new, empty Delta table with a schema.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -343,7 +343,7 @@
     {
       "id": "create.ctas",
       "title": "Create from select",
-      "summary": null,
+      "summary": "Create a Delta table from the result of a query, in one step.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -415,7 +415,7 @@
     {
       "id": "create.partitioned",
       "title": "Create partitioned table",
-      "summary": null,
+      "summary": "Create a table whose files are split by the values of one or more columns.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -487,7 +487,7 @@
     {
       "id": "write.append",
       "title": "Append rows",
-      "summary": null,
+      "summary": "Add new rows to an existing table without touching the rows already there.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -659,7 +659,7 @@
     {
       "id": "write.overwrite",
       "title": "Overwrite rows",
-      "summary": null,
+      "summary": "Replace all of a table's rows with new data in one commit.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -771,7 +771,7 @@
     {
       "id": "write.replace-where",
       "title": "Replace where",
-      "summary": null,
+      "summary": "Replace only the rows that match a predicate, leaving the rest in place.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -859,7 +859,7 @@
     {
       "id": "write.dynamic-partitions",
       "title": "Dynamic partitions",
-      "summary": null,
+      "summary": "Overwrite only the partitions the new data touches.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -915,7 +915,7 @@
     {
       "id": "write.enforce-schema",
       "title": "Enforce schema",
-      "summary": null,
+      "summary": "Have a write that doesn't match the table's schema rejected instead of applied.",
       "request": null,
       "cells": {
         "spark-python": {
@@ -983,7 +983,7 @@
     {
       "id": "write.idempotent",
       "title": "Idempotent writes",
-      "summary": null,
+      "summary": "Retry a write safely, so a batch that already committed isn't applied twice.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1071,7 +1071,7 @@
     {
       "id": "write.commit-metadata",
       "title": "Commit metadata",
-      "summary": null,
+      "summary": "Attach your own metadata to a commit and find it in the table's history.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1143,7 +1143,7 @@
     {
       "id": "dml.update",
       "title": "Update rows",
-      "summary": null,
+      "summary": "Change the values of rows that match a condition.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1243,7 +1243,7 @@
     {
       "id": "dml.delete",
       "title": "Delete rows",
-      "summary": null,
+      "summary": "Remove the rows that match a condition.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1343,7 +1343,7 @@
     {
       "id": "merge.upsert",
       "title": "Merge upsert",
-      "summary": null,
+      "summary": "Update matching rows and insert new ones from a source, in one operation.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1431,7 +1431,7 @@
     {
       "id": "merge.not-matched-by-source",
       "title": "Merge not matched by source",
-      "summary": null,
+      "summary": "In a merge, update or delete target rows that have no match in the source.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1519,7 +1519,7 @@
     {
       "id": "merge.schema-evolution",
       "title": "Merge schema evolution",
-      "summary": null,
+      "summary": "Let a merge add the source's new columns to the target table.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1607,7 +1607,7 @@
     {
       "id": "read.scan",
       "title": "Scan table",
-      "summary": null,
+      "summary": "Read a table's current rows into a query or DataFrame.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1866,7 +1866,7 @@
     {
       "id": "read.pushdown",
       "title": "Filter pushdown",
-      "summary": null,
+      "summary": "Filter on read so the engine skips files that can't match.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -1962,7 +1962,7 @@
     {
       "id": "read.version",
       "title": "Read version",
-      "summary": null,
+      "summary": "Read the table as it was at an earlier version number.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -2141,7 +2141,7 @@
     {
       "id": "read.timestamp",
       "title": "Read timestamp",
-      "summary": null,
+      "summary": "Read the table as it was at a point in time.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -2253,7 +2253,7 @@
     {
       "id": "read.past-retention",
       "title": "Read past retention",
-      "summary": null,
+      "summary": "Learn what happens when you read a version whose files were already vacuumed.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -2347,7 +2347,7 @@
     {
       "id": "history.list",
       "title": "List history",
-      "summary": null,
+      "summary": "List the commits that changed a table, with their operations and versions.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -2558,7 +2558,7 @@
     {
       "id": "history.detail",
       "title": "History detail",
-      "summary": null,
+      "summary": "Show a table's current location, size, file count, and properties.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -2652,7 +2652,7 @@
     {
       "id": "history.restore",
       "title": "Restore version",
-      "summary": null,
+      "summary": "Roll a table back to an earlier version.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -2740,7 +2740,7 @@
     {
       "id": "history.shallow-clone",
       "title": "Shallow clone",
-      "summary": null,
+      "summary": "Make a new table that references another table's files without copying them.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -2828,7 +2828,7 @@
     {
       "id": "schema.merge-on-write",
       "title": "Merge on write",
-      "summary": null,
+      "summary": "Add a write's new columns to the table's schema as part of the write.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -2916,7 +2916,7 @@
     {
       "id": "schema.overwrite",
       "title": "Overwrite schema",
-      "summary": null,
+      "summary": "Replace a table's schema along with its data.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3004,7 +3004,7 @@
     {
       "id": "schema.add-column",
       "title": "Add column",
-      "summary": null,
+      "summary": "Add a column to an existing table's schema.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3092,7 +3092,7 @@
     {
       "id": "schema.rename-drop",
       "title": "Rename/drop column",
-      "summary": null,
+      "summary": "Rename or drop a column without rewriting the data files.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3180,7 +3180,7 @@
     {
       "id": "schema.type-widening",
       "title": "Type widening",
-      "summary": null,
+      "summary": "Change a column to a wider type, such as int to long, without rewriting the data.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3268,7 +3268,7 @@
     {
       "id": "quality.check",
       "title": "Check constraint",
-      "summary": null,
+      "summary": "Add a CHECK constraint that rejects rows that violate it.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3340,7 +3340,7 @@
     {
       "id": "quality.not-null",
       "title": "Not null constraint",
-      "summary": null,
+      "summary": "Declare a column NOT NULL so writes with nulls fail.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3412,7 +3412,7 @@
     {
       "id": "columns.generated",
       "title": "Generated columns",
-      "summary": null,
+      "summary": "Define a column whose value is computed from other columns on write.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3484,7 +3484,7 @@
     {
       "id": "columns.identity",
       "title": "Identity columns",
-      "summary": null,
+      "summary": "Give a column unique values the table assigns on insert.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3556,7 +3556,7 @@
     {
       "id": "columns.default",
       "title": "Default columns",
-      "summary": null,
+      "summary": "Give a column a default value for writes that leave it out.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3596,7 +3596,7 @@
     {
       "id": "cdf.read",
       "title": "Read change data",
-      "summary": null,
+      "summary": "Read the row-level changes (inserts, updates, deletes) between versions.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3684,7 +3684,7 @@
     {
       "id": "stream.source-sink",
       "title": "Stream source/sink",
-      "summary": null,
+      "summary": "Use a table as a streaming source or sink.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3772,7 +3772,7 @@
     {
       "id": "stream.foreach-batch-merge",
       "title": "Stream foreach batch merge",
-      "summary": null,
+      "summary": "Merge each micro-batch of a stream into a table.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3860,7 +3860,7 @@
     {
       "id": "layout.compact",
       "title": "Compact/optimize",
-      "summary": null,
+      "summary": "Rewrite many small files into fewer, larger ones.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -3948,7 +3948,7 @@
     {
       "id": "layout.zorder",
       "title": "Z-order",
-      "summary": null,
+      "summary": "Co-locate related values across files so filters skip more data.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4036,7 +4036,7 @@
     {
       "id": "layout.clustering",
       "title": "Clustering",
-      "summary": null,
+      "summary": "Cluster a table by chosen columns and let maintenance keep it clustered.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4124,7 +4124,7 @@
     {
       "id": "maint.vacuum",
       "title": "Vacuum",
-      "summary": null,
+      "summary": "Delete data files that no version within the retention period still needs.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4212,7 +4212,7 @@
     {
       "id": "maint.checkpoint",
       "title": "Checkpoint",
-      "summary": null,
+      "summary": "Write a checkpoint so readers don't replay the whole commit log.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4300,7 +4300,7 @@
     {
       "id": "maint.purge-dvs",
       "title": "Purge deletion vectors",
-      "summary": null,
+      "summary": "Rewrite files to physically remove rows marked deleted by deletion vectors.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4356,7 +4356,7 @@
     {
       "id": "maint.manifest",
       "title": "Generate manifest",
-      "summary": null,
+      "summary": "Generate manifest files so engines without Delta support can read the table.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4444,7 +4444,7 @@
     {
       "id": "maint.repair",
       "title": "Repair table",
-      "summary": null,
+      "summary": "Repair a table whose log references data files that no longer exist.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4532,7 +4532,7 @@
     {
       "id": "migrate.convert-parquet",
       "title": "Convert to Delta",
-      "summary": null,
+      "summary": "Turn an existing Parquet directory into a Delta table in place.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4620,7 +4620,7 @@
     {
       "id": "feature.enable",
       "title": "Enable feature",
-      "summary": null,
+      "summary": "Turn on a table feature, which may raise the table's protocol version.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4708,7 +4708,7 @@
     {
       "id": "feature.drop",
       "title": "Drop feature",
-      "summary": null,
+      "summary": "Remove a table feature so older readers and writers can use the table again.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4796,7 +4796,7 @@
     {
       "id": "feature.properties",
       "title": "Feature properties",
-      "summary": null,
+      "summary": "Read and set a table's properties.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4894,7 +4894,7 @@
     {
       "id": "storage.s3-multi-writer",
       "title": "S3 multi-writer",
-      "summary": null,
+      "summary": "Let several writers commit to the same table on S3 safely.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -4966,7 +4966,7 @@
     {
       "id": "storage.azure-gcs",
       "title": "Azure/GCS",
-      "summary": null,
+      "summary": "Read and write tables on Azure Data Lake Storage or Google Cloud Storage.",
       "request": null,
       "cells": {
         "spark-sql": {
@@ -5054,7 +5054,7 @@
     {
       "id": "catalog.unity",
       "title": "Unity Catalog",
-      "summary": null,
+      "summary": "Create, read, and write tables through Unity Catalog instead of by path.",
       "request": null,
       "cells": {
         "spark-sql": {

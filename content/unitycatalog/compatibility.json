@@ -11,6 +11,13 @@
       "model": "apacheSpark"
     },
     {
+      "key": "spark-4.2",
+      "label": "Spark",
+      "version": "4.2.0",
+      "package": "pyspark",
+      "model": "apacheSpark"
+    },
+    {
       "key": "duckdb",
       "label": "DuckDB",
       "version": "1.5.4",
@@ -179,6 +186,23 @@
         "function.execute",
         "function.list",
         "function.delete"
+      ]
+    },
+    {
+      "id": "metric-views",
+      "title": "Metric views",
+      "columns": [
+        "spark-4.2",
+        "python-sdk"
+      ],
+      "rows": [
+        "metricview.create",
+        "metricview.list",
+        "metricview.describe",
+        "metricview.query",
+        "metricview.replace",
+        "metricview.rename",
+        "metricview.drop"
       ]
     }
   ],
@@ -1703,6 +1727,420 @@
               "version": "4.1.0",
               "api": null,
               "note": "UC connector and Iceberg REST catalogs in one session"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "metricview.create",
+      "title": "Create a metric view",
+      "summary": "Define dimensions and measures in YAML over a table or a query, and store the definition in the catalog.",
+      "request": null,
+      "cells": {
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/metric_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "create-the-metric-view",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "CREATE VIEW … WITH METRICS",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/008-first-metric-view/snippets/metric_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-metric-view"
+              },
+              "anchor": "define-the-metric-view",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "CREATE VIEW … WITH METRICS",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/register_metric_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "register-a-definition-through-the-rest-api",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "create_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "metricview.list",
+      "title": "List metric views",
+      "summary": "Find a schema's metric views by name.",
+      "request": null,
+      "cells": {
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/metric_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "list-and-inspect-metric-views",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "SHOW VIEWS",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/register_metric_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "register-a-definition-through-the-rest-api",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "list_tables",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "metricview.describe",
+      "title": "Inspect a metric view",
+      "summary": "Read a metric view's dimensions, measures, and stored definition.",
+      "request": null,
+      "cells": {
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/metric_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "list-and-inspect-metric-views",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DESCRIBE EXTENDED",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/008-first-metric-view/snippets/metric_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-metric-view"
+              },
+              "anchor": "inspect-it",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DESCRIBE EXTENDED",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/register_metric_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "register-a-definition-through-the-rest-api",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "get_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "metricview.query",
+      "title": "Query a metric view",
+      "summary": "Compute measures with `measure()`, grouped and filtered by dimensions.",
+      "request": null,
+      "cells": {
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/metric_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "query-it",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "measure()",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/008-first-metric-view/snippets/metric_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-metric-view"
+              },
+              "anchor": "query-measures-by-month",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "measure()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "why": "The SDK stores and returns the definition; computing measures needs an engine.",
+              "source": "how-to/metric-views#register-a-definition-through-the-rest-api",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "metricview.replace",
+      "title": "Change a metric view's definition",
+      "summary": "Replace a metric view's definition in place, keeping its name.",
+      "request": null,
+      "cells": {
+        "spark-4.2": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "why": "`CREATE OR REPLACE VIEW … WITH METRICS` fails with `Replacing a view is not supported yet`. Drop the view and create it again.",
+              "source": "how-to/metric-views#change-a-definition",
+              "api": null,
+              "verified": "4.2.0",
+              "note": null
+            }
+          ]
+        },
+        "python-sdk": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The UC REST API has no table update; delete the metric view and create it again.",
+              "source": "reference/features-and-limitations#namespace-and-assets",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "metricview.rename",
+      "title": "Rename a metric view",
+      "summary": "Give a metric view a new name in its schema.",
+      "request": null,
+      "cells": {
+        "spark-4.2": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "why": "`ALTER VIEW … RENAME TO` fails with `Renaming a view is not supported yet`.",
+              "source": "how-to/metric-views#change-a-definition",
+              "api": null,
+              "verified": "4.2.0",
+              "note": null
+            }
+          ]
+        },
+        "python-sdk": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The UC REST API has no table update; delete the metric view and create it again.",
+              "source": "reference/features-and-limitations#namespace-and-assets",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "metricview.drop",
+      "title": "Drop a metric view",
+      "summary": "Remove a metric view; its source tables stay.",
+      "request": null,
+      "cells": {
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/metric_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "drop-a-metric-view",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DROP VIEW",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/008-first-metric-view/snippets/metric_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "first-metric-view"
+              },
+              "anchor": "clean-up",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DROP VIEW",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/013-metric-views/snippets/register_metric_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "metric-views"
+              },
+              "anchor": "register-a-definition-through-the-rest-api",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "delete_table",
+              "note": null
             }
           ],
           "evidence": []

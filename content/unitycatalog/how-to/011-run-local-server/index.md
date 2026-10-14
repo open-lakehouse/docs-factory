@@ -132,5 +132,6 @@ can read and change everything in the catalog. Use it only on your own machine.
 
 - [Create your first catalog](../../tutorials/getting-started/index.md) uses
   this server from the command line.
-- [Choose a client or engine](../../reference/clients-and-engines/index.md)
-  lists the tools that connect to it.
+- [Use the Python client](../../tutorials/python-client/index.md),
+  [Spark](../configure-spark/index.md), or
+  [DuckDB](../duckdb/index.md) to connect to it.

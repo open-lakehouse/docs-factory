@@ -118,7 +118,9 @@ in each release, see
   local server and walks the namespace from the command line.
 - [Run a local Unity Catalog server](../how-to/run-local-server/index.md)
   sets up the server every example in these docs uses.
-- [Choose a client or engine](../reference/clients-and-engines/index.md) shows
-  how to connect the tools you already use.
+- Connect the tools you already use:
+  [Spark](../how-to/configure-spark/index.md),
+  [DuckDB](../how-to/duckdb/index.md), or
+  [Python DataFrame libraries](../how-to/python-dataframes/index.md).
 
 [lakehouse architecture]: https://www.databricks.com/blog/what-is-data-lakehouse

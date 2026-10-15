@@ -1,5 +1,5 @@
-// Page → derived prerequisites for the review app, so a reviewer sees the same
-// Docker bullet and "Start the environment" commands the docs emitter adds
+// Page → derived environment for the review app, so a reviewer sees the same
+// Docker bullet and start commands (or pointer) the docs emitter adds
 // (emit/docs/emit-docs.mjs). The commands name the published docs site's env
 // bundle: they're what a reader will run, not something the app serves.
 //
@@ -9,7 +9,11 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import delta from "../../emit/docs/sites/delta-docs.mjs";
 import unitycatalog from "../../emit/docs/sites/unitycatalog-docs.mjs";
-import { declaredEnvironment, pageEnvironment } from "../src/content-core/environment.mjs";
+import {
+  declaredEnvironment,
+  environmentGuide,
+  pageEnvironment,
+} from "../src/content-core/environment.mjs";
 import { splitFrontmatter } from "../src/content-core/frontmatter.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
 import { loadRegistry } from "../src/content-core/registry.mjs";
@@ -19,7 +23,7 @@ import { runDocsnipScripts, scriptEntry } from "./build-script-index.mjs";
 const SITES = [delta, unitycatalog];
 
 /**
- * `(path, source) => { environment, guide } | null` over docsnip's raw script
+ * `(path, source) => { environment, guide, diataxis } | null` over docsnip's raw script
  * entries. Scripts are keyed by the docs site's routes, so a page's `runUrl`
  * is the published one; the guide link is the in-app route, for the reviewer.
  * `readPage` returns a page's source (the guide's title comes from it).
@@ -27,25 +31,21 @@ const SITES = [delta, unitycatalog];
 export function environmentResolver({ entries, registry, sites = SITES, readPage }) {
   const bySite = sites
     .filter((site) => site.env)
-    .map((site) => {
-      const guideIdentity = {
-        area: "docs",
-        project: site.project,
-        bucket: site.env.guide.bucket,
-        slug: site.env.guide.slug,
-      };
-      const guideSource = readPage(guideIdentity);
-      return {
-        site,
-        scripts: entries.map((e) => scriptEntry(e, { hrefFor: site.hrefFor })),
-        bundleUrl: `${site.origin}/env/${site.env.bundle}.tar.gz`,
-        guideRoute: hrefFromIdentity(guideIdentity),
-        guide: guideSource && {
-          href: hrefFromIdentity(guideIdentity),
-          title: splitFrontmatter(guideSource).meta.title ?? site.env.guide.slug,
-        },
-      };
-    });
+    .map((site) => ({
+      site,
+      scripts: entries.map((e) => scriptEntry(e, { hrefFor: site.hrefFor })),
+      bundleUrl: `${site.origin}/env/${site.env.bundle}.tar.gz`,
+      guidePage: (bucket, slug) => {
+        const identity = { area: "docs", project: site.project, bucket, slug };
+        const source = readPage(identity);
+        return source
+          ? {
+              href: hrefFromIdentity(identity),
+              title: splitFrontmatter(source).meta.title ?? slug,
+            }
+          : null;
+      },
+    }));
 
   return (path, source) => {
     const { meta, body } = splitFrontmatter(source);
@@ -62,8 +62,12 @@ export function environmentResolver({ entries, registry, sites = SITES, readPage
       declared: declaredEnvironment(body),
     });
     if (!environment) return null;
-    const guide = entry.guideRoute === hrefFromIdentity(identity) ? null : entry.guide;
-    return { environment, guide };
+    const guide = environmentGuide(environment, {
+      siteGuide: entry.site.env.guide,
+      resolve: entry.guidePage,
+      self: hrefFromIdentity(identity),
+    });
+    return { environment, guide, diataxis: meta.diataxis ?? identity.bucket };
   };
 }
 

@@ -271,6 +271,7 @@ test("companionsSection gives link, purpose, run command, and the stack", () => 
   );
   expect(md).toContain("run: `bash aws_storage.sh` from `uc-docs-env/unitycatalog`");
   expect(md).toContain("They need Unity Catalog 0.6.0 with simulated S3 running");
+  expect(md).toContain(`\`\`\`bash\n${ENVIRONMENT.commands.join("\n")}\n\`\`\``);
   expect(md).not.toContain("compose.yaml`");
 });
 

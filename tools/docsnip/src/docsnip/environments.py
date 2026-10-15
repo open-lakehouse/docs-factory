@@ -19,6 +19,9 @@ REGISTRY = Path("envs") / "environments.yml"
 # Mirrors DECLARED_RE in site/src/content-core/environment.mjs.
 _BOX_RE = re.compile(r"^:{3,}prerequisites\b(?:\{([^}\n]*)\})?", re.MULTILINE)
 _DECLARED_RE = re.compile(r'\benvironment="([^"]+)"')
+_MARKER_RE = re.compile(r"^:{3,}environment\s*$", re.MULTILINE)
+# The emitter checks that the page exists; see environmentGuide in environment.mjs.
+_GUIDE_RE = re.compile(r"[a-z-]+/[a-z0-9-]+(#[a-z0-9-]+)?")
 
 
 @dataclasses.dataclass(frozen=True)
@@ -27,6 +30,7 @@ class Environment:
     title: str
     ports: list[int]
     client_env: dict[str, str]
+    guide: str | None = None
 
 
 def load(repo_root: Path) -> dict[str, Environment]:
@@ -38,13 +42,20 @@ def load(repo_root: Path) -> dict[str, Environment]:
         title = entry.get("title")
         ports = entry.get("ports", []) or []
         client_env = entry.get("client-env", {}) or {}
+        guide = entry.get("guide")
         if not isinstance(title, str) or not title:
             raise ValueError(f"{REGISTRY}: {key}: title must be a non-empty string")
         if not all(isinstance(p, int) for p in ports):
             raise ValueError(f"{REGISTRY}: {key}: ports must be integers")
         if not all(isinstance(v, str) for v in client_env.values()):
             raise ValueError(f"{REGISTRY}: {key}: client-env values must be strings")
-        envs[key] = Environment(key, title, list(ports), dict(client_env))
+        if guide is not None and not (
+            isinstance(guide, str) and _GUIDE_RE.fullmatch(guide)
+        ):
+            raise ValueError(
+                f"{REGISTRY}: {key}: guide must be <bucket>/<slug>[#anchor]"
+            )
+        envs[key] = Environment(key, title, list(ports), dict(client_env), guide)
     return envs
 
 
@@ -67,7 +78,7 @@ def client_env(compose_path: Path | None, repo_root: Path) -> dict[str, str]:
 
 def check(repo_root: Path, scripts) -> list[str]:
     """Registry errors: a malformed entry, a key with no file, or a script whose
-    compose isn't registered (it would get no "Start the environment" block)."""
+    compose isn't registered (it would get no start commands)."""
     try:
         envs = load(repo_root)
     except (OSError, ValueError, yaml.YAMLError) as exc:
@@ -92,8 +103,9 @@ def check(repo_root: Path, scripts) -> list[str]:
 
 def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
     """Prerequisites errors: a page whose scripts need a stack must hold exactly
-    one ``:::prerequisites`` (the emitter puts the start commands there), and a
-    declared ``environment="…"`` must be a registry key."""
+    one ``:::prerequisites`` (the emitter adds the Docker bullet there), a
+    declared ``environment="…"`` must be a registry key, and a ``:::environment``
+    marker (where the emitter puts the start commands) needs a stack to start."""
     from .frontmatter import iter_content_files
 
     try:
@@ -102,7 +114,8 @@ def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
         return []  # reported by check()
     errors: list[str] = []
     for md in iter_content_files(content_root):
-        boxes = list(_BOX_RE.finditer(md.read_text()))
+        text = md.read_text()
+        boxes = list(_BOX_RE.finditer(text))
         needs = md.name == "index.md" and any(
             m.compose_path() is not None and md.parent in m.path.parents
             for m in scripts
@@ -112,13 +125,23 @@ def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
         elif needs and not boxes:
             errors.append(
                 f"{md}: its scripts need a local environment, so the page needs a "
-                ":::prerequisites box for the emitter to put the start commands in"
+                ":::prerequisites box for the emitter to add the Docker bullet to"
             )
+        declares = False
         for box in boxes:
             declared = _DECLARED_RE.search(box.group(1) or "")
+            declares = declares or declared is not None
             if declared and declared.group(1) not in envs:
                 errors.append(
                     f"{md}: :::prerequisites environment {declared.group(1)} "
                     f"has no entry in {REGISTRY}"
                 )
+        markers = len(_MARKER_RE.findall(text))
+        if markers > 1:
+            errors.append(f"{md}: more than one :::environment")
+        elif markers and not (needs or declares):
+            errors.append(
+                f"{md}: :::environment marks where the start commands go, but no "
+                "script on the page needs a stack and its :::prerequisites declares none"
+            )
     return errors

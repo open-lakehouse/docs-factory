@@ -1,6 +1,11 @@
 // pageEnvironment: a page's scripts → the one stack they need and its commands.
 import { expect, test } from "bun:test";
-import { declaredEnvironment, pageEnvironment, portList } from "../environment.mjs";
+import {
+  declaredEnvironment,
+  environmentGuide,
+  pageEnvironment,
+  portList,
+} from "../environment.mjs";
 
 const REGISTRY = {
   "unitycatalog/compose.yaml": { title: "UC", ports: [8080], clientEnv: {} },
@@ -82,4 +87,26 @@ test("a page can declare its environment without owning scripts", () => {
     "more than one environment",
   );
   expect(declaredEnvironment(":::prerequisites\n:::\n")).toBeNull();
+});
+
+test("environmentGuide: the registry guide, else the site's, never the page itself", () => {
+  const pages = { "how-to/run": "Run", "how-to/s3": "S3" };
+  const resolve = (bucket, slug) =>
+    pages[`${bucket}/${slug}`]
+      ? { href: `/${bucket}/${slug}`, title: pages[`${bucket}/${slug}`] }
+      : null;
+  const siteGuide = { bucket: "how-to", slug: "run" };
+  const env = { guide: "how-to/s3#start" };
+  expect(environmentGuide(env, { siteGuide, resolve })).toEqual({
+    href: "/how-to/s3#start",
+    title: "S3",
+  });
+  expect(environmentGuide(env, { siteGuide, resolve, self: "/how-to/s3" })).toEqual({
+    href: "/how-to/run",
+    title: "Run",
+  });
+  expect(environmentGuide({ guide: "how-to/gone" }, { siteGuide, resolve }).href).toBe(
+    "/how-to/run",
+  );
+  expect(environmentGuide({}, { siteGuide, resolve, self: "/how-to/run" })).toBeNull();
 });

@@ -44,8 +44,8 @@ export function declaredEnvironment(body) {
 
 /**
  * The environment a page's owned scripts need, or null if none needs one.
- * `registry` maps keys to `{ title, ports, clientEnv }`. A page whose scripts
- * name two different stacks throws: one page, one "Start the environment".
+ * `registry` maps keys to `{ title, ports, clientEnv, guide }`. A page whose scripts
+ * name two different stacks throws: one page, one set of start commands.
  * `declared` (declaredEnvironment) is for a page with no scripts of its own
  * that still walks the reader through a stack; scripts must agree with it.
  * `runUrl` is set when the page owns exactly one Python script and it
@@ -71,6 +71,7 @@ export function pageEnvironment(
     title: env.title,
     ports: env.ports ?? [],
     clientEnv: env.clientEnv ?? {},
+    guide: env.guide ?? null,
     bundleUrl,
     commands: startCommands(key, env, { bundle, bundleUrl }),
     stop: stopCommand(key),
@@ -85,4 +86,23 @@ export function portList(ports) {
   const p = ports.map(String);
   if (p.length <= 2) return p.join(" and ");
   return `${p.slice(0, -1).join(", ")}, and ${p.at(-1)}`;
+}
+
+/**
+ * The page a how-to's pointer bullet links for `env`: its registry `guide`
+ * (`<bucket>/<slug>[#anchor]`), else the site's default `siteGuide`
+ * (`{ bucket, slug }`). One that is the page itself (`self`, a route) or isn't
+ * published falls through to the next. `resolve(bucket, slug)` is
+ * `{ href, title }` for a published page, else null.
+ */
+export function environmentGuide(env, { siteGuide = null, resolve, self = null }) {
+  const refs = [env.guide, siteGuide && `${siteGuide.bucket}/${siteGuide.slug}`];
+  for (const ref of refs.filter(Boolean)) {
+    const [path, anchor] = ref.split("#");
+    const [bucket, slug] = path.split("/");
+    const page = resolve(bucket, slug);
+    if (!page || page.href === self) continue;
+    return { href: anchor ? `${page.href}#${anchor}` : page.href, title: page.title };
+  }
+  return null;
 }

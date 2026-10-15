@@ -119,14 +119,14 @@ const environmentFor = loadEnvironmentResolver(path.resolve(__dirname, ".."));
 // down the review app.
 function remarkPageEnvironment() {
   return (tree: Parameters<ReturnType<typeof remarkPrerequisitesEnv>>[0], file: VFile) => {
-    if (!environmentFor || !file.path) return;
     let derived = null;
     try {
-      derived = environmentFor(file.path, String(file.value));
+      derived = environmentFor && file.path ? environmentFor(file.path, String(file.value)) : null;
     } catch (err) {
       console.warn(`${path.relative(__dirname, file.path)}: ${(err as Error).message}`);
     }
-    if (derived) remarkPrerequisitesEnv(derived)(tree);
+    // Without one, still drop any `:::environment` marker.
+    remarkPrerequisitesEnv(derived ?? { environment: null })(tree);
   };
 }
 

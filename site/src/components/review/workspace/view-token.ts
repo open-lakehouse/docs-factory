@@ -1,7 +1,7 @@
 // A workspace tab token now identifies BOTH a page (ContentRef) AND which VIEW
 // of that page is shown. Clicking a sidebar item opens a GROUP of sibling views
-// — the rendered page (as before), its `.md` twin, and one view per runnable
-// script served alongside it. Each view is its own tab; they share a groupKey
+// — the rendered page (as before), its `.md` twin, its emitted `<head>`, and one
+// view per runnable script served alongside it. Each view is its own tab; they share a groupKey
 // (the ref token) so the strip can group them under the item.
 //
 // The token extends the existing `refToParam` output with an OPTIONAL `#view`
@@ -10,6 +10,7 @@
 //
 //   docs:slug:project:bucket                    → rendered
 //   docs:slug:project:bucket#md                 → the .md twin
+//   docs:slug:project:bucket#head               → the emitted <head>
 //   docs:slug:project:bucket#script:<enc>       → a served script, <enc> = the fetchUrl
 //
 // `#` is a fresh delimiter: `:` already separates ref fields and `,` separates
@@ -20,7 +21,11 @@ import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb
 import { refFromParam, refToParam } from "../../../lib/content-ref";
 
 /** Which view of a page a tab shows. `rendered` is the default (no `#` suffix). */
-export type TabView = { kind: "rendered" } | { kind: "md" } | { kind: "script"; fetchUrl: string };
+export type TabView =
+  | { kind: "rendered" }
+  | { kind: "md" }
+  | { kind: "head" }
+  | { kind: "script"; fetchUrl: string };
 
 /** The `#…` suffix for a view, or "" for the rendered view (bare ref token). */
 export function viewToParam(view: TabView): string {
@@ -29,6 +34,8 @@ export function viewToParam(view: TabView): string {
       return "";
     case "md":
       return "#md";
+    case "head":
+      return "#head";
     case "script":
       return `#script:${encodeURIComponent(view.fetchUrl)}`;
   }
@@ -55,6 +62,8 @@ export function parseTabToken(token: string): { ref: ContentRef; view: TabView }
   let view: TabView = { kind: "rendered" };
   if (viewPart === "md") {
     view = { kind: "md" };
+  } else if (viewPart === "head") {
+    view = { kind: "head" };
   } else if (viewPart.startsWith("script:")) {
     const fetchUrl = decodeURIComponent(viewPart.slice("script:".length));
     if (fetchUrl) view = { kind: "script", fetchUrl };

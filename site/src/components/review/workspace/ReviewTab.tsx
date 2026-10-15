@@ -4,6 +4,7 @@
 //     + ReviewProvider (scoped to the ContentRef) with its own articleRef — the
 //     same stack /docs and /blog mount, so review chrome behaves identically.
 //   - md:       the read-only `.md` twin (MarkdownTwinView) — no review layer.
+//   - head:     the read-only emitted `<head>` (PageHeadView) — no review layer.
 //   - script:   a served runnable script (ScriptView) — its own review layer for
 //     line comments.
 //
@@ -27,6 +28,7 @@ import { ReviewProvider } from "../review-context";
 import { ScrollContainerProvider } from "../scroll-container-context";
 import { SelectionProvider } from "../selection-context";
 import MarkdownTwinView from "./MarkdownTwinView";
+import PageHeadView from "./PageHeadView";
 import { useRightPaneSlot } from "./right-pane-slot";
 import ScriptView from "./ScriptView";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
@@ -55,8 +57,16 @@ export default function ReviewTab({
   view: TabView;
   isActive: boolean;
 }) {
-  if (view.kind === "md") {
-    return <MarkdownTwinTab token={token} contentRef={contentRef} isActive={isActive} />;
+  if (view.kind === "md" || view.kind === "head") {
+    return (
+      <ReadOnlyTab token={token} isActive={isActive}>
+        {view.kind === "md" ? (
+          <MarkdownTwinView contentRef={contentRef} />
+        ) : (
+          <PageHeadView contentRef={contentRef} />
+        )}
+      </ReadOnlyTab>
+    );
   }
   if (view.kind === "script") {
     return (
@@ -71,15 +81,15 @@ export default function ReviewTab({
   return <RenderedTab token={token} contentRef={contentRef} isActive={isActive} />;
 }
 
-/** The read-only `.md` twin view, wrapped in the shared tabpanel shell. */
-function MarkdownTwinTab({
+/** The shared tabpanel shell for a read-only companion view. */
+function ReadOnlyTab({
   token,
-  contentRef,
   isActive,
+  children,
 }: {
   token: string;
-  contentRef: ContentRef;
   isActive: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <div
@@ -93,7 +103,7 @@ function MarkdownTwinTab({
       )}
       hidden={!isActive}
     >
-      <MarkdownTwinView contentRef={contentRef} />
+      {children}
     </div>
   );
 }

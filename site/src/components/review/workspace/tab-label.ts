@@ -17,7 +17,7 @@ export function tabLabel(ref: ContentRef): string {
 /**
  * Label for a sub-view within an item's group. Deliberately UNPREFIXED — the
  * parent item tab already carries the page name, so a sub-view only needs its
- * own distinguishing name: "Rendered", "Markdown", or a script's file name.
+ * own distinguishing name: "Rendered", "Markdown", "Head", or a script's file name.
  */
 export function viewLabel(view: TabView): string {
   switch (view.kind) {
@@ -25,6 +25,8 @@ export function viewLabel(view: TabView): string {
       return "Rendered";
     case "md":
       return "Markdown";
+    case "head":
+      return "Head";
     case "script":
       return view.fetchUrl.split("/").pop() || view.fetchUrl;
   }

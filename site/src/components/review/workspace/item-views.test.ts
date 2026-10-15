@@ -3,6 +3,8 @@
 // scripts attach whenever a scripts.json entry's tutorialRoute matches the page's
 // route — INDEPENDENT of status (docsnip indexes scripts regardless of
 // frontmatter), so a draft tutorial still shows its scripts. Blog routes match too.
+// A docs page of a project with a docs site gets a Head view when an emit with
+// --drafts would select it (ready or draft).
 import { expect, test } from "bun:test";
 import type { ContentPage } from "../../../content";
 import { blogRef, docRef } from "../../../lib/content-ref";
@@ -72,4 +74,33 @@ test("a published blog attaches scripts matched on its /blog/<slug> route", () =
 
 test("a missing page (undefined) has no twin; rendered-only when no scripts match", () => {
   expect(viewsFor(ref, undefined, indexWith())).toEqual([{ kind: "rendered" }]);
+});
+
+function docPage(project: string, status?: string): ContentPage {
+  return { area: "docs", project, frontmatter: { status } } as unknown as ContentPage;
+}
+
+test("a ready or draft docs-site page gets a Head view after the twin", () => {
+  expect(viewsFor(ref, docPage("delta", "ready"), indexWith())).toEqual([
+    { kind: "rendered" },
+    { kind: "md" },
+    { kind: "head" },
+  ]);
+  expect(viewsFor(ref, docPage("unitycatalog", "draft"), indexWith())).toEqual([
+    { kind: "rendered" },
+    { kind: "head" },
+  ]);
+  // Unset status is a draft.
+  expect(viewsFor(ref, docPage("delta"), indexWith())).toContainEqual({ kind: "head" });
+});
+
+test("idea, private, site-less projects, and blogs get no Head view", () => {
+  for (const page of [
+    docPage("delta", "idea"),
+    docPage("delta", "private"),
+    docPage("open-lakehouse", "ready"),
+    { area: "blogs", frontmatter: { status: "ready" } } as unknown as ContentPage,
+  ]) {
+    expect(viewsFor(ref, page, indexWith())).not.toContainEqual({ kind: "head" });
+  }
 });

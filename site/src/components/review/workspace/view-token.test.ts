@@ -30,6 +30,13 @@ test("md view round-trips", () => {
   expect(parsed?.ref.slug).toBe("explore-table-history");
 });
 
+test("head view round-trips", () => {
+  const token = tabTokenFor(doc, { kind: "head" });
+  expect(token).toBe("docs:explore-table-history:delta:tutorials#head");
+  expect(parseTabToken(token)?.view).toEqual({ kind: "head" });
+  expect(refTokenOf(token)).toBe("docs:explore-table-history:delta:tutorials");
+});
+
 test("script view round-trips with an encoded fetchUrl", () => {
   const fetchUrl = "/docs/delta/tutorials/explore-table-history/snippets/explore_delta_history.py";
   const token = tabTokenFor(doc, { kind: "script", fetchUrl });

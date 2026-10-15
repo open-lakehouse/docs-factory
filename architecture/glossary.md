@@ -117,6 +117,20 @@ block in [estate.yml](./estate.yml).)_
   structural property of the model. See
   [design/asset-kinds.md](./design/asset-kinds.md) and
   [ADR-0005](./adr/ADR-0005-governed-asset-kinds.md).
+- **concern** — a property that spans asset kinds and capabilities instead of
+  sitting in the read path: governance, lineage, observability. A concern
+  `appliesTo` what it spans, and implementations `realize` it. See
+  [ADR-0007](./adr/ADR-0007-cross-cutting-concerns.md).
+- **view, metric view, credential, external location** — the asset kinds added
+  for the compatibility journeys. A view (`sqlView`; `view` is a LikeC4 keyword)
+  is a stored query; a metric view declares measures and dimensions over one; a
+  credential is a catalogued cloud identity used only to mint scoped
+  credentials; an external location binds a storage path to a credential.
+- **capability (ours) vs Trestle "capability"** — in the model, a capability is
+  an abstract lakehouse function (catalog, query engine). In Trestle,
+  `Selection.capabilities` and `provider_of` take a *role* string (`data_catalog`,
+  `tracing`). Roles map onto capabilities and concerns in
+  `architecture/integrations/trestle.yaml`; neither side renames.
 - **estate boundary (`lakehouse`)** — the root `lakehouse` element is the estate's
   boundary: the C4 **SoftwareSystem** / Backstage **System-Domain** analog. It also
   hosts the capability nesting; asset kinds relate to it via `dependsOn`, not

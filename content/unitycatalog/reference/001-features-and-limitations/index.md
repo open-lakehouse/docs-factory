@@ -152,4 +152,4 @@ several of them, so guides written for Databricks don't apply here:
 
 ## Related pages
 
-- [Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md)
+- [Core concepts](../../explanation/uc-basics/index.md)

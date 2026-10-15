@@ -24,7 +24,7 @@ Volumes come in two types:
   directory.
 
 For how volumes fit into the namespace, see
-[Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
+[Core concepts](../../explanation/uc-basics/index.md).
 
 :::prerequisites
 - For managed volumes, a storage root on the schema or its catalog.

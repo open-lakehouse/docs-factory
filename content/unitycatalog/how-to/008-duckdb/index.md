@@ -119,7 +119,7 @@ lists the errors DuckDB returns for the others.
 With authorization enabled, reading needs `USE CATALOG` on the catalog,
 `USE SCHEMA` on the schema, and `SELECT` on the table. Appending also needs
 `MODIFY` on the table. Owners have all of these. See
-[Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md#ownership-and-privileges).
+[Core concepts](../../explanation/uc-basics/index.md#ownership-and-privileges).
 
 ## Next steps
 

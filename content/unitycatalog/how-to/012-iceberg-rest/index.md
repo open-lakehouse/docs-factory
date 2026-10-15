@@ -327,7 +327,7 @@ schema, and `SELECT` on the table. Writing also needs `MODIFY`; without it, the
 server vends read-only credentials. Creating a table needs `CREATE TABLE` on the
 schema, and creating a schema needs `CREATE SCHEMA` on the catalog. Owners have
 all of these. See
-[Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md#ownership-and-privileges).
+[Core concepts](../../explanation/uc-basics/index.md#ownership-and-privileges).
 
 ## Next steps
 

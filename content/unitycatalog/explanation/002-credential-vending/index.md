@@ -109,7 +109,7 @@ when asked. The table's storage location falls under exactly one *external
 location*, which names a *storage credential*, which holds the identity the
 server uses with the cloud. External locations can't overlap, so the answer is
 always unique. See
-[Namespaces, securables, and storage locations](../uc-basics/index.md) for how
+[Core concepts](../uc-basics/index.md) for how
 locations and storage roots fit together.
 
 Each cloud narrows the credential differently:

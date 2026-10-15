@@ -1,6 +1,8 @@
-// LOGICAL LAYER (abstract) — the reference open lakehouse: people + capabilities.
+// LOGICAL LAYER (abstract) — the reference open lakehouse: people, capabilities,
+// and the concerns that span them.
 //
-// Technology-agnostic capabilities and the people who use the lakehouse. OUR
+// Technology-agnostic capabilities, concerns, and the people who use the
+// lakehouse. What each concern applies to lives in concerns.likec4. OUR
 // service/repo names appear only in the deployment layer; the concrete
 // technology mapped onto these capabilities (specifications + implementations)
 // lives in technology-catalog.likec4; asset kinds in assets.likec4;
@@ -143,7 +145,7 @@ model {
       metadata { canonicalDoc "design/governance.md" }
     }
 
-    lineage = capability "Lineage" {
+    lineage = concern "Lineage" {
       summary "Records where data came from and where it flows, down to the column."
       description "
         Data lineage traces the origin and movement of data through the system —
@@ -157,7 +159,7 @@ model {
 
     // The zero-trust points (PAP / PDP / PEP / PIP / PA) are prose in
     // design/governance.md, not elements.
-    governance = capability "Governance" {
+    governance = concern "Governance" {
       summary "Decides who may access what, and enforces it (row filters, column masks)."
       description "
         Governance answers 'can this principal do this here?' and, when allowed,
@@ -199,11 +201,10 @@ model {
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
-    observability = capability "Observability" {
+    observability = concern "Observability" {
       summary "Traces, metrics, and logs — how operators see what the lakehouse is doing."
       description "
-        Observability is the cross-cutting capability that makes the running
-        platform legible: distributed traces, metrics, and logs emitted by the
+        Observability is the concern that makes the running platform legible: distributed traces, metrics, and logs emitted by the
         query engine and services, so operators can reason about latency,
         failures, and cost.
 

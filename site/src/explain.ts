@@ -2,11 +2,11 @@
 //
 // Reads the estate model straight from the LikeC4 Vite plugin's virtual module
 // (`likec4:single-project`, workspace = ../architecture/model) — no graph.json,
-// no second codegen. Three page-worthy kinds:
-//   capability        (level 1)
-//   openSpecification (level 2)
-//   implementation    (level 3)
-// Specs are grouped under the capability they `specifies`; implementations
+// no second codegen. Four page-worthy kinds:
+//   capability, concern (level 1)
+//   openSpecification   (level 2)
+//   implementation      (level 3)
+// Specs are grouped under the capability or concern they `specifies`; implementations
 // under the spec they `implements` (or surfaced separately when they only
 // `realize` a capability).
 //
@@ -27,7 +27,7 @@ const likec4model = $likec4model.get();
 export { likec4model };
 
 /** Element kinds that get an explanation page. */
-export type ExplainKind = "capability" | "openSpecification" | "implementation";
+export type ExplainKind = "capability" | "concern" | "openSpecification" | "implementation";
 // The runtime set is single-sourced from content/vocab.json (shared with
 // docsnip's PAGE_WORTHY_KINDS); the literal type above stays for compile-time
 // narrowing. A drift test asserts the two stay in sync.
@@ -47,8 +47,8 @@ export interface ExplainSpecificationNode extends ExplainEntry {
 }
 
 export interface ExplainCapabilityNode extends ExplainEntry {
-  kind: "capability";
-  /** Specifications that `specifies` this capability. */
+  kind: "capability" | "concern";
+  /** Specifications that `specifies` this capability or concern. */
   specs: ExplainSpecificationNode[];
 }
 
@@ -78,6 +78,7 @@ function toEntry(el: ElementModel): ExplainEntry {
 const byTitle = (a: { title: string }, b: { title: string }) => a.title.localeCompare(b.title);
 
 const capabilities = allElements.filter((el) => el.kind === "capability").sort(byTitle);
+const concerns = allElements.filter((el) => el.kind === "concern").sort(byTitle);
 const specifications = allElements.filter((el) => el.kind === "openSpecification").sort(byTitle);
 const implementations = allElements.filter((el) => el.kind === "implementation").sort(byTitle);
 
@@ -109,7 +110,7 @@ function toSpecNode(spec: ElementModel): ExplainSpecificationNode {
   };
 }
 
-// Group each specification under the capability it `specifies`.
+// Group each specification under the capability or concern it `specifies`.
 const specsByCapability = new Map<string, ElementModel[]>();
 const orphanSpecElements: ElementModel[] = [];
 
@@ -117,7 +118,7 @@ for (const spec of specifications) {
   const specifiesTarget = [...spec.outgoing()]
     .filter((rel) => rel.kind === "specifies")
     .map((rel) => rel.target)
-    .find((target) => target.kind === "capability");
+    .find((target) => target.kind === "capability" || target.kind === "concern");
 
   if (specifiesTarget) {
     const key = String(specifiesTarget.id);
@@ -129,14 +130,21 @@ for (const spec of specifications) {
   }
 }
 
-/** Capability → its specifications → implementations (for the sidebar). */
-export const explainNav: ExplainCapabilityNode[] = capabilities.map((cap) => ({
-  ...toEntry(cap),
-  kind: "capability",
-  specs: (specsByCapability.get(String(cap.id)) ?? []).sort(byTitle).map(toSpecNode),
-}));
+function toCapabilityNode(el: ElementModel): ExplainCapabilityNode {
+  return {
+    ...toEntry(el),
+    kind: el.kind === "concern" ? "concern" : "capability",
+    specs: (specsByCapability.get(String(el.id)) ?? []).sort(byTitle).map(toSpecNode),
+  };
+}
 
-/** Specifications that don't `specifies` any capability (surfaced separately). */
+/** Capabilities, then concerns → their specifications → implementations (for the sidebar). */
+export const explainNav: ExplainCapabilityNode[] = [
+  ...capabilities.map(toCapabilityNode),
+  ...concerns.map(toCapabilityNode),
+];
+
+/** Specifications that don't `specifies` any capability or concern (surfaced separately). */
 export const orphanSpecs: ExplainSpecificationNode[] = orphanSpecElements
   .sort(byTitle)
   .map(toSpecNode);
@@ -149,6 +157,7 @@ export const orphanImplementations: ExplainEntry[] = orphanImplementationElement
 /** Flat list of every element that has an explanation page. */
 export const explainEntries: ExplainEntry[] = [
   ...capabilities.map(toEntry),
+  ...concerns.map(toEntry),
   ...specifications.map(toEntry),
   ...implementations.map(toEntry),
 ];
@@ -167,6 +176,8 @@ export function kindLabel(kind: string): string {
   switch (kind) {
     case "capability":
       return "Capability";
+    case "concern":
+      return "Concern";
     case "openSpecification":
       return "Specification";
     case "implementation":

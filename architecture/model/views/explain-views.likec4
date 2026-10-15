@@ -1,6 +1,6 @@
 // Scoped element views for the site's /explain pages. One `view of <element>`
-// per capability and specification, each an ad-hoc neighborhood (`include *` =
-// the element plus its direct neighbors). The preview seeds the explanation
+// per capability, concern, and specification, each an ad-hoc neighborhood
+// (`include *` = the element plus its direct neighbors). The preview seeds the explanation
 // diagram with the element's own view (element.defaultView) instead of a
 // whole-estate reference view, so each page is focused on its subject.
 //
@@ -45,6 +45,19 @@ views {
     autoLayout LeftRight
   }
 
+  view explain_modelTracking of lakehouse.modelTracking {
+    title "Model tracking — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_sharing of lakehouse.sharing {
+    title "Sharing — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  // --- Concerns ----------------------------------------------------------
   view explain_governance of lakehouse.governance {
     title "Governance — in context"
     include *
@@ -57,20 +70,8 @@ views {
     autoLayout LeftRight
   }
 
-  view explain_modelTracking of lakehouse.modelTracking {
-    title "Model tracking — in context"
-    include *
-    autoLayout LeftRight
-  }
-
   view explain_observability of lakehouse.observability {
     title "Observability — in context"
-    include *
-    autoLayout LeftRight
-  }
-
-  view explain_sharing of lakehouse.sharing {
-    title "Sharing — in context"
     include *
     autoLayout LeftRight
   }

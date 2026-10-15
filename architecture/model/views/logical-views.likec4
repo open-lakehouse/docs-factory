@@ -6,7 +6,7 @@ views {
   // --- The reference lakehouse in context ----------------------------------
   view referenceContext {
     title "Reference Open Lakehouse — context"
-    description "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping)."
+    description "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping). The concerns that span them have their own view, concernMatrix."
 
     include
       practitioner,
@@ -16,8 +16,11 @@ views {
       lakehouse,
       lakehouse.*,
 
-    // governed asset kinds get their own views
-    exclude element.kind == asset
+    // asset kinds and concerns get their own views
+    exclude
+      element.kind == asset,
+      element.kind == concern,
+      element.tag == #generated
     autoLayout LeftRight
   }
 
@@ -51,12 +54,31 @@ views {
   // --- Capability map: inside the lakehouse --------------------------------
   view capabilityMap of lakehouse {
     title "Reference Open Lakehouse — capabilities"
-    description "The capability chain: query engine -> catalog -> table format -> file format -> object storage, with governance, lineage, and observability attaching at planning time. Delta & Iceberg are peer specifications of the table-format capability."
+    description "The capability chain: query engine -> catalog -> table format -> file format -> object storage. Governance, lineage, and observability are concerns that attach at planning time; concernMatrix shows them. Delta & Iceberg are peer specifications of the table-format capability."
 
     include *
 
-    // asset kinds have their own views
-    exclude element.kind == asset
+    // asset kinds and concerns have their own views
+    exclude
+      element.kind == asset,
+      element.kind == concern,
+      element.tag == #generated
+    autoLayout LeftRight
+  }
+
+  // --- Concerns: what governance, lineage, and observability span ---------
+  view concernMatrix {
+    title "Cross-cutting concerns"
+    description "Governance, lineage, and observability are concerns, not layers in the read path: each appliesTo the asset kinds or capabilities it spans, and implementations realize them like capabilities."
+
+    include
+      element.kind == concern,
+      element.kind == asset,
+      lakehouse.queryEngine,
+      lakehouse.catalog,
+      lakehouse.orchestration
+
+    exclude element.tag == #generated
     autoLayout LeftRight
   }
 

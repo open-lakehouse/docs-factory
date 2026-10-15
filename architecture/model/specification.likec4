@@ -34,6 +34,16 @@ specification {
     }
   }
 
+  // A concern is a property that spans assets and capabilities rather than
+  // sitting in the read path (governance, lineage, observability). It
+  // `appliesTo` what it spans; implementations `realizes` it like a capability.
+  element concern {
+    style {
+      shape component
+      color amber
+    }
+  }
+
   // A specification defines properties and behaviors a concrete implementation
   // must adhere to. Often times specifications are open standards or formats
   // that are implemented by multiple concrete implementations. Specifications
@@ -122,8 +132,13 @@ specification {
   // Governed-asset edges (the subject axis — see ADR-0005):
   relationship governs                     // a catalog specification governs an asset kind
 
+  // Cross-cutting edge (ADR-0007): a concern spans an asset kind or capability.
+  // One kind for every concern; the verb goes in the title.
+  relationship appliesTo { line dotted }
+
   // --- Tags ----------------------------------------------------------------
   tag service
   tag library
   tag infra
+  tag generated   // rendered from a Trestle plan; excluded from estate views
 }

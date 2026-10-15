@@ -7,14 +7,17 @@
   },
   "specification": {
     "tags": {
-      "infra": {
+      "generated": {
         "color": "tomato"
       },
-      "library": {
+      "infra": {
         "color": "grass"
       },
-      "service": {
+      "library": {
         "color": "blue"
+      },
+      "service": {
+        "color": "ruby"
       }
     },
     "elements": {
@@ -34,6 +37,12 @@
       "capability": {
         "style": {
           "color": "primary"
+        }
+      },
+      "concern": {
+        "style": {
+          "shape": "component",
+          "color": "amber"
         }
       },
       "openSpecification": {
@@ -92,6 +101,11 @@
       },
       "governs": {
         "style": {}
+      },
+      "appliesTo": {
+        "style": {
+          "line": "dotted"
+        }
       }
     },
     "deployments": {
@@ -413,7 +427,8 @@
         "canonicalDoc": "design/lineage-plane.md"
       },
       "style": {
-        "color": "primary"
+        "shape": "component",
+        "color": "amber"
       },
       "summary": {
         "txt": "Records where data came from and where it flows, down to the column."
@@ -422,7 +437,7 @@
         "txt": "Data lineage traces the origin and movement of data through the system —\nwhich inputs produced which outputs, dataset- and column-level.\n\nHere it is captured at query planning time, so provenance is derived from\nthe plan the engine is about to run rather than reconstructed after."
       },
       "title": "Lineage",
-      "kind": "capability",
+      "kind": "concern",
       "id": "lakehouse.lineage"
     },
     "lakehouse.governance": {
@@ -430,7 +445,8 @@
         "canonicalDoc": "design/governance.md"
       },
       "style": {
-        "color": "primary"
+        "shape": "component",
+        "color": "amber"
       },
       "summary": {
         "txt": "Decides who may access what, and enforces it (row filters, column masks)."
@@ -439,7 +455,7 @@
         "txt": "Governance answers 'can this principal do this here?' and, when allowed,\ngoverns what they see — enforcing row filters and column masks.\n\nIt spans the lakehouse: a policy engine decides, and a trusted engine or\ngateway enforces the decision where the data flows."
       },
       "title": "Governance",
-      "kind": "capability",
+      "kind": "concern",
       "id": "lakehouse.governance"
     },
     "lakehouse.modelTracking": {
@@ -481,16 +497,17 @@
         "canonicalDoc": "design/reference-architecture.md"
       },
       "style": {
-        "color": "primary"
+        "shape": "component",
+        "color": "amber"
       },
       "summary": {
         "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
       },
       "description": {
-        "txt": "Observability is the cross-cutting capability that makes the running\nplatform legible: distributed traces, metrics, and logs emitted by the\nquery engine and services, so operators can reason about latency,\nfailures, and cost.\n\nLike governance and lineage it attaches across the stack rather than\nsitting in the query path."
+        "txt": "Observability is the concern that makes the running platform legible: distributed traces, metrics, and logs emitted by the\nquery engine and services, so operators can reason about latency,\nfailures, and cost.\n\nLike governance and lineage it attaches across the stack rather than\nsitting in the query path."
       },
       "title": "Observability",
-      "kind": "capability",
+      "kind": "concern",
       "id": "lakehouse.observability"
     },
     "deltaSpec": {
@@ -844,7 +861,7 @@
     }
   },
   "relations": {
-    "7pe8wl": {
+    "1o1usf0": {
       "title": "governs",
       "source": {
         "model": "ucSpec"
@@ -853,9 +870,9 @@
         "model": "lakehouse.namespace"
       },
       "kind": "governs",
-      "id": "7pe8wl"
+      "id": "1o1usf0"
     },
-    "1yp2357": {
+    "1mvh5gi": {
       "title": "governs",
       "source": {
         "model": "ucSpec"
@@ -864,9 +881,9 @@
         "model": "lakehouse.table"
       },
       "kind": "governs",
-      "id": "1yp2357"
+      "id": "1mvh5gi"
     },
-    "xcj2ik": {
+    "1gls179": {
       "title": "governs",
       "source": {
         "model": "ucSpec"
@@ -875,9 +892,9 @@
         "model": "lakehouse.volume"
       },
       "kind": "governs",
-      "id": "xcj2ik"
+      "id": "1gls179"
     },
-    "19a3teh": {
+    "1vokyi8": {
       "title": "governs",
       "source": {
         "model": "ucSpec"
@@ -886,9 +903,9 @@
         "model": "lakehouse.registeredFunction"
       },
       "kind": "governs",
-      "id": "19a3teh"
+      "id": "1vokyi8"
     },
-    "1annxgc": {
+    "rqzg5x": {
       "title": "governs",
       "source": {
         "model": "ucSpec"
@@ -897,9 +914,9 @@
         "model": "lakehouse.mlModel"
       },
       "kind": "governs",
-      "id": "1annxgc"
+      "id": "rqzg5x"
     },
-    "szoh21": {
+    "1xaqldc": {
       "title": "governs",
       "source": {
         "model": "ucSpec"
@@ -908,9 +925,9 @@
         "model": "lakehouse.agentSkill"
       },
       "kind": "governs",
-      "id": "szoh21"
+      "id": "1xaqldc"
     },
-    "xoa4h4": {
+    "1otxby9": {
       "title": "governs",
       "source": {
         "model": "icebergRestSpec"
@@ -919,9 +936,9 @@
         "model": "lakehouse.namespace"
       },
       "kind": "governs",
-      "id": "xoa4h4"
+      "id": "1otxby9"
     },
-    "7f4apm": {
+    "18jza37": {
       "title": "governs",
       "source": {
         "model": "icebergRestSpec"
@@ -930,9 +947,9 @@
         "model": "lakehouse.table"
       },
       "kind": "governs",
-      "id": "7f4apm"
+      "id": "18jza37"
     },
-    "stxdkh": {
+    "19o8fko": {
       "line": "dashed",
       "title": "tracked via",
       "source": {
@@ -942,9 +959,9 @@
         "model": "lakehouse.catalog"
       },
       "kind": "dependsOn",
-      "id": "stxdkh"
+      "id": "19o8fko"
     },
-    "hqdiqo": {
+    "1ri3hhl": {
       "line": "dashed",
       "title": "data layout on disk",
       "source": {
@@ -954,9 +971,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "dependsOn",
-      "id": "hqdiqo"
+      "id": "1ri3hhl"
     },
-    "7180c6": {
+    "valkbj": {
       "line": "dashed",
       "title": "data stored at rest",
       "source": {
@@ -966,9 +983,9 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "dependsOn",
-      "id": "7180c6"
+      "id": "valkbj"
     },
-    "1g47148": {
+    "1scvayp": {
       "line": "dashed",
       "title": "commit coordination",
       "source": {
@@ -978,9 +995,9 @@
         "model": "lakehouse.catalog"
       },
       "kind": "dependsOn",
-      "id": "1g47148"
+      "id": "1scvayp"
     },
-    "154voxv": {
+    "lkskzu": {
       "line": "dashed",
       "title": "materialized as files in",
       "source": {
@@ -990,9 +1007,9 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "dependsOn",
-      "id": "154voxv"
+      "id": "lkskzu"
     },
-    "hoap2r": {
+    "1wtgw1m": {
       "line": "dashed",
       "title": "data stored at rest",
       "source": {
@@ -1002,9 +1019,9 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "dependsOn",
-      "id": "hoap2r"
+      "id": "1wtgw1m"
     },
-    "1fi5u43": {
+    "1lrf94q": {
       "line": "dashed",
       "title": "files stored at rest",
       "source": {
@@ -1014,42 +1031,153 @@
         "model": "lakehouse.volume"
       },
       "kind": "dependsOn",
-      "id": "1fi5u43"
+      "id": "1lrf94q"
     },
-    "vq0h7n": {
-      "title": "queries + governs data",
+    "1e7rw42": {
+      "line": "dotted",
+      "title": "tracks lineage of",
       "source": {
-        "model": "practitioner"
+        "model": "lakehouse.lineage"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "appliesTo",
+      "id": "1e7rw42"
+    },
+    "sf4x6t": {
+      "line": "dotted",
+      "title": "tracks lineage of",
+      "source": {
+        "model": "lakehouse.lineage"
+      },
+      "target": {
+        "model": "lakehouse.volume"
+      },
+      "kind": "appliesTo",
+      "id": "sf4x6t"
+    },
+    "12l0mbk": {
+      "line": "dotted",
+      "title": "tracks lineage of",
+      "source": {
+        "model": "lakehouse.lineage"
+      },
+      "target": {
+        "model": "lakehouse.mlModel"
+      },
+      "kind": "appliesTo",
+      "id": "12l0mbk"
+    },
+    "14lli1b": {
+      "line": "dotted",
+      "title": "secures",
+      "source": {
+        "model": "lakehouse.governance"
+      },
+      "target": {
+        "model": "lakehouse.namespace"
+      },
+      "kind": "appliesTo",
+      "id": "14lli1b"
+    },
+    "7kna5x": {
+      "line": "dotted",
+      "title": "secures",
+      "source": {
+        "model": "lakehouse.governance"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "appliesTo",
+      "id": "7kna5x"
+    },
+    "1mt9uq": {
+      "line": "dotted",
+      "title": "secures",
+      "source": {
+        "model": "lakehouse.governance"
+      },
+      "target": {
+        "model": "lakehouse.volume"
+      },
+      "kind": "appliesTo",
+      "id": "1mt9uq"
+    },
+    "1pywqdf": {
+      "line": "dotted",
+      "title": "secures",
+      "source": {
+        "model": "lakehouse.governance"
+      },
+      "target": {
+        "model": "lakehouse.registeredFunction"
+      },
+      "kind": "appliesTo",
+      "id": "1pywqdf"
+    },
+    "lxchl2": {
+      "line": "dotted",
+      "title": "secures",
+      "source": {
+        "model": "lakehouse.governance"
+      },
+      "target": {
+        "model": "lakehouse.mlModel"
+      },
+      "kind": "appliesTo",
+      "id": "lxchl2"
+    },
+    "ckiszz": {
+      "line": "dotted",
+      "title": "secures",
+      "source": {
+        "model": "lakehouse.governance"
+      },
+      "target": {
+        "model": "lakehouse.agentSkill"
+      },
+      "kind": "appliesTo",
+      "id": "ckiszz"
+    },
+    "1gnqj1t": {
+      "line": "dotted",
+      "title": "observes",
+      "source": {
+        "model": "lakehouse.observability"
       },
       "target": {
         "model": "lakehouse.queryEngine"
       },
-      "kind": "flows",
-      "id": "vq0h7n"
+      "kind": "appliesTo",
+      "id": "1gnqj1t"
     },
-    "1feeeoq": {
-      "title": "builds + operates",
+    "142vhha": {
+      "line": "dotted",
+      "title": "observes",
       "source": {
-        "model": "platformEngineer"
+        "model": "lakehouse.observability"
       },
       "target": {
-        "model": "lakehouse"
+        "model": "lakehouse.catalog"
       },
-      "kind": "flows",
-      "id": "1feeeoq"
+      "kind": "appliesTo",
+      "id": "142vhha"
     },
-    "166por": {
-      "title": "schedules + triggers pipelines that run on",
+    "1df19w7": {
+      "line": "dotted",
+      "title": "observes",
       "source": {
+        "model": "lakehouse.observability"
+      },
+      "target": {
         "model": "lakehouse.orchestration"
       },
-      "target": {
-        "model": "lakehouse.queryEngine"
-      },
-      "kind": "flows",
-      "id": "166por"
+      "kind": "appliesTo",
+      "id": "1df19w7"
     },
-    "1jrfh0z": {
+    "r6lez8": {
       "title": "emits run status + metrics",
       "source": {
         "model": "lakehouse.orchestration"
@@ -1058,9 +1186,42 @@
         "model": "lakehouse.observability"
       },
       "kind": "flows",
-      "id": "1jrfh0z"
+      "id": "r6lez8"
     },
-    "pjt2qt": {
+    "v3c3ka": {
+      "title": "queries + governs data",
+      "source": {
+        "model": "practitioner"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "flows",
+      "id": "v3c3ka"
+    },
+    "vqil0z": {
+      "title": "builds + operates",
+      "source": {
+        "model": "platformEngineer"
+      },
+      "target": {
+        "model": "lakehouse"
+      },
+      "kind": "flows",
+      "id": "vqil0z"
+    },
+    "1fl97wi": {
+      "title": "schedules + triggers pipelines that run on",
+      "source": {
+        "model": "lakehouse.orchestration"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "flows",
+      "id": "1fl97wi"
+    },
+    "1531gvj": {
       "line": "dashed",
       "title": "mints scoped storage credentials through",
       "source": {
@@ -1070,9 +1231,9 @@
         "model": "lakehouse.credentialIssuer"
       },
       "kind": "dependsOn",
-      "id": "pjt2qt"
+      "id": "1531gvj"
     },
-    "2crdgb": {
+    "8hql8z": {
       "title": "issues credentials honored by",
       "source": {
         "model": "lakehouse.credentialIssuer"
@@ -1081,9 +1242,9 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "flows",
-      "id": "2crdgb"
+      "id": "8hql8z"
     },
-    "1t1pkam": {
+    "bwf5av": {
       "title": "",
       "source": {
         "model": "deltaSpec"
@@ -1092,9 +1253,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "specifies",
-      "id": "1t1pkam"
+      "id": "bwf5av"
     },
-    "1pzdc3d": {
+    "1og8368": {
       "title": "",
       "source": {
         "model": "icebergSpec"
@@ -1103,9 +1264,9 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "specifies",
-      "id": "1pzdc3d"
+      "id": "1og8368"
     },
-    "1pb2lbu": {
+    "mmnncj": {
       "title": "specifies the catalog capability",
       "source": {
         "model": "ucSpec"
@@ -1114,9 +1275,9 @@
         "model": "lakehouse.catalog"
       },
       "kind": "specifies",
-      "id": "1pb2lbu"
+      "id": "mmnncj"
     },
-    "npwbvn": {
+    "1l7hozu": {
       "title": "specifies the catalog capability",
       "source": {
         "model": "icebergRestSpec"
@@ -1125,9 +1286,9 @@
         "model": "lakehouse.catalog"
       },
       "kind": "specifies",
-      "id": "npwbvn"
+      "id": "1l7hozu"
     },
-    "kdcmo7": {
+    "1aee29a": {
       "title": "specifies the sharing capability",
       "source": {
         "model": "openSharingSpec"
@@ -1136,9 +1297,9 @@
         "model": "lakehouse.sharing"
       },
       "kind": "specifies",
-      "id": "kdcmo7"
+      "id": "1aee29a"
     },
-    "12dlf95": {
+    "1r0pgls": {
       "title": "specifies the file-format capability",
       "source": {
         "model": "parquetSpec"
@@ -1147,9 +1308,9 @@
         "model": "lakehouse.fileFormat"
       },
       "kind": "specifies",
-      "id": "12dlf95"
+      "id": "1r0pgls"
     },
-    "hvz7qx": {
+    "17kadm8": {
       "title": "specifies the object-storage capability",
       "source": {
         "model": "s3Api"
@@ -1158,9 +1319,9 @@
         "model": "lakehouse.objectStorage"
       },
       "kind": "specifies",
-      "id": "hvz7qx"
+      "id": "17kadm8"
     },
-    "1gmukzb": {
+    "bgan4u": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1170,9 +1331,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "1gmukzb"
+      "id": "bgan4u"
     },
-    "1yaxddt": {
+    "zwpunc": {
       "line": "dashed",
       "title": "reads data files via",
       "source": {
@@ -1182,9 +1343,9 @@
         "model": "s3Api"
       },
       "kind": "consumes",
-      "id": "1yaxddt"
+      "id": "zwpunc"
     },
-    "cdx2sn": {
+    "1s9csku": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1194,9 +1355,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "cdx2sn"
+      "id": "1s9csku"
     },
-    "1bfh5ib": {
+    "1p8qxyi": {
       "line": "dashed",
       "title": "reads via",
       "source": {
@@ -1206,9 +1367,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "consumes",
-      "id": "1bfh5ib"
+      "id": "1p8qxyi"
     },
-    "sst1le": {
+    "1ijogmz": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -1218,9 +1379,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "sst1le"
+      "id": "1ijogmz"
     },
-    "12sqffm": {
+    "nko3vv": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -1230,9 +1391,9 @@
         "model": "deltaSpec"
       },
       "kind": "implements",
-      "id": "12sqffm"
+      "id": "nko3vv"
     },
-    "1ez5uee": {
+    "xg7wq7": {
       "line": "dashed",
       "title": "reads/writes data files via",
       "source": {
@@ -1242,9 +1403,9 @@
         "model": "s3Api"
       },
       "kind": "consumes",
-      "id": "1ez5uee"
+      "id": "xg7wq7"
     },
-    "19znmnz": {
+    "1ficrpy": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -1254,9 +1415,9 @@
         "model": "deltaSpec"
       },
       "kind": "implements",
-      "id": "19znmnz"
+      "id": "1ficrpy"
     },
-    "h034c": {
+    "17nq6lh": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1266,9 +1427,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "h034c"
+      "id": "17nq6lh"
     },
-    "m8nchq": {
+    "9b6b13": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1278,9 +1439,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "m8nchq"
+      "id": "9b6b13"
     },
-    "1me54b3": {
+    "1if5kiu": {
       "line": "dashed",
       "title": "reads Delta tables via",
       "source": {
@@ -1290,9 +1451,9 @@
         "model": "deltaSpec"
       },
       "kind": "consumes",
-      "id": "1me54b3"
+      "id": "1if5kiu"
     },
-    "gr05te": {
+    "1lef4t7": {
       "line": "dashed",
       "title": "reads Iceberg tables via",
       "source": {
@@ -1302,9 +1463,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "consumes",
-      "id": "gr05te"
+      "id": "1lef4t7"
     },
-    "ju4tu0": {
+    "zqr4xt": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -1314,9 +1475,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "ju4tu0"
+      "id": "zqr4xt"
     },
-    "1kdb94": {
+    "yykakx": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1326,9 +1487,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "1kdb94"
+      "id": "yykakx"
     },
-    "1mle37v": {
+    "1wxg6ea": {
       "line": "dashed",
       "title": "reads/writes Delta via",
       "source": {
@@ -1338,9 +1499,9 @@
         "model": "deltaRs"
       },
       "kind": "dependsOn",
-      "id": "1mle37v"
+      "id": "1wxg6ea"
     },
-    "10i6480": {
+    "uib3l5": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -1350,9 +1511,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "10i6480"
+      "id": "uib3l5"
     },
-    "1qxssit": {
+    "4t63gs": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -1362,9 +1523,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "implements",
-      "id": "1qxssit"
+      "id": "4t63gs"
     },
-    "a1aabg": {
+    "14p4xp1": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -1374,9 +1535,9 @@
         "model": "ucSpec"
       },
       "kind": "implements",
-      "id": "a1aabg"
+      "id": "14p4xp1"
     },
-    "xe1exl": {
+    "gelsz4": {
       "line": "dotted",
       "title": "realizes the model-tracking capability",
       "source": {
@@ -1386,7 +1547,7 @@
         "model": "lakehouse.modelTracking"
       },
       "kind": "realizes",
-      "id": "xe1exl"
+      "id": "gelsz4"
     }
   },
   "globals": {
@@ -1430,7 +1591,7 @@
           "target": "lakehouse",
           "label": "queries + governs data",
           "relations": [
-            "vq0h7n"
+            "v3c3ka"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1444,7 +1605,7 @@
           "target": "lakehouse",
           "label": "builds + operates",
           "relations": [
-            "1feeeoq"
+            "vqil0z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1458,7 +1619,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "1t1pkam"
+            "bwf5av"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1472,7 +1633,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "1pzdc3d"
+            "1og8368"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1486,13 +1647,13 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "7pe8wl",
-            "1yp2357",
-            "xcj2ik",
-            "19a3teh",
-            "1annxgc",
-            "szoh21",
-            "1pb2lbu"
+            "1o1usf0",
+            "1mvh5gi",
+            "1gls179",
+            "1vokyi8",
+            "rqzg5x",
+            "1xaqldc",
+            "mmnncj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1505,9 +1666,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "xoa4h4",
-            "7f4apm",
-            "npwbvn"
+            "1otxby9",
+            "18jza37",
+            "1l7hozu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1520,7 +1681,7 @@
           "target": "lakehouse",
           "label": "specifies the sharing capability",
           "relations": [
-            "kdcmo7"
+            "1aee29a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1534,7 +1695,7 @@
           "target": "lakehouse",
           "label": "specifies the file-format capability",
           "relations": [
-            "12dlf95"
+            "1r0pgls"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1548,7 +1709,7 @@
           "target": "lakehouse",
           "label": "specifies the object-storage capability",
           "relations": [
-            "hvz7qx"
+            "17kadm8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1562,7 +1723,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1gmukzb"
+            "bgan4u"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1576,7 +1737,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "cdx2sn"
+            "1s9csku"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1590,7 +1751,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "h034c"
+            "17nq6lh"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1604,7 +1765,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "m8nchq"
+            "9b6b13"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1618,7 +1779,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1kdb94"
+            "yykakx"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1632,7 +1793,7 @@
           "target": "lakehouse",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "xe1exl"
+            "gelsz4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1646,7 +1807,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "12sqffm"
+            "nko3vv"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1660,7 +1821,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "19znmnz"
+            "1ficrpy"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1674,7 +1835,7 @@
           "target": "deltaSpec",
           "label": "reads Delta tables via",
           "relations": [
-            "1me54b3"
+            "1if5kiu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1688,7 +1849,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "sst1le"
+            "1ijogmz"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1702,7 +1863,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "ju4tu0"
+            "zqr4xt"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1716,7 +1877,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "10i6480"
+            "uib3l5"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1730,7 +1891,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "a1aabg"
+            "14p4xp1"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1744,7 +1905,7 @@
           "target": "icebergRestSpec",
           "label": "reads via",
           "relations": [
-            "1bfh5ib"
+            "1p8qxyi"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1758,7 +1919,7 @@
           "target": "icebergRestSpec",
           "label": "reads Iceberg tables via",
           "relations": [
-            "gr05te"
+            "1lef4t7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1772,7 +1933,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "1qxssit"
+            "4t63gs"
           ],
           "color": "gray",
           "line": "dotted",
@@ -1786,7 +1947,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "1yaxddt"
+            "zwpunc"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1800,7 +1961,7 @@
           "target": "s3Api",
           "label": "reads/writes data files via",
           "relations": [
-            "1ez5uee"
+            "xg7wq7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -1814,7 +1975,7 @@
           "target": "deltaRs",
           "label": "reads/writes Delta via",
           "relations": [
-            "1mle37v"
+            "1wxg6ea"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3185,7 +3346,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1pb2lbu"
+            "mmnncj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3199,7 +3360,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "npwbvn"
+            "1l7hozu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3213,7 +3374,7 @@
           "target": "lakehouse.catalog",
           "label": "tracked via",
           "relations": [
-            "stxdkh"
+            "19o8fko"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3227,12 +3388,26 @@
           "target": "lakehouse.catalog",
           "label": "commit coordination",
           "relations": [
-            "1g47148"
+            "1scvayp"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "dependsOn"
+        },
+        {
+          "id": "1078ltw",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.catalog",
+          "label": "observes",
+          "relations": [
+            "142vhha"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "16v5tyx",
@@ -3241,7 +3416,7 @@
           "target": "lakehouse.credentialIssuer",
           "label": "mints scoped storage credentials through",
           "relations": [
-            "pjt2qt"
+            "1531gvj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3364,6 +3539,33 @@
           "kind": "asset"
         },
         {
+          "id": "lakehouse.observability",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1078ltw"
+          ],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_observability"
+        },
+        {
           "id": "lakehouse.catalog",
           "parent": null,
           "level": 0,
@@ -3372,7 +3574,8 @@
             "cp7myr",
             "dton7c",
             "3jpgka",
-            "kurvyf"
+            "kurvyf",
+            "1078ltw"
           ],
           "outEdges": [
             "16v5tyx"
@@ -3438,7 +3641,7 @@
           }
         ]
       },
-      "hash": "5QjcxOdeeHGk5EEvlIIITdsg-0z6fV-BXo-5u0gAukk"
+      "hash": "XaCzfdkJgQjlr2aN_rP3UvWDCd-XX3os3OEyu-per8U"
     },
     "explain_queryEngine": {
       "_type": "element",
@@ -3461,7 +3664,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "vq0h7n"
+            "v3c3ka"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3475,7 +3678,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1gmukzb"
+            "bgan4u"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3489,7 +3692,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "cdx2sn"
+            "1s9csku"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3503,7 +3706,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "h034c"
+            "17nq6lh"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3517,7 +3720,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "m8nchq"
+            "9b6b13"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3531,7 +3734,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1kdb94"
+            "yykakx"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3545,12 +3748,26 @@
           "target": "lakehouse.queryEngine",
           "label": "schedules + triggers pipelines that run on",
           "relations": [
-            "166por"
+            "1fl97wi"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "iflpwz",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.queryEngine",
+          "label": "observes",
+          "relations": [
+            "1gnqj1t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         }
       ],
       "nodes": [
@@ -3763,6 +3980,33 @@
           "navigateTo": "explain_orchestration"
         },
         {
+          "id": "lakehouse.observability",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "iflpwz"
+          ],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_observability"
+        },
+        {
           "id": "lakehouse.queryEngine",
           "parent": null,
           "level": 0,
@@ -3774,7 +4018,8 @@
             "8x2yjo",
             "16lmeqg",
             "1dpuyes",
-            "gx91at"
+            "gx91at",
+            "iflpwz"
           ],
           "outEdges": [],
           "title": "Query engine",
@@ -3807,7 +4052,7 @@
           }
         ]
       },
-      "hash": "pjB-D2josKiJDl-n6TnM-5sbO7EyBJ978TUpPRiroUo"
+      "hash": "p1LKZnuCdB1mKivPzOlHg-Xnvp9OWAKEMaWAP5rTzRQ"
     },
     "explain_orchestration": {
       "_type": "element",
@@ -3824,13 +4069,27 @@
       },
       "edges": [
         {
+          "id": "1l94s8c",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.orchestration",
+          "label": "observes",
+          "relations": [
+            "1df19w7"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
           "id": "gx91at",
           "parent": null,
           "source": "lakehouse.orchestration",
           "target": "lakehouse.queryEngine",
           "label": "schedules + triggers pipelines that run on",
           "relations": [
-            "166por"
+            "1fl97wi"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3844,7 +4103,7 @@
           "target": "lakehouse.observability",
           "label": "emits run status + metrics",
           "relations": [
-            "1jrfh0z"
+            "r6lez8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3854,11 +4113,42 @@
       ],
       "nodes": [
         {
+          "id": "lakehouse.observability",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1p88a5o"
+          ],
+          "outEdges": [
+            "1l94s8c"
+          ],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_observability"
+        },
+        {
           "id": "lakehouse.orchestration",
           "parent": null,
           "level": 0,
           "children": [],
-          "inEdges": [],
+          "inEdges": [
+            "1l94s8c"
+          ],
           "outEdges": [
             "gx91at",
             "1p88a5o"
@@ -3906,36 +4196,9 @@
           },
           "kind": "capability",
           "navigateTo": "explain_queryEngine"
-        },
-        {
-          "id": "lakehouse.observability",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "1p88a5o"
-          ],
-          "outEdges": [],
-          "title": "Observability",
-          "modelRef": "lakehouse.observability",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_observability"
         }
       ],
-      "hash": "4go8ZYVT3A8_QxYYWz2UR-7xT7U0BG5rdP5MLxv8TOQ"
+      "hash": "-UGJXPATZUTAPA7vegHrqFGtydjvk0naW5CAb5lNcAw"
     },
     "explain_tableFormat": {
       "_type": "element",
@@ -3958,7 +4221,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "1t1pkam"
+            "bwf5av"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3972,7 +4235,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "1pzdc3d"
+            "1og8368"
           ],
           "color": "gray",
           "line": "dashed",
@@ -3986,7 +4249,7 @@
           "target": "lakehouse.tableFormat",
           "label": "data layout on disk",
           "relations": [
-            "hqdiqo"
+            "1ri3hhl"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4147,7 +4410,7 @@
           "target": "lakehouse.fileFormat",
           "label": "specifies the file-format capability",
           "relations": [
-            "12dlf95"
+            "1r0pgls"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4280,7 +4543,7 @@
           "target": "lakehouse.objectStorage",
           "label": "specifies the object-storage capability",
           "relations": [
-            "hvz7qx"
+            "17kadm8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4294,7 +4557,7 @@
           "target": "lakehouse.objectStorage",
           "label": "data stored at rest",
           "relations": [
-            "7180c6"
+            "valkbj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4308,7 +4571,7 @@
           "target": "lakehouse.objectStorage",
           "label": "materialized as files in",
           "relations": [
-            "154voxv"
+            "lkskzu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4322,7 +4585,7 @@
           "target": "lakehouse.objectStorage",
           "label": "data stored at rest",
           "relations": [
-            "hoap2r"
+            "1wtgw1m"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4336,7 +4599,7 @@
           "target": "lakehouse.objectStorage",
           "label": "issues credentials honored by",
           "relations": [
-            "2crdgb"
+            "8hql8z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4524,150 +4787,6 @@
       },
       "hash": "LYR769Bw7ZWrBr-iyyLoK5gDgVJldno3LVQ9jXPf2b0"
     },
-    "explain_governance": {
-      "_type": "element",
-      "tags": null,
-      "links": null,
-      "viewOf": "lakehouse.governance",
-      "_stage": "computed",
-      "sourcePath": "views/explain-views.likec4",
-      "description": null,
-      "title": "Governance — in context",
-      "id": "explain_governance",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "edges": [],
-      "nodes": [
-        {
-          "id": "lakehouse",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "lakehouse.governance"
-          ],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Open Lakehouse",
-          "modelRef": "lakehouse",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
-          },
-          "tags": [],
-          "links": [
-            {
-              "url": "https://openlakehouse.io"
-            }
-          ],
-          "kind": "capability",
-          "depth": 1,
-          "navigateTo": "capabilityMap"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability"
-        }
-      ],
-      "hash": "VZfNvIiaYcRrU_y9u8sF4-QVX5oGBktQJ4MuuFahQ_4"
-    },
-    "explain_lineage": {
-      "_type": "element",
-      "tags": null,
-      "links": null,
-      "viewOf": "lakehouse.lineage",
-      "_stage": "computed",
-      "sourcePath": "views/explain-views.likec4",
-      "description": null,
-      "title": "Lineage — in context",
-      "id": "explain_lineage",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "edges": [],
-      "nodes": [
-        {
-          "id": "lakehouse",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "lakehouse.lineage"
-          ],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Open Lakehouse",
-          "modelRef": "lakehouse",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
-          },
-          "tags": [],
-          "links": [
-            {
-              "url": "https://openlakehouse.io"
-            }
-          ],
-          "kind": "capability",
-          "depth": 1,
-          "navigateTo": "capabilityMap"
-        },
-        {
-          "id": "lakehouse.lineage",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Lineage",
-          "modelRef": "lakehouse.lineage",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Records where data came from and where it flows, down to the column."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
-          },
-          "kind": "capability"
-        }
-      ],
-      "hash": "27MDitt2YIxCTixq-qTl00ecIvaE2AZ2LPziDveLr8A"
-    },
     "explain_modelTracking": {
       "_type": "element",
       "tags": null,
@@ -4689,7 +4808,7 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "xe1exl"
+            "gelsz4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4803,92 +4922,6 @@
       },
       "hash": "WwaafruWHHyJeT6cmBkkpaHD0FR06yiP-_mFGwr2pP0"
     },
-    "explain_observability": {
-      "_type": "element",
-      "tags": null,
-      "links": null,
-      "viewOf": "lakehouse.observability",
-      "_stage": "computed",
-      "sourcePath": "views/explain-views.likec4",
-      "description": null,
-      "title": "Observability — in context",
-      "id": "explain_observability",
-      "autoLayout": {
-        "direction": "LR"
-      },
-      "edges": [
-        {
-          "id": "1p88a5o",
-          "parent": null,
-          "source": "lakehouse.orchestration",
-          "target": "lakehouse.observability",
-          "label": "emits run status + metrics",
-          "relations": [
-            "1jrfh0z"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        }
-      ],
-      "nodes": [
-        {
-          "id": "lakehouse.orchestration",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1p88a5o"
-          ],
-          "title": "Orchestration",
-          "modelRef": "lakehouse.orchestration",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_orchestration"
-        },
-        {
-          "id": "lakehouse.observability",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "1p88a5o"
-          ],
-          "outEdges": [],
-          "title": "Observability",
-          "modelRef": "lakehouse.observability",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability"
-        }
-      ],
-      "hash": "g9SKcX7SE1jC3NJJ5Jx78swgtC9UsYX-oLAnJEK792E"
-    },
     "explain_sharing": {
       "_type": "element",
       "tags": null,
@@ -4910,7 +4943,7 @@
           "target": "lakehouse.sharing",
           "label": "specifies the sharing capability",
           "relations": [
-            "kdcmo7"
+            "1aee29a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5022,6 +5055,658 @@
       },
       "hash": "ICcUKneyINQlOGYTKc78Cq5z8H5eyZ0vNf5KzGDWuRM"
     },
+    "explain_governance": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "viewOf": "lakehouse.governance",
+      "_stage": "computed",
+      "sourcePath": "views/explain-views.likec4",
+      "description": null,
+      "title": "Governance — in context",
+      "id": "explain_governance",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "1onsglj",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.namespace",
+          "label": "secures",
+          "relations": [
+            "14lli1b"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1fu0di2",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.table",
+          "label": "secures",
+          "relations": [
+            "7kna5x"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "9omey4",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.volume",
+          "label": "secures",
+          "relations": [
+            "1mt9uq"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1p8wjri",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.registeredFunction",
+          "label": "secures",
+          "relations": [
+            "1pywqdf"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "keebre",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.mlModel",
+          "label": "secures",
+          "relations": [
+            "lxchl2"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "r6sbd8",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.agentSkill",
+          "label": "secures",
+          "relations": [
+            "ckiszz"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "lakehouse.governance",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1onsglj",
+            "1fu0di2",
+            "9omey4",
+            "1p8wjri",
+            "keebre",
+            "r6sbd8"
+          ],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "concern"
+        },
+        {
+          "id": "lakehouse.namespace",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1onsglj"
+          ],
+          "outEdges": [],
+          "title": "Namespace",
+          "modelRef": "lakehouse.namespace",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The namespace container other asset kinds are organized under."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.table",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1fu0di2"
+          ],
+          "outEdges": [],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.volume",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "9omey4"
+          ],
+          "outEdges": [],
+          "title": "Volume",
+          "modelRef": "lakehouse.volume",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed storage location with usually non-tabular files."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.registeredFunction",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1p8wjri"
+          ],
+          "outEdges": [],
+          "title": "Function",
+          "modelRef": "lakehouse.registeredFunction",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed, reusable unit of computation."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.mlModel",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "keebre"
+          ],
+          "outEdges": [],
+          "title": "Model",
+          "modelRef": "lakehouse.mlModel",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed ML model."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.agentSkill",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "r6sbd8"
+          ],
+          "outEdges": [],
+          "title": "Agent skill",
+          "modelRef": "lakehouse.agentSkill",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "links": [
+            {
+              "url": "https://agentskills.io"
+            }
+          ],
+          "kind": "asset"
+        }
+      ],
+      "hash": "v6k5wOBJou6GA-DPuWxClRaOSvPFSQLXO2V39UJi9S4"
+    },
+    "explain_lineage": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "viewOf": "lakehouse.lineage",
+      "_stage": "computed",
+      "sourcePath": "views/explain-views.likec4",
+      "description": null,
+      "title": "Lineage — in context",
+      "id": "explain_lineage",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "1mzyvvd",
+          "parent": null,
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.table",
+          "label": "tracks lineage of",
+          "relations": [
+            "1e7rw42"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "pivn0v",
+          "parent": null,
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.volume",
+          "label": "tracks lineage of",
+          "relations": [
+            "sf4x6t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "20mrpl",
+          "parent": null,
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.mlModel",
+          "label": "tracks lineage of",
+          "relations": [
+            "12l0mbk"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "lakehouse.lineage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1mzyvvd",
+            "pivn0v",
+            "20mrpl"
+          ],
+          "title": "Lineage",
+          "modelRef": "lakehouse.lineage",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/lineage-plane.md"
+          },
+          "kind": "concern"
+        },
+        {
+          "id": "lakehouse.table",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1mzyvvd"
+          ],
+          "outEdges": [],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.volume",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "pivn0v"
+          ],
+          "outEdges": [],
+          "title": "Volume",
+          "modelRef": "lakehouse.volume",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed storage location with usually non-tabular files."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.mlModel",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "20mrpl"
+          ],
+          "outEdges": [],
+          "title": "Model",
+          "modelRef": "lakehouse.mlModel",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed ML model."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        }
+      ],
+      "hash": "gg2yJ98aEoMBxSYt4uCvSM6aAaA5Q-3DeHF00GYO0XQ"
+    },
+    "explain_observability": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "viewOf": "lakehouse.observability",
+      "_stage": "computed",
+      "sourcePath": "views/explain-views.likec4",
+      "description": null,
+      "title": "Observability — in context",
+      "id": "explain_observability",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "1p88a5o",
+          "parent": null,
+          "source": "lakehouse.orchestration",
+          "target": "lakehouse.observability",
+          "label": "emits run status + metrics",
+          "relations": [
+            "r6lez8"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "1078ltw",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.catalog",
+          "label": "observes",
+          "relations": [
+            "142vhha"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "iflpwz",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.queryEngine",
+          "label": "observes",
+          "relations": [
+            "1gnqj1t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1l94s8c",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.orchestration",
+          "label": "observes",
+          "relations": [
+            "1df19w7"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "lakehouse.orchestration",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1l94s8c"
+          ],
+          "outEdges": [
+            "1p88a5o"
+          ],
+          "title": "Orchestration",
+          "modelRef": "lakehouse.orchestration",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_orchestration"
+        },
+        {
+          "id": "lakehouse.observability",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1p88a5o"
+          ],
+          "outEdges": [
+            "1078ltw",
+            "iflpwz",
+            "1l94s8c"
+          ],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "concern"
+        },
+        {
+          "id": "lakehouse.catalog",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1078ltw"
+          ],
+          "outEdges": [],
+          "title": "Catalog",
+          "modelRef": "lakehouse.catalog",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/catalog-plane.md"
+          },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
+          "kind": "capability",
+          "navigateTo": "explain_catalog"
+        },
+        {
+          "id": "lakehouse.queryEngine",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "iflpwz"
+          ],
+          "outEdges": [],
+          "title": "Query engine",
+          "modelRef": "lakehouse.queryEngine",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_queryEngine"
+        }
+      ],
+      "hash": "aaBP-I0qdYg2Shikbw3QlMbMByeA59aEzMEuDpwYCgw"
+    },
     "explain_deltaSpec": {
       "_type": "element",
       "tags": null,
@@ -5043,7 +5728,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "12sqffm"
+            "nko3vv"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5057,7 +5742,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "19znmnz"
+            "1ficrpy"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5071,7 +5756,7 @@
           "target": "deltaSpec",
           "label": "reads Delta tables via",
           "relations": [
-            "1me54b3"
+            "1if5kiu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5085,7 +5770,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "1t1pkam"
+            "bwf5av"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5294,7 +5979,7 @@
           "target": "lakehouse",
           "label": null,
           "relations": [
-            "1pzdc3d"
+            "1og8368"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5398,7 +6083,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "sst1le"
+            "1ijogmz"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5412,7 +6097,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "ju4tu0"
+            "zqr4xt"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5426,7 +6111,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "10i6480"
+            "uib3l5"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5440,7 +6125,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "a1aabg"
+            "14p4xp1"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5454,13 +6139,13 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "7pe8wl",
-            "1yp2357",
-            "xcj2ik",
-            "19a3teh",
-            "1annxgc",
-            "szoh21",
-            "1pb2lbu"
+            "1o1usf0",
+            "1mvh5gi",
+            "1gls179",
+            "1vokyi8",
+            "rqzg5x",
+            "1xaqldc",
+            "mmnncj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5706,7 +6391,7 @@
           "target": "icebergRestSpec",
           "label": "reads via",
           "relations": [
-            "1bfh5ib"
+            "1p8qxyi"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5720,7 +6405,7 @@
           "target": "icebergRestSpec",
           "label": "reads Iceberg tables via",
           "relations": [
-            "gr05te"
+            "1lef4t7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5734,7 +6419,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "1qxssit"
+            "4t63gs"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5748,9 +6433,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "xoa4h4",
-            "7f4apm",
-            "npwbvn"
+            "1otxby9",
+            "18jza37",
+            "1l7hozu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -5959,7 +6644,7 @@
           "target": "lakehouse",
           "label": "specifies the sharing capability",
           "relations": [
-            "kdcmo7"
+            "1aee29a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6062,7 +6747,7 @@
           "target": "lakehouse",
           "label": "specifies the file-format capability",
           "relations": [
-            "12dlf95"
+            "1r0pgls"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6165,7 +6850,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "1yaxddt"
+            "zwpunc"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6179,7 +6864,7 @@
           "target": "s3Api",
           "label": "reads/writes data files via",
           "relations": [
-            "1ez5uee"
+            "xg7wq7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6193,7 +6878,7 @@
           "target": "lakehouse",
           "label": "specifies the object-storage capability",
           "relations": [
-            "hvz7qx"
+            "17kadm8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6492,7 +7177,7 @@
           "target": "lakehouse.queryEngine",
           "label": "query table",
           "relations": [
-            "vq0h7n"
+            "v3c3ka"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6571,7 +7256,7 @@
       "_stage": "computed",
       "sourcePath": "views/logical-views.likec4",
       "description": {
-        "txt": "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping)."
+        "txt": "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping). The concerns that span them have their own view, concernMatrix."
       },
       "title": "Reference Open Lakehouse — context",
       "id": "referenceContext",
@@ -6586,7 +7271,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "vq0h7n"
+            "v3c3ka"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6600,7 +7285,7 @@
           "target": "lakehouse.credentialIssuer",
           "label": "mints scoped storage credentials through",
           "relations": [
-            "pjt2qt"
+            "1531gvj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6614,21 +7299,7 @@
           "target": "lakehouse.queryEngine",
           "label": "schedules + triggers pipelines that run on",
           "relations": [
-            "166por"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "1p88a5o",
-          "parent": "lakehouse",
-          "source": "lakehouse.orchestration",
-          "target": "lakehouse.observability",
-          "label": "emits run status + metrics",
-          "relations": [
-            "1jrfh0z"
+            "1fl97wi"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6642,7 +7313,7 @@
           "target": "lakehouse.objectStorage",
           "label": "issues credentials honored by",
           "relations": [
-            "2crdgb"
+            "8hql8z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6656,7 +7327,7 @@
           "target": "lakehouse",
           "label": "builds + operates",
           "relations": [
-            "1feeeoq"
+            "vqil0z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -6743,12 +7414,9 @@
             "lakehouse.fileFormat",
             "lakehouse.credentialIssuer",
             "lakehouse.queryEngine",
-            "lakehouse.lineage",
-            "lakehouse.governance",
+            "lakehouse.objectStorage",
             "lakehouse.modelTracking",
-            "lakehouse.sharing",
-            "lakehouse.observability",
-            "lakehouse.objectStorage"
+            "lakehouse.sharing"
           ],
           "inEdges": [
             "12g2j4b",
@@ -6815,8 +7483,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "gx91at",
-            "1p88a5o"
+            "gx91at"
           ],
           "title": "Orchestration",
           "modelRef": "lakehouse.orchestration",
@@ -6943,14 +7610,16 @@
           "navigateTo": "explain_queryEngine"
         },
         {
-          "id": "lakehouse.lineage",
+          "id": "lakehouse.objectStorage",
           "parent": "lakehouse",
           "level": 1,
           "children": [],
-          "inEdges": [],
+          "inEdges": [
+            "mzhgx2"
+          ],
           "outEdges": [],
-          "title": "Lineage",
-          "modelRef": "lakehouse.lineage",
+          "title": "Object storage",
+          "modelRef": "lakehouse.objectStorage",
           "shape": "rectangle",
           "color": "primary",
           "style": {
@@ -6958,39 +7627,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "Records where data came from and where it flows, down to the column."
+            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
           },
           "tags": [],
           "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
+            "canonicalDoc": "design/reference-architecture.md"
           },
           "kind": "capability",
-          "navigateTo": "explain_lineage"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_governance"
+          "navigateTo": "explain_objectStorage"
         },
         {
           "id": "lakehouse.modelTracking",
@@ -7041,63 +7685,9 @@
           },
           "kind": "capability",
           "navigateTo": "explain_sharing"
-        },
-        {
-          "id": "lakehouse.observability",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1p88a5o"
-          ],
-          "outEdges": [],
-          "title": "Observability",
-          "modelRef": "lakehouse.observability",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_observability"
-        },
-        {
-          "id": "lakehouse.objectStorage",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "mzhgx2"
-          ],
-          "outEdges": [],
-          "title": "Object storage",
-          "modelRef": "lakehouse.objectStorage",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_objectStorage"
         }
       ],
-      "hash": "0pOKxPssF2nhisdwdPeo2lKvSlrD4kSqPwi_tA15J3k"
+      "hash": "9p8JNmknCgUNNSENE40-1VJ5Xg2ms7WKiHyPs_pk-fo"
     },
     "technologyCatalog": {
       "_type": "element",
@@ -7121,12 +7711,26 @@
           "target": "lakehouse.credentialIssuer",
           "label": "mints scoped storage credentials through",
           "relations": [
-            "pjt2qt"
+            "1531gvj"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "dependsOn"
+        },
+        {
+          "id": "1078ltw",
+          "parent": "lakehouse",
+          "source": "lakehouse.observability",
+          "target": "lakehouse.catalog",
+          "label": "observes",
+          "relations": [
+            "142vhha"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "gx91at",
@@ -7135,12 +7739,26 @@
           "target": "lakehouse.queryEngine",
           "label": "schedules + triggers pipelines that run on",
           "relations": [
-            "166por"
+            "1fl97wi"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "iflpwz",
+          "parent": "lakehouse",
+          "source": "lakehouse.observability",
+          "target": "lakehouse.queryEngine",
+          "label": "observes",
+          "relations": [
+            "1gnqj1t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "1p88a5o",
@@ -7149,12 +7767,26 @@
           "target": "lakehouse.observability",
           "label": "emits run status + metrics",
           "relations": [
-            "1jrfh0z"
+            "r6lez8"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "1l94s8c",
+          "parent": "lakehouse",
+          "source": "lakehouse.observability",
+          "target": "lakehouse.orchestration",
+          "label": "observes",
+          "relations": [
+            "1df19w7"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "mzhgx2",
@@ -7163,7 +7795,7 @@
           "target": "lakehouse.objectStorage",
           "label": "issues credentials honored by",
           "relations": [
-            "2crdgb"
+            "8hql8z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7177,7 +7809,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "1t1pkam"
+            "bwf5av"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7191,7 +7823,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "1pzdc3d"
+            "1og8368"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7205,7 +7837,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1pb2lbu"
+            "mmnncj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7219,7 +7851,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "npwbvn"
+            "1l7hozu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7233,7 +7865,7 @@
           "target": "lakehouse.sharing",
           "label": "specifies the sharing capability",
           "relations": [
-            "kdcmo7"
+            "1aee29a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7247,7 +7879,7 @@
           "target": "lakehouse.fileFormat",
           "label": "specifies the file-format capability",
           "relations": [
-            "12dlf95"
+            "1r0pgls"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7261,7 +7893,7 @@
           "target": "lakehouse.objectStorage",
           "label": "specifies the object-storage capability",
           "relations": [
-            "hvz7qx"
+            "17kadm8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7275,7 +7907,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1gmukzb"
+            "bgan4u"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7289,7 +7921,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "1yaxddt"
+            "zwpunc"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7303,7 +7935,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "cdx2sn"
+            "1s9csku"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7317,7 +7949,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "sst1le"
+            "1ijogmz"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7331,7 +7963,7 @@
           "target": "icebergRestSpec",
           "label": "reads via",
           "relations": [
-            "1bfh5ib"
+            "1p8qxyi"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7345,7 +7977,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "1qxssit"
+            "4t63gs"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7359,7 +7991,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "a1aabg"
+            "14p4xp1"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7373,7 +8005,7 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "xe1exl"
+            "gelsz4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7389,15 +8021,15 @@
           "children": [
             "lakehouse.lineage",
             "lakehouse.governance",
-            "lakehouse.catalog",
             "lakehouse.orchestration",
             "lakehouse.tableFormat",
             "lakehouse.sharing",
             "lakehouse.fileFormat",
             "lakehouse.modelTracking",
-            "lakehouse.credentialIssuer",
-            "lakehouse.queryEngine",
             "lakehouse.observability",
+            "lakehouse.catalog",
+            "lakehouse.queryEngine",
+            "lakehouse.credentialIssuer",
             "lakehouse.objectStorage"
           ],
           "inEdges": [
@@ -7443,8 +8075,8 @@
           "outEdges": [],
           "title": "Lineage",
           "modelRef": "lakehouse.lineage",
-          "shape": "rectangle",
-          "color": "primary",
+          "shape": "component",
+          "color": "amber",
           "style": {
             "opacity": 15,
             "size": "md"
@@ -7456,7 +8088,7 @@
           "metadata": {
             "canonicalDoc": "design/lineage-plane.md"
           },
-          "kind": "capability",
+          "kind": "concern",
           "navigateTo": "explain_lineage"
         },
         {
@@ -7468,8 +8100,8 @@
           "outEdges": [],
           "title": "Governance",
           "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
+          "shape": "component",
+          "color": "amber",
           "style": {
             "opacity": 15,
             "size": "md"
@@ -7481,7 +8113,7 @@
           "metadata": {
             "canonicalDoc": "design/governance.md"
           },
-          "kind": "capability",
+          "kind": "concern",
           "navigateTo": "explain_governance"
         },
         {
@@ -7872,46 +8504,13 @@
           "navigateTo": "explain_ucSpec"
         },
         {
-          "id": "lakehouse.catalog",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "cp7myr",
-            "dton7c"
-          ],
-          "outEdges": [
-            "16v5tyx"
-          ],
-          "title": "Catalog",
-          "modelRef": "lakehouse.catalog",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
-          },
-          "links": [
-            {
-              "url": "https://www.openlakehouse.io/technologies/catalogs"
-            }
-          ],
-          "kind": "capability",
-          "navigateTo": "explain_catalog"
-        },
-        {
           "id": "lakehouse.orchestration",
           "parent": "lakehouse",
           "level": 1,
           "children": [],
-          "inEdges": [],
+          "inEdges": [
+            "1l94s8c"
+          ],
           "outEdges": [
             "gx91at",
             "1p88a5o"
@@ -8044,6 +8643,103 @@
           "navigateTo": "explain_modelTracking"
         },
         {
+          "id": "lakehouse.observability",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1p88a5o"
+          ],
+          "outEdges": [
+            "1078ltw",
+            "iflpwz",
+            "1l94s8c"
+          ],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_observability"
+        },
+        {
+          "id": "lakehouse.catalog",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1078ltw",
+            "cp7myr",
+            "dton7c"
+          ],
+          "outEdges": [
+            "16v5tyx"
+          ],
+          "title": "Catalog",
+          "modelRef": "lakehouse.catalog",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/catalog-plane.md"
+          },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
+          "kind": "capability",
+          "navigateTo": "explain_catalog"
+        },
+        {
+          "id": "lakehouse.queryEngine",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "gx91at",
+            "iflpwz",
+            "ipwqn",
+            "zt1zxe"
+          ],
+          "outEdges": [],
+          "title": "Query engine",
+          "modelRef": "lakehouse.queryEngine",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_queryEngine"
+        },
+        {
           "id": "lakehouse.credentialIssuer",
           "parent": "lakehouse",
           "level": 1,
@@ -8070,62 +8766,6 @@
             "canonicalDoc": "design/governance.md"
           },
           "kind": "capability"
-        },
-        {
-          "id": "lakehouse.queryEngine",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "gx91at",
-            "ipwqn",
-            "zt1zxe"
-          ],
-          "outEdges": [],
-          "title": "Query engine",
-          "modelRef": "lakehouse.queryEngine",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Parses, plans, and executes queries over open table formats."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_queryEngine"
-        },
-        {
-          "id": "lakehouse.observability",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1p88a5o"
-          ],
-          "outEdges": [],
-          "title": "Observability",
-          "modelRef": "lakehouse.observability",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_observability"
         },
         {
           "id": "lakehouse.objectStorage",
@@ -8206,7 +8846,7 @@
           }
         ]
       },
-      "hash": "vgwuP2Ld_MKb9d1ji5f0vsCxtx_zSD6rLu0zQCBE69A"
+      "hash": "peFNhM4tRvX3z-AwhD9wqp3QpTeCVmYH1z4zHSjbo3U"
     },
     "capabilityMap": {
       "_type": "element",
@@ -8216,7 +8856,7 @@
       "_stage": "computed",
       "sourcePath": "views/logical-views.likec4",
       "description": {
-        "txt": "The capability chain: query engine -> catalog -> table format -> file format -> object storage, with governance, lineage, and observability attaching at planning time. Delta & Iceberg are peer specifications of the table-format capability."
+        "txt": "The capability chain: query engine -> catalog -> table format -> file format -> object storage. Governance, lineage, and observability are concerns that attach at planning time; concernMatrix shows them. Delta & Iceberg are peer specifications of the table-format capability."
       },
       "title": "Reference Open Lakehouse — capabilities",
       "id": "capabilityMap",
@@ -8231,7 +8871,7 @@
           "target": "lakehouse.queryEngine",
           "label": "queries + governs data",
           "relations": [
-            "vq0h7n"
+            "v3c3ka"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8245,7 +8885,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "1t1pkam"
+            "bwf5av"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8259,7 +8899,7 @@
           "target": "lakehouse.tableFormat",
           "label": null,
           "relations": [
-            "1pzdc3d"
+            "1og8368"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8273,7 +8913,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "1pb2lbu"
+            "mmnncj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8287,7 +8927,7 @@
           "target": "lakehouse.catalog",
           "label": "specifies the catalog capability",
           "relations": [
-            "npwbvn"
+            "1l7hozu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8301,7 +8941,7 @@
           "target": "lakehouse.sharing",
           "label": "specifies the sharing capability",
           "relations": [
-            "kdcmo7"
+            "1aee29a"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8315,7 +8955,7 @@
           "target": "lakehouse.fileFormat",
           "label": "specifies the file-format capability",
           "relations": [
-            "12dlf95"
+            "1r0pgls"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8329,7 +8969,7 @@
           "target": "lakehouse.objectStorage",
           "label": "specifies the object-storage capability",
           "relations": [
-            "hvz7qx"
+            "17kadm8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8343,7 +8983,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1gmukzb"
+            "bgan4u"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8357,7 +8997,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "cdx2sn"
+            "1s9csku"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8371,7 +9011,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "h034c"
+            "17nq6lh"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8385,7 +9025,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "m8nchq"
+            "9b6b13"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8399,7 +9039,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1kdb94"
+            "yykakx"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8413,7 +9053,7 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "xe1exl"
+            "gelsz4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8427,7 +9067,7 @@
           "target": "lakehouse.credentialIssuer",
           "label": "mints scoped storage credentials through",
           "relations": [
-            "pjt2qt"
+            "1531gvj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8441,21 +9081,7 @@
           "target": "lakehouse.queryEngine",
           "label": "schedules + triggers pipelines that run on",
           "relations": [
-            "166por"
-          ],
-          "color": "gray",
-          "line": "dashed",
-          "head": "normal",
-          "kind": "flows"
-        },
-        {
-          "id": "1p88a5o",
-          "parent": "lakehouse",
-          "source": "lakehouse.orchestration",
-          "target": "lakehouse.observability",
-          "label": "emits run status + metrics",
-          "relations": [
-            "1jrfh0z"
+            "1fl97wi"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8469,7 +9095,7 @@
           "target": "lakehouse.objectStorage",
           "label": "issues credentials honored by",
           "relations": [
-            "2crdgb"
+            "8hql8z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8917,10 +9543,7 @@
             "lakehouse.orchestration",
             "lakehouse.credentialIssuer",
             "lakehouse.queryEngine",
-            "lakehouse.observability",
-            "lakehouse.objectStorage",
-            "lakehouse.lineage",
-            "lakehouse.governance"
+            "lakehouse.objectStorage"
           ],
           "inEdges": [
             "7v3snl",
@@ -9110,8 +9733,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "gx91at",
-            "1p88a5o"
+            "gx91at"
           ],
           "title": "Orchestration",
           "modelRef": "lakehouse.orchestration",
@@ -9193,33 +9815,6 @@
           "navigateTo": "explain_queryEngine"
         },
         {
-          "id": "lakehouse.observability",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1p88a5o"
-          ],
-          "outEdges": [],
-          "title": "Observability",
-          "modelRef": "lakehouse.observability",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_observability"
-        },
-        {
           "id": "lakehouse.objectStorage",
           "parent": "lakehouse",
           "level": 1,
@@ -9246,56 +9841,6 @@
           },
           "kind": "capability",
           "navigateTo": "explain_objectStorage"
-        },
-        {
-          "id": "lakehouse.lineage",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Lineage",
-          "modelRef": "lakehouse.lineage",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Records where data came from and where it flows, down to the column."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_lineage"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_governance"
         }
       ],
       "notation": {
@@ -9318,7 +9863,617 @@
           }
         ]
       },
-      "hash": "2CM-7mxJrfKK81GaNM1C96SdJH5RjaiBvVtV5cfFJoI"
+      "hash": "UdH922hR8fVqZg7a8c2atLXMzqRk5kx1BQDbj_xWJQU"
+    },
+    "concernMatrix": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "_stage": "computed",
+      "sourcePath": "views/logical-views.likec4",
+      "description": {
+        "txt": "Governance, lineage, and observability are concerns, not layers in the read path: each appliesTo the asset kinds or capabilities it spans, and implementations realize them like capabilities."
+      },
+      "title": "Cross-cutting concerns",
+      "id": "concernMatrix",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "1mzyvvd",
+          "parent": null,
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.table",
+          "label": "tracks lineage of",
+          "relations": [
+            "1e7rw42"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "pivn0v",
+          "parent": null,
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.volume",
+          "label": "tracks lineage of",
+          "relations": [
+            "sf4x6t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "20mrpl",
+          "parent": null,
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.mlModel",
+          "label": "tracks lineage of",
+          "relations": [
+            "12l0mbk"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1onsglj",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.namespace",
+          "label": "secures",
+          "relations": [
+            "14lli1b"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1fu0di2",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.table",
+          "label": "secures",
+          "relations": [
+            "7kna5x"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "9omey4",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.volume",
+          "label": "secures",
+          "relations": [
+            "1mt9uq"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1p8wjri",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.registeredFunction",
+          "label": "secures",
+          "relations": [
+            "1pywqdf"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "keebre",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.mlModel",
+          "label": "secures",
+          "relations": [
+            "lxchl2"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "r6sbd8",
+          "parent": null,
+          "source": "lakehouse.governance",
+          "target": "lakehouse.agentSkill",
+          "label": "secures",
+          "relations": [
+            "ckiszz"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1c0oiiy",
+          "parent": null,
+          "source": "lakehouse.agentSkill",
+          "target": "lakehouse.volume",
+          "label": "files stored at rest",
+          "relations": [
+            "1lrf94q"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "dependsOn"
+        },
+        {
+          "id": "iflpwz",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.queryEngine",
+          "label": "observes",
+          "relations": [
+            "1gnqj1t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1078ltw",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.catalog",
+          "label": "observes",
+          "relations": [
+            "142vhha"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "3jpgka",
+          "parent": null,
+          "source": "lakehouse.namespace",
+          "target": "lakehouse.catalog",
+          "label": "tracked via",
+          "relations": [
+            "19o8fko"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "dependsOn"
+        },
+        {
+          "id": "kurvyf",
+          "parent": null,
+          "source": "lakehouse.table",
+          "target": "lakehouse.catalog",
+          "label": "commit coordination",
+          "relations": [
+            "1scvayp"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "dependsOn"
+        },
+        {
+          "id": "1l94s8c",
+          "parent": null,
+          "source": "lakehouse.observability",
+          "target": "lakehouse.orchestration",
+          "label": "observes",
+          "relations": [
+            "1df19w7"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1p88a5o",
+          "parent": null,
+          "source": "lakehouse.orchestration",
+          "target": "lakehouse.observability",
+          "label": "emits run status + metrics",
+          "relations": [
+            "r6lez8"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        },
+        {
+          "id": "gx91at",
+          "parent": null,
+          "source": "lakehouse.orchestration",
+          "target": "lakehouse.queryEngine",
+          "label": "schedules + triggers pipelines that run on",
+          "relations": [
+            "1fl97wi"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "flows"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "lakehouse.lineage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1mzyvvd",
+            "pivn0v",
+            "20mrpl"
+          ],
+          "title": "Lineage",
+          "modelRef": "lakehouse.lineage",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/lineage-plane.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_lineage"
+        },
+        {
+          "id": "lakehouse.governance",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1onsglj",
+            "1fu0di2",
+            "9omey4",
+            "1p8wjri",
+            "keebre",
+            "r6sbd8"
+          ],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_governance"
+        },
+        {
+          "id": "lakehouse.observability",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1p88a5o"
+          ],
+          "outEdges": [
+            "iflpwz",
+            "1078ltw",
+            "1l94s8c"
+          ],
+          "title": "Observability",
+          "modelRef": "lakehouse.observability",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_observability"
+        },
+        {
+          "id": "lakehouse.namespace",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1onsglj"
+          ],
+          "outEdges": [
+            "3jpgka"
+          ],
+          "title": "Namespace",
+          "modelRef": "lakehouse.namespace",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The namespace container other asset kinds are organized under."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.table",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1mzyvvd",
+            "1fu0di2"
+          ],
+          "outEdges": [
+            "kurvyf"
+          ],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.registeredFunction",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1p8wjri"
+          ],
+          "outEdges": [],
+          "title": "Function",
+          "modelRef": "lakehouse.registeredFunction",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed, reusable unit of computation."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.mlModel",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "20mrpl",
+            "keebre"
+          ],
+          "outEdges": [],
+          "title": "Model",
+          "modelRef": "lakehouse.mlModel",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed ML model."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.agentSkill",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "r6sbd8"
+          ],
+          "outEdges": [
+            "1c0oiiy"
+          ],
+          "title": "Agent skill",
+          "modelRef": "lakehouse.agentSkill",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "links": [
+            {
+              "url": "https://agentskills.io"
+            }
+          ],
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.orchestration",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1l94s8c"
+          ],
+          "outEdges": [
+            "1p88a5o",
+            "gx91at"
+          ],
+          "title": "Orchestration",
+          "modelRef": "lakehouse.orchestration",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_orchestration"
+        },
+        {
+          "id": "lakehouse.catalog",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1078ltw",
+            "3jpgka",
+            "kurvyf"
+          ],
+          "outEdges": [],
+          "title": "Catalog",
+          "modelRef": "lakehouse.catalog",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/catalog-plane.md"
+          },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
+          "kind": "capability",
+          "navigateTo": "explain_catalog"
+        },
+        {
+          "id": "lakehouse.volume",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "pivn0v",
+            "9omey4",
+            "1c0oiiy"
+          ],
+          "outEdges": [],
+          "title": "Volume",
+          "modelRef": "lakehouse.volume",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed storage location with usually non-tabular files."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.queryEngine",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "iflpwz",
+            "gx91at"
+          ],
+          "outEdges": [],
+          "title": "Query engine",
+          "modelRef": "lakehouse.queryEngine",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_queryEngine"
+        }
+      ],
+      "hash": "VvcCo066jvzyoOZnhQdLD-rkw3eq6OFPKZLoV-8WJQ8"
     },
     "assetGovernanceBreadth": {
       "_type": "element",
@@ -9342,7 +10497,7 @@
           "target": "lakehouse.namespace",
           "label": "governs",
           "relations": [
-            "7pe8wl"
+            "1o1usf0"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9356,7 +10511,7 @@
           "target": "lakehouse.table",
           "label": "governs",
           "relations": [
-            "1yp2357"
+            "1mvh5gi"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9370,7 +10525,7 @@
           "target": "lakehouse.volume",
           "label": "governs",
           "relations": [
-            "xcj2ik"
+            "1gls179"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9384,7 +10539,7 @@
           "target": "lakehouse.registeredFunction",
           "label": "governs",
           "relations": [
-            "19a3teh"
+            "1vokyi8"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9398,7 +10553,7 @@
           "target": "lakehouse.mlModel",
           "label": "governs",
           "relations": [
-            "1annxgc"
+            "rqzg5x"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9412,7 +10567,7 @@
           "target": "lakehouse.agentSkill",
           "label": "governs",
           "relations": [
-            "szoh21"
+            "1xaqldc"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9426,7 +10581,7 @@
           "target": "lakehouse.namespace",
           "label": "governs",
           "relations": [
-            "xoa4h4"
+            "1otxby9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9440,7 +10595,7 @@
           "target": "lakehouse.table",
           "label": "governs",
           "relations": [
-            "7f4apm"
+            "18jza37"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9454,7 +10609,7 @@
           "target": "lakehouse.volume",
           "label": "files stored at rest",
           "relations": [
-            "1fi5u43"
+            "1lrf94q"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9774,12 +10929,26 @@
           "target": "lakehouse.catalog",
           "label": "tracked via",
           "relations": [
-            "stxdkh"
+            "19o8fko"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "dependsOn"
+        },
+        {
+          "id": "1onsglj",
+          "parent": "lakehouse",
+          "source": "lakehouse.governance",
+          "target": "lakehouse.namespace",
+          "label": "secures",
+          "relations": [
+            "14lli1b"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "kurvyf",
@@ -9788,7 +10957,7 @@
           "target": "lakehouse.catalog",
           "label": "commit coordination",
           "relations": [
-            "1g47148"
+            "1scvayp"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9802,7 +10971,7 @@
           "target": "lakehouse.tableFormat",
           "label": "data layout on disk",
           "relations": [
-            "hqdiqo"
+            "1ri3hhl"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9816,12 +10985,40 @@
           "target": "lakehouse.objectStorage",
           "label": "data stored at rest",
           "relations": [
-            "7180c6"
+            "valkbj"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "dependsOn"
+        },
+        {
+          "id": "1mzyvvd",
+          "parent": "lakehouse",
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.table",
+          "label": "tracks lineage of",
+          "relations": [
+            "1e7rw42"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1fu0di2",
+          "parent": "lakehouse",
+          "source": "lakehouse.governance",
+          "target": "lakehouse.table",
+          "label": "secures",
+          "relations": [
+            "7kna5x"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "1q3ub9q",
@@ -9830,7 +11027,7 @@
           "target": "lakehouse.objectStorage",
           "label": "materialized as files in",
           "relations": [
-            "154voxv"
+            "lkskzu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9844,12 +11041,54 @@
           "target": "lakehouse.volume",
           "label": "files stored at rest",
           "relations": [
-            "1fi5u43"
+            "1lrf94q"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "dependsOn"
+        },
+        {
+          "id": "pivn0v",
+          "parent": "lakehouse",
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.volume",
+          "label": "tracks lineage of",
+          "relations": [
+            "sf4x6t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "9omey4",
+          "parent": "lakehouse",
+          "source": "lakehouse.governance",
+          "target": "lakehouse.volume",
+          "label": "secures",
+          "relations": [
+            "1mt9uq"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "1p8wjri",
+          "parent": "lakehouse",
+          "source": "lakehouse.governance",
+          "target": "lakehouse.registeredFunction",
+          "label": "secures",
+          "relations": [
+            "1pywqdf"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "wo4v60",
@@ -9858,12 +11097,54 @@
           "target": "lakehouse.objectStorage",
           "label": "data stored at rest",
           "relations": [
-            "hoap2r"
+            "1wtgw1m"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "dependsOn"
+        },
+        {
+          "id": "20mrpl",
+          "parent": "lakehouse",
+          "source": "lakehouse.lineage",
+          "target": "lakehouse.mlModel",
+          "label": "tracks lineage of",
+          "relations": [
+            "12l0mbk"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "keebre",
+          "parent": "lakehouse",
+          "source": "lakehouse.governance",
+          "target": "lakehouse.mlModel",
+          "label": "secures",
+          "relations": [
+            "lxchl2"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
+        },
+        {
+          "id": "r6sbd8",
+          "parent": "lakehouse",
+          "source": "lakehouse.governance",
+          "target": "lakehouse.agentSkill",
+          "label": "secures",
+          "relations": [
+            "ckiszz"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "16v5tyx",
@@ -9872,12 +11153,26 @@
           "target": "lakehouse.credentialIssuer",
           "label": "mints scoped storage credentials through",
           "relations": [
-            "pjt2qt"
+            "1531gvj"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "dependsOn"
+        },
+        {
+          "id": "1078ltw",
+          "parent": "lakehouse",
+          "source": "lakehouse.observability",
+          "target": "lakehouse.catalog",
+          "label": "observes",
+          "relations": [
+            "142vhha"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "gx91at",
@@ -9886,12 +11181,26 @@
           "target": "lakehouse.queryEngine",
           "label": "schedules + triggers pipelines that run on",
           "relations": [
-            "166por"
+            "1fl97wi"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "iflpwz",
+          "parent": "lakehouse",
+          "source": "lakehouse.observability",
+          "target": "lakehouse.queryEngine",
+          "label": "observes",
+          "relations": [
+            "1gnqj1t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "1p88a5o",
@@ -9900,12 +11209,26 @@
           "target": "lakehouse.observability",
           "label": "emits run status + metrics",
           "relations": [
-            "1jrfh0z"
+            "r6lez8"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "flows"
+        },
+        {
+          "id": "1l94s8c",
+          "parent": "lakehouse",
+          "source": "lakehouse.observability",
+          "target": "lakehouse.orchestration",
+          "label": "observes",
+          "relations": [
+            "1df19w7"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "appliesTo"
         },
         {
           "id": "mzhgx2",
@@ -9914,7 +11237,7 @@
           "target": "lakehouse.objectStorage",
           "label": "issues credentials honored by",
           "relations": [
-            "2crdgb"
+            "8hql8z"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9928,22 +11251,22 @@
           "parent": null,
           "level": 0,
           "children": [
+            "lakehouse.fileFormat",
+            "lakehouse.governance",
+            "lakehouse.lineage",
+            "lakehouse.orchestration",
             "lakehouse.namespace",
-            "lakehouse.table",
             "lakehouse.registeredFunction",
             "lakehouse.agentSkill",
+            "lakehouse.table",
             "lakehouse.mlModel",
-            "lakehouse.orchestration",
-            "lakehouse.catalog",
-            "lakehouse.tableFormat",
-            "lakehouse.volume",
-            "lakehouse.queryEngine",
-            "lakehouse.fileFormat",
-            "lakehouse.lineage",
-            "lakehouse.governance",
             "lakehouse.modelTracking",
             "lakehouse.sharing",
             "lakehouse.observability",
+            "lakehouse.volume",
+            "lakehouse.tableFormat",
+            "lakehouse.catalog",
+            "lakehouse.queryEngine",
             "lakehouse.credentialIssuer",
             "lakehouse.objectStorage"
           ],
@@ -9971,283 +11294,6 @@
           "navigateTo": "capabilityMap"
         },
         {
-          "id": "lakehouse.namespace",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "3jpgka"
-          ],
-          "title": "Namespace",
-          "modelRef": "lakehouse.namespace",
-          "shape": "rectangle",
-          "color": "green",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The namespace container other asset kinds are organized under."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
-          },
-          "kind": "asset"
-        },
-        {
-          "id": "lakehouse.table",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "kurvyf",
-            "115nb49",
-            "tuvbx4"
-          ],
-          "title": "Table",
-          "modelRef": "lakehouse.table",
-          "shape": "rectangle",
-          "color": "green",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The tabular securable — rows and columns with ACID semantics."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
-          },
-          "kind": "asset"
-        },
-        {
-          "id": "lakehouse.registeredFunction",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Function",
-          "modelRef": "lakehouse.registeredFunction",
-          "shape": "rectangle",
-          "color": "green",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "A governed, reusable unit of computation."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
-          },
-          "kind": "asset"
-        },
-        {
-          "id": "lakehouse.agentSkill",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1c0oiiy"
-          ],
-          "title": "Agent skill",
-          "modelRef": "lakehouse.agentSkill",
-          "shape": "rectangle",
-          "color": "green",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
-          },
-          "links": [
-            {
-              "url": "https://agentskills.io"
-            }
-          ],
-          "kind": "asset"
-        },
-        {
-          "id": "lakehouse.mlModel",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "wo4v60"
-          ],
-          "title": "Model",
-          "modelRef": "lakehouse.mlModel",
-          "shape": "rectangle",
-          "color": "green",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "A governed ML model."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
-          },
-          "kind": "asset"
-        },
-        {
-          "id": "lakehouse.orchestration",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "gx91at",
-            "1p88a5o"
-          ],
-          "title": "Orchestration",
-          "modelRef": "lakehouse.orchestration",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_orchestration"
-        },
-        {
-          "id": "lakehouse.catalog",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "3jpgka",
-            "kurvyf"
-          ],
-          "outEdges": [
-            "16v5tyx"
-          ],
-          "title": "Catalog",
-          "modelRef": "lakehouse.catalog",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/catalog-plane.md"
-          },
-          "links": [
-            {
-              "url": "https://www.openlakehouse.io/technologies/catalogs"
-            }
-          ],
-          "kind": "capability",
-          "navigateTo": "explain_catalog"
-        },
-        {
-          "id": "lakehouse.tableFormat",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "115nb49"
-          ],
-          "outEdges": [],
-          "title": "Open table format",
-          "modelRef": "lakehouse.tableFormat",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "A metadata layer that gives object-storage files ACID table semantics."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_tableFormat"
-        },
-        {
-          "id": "lakehouse.volume",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1c0oiiy"
-          ],
-          "outEdges": [
-            "1q3ub9q"
-          ],
-          "title": "Volume",
-          "modelRef": "lakehouse.volume",
-          "shape": "rectangle",
-          "color": "green",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "A governed storage location with usually non-tabular files."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
-          },
-          "kind": "asset"
-        },
-        {
-          "id": "lakehouse.queryEngine",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "gx91at"
-          ],
-          "outEdges": [],
-          "title": "Query engine",
-          "modelRef": "lakehouse.queryEngine",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Parses, plans, and executes queries over open table formats."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/reference-architecture.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_queryEngine"
-        },
-        {
           "id": "lakehouse.fileFormat",
           "parent": "lakehouse",
           "level": 1,
@@ -10273,41 +11319,23 @@
           "navigateTo": "explain_fileFormat"
         },
         {
-          "id": "lakehouse.lineage",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Lineage",
-          "modelRef": "lakehouse.lineage",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Records where data came from and where it flows, down to the column."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
-          },
-          "kind": "capability",
-          "navigateTo": "explain_lineage"
-        },
-        {
           "id": "lakehouse.governance",
           "parent": "lakehouse",
           "level": 1,
           "children": [],
           "inEdges": [],
-          "outEdges": [],
+          "outEdges": [
+            "1onsglj",
+            "1fu0di2",
+            "9omey4",
+            "1p8wjri",
+            "keebre",
+            "r6sbd8"
+          ],
           "title": "Governance",
           "modelRef": "lakehouse.governance",
-          "shape": "rectangle",
-          "color": "primary",
+          "shape": "component",
+          "color": "amber",
           "style": {
             "opacity": 15,
             "size": "md"
@@ -10319,8 +11347,211 @@
           "metadata": {
             "canonicalDoc": "design/governance.md"
           },
-          "kind": "capability",
+          "kind": "concern",
           "navigateTo": "explain_governance"
+        },
+        {
+          "id": "lakehouse.lineage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1mzyvvd",
+            "pivn0v",
+            "20mrpl"
+          ],
+          "title": "Lineage",
+          "modelRef": "lakehouse.lineage",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/lineage-plane.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_lineage"
+        },
+        {
+          "id": "lakehouse.orchestration",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1l94s8c"
+          ],
+          "outEdges": [
+            "gx91at",
+            "1p88a5o"
+          ],
+          "title": "Orchestration",
+          "modelRef": "lakehouse.orchestration",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_orchestration"
+        },
+        {
+          "id": "lakehouse.namespace",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1onsglj"
+          ],
+          "outEdges": [
+            "3jpgka"
+          ],
+          "title": "Namespace",
+          "modelRef": "lakehouse.namespace",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The namespace container other asset kinds are organized under."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.registeredFunction",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1p8wjri"
+          ],
+          "outEdges": [],
+          "title": "Function",
+          "modelRef": "lakehouse.registeredFunction",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed, reusable unit of computation."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.agentSkill",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "r6sbd8"
+          ],
+          "outEdges": [
+            "1c0oiiy"
+          ],
+          "title": "Agent skill",
+          "modelRef": "lakehouse.agentSkill",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "links": [
+            {
+              "url": "https://agentskills.io"
+            }
+          ],
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.table",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1mzyvvd",
+            "1fu0di2"
+          ],
+          "outEdges": [
+            "kurvyf",
+            "115nb49",
+            "tuvbx4"
+          ],
+          "title": "Table",
+          "modelRef": "lakehouse.table",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The tabular securable — rows and columns with ACID semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.mlModel",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "20mrpl",
+            "keebre"
+          ],
+          "outEdges": [
+            "wo4v60"
+          ],
+          "title": "Model",
+          "modelRef": "lakehouse.mlModel",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed ML model."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
         },
         {
           "id": "lakehouse.modelTracking",
@@ -10380,11 +11611,15 @@
           "inEdges": [
             "1p88a5o"
           ],
-          "outEdges": [],
+          "outEdges": [
+            "1078ltw",
+            "iflpwz",
+            "1l94s8c"
+          ],
           "title": "Observability",
           "modelRef": "lakehouse.observability",
-          "shape": "rectangle",
-          "color": "primary",
+          "shape": "component",
+          "color": "amber",
           "style": {
             "opacity": 15,
             "size": "md"
@@ -10396,8 +11631,129 @@
           "metadata": {
             "canonicalDoc": "design/reference-architecture.md"
           },
-          "kind": "capability",
+          "kind": "concern",
           "navigateTo": "explain_observability"
+        },
+        {
+          "id": "lakehouse.volume",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1c0oiiy",
+            "pivn0v",
+            "9omey4"
+          ],
+          "outEdges": [
+            "1q3ub9q"
+          ],
+          "title": "Volume",
+          "modelRef": "lakehouse.volume",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed storage location with usually non-tabular files."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.tableFormat",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "115nb49"
+          ],
+          "outEdges": [],
+          "title": "Open table format",
+          "modelRef": "lakehouse.tableFormat",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A metadata layer that gives object-storage files ACID table semantics."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_tableFormat"
+        },
+        {
+          "id": "lakehouse.catalog",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "3jpgka",
+            "kurvyf",
+            "1078ltw"
+          ],
+          "outEdges": [
+            "16v5tyx"
+          ],
+          "title": "Catalog",
+          "modelRef": "lakehouse.catalog",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/catalog-plane.md"
+          },
+          "links": [
+            {
+              "url": "https://www.openlakehouse.io/technologies/catalogs"
+            }
+          ],
+          "kind": "capability",
+          "navigateTo": "explain_catalog"
+        },
+        {
+          "id": "lakehouse.queryEngine",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "gx91at",
+            "iflpwz"
+          ],
+          "outEdges": [],
+          "title": "Query engine",
+          "modelRef": "lakehouse.queryEngine",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Parses, plans, and executes queries over open table formats."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/reference-architecture.md"
+          },
+          "kind": "capability",
+          "navigateTo": "explain_queryEngine"
         },
         {
           "id": "lakehouse.credentialIssuer",
@@ -10458,7 +11814,7 @@
           "navigateTo": "explain_objectStorage"
         }
       ],
-      "hash": "frFh_c_PfuVqFSBd2LMGpv4XaPf2QtWrwbYegNk0-HU"
+      "hash": "CYM3jq1qtNYjcjr4Yq-RtZUmFhTINuyJu33EZYqDyHk"
     }
   },
   "deployments": {

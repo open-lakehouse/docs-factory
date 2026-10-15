@@ -38,5 +38,26 @@ def test_reports_missing_description_link_and_anchor_edge(tmp_path):
     ]
 
 
+def test_concern_needs_an_applies_to_edge_but_no_link(tmp_path):
+    model = tmp_path / "model.json"
+    model.write_text(
+        json.dumps(
+            {
+                "elements": {
+                    "spanning": {"kind": "concern", "description": {"txt": "Spans."}},
+                    "floating": {
+                        "kind": "concern",
+                        "description": {"txt": "Spans nothing."},
+                    },
+                },
+                "relations": {
+                    "r1": {"kind": "appliesTo", "source": {"model": "spanning"}},
+                },
+            }
+        )
+    )
+    assert model_quality_gaps(model) == ["  - floating (concern): no appliesTo edge"]
+
+
 def test_missing_model_reports_nothing(tmp_path):
     assert model_quality_gaps(tmp_path / "absent.json") == []

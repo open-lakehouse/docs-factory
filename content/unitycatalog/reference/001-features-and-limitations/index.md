@@ -146,7 +146,8 @@ several of them, so guides written for Databricks don't apply here:
 - Lineage
 - Tags and data classification
 - Row filters, column masks, and attribute-based access control (ABAC)
-- SCIM groups
+- Groups and service principals: principals are users only
+- Connections to external databases
 - Audit logs
 - A Delta Sharing server
 

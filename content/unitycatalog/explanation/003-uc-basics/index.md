@@ -226,8 +226,7 @@ them access.
 :::note
 This page describes the open source server's behavior, based on its API
 definitions and authorization source. Databricks Unity Catalog adds securables
-and governance features the open source server doesn't implement, such as
-connections, shares, groups, tags, lineage, row filters, and column masks. Its
-REST API reference groups endpoints into areas the open source API has no
-counterpart for, notably metadata and lineage.
+and governance features beyond it, so a Databricks guide may not apply here.
+For what the open source server doesn't include, see
+[Not in Unity Catalog OSS](../../reference/features-and-limitations/index.md#not-in-unity-catalog-oss).
 :::

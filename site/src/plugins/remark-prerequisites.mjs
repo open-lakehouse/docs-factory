@@ -1,43 +1,32 @@
 /**
  * remark-prerequisites — turn a `:::prerequisites` container into a
- * `<Prerequisites>` box, and the `:::environment[Title]` the docs emitter nests
- * inside it (remark-prerequisites-env.mjs) into a
- * `<PrerequisitesEnvironment>` section. The flattening counterpart for the .md
- * twins is emit/plugins/remark-prerequisites-md.mjs. Mirrors remark-tldr.mjs.
+ * `<Prerequisites>` box. The flattening counterpart for the .md twins is
+ * emit/plugins/remark-prerequisites-md.mjs. Mirrors remark-tldr.mjs.
  */
 import { injectImport, jsxFlow, stringAttr, takeDirectiveLabel } from "./lib/mdx-helpers.mjs";
 
 const IMPORT_SOURCE = "@/components/prerequisites";
-const NAMES = { prerequisites: "Prerequisites", environment: "PrerequisitesEnvironment" };
 
 export default function remarkPrerequisites() {
   return (tree) => {
-    const used = new Set();
+    let used = false;
 
-    const walk = (node, inside) => {
+    const walk = (node) => {
       if (!node.children) return;
       for (let i = 0; i < node.children.length; i++) {
         const child = node.children[i];
-        const name =
-          child.type === "containerDirective" &&
-          (child.name === "prerequisites" || (inside && child.name === "environment"))
-            ? NAMES[child.name]
-            : null;
-        if (!name) {
-          walk(child, inside);
-          continue;
-        }
-        walk(child, true);
+        walk(child);
+        if (child.type !== "containerDirective" || child.name !== "prerequisites") continue;
         const title = takeDirectiveLabel(child);
-        node.children[i] = jsxFlow(name, {
+        node.children[i] = jsxFlow("Prerequisites", {
           attributes: title ? [stringAttr("title", title)] : [],
           children: child.children,
         });
-        used.add(name);
+        used = true;
       }
     };
-    walk(tree, false);
+    walk(tree);
 
-    injectImport(tree, { names: [...used].sort(), source: IMPORT_SOURCE, used: used.size > 0 });
+    injectImport(tree, { names: ["Prerequisites"], source: IMPORT_SOURCE, used });
   };
 }

@@ -1,5 +1,5 @@
 // `@/components/prerequisites` is the import path the vendored remark-prerequisites emits.
-import { ClipboardCheck, Container } from "lucide-react";
+import { ClipboardCheck } from "lucide-react";
 import type { ReactNode } from "react";
 
 export function Prerequisites({
@@ -18,21 +18,3 @@ export function Prerequisites({
   );
 }
 
-/** The emitter-derived part: how to download and start the page's stack. */
-export function PrerequisitesEnvironment({
-  title,
-  children,
-}: {
-  title?: string;
-  children: ReactNode;
-}) {
-  return (
-    <section className="prereqs-env" aria-label="Start the environment">
-      <p className="prereqs-env-title">
-        <Container aria-hidden="true" />
-        <span>Start the environment{title ? `: ${title}` : ""}</span>
-      </p>
-      {children}
-    </section>
-  );
-}

@@ -1,7 +1,7 @@
-// The `:::prerequisites` box. Its Docker bullet and "Start the environment"
-// section are derived from the page's scripts (remark-prerequisites-env.mjs).
+// The `:::prerequisites` box. Its Docker bullet (and a how-to's environment
+// pointer) are derived from the page's scripts (remark-prerequisites-env.mjs).
 
-import { ClipboardCheck, Container } from "lucide-react";
+import { ClipboardCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
@@ -17,17 +17,5 @@ export function Prerequisites({ title = "Prerequisites", children }: Prerequisit
       <AlertTitle className="callout-title">{title}</AlertTitle>
       <AlertDescription className="callout-body">{children}</AlertDescription>
     </Alert>
-  );
-}
-
-export function PrerequisitesEnvironment({ title, children }: PrerequisitesProps) {
-  return (
-    <section className="prereqs-env" aria-label="Start the environment">
-      <p className="prereqs-env-title">
-        <Container aria-hidden="true" />
-        <span>Start the environment{title ? `: ${title}` : ""}</span>
-      </p>
-      {children}
-    </section>
   );
 }

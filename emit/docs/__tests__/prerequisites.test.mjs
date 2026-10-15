@@ -95,10 +95,7 @@ const BUNDLE = {
   bundle: "uc-docs-env",
   bundleUrl: "https://d.io/env/uc-docs-env.tar.gz",
 };
-const ENV = pageEnvironment(
-  [{ kind: "python", environment: "uc/compose.aws.yaml", fetchUrl: "/how-to/s3/snippets/s3.py" }],
-  { ...BUNDLE, origin: "https://d.io" },
-);
+const ENV = pageEnvironment([{ kind: "python", environment: "uc/compose.aws.yaml" }], BUNDLE);
 const RESOLVE = (key) => registryEnvironment(key, BUNDLE);
 const GUIDE = { href: "/how-to/run-local-server#with-s3", title: "Run a local server" };
 const DOCKER =
@@ -148,7 +145,7 @@ test("tutorial: starting the stack is the journey's first step", async () => {
   expect(step).toBeGreaterThan(out.indexOf("::::journey"));
   expect(step).toBeLessThan(out.indexOf("### Open a session"));
   expect(out).toContain(`\`\`\`bash\n${COMMANDS}\n\`\`\``);
-  expect(out).toContain("`uv run https://d.io/how-to/s3/snippets/s3.py`");
+  expect(out).not.toContain("uv run https://");
 });
 
 test("md-twin: the tutorial's first step is numbered and carries the commands", async () => {

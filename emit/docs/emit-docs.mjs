@@ -283,7 +283,6 @@ export async function emitDocs({ site, drafts = false }) {
             registry,
             bundle: site.env.bundle,
             bundleUrl: envBundle.bundleUrl,
-            origin,
             declared: declaredEnvironment(page.body),
           });
       } catch (err) {

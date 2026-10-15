@@ -19,13 +19,8 @@ const OPTS = {
   registry: REGISTRY,
   bundle: "uc-docs-env",
   bundleUrl: "https://d.io/env/uc-docs-env.tar.gz",
-  origin: "https://d.io",
 };
-const py = (environment, fetchUrl = "/how-to/x/snippets/x.py") => ({
-  kind: "python",
-  environment,
-  fetchUrl,
-});
+const py = (environment) => ({ kind: "python", environment });
 
 test("no environment when no script needs one", () => {
   expect(pageEnvironment([py(null)], OPTS)).toBeNull();
@@ -39,7 +34,6 @@ test("the default compose starts without -f", () => {
     "cd uc-docs-env/unitycatalog && docker compose up -d --wait",
   ]);
   expect(env.stop).toBe("docker compose down");
-  expect(env.runUrl).toBe("https://d.io/how-to/x/snippets/x.py");
 });
 
 test("a variant passes -f and exports its client env", () => {
@@ -50,19 +44,6 @@ test("a variant passes -f and exports its client env", () => {
     "export AWS_ENDPOINT_URL=http://localhost:9000",
   ]);
   expect(env.ports).toEqual([8080, 9000]);
-});
-
-test("two Python scripts leave no single run URL", () => {
-  const env = pageEnvironment(
-    [py("unitycatalog/compose.yaml"), py("unitycatalog/compose.yaml", "/how-to/x/snippets/y.py")],
-    OPTS,
-  );
-  expect(env.runUrl).toBeNull();
-});
-
-test("a script that imports a helper gets no run URL", () => {
-  const script = { ...py("unitycatalog/compose.yaml"), helpers: [{ fetchUrl: "/x/_seed.py" }] };
-  expect(pageEnvironment([script], OPTS).runUrl).toBeNull();
 });
 
 test("scripts needing two stacks are an error", () => {

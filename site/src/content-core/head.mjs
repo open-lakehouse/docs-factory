@@ -201,7 +201,7 @@ export function jsonLd({
     articleSection: typeof meta.diataxis === "string" ? meta.diataxis : undefined,
     isPartOf:
       identity.area === "docs" && identity.project
-        ? { "@type": "TechArticle", name: `${identity.project} documentation` }
+        ? { "@type": "TechArticle", name: `${siteName} documentation` }
         : undefined,
   });
 }

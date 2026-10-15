@@ -68,6 +68,42 @@ thread running through it. It is the design-side counterpart to the Casper
 golden-path post that *uses* the store; if promoted, cross-link the two rather than
 duplicate.
 
+## The Composable Lakehouse
+
+**Register:** architecture walkthrough backed by a runnable configuration. Each
+post is one Trestle environment selection, the model view it realizes, and one
+thing it lets you do that the previous configuration couldn't.
+**Through-line:** a lakehouse decomposes into capabilities with open interfaces
+between them. Trestle assembles a configuration from roles, and each post adds
+roles to the same stack until it is the full agentic lakehouse, deployed end
+to end. Facts come from `architecture/` (capabilities, concerns, asset kinds)
+and Trestle's `stack-topology` module catalog; the role → capability mapping
+is in `docs/design/trestle-model-convergence.md` §4.
+**Cross-links:** Governed ↔ *Trust in your Open Lakehouse* / *cross-repo-abac*
+(the argument lives there; this arc is the configuration); Interoperable ↔
+`uc-iceberg-rest`; Agentic ↔ the Chef Casper arc.
+
+**Posts (in order):**
+1. What is a Databrick? — `blogs/what-is-a-databrick/` — idea — the opener:
+   lakehouse + composable data systems, the capability chain, the series map.
+2. The Composable Lakehouse — `blogs/composable-lakehouse/` — idea — catalog +
+   object store + gateway; roles vs. implementations, swapping a brick.
+3. The Governed Lakehouse — `blogs/governed-lakehouse/` — idea — + auth + policy;
+   PDP/PEP placement, credential vending.
+4. The Observable Lakehouse — `blogs/observable-lakehouse/` — idea — + tracing +
+   lineage; concerns that span capabilities.
+5. The Interoperable Lakehouse — `blogs/interoperable-lakehouse/` — idea — peer
+   formats, Iceberg REST, many engines on one table.
+6. The Portable Lakehouse — `blogs/portable-lakehouse/` — idea — in-stack vs.
+   hosted providers, deploy targets.
+7. The Interactive Lakehouse — `blogs/interactive-lakehouse/` — idea — notebooks
+   + experiment tracking; AI asset kinds.
+8. The Agentic Lakehouse — `blogs/agentic-lakehouse/` — idea — the finale: agent
+   platform + everything above, deployed A to Z.
+
+Adjectives for 5–7 are still open; reorder or replace freely, but keep 1–4 and
+the agentic finale as the spine.
+
 ## Build on Unity Catalog
 
 **Register:** practical integrations with Unity Catalog

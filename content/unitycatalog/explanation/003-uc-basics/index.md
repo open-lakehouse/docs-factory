@@ -1,5 +1,5 @@
 ---
-title: "Core concepts: the catalog and the assets it governs"
+title: "Core concepts: assets under management"
 summary: How Unity Catalog organizes data and AI assets into a three-level namespace, how catalogs reach storage, which privileges the open source server enforces on each object, and how it manages users.
 diataxis: explanation
 project: unitycatalog
@@ -197,8 +197,8 @@ privileges for one principal. The CLI wraps the same calls in
 `bin/uc permission create | get | delete`.
 
 The how-to guides list the privileges each operation needs, for example
-[Create and manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
-and [Create and manage volumes](../../how-to/manage-volumes/index.md).
+[Manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
+and [Manage volumes](../../how-to/manage-volumes/index.md).
 
 ## Principals and users
 

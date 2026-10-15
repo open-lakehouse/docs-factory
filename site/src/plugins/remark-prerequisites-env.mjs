@@ -54,7 +54,7 @@ function pointerItem(env, guide) {
 }
 
 function startNodes(env) {
-  const nodes = [
+  return [
     paragraph(
       text(`Download the docs' environment and start ${env.title}. Already running it? Skip this.`),
     ),
@@ -67,12 +67,6 @@ function startNodes(env) {
       text("."),
     ),
   ];
-  if (env.runUrl) {
-    nodes.push(
-      paragraph(text("To run every example on this page at once: "), code(`uv run ${env.runUrl}`)),
-    );
-  }
-  return nodes;
 }
 
 const commandsBlock = (env) => ({

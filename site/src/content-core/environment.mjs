@@ -48,13 +48,8 @@ export function declaredEnvironment(body) {
  * name two different stacks throws: one page, one set of start commands.
  * `declared` (declaredEnvironment) is for a page with no scripts of its own
  * that still walks the reader through a stack; scripts must agree with it.
- * `runUrl` is set when the page owns exactly one Python script and it
- * imports no helper module, so a reader can `uv run` it straight from its URL.
  */
-export function pageEnvironment(
-  scripts,
-  { registry, bundle, bundleUrl, origin = "", declared = null },
-) {
+export function pageEnvironment(scripts, { registry, bundle, bundleUrl, declared = null }) {
   const keys = [
     ...new Set([declared, ...scripts.map((s) => s.environment)].filter(Boolean)),
   ].sort();
@@ -63,12 +58,7 @@ export function pageEnvironment(
     throw new Error(`scripts need more than one environment (${keys.join(", ")})`);
   }
   const [key] = keys;
-  const python = scripts.filter((s) => s.kind === "python");
-  return {
-    ...registryEnvironment(key, { registry, bundle, bundleUrl }),
-    runUrl:
-      python.length === 1 && !python[0].helpers?.length ? `${origin}${python[0].fetchUrl}` : null,
-  };
+  return registryEnvironment(key, { registry, bundle, bundleUrl });
 }
 
 /**

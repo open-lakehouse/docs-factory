@@ -22,7 +22,7 @@ its format.
 
 :::prerequisites
 - A schema, such as `retail.sales`:
-  [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
+  [Manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
 - Data files the server can reach, such as a folder under the local server's
   [`UC_DOCS_ROOT`](../run-local-server/index.md#share-a-folder-with-the-server).
 - [uv](https://docs.astral.sh/uv/getting-started/installation/), for the Python
@@ -40,8 +40,7 @@ JSON, one folder per table:
 Set up the client for your interface:
 
 :::tab[Python SDK]
-Open a Python session with the SDK. `python -m asyncio` accepts the
-top-level `await` its calls need:
+Start Python with the SDK:
 
 ```bash
 uv run --with unitycatalog-client==0.7.0 --with pyarrow \
@@ -168,5 +167,5 @@ For data that changes, write Delta and
 
 - [Register an existing external table](../register-external-table/index.md)
   covers Delta tables, which engines can read by name.
-- [Create and manage volumes](../manage-volumes/index.md) to govern files that
+- [Manage volumes](../manage-volumes/index.md) to govern files that
   aren't tables.

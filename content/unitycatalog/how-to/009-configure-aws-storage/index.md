@@ -48,8 +48,7 @@ trust policies or external IDs, so do the IAM steps for real on AWS.
 Set up the client for your interface:
 
 :::tab[Python SDK]
-Open a Python session with the SDK. `python -m asyncio` accepts the
-top-level `await` its calls need:
+Start Python with the SDK:
 
 ```bash
 uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 python -m asyncio
@@ -325,5 +324,5 @@ that a location still uses breaks every list of external locations; see
   to put managed tables and volumes under this external location.
 - [Configure Spark to use Unity Catalog](../configure-spark/index.md): Spark
   needs `hadoop-aws` on the classpath to use vended S3 credentials.
-- [Create and manage volumes](../manage-volumes/index.md) with `s3://` locations
+- [Manage volumes](../manage-volumes/index.md) with `s3://` locations
   under the external location.

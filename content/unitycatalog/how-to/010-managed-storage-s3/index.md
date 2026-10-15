@@ -32,8 +32,7 @@ managed data. For the difference between managed and external objects, see
 Set up the client for your interface:
 
 :::tab[Python SDK]
-Open a Python session with the SDK. `python -m asyncio` accepts the
-top-level `await` its calls need:
+Start Python with the SDK:
 
 ```bash
 uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 python -m asyncio
@@ -188,5 +187,5 @@ catalog doesn't delete the external location or the storage credential.
 
 - [Configure Spark to use Unity Catalog](../configure-spark/index.md) and create
   managed Delta tables under these roots.
-- [Create and manage volumes](../manage-volumes/index.md) for the full volume
+- [Manage volumes](../manage-volumes/index.md) for the full volume
   lifecycle.

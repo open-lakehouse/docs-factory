@@ -11,8 +11,7 @@ status: ready
 
 Apache Spark connects to a [Unity Catalog](model:unityCatalogOSS) server
 through the Unity Catalog Spark connector, so that Spark SQL can name
-`catalog.schema.table` and read and write the tables it holds. This guide picks
-matching versions, configures a SparkSession, and sets up authentication. The
+`catalog.schema.table` and read and write the tables it holds. The
 connector registers one Unity Catalog catalog as a Spark catalog. Delta Spark
 handles the table format, and from Delta 4.3.0 it reads and commits
 catalog-managed tables through the server's Delta API.

@@ -33,9 +33,12 @@ Python library for object storage and local files:
 uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 python -m asyncio
 ```
 
+Enter each of the following snippets in it, in order.
+
+:::note
 `python -m asyncio` is a Python shell that accepts `await` at the top level,
-which the asynchronous client needs. Enter each of the following snippets in
-it, in order.
+which the asynchronous client needs.
+:::
 
 ### Connect to the server
 
@@ -141,7 +144,7 @@ came straight from storage.
 
 ## Next steps
 
-- [Create and manage volumes](../../how-to/manage-volumes/index.md) covers
+- [Manage volumes](../../how-to/manage-volumes/index.md) covers
   managed volumes, renaming, and what deleting each kind does to its files.
 - [Credential vending](../../explanation/credential-vending/index.md) explains
   the trust boundary behind the access request.

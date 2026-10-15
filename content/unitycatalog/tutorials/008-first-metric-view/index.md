@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - deltaSpark
-status: draft
+status: ready
 ---
 
 In this tutorial you define three business metrics, the order count, total
@@ -167,7 +167,7 @@ same revenue per customer, because none of them define it.
 
 ## Next steps
 
-- [Create and maintain metric views](../../how-to/metric-views/index.md)
+- [Manage metric views](../../how-to/metric-views/index.md)
   covers query sources, joins, registering a definition through the REST API,
   and changing one.
 - [Seed the TPC-H sample data](../../how-to/seed-tpch-data/index.md) gives you

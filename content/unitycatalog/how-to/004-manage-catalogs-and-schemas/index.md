@@ -1,5 +1,5 @@
 ---
-title: Create and manage catalogs and schemas
+title: Manage catalogs and schemas
 summary: Create, inspect, update, rename, and delete Unity Catalog catalogs and schemas with the Python SDK or the CLI.
 diataxis: how-to
 project: unitycatalog
@@ -10,9 +10,7 @@ status: ready
 ---
 
 Catalogs and schemas organize every asset in
-[Unity Catalog](model:unityCatalogOSS). This guide creates, inspects, updates,
-renames, and deletes them with the Python SDK or the
-`uc` CLI. A catalog is the top level of the three-level namespace. It contains schemas, and a schema contains tables,
+[Unity Catalog](model:unityCatalogOSS). A catalog is the top level of the three-level namespace. It contains schemas, and a schema contains tables,
 volumes, functions, and registered models. For how these objects relate, see
 [Core concepts](../../explanation/uc-basics/index.md).
 
@@ -26,8 +24,7 @@ volumes, functions, and registered models. For how these objects relate, see
 Set up the client for your interface:
 
 :::tab[Python SDK]
-Open a Python session with the SDK. `python -m asyncio` accepts the
-top-level `await` its calls need:
+Start Python with the SDK:
 
 ```bash
 uv run --with unitycatalog-client==0.7.0 python -m asyncio
@@ -226,6 +223,6 @@ or the metastore. To delete a schema, you need ownership of the schema plus
 
 - [Register an existing external table](../register-external-table/index.md) in
   your new schema.
-- [Create and manage volumes](../manage-volumes/index.md) for files.
+- [Manage volumes](../manage-volumes/index.md) for files.
 - [Use the Python client](../../tutorials/python-client/index.md) for a guided
   walkthrough of the same SDK.

@@ -5,7 +5,7 @@ diataxis: tutorial
 project: unitycatalog
 references:
   - unityCatalogOSS
-status: draft
+status: ready
 ---
 
 In this tutorial you turn an ordinary Python function into a catalog object.
@@ -31,18 +31,17 @@ mkdir first-function && cd first-function
 uv run --with unitycatalog-ai==0.4.0 python -m asyncio
 ```
 
+Enter each of the following snippets in it, in order.
+
+:::note
 `python -m asyncio` is a Python shell that accepts `await` at the top level,
-which the asynchronous client needs. Enter each of the following snippets in
-it, in order.
+which the asynchronous client needs.
+:::
 
 ### Connect to the server
 
 ```python file=./snippets/first_function.py start=start:connect end=end:connect
 ```
-
-`unitycatalog-ai` 0.4.0 depends on the 0.4 release of `unitycatalog-client`.
-It works with the local server for everything in this tutorial. Authorization
-is off on the local server, so the client needs no token.
 
 ### Create a schema for functions
 
@@ -68,12 +67,14 @@ Then import it into the session:
 The client reads the function's source code to register it, so define
 functions in a module like this one rather than typing them into the session.
 
+:::tip
 Every argument and the return value need a type hint, because the catalog
 stores the function's signature as SQL types: `int` becomes `LONG`, and
 `float` becomes `DOUBLE`. The docstring follows the Google style. The client
 stores its first paragraph as the function's comment and each `Args:` entry as
 that parameter's comment. An AI agent later reads exactly these descriptions to
 decide when to call the function, so they are worth writing well.
+:::
 
 ### Register the function
 
@@ -120,11 +121,13 @@ stored the default too:
 
 The first call returns `53.97`, and the second `59.97`.
 
+:::note
 Neither call ran on the server. The client fetched the stored
 definition, rebuilt the function from it, and ran it on your machine, in a
 separate Python process by default. So whoever calls a catalog function runs
 it with their own Python environment and permissions. To run in the calling
 process instead, pass `execution_mode="local"` to `UnitycatalogFunctionClient`.
+:::
 
 ### Pass the right types
 

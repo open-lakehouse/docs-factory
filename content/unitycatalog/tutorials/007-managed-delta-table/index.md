@@ -190,5 +190,5 @@ versions. To try that, read the table from DuckDB.
   reads and appends to a managed table from a second engine.
 - [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md)
   explains the protocol behind each step.
-- [Create and manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
+- [Manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
   covers storage roots for schemas as well as catalogs.

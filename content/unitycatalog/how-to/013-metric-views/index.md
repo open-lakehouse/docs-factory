@@ -1,12 +1,12 @@
 ---
-title: Create and maintain metric views
+title: Manage metric views
 summary: Keep metric-view definitions in YAML files, create them with Spark over tables or queries, register them through the REST API, and change or drop them.
 diataxis: how-to
 project: unitycatalog
 references:
   - unityCatalogOSS
   - deltaSpark
-status: draft
+status: ready
 ---
 
 A metric view stores dimensions and measures in Unity Catalog as YAML. The
@@ -25,8 +25,7 @@ first walk-through on a small table, see
 
 ## Connect Spark
 
-Metric views need Spark 4.2 and the connector built for it. Open a session in
-the folder where you keep your definitions:
+Metric views need Spark 4.2 and the connector built for it:
 
 ```bash
 uv run --with pyspark==4.2.0 python
@@ -52,7 +51,8 @@ to a metric go through review like any other change. Spark reads these keys:
 | `dimensions` | The values you group and filter by: a `name` and an `expr` over a source row. |
 | `measures` | The aggregations you report: a `name` and an aggregate `expr`. |
 
-Save this definition as `orders_metrics.yaml`. A dimension can be any
+Save this definition as `orders_metrics.yaml`, in the folder you started
+Python in. A dimension can be any
 expression on a row, such as a `CASE` that turns codes into labels. A measure
 can combine aggregates, such as revenue divided by the number of distinct
 customers:

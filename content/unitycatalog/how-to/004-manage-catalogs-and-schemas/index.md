@@ -10,9 +10,7 @@ status: ready
 ---
 
 Catalogs and schemas organize every asset in
-[Unity Catalog](model:unityCatalogOSS). This guide creates, inspects, updates,
-renames, and deletes them with the Python SDK or the
-`uc` CLI. A catalog is the top level of the three-level namespace. It contains schemas, and a schema contains tables,
+[Unity Catalog](model:unityCatalogOSS). A catalog is the top level of the three-level namespace. It contains schemas, and a schema contains tables,
 volumes, functions, and registered models. For how these objects relate, see
 [Core concepts](../../explanation/uc-basics/index.md).
 

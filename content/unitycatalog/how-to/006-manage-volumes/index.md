@@ -12,8 +12,7 @@ status: ready
 A [Unity Catalog](model:unityCatalogOSS) volume governs a directory of files
 that aren't a table: CSV drops, documents, images, model inputs. Like a table, a
 volume lives in a schema and has a three-level name, such as
-`retail.files.landing`. This guide creates, inspects, renames, and deletes
-volumes, and shows what each step does to their files.
+`retail.files.landing`.
 
 Volumes come in two types:
 

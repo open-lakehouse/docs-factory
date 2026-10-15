@@ -1,5 +1,5 @@
-// The `:::prerequisites` box. In the factory preview it holds only the authored
-// bullets; the "Start the environment" commands are added by the docs emitter.
+// The `:::prerequisites` box. Its Docker bullet and "Start the environment"
+// section are derived from the page's scripts (remark-prerequisites-env.mjs).
 
 import { ClipboardCheck, Container } from "lucide-react";
 import type { ReactNode } from "react";

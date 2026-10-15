@@ -12,7 +12,9 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkGfm from "remark-gfm";
 import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import type { ShikiTransformer } from "shiki";
+import type { VFile } from "vfile";
 import { defineConfig, type Plugin } from "vite";
+import { loadEnvironmentResolver } from "./scripts/page-environments.mjs";
 import { docIdentity, hrefFromIdentity } from "./src/content-core/identity.mjs";
 import remarkCallouts from "./src/plugins/remark-callouts.mjs";
 import remarkCodeSnippets from "./src/plugins/remark-code-snippets.mjs";
@@ -22,6 +24,7 @@ import remarkJourney from "./src/plugins/remark-journey.mjs";
 import remarkLikeC4Views from "./src/plugins/remark-likec4-views.mjs";
 import remarkModelLinks from "./src/plugins/remark-model-links.mjs";
 import remarkPrerequisites from "./src/plugins/remark-prerequisites.mjs";
+import remarkPrerequisitesEnv from "./src/plugins/remark-prerequisites-env.mjs";
 import remarkResolveImages from "./src/plugins/remark-resolve-images.mjs";
 import remarkSourceLinks from "./src/plugins/remark-source-links.mjs";
 import remarkTabs from "./src/plugins/remark-tabs.mjs";
@@ -109,6 +112,24 @@ function buildKnownHrefs(): Set<string> {
 
 const knownHrefs = buildKnownHrefs();
 
+const environmentFor = loadEnvironmentResolver(path.resolve(__dirname, ".."));
+
+// The emitter's derived prerequisites, per page. A page whose scripts disagree
+// on a stack fails the emit; here it only warns, so one bad page can't take
+// down the review app.
+function remarkPageEnvironment() {
+  return (tree: Parameters<ReturnType<typeof remarkPrerequisitesEnv>>[0], file: VFile) => {
+    if (!environmentFor || !file.path) return;
+    let derived = null;
+    try {
+      derived = environmentFor(file.path, String(file.value));
+    } catch (err) {
+      console.warn(`${path.relative(__dirname, file.path)}: ${(err as Error).message}`);
+    }
+    if (derived) remarkPrerequisitesEnv(derived)(tree);
+  };
+}
+
 // Dev-only static serving for build-emitted companion files. `.md` twins,
 // served `.py`/`.sh`/`.sql` scripts, and scripts.json are written to dist/ by build:artifacts
 // (never to public/), so `vite dev` would 404 them and the review workspace's
@@ -184,6 +205,7 @@ export default defineConfig({
           remarkFrontmatter,
           [remarkMdxFrontmatter, { name: "frontmatter" }],
           remarkCodeSnippets,
+          remarkPageEnvironment,
           remarkPrerequisites,
           remarkTldr,
           remarkCallouts,

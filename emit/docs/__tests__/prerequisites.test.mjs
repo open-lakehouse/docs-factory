@@ -6,8 +6,8 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pageEnvironment } from "../../../site/src/content-core/environment.mjs";
+import remarkPrerequisitesEnv from "../../../site/src/plugins/remark-prerequisites-env.mjs";
 import { emitOne } from "../../emit.mjs";
-import remarkPrerequisitesEnv from "../../plugins/remark-prerequisites-env.mjs";
 import { docsSiteTarget } from "../../targets/docs-site.mjs";
 import mdTwin from "../../targets/md-twin.mjs";
 
@@ -61,7 +61,7 @@ async function render(target, environment = ENV) {
 test("docs-site: the derived bullet, the authored ones, then the environment", async () => {
   const out = await render(docsSiteTarget({ assetBase: "/assets/how-to/s3" }));
   expect(out).toContain(
-    "::::prerequisites\n- Docker with Compose v2, for the local environment.\n- Python 3.11 or later.",
+    "::::prerequisites\n- [Docker](https://docs.docker.com/get-started/get-docker/) with Compose v2, for the local environment.\n- Python 3.11 or later.",
   );
   expect(out).toContain(":::environment[UC with S3]");
   expect(out).toContain(

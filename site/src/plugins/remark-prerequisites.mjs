@@ -1,7 +1,7 @@
 /**
  * remark-prerequisites — turn a `:::prerequisites` container into a
  * `<Prerequisites>` box, and the `:::environment[Title]` the docs emitter nests
- * inside it (emit/plugins/remark-prerequisites-env.mjs) into a
+ * inside it (remark-prerequisites-env.mjs) into a
  * `<PrerequisitesEnvironment>` section. The flattening counterpart for the .md
  * twins is emit/plugins/remark-prerequisites-md.mjs. Mirrors remark-tldr.mjs.
  */

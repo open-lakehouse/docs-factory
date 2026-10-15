@@ -10,7 +10,8 @@ asset kinds** — the *nouns* the lakehouse manages along the data & AI value ch
 > **Verbs vs nouns.** Capabilities are what the platform *does* (catalog, query
 > engine, table format, governance, model tracking). Asset kinds are what it
 > *governs* (table, volume, function, model, agent skill). Both are first-class;
-> they meet at two edges — `dependsOn` and `governs`.
+> they meet at two edges — `dependsOn` and `governs`. **Concerns** (governance,
+> lineage, observability) span both, through a third edge, `appliesTo`.
 
 ## What an asset kind is
 
@@ -24,7 +25,7 @@ deployment `service` and not a logical `capability` (see
 Unity Catalog's name for an asset kind is a **securable**. The logical layer uses
 the vendor-neutral term `asset`; the glossary records the mapping.
 
-The first-pass set:
+The set, limited to kinds a tracked compatibility journey acts on:
 
 | Asset kind | What it is |
 |---|---|
@@ -34,6 +35,12 @@ The first-pass set:
 | **Function** | A governed, reusable unit of computation (UDF / routine) the query engine resolves and runs. |
 | **Model** | A governed ML model — versions, stages, and lineage catalogued like data. |
 | **Agent skill** | An emerging kind: a shareable, governed capability an AI agent can discover and invoke. |
+| **View** (`sqlView`) | A stored query with a schema and no data of its own; the engine expands it at query time. `view` is a LikeC4 keyword, hence the ID. |
+| **Metric view** | A view that declares measures and dimensions once, so every engine computes a metric the same way. |
+| **Credential** | A catalogued long-lived cloud identity, used only to mint scoped storage credentials. |
+| **External location** | A governed storage path prefix bound to the credential that reaches it. |
+
+Deferred until a journey acts on them: shares, connections, and MCP servers.
 
 ## The two edges
 
@@ -46,19 +53,21 @@ declared; the model uses the generic `dependsOn` (ADR-0006,
 `model/logical/assets.likec4` today:
 
 ```
-  namespace ──dependsOn──▶ catalog                               (tracked via)
-  table     ──dependsOn──▶ table format, object storage, catalog
-  volume    ──dependsOn──▶ object storage
-  model     ──dependsOn──▶ object storage
-  skill     ──dependsOn──▶ volume
-  function  (no edge yet)
+  namespace        ──dependsOn──▶ catalog
+  table            ──dependsOn──▶ table format, object storage, catalog
+  view             ──dependsOn──▶ table, query engine
+  metric view      ──dependsOn──▶ view, query engine
+  volume           ──dependsOn──▶ object storage, catalog
+  function         ──dependsOn──▶ query engine, catalog
+  model            ──dependsOn──▶ object storage, model tracking, catalog
+  skill            ──dependsOn──▶ volume, sharing, catalog
+  credential       ──dependsOn──▶ storage credential issuer
+  external location──dependsOn──▶ object storage, credential
 ```
 
 This is the capability-coverage lens: a platform that only has table-format and
-object-storage capabilities can materialize **tables**, and nothing else. The
-lens is incomplete: the model doesn't yet say that every kind needs the catalog,
-that functions need a query engine, or that models need model tracking. Treat a
-missing edge as unknown, not as "not needed".
+object-storage capabilities can materialize **tables**, and nothing else. Views
+and metric views reach the catalog through what they're defined over.
 
 ### `governs` — which catalog covers which kinds (breadth)
 
@@ -89,9 +98,9 @@ governed by the catalog but *distributed* through **Sharing** — a first-class,
 technology-agnostic capability specified by **Open Sharing** (the open profile of
 the Delta Sharing protocol). "Sharing" is deliberately the right altitude: wider
 ("data exchange") dilutes it, narrower ("agent-skill distribution") wrongly ties a
-capability to one asset kind. The model draws no asset → sharing edge: a table
-*can* be shared but doesn't depend on sharing to exist, and the skill's
-distribution path isn't modeled as an edge yet.
+capability to one asset kind. A table *can* be shared but doesn't depend on
+sharing to exist, so it has no edge to it; an agent skill does, so
+`agentSkill ──dependsOn──▶ sharing` ("distributed through").
 
 ## Views
 
@@ -99,3 +108,5 @@ distribution path isn't modeled as an edge yet.
   kinds they `govern`. Shows UC's data & AI breadth against the table-centric
   Iceberg REST catalog.
 - **`assetCapabilities`** — asset kinds and the capabilities they `dependsOn`.
+- **`concernMatrix`** — the concerns and the asset kinds and capabilities they
+  `appliesTo` ([ADR-0007](../adr/ADR-0007-cross-cutting-concerns.md)).

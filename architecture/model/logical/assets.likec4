@@ -24,6 +24,30 @@ model {
     table -[dependsOn]-> objectStorage "data stored at rest"
     table -[dependsOn]-> catalog "commit coordination"
 
+    sqlView = asset "View" {
+      summary "A named query over tables, resolved and run by the query engine."
+      description "
+        A view is a stored query: it has a schema like a table but no data of
+        its own. The catalog records its definition, and the query engine
+        expands it against the tables it reads at query time.
+      "
+      metadata { canonicalDoc "design/asset-kinds.md" }
+    }
+    sqlView -[dependsOn]-> table "selects from"
+    sqlView -[dependsOn]-> queryEngine "expanded and run by"
+
+    metricView = asset "Metric view" {
+      summary "A view that declares measures and dimensions, so every engine computes a metric the same way."
+      description "
+        A metric view defines business metrics once: measures (aggregations)
+        and the dimensions they can be grouped by, over a source view or table.
+        Queries name a measure instead of re-writing its aggregation.
+      "
+      metadata { canonicalDoc "design/asset-kinds.md" }
+    }
+    metricView -[dependsOn]-> sqlView "defined over"
+    metricView -[dependsOn]-> queryEngine "computed by"
+
     volume = asset "Volume" {
       summary "A governed storage location with usually non-tabular files."
 
@@ -34,6 +58,7 @@ model {
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
     volume -[dependsOn]-> objectStorage "materialized as files in"
+    volume -[dependsOn]-> catalog "registered in"
 
     registeredFunction = asset "Function" {
       summary "A governed, reusable unit of computation."
@@ -43,6 +68,8 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
+    registeredFunction -[dependsOn]-> queryEngine "resolved and run by"
+    registeredFunction -[dependsOn]-> catalog "registered in"
 
     mlModel = asset "Model" {
       summary "A governed ML model."
@@ -53,14 +80,47 @@ model {
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
     mlModel -[dependsOn]-> objectStorage "data stored at rest"
+    mlModel -[dependsOn]-> modelTracking "versioned and promoted through"
+    mlModel -[dependsOn]-> catalog "registered in"
 
     agentSkill = asset "Agent skill" {
+      summary "A packaged, governed set of instructions and files an AI agent can discover and use."
+      description "
+        An agent skill bundles instructions, scripts, and reference files that
+        teach an agent a task. Governed as an asset, it is catalogued, access
+        controlled, and distributed like data.
+      "
 
       link https://agentskills.io
 
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
     agentSkill -[dependsOn]-> volume "files stored at rest"
+    agentSkill -[dependsOn]-> sharing "distributed through"
+    agentSkill -[dependsOn]-> catalog "registered in"
+
+    credential = asset "Credential" {
+      summary "A catalogued cloud identity the catalog uses to mint scoped storage credentials."
+      description "
+        A credential stores a long-lived cloud identity (an IAM role, a managed
+        identity, a service account) in the catalog. The catalog never hands it
+        out: it uses it to ask the issuer for short-lived, narrowed credentials.
+      "
+      metadata { canonicalDoc "design/asset-kinds.md" }
+    }
+    credential -[dependsOn]-> credentialIssuer "exchanged for scoped credentials through"
+
+    externalLocation = asset "External location" {
+      summary "A governed object-storage path, paired with the credential that can reach it."
+      description "
+        An external location binds a storage path prefix to a credential, so
+        the catalog can authorize access to anything under that path and vend
+        credentials for it.
+      "
+      metadata { canonicalDoc "design/asset-kinds.md" }
+    }
+    externalLocation -[dependsOn]-> objectStorage "a path in"
+    externalLocation -[dependsOn]-> credential "reached with"
   }
 
   ucSpec -[governs]-> lakehouse.namespace "governs"
@@ -69,8 +129,13 @@ model {
   ucSpec -[governs]-> lakehouse.registeredFunction "governs"
   ucSpec -[governs]-> lakehouse.mlModel "governs"
   ucSpec -[governs]-> lakehouse.agentSkill "governs"
+  ucSpec -[governs]-> lakehouse.sqlView "governs"
+  ucSpec -[governs]-> lakehouse.metricView "governs"
+  ucSpec -[governs]-> lakehouse.credential "governs"
+  ucSpec -[governs]-> lakehouse.externalLocation "governs"
 
   icebergRestSpec -[governs]-> lakehouse.namespace "governs"
   icebergRestSpec -[governs]-> lakehouse.table "governs"
+  icebergRestSpec -[governs]-> lakehouse.sqlView "governs"
 }
 

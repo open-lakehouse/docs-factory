@@ -1,6 +1,6 @@
 # Canonical registry for the LAYERED model.
 #
-# Maps logical capabilities and asset kinds to their design doc, and each
+# Maps logical capabilities, concerns, and asset kinds to their design doc, and each
 # concrete deployment service to the repo that provides it. The maintenance skill
 # and human readers use this to navigate model <-> prose <-> source. Keep in sync
 # with `metadata.canonicalDoc` on logical elements and `metadata.sourceRepo` on
@@ -37,12 +37,6 @@ capabilities:
     element: lakehouse.objectStorage
     doc: design/reference-architecture.md
     note: The S3 API specifies it; buckets are deployment datastores (ADR-0004).
-  lineage:
-    element: lakehouse.lineage
-    doc: design/lineage-plane.md
-  governance:
-    element: lakehouse.governance
-    doc: design/governance.md
   modelTracking:
     element: lakehouse.modelTracking
     doc: design/reference-architecture.md
@@ -51,6 +45,16 @@ capabilities:
     element: lakehouse.sharing
     doc: design/reference-architecture.md
     note: Specified by Open Sharing (Delta Sharing protocol); agent skills require it (ADR-0005).
+
+# --- Logical layer: cross-cutting concerns (ADR-0007) ---------------------
+# What each one appliesTo is in model/logical/concerns.likec4.
+concerns:
+  governance:
+    element: lakehouse.governance
+    doc: design/governance.md
+  lineage:
+    element: lakehouse.lineage
+    doc: design/lineage-plane.md
   observability:
     element: lakehouse.observability
     doc: design/reference-architecture.md
@@ -63,7 +67,11 @@ asset_kinds:
   volume:     { element: lakehouse.volume,             doc: design/asset-kinds.md }
   function:   { element: lakehouse.registeredFunction, doc: design/asset-kinds.md }
   model:      { element: lakehouse.mlModel,            doc: design/asset-kinds.md }
-  agentSkill: { element: lakehouse.agentSkill,         doc: design/asset-kinds.md, note: "governed by catalog; distributed via the sharing capability (Open Sharing) — built today." }
+  agentSkill: { element: lakehouse.agentSkill,         doc: design/asset-kinds.md, note: "governed by catalog; dependsOn the sharing capability (Open Sharing) for distribution — built today." }
+  view:       { element: lakehouse.sqlView,            doc: design/asset-kinds.md, note: "`view` is a LikeC4 keyword." }
+  metricView: { element: lakehouse.metricView,         doc: design/asset-kinds.md }
+  credential: { element: lakehouse.credential,         doc: design/asset-kinds.md }
+  externalLocation: { element: lakehouse.externalLocation, doc: design/asset-kinds.md }
 
 # --- Concrete layer: deployment services -> source repos ------------------
 # (What each realizes is in model/deployment/deployments.likec4 via instanceOf.

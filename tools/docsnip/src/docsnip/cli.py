@@ -282,6 +282,10 @@ def cmd_versions(p, fix: bool = False) -> int:
 def cmd_bump(p, release: str, project: versions.Project) -> int:
     for path in versions.bump(p["root"], release, project):
         print(f"rewrote {path.relative_to(p['root'])}")
+    print(
+        "next: the release review re-reads claims the release can change "
+        "(docs/design/docs-versioning.md#release-review, skill release-bump)"
+    )
     # Table headers show pinned versions.
     return cmd_versions(p) or cmd_compat(p, fix=True)
 

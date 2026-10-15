@@ -243,12 +243,13 @@ compat:
     uv run docsnip compat --fix
 
 # Move the UC docs to a new release: rewrite release.yml and every pin matching it.
+# Then run the release review (docs/design/docs-versioning.md, skill release-bump).
 bump-uc VERSION:
     uv run docsnip bump-uc {{VERSION}}
 
 # Move the Delta docs to a new Delta Spark release: rewrite content/delta/release.yml
 # and every pin matching it. deltalake and DuckDB pins: edit release.yml, then
-# `uv run docsnip versions --fix`.
+# `uv run docsnip versions --fix`. Then run the release review, as for bump-uc.
 bump-delta VERSION:
     uv run docsnip bump-delta {{VERSION}}
 

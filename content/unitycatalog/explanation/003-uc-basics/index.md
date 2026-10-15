@@ -1,5 +1,5 @@
 ---
-title: "Core concepts: the catalog and the assets it governs"
+title: "Core concepts: assets under management"
 summary: How Unity Catalog organizes data and AI assets into a three-level namespace, how catalogs reach storage, which privileges the open source server enforces on each object, and how it manages users.
 diataxis: explanation
 project: unitycatalog

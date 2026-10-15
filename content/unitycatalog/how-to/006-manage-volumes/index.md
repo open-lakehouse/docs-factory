@@ -36,8 +36,7 @@ For how volumes fit into the namespace, see
 Set up the client for your interface:
 
 :::tab[Python SDK]
-Open a Python session with the SDK. `python -m asyncio` accepts the
-top-level `await` its calls need:
+Start Python with the SDK:
 
 ```bash
 uv run --with unitycatalog-client==0.7.0 python -m asyncio

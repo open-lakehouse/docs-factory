@@ -32,9 +32,12 @@ client installed:
 uv run --with unitycatalog-client==0.7.0 python -m asyncio
 ```
 
-`python -m asyncio` is a Python shell that accepts `await` at the top level.
-The client is asynchronous, so every call is awaited. Enter each of the
-following snippets in it, in order.
+Enter each of the following snippets in it, in order.
+
+:::note
+`python -m asyncio` is a Python shell that accepts `await` at the top level,
+which the asynchronous client needs.
+:::
 
 ### Connect to the server
 

@@ -1,6 +1,6 @@
 ---
 name: update-architecture
-description: Keep the canonical, LAYERED Open Lakehouse architecture model (LikeC4, in architecture/) in sync with the estate. Logical layer = abstract capabilities + zero-trust governance roles (no repo names); deployment layer = our services realizing them across topologies. Traverses sibling repos' docs/ADRs, proposes minimal .likec4 patches for human approval, then regenerates artifacts. Use when a service/deployment changes, a new capability or governance role appears, an instanceOf mapping changes, or designed work becomes built.
+description: Keep the canonical, LAYERED Open Lakehouse architecture model (LikeC4, in architecture/) in sync with the estate. Logical layer = abstract capabilities, asset kinds, and the technology catalog (no repo names in the reference); deployment layer = our services realizing them. Traverses sibling repos' docs/ADRs, proposes minimal .likec4 patches for human approval, then regenerates artifacts. Use when a service/deployment changes, a new capability or asset kind appears, an instanceOf mapping changes, or designed work becomes built.
 user-invocable: true
 version: 0.2.0
 ---
@@ -41,13 +41,14 @@ With no args, do a full reconciliation pass across all modeled repos.
    on logical elements and `metadata.sourceRepo` + GitHub `link` on deployment
    services. Tags come first in an element body.
 5. **Respect the layering.** The model is layered:
-   - **Logical (abstract):** technology-agnostic capabilities + governance roles.
+   - **Logical (abstract):** technology-agnostic capabilities and asset kinds.
      **NO repo/service/infra names** ever appear here.
    - **Deployment (concrete):** our repos/services as nodes that `instanceOf` the
-     logical elements they realize, across three trust-differentiated topologies.
+     logical elements they realize, in the `trustedCompute` environment.
    A repo change almost always edits the **deployment** layer, not the logical one.
-   Only touch logical files if a genuinely new *capability* or *governance role*
-   (not a new service) appears.
+   Only touch logical files if a genuinely new *capability* or *asset kind*
+   (not a new service) appears. The zero-trust points (PAP/PDP/PEP/PIP/PA) are
+   prose in `design/governance.md`, not elements.
 6. **Maturity honesty.** Tag designed-but-not-built elements/edges `#designed` (or
    `#prototype`). Never present designed work as built. When unsure, check the
    source repo's docs (much of the distributed zero-trust topology is designed).
@@ -70,7 +71,7 @@ For the affected repo(s) (from `--repo`, `--summary`, or all in a full pass):
 - Cross-check against `architecture/estate.yml` for coarse facts — but prefer
   the repo's own docs where they're more specific.
 - Determine the delta **and which layer it touches**: a new/changed *service or
-  deployment* (concrete)? a new *capability or governance role* (abstract)? a new
+  deployment* (concrete)? a new *capability or asset kind* (abstract)? a new
   `instanceOf` mapping (which role does a service now play)? a maturity change
   (something moved from designed → built)?
 
@@ -86,19 +87,18 @@ discovers `**/*.likec4` recursively, so location is organization only.)
 |---|---|
 | New/changed abstract **capability** | `model/logical/capabilities.likec4` |
 | New/changed **specification** or **implementation** (OSS tech) | `model/logical/technology-catalog.likec4` |
-| New/changed **governance role** or zero-trust edge | `model/logical/governance.likec4` |
-| New/changed **asset kind** (securable) or requires/governs edge | `model/logical/assets.likec4` |
+| New/changed **asset kind** (securable) or dependsOn/governs edge | `model/logical/assets.likec4` |
 | Capability-chain / realizes / vends / reads edge | `model/logical/relationships.likec4` |
-| New/changed **service, gateway, topology**, or `instanceOf` | `model/deployment/deployments.likec4` |
+| New/changed **service, datastore, environment**, or `instanceOf` | `model/deployment/deployments.likec4` |
 | New element / deploymentNode / relationship kind, or tag | `model/specification.likec4` |
 | New logical / deployment / dynamic **view** | `model/views/logical-views.likec4` / `deployment-views.likec4` / `flows.likec4` |
 
-- A new **service** goes in `deployments.likec4` as a `service` (or `gateway` /
-  `browser` / `datastore`) node inside the right topology, with `metadata` +
-  `link` **then** `instanceOf <logical role(s)>`. It realizes existing logical
-  capabilities/roles — do **not** invent a new logical element for it unless it
+- A new **service** goes in `deployments.likec4` as a `service` (or `browser` /
+  `datastore`) node inside the right environment, with `metadata` + `link`
+  **then** `instanceOf <logical element(s)>`. It realizes existing logical
+  capabilities — do **not** invent a new logical element for it unless it
   introduces a genuinely new capability.
-- A new **capability/role** goes in the logical layer (tech-agnostic name, a
+- A new **capability** goes in the logical layer (tech-agnostic name, a
   `metadata.canonicalDoc`), and is then realized by one or more services.
 
 If a design doc's scope changed, also propose the `design/*.md` edit and the
@@ -117,7 +117,7 @@ After approval:
      (no dots/quotes) — use `canonicalDoc`, `sourceRepo`.
    - Inside a **deployment node**, `metadata`/`link` come **before** `instanceOf`.
    - `view of <el>` and `instanceOf <el>` need the **fully-qualified** logical path
-     (e.g. `lakehouse.governance.pep`).
+     (e.g. `lakehouse.governance`).
    - Deployment relationships connect deployment nodes/instances — you can't use a
      logical actor (a `person`) as an endpoint there.
 3. Surface the final diff (sources **and** regenerated `dist/`). Remind the human

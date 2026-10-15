@@ -3,9 +3,8 @@
 // Technology-agnostic capabilities and the people who use the lakehouse. OUR
 // service/repo names appear only in the deployment layer; the concrete
 // technology mapped onto these capabilities (specifications + implementations)
-// lives in technology-catalog.likec4. The governance capability's zero-trust
-// roles live in governance.likec4; asset kinds in assets.likec4; cross-capability
-// relationships in relationships.likec4.
+// lives in technology-catalog.likec4; asset kinds in assets.likec4;
+// cross-capability relationships in relationships.likec4.
 
 model {
 
@@ -156,16 +155,16 @@ model {
       metadata { canonicalDoc "design/lineage-plane.md" }
     }
 
-    // Governance is a first-class capability; its zero-trust roles (PAP / PDP /
-    // PEP / PIP / PA) are declared in governance.likec4 via `extend`.
+    // The zero-trust points (PAP / PDP / PEP / PIP / PA) are prose in
+    // design/governance.md, not elements.
     governance = capability "Governance" {
       summary "Decides who may access what, and enforces it (row filters, column masks)."
       description "
         Governance answers 'can this principal do this here?' and, when allowed,
         governs what they see — enforcing row filters and column masks.
 
-        It is a cross-cutting zero-trust decomposition (PAP / PDP / PEP / PIP /
-        PA) whose points are realized by different services per deployment.
+        It spans the lakehouse: a policy engine decides, and a trusted engine or
+        gateway enforces the decision where the data flows.
       "
       metadata { canonicalDoc "design/governance.md" }
     }

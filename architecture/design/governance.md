@@ -2,9 +2,10 @@
 
 Governance is a first-class capability of the reference lakehouse, but it is
 **cross-cutting**: its points live in *different services*, and **where
-enforcement happens changes with the deployment**. This doc describes the logical
-decomposition; which concrete service plays each point is a deployment fact
-([`deployments.md`](./deployments.md)).
+enforcement happens changes with the deployment**. This doc describes the
+decomposition. The model has a single `lakehouse.governance` capability; the
+points below are prose, not elements (the role elements were removed from the
+model in #73). For the deployed services, see [`deployments.md`](./deployments.md).
 
 ## The points (NIST 800-207 framing)
 
@@ -18,7 +19,7 @@ decomposition; which concrete service plays each point is a deployment fact
 
 The decision cycle: **PAP** publishes policy → **PEP** requests a decision for a
 request → **PIP** supplies facts → **PDP** returns a verdict + constraints → **PEP**
-applies it. (See the `policyDecisionFlow` dynamic view.)
+applies it.
 
 ## The decide / enforce split (built)
 
@@ -69,7 +70,7 @@ The two-layer guarantee (catalog gates + vends; engine enforces RLS/CM) **holds
 only for data that flows through the enforcing engine.** The moment the catalog
 vends a raw credential to an *external* engine (Spark, Trino, a raw-S3 notebook),
 the Cedar row-filter/column-mask residuals are bypassed and that engine reads raw
-files. This is the platform's sharpest limitation — modeled explicitly in the
-`externalEngine` deployment and the `fgacBypass` flow. The designed mitigation:
+files. This is the platform's sharpest limitation (see
+[`deployments.md`](./deployments.md), "Outside the boundary"). The designed mitigation:
 the catalog *refuses* to vend a raw credential for a governed table, forcing the
 query through the enforcing engine.

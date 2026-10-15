@@ -1,4 +1,4 @@
-// LOGICAL views — the abstract reference lakehouse and its governance model.
+// LOGICAL views — the abstract reference lakehouse.
 // Deployment (concrete) views live in deployment-views.likec4; flows in flows.likec4.
 
 views {
@@ -16,7 +16,7 @@ views {
       lakehouse,
       lakehouse.*,
 
-    // the zero-trust roles + governed asset kinds get their own views
+    // governed asset kinds get their own views
     exclude element.kind == asset
     autoLayout LeftRight
   }
@@ -55,7 +55,7 @@ views {
 
     include *
 
-    // collapse the governance roles + asset kinds here (own views)
+    // asset kinds have their own views
     exclude element.kind == asset
     autoLayout LeftRight
   }
@@ -76,7 +76,7 @@ views {
   // --- Governed asset kinds: capabilities required to manage them -----------
   view assetCapabilities {
     title "Governed asset kinds — capabilities required"
-    description "What a platform must be able to do to manage each asset kind. Every kind requires the catalog to be a governed securable; domain capabilities materialize each kind (a table needs a table format + query engine; a volume needs object storage; a model needs model tracking)."
+    description "The capabilities each asset kind is materialized on: a table on a table format, object storage, and the catalog that coordinates its commits; a volume and a model on object storage."
 
     include
       lakehouse,

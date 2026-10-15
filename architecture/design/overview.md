@@ -8,8 +8,8 @@ ship**. This model describes it at **two altitudes of one architecture**:
   engine, open table format, object storage, lineage, and a cross-cutting
   governance decomposition. See [`reference-architecture.md`](./reference-architecture.md)
   and [`governance.md`](./governance.md).
-- **Concrete:** our services realizing those capabilities across three
-  trust-differentiated deployment topologies. See [`deployments.md`](./deployments.md).
+- **Concrete:** our services realizing those capabilities in the `trustedCompute`
+  reference deployment. See [`deployments.md`](./deployments.md).
 
 The concrete is *a realization of* the abstract — modeled with LikeC4's deployment
 layer (`instanceOf`), so the reference model stays clean of repo/infra names and
@@ -31,7 +31,8 @@ turns them into a governed, transactional table.
 ## The services (concrete realization)
 
 Our repos manifest in the deployment layer, each realizing one or more
-capabilities/roles:
+capabilities. The zero-trust points they play (prose, not model elements) are in
+[`governance.md`](./governance.md):
 
 | Repo | Realizes | Notes |
 |---|---|---|
@@ -43,8 +44,9 @@ capabilities/roles:
 
 ## Cross-cutting
 
-- **Governance / zero-trust** (PAP/PDP/PEP/PIP/PA) — pervasive; realized by
-  different services per topology. [`governance.md`](./governance.md).
+- **Governance / zero-trust** (PAP/PDP/PEP/PIP/PA) — pervasive; its points sit in
+  different services, and enforcement moves with the deployment.
+  [`governance.md`](./governance.md).
 - **Cross-estate patterns** (composition, agentic CLIs, composable UI) —
   [`patterns.md`](./patterns.md).
 - **Cross-cutting concepts** — credential vending, planning-time capture, plug in

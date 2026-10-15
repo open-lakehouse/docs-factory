@@ -13,6 +13,7 @@ import {
   declaredEnvironment,
   environmentGuide,
   pageEnvironment,
+  registryEnvironment,
 } from "../src/content-core/environment.mjs";
 import { splitFrontmatter } from "../src/content-core/frontmatter.mjs";
 import { docIdentity, hrefFromIdentity } from "../src/content-core/identity.mjs";
@@ -23,7 +24,7 @@ import { runDocsnipScripts, scriptEntry } from "./build-script-index.mjs";
 const SITES = [delta, unitycatalog];
 
 /**
- * `(path, source) => { environment, guide, diataxis } | null` over docsnip's raw script
+ * `(path, source) => { environment, guide, diataxis, resolve } | null` over docsnip's raw script
  * entries. Scripts are keyed by the docs site's routes, so a page's `runUrl`
  * is the published one; the guide link is the in-app route, for the reviewer.
  * `readPage` returns a page's source (the guide's title comes from it).
@@ -54,20 +55,20 @@ export function environmentResolver({ entries, registry, sites = SITES, readPage
     if (!entry) return null;
     const route = entry.site.hrefFor(identity);
     const owned = entry.scripts.filter((s) => s.tutorialRoute === route);
+    const bundle = { registry, bundle: entry.site.env.bundle, bundleUrl: entry.bundleUrl };
     const environment = pageEnvironment(owned, {
-      registry,
-      bundle: entry.site.env.bundle,
-      bundleUrl: entry.bundleUrl,
+      ...bundle,
       origin: entry.site.origin,
       declared: declaredEnvironment(body),
     });
-    if (!environment) return null;
+    const resolve = (key) => registryEnvironment(key, bundle);
+    if (!environment) return { environment: null, resolve };
     const guide = environmentGuide(environment, {
       siteGuide: entry.site.env.guide,
       resolve: entry.guidePage,
       self: hrefFromIdentity(identity),
     });
-    return { environment, guide, diataxis: meta.diataxis ?? identity.bucket };
+    return { environment, guide, diataxis: meta.diataxis ?? identity.bucket, resolve };
   };
 }
 

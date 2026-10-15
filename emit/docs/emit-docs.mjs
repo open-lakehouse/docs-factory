@@ -50,6 +50,7 @@ import {
   declaredEnvironment,
   environmentGuide,
   pageEnvironment,
+  registryEnvironment,
 } from "../../site/src/content-core/environment.mjs";
 import { isEmitted, splitFrontmatter } from "../../site/src/content-core/frontmatter.mjs";
 import { canonicalUrl, pageHead } from "../../site/src/content-core/head.mjs";
@@ -297,6 +298,19 @@ export async function emitDocs({ site, drafts = false }) {
         });
       const guideAt = (base) => guide && { href: `${base}${guide.href}`, title: guide.title };
       const diataxis = page.meta.diataxis ?? identity.bucket;
+      const resolve =
+        envBundle &&
+        ((key) => {
+          try {
+            return registryEnvironment(key, {
+              registry,
+              bundle: site.env.bundle,
+              bundleUrl: envBundle.bundleUrl,
+            });
+          } catch (err) {
+            throw new Error(`${relative(REPO_ROOT, absPath)}: ${err.message}`);
+          }
+        });
 
       const rendered = await emitOne({
         ...common,
@@ -305,7 +319,7 @@ export async function emitDocs({ site, drafts = false }) {
           ...linkPlugins(route),
           [remarkScriptLinks, { scripts: scriptUrls }],
           [remarkStripSourceMeta],
-          [remarkPrerequisitesEnv, { environment, guide: guideAt(""), diataxis }],
+          [remarkPrerequisitesEnv, { environment, guide: guideAt(""), diataxis, resolve }],
         ],
       });
       likec4Exported ||= rendered.likec4Dir !== null;
@@ -345,7 +359,7 @@ export async function emitDocs({ site, drafts = false }) {
         plugins: [
           ...linkPlugins(route),
           [remarkAbsoluteLinks, { origin }],
-          [remarkPrerequisitesEnv, { environment, guide: guideAt(origin), diataxis }],
+          [remarkPrerequisitesEnv, { environment, guide: guideAt(origin), diataxis, resolve }],
         ],
       });
       let twinOut = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));

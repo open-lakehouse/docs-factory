@@ -95,6 +95,18 @@ def test_environment_marker_needs_a_stack(tmp_path) -> None:
     assert environments.check_pages(root, root / "content", []) == []
 
 
+def test_keyed_environment_marker_must_be_registered(tmp_path) -> None:
+    root = _repo(tmp_path, "environments:\n  uc/compose.yaml: { title: UC }\n")
+    (root / "content" / "p" / "how-to" / "x").mkdir(parents=True)
+    _page(
+        root,
+        ':::prerequisites\n:::\n\n:::environment{key="uc/compose.yaml"}\n:::\n\n'
+        ':::environment{key="uc/nope.yaml"}\n:::\n',
+    )
+    errors = environments.check_pages(root, root / "content", [])
+    assert len(errors) == 1 and "key uc/nope.yaml has no entry" in errors[0]
+
+
 def test_guide_must_name_a_page(tmp_path) -> None:
     root = _repo(
         tmp_path, "environments:\n  uc/compose.yaml: { title: UC, guide: run }\n"

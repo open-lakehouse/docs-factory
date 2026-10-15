@@ -63,9 +63,21 @@ export function pageEnvironment(
     throw new Error(`scripts need more than one environment (${keys.join(", ")})`);
   }
   const [key] = keys;
+  const python = scripts.filter((s) => s.kind === "python");
+  return {
+    ...registryEnvironment(key, { registry, bundle, bundleUrl }),
+    runUrl:
+      python.length === 1 && !python[0].helpers?.length ? `${origin}${python[0].fetchUrl}` : null,
+  };
+}
+
+/**
+ * One registry entry with its reader commands, independent of any page: what
+ * a keyed `:::environment{key="…"}` marker renders. Throws on an unknown key.
+ */
+export function registryEnvironment(key, { registry, bundle, bundleUrl }) {
   const env = registry[key];
   if (!env) throw new Error(`environment ${key} is not in envs/environments.yml`);
-  const python = scripts.filter((s) => s.kind === "python");
   return {
     key,
     title: env.title,
@@ -76,8 +88,7 @@ export function pageEnvironment(
     commands: startCommands(key, env, { bundle, bundleUrl }),
     stop: stopCommand(key),
     dir: `${bundle}/${composeParts(key).dir}`,
-    runUrl:
-      python.length === 1 && !python[0].helpers?.length ? `${origin}${python[0].fetchUrl}` : null,
+    runUrl: null,
   };
 }
 

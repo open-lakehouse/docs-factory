@@ -47,7 +47,7 @@ test("a page without scripts gets its declared stack, and the guide skips itself
 });
 
 test("no stack, or a project without an env bundle, leaves the box as authored", () => {
-  expect(resolve(...page("uc/how-to/007-plain"))).toBeNull();
+  expect(resolve(...page("uc/how-to/007-plain")).environment).toBeNull();
   expect(resolve(...page("delta/how-to/001-read"))).toBeNull();
 });
 
@@ -67,4 +67,12 @@ test("a registry guide links its section of the page that starts the stack", () 
   });
   const { guide } = withGuide(...page("uc/how-to/005-s3"));
   expect(guide.href).toBe("/docs/uc/how-to/run-local-server#with-s3");
+});
+
+test("a keyed marker resolves any registry stack, even on a page without one", () => {
+  const { resolve: keyed } = resolve(...page("uc/how-to/007-plain"));
+  expect(keyed("uc/compose.yaml").commands[1]).toBe(
+    "cd uc-docs-env/uc && docker compose up -d --wait",
+  );
+  expect(() => keyed("uc/nope.yaml")).toThrow("uc/nope.yaml is not in envs/environments.yml");
 });

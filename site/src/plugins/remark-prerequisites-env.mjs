@@ -6,6 +6,8 @@
  *
  * - an authored, empty `:::environment` container anywhere in the body is
  *   replaced by the commands (a page whose task is starting the stack);
+ *   `:::environment{key="unitycatalog/compose.aws.yaml"}` is replaced by just
+ *   the code block for that registry stack, so one page can start several;
  * - else a tutorial gets them as its first step, `### Start the environment`
  *   at the top of its first `::::journey` (or a `##` section before its first
  *   `##` if it has none);
@@ -16,8 +18,10 @@
  * twin render them alike. Both emit targets and the review app run this.
  *
  * `environment` null (no script needs a stack) leaves the page as authored,
- * minus any `:::environment` marker. `guide` is `{ href, title }`, or null when
- * this emit doesn't publish it.
+ * minus any bare `:::environment` marker. `guide` is `{ href, title }`, or null
+ * when this emit doesn't publish it. `resolve(key)` is content-core's
+ * registryEnvironment for this site (throws on an unknown key), or null, which
+ * drops keyed markers too.
  */
 const text = (value) => ({ type: "text", value });
 const code = (value) => ({ type: "inlineCode", value });
@@ -54,7 +58,7 @@ function startNodes(env) {
     paragraph(
       text(`Download the docs' environment and start ${env.title}. Already running it? Skip this.`),
     ),
-    { type: "code", lang: "bash", meta: null, value: env.commands.join("\n") },
+    commandsBlock(env),
     paragraph(
       text("Stop it later with "),
       code(env.stop),
@@ -71,17 +75,27 @@ function startNodes(env) {
   return nodes;
 }
 
-/** Replace each `:::environment` marker under `node` with `nodes`; true if any. */
-function replaceMarkers(node, nodes) {
+const commandsBlock = (env) => ({
+  type: "code",
+  lang: "bash",
+  meta: null,
+  value: env.commands.join("\n"),
+});
+
+/**
+ * Replace each `:::environment` marker under `node` with `nodesFor(key)`
+ * (`key` null for a bare marker); true if any.
+ */
+function replaceMarkers(node, nodesFor) {
   if (!node.children) return false;
   let found = false;
   const out = [];
   for (const child of node.children) {
     if (isDirective("environment")(child)) {
-      out.push(...structuredClone(nodes));
+      out.push(...nodesFor(child.attributes?.key ?? null));
       found = true;
     } else {
-      found = replaceMarkers(child, nodes) || found;
+      found = replaceMarkers(child, nodesFor) || found;
       out.push(child);
     }
   }
@@ -112,15 +126,21 @@ function insertTutorialStep(tree, env) {
 
 /**
  * @param {{ environment: object | null, guide?: { href: string, title: string } | null,
- *   diataxis?: string | null }} options
+ *   diataxis?: string | null, resolve?: ((key: string) => object) | null }} options
  */
-export default function remarkPrerequisitesEnv({ environment, guide = null, diataxis = null }) {
+export default function remarkPrerequisitesEnv({
+  environment,
+  guide = null,
+  diataxis = null,
+  resolve = null,
+}) {
   return (tree) => {
-    if (!environment) {
-      replaceMarkers(tree, []);
-      return;
-    }
-    const placed = replaceMarkers(tree, startNodes(environment));
+    const nodesFor = (key) => {
+      if (key) return resolve ? [commandsBlock(resolve(key))] : [];
+      return environment ? startNodes(environment) : [];
+    };
+    const placed = replaceMarkers(tree, nodesFor);
+    if (!environment) return;
     if (!placed && diataxis === "tutorial") insertTutorialStep(tree, environment);
 
     const box = tree.children.find(isDirective("prerequisites"));

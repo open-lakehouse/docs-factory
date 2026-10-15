@@ -21,6 +21,7 @@ test("docPageHead uses the site's origin, routes, and title", () => {
     headline: "Create tables",
     url: `${uc.origin}/how-to/create-tables`,
     description: "Create a managed or external table in Unity Catalog.",
+    isPartOf: { "@type": "TechArticle", name: `${uc.title} documentation` },
   });
 });
 

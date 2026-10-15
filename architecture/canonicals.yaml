@@ -52,6 +52,16 @@ concerns:
   governance:
     element: lakehouse.governance
     doc: design/governance.md
+  authentication:
+    element: lakehouse.governance.authentication
+    doc: design/governance.md
+  authorization:
+    element: lakehouse.governance.authorization
+    doc: design/governance.md
+  fineGrainedAccess:
+    element: lakehouse.governance.fineGrainedAccess
+    doc: design/governance.md
+    note: Row filters + column masks; needs a trusted engine to enforce (ADR-0007).
   lineage:
     element: lakehouse.lineage
     doc: design/lineage-plane.md

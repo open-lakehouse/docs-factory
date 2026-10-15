@@ -141,4 +141,8 @@ specification {
   tag library
   tag infra
   tag generated   // rendered from a Trestle plan; excluded from estate views
+  // On a `realizes` edge: the implementation meets the target only together
+  // with another contributor. Whether the target is fully met is a property of
+  // an environment's deployed instances, never of one edge (ADR-0007).
+  tag partial
 }

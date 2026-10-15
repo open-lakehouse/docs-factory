@@ -181,6 +181,10 @@ model {
     }
   }
   lakekeeper -[implements]-> icebergRestSpec "implements"
+  lakekeeper -[realizes]-> lakehouse.governance.authorization "table-level permissions via OpenFGA"
+  lakekeeper -[realizes]-> lakehouse.governance.authentication "validates OIDC tokens" {
+    #partial
+  }
 
   unityCatalogOSS = implementation "Unity Catalog (OSS)" {
     #service
@@ -195,6 +199,10 @@ model {
   }
   unityCatalogOSS -[implements]-> ucSpec "implements"
   unityCatalogOSS -[implements]-> icebergRestSpec "serves Iceberg tables through"
+  unityCatalogOSS -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
+  unityCatalogOSS -[realizes]-> lakehouse.governance.authentication "validates access tokens" {
+    #partial
+  }
 
   // Model-tracking implementation --------------------------------------------
   mlflow = implementation "MLflow" {
@@ -228,7 +236,10 @@ model {
     description "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
     link https://www.authelia.com
   }
-  authelia -[realizes]-> lakehouse.governance "authenticates + authorizes requests at the gateway"
+  authelia -[realizes]-> lakehouse.governance.authentication "single sign-on at the gateway"
+  authelia -[realizes]-> lakehouse.governance.authorization "access rules at the gateway" {
+    #partial
+  }
 
   openPolicyAgent = implementation "Open Policy Agent" {
     #service
@@ -236,7 +247,9 @@ model {
     description "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
     link https://www.openpolicyagent.org
   }
-  openPolicyAgent -[realizes]-> lakehouse.governance "decides access policy"
+  openPolicyAgent -[realizes]-> lakehouse.governance.authorization "decides access policy" {
+    #partial
+  }
 
   jaeger = implementation "Jaeger" {
     #service

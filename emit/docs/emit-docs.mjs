@@ -78,6 +78,7 @@ import {
   toEntry,
 } from "./discovery.mjs";
 import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
+import { docPageHead } from "./heads.mjs";
 import { loadModel, modelLinkResolver, viewAltText } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
 import { searchRecords } from "./search.mjs";
@@ -451,14 +452,7 @@ export async function emitDocs({ site, drafts = false }) {
       },
     };
     for (const p of ordered) {
-      heads[p.route] = pageHead({
-        identity: p.identity,
-        meta: p.meta,
-        body: p.body,
-        origin,
-        hrefFor,
-        siteName: site.title,
-      });
+      heads[p.route] = docPageHead(site, p);
     }
     for (const a of apis) {
       heads[a.route] = {

@@ -23,7 +23,7 @@ from docs-factory, so it can move to another repo unchanged.
 | --- | --- |
 | `src/content/<bucket>/<slug>.md` | Page Markdown with snippets inlined, links mapped to site routes, and `:::` directives kept. |
 | `src/generated/site.json` | Navigation tree, page list (route, title, section trail, headings, prev/next, the page's scripts), and the REST API references (`apis`). |
-| `src/generated/heads.json` | Per-route `<head>` from `content-core/head.mjs` `pageHead()`. |
+| `src/generated/heads.json` | Per-route `<head>` from `content-core/head.mjs` `pageHead()`; content pages go through `emit/docs/heads.mjs` `docPageHead()`, which also builds the review app's Head tab. |
 | `src/vendor/plugins/` | Verbatim copies of the preview's directive plugins (`site/src/plugins/`). |
 | `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + scripts and their helpers, `env/` (the environment bundle and `environments.json`), images, LikeC4 PNGs and web component. |
 | `.docs-emit.json` | The emit manifest (below). |

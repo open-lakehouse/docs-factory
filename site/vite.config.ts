@@ -1,4 +1,4 @@
-import { createReadStream, readdirSync, statSync } from "node:fs";
+import { createReadStream, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import mdx from "@mdx-js/rollup";
 import rehypeShiki from "@shikijs/rehype";
@@ -14,8 +14,12 @@ import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import type { ShikiTransformer } from "shiki";
 import type { VFile } from "vfile";
 import { defineConfig, type Plugin } from "vite";
+import { docPageHead } from "../emit/docs/heads.mjs";
+import { DOCS_SITES } from "../emit/docs/sites/index.mjs";
 import { loadEnvironmentResolver } from "./scripts/page-environments.mjs";
+import { isEmitted, isPublic, splitFrontmatter } from "./src/content-core/frontmatter.mjs";
 import { docIdentity, hrefFromIdentity } from "./src/content-core/identity.mjs";
+import { walkContent } from "./src/content-core/walk.mjs";
 import remarkCallouts from "./src/plugins/remark-callouts.mjs";
 import remarkCodeSnippets from "./src/plugins/remark-code-snippets.mjs";
 import remarkDirectiveProseGuard from "./src/plugins/remark-directive-prose-guard.mjs";
@@ -177,6 +181,59 @@ function devCompanionFiles(): Plugin {
   };
 }
 
+// Every docs page's <head> as its docs site emits it, for the review workspace's
+// Head tab (src/lib/page-heads.ts). Built from the same docPageHead the emitter
+// calls, over the pages a `--drafts` emit selects. Dev builds it per request, so
+// a content edit only needs to tell the client to refetch.
+function buildPageHeads(): Record<string, unknown> {
+  const repoRoot = path.resolve(__dirname, "..");
+  const out: Record<string, unknown> = {};
+  for (const site of DOCS_SITES) {
+    for (const absPath of walkContent(path.join(repoRoot, "content", site.project))) {
+      const { meta, body } = splitFrontmatter(readFileSync(absPath, "utf8")) as {
+        meta: Record<string, unknown>;
+        body: string;
+      };
+      if (!isEmitted(meta, { drafts: true })) continue;
+      const identity = docIdentity(absPath, meta);
+      const summary = typeof meta.summary === "string" ? meta.summary.trim() : "";
+      out[`${identity.project}/${identity.bucket}/${identity.slug}`] = {
+        site: site.name,
+        published: isPublic(meta),
+        descriptionSource: summary ? "summary" : "body",
+        head: docPageHead(site, { identity, meta, body }),
+      };
+    }
+  }
+  return out;
+}
+
+function pageHeads(): Plugin {
+  const contentDir = path.resolve(__dirname, "../content") + path.sep;
+  return {
+    name: "docs-factory:page-heads",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        if ((req.url ?? "").split("?")[0] !== "/page-heads.json") return next();
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.end(JSON.stringify(buildPageHeads()));
+      });
+      server.watcher.on("change", (file) => {
+        if (file.startsWith(contentDir) && /\.mdx?$/.test(file)) {
+          server.ws.send({ type: "custom", event: "docs-factory:page-heads" });
+        }
+      });
+    },
+    generateBundle() {
+      this.emitFile({
+        type: "asset",
+        fileName: "page-heads.json",
+        source: `${JSON.stringify(buildPageHeads())}\n`,
+      });
+    },
+  };
+}
+
 export default defineConfig({
   server: {
     host: "::",
@@ -188,6 +245,7 @@ export default defineConfig({
   },
   plugins: [
     devCompanionFiles(),
+    pageHeads(),
     {
       enforce: "pre",
       ...mdx({

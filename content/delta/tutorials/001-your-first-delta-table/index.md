@@ -16,7 +16,8 @@ transaction log that makes it a Delta table: every write adds a version, and
 you can list the table's history and query an earlier version.
 
 :::prerequisites
-- Java 17 and [uv](https://docs.astral.sh/uv/).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- [Java 17](https://adoptium.net/temurin/releases/?version=17).
 :::
 
 ::::journey

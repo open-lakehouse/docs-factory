@@ -18,7 +18,8 @@ handles the table format, and from Delta 4.3.0 it reads and commits
 catalog-managed tables through the server's Delta API.
 
 :::prerequisites
-- Java 17 and Python 3.11 or later with [uv](https://docs.astral.sh/uv/).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- [Java 17](https://adoptium.net/temurin/releases/?version=17).
 :::
 
 ## Choose matching versions

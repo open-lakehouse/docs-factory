@@ -18,7 +18,7 @@ with the `deltalake` package from [delta-rs](model:deltaRs), then query it with
 in the same two commits, so every how-to guide works on the result.
 
 :::prerequisites
-- Python 3.11 or later and [uv](https://docs.astral.sh/uv/).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
 :::
 
 ::::journey

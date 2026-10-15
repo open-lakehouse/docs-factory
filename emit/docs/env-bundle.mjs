@@ -12,7 +12,6 @@ import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
-import { parse as parseYaml } from "yaml";
 import {
   composeParts,
   exportLines,
@@ -21,16 +20,7 @@ import {
   stopCommand,
 } from "../../site/src/content-core/environment.mjs";
 
-/** envs/environments.yml as `{ key: { title, ports, clientEnv } }`. */
-export function loadRegistry(repoRoot) {
-  const raw = parseYaml(readFileSync(join(repoRoot, "envs", "environments.yml"), "utf8")) ?? {};
-  return Object.fromEntries(
-    Object.entries(raw.environments ?? {}).map(([key, e]) => [
-      key,
-      { title: e.title, ports: e.ports ?? [], clientEnv: e["client-env"] ?? {} },
-    ]),
-  );
-}
+export { loadRegistry } from "../../site/src/content-core/registry.mjs";
 
 // READMEs describe the repo's test setup; example/ is aws-sim's own demo.
 const EXCLUDE = /(^|\/)(README\.md|example\/.*)$/;

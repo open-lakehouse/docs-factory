@@ -139,15 +139,26 @@ is the reference example.
    alone when an AI search engine quotes it. Don't name the release: see
    [Versions](#versions). Don't open with
    "This page shows how to". Link the explanation that covers the concepts.
-2. **Prerequisites.** A `:::prerequisites` box with what the reader brings:
-   client versions, and data or configuration the page assumes. Pages don't
-   ship their own compose file and don't describe starting one: the emitter
-   appends a Docker bullet and the commands that download and start the page's
-   stack (from its scripts' compose and
+2. **Prerequisites.** A `:::prerequisites` box, one short bullet each:
+   - **Tools the reader installs**, linked to their install page and scoped to
+     the tab that needs them: `[uv](https://docs.astral.sh/uv/getting-started/installation/)`,
+     `[Java 17](https://adoptium.net/temurin/releases/?version=17), for Spark`,
+     `[JBang](https://www.jbang.dev/download/), for the Java examples`,
+     `[Rust](https://www.rust-lang.org/tools/install), for the Rust examples`.
+   - **What the page assumes exists**, in one line: what it is, the name the
+     page uses, and the page that creates it ("A schema, such as
+     `retail.sales`: [Create and manage catalogs and schemas](…)").
+
+   Packages and their pins go in the step that opens the session
+   (`uv run --with unitycatalog-client==0.7.0 python -m asyncio`), not in the
+   box, and uv brings its own Python, so don't list a Python version. Pages
+   don't ship their own compose file and don't describe starting one: the
+   emitter (and the review app) adds a Docker bullet and the commands that
+   download and start the page's stack (from its scripts' compose and
    [`envs/environments.yml`](../envs/environments.yml)), whose title carries
-   the server version. So don't list the server itself, free ports, or
-   downloads a tool makes on first run (Spark's Maven jars). A page without scripts
-   that still walks through a stack declares it:
+   the server version. So don't list Docker, the server itself, free ports,
+   `curl`, or downloads a tool makes on first run (Spark's Maven jars). A page
+   without scripts that still walks through a stack declares it:
    `:::prerequisites{environment="unitycatalog/compose.aws.yaml"}`. Then a
    `## Set up the client` section with a tab group per interface.
 3. **One `##` section per task**, named with an imperative ("Create a catalog",
@@ -253,6 +264,11 @@ in the page's frontmatter (`prerequisites.packages` / `.services` are not read b
 anything; only `prerequisites.datasets` is, for seed-dataset examples). The test
 harness reads `[tool.docs-factory]` to know which compose to start; omit the
 whole table if the script needs no services.
+
+A script that hangs is killed after 600 s and fails. When a dependency is known
+to stall now and then, set `timeout` (seconds) to fail it sooner and `retries`
+to re-run it on a fresh stack; say why in a comment beside them. Only a timeout
+is retried, and CI annotates every retry so the flake stays visible.
 
 Scala and Java scripts follow the same contract with their own tools' headers.
 A Scala script (`*.sc`) is run by `scala-cli run`, a Java one (`*.java`) by

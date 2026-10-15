@@ -5,8 +5,6 @@ diataxis: tutorial
 project: delta
 delta_features: [time-travel]
 prerequisites:
-  packages:
-    python: [deltalake, docs-factory-seed]
   datasets: [orders]
 references:
   - deltaSpec

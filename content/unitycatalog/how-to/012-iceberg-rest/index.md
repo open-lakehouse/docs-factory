@@ -21,17 +21,10 @@ keys. Iceberg tables live next to Delta tables in the same schemas, under the
 same privileges.
 
 :::prerequisites
-- A catalog with managed storage on S3, so that the server can place new
-  tables. This page uses the catalog `retail` with the schema `sales`. To set
-  one up, see
+- A catalog with managed storage on S3, such as `retail`:
   [Set managed storage for catalogs and schemas on S3](../managed-storage-s3/index.md).
-- One of these clients:
-
-  | Client | Needs |
-  | --- | --- |
-  | Spark | Java 17 and `pyspark==4.1.0` |
-  | DuckDB | `duckdb==1.5.4` |
-  | PyIceberg | `pyiceberg[pyarrow]==0.12.0` |
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- [Java 17](https://adoptium.net/temurin/releases/?version=17), for Spark.
 :::
 
 ## How Iceberg names map to the catalog
@@ -57,6 +50,12 @@ client, or [with both in one Spark session](#join-delta-and-iceberg-tables-in-sp
 ## Connect a client
 
 :::tab[Spark]
+Open a Python session with PySpark:
+
+```bash
+uv run --with pyspark==4.1.0 python
+```
+
 ```python file=./snippets/spark_iceberg.py start=start:session end=end:session
 ```
 
@@ -68,6 +67,12 @@ three-part names the same in both.
 :::
 
 ::::tab[DuckDB]
+Open a Python session with DuckDB:
+
+```bash
+uv run --with duckdb==1.5.4 python
+```
+
 Install and load the `iceberg` extension:
 
 ```python file=./snippets/duckdb_iceberg.py start=start:install end=end:install
@@ -97,6 +102,12 @@ On real AWS, leave these settings out.
 ::::
 
 ::::tab[PyIceberg]
+Open a Python session with PyIceberg:
+
+```bash
+uv run --with "pyiceberg[pyarrow]==0.12.0" python
+```
+
 ```python file=./snippets/pyiceberg_tables.py start=start:imports end=end:imports
 ```
 

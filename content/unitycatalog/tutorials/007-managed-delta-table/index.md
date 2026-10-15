@@ -19,7 +19,8 @@ from a folder of Delta files.
 Allow about fifteen minutes.
 
 :::prerequisites
-- Java 17 and [uv](https://docs.astral.sh/uv/).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- [Java 17](https://adoptium.net/temurin/releases/?version=17).
 :::
 
 ::::journey

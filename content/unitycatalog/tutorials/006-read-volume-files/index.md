@@ -18,7 +18,7 @@ with a storage library.
 It takes about ten minutes.
 
 :::prerequisites
-- [uv](https://docs.astral.sh/uv/).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
 :::
 
 ::::journey

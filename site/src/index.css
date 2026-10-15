@@ -1580,6 +1580,22 @@ a.roadmap-slot-title:hover { color: var(--accent); }
 .prose .callout-body p { margin: 0.5rem 0; }
 .prose .callout-body .cb { margin: 0.75rem 0; }
 
+/* The derived "Start the environment" section of a prerequisites box
+   (src/components/prerequisites.tsx), as the docs shell styles it. */
+.prose .prereqs-env {
+  margin-top: 0.75rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border);
+}
+.prose .prereqs-env-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.25rem;
+  font-weight: 600;
+}
+.prose .prereqs-env-title svg { width: 0.9rem; height: 0.9rem; color: var(--muted-foreground); }
+
 /* Tables — bordered, neutral. */
 /* Tables — mangrove data-grid feel: hairline frame, mono cells, zebra rows. */
 .prose table {

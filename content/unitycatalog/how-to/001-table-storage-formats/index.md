@@ -21,13 +21,12 @@ is different: you look the table up, then read its location with the reader for
 its format.
 
 :::prerequisites
-- A schema to register the tables in. This page uses `retail.sales`; see
+- A schema, such as `retail.sales`:
   [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
-- A folder of data files the server can reach. On the
-  [local server](../run-local-server/index.md), that's a folder under
+- Data files the server can reach, such as a folder under the local server's
   [`UC_DOCS_ROOT`](../run-local-server/index.md#share-a-folder-with-the-server).
-- For the Python examples, Python 3.11 or later with `unitycatalog-client`
-  0.7.0 and `pyarrow`. To read the tables, `polars==1.44.2` or `duckdb==1.5.4`.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/), for the Python
+  examples.
 :::
 
 ## Set up the client
@@ -41,6 +40,14 @@ JSON, one folder per table:
 Set up the client for your interface:
 
 :::tab[Python SDK]
+Open a Python session with the SDK. `python -m asyncio` accepts the
+top-level `await` its calls need:
+
+```bash
+uv run --with unitycatalog-client==0.7.0 --with pyarrow \
+  --with polars==1.44.2 --with duckdb==1.5.4 python -m asyncio
+```
+
 ```python file=./snippets/file_formats.py start=start:connect end=end:connect
 ```
 :::

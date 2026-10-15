@@ -10,6 +10,10 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
 # services = ["unitycatalog"]
+# # deltalake 1.6.6 sometimes stalls opening a uc:// table after the credentials
+# # are vended; a run that stalls is retried on a fresh server.
+# timeout = 180
+# retries = 2
 # claims.pandas = [
 #   { journey = "external.read", region = "read" },
 #   { journey = "external.read-vended", region = "read" },

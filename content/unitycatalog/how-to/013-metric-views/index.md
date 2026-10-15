@@ -17,8 +17,10 @@ first walk-through on a small table, see
 [Define and query your first metric view](../../tutorials/first-metric-view/index.md).
 
 :::prerequisites
-- Java 17 and [uv](https://docs.astral.sh/uv/).
-- The TPC-H sample in `samples.tpch`: [Seed TPC-H data into Unity Catalog](../seed-tpch-data/index.md).
+- The TPC-H sample in `samples.tpch`:
+  [Seed TPC-H data into Unity Catalog](../seed-tpch-data/index.md).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- [Java 17](https://adoptium.net/temurin/releases/?version=17).
 :::
 
 ## Connect Spark

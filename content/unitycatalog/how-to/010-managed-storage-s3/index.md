@@ -21,11 +21,10 @@ managed data. For the difference between managed and external objects, see
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
 
 :::prerequisites
-- A server configured for AWS with a storage credential and an external
-  location, as in
+- A storage credential and an external location:
   [Configure AWS storage credentials and external locations](../configure-aws-storage/index.md).
-- For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.7.0
-  and `obstore`.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/), for the Python
+  examples.
 :::
 
 ## Set up the client
@@ -33,6 +32,13 @@ managed data. For the difference between managed and external objects, see
 Set up the client for your interface:
 
 :::tab[Python SDK]
+Open a Python session with the SDK. `python -m asyncio` accepts the
+top-level `await` its calls need:
+
+```bash
+uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 python -m asyncio
+```
+
 ```python file=./snippets/managed_storage.py start=start:connect end=end:connect
 ```
 :::

@@ -28,8 +28,8 @@ For how volumes fit into the namespace, see
 
 :::prerequisites
 - For managed volumes, a storage root on the schema or its catalog.
-- For the Python examples, Python 3.11 or later with `unitycatalog-client`
-  0.7.0.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/), for the Python
+  examples.
 :::
 
 ## Set up the client
@@ -37,6 +37,13 @@ For how volumes fit into the namespace, see
 Set up the client for your interface:
 
 :::tab[Python SDK]
+Open a Python session with the SDK. `python -m asyncio` accepts the
+top-level `await` its calls need:
+
+```bash
+uv run --with unitycatalog-client==0.7.0 python -m asyncio
+```
+
 ```python file=./snippets/volumes.py start=start:connect end=end:connect
 ```
 :::

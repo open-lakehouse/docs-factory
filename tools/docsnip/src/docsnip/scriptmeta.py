@@ -215,6 +215,9 @@ class DocsFactoryMeta:
     ``lane`` puts the script in an opt-in test lane: ``"spark"`` for one that
     needs Java and Maven (PySpark, or the ``spark-sql`` shell), ``"jvm"`` for
     every Scala and Java script.
+    ``timeout`` (seconds) replaces the harness's default per-run limit, and
+    ``retries`` re-runs a script that hit it, each time on a fresh stack. Only
+    a timeout is retried: a script that exits non-zero fails at once.
     ``claims`` feed the compatibility matrices (see :class:`Claim`).
     """
 
@@ -225,6 +228,8 @@ class DocsFactoryMeta:
     verifies: str | None = None
     claims: list[Claim] = dataclasses.field(default_factory=list)
     lane: str | None = None
+    timeout: int | None = None
+    retries: int = 0
 
     @property
     def needs_services(self) -> bool:
@@ -395,6 +400,8 @@ def parse_script(path: Path) -> ScriptMeta | None:
     env = tool.get("env", {}) or {}
     verifies = tool.get("verifies")
     lane = tool.get("lane")
+    timeout = tool.get("timeout")
+    retries = tool.get("retries", 0)
 
     if compose is not None and not isinstance(compose, str):
         raise ScriptMetaError(f"{path}: [tool.docs-factory].compose must be a string")
@@ -415,6 +422,17 @@ def parse_script(path: Path) -> ScriptMeta | None:
     if lane is not None and lane not in LANES:
         raise ScriptMetaError(
             f"{path}: [tool.docs-factory].lane must be one of {', '.join(LANES)}"
+        )
+    # bool is an int subclass; `timeout = true` is a typo, not one second.
+    if timeout is not None and (
+        not isinstance(timeout, int) or isinstance(timeout, bool) or timeout <= 0
+    ):
+        raise ScriptMetaError(
+            f"{path}: [tool.docs-factory].timeout must be a positive number of seconds"
+        )
+    if not isinstance(retries, int) or isinstance(retries, bool) or retries < 0:
+        raise ScriptMetaError(
+            f"{path}: [tool.docs-factory].retries must be a non-negative integer"
         )
     if runner.lane is not None:
         if lane not in (None, runner.lane):
@@ -439,6 +457,8 @@ def parse_script(path: Path) -> ScriptMeta | None:
             verifies=verifies,
             claims=_parse_claims(path, tool.get("claims")),
             lane=lane,
+            timeout=timeout,
+            retries=retries,
         ),
         runner=runner.name,
         cargo_example=crate.examples.get(path.resolve()) if crate else None,

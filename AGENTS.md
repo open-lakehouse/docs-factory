@@ -159,8 +159,10 @@ just arch-dev                          # LikeC4 architecture model at :5173
    [`envs/unitycatalog`](envs/unitycatalog/README.md) server (`compose.yaml`, or
    `compose.aws.yaml` for S3); every compose file needs an entry in
    [`envs/environments.yml`](envs/environments.yml). Open the page with a
-   `:::prerequisites` box holding only its own requirements: the emitter adds
-   the commands that download and start the stack. Keep S3 endpoints out of the
+   `:::prerequisites` box naming only the tools to install (linked) and the
+   state the page assumes, in a line each; package pins go in the session
+   command (`content/README.md` item 2). The emitter adds Docker and the
+   commands that download and start the stack. Keep S3 endpoints out of the
    snippet: the registry's `client-env` sets them for the test and tells the
    reader to export them. `[tool.docs-factory] env` is for harness-only knobs.
 5. Steps are about the task, not the script. A tutorial opens an interactive

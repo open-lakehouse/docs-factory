@@ -2,8 +2,8 @@
  * remark-prerequisites-env — fill a page's `:::prerequisites` box with what its
  * scripts need: a "Docker with Compose v2" bullet ahead of the
  * authored ones, and a nested `:::environment[Title]` holding the commands that
- * download and start the stack (content-core pageEnvironment). Both targets run
- * it, so the site box and the .md twin say the same thing.
+ * download and start the stack (content-core pageEnvironment). Both emit targets
+ * and the review app run it, so every rendering says the same thing.
  *
  * `environment` null (no script needs a stack) leaves the box as authored.
  * `guide` is `{ href, title }` for the long-form setup page, or null when this
@@ -13,13 +13,20 @@ const text = (value) => ({ type: "text", value });
 const code = (value) => ({ type: "inlineCode", value });
 const paragraph = (...children) => ({ type: "paragraph", children });
 
+const DOCKER_INSTALL = "https://docs.docker.com/get-started/get-docker/";
+
 // The stack's ports are defaults a reader rarely has taken; the env bundle's
 // README lists them for the reader who does.
 function dockerItem() {
   return {
     type: "listItem",
     spread: false,
-    children: [paragraph(text("Docker with Compose v2, for the local environment."))],
+    children: [
+      paragraph(
+        { type: "link", url: DOCKER_INSTALL, children: [text("Docker")] },
+        text(" with Compose v2, for the local environment."),
+      ),
+    ],
   };
 }
 

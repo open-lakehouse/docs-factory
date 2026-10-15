@@ -106,6 +106,8 @@ def pytest_collection_modifyitems(config, items):
 
 
 _DURATIONS: dict[str, float] = {}
+# Scripts that timed out and were re-run under their `retries`, one entry a retry.
+_RETRIED: list[Path] = []
 
 
 def pytest_runtest_logreport(report):
@@ -136,6 +138,9 @@ def pytest_terminal_summary(terminalreporter):
     for report in terminalreporter.stats.get("skipped", []):
         if isinstance(report.longrepr, tuple):
             print(f"::warning file={report.fspath}::skipped: {report.longrepr[2]}")
+    for path in _RETRIED:
+        rel = path.resolve().relative_to(_REPO_ROOT)
+        print(f"::warning file={rel}::timed out and was retried")
 
 
 class TutorialScriptFile(pytest.File):
@@ -190,20 +195,33 @@ class TutorialScriptItem(pytest.Item):
             **self.script_meta.docs_factory.env,
             **_maven_mirror_env(),
         }
+        # sitecustomize can't see a bare `raise SystemExit(n)`, so such a
+        # script keeps the normal (slow, hang-prone) teardown rather than
+        # risk reporting its failure as a pass.
+        python = self.script_meta.runner == "python"
+        if python and "SystemExit" not in self.script_meta.path.read_text():
+            env["PYTHONPATH"] = os.pathsep.join(
+                p for p in (str(_HARNESS_DIR), env.get("PYTHONPATH")) if p
+            )
+        # Unbuffered, so a killed script's report shows how far it got.
+        env.setdefault("PYTHONUNBUFFERED", "1")
+        retries = self.script_meta.docs_factory.retries
+        for attempt in range(retries + 1):
+            try:
+                self._run_once(env)
+                return
+            except TutorialScriptTimeout:
+                if attempt == retries:
+                    raise
+                _RETRIED.append(self.script_meta.path)
+
+    def _run_once(self, env: dict[str, str]) -> None:
+        """One run of the script on a fresh stack."""
+        python = self.script_meta.runner == "python"
         base_url = _start_services(self.script_meta)
         try:
             if base_url is not None and self.script_meta.docs_factory.base_url_env:
                 env[self.script_meta.docs_factory.base_url_env] = base_url
-            # sitecustomize can't see a bare `raise SystemExit(n)`, so such a
-            # script keeps the normal (slow, hang-prone) teardown rather than
-            # risk reporting its failure as a pass.
-            python = self.script_meta.runner == "python"
-            if python and "SystemExit" not in self.script_meta.path.read_text():
-                env["PYTHONPATH"] = os.pathsep.join(
-                    p for p in (str(_HARNESS_DIR), env.get("PYTHONPATH")) if p
-                )
-            # Unbuffered, so a killed script's report shows how far it got.
-            env.setdefault("PYTHONUNBUFFERED", "1")
             try:
                 with _delta_lock(self.script_meta.path):
                     proc = _run_script(self.script_meta, env)
@@ -300,6 +318,10 @@ def _command(meta: ScriptMeta) -> list[str]:
     return ["uv", "run", "--no-project"]
 
 
+def _timeout_s(meta: ScriptMeta) -> int:
+    return meta.docs_factory.timeout or _SCRIPT_TIMEOUT_S
+
+
 def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedProcess:
     """Run the script, killing its whole process group on timeout.
 
@@ -317,7 +339,7 @@ def _run_script(meta: ScriptMeta, env: dict[str, str]) -> subprocess.CompletedPr
         start_new_session=True,
     ) as proc:
         try:
-            stdout, stderr = proc.communicate(timeout=_SCRIPT_TIMEOUT_S)
+            stdout, stderr = proc.communicate(timeout=_timeout_s(meta))
         except subprocess.TimeoutExpired:
             os.killpg(proc.pid, signal.SIGKILL)
             stdout, stderr = proc.communicate()
@@ -416,7 +438,7 @@ class TutorialScriptTimeout(TutorialScriptFailure):
     def __str__(self) -> str:
         text = (
             f"`{_command(self.meta)[0]} run {self.meta.path.name}` ran past "
-            f"{_SCRIPT_TIMEOUT_S}s and was "
+            f"{_timeout_s(self.meta)}s and was "
             f"killed\n--- stdout ---\n{self.proc.stdout}\n"
             f"--- stderr ---\n{self.proc.stderr}"
         )

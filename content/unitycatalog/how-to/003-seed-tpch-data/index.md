@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - lakehouse.catalog
-status: draft
+status: ready
 ---
 
 [TPC-H](https://www.tpc.org/tpch/) is the standard benchmark schema: eight

@@ -242,9 +242,15 @@ how-to's prerequisite). So:
 - Commands pin exactly: `uv run --with unitycatalog-client==0.6.0`.
 - Version-specific facts go in R01's known issues (with **Affects**), R02's
   matrix, version tables, and upstream links pinned to `blob/vX`.
+- Absences are release-sensitive ("the server has no groups"). List them in
+  R01's *Not in Unity Catalog OSS* or known issues and link there, and skip
+  "yet" and "currently". If a page has to state one itself, add it to the
+  [release-sensitive pages](../docs/design/docs-versioning.md#release-sensitive-pages).
 
 `docsnip check` fails on a pin that disagrees with the manifest and warns on
-release-scoped prose. `just bump-uc <version>` rewrites every pin.
+release-scoped prose. `just bump-uc <version>` rewrites every pin, and the
+[release review](../docs/design/docs-versioning.md#release-review) re-reads
+the claims the release can change.
 
 ## Tutorials: colocated, self-testing folder mode
 

@@ -26,8 +26,7 @@ Allow about fifteen minutes.
 
 ### Open a Python session
 
-Start the environment under **Prerequisites** if it isn't already running
-from an earlier tutorial. Metric views need Spark 4.2. Open a Python session
+Metric views need Spark 4.2. Open a Python session
 with PySpark 4.2, from a terminal where `UC_DOCS_ROOT` is set the same way as
 for the server:
 

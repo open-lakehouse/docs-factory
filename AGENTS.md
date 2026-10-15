@@ -162,7 +162,9 @@ just arch-dev                          # LikeC4 architecture model at :5173
    `:::prerequisites` box naming only the tools to install (linked) and the
    state the page assumes, in a line each; package pins go in the session
    command (`content/README.md` item 2). The emitter adds Docker and the
-   commands that download and start the stack. Keep S3 endpoints out of the
+   commands that download and start the stack: as a tutorial's first step, or
+   as a how-to's prerequisite linking the page that starts it (`content/README.md`
+   "Starting the environment"). Keep S3 endpoints out of the
    snippet: the registry's `client-env` sets them for the test and tells the
    reader to export them. `[tool.docs-factory] env` is for harness-only knobs.
 5. Steps are about the task, not the script. A tutorial opens an interactive

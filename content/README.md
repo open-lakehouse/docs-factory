@@ -153,14 +153,12 @@ is the reference example.
    (`uv run --with unitycatalog-client==0.7.0 python -m asyncio`), not in the
    box, and uv brings its own Python, so don't list a Python version. Pages
    don't ship their own compose file and don't describe starting one: the
-   emitter (and the review app) adds a Docker bullet and the commands that
-   download and start the page's stack (from its scripts' compose and
-   [`envs/environments.yml`](../envs/environments.yml)), whose title carries
-   the server version. So don't list Docker, the server itself, free ports,
-   `curl`, or downloads a tool makes on first run (Spark's Maven jars). A page
-   without scripts that still walks through a stack declares it:
-   `:::prerequisites{environment="unitycatalog/compose.aws.yaml"}`. Then a
-   `## Set up the client` section with a tab group per interface.
+   emitter (and the review app) adds a Docker bullet and a bullet naming the
+   page's stack, linked to the section that starts it (see
+   [Starting the environment](#starting-the-environment)). So don't list
+   Docker, the server itself, free ports, `curl`, or downloads a tool makes on
+   first run (Spark's Maven jars). Then a `## Set up the client` section with a
+   tab group per interface.
 3. **One `##` section per task**, named with an imperative ("Create a catalog",
    "Delete a volume"). Each has a sentence of context, a tab group with one
    snippet per interface, and any constraints the server enforces.
@@ -202,12 +200,38 @@ the emitted site, and the variables a host client needs for a stack
 pages whose server must see your files. A page that needs a different server
 configuration is the exception: give it its own compose file and say why.
 
+### Starting the environment
+
+The emitter derives the stack a page needs from its scripts' compose and
+[`envs/environments.yml`](../envs/environments.yml), whose title carries the
+server version. Every page gets the Docker bullet in its `:::prerequisites`
+box. The commands that download and start the stack go where the page's
+Diátaxis type wants them:
+
+- **Tutorials** get them as step 1, a `### Start the environment` step at
+  the top of the `::::journey`, with a line for readers whose stack already
+  runs from an earlier tutorial. Don't write a step or sentence that starts
+  it.
+- **How-tos** (and reference pages) get one prerequisite bullet,
+  "Unity Catalog 0.7.0 with simulated S3, running:", linking the section that
+  starts that stack: the entry's `guide` in `environments.yml`, else the
+  site's [Run a local Unity Catalog server](unitycatalog/how-to/011-run-local-server/index.md).
+- **A page whose task is starting the stack** places the commands itself
+  with an empty `:::environment` container (`:::environment` then `:::`).
+  The marker takes precedence over both rules above. A page with no scripts
+  that still walks through a stack declares it:
+  `:::prerequisites{environment="unitycatalog/compose.aws.yaml"}`.
+
+The `.md` twin also gives the commands under **Companion files**, so an agent
+reading a how-to's twin doesn't have to follow the link.
+
 ## Versions
 
 The docs describe the current release only
 ([design](../docs/design/docs-versioning.md)). The release and its companion
 pins live in [`unitycatalog/release.yml`](unitycatalog/release.yml), and readers
-see the release in the environment title of the prerequisites box. So:
+see the release in the environment title (a tutorial's first step, or a
+how-to's prerequisite). So:
 
 - Don't scope prose to the release ("In 0.6.0 the server…", "as of 0.6.0").
   Write it in the present tense. A number in prose marks a boundary: "requires

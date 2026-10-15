@@ -19,8 +19,8 @@ catalog, a schema inside it, and a Delta table you write to and read back.
 
 ### Start the server
 
-Run the commands under **Prerequisites**. They download the docs'
-environment and start the Unity Catalog server.
+:::environment
+:::
 
 The server now listens on `http://localhost:8080`. Authorization is off, so
 every command succeeds without a token. That keeps this tutorial short, and it

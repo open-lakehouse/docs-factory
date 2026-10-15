@@ -25,8 +25,7 @@ scripts use the same calls to manage catalog objects.
 
 ### Open a Python session
 
-Start the environment under **Prerequisites** if it isn't already running
-from an earlier tutorial. Then open a Python session with the
+Open a Python session with the
 client installed:
 
 ```bash

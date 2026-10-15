@@ -25,8 +25,7 @@ It takes about ten minutes.
 
 ### Open a Python session
 
-Start the environment under **Prerequisites** if it isn't already running
-from an earlier tutorial. Then open a Python session with the
+Open a Python session with the
 Unity Catalog client and [obstore](https://developmentseed.org/obstore/), a
 Python library for object storage and local files:
 

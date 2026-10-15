@@ -6,6 +6,7 @@
 | Date | 2026-07-13 |
 | Supersedes | — |
 | Superseded by | — |
+| Amended | 2026-10-16 (proposed; see [Amendment](#amendment-2026-10-16-proposed)) |
 
 ## Context
 
@@ -66,3 +67,36 @@ abstract→concrete link is expressed via deployment `instanceOf` (not a logical
   the layer→file map to manage this.
 - Ordering rules inside deployment nodes (metadata/link before `instanceOf`) are a
   minor authoring gotcha, documented in the README.
+
+## Amendment (2026-10-16, proposed)
+
+The Decision above stands. Two things have changed around it, and the Trestle
+convergence ([design](../../docs/design/trestle-model-convergence.md)) needs a
+third stated explicitly.
+
+**The model no longer has the three topologies or the governance roles.** #73
+removed `logical/governance.likec4`, the PAP/PDP/PEP/PIP/PA elements, and the
+`olaiNative`/`externalEngine`/`browserWasm` deployments. The only modeled
+deployment environment is `trustedCompute`. The zero-trust decomposition and the
+credential-vending bypass are prose in `design/governance.md` and
+`design/deployments.md`.
+
+**The logical layer has two parts with different rules.**
+
+- The **abstract reference architecture** (capabilities, asset kinds, and the
+  concerns of [ADR-0007](./ADR-0007-cross-cutting-concerns.md)) names no
+  technology. That is the rule this ADR set.
+- The **technology catalog** ([ADR-0004](./ADR-0004-capability-specification-implementation.md))
+  names specifications and software implementations, including first-party
+  software (`omnigent` today, `headwaters` next). It is still logical:
+  implementations are types of software, not running things.
+
+**Deployment instances are configured occurrences of implementations.** A
+deployment node `instanceOf` an implementation where one is modeled, and a
+capability only where no implementation is (the `trustedCompute` nodes predate
+the technology catalog and still point at capabilities). Deployment fragments
+generated from Trestle plans
+([factory ADR-0003](../../docs/decisions/ADR-0003-trestle-generated-environments.md))
+always point at implementations, so each generated node reaches its
+capabilities through the implementation's `implements` and `realizes` edges.
+

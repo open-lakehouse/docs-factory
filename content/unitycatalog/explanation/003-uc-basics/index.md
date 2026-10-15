@@ -12,7 +12,7 @@ references:
   - lakehouse.mlModel
   - lakehouse.governance
   - lakehouse.credentialIssuer
-status: draft
+status: ready
 ---
 
 Unity Catalog is a registry of named objects. Each object has an owner and a set

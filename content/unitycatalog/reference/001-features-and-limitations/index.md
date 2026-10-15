@@ -121,6 +121,7 @@ Fixed in 0.7.0, for readers upgrading from 0.6.0:
 | Daft 0.7.25 | Tables on S3 | Not verified: against simulated S3, reads failed with `Generic S3 error`. |
 | Daft 0.7.25 | Tables written by Polars | `Unsupported Arrow DataType: Utf8View`. |
 | pandas (`deltalake` 1.6.6) | `uc://` names for tables on local storage | `error decoding response body`. Read the table's `storage_location` path instead. |
+| pandas (`deltalake` 1.6.6) | `uc://` names for tables on S3 | Now and then `DeltaTable("uc://…")` never returns: the server vends the credentials, and no request reaches storage. Seen in about one run in ten against the local environment. Interrupt it and run it again. |
 | DuckDB 1.5.4 | `CREATE TABLE`, `CREATE TABLE … AS SELECT`, `DROP TABLE` | `Not implemented Error`. |
 | DuckDB 1.5.4 | `UPDATE`, `DELETE` | `Binder Error: Can only update base table` (or `delete from`). |
 | DuckDB 1.5.4, stable `unity_catalog` | Tables with `DECIMAL` columns | `Invalid field found while parsing field: type_precision`. Install the extension from `core_nightly`. |

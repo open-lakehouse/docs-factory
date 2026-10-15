@@ -133,8 +133,9 @@ export function environmentFrontmatter(environment, index) {
 /**
  * The twin's leading "Companion files" section (pure, for testing): each script
  * the page owns, its purpose, and the command that runs it, so an agent reading
- * top-down knows a tested script exists before the body quotes it. `environment`
- * is the stack they need; its commands are in the body's Prerequisites.
+ * top-down knows a tested script exists before the body quotes it, and gets the
+ * commands that start `environment`, the stack they need: a how-to's body only
+ * links the page that starts it.
  * Empty string if no scripts.
  */
 export function companionsSection(scripts, origin = "", environment = null) {
@@ -147,7 +148,11 @@ export function companionsSection(scripts, origin = "", environment = null) {
   ];
   if (environment) {
     lines.push(
-      `They need ${environment.title} running: see **Prerequisites** below, or \`environment\` in this file's frontmatter.`,
+      `They need ${environment.title} running. To start it (also \`environment\` in this file's frontmatter):`,
+      "",
+      "```bash",
+      ...environment.commands,
+      "```",
       "",
     );
   }

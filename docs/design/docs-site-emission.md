@@ -69,8 +69,9 @@ Each page has companions an agent can use without the HTML:
   scripts, `companions:` (URL, kind, purpose, run command, services, helpers) and
   `environment:` (the stack's title, folder, exact start and stop commands, and
   the site's `environments.json`). The body opens with a `## Companion files`
-  section that gives the same facts in prose, so a reader going top-down learns
-  a tested script exists before the text quotes it.
+  section that gives the same facts in prose, plus the stack's start commands,
+  so a reader going top-down learns a tested script exists, and how to run it,
+  before the text quotes it.
 - **Scripts** at `<route>/snippets/<file>`: the CI-verified `.py`, or the `.sh` a
   harness verifies. The served copy drops `--8<--` markers and the factory-only
   PEP 723 tables (`[tool.docs-factory]`, `[tool.uv.sources]`) and keeps
@@ -85,9 +86,13 @@ Each page has companions an agent can use without the HTML:
   plus a README generated from `envs/environments.yml`. The archive is
   byte-identical across runs and machines, so planSync rewrites it only when envs
   change. `/env/environments.json` lists each stack with its start and stop
-  commands. A page's `:::prerequisites` box gets the same commands for the stack
-  its scripts need (`content-core/environment.mjs` `pageEnvironment`), in both
-  the site page and the twin.
+  commands. A page gets the same commands for the stack its scripts need
+  (`content-core/environment.mjs` `pageEnvironment`), placed by Diátaxis type
+  (`remark-prerequisites-env.mjs`): in an authored `:::environment` marker, else
+  as a tutorial's first step, else a how-to's `:::prerequisites` box gets one
+  bullet linking the section that starts the stack (`guide` in
+  `envs/environments.yml`). The twin's Companion files section always carries
+  the commands.
 - **`llms.txt`, `llms-full.txt`, `scripts.json`**, all with absolute URLs.
   `llms.txt` links `environments.json` and the one-line bundle download.
 

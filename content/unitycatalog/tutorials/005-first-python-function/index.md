@@ -22,8 +22,7 @@ without copying your code.
 
 ### Open a Python session
 
-Start the environment under **Prerequisites** if it isn't already running
-from an earlier tutorial. Then create an empty folder and, in
+Create an empty folder and, in
 it, open a Python session with `unitycatalog-ai`, the client library for
 catalog functions:
 

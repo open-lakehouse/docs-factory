@@ -19,9 +19,10 @@ guide until you stop it.
 
 ## Download the environment
 
-The commands under **Prerequisites** download the docs' environment, a small
-archive, and start the default server. The archive unpacks into
-`uc-docs-env/`:
+:::environment
+:::
+
+The archive unpacks into `uc-docs-env/`:
 
 - `uc-docs-env/unitycatalog` holds the server's compose files and
   configuration. Run every `docker compose` command on this page from here.

@@ -1,6 +1,6 @@
-// `:::prerequisites` through both targets: the docs-site page keeps the box as a
-// directive and gains the derived Docker bullet + `:::environment` commands; the
-// .md twin flattens the same content to a **Prerequisites** blockquote.
+// The derived environment through both targets: the box always gains a Docker
+// bullet; the start commands land in an authored `:::environment`, else as a
+// tutorial's first step, else a how-to's box gets a bullet linking the guide.
 import { expect, test } from "bun:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -11,7 +11,7 @@ import { emitOne } from "../../emit.mjs";
 import { docsSiteTarget } from "../../targets/docs-site.mjs";
 import mdTwin from "../../targets/md-twin.mjs";
 
-const PAGE = `---
+const HOWTO = `---
 title: Use S3
 diataxis: how-to
 project: demo
@@ -22,6 +22,42 @@ project: demo
 :::
 
 ## Steps
+`;
+
+const TUTORIAL = `---
+title: First steps
+diataxis: tutorial
+project: demo
+---
+
+:::prerequisites
+- Python 3.11 or later.
+:::
+
+::::journey
+
+### Open a session
+
+Run python.
+
+::::
+`;
+
+const PLACED = `---
+title: Run a local server
+diataxis: how-to
+project: demo
+---
+
+:::prerequisites
+:::
+
+## Download the environment
+
+:::environment
+:::
+
+That's it.
 `;
 
 const ENV = pageEnvironment(
@@ -39,18 +75,25 @@ const ENV = pageEnvironment(
     origin: "https://d.io",
   },
 );
-const GUIDE = { href: "/how-to/run-local-server", title: "Run a local server" };
+const GUIDE = { href: "/how-to/run-local-server#with-s3", title: "Run a local server" };
+const DOCKER =
+  "- [Docker](https://docs.docker.com/get-started/get-docker/) with Compose v2, for the local environment.";
+const COMMANDS = [
+  "curl -fsSL https://d.io/env/uc-docs-env.tar.gz | tar -xz",
+  "cd uc-docs-env/uc && docker compose -f compose.aws.yaml up -d --wait",
+  "export AWS_ALLOW_HTTP=true",
+].join("\n");
 
-async function render(target, environment = ENV) {
+async function render(target, page, { environment = ENV, diataxis = "how-to" } = {}) {
   const dir = mkdtempSync(join(tmpdir(), "prereqs-"));
   try {
     const inputPath = join(dir, "index.md");
-    writeFileSync(inputPath, PAGE);
+    writeFileSync(inputPath, page);
     const { output } = await emitOne({
       inputPath,
       target,
       likec4OutDir: join(dir, "likec4"),
-      plugins: [[remarkPrerequisitesEnv, { environment, guide: GUIDE }]],
+      plugins: [[remarkPrerequisitesEnv, { environment, guide: GUIDE, diataxis }]],
     });
     return output;
   } finally {
@@ -58,34 +101,50 @@ async function render(target, environment = ENV) {
   }
 }
 
-test("docs-site: the derived bullet, the authored ones, then the environment", async () => {
-  const out = await render(docsSiteTarget({ assetBase: "/assets/how-to/s3" }));
+const site = () => docsSiteTarget({ assetBase: "/a" });
+
+test("how-to: Docker and a pointer to the guide, no commands", async () => {
+  const out = await render(site(), HOWTO);
   expect(out).toContain(
-    "::::prerequisites\n- [Docker](https://docs.docker.com/get-started/get-docker/) with Compose v2, for the local environment.\n- Python 3.11 or later.",
+    `:::prerequisites\n${DOCKER}\n- UC with S3, running: [Run a local server](/how-to/run-local-server#with-s3).\n- Python 3.11 or later.`,
   );
-  expect(out).toContain(":::environment[UC with S3]");
-  expect(out).toContain(
-    [
-      "```bash",
-      "curl -fsSL https://d.io/env/uc-docs-env.tar.gz | tar -xz",
-      "cd uc-docs-env/uc && docker compose -f compose.aws.yaml up -d --wait",
-      "export AWS_ALLOW_HTTP=true",
-      "```",
-    ].join("\n"),
-  );
-  expect(out).toContain("[Run a local server](/how-to/run-local-server)");
+  expect(out).not.toContain("curl");
+});
+
+test("tutorial: starting the stack is the journey's first step", async () => {
+  const out = await render(site(), TUTORIAL, { diataxis: "tutorial" });
+  expect(out).toContain(`:::prerequisites\n${DOCKER}\n- Python 3.11 or later.`);
+  expect(out).not.toContain("running: [");
+  const step = out.indexOf("### Start the environment");
+  expect(step).toBeGreaterThan(out.indexOf("::::journey"));
+  expect(step).toBeLessThan(out.indexOf("### Open a session"));
+  expect(out).toContain(`\`\`\`bash\n${COMMANDS}\n\`\`\``);
   expect(out).toContain("`uv run https://d.io/how-to/s3/snippets/s3.py`");
 });
 
-test("md-twin: a **Prerequisites** blockquote with the same commands", async () => {
-  const out = await render(mdTwin);
+test("md-twin: the tutorial's first step is numbered and carries the commands", async () => {
+  const out = await render(mdTwin, TUTORIAL, { diataxis: "tutorial" });
   expect(out).not.toContain(":::");
   expect(out).toContain("> **Prerequisites**");
-  expect(out).toContain("> **Start the environment: UC with S3**");
-  expect(out).toContain("> cd uc-docs-env/uc && docker compose -f compose.aws.yaml up -d --wait");
+  expect(out).toContain("### Step 1 — Start the environment");
+  expect(out).toContain("### Step 2 — Open a session");
+  expect(out).toContain(COMMANDS);
 });
 
-test("a page whose scripts need no stack keeps the box as authored", async () => {
-  const out = await render(docsSiteTarget({ assetBase: "/a" }), null);
-  expect(out).toContain(":::prerequisites\n- Python 3.11 or later.\n:::");
+test("an authored :::environment takes the commands in place, and no pointer", async () => {
+  const out = await render(site(), PLACED);
+  expect(out).not.toContain(":::environment");
+  expect(out).not.toContain("running: [");
+  const at = out.indexOf(COMMANDS);
+  expect(at).toBeGreaterThan(out.indexOf("## Download the environment"));
+  expect(at).toBeLessThan(out.indexOf("That's it."));
+});
+
+test("a page whose scripts need no stack is left as authored, minus the marker", async () => {
+  expect(await render(site(), HOWTO, { environment: null })).toContain(
+    ":::prerequisites\n- Python 3.11 or later.\n:::",
+  );
+  const placed = await render(site(), PLACED, { environment: null });
+  expect(placed).not.toContain(":::environment");
+  expect(placed).not.toContain("curl");
 });

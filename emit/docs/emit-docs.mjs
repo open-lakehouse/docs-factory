@@ -46,7 +46,11 @@ import {
   scriptEntry,
   scriptSummary,
 } from "../../site/scripts/build-script-index.mjs";
-import { declaredEnvironment, pageEnvironment } from "../../site/src/content-core/environment.mjs";
+import {
+  declaredEnvironment,
+  environmentGuide,
+  pageEnvironment,
+} from "../../site/src/content-core/environment.mjs";
 import { isEmitted, splitFrontmatter } from "../../site/src/content-core/frontmatter.mjs";
 import { canonicalUrl, pageHead } from "../../site/src/content-core/head.mjs";
 import { docIdentity } from "../../site/src/content-core/identity.mjs";
@@ -182,6 +186,10 @@ export async function emitDocs({ site, drafts = false }) {
     const apis = apiEntries(site);
     const apiIndex = apis.length ? apiIndexRoute(site) : null;
     const byRoute = new Map(selected.map((p) => [hrefFor(p.identity), p]));
+    const guidePage = (bucket, slug) => {
+      const page = byRoute.get(routeFor(bucket, slug));
+      return page ? { href: routeFor(bucket, slug), title: page.meta.title ?? slug } : null;
+    };
     const ordered = order.map(({ route, section }) => ({ ...byRoute.get(route), route, section }));
 
     // Runnable scripts first: twins list the ones their page owns.
@@ -221,6 +229,14 @@ export async function emitDocs({ site, drafts = false }) {
       envBundle.guide = routes.has(guideRoute)
         ? { route: guideRoute, title: byRoute.get(guideRoute).meta.title }
         : null;
+      // A registry guide may be unpublished in this emit, but it must exist.
+      const allRoutes = new Set(all.map((p) => hrefFor(p.identity)));
+      for (const [key, env] of Object.entries(registry)) {
+        if (!site.env.dirs.includes(key.split("/")[0])) continue;
+        const [bucket, slug] = (env.guide ?? "").split("#")[0].split("/");
+        if (env.guide && !allRoutes.has(routeFor(bucket, slug)))
+          throw new Error(`envs/environments.yml: ${key}: guide ${env.guide} is not a page`);
+      }
       files.set(`public/env/${site.env.bundle}.tar.gz`, envBundle.archive);
       files.set("public/env/environments.json", `${JSON.stringify(envBundle.index, null, 2)}\n`);
     }
@@ -272,8 +288,15 @@ export async function emitDocs({ site, drafts = false }) {
       } catch (err) {
         throw new Error(`${relative(REPO_ROOT, absPath)}: ${err.message}`);
       }
-      const guide = envBundle?.guide?.route === route ? null : envBundle?.guide;
-      const guideAt = (base) => guide && { href: `${base}${guide.route}`, title: guide.title };
+      const guide =
+        environment &&
+        environmentGuide(environment, {
+          siteGuide: site.env.guide,
+          resolve: guidePage,
+          self: route,
+        });
+      const guideAt = (base) => guide && { href: `${base}${guide.href}`, title: guide.title };
+      const diataxis = page.meta.diataxis ?? identity.bucket;
 
       const rendered = await emitOne({
         ...common,
@@ -282,7 +305,7 @@ export async function emitDocs({ site, drafts = false }) {
           ...linkPlugins(route),
           [remarkScriptLinks, { scripts: scriptUrls }],
           [remarkStripSourceMeta],
-          [remarkPrerequisitesEnv, { environment, guide: guideAt("") }],
+          [remarkPrerequisitesEnv, { environment, guide: guideAt(""), diataxis }],
         ],
       });
       likec4Exported ||= rendered.likec4Dir !== null;
@@ -322,7 +345,7 @@ export async function emitDocs({ site, drafts = false }) {
         plugins: [
           ...linkPlugins(route),
           [remarkAbsoluteLinks, { origin }],
-          [remarkPrerequisitesEnv, { environment, guide: guideAt(origin) }],
+          [remarkPrerequisitesEnv, { environment, guide: guideAt(origin), diataxis }],
         ],
       });
       let twinOut = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
@@ -351,7 +374,7 @@ export async function emitDocs({ site, drafts = false }) {
         file,
         title,
         summary: typeof page.meta.summary === "string" ? page.meta.summary : null,
-        diataxis: page.meta.diataxis ?? identity.bucket,
+        diataxis,
         section: page.section,
         headings: pageHeadings,
         twin: `${route}.md`,

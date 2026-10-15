@@ -1,12 +1,15 @@
 # Reader-facing facts about each compose file under envs/, keyed by its path
 # relative to this folder. A script's [tool.docs-factory] compose must name one
-# of these. The docs emitter turns an entry into a page's "Start the
-# environment" commands, and content/conftest.py hands `client-env` to the
-# script it runs, so the variables a reader exports are the ones the test uses.
+# of these. The docs emitter turns an entry into the commands that start a
+# page's stack (a tutorial's first step), or a how-to's prerequisite linking
+# `guide`; content/conftest.py hands `client-env` to the script it runs, so the
+# variables a reader exports are the ones the test uses.
 #
 #   title       what the reader starts
 #   ports       host ports the stack binds; the env bundle's README lists them
 #   client-env  variables a client on the host needs to reach the stack
+#   guide       <bucket>/<slug>[#anchor] of the section that starts it; default
+#               the site's guide (emit/docs/sites/<site>.mjs env.guide)
 environments:
   unitycatalog/compose.yaml:
     title: Unity Catalog 0.7.0
@@ -15,6 +18,7 @@ environments:
   unitycatalog/compose.aws.yaml:
     title: Unity Catalog 0.7.0 with simulated S3
     ports: [8080, 9000]
+    guide: how-to/run-local-server#start-the-server-with-simulated-s3
     client-env:
       AWS_ENDPOINT_URL: http://localhost:9000
       AWS_ALLOW_HTTP: "true"
@@ -22,3 +26,4 @@ environments:
   unitycatalog/compose.postgres.yaml:
     title: Unity Catalog 0.7.0 with PostgreSQL
     ports: [8080]
+    guide: how-to/configure-backend-db#try-it-on-the-local-server

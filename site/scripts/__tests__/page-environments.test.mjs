@@ -31,7 +31,8 @@ const page = (dir, body = ":::prerequisites\n:::\n") => [
 ];
 
 test("a page owning a stack script gets the stack, its run URL, and the in-app guide", () => {
-  const { environment, guide } = resolve(...page("uc/how-to/005-s3"));
+  const { environment, guide, diataxis } = resolve(...page("uc/how-to/005-s3"));
+  expect(diataxis).toBe("how-to");
   expect(environment.title).toBe("UC");
   expect(environment.commands[0]).toBe("curl -fsSL https://d.io/env/uc-docs-env.tar.gz | tar -xz");
   expect(environment.runUrl).toBe("https://d.io/how-to/s3/snippets/s3.py");
@@ -48,4 +49,22 @@ test("a page without scripts gets its declared stack, and the guide skips itself
 test("no stack, or a project without an env bundle, leaves the box as authored", () => {
   expect(resolve(...page("uc/how-to/007-plain"))).toBeNull();
   expect(resolve(...page("delta/how-to/001-read"))).toBeNull();
+});
+
+test("a registry guide links its section of the page that starts the stack", () => {
+  const withGuide = environmentResolver({
+    entries: [entry("content/uc/how-to/005-s3/snippets/s3.py")],
+    registry: {
+      "uc/compose.yaml": {
+        title: "UC",
+        ports: [8080],
+        clientEnv: {},
+        guide: "how-to/run-local-server#with-s3",
+      },
+    },
+    sites: [SITE],
+    readPage: () => "---\ntitle: Run a local server\n---\n",
+  });
+  const { guide } = withGuide(...page("uc/how-to/005-s3"));
+  expect(guide.href).toBe("/docs/uc/how-to/run-local-server#with-s3");
 });

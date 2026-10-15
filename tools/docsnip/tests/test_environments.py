@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
 from docsnip import environments
 from docsnip.scriptmeta import discover, parse_script
 
@@ -79,3 +80,29 @@ def test_declared_environment_must_be_registered(tmp_path) -> None:
     _page(root, ':::prerequisites{environment="uc/nope.yaml"}\n:::\n')
     errors = environments.check_pages(root, root / "content", [])
     assert len(errors) == 1 and "uc/nope.yaml has no entry" in errors[0]
+
+
+def test_environment_marker_needs_a_stack(tmp_path) -> None:
+    root = _repo(tmp_path, "environments:\n  uc/compose.yaml: { title: UC }\n")
+    (root / "content" / "p" / "how-to" / "x").mkdir(parents=True)
+    _page(root, ":::prerequisites\n:::\n\n:::environment\n:::\n")
+    errors = environments.check_pages(root, root / "content", [])
+    assert len(errors) == 1 and "no script on the page needs a stack" in errors[0]
+    _page(
+        root,
+        ':::prerequisites{environment="uc/compose.yaml"}\n:::\n\n:::environment\n:::\n',
+    )
+    assert environments.check_pages(root, root / "content", []) == []
+
+
+def test_guide_must_name_a_page(tmp_path) -> None:
+    root = _repo(
+        tmp_path, "environments:\n  uc/compose.yaml: { title: UC, guide: run }\n"
+    )
+    with pytest.raises(ValueError, match="guide must be"):
+        environments.load(root)
+    root = _repo(
+        tmp_path / "ok",
+        "environments:\n  uc/compose.yaml: { title: UC, guide: how-to/run#with-s3 }\n",
+    )
+    assert environments.load(root)["uc/compose.yaml"].guide == "how-to/run#with-s3"

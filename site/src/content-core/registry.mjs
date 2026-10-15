@@ -6,13 +6,18 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import yaml from "js-yaml";
 
-/** envs/environments.yml as `{ key: { title, ports, clientEnv } }`. */
+/** envs/environments.yml as `{ key: { title, ports, clientEnv, guide } }`. */
 export function loadRegistry(repoRoot) {
   const raw = yaml.load(readFileSync(join(repoRoot, "envs", "environments.yml"), "utf8")) ?? {};
   return Object.fromEntries(
     Object.entries(raw.environments ?? {}).map(([key, e]) => [
       key,
-      { title: e.title, ports: e.ports ?? [], clientEnv: e["client-env"] ?? {} },
+      {
+        title: e.title,
+        ports: e.ports ?? [],
+        clientEnv: e["client-env"] ?? {},
+        guide: e.guide ?? null,
+      },
     ]),
   );
 }

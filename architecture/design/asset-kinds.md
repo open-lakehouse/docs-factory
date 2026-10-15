@@ -10,7 +10,7 @@ asset kinds** — the *nouns* the lakehouse manages along the data & AI value ch
 > **Verbs vs nouns.** Capabilities are what the platform *does* (catalog, query
 > engine, table format, governance, model tracking). Asset kinds are what it
 > *governs* (table, volume, function, model, agent skill). Both are first-class;
-> they meet at two edges — `requires` and `governs`.
+> they meet at two edges — `dependsOn` and `governs`.
 
 ## What an asset kind is
 
@@ -37,27 +37,28 @@ The first-pass set:
 
 ## The two edges
 
-### `requires` — what a platform must do to manage a kind
+### `dependsOn` — what a kind is materialized on
 
-Each asset kind `requires` the capabilities needed to manage it. **Every** kind
-requires the **catalog** — that is what makes it a governed securable at all —
-and then the domain capabilities that actually *materialize* it:
+An asset kind `dependsOn` the capabilities (or other kinds) it is materialized
+on. ADR-0005 named this edge `requires`, but no such relationship kind was ever
+declared; the model uses the generic `dependsOn` (ADR-0006,
+[ADR-0007](../adr/ADR-0007-cross-cutting-concerns.md)). The edges in
+`model/logical/assets.likec4` today:
 
 ```
-  table    ──requires──▶ catalog, table format, query engine
-  volume   ──requires──▶ catalog, object storage
-  function ──requires──▶ catalog, query engine
-  model    ──requires──▶ catalog, model tracking
-  skill    ──requires──▶ catalog, sharing
-  schema   ──requires──▶ catalog
+  namespace ──dependsOn──▶ catalog                               (tracked via)
+  table     ──dependsOn──▶ table format, object storage, catalog
+  volume    ──dependsOn──▶ object storage
+  model     ──dependsOn──▶ object storage
+  skill     ──dependsOn──▶ volume
+  function  (no edge yet)
 ```
 
 This is the capability-coverage lens: a platform that only has table-format and
-query-engine capabilities can manage **tables**, and nothing else. Managing
-models means having a model-tracking capability; managing volumes means governing
-object storage as first-class securables rather than raw paths; managing agent
-skills means having a **sharing** capability (Open Sharing) as the distribution
-surface a catalog reuses to vend a new resource kind.
+object-storage capabilities can materialize **tables**, and nothing else. The
+lens is incomplete: the model doesn't yet say that every kind needs the catalog,
+that functions need a query engine, or that models need model tracking. Treat a
+missing edge as unknown, not as "not needed".
 
 ### `governs` — which catalog covers which kinds (breadth)
 
@@ -88,13 +89,13 @@ governed by the catalog but *distributed* through **Sharing** — a first-class,
 technology-agnostic capability specified by **Open Sharing** (the open profile of
 the Delta Sharing protocol). "Sharing" is deliberately the right altitude: wider
 ("data exchange") dilutes it, narrower ("agent-skill distribution") wrongly ties a
-capability to one asset kind. The edge stays specific — only `agentSkill
--[requires]-> sharing` — because a table *can* be shared but does not *require*
-sharing to exist.
+capability to one asset kind. The model draws no asset → sharing edge: a table
+*can* be shared but doesn't depend on sharing to exist, and the skill's
+distribution path isn't modeled as an edge yet.
 
 ## Views
 
 - **`assetGovernanceBreadth`** — the hero: catalog specifications and the asset
   kinds they `govern`. Shows UC's data & AI breadth against the table-centric
   Iceberg REST catalog.
-- **`assetCapabilities`** — asset kinds and the capabilities they `require`.
+- **`assetCapabilities`** — asset kinds and the capabilities they `dependsOn`.

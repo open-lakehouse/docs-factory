@@ -1,6 +1,6 @@
 # Canonical registry for the LAYERED model.
 #
-# Maps logical capabilities + governance roles to their design doc, and each
+# Maps logical capabilities and asset kinds to their design doc, and each
 # concrete deployment service to the repo that provides it. The maintenance skill
 # and human readers use this to navigate model <-> prose <-> source. Keep in sync
 # with `metadata.canonicalDoc` on logical elements and `metadata.sourceRepo` on
@@ -55,14 +55,6 @@ capabilities:
     element: lakehouse.observability
     doc: design/reference-architecture.md
 
-# --- Logical layer: governance roles (zero-trust) -------------------------
-governance_roles:
-  pap: { element: lakehouse.governance.pap, doc: design/governance.md }
-  pdp: { element: lakehouse.governance.pdp, doc: design/governance.md }
-  pep: { element: lakehouse.governance.pep, doc: design/governance.md }
-  pip: { element: lakehouse.governance.pip, doc: design/governance.md }
-  pa:  { element: lakehouse.governance.pa,  doc: design/governance.md }
-
 # --- Logical layer: governed asset kinds (securables) ---------------------
 # The subject axis (ADR-0005). "securable" is UC's term; `asset` is neutral.
 asset_kinds:
@@ -74,7 +66,8 @@ asset_kinds:
   agentSkill: { element: lakehouse.agentSkill,         doc: design/asset-kinds.md, note: "governed by catalog; distributed via the sharing capability (Open Sharing) — built today." }
 
 # --- Concrete layer: deployment services -> source repos ------------------
-# (Which logical roles each realizes is in model/deployments.likec4 via instanceOf.)
+# (What each realizes is in model/deployment/deployments.likec4 via instanceOf.
+# The zero-trust points they play are prose in design/governance.md.)
 services:
   trestle:
     source_repo: open-lakehouse/trestle
@@ -83,25 +76,19 @@ services:
   mangrove:
     source_repo: open-lakehouse/mangrove   # project: unitycatalog-rs
     doc: design/catalog-plane.md
-    realizes: [catalog, pip, pa]
+    realizes: [catalog]
   headwaters:
     source_repo: open-lakehouse/headwaters
     doc: design/lineage-plane.md
-    realizes: [lineage, pip]
-  breakwater:
-    source_repo: open-lakehouse/breakwater
-    doc: design/governance.md
-    realizes: [pdp, pep]   # decide/enforce; embedded in hydrofoil
+    realizes: [lineage]
   hydrofoil:
     source_repo: open-lakehouse/hydrofoil
     doc: design/integration-hub.md
-    realizes: [queryEngine, pdp, pep]
+    realizes: [queryEngine]   # embeds breakwater (decide/enforce) as a library
 
-# --- Deployment topologies ------------------------------------------------
+# --- Deployment environments ----------------------------------------------
 deployments:
-  olaiNative:    { doc: design/deployments.md, trust: trusted,   note: "gateway = one surface; full FGAC" }
-  externalEngine: { doc: design/deployments.md, trust: untrusted, note: "credential vending; FGAC bypassed" }
-  browserWasm:   { doc: design/deployments.md, trust: untrusted, note: "signed-URL/proxy; prototype" }
+  trustedCompute: { doc: design/deployments.md, trust: trusted, note: "the reference deployment; full FGAC in-plan" }
 
 # --- Cross-cutting prose --------------------------------------------------
 other:

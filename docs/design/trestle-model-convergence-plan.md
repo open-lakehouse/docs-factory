@@ -47,6 +47,7 @@ and no duplicated authored wiring.
 3. Inventory the UC environment variants (`envs/unitycatalog/compose{,.aws,.postgres}.yaml`,
    `envs/aws-sim/`): the scripts using each, which ones gate CI, mounts, the
    container name, endpoints, image fixes, and state. This feeds P3's knobs and P5.
+   Done: [`trestle-env-inventory.md`](trestle-env-inventory.md).
 
 **Files:** `architecture/{README.md,canonicals.yaml,glossary.md}`,
 `architecture/design/deployments.md`, `architecture/adr/`, `docs/decisions/`.

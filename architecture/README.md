@@ -15,10 +15,11 @@ source-level implementation.
 - **The logical layer names no service, repo, or technology.** Those appear only
   in the deployment layer. The logical layer is the reference architecture; the
   deployment layer is one realization of it.
-- **Trust is a property of the deployment topology, not of a component.** The
-  same query engine is trusted inside the boundary (enforces FGAC in-plan) and
-  untrusted deployed outside it (gets a vended credential, reads storage
-  directly — FGAC bypassed). The two deployment topologies make that explicit.
+- **Trust is a property of the deployment, not of a component.** The same query
+  engine is trusted inside the boundary (enforces FGAC in-plan) and untrusted
+  deployed outside it (gets a vended credential, reads storage directly — FGAC
+  bypassed). The model holds one reference deployment, `trustedCompute`; the
+  untrusted cases are prose in [`design/deployments.md`](./design/deployments.md).
 - **Maturity-honest.** Designed-but-not-built elements/edges carry `#designed`
   (or `#prototype`) and render amber, so the model never overstates what exists.
 - **Ref-free.** Names and edges only — never a commit SHA or release tag.
@@ -47,20 +48,19 @@ architecture/
     logical/
       capabilities.likec4       # abstract reference: people + capabilities
       technology-catalog.likec4 # concrete tech: specs + implementations (still logical)
-      governance.likec4         # the zero-trust roles + their edges
-      assets.likec4             # governed asset kinds (securables) + requires/governs
+      assets.likec4             # governed asset kinds (securables) + dependsOn/governs
       relationships.likec4      # capability chain + specifies/implements/realizes/vends/reads
     deployment/
-      deployments.likec4        # services instanceOf capabilities, per topology
+      deployments.likec4        # trustedCompute: services instanceOf capabilities
     views/
       logical-views.likec4      # logical views
-      deployment-views.likec4   # one view per deployment topology
+      deployment-views.likec4   # one view per deployment environment
       flows.likec4              # dynamic/sequence views
       explain-views.likec4      # per-element views for the site's /explain pages
       blog-views.likec4         # blog-specific preview views (not the reference model)
   design/                       # architecture-focused prose (canonicalDoc targets)
   adr/                          # architecture decision records
-  canonicals.yaml              # capability/service -> design-doc -> source-repo registry
+  canonicals.yaml               # capability/service -> design-doc -> source-repo registry
   estate.yml                   # ref-free repo facts
   glossary.md                  # canonical terminology
   conflicts.md                 # open-questions register
@@ -83,9 +83,8 @@ just arch-refresh   # check + model + build — run after any model edit
 
 1. Decide which **layer** the change touches, then edit the owning file (logical
    capability → `logical/capabilities`; spec/implementation → `logical/technology-catalog`;
-   governance role → `logical/governance`; asset kind → `logical/assets`;
-   cross-capability edge → `logical/relationships`; service/topology →
-   `deployment/deployments`; kinds/tags → `specification`; views →
+   asset kind → `logical/assets`; cross-capability edge → `logical/relationships`;
+   service/environment → `deployment/deployments`; kinds/tags → `specification`; views →
    `views/logical-views`/`views/deployment-views`/`views/flows`).
 2. Make the minimal change. Never add a service/repo/technology name to a logical
    file. Tag designed-but-not-built work `#designed`/`#prototype`. Stay ref-free.

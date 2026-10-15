@@ -58,7 +58,7 @@ tagged for maturity — not on the format concept itself. See
 The capabilities above are the *verbs* of the lakehouse. The *nouns* they govern —
 tables, volumes, functions, models, agent skills — are modeled as first-class,
 type-level **asset kinds** (Unity Catalog's "securables") on a separate subject
-axis. Each kind `requires` the capabilities needed to manage it, and each catalog
+axis. Each kind `dependsOn` the capabilities it is materialized on, and each catalog
 specification `governs` the set of kinds it covers — which is where the data & AI
 breadth of Unity Catalog shows against a table-centric catalog. Agent skills, the
 newest kind, surfaced a new capability of their own: **Sharing** (specified by

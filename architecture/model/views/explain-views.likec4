@@ -5,8 +5,6 @@
 // whole-estate reference view, so each page is focused on its subject.
 //
 // Convention: id `explain_<element>`, title "<Title> — in context".
-// Governance reuses its existing `governanceModel` view (view of
-// lakehouse.governance), so it is intentionally absent here.
 
 views {
 
@@ -43,6 +41,12 @@ views {
 
   view explain_objectStorage of lakehouse.objectStorage {
     title "Object storage — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_governance of lakehouse.governance {
+    title "Governance — in context"
     include *
     autoLayout LeftRight
   }

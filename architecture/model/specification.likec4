@@ -55,13 +55,6 @@ specification {
     }
   }
 
-  element role {
-    style {
-      shape rectangle
-      color indigo
-    }
-  }
-
   // A concrete implementation: software that realizes a capability and/or
   // implements a specification. May run as a service or embed as a library.
   element implementation {
@@ -109,7 +102,7 @@ specification {
   //   partOf    — generic COMPOSITION. Added only where nesting does NOT already
   //               imply it (cross-type composition, e.g. impl composed of impl);
   //               never duplicate the containment tree. Asset "belonging" is NOT
-  //               partOf — it is carried by `requires` (asset -> capability).
+  //               partOf — it is carried by `dependsOn` (asset -> capability).
   //   dependsOn — generic DEPENDENCY (fallback when no specific edge fits). The
   //               specific edges below (resolves / reads / vends / consumes /
   //               enforces) are REFINEMENTS of dependsOn and stay the primary

@@ -36,6 +36,7 @@ docs/
     release-bump-agent.md            the Omnigent agent a bump could become (not built)
     trestle-model-convergence.md      estate model ↔ Trestle environments ↔ journeys: concepts, ownership, joins
     trestle-model-convergence-plan.md phased execution plan for that design (one session per phase)
+    trestle-env-inventory.md          the hand-written UC environments, as P3/P5 inputs (P0)
   deploy/       operational runbooks
     runbook.md                       go-live provisioning (Neon / Vercel / GitHub)
 ```

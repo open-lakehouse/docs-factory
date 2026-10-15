@@ -119,7 +119,7 @@ block in [estate.yml](./estate.yml).)_
   [ADR-0005](./adr/ADR-0005-governed-asset-kinds.md).
 - **estate boundary (`lakehouse`)** — the root `lakehouse` element is the estate's
   boundary: the C4 **SoftwareSystem** / Backstage **System-Domain** analog. It also
-  hosts the capability nesting; asset kinds relate to it via `requires`, not
+  hosts the capability nesting; asset kinds relate to it via `dependsOn`, not
   composition. See [ADR-0006](./adr/ADR-0006-system-boundary-and-generic-relations.md).
 - **`partOf` / `dependsOn`** — the generic relationship backbone. `partOf` is
   generic composition, added only where the nesting tree doesn't already imply it;

@@ -184,6 +184,9 @@ just arch-dev                          # LikeC4 architecture model at :5173
    link there. Pages don't restate the release: it lives in
    `content/unitycatalog/release.yml` and the environment title, and
    `just bump-uc` moves every pin (see `content/README.md` "Versions").
+   A bump isn't done until the
+   [release review](docs/design/docs-versioning.md#release-review) re-reads
+   the claims the release can change; the `release-bump` skill runs both.
 
 ## Blog workflow
 

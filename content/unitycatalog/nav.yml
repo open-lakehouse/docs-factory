@@ -192,7 +192,7 @@ nav:
       - page: explanation/credential-vending
         id: E05
       - planned: E06
-        title: Authentication, principals, ownership, and privileges
+        title: Authentication and identity providers
       - planned: E07
         title: Where catalog functions execute
       - planned: E08

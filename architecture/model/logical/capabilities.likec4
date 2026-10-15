@@ -68,6 +68,19 @@ model {
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
+    interactiveDevelopment = capability "Interactive development" {
+      summary "Notebooks and editors where people author code and run it in a live session."
+      description "
+        Interactive development is where a person explores data and builds
+        logic: a notebook or editor holds a live session, sends queries to the
+        query engine, and shows results as they arrive.
+
+        Its notebooks are files, so the lakehouse governs them like any other
+        file, in a volume, rather than as an asset kind of their own.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
     orchestration = capability "Orchestration" {
       summary "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
       description "

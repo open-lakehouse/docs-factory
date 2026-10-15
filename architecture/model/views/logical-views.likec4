@@ -42,6 +42,9 @@ views {
       azureBlobApi,
       openLineageSpec,
       otlpSpec,
+      sparkConnectSpec,
+      flightSqlSpec,
+      openCypherSpec,
     // implementations (concrete software)
       element.kind == implementation,
 

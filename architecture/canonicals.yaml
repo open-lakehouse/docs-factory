@@ -21,6 +21,10 @@ capabilities:
   queryEngine:
     element: lakehouse.queryEngine
     doc: design/reference-architecture.md
+  interactiveDevelopment:
+    element: lakehouse.interactiveDevelopment
+    doc: design/reference-architecture.md
+    note: Notebooks + editors; notebooks are files governed in volumes, not an asset kind.
   orchestration:
     element: lakehouse.orchestration
     doc: design/reference-architecture.md

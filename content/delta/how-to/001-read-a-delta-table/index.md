@@ -20,13 +20,12 @@ delta-rs (the `deltalake` Python package or Rust crate), and DuckDB (in SQL
 or Python), all of which read Delta tables.
 
 :::prerequisites
-- A Delta table. The examples read `orders` at `/tmp/delta/orders`, which
-  [Create your first Delta table](../../tutorials/your-first-delta-table/index.md)
-  and [Build a Delta table in Python and query it with DuckDB](../../tutorials/python-to-duckdb/index.md)
-  create. To read your own table, change the path.
-- [uv](https://docs.astral.sh/uv/), and Java 17 for Spark. The Java examples
-  also need [JBang](https://www.jbang.dev/), and the Rust ones
-  [Rust and Cargo](https://www.rust-lang.org/tools/install).
+- A Delta table at `/tmp/delta/orders`, such as the one from
+  [Create your first Delta table](../../tutorials/your-first-delta-table/index.md).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- [Java 17](https://adoptium.net/temurin/releases/?version=17), for Spark.
+- [JBang](https://www.jbang.dev/download/), for the Java examples.
+- [Rust](https://www.rust-lang.org/tools/install), for the Rust examples.
 :::
 
 ## Set up the client

@@ -17,8 +17,8 @@ volumes, functions, and registered models. For how these objects relate, see
 [Namespaces, securables, and storage locations](../../explanation/uc-basics/index.md).
 
 :::prerequisites
-- For the Python examples, Python 3.11 or later with
-  [`unitycatalog-client`](https://pypi.org/project/unitycatalog-client/) 0.7.0.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/), for the Python
+  examples.
 :::
 
 ## Set up the client
@@ -26,13 +26,18 @@ volumes, functions, and registered models. For how these objects relate, see
 Set up the client for your interface:
 
 :::tab[Python SDK]
+Open a Python session with the SDK. `python -m asyncio` accepts the
+top-level `await` its calls need:
+
+```bash
+uv run --with unitycatalog-client==0.7.0 python -m asyncio
+```
+
 ```python file=./snippets/catalogs.py start=start:connect end=end:connect
 ```
 
 Create one `CatalogsApi` and one `SchemasApi` from an open client:
-`async with ApiClient(config) as api: catalogs = CatalogsApi(api)`. The SDK is
-asynchronous: run the snippets in an `async` function, or interactively in
-`python -m asyncio`, which accepts top-level `await`.
+`async with ApiClient(config) as api: catalogs = CatalogsApi(api)`.
 :::
 
 :::tab[CLI]

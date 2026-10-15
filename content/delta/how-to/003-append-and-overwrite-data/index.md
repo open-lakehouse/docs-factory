@@ -20,11 +20,10 @@ package, and DuckDB. DuckDB can only append: its `delta` extension doesn't
 overwrite, update, or delete rows.
 
 :::prerequisites
-- A Delta table. The examples write to `orders` at `/tmp/delta/orders`, which
-  [Create your first Delta table](../../tutorials/your-first-delta-table/index.md)
-  and [Build a Delta table in Python and query it with DuckDB](../../tutorials/python-to-duckdb/index.md)
-  create. To write to your own table, change the path and the rows.
-- [uv](https://docs.astral.sh/uv/), and Java 17 for Spark SQL and PySpark.
+- A Delta table at `/tmp/delta/orders`, such as the one from
+  [Create your first Delta table](../../tutorials/your-first-delta-table/index.md).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- [Java 17](https://adoptium.net/temurin/releases/?version=17), for Spark.
 :::
 
 ## Set up the client

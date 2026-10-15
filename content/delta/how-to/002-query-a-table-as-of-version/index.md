@@ -20,12 +20,10 @@ SQL, PySpark, the `deltalake` Python package, and DuckDB. DuckDB queries
 earlier versions by number only, and doesn't list a table's history.
 
 :::prerequisites
-- A Delta table with history. The examples read `orders` at
-  `/tmp/delta/orders`, which
-  [Create your first Delta table](../../tutorials/your-first-delta-table/index.md)
-  and [Build a Delta table in Python and query it with DuckDB](../../tutorials/python-to-duckdb/index.md)
-  create in three versions. To read your own table, change the path.
-- [uv](https://docs.astral.sh/uv/), and Java 17 for Spark SQL and PySpark.
+- A Delta table with history at `/tmp/delta/orders`, such as the one from
+  [Create your first Delta table](../../tutorials/your-first-delta-table/index.md).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
+- [Java 17](https://adoptium.net/temurin/releases/?version=17), for Spark.
 :::
 
 ## Set up the client

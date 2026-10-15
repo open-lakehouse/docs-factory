@@ -22,18 +22,11 @@ All three work with external Delta tables, through
 commit through the server.
 
 :::prerequisites
-- An external Delta table in Unity Catalog. This page uses `retail.sales.orders`; to register your own, see
+- An external Delta table in Unity Catalog, such as `retail.sales.orders`:
   [Register an existing external table](../register-external-table/index.md).
-- Python 3.11 or later, with one of:
-
-  | Library | Packages |
-  | --- | --- |
-  | Polars | `polars==1.44.2` |
-  | Daft | `daft[unity]==0.7.25` and `tenacity` |
-  | pandas | `pandas==2.3.3` and `deltalake==1.6.6` |
-- For tables on S3, an
-  [external location](../configure-aws-storage/index.md) that covers the
-  table's path, so that the server can vend credentials for it.
+- For tables on S3, an [external location](../configure-aws-storage/index.md)
+  that covers the table's path.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
 :::
 
 The Polars and pandas examples use a table on S3, and the Daft examples a table
@@ -45,6 +38,12 @@ The local environment above simulates S3. On real AWS, leave its
 ## Connect to the server
 
 :::tab[Polars]
+Open a Python session with Polars:
+
+```bash
+uv run --with polars==1.44.2 --with deltalake==1.6.6 python
+```
+
 ```python file=./snippets/polars_tables.py start=start:connect end=end:connect
 ```
 
@@ -55,6 +54,12 @@ as unstable, so its API may change in any release.
 :::
 
 :::tab[Daft]
+Open a Python session with Daft:
+
+```bash
+uv run --with "daft[unity]==0.7.25" --with tenacity python
+```
+
 ```python file=./snippets/daft_tables.py start=start:connect end=end:connect
 ```
 
@@ -65,6 +70,12 @@ client only from `daft.catalog.__unity`.
 :::
 
 :::tab[pandas]
+Open a Python session with pandas and `deltalake`:
+
+```bash
+uv run --with pandas==2.3.3 --with deltalake==1.6.6 python
+```
+
 ```python file=./snippets/pandas_tables.py start=start:connect end=end:connect
 ```
 

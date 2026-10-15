@@ -15,7 +15,7 @@ catalog, applications and AI agents with access can find and call it by name,
 without copying your code.
 
 :::prerequisites
-- [uv](https://docs.astral.sh/uv/).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
 :::
 
 ::::journey

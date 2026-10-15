@@ -34,9 +34,9 @@ policy that narrows access to the requested path and operation.
 
 :::prerequisites
 - In AWS, permission to create IAM roles and policies, and to edit the bucket's
-  policy if the bucket uses one.
-- For the Python examples, Python 3.11 or later with `unitycatalog-client` 0.7.0
-  and, to check vended credentials, `obstore`. For the CLI examples, `curl`.
+  policy if it has one.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/), for the Python
+  examples.
 :::
 
 To try the steps without an AWS account, use the local environment above with
@@ -48,6 +48,13 @@ trust policies or external IDs, so do the IAM steps for real on AWS.
 Set up the client for your interface:
 
 :::tab[Python SDK]
+Open a Python session with the SDK. `python -m asyncio` accepts the
+top-level `await` its calls need:
+
+```bash
+uv run --with unitycatalog-client==0.7.0 --with obstore==0.11.1 python -m asyncio
+```
+
 ```python file=./snippets/aws_storage.py start=start:connect end=end:connect
 ```
 

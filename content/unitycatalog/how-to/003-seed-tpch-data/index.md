@@ -21,8 +21,7 @@ registers it as an external table, three steps per table:
 > **generate** (DuckDB) → **write Delta** (deltalake) → **register** (Unity Catalog)
 
 :::prerequisites
-- A running Unity Catalog server.
-- Python 3.11 or later with [uv](https://docs.astral.sh/uv/).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
 :::
 
 Unity Catalog only records where an external table lives and never reads the

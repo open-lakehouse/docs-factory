@@ -18,8 +18,8 @@ includes the PostgreSQL JDBC driver, and the server creates its tables on first
 start.
 
 :::prerequisites
-- A PostgreSQL database that the server can reach, and a role that owns it.
-  This page uses PostgreSQL 16.
+- A PostgreSQL database that the server can reach, and a role that owns it. This
+  page uses PostgreSQL 16.
 :::
 
 ## Create the database

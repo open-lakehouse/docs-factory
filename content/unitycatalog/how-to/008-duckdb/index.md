@@ -16,19 +16,20 @@ appends rows to them, including catalog-managed Delta tables. DuckDB's
 to a catalog-managed table go through the server, like a Spark write.
 
 :::prerequisites
-- At least one Delta table in Unity Catalog. Create one with Spark, as in
-  [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md),
-  or register existing ones as in
-  [Register an existing external table](../register-external-table/index.md).
-  This page uses the managed table `retail.sales.orders` from that tutorial.
-- DuckDB 1.5.4. This page uses its Python package, `duckdb==1.5.4`; the same
-  SQL works in the DuckDB CLI.
-- Table files that DuckDB can reach. On the
-  [local server](../run-local-server/index.md), tables live under its
+- A Delta table in Unity Catalog, such as `retail.sales.orders` from
+  [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md).
+- Table files that DuckDB can reach, such as the local server's
   [shared folder](../run-local-server/index.md#share-a-folder-with-the-server).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
 :::
 
 ## Install the extensions
+
+Open a Python session with DuckDB:
+
+```bash
+uv run --with duckdb==1.5.4 python
+```
 
 Install and load `delta` and `unity_catalog`:
 

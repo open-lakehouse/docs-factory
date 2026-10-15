@@ -23,14 +23,12 @@ difference, see
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md).
 
 :::prerequisites
-- A schema to register the table in. This page uses `retail.sales`; see
+- A schema, such as `retail.sales`:
   [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
-- A Delta table at a location the server can reach. On the
-  [local server](../run-local-server/index.md), that's a folder under
+- A Delta table the server can reach, such as one under the local server's
   [`UC_DOCS_ROOT`](../run-local-server/index.md#share-a-folder-with-the-server).
-- For the Python examples, Python 3.11 or later with `unitycatalog-client`
-  0.7.0 and `deltalake`. To read the table from another engine,
-  `polars==1.44.2`, `daft[unity]==0.7.25` with `tenacity`, or `duckdb==1.5.4`.
+- [uv](https://docs.astral.sh/uv/getting-started/installation/), for the Python
+  examples.
 :::
 
 ## Set up the client
@@ -43,6 +41,15 @@ If you don't have a table at hand, write a small one:
 Set up the client for your interface:
 
 :::tab[Python SDK]
+Open a Python session with the SDK. `python -m asyncio` accepts the
+top-level `await` its calls need:
+
+```bash
+uv run --with unitycatalog-client==0.7.0 --with deltalake==1.6.6 \
+  --with polars==1.44.2 --with "daft[unity]==0.7.25" --with tenacity \
+  --with duckdb==1.5.4 python -m asyncio
+```
+
 ```python file=./snippets/external_table.py start=start:connect end=end:connect
 ```
 :::

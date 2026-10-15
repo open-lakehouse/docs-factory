@@ -18,7 +18,7 @@ an object that doesn't exist, and clean up. Applications, notebooks, and
 scripts use the same calls to manage catalog objects.
 
 :::prerequisites
-- [uv](https://docs.astral.sh/uv/).
+- [uv](https://docs.astral.sh/uv/getting-started/installation/).
 :::
 
 ::::journey

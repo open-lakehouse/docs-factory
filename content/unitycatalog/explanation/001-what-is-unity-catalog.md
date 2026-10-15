@@ -71,7 +71,7 @@ Around the namespace the server also manages storage credentials and external
 locations, which describe the cloud storage it may access, and users, ownership,
 and privileges, which describe who may do what. For how these objects fit
 together, see
-[Namespaces, securables, and storage locations](uc-basics/index.md).
+[Core concepts](uc-basics/index.md).
 
 ## How it works with engines and storage
 

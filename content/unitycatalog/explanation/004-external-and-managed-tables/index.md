@@ -152,7 +152,7 @@ governed name without changing who writes it.
 
 - [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md)
   walks the lifecycle above with Spark.
-- [Namespaces, securables, and storage locations](../uc-basics/index.md)
+- [Core concepts](../uc-basics/index.md)
   explains storage roots and how managed locations are inherited.
 - The [Delta API specification](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/api/delta.yaml)
   defines every endpoint and field.

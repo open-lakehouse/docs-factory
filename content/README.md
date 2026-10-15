@@ -265,6 +265,11 @@ anything; only `prerequisites.datasets` is, for seed-dataset examples). The test
 harness reads `[tool.docs-factory]` to know which compose to start; omit the
 whole table if the script needs no services.
 
+A script that hangs is killed after 600 s and fails. When a dependency is known
+to stall now and then, set `timeout` (seconds) to fail it sooner and `retries`
+to re-run it on a fresh stack; say why in a comment beside them. Only a timeout
+is retried, and CI annotates every retry so the flake stays visible.
+
 Scala and Java scripts follow the same contract with their own tools' headers.
 A Scala script (`*.sc`) is run by `scala-cli run`, a Java one (`*.java`) by
 `jbang`; their dependencies are the directives those tools read, and the

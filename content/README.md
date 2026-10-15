@@ -138,7 +138,9 @@ is the reference example.
    what the reader achieves, naming Unity Catalog, so the paragraph stands
    alone when an AI search engine quotes it. Don't name the release: see
    [Versions](#versions). Don't open with
-   "This page shows how to". Link the explanation that covers the concepts.
+   "This page shows how to". The site renders the `summary` right above the
+   intro, so don't restate it ("This guide creates, inspects, and deletes…").
+   Link the explanation that covers the concepts.
 2. **Prerequisites.** A `:::prerequisites` box, one short bullet each:
    - **Tools the reader installs**, linked to their install page and scoped to
      the tab that needs them: `[uv](https://docs.astral.sh/uv/getting-started/installation/)`,
@@ -151,7 +153,8 @@ is the reference example.
 
    Packages and their pins go in the step that opens the session
    (`uv run --with unitycatalog-client==0.7.0 python -m asyncio`), not in the
-   box, and uv brings its own Python, so don't list a Python version. Pages
+   box. Show that command without explaining sessions ("Start Python with the
+   SDK:"): a how-to reader knows their shell. uv brings its own Python, so don't list a Python version. Pages
    don't ship their own compose file and don't describe starting one: the
    emitter (and the review app) adds a Docker bullet and a bullet naming the
    page's stack, linked to the section that starts it (see
@@ -259,6 +262,13 @@ narrative with one script, so it colocates its code with its prose: instead of a
 standalone `tutorials/foo.md`, use a folder with an `index.md` plus the script(s)
 it teaches. There is **no separate test file** — running the script *is* the
 test (see below).
+
+A tutorial's step text is what the reader does. Side information (what
+`python -m asyncio` is, why a function needs type hints, where a call
+actually runs) goes in a `:::note`, or a `:::tip` for advice. Don't add
+version or compatibility notes: the pinned install command guarantees that
+everything on the page works. As for how-tos, the intro doesn't restate the
+`summary`.
 
 ```
 content/unitycatalog/tutorials/002-python-client/

@@ -147,7 +147,7 @@ is the reference example.
      `[Rust](https://www.rust-lang.org/tools/install), for the Rust examples`.
    - **What the page assumes exists**, in one line: what it is, the name the
      page uses, and the page that creates it ("A schema, such as
-     `retail.sales`: [Create and manage catalogs and schemas](…)").
+     `retail.sales`: [Manage catalogs and schemas](…)").
 
    Packages and their pins go in the step that opens the session
    (`uv run --with unitycatalog-client==0.7.0 python -m asyncio`), not in the

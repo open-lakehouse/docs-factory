@@ -153,7 +153,7 @@ server no longer knows about them.
 
 - [Run a local Unity Catalog server](../run-local-server/index.md) covers the
   other variants of the local environment.
-- [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md)
+- [Manage catalogs and schemas](../manage-catalogs-and-schemas/index.md)
   to fill the new metastore.
 - [Features and limitations](../../reference/features-and-limitations/index.md)
   lists the server's deployment options.

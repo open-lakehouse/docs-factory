@@ -1,5 +1,5 @@
 ---
-title: Create and manage catalogs and schemas
+title: Manage catalogs and schemas
 summary: Create, inspect, update, rename, and delete Unity Catalog catalogs and schemas with the Python SDK or the CLI.
 diataxis: how-to
 project: unitycatalog
@@ -226,6 +226,6 @@ or the metastore. To delete a schema, you need ownership of the schema plus
 
 - [Register an existing external table](../register-external-table/index.md) in
   your new schema.
-- [Create and manage volumes](../manage-volumes/index.md) for files.
+- [Manage volumes](../manage-volumes/index.md) for files.
 - [Use the Python client](../../tutorials/python-client/index.md) for a guided
   walkthrough of the same SDK.

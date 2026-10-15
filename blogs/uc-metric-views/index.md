@@ -125,7 +125,7 @@ The definition below uses the version 1.1 syntax from the Databricks documentati
 with `joins`, `fields`, and agent metadata. Apache Spark 4.2, the engine that runs
 metric views against Unity Catalog OSS, reads only version `"0.1"` so far:
 `source`, `filter`, `dimensions`, and `measures`, with the join written in the
-`source` query. [Create and maintain metric views](../../content/unitycatalog/how-to/013-metric-views/index.md) shows this view in that form.
+`source` query. [Manage metric views](../../content/unitycatalog/how-to/013-metric-views/index.md) shows this view in that form.
 :::
 
 ::::journey
@@ -213,4 +213,4 @@ for internal alignment on what your actual KPIs should be.
 
 And you can get started today with Unity Catalog 0.7 and Apache Spark 4.2:
 [Define and query your first metric view](../../content/unitycatalog/tutorials/008-first-metric-view/index.md) walks through a first one, and
-[Create and maintain metric views](../../content/unitycatalog/how-to/013-metric-views/index.md) covers the rest.
+[Manage metric views](../../content/unitycatalog/how-to/013-metric-views/index.md) covers the rest.

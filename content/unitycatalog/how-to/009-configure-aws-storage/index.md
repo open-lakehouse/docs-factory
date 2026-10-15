@@ -325,5 +325,5 @@ that a location still uses breaks every list of external locations; see
   to put managed tables and volumes under this external location.
 - [Configure Spark to use Unity Catalog](../configure-spark/index.md): Spark
   needs `hadoop-aws` on the classpath to use vended S3 credentials.
-- [Create and manage volumes](../manage-volumes/index.md) with `s3://` locations
+- [Manage volumes](../manage-volumes/index.md) with `s3://` locations
   under the external location.

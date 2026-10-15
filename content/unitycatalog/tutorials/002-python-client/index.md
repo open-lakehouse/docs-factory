@@ -117,7 +117,7 @@ sees the same names.
 
 ## Next steps
 
-- [Create and manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
+- [Manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
   covers updating, renaming, and deleting them from Python or the CLI.
 - [Create and update a catalog-managed Delta table](../managed-delta-table/index.md)
   writes real data into a table that Unity Catalog manages.

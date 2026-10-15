@@ -1,5 +1,5 @@
 ---
-title: Create and manage volumes
+title: Manage volumes
 summary: Create external and managed Unity Catalog volumes, inspect, rename, and delete them, and see what happens to their files.
 diataxis: how-to
 project: unitycatalog

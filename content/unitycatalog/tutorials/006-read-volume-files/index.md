@@ -141,7 +141,7 @@ came straight from storage.
 
 ## Next steps
 
-- [Create and manage volumes](../../how-to/manage-volumes/index.md) covers
+- [Manage volumes](../../how-to/manage-volumes/index.md) covers
   managed volumes, renaming, and what deleting each kind does to its files.
 - [Credential vending](../../explanation/credential-vending/index.md) explains
   the trust boundary behind the access request.

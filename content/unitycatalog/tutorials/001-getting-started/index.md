@@ -131,5 +131,5 @@ storage location. Then you registered a catalog, schema, and table of your own.
 - [Core concepts](../../explanation/uc-basics/index.md)
   explains the objects you just created and how they relate.
 - [Use the Python client](../python-client/index.md) does the same from Python.
-- [Create and manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
+- [Manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
   covers updating, renaming, and deleting them.

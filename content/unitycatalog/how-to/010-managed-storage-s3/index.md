@@ -188,5 +188,5 @@ catalog doesn't delete the external location or the storage credential.
 
 - [Configure Spark to use Unity Catalog](../configure-spark/index.md) and create
   managed Delta tables under these roots.
-- [Create and manage volumes](../manage-volumes/index.md) for the full volume
+- [Manage volumes](../manage-volumes/index.md) for the full volume
   lifecycle.

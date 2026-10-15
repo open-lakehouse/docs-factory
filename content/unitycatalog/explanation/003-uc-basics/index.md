@@ -197,8 +197,8 @@ privileges for one principal. The CLI wraps the same calls in
 `bin/uc permission create | get | delete`.
 
 The how-to guides list the privileges each operation needs, for example
-[Create and manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
-and [Create and manage volumes](../../how-to/manage-volumes/index.md).
+[Manage catalogs and schemas](../../how-to/manage-catalogs-and-schemas/index.md)
+and [Manage volumes](../../how-to/manage-volumes/index.md).
 
 ## Principals and users
 

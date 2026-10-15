@@ -1,5 +1,5 @@
 ---
-title: Create and maintain metric views
+title: Manage metric views
 summary: Keep metric-view definitions in YAML files, create them with Spark over tables or queries, register them through the REST API, and change or drop them.
 diataxis: how-to
 project: unitycatalog

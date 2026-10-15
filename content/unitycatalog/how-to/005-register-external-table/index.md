@@ -24,7 +24,7 @@ difference, see
 
 :::prerequisites
 - A schema, such as `retail.sales`:
-  [Create and manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
+  [Manage catalogs and schemas](../manage-catalogs-and-schemas/index.md).
 - A Delta table the server can reach, such as one under the local server's
   [`UC_DOCS_ROOT`](../run-local-server/index.md#share-a-folder-with-the-server).
 - [uv](https://docs.astral.sh/uv/getting-started/installation/), for the Python
@@ -207,7 +207,7 @@ tools.
 
 ## Next steps
 
-- [Create and manage volumes](../manage-volumes/index.md) to govern
+- [Manage volumes](../manage-volumes/index.md) to govern
   non-tabular files in the same schema.
 - [Credential vending](../../explanation/credential-vending/index.md) explains
   how engines get access to cloud storage.

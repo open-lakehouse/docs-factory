@@ -5,7 +5,10 @@ import { expect, test } from "bun:test";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { pageEnvironment } from "../../../site/src/content-core/environment.mjs";
+import {
+  pageEnvironment,
+  registryEnvironment,
+} from "../../../site/src/content-core/environment.mjs";
 import remarkPrerequisitesEnv from "../../../site/src/plugins/remark-prerequisites-env.mjs";
 import { emitOne } from "../../emit.mjs";
 import { docsSiteTarget } from "../../targets/docs-site.mjs";
@@ -60,21 +63,43 @@ project: demo
 That's it.
 `;
 
+const KEYED = `---
+title: Run a local server
+diataxis: how-to
+project: demo
+---
+
+:::prerequisites{environment="uc/compose.yaml"}
+:::
+
+## Minimal
+
+:::environment{key="uc/compose.yaml"}
+:::
+
+## With S3
+
+:::environment{key="uc/compose.aws.yaml"}
+:::
+`;
+
+const BUNDLE = {
+  registry: {
+    "uc/compose.yaml": { title: "UC", ports: [8080], clientEnv: {} },
+    "uc/compose.aws.yaml": {
+      title: "UC with S3",
+      ports: [8080, 9000],
+      clientEnv: { AWS_ALLOW_HTTP: "true" },
+    },
+  },
+  bundle: "uc-docs-env",
+  bundleUrl: "https://d.io/env/uc-docs-env.tar.gz",
+};
 const ENV = pageEnvironment(
   [{ kind: "python", environment: "uc/compose.aws.yaml", fetchUrl: "/how-to/s3/snippets/s3.py" }],
-  {
-    registry: {
-      "uc/compose.aws.yaml": {
-        title: "UC with S3",
-        ports: [8080, 9000],
-        clientEnv: { AWS_ALLOW_HTTP: "true" },
-      },
-    },
-    bundle: "uc-docs-env",
-    bundleUrl: "https://d.io/env/uc-docs-env.tar.gz",
-    origin: "https://d.io",
-  },
+  { ...BUNDLE, origin: "https://d.io" },
 );
+const RESOLVE = (key) => registryEnvironment(key, BUNDLE);
 const GUIDE = { href: "/how-to/run-local-server#with-s3", title: "Run a local server" };
 const DOCKER =
   "- [Docker](https://docs.docker.com/get-started/get-docker/) with Compose v2, for the local environment.";
@@ -84,7 +109,11 @@ const COMMANDS = [
   "export AWS_ALLOW_HTTP=true",
 ].join("\n");
 
-async function render(target, page, { environment = ENV, diataxis = "how-to" } = {}) {
+async function render(
+  target,
+  page,
+  { environment = ENV, diataxis = "how-to", resolve = RESOLVE } = {},
+) {
   const dir = mkdtempSync(join(tmpdir(), "prereqs-"));
   try {
     const inputPath = join(dir, "index.md");
@@ -93,7 +122,7 @@ async function render(target, page, { environment = ENV, diataxis = "how-to" } =
       inputPath,
       target,
       likec4OutDir: join(dir, "likec4"),
-      plugins: [[remarkPrerequisitesEnv, { environment, guide: GUIDE, diataxis }]],
+      plugins: [[remarkPrerequisitesEnv, { environment, guide: GUIDE, diataxis, resolve }]],
     });
     return output;
   } finally {
@@ -147,4 +176,22 @@ test("a page whose scripts need no stack is left as authored, minus the marker",
   const placed = await render(site(), PLACED, { environment: null });
   expect(placed).not.toContain(":::environment");
   expect(placed).not.toContain("curl");
+});
+
+test("a keyed :::environment renders just that stack's commands, and no pointer", async () => {
+  const minimal = registryEnvironment("uc/compose.yaml", BUNDLE);
+  const out = await render(site(), KEYED, { environment: minimal });
+  expect(out).not.toContain(":::environment");
+  expect(out).not.toContain("running");
+  expect(out).not.toContain("Skip this.");
+  expect(out).toContain(`:::prerequisites{environment="uc/compose.yaml"}\n${DOCKER}\n:::`);
+  const plain = out.indexOf("cd uc-docs-env/uc && docker compose up -d --wait");
+  expect(plain).toBeGreaterThan(out.indexOf("## Minimal"));
+  expect(plain).toBeLessThan(out.indexOf("## With S3"));
+  expect(out.indexOf(COMMANDS)).toBeGreaterThan(out.indexOf("## With S3"));
+});
+
+test("a keyed :::environment naming no registry stack fails the emit", async () => {
+  const page = KEYED.replace("uc/compose.aws.yaml", "uc/nope.yaml");
+  await expect(render(site(), page)).rejects.toThrow("uc/nope.yaml is not in");
 });

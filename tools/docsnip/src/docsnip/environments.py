@@ -20,6 +20,7 @@ REGISTRY = Path("envs") / "environments.yml"
 _BOX_RE = re.compile(r"^:{3,}prerequisites\b(?:\{([^}\n]*)\})?", re.MULTILINE)
 _DECLARED_RE = re.compile(r'\benvironment="([^"]+)"')
 _MARKER_RE = re.compile(r"^:{3,}environment\s*$", re.MULTILINE)
+_KEYED_RE = re.compile(r'^:{3,}environment\{key="([^"]+)"\}\s*$', re.MULTILINE)
 # The emitter checks that the page exists; see environmentGuide in environment.mjs.
 _GUIDE_RE = re.compile(r"[a-z-]+/[a-z0-9-]+(#[a-z0-9-]+)?")
 
@@ -104,8 +105,9 @@ def check(repo_root: Path, scripts) -> list[str]:
 def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
     """Prerequisites errors: a page whose scripts need a stack must hold exactly
     one ``:::prerequisites`` (the emitter adds the Docker bullet there), a
-    declared ``environment="…"`` must be a registry key, and a ``:::environment``
-    marker (where the emitter puts the start commands) needs a stack to start."""
+    declared ``environment="…"`` must be a registry key, a ``:::environment``
+    marker (where the emitter puts the start commands) needs a stack to start,
+    and a keyed ``:::environment{key="…"}`` must name a registry key."""
     from .frontmatter import iter_content_files
 
     try:
@@ -136,6 +138,11 @@ def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
                     f"{md}: :::prerequisites environment {declared.group(1)} "
                     f"has no entry in {REGISTRY}"
                 )
+        errors.extend(
+            f"{md}: :::environment key {key} has no entry in {REGISTRY}"
+            for key in _KEYED_RE.findall(text)
+            if key not in envs
+        )
         markers = len(_MARKER_RE.findall(text))
         if markers > 1:
             errors.append(f"{md}: more than one :::environment")

@@ -218,7 +218,10 @@ Diátaxis type wants them:
   site's [Run a local Unity Catalog server](unitycatalog/how-to/011-run-local-server/index.md).
 - **A page whose task is starting the stack** places the commands itself
   with an empty `:::environment` container (`:::environment` then `:::`).
-  The marker takes precedence over both rules above. A page with no scripts
+  The marker takes precedence over both rules above. A page that starts
+  several stacks puts a keyed marker in each one's section,
+  `:::environment{key="unitycatalog/compose.aws.yaml"}`, which renders just
+  that stack's download, start, and `export` commands. A page with no scripts
   that still walks through a stack declares it:
   `:::prerequisites{environment="unitycatalog/compose.aws.yaml"}`.
 

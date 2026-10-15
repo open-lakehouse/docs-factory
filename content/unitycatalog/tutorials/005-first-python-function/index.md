@@ -5,7 +5,7 @@ diataxis: tutorial
 project: unitycatalog
 references:
   - unityCatalogOSS
-status: draft
+status: ready
 ---
 
 In this tutorial you turn an ordinary Python function into a catalog object.

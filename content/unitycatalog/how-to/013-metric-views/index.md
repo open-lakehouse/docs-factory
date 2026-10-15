@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - deltaSpark
-status: draft
+status: ready
 ---
 
 A metric view stores dimensions and measures in Unity Catalog as YAML. The

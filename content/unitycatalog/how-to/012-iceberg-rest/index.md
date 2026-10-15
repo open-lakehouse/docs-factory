@@ -9,7 +9,7 @@ references:
   - icebergSpec
   - apacheSpark
   - duckdb
-status: draft
+status: ready
 ---
 
 [Unity Catalog](model:unityCatalogOSS) serves the

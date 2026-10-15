@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - deltaSpark
-status: draft
+status: ready
 ---
 
 In this tutorial you define three business metrics, the order count, total

@@ -34,6 +34,8 @@ docs/
     interactive-docs-site.md         islands / roadmap / auth platform study
     multi-domain-single-deployment.md one deployment, three doc domains
     release-bump-agent.md            the Omnigent agent a bump could become (not built)
+    trestle-model-convergence.md      proposed join of domain concepts, generated environments, and evidence
+    trestle-model-convergence-plan.md execution work packages for the cross-repository integration
   deploy/       operational runbooks
     runbook.md                       go-live provisioning (Neon / Vercel / GitHub)
 ```

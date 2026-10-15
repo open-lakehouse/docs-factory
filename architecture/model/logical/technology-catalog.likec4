@@ -239,6 +239,27 @@ model {
   }
   mlflow -[realizes]-> lakehouse.modelTracking "realizes the model-tracking capability"
 
+  // First-party query engine ------------------------------------------------
+  // trustedCompute's hydrofoil is an instance of this. Fine-grained access is
+  // #partial: it decides and enforces in-plan, but needs the catalog's resource
+  // facts and a policy bundle to do it.
+  hydrofoil = implementation "hydrofoil" {
+    #service
+
+    description "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+    link https://github.com/open-lakehouse/hydrofoil
+  }
+  hydrofoil -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  hydrofoil -[implements]-> flightSqlSpec "serves"
+  hydrofoil -[consumes]-> ucSpec "resolves tables via"
+  hydrofoil -[dependsOn]-> datafusion "built on"
+  hydrofoil -[realizes]-> lakehouse.governance.authorization "coarse allow/deny gate before planning" {
+    #partial
+  }
+  hydrofoil -[realizes]-> lakehouse.governance.fineGrainedAccess "rewrites plans with row filters + column masks" {
+    #partial
+  }
+
   // Lineage, governance, and observability implementations -----------------
   // headwaters is first-party; the technology catalog names our software too
   // (ADR-0003 amendment), and trustedCompute's headwaters is an instance of it.

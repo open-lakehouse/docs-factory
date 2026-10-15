@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-15. P0 done (#219); P1a done; P1b next.
+**Status:** plan, 2026-10-15. P0 done (#219); P1a and P1b done; P2 next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -129,8 +129,14 @@ emit treat concerns as page-worthy, and no content reference breaks.
 - Governance breadth stays on the spec (`governs`); implementations inherit it
   through `implements`.
 
-**Verify:** as P1. **Done when** the facets validate, the explain nav shows
-them under governance, and design §2/§4/§10 match the model.
+**Verify:** as P1. **Done when** the facets validate, the explain nav lists
+them, and design §2/§4/§10 match the model.
+
+**Done (P1b).** UC OSS has no row filter, column mask, or ABAC API (R01), so it
+gets no fine-grained-access edge; hydrofoil's `#partial` contribution is the
+only one, and it needs the catalog's resource facts. Facets join `explainNav`
+as flat concern nodes (it has no renderer yet). LikeC4 1.58 can't style edges by
+tag in a view rule we use, so `#partial` edges render like the rest.
 
 ## P2 — Journeys join the model (docs-factory)
 

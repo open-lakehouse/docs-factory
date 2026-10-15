@@ -45,7 +45,9 @@ The gateway is not yet a node in `trustedCompute`.
 
 ## Outside the boundary (not modeled)
 
-**External engine (credential vending).** mangrove vends a short-lived scoped
+**External engine (credential vending).** An external engine isn't an instance
+of hydrofoil, so the `#partial` fine-grained-access contribution is absent:
+mangrove vends a short-lived scoped
 credential to an external, untrusted engine (Spark, Trino, a notebook) after a
 *coarse* authorize check; that engine then reads raw files directly. **Row
 filters and column masks are bypassed**; only coarse access is enforced. The

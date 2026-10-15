@@ -106,6 +106,13 @@ discovers `**/*.likec4` recursively, so location is organization only.)
 - A new **capability** goes in the logical layer (tech-agnostic name, a
   `metadata.canonicalDoc`), and is then realized by one or more services.
 
+A component that meets a capability or concern only together with another
+gets `#partial` on its `realizes` edge (`{ #partial }` in the edge body); never
+draw a `realizes` edge an implementation's own release doesn't back (UC OSS has
+no fine-grained access). Governance changes go on a facet
+(`governance.authentication` / `authorization` / `fineGrainedAccess`), not the
+parent.
+
 A Trestle module's `model:` ref always names an **implementation** in the
 technology catalog, never a capability or concern; what a Trestle *role*
 contributes lives in `architecture/integrations/trestle.yaml`.

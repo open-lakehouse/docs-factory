@@ -126,6 +126,18 @@ block in [estate.yml](./estate.yml).)_
   is a stored query; a metric view declares measures and dimensions over one; a
   credential is a catalogued cloud identity used only to mint scoped
   credentials; an external location binds a storage path to a credential.
+- **governance facets** — `authentication`, `authorization`, and
+  `fineGrainedAccess`, nested concerns under governance. See
+  [design/governance.md](./design/governance.md).
+- **`#partial`** — on a `realizes` edge: the implementation meets the target
+  only together with another contributor (hydrofoil enforces fine-grained
+  access but needs the catalog's facts). Whether the target is fully met is a
+  property of an environment, never of one edge.
+- **interactive development** — the capability notebooks and editors realize
+  (marimo). A notebook is a file in a volume, not an asset kind.
+- **query API spec** — a protocol a served engine speaks (Spark Connect, Arrow
+  Flight SQL, openCypher), modeled as a specification of the query engine. A
+  "warehouse" is a query engine behind one.
 - **capability (ours) vs Trestle "capability"** — in the model, a capability is
   an abstract lakehouse function (catalog, query engine). In Trestle,
   `Selection.capabilities` and `provider_of` take a *role* string (`data_catalog`,

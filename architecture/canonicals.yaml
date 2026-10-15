@@ -106,7 +106,7 @@ services:
   hydrofoil:
     source_repo: open-lakehouse/hydrofoil
     doc: design/integration-hub.md
-    realizes: [queryEngine]   # embeds breakwater (decide/enforce) as a library
+    realizes: [queryEngine, fineGrainedAccess]   # embeds breakwater (decide/enforce) as a library; fineGrainedAccess is #partial
 
 # --- Deployment environments ----------------------------------------------
 deployments:

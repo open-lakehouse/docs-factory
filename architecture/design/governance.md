@@ -1,11 +1,27 @@
 # Governance — the zero-trust decomposition
 
-Governance is a first-class capability of the reference lakehouse, but it is
-**cross-cutting**: its points live in *different services*, and **where
-enforcement happens changes with the deployment**. This doc describes the
-decomposition. The model has a single `lakehouse.governance` capability; the
-points below are prose, not elements (the role elements were removed from the
-model in #73). For the deployed services, see [`deployments.md`](./deployments.md).
+Governance is a **concern** of the reference lakehouse
+([ADR-0007](../adr/ADR-0007-cross-cutting-concerns.md)): its points live in
+*different services*, and **where enforcement happens changes with the
+deployment**. This doc describes the decomposition.
+
+## Facets in the model
+
+`lakehouse.governance` nests three facet concerns. No single component meets
+one alone, so implementations `realize` them, with `#partial` where a
+component contributes only alongside another:
+
+| Facet | Contributors in the model |
+|---|---|
+| `authentication` | Authelia (SSO at the gateway); UC OSS and Lakekeeper `#partial` (validate tokens) |
+| `authorization` | UC OSS (grants + privileges); Lakekeeper (OpenFGA permissions); OPA, Authelia, hydrofoil `#partial` (decide, gateway rules, coarse gate) |
+| `fineGrainedAccess` | hydrofoil `#partial` (rewrites the plan with row filters + column masks; needs the catalog's resource facts and the policy bundle) |
+
+Unity Catalog OSS has no row filter, column mask, or ABAC API, so it doesn't
+contribute to fine-grained access. Which contributors are deployed together is
+a property of an environment: `trustedCompute` meets fine-grained access only
+because hydrofoil sits in front of the catalog. The zero-trust points below
+stay prose, not elements (the role elements were removed in #73). For the deployed services, see [`deployments.md`](./deployments.md).
 
 ## The points (NIST 800-207 framing)
 

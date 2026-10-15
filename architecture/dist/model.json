@@ -1097,6 +1097,27 @@
       "kind": "implementation",
       "id": "mlflow"
     },
+    "hydrofoil": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://github.com/open-lakehouse/hydrofoil"
+        }
+      ],
+      "tags": [
+        "service"
+      ],
+      "description": {
+        "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+      },
+      "title": "hydrofoil",
+      "kind": "implementation",
+      "id": "hydrofoil"
+    },
     "headwaters": {
       "notation": "Implementation (software / service)",
       "style": {
@@ -2726,7 +2747,85 @@
       "kind": "realizes",
       "id": "g47eh"
     },
-    "wyp2g2": {
+    "1lk3wrl": {
+      "line": "dotted",
+      "title": "realizes the query-engine capability",
+      "source": {
+        "model": "hydrofoil"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "realizes",
+      "id": "1lk3wrl"
+    },
+    "1s8cfwc": {
+      "line": "dotted",
+      "title": "serves",
+      "source": {
+        "model": "hydrofoil"
+      },
+      "target": {
+        "model": "flightSqlSpec"
+      },
+      "kind": "implements",
+      "id": "1s8cfwc"
+    },
+    "1o1wt99": {
+      "line": "dashed",
+      "title": "resolves tables via",
+      "source": {
+        "model": "hydrofoil"
+      },
+      "target": {
+        "model": "ucSpec"
+      },
+      "kind": "consumes",
+      "id": "1o1wt99"
+    },
+    "1yntbch": {
+      "line": "dashed",
+      "title": "built on",
+      "source": {
+        "model": "hydrofoil"
+      },
+      "target": {
+        "model": "datafusion"
+      },
+      "kind": "dependsOn",
+      "id": "1yntbch"
+    },
+    "1s3mhlm": {
+      "line": "dotted",
+      "title": "coarse allow/deny gate before planning",
+      "tags": [
+        "partial"
+      ],
+      "source": {
+        "model": "hydrofoil"
+      },
+      "target": {
+        "model": "lakehouse.governance.authorization"
+      },
+      "kind": "realizes",
+      "id": "1s3mhlm"
+    },
+    "t2l3dc": {
+      "line": "dotted",
+      "title": "rewrites plans with row filters + column masks",
+      "tags": [
+        "partial"
+      ],
+      "source": {
+        "model": "hydrofoil"
+      },
+      "target": {
+        "model": "lakehouse.governance.fineGrainedAccess"
+      },
+      "kind": "realizes",
+      "id": "t2l3dc"
+    },
+    "1wkrirv": {
       "line": "dotted",
       "title": "realizes the lineage concern",
       "source": {
@@ -2736,9 +2835,9 @@
         "model": "lakehouse.lineage"
       },
       "kind": "realizes",
-      "id": "wyp2g2"
+      "id": "1wkrirv"
     },
-    "1a6ro9": {
+    "dhgwvm": {
       "line": "dotted",
       "title": "emits + ingests",
       "source": {
@@ -2748,9 +2847,9 @@
         "model": "openLineageSpec"
       },
       "kind": "implements",
-      "id": "1a6ro9"
+      "id": "dhgwvm"
     },
-    "wvq625": {
+    "qmbl6x": {
       "line": "dotted",
       "title": "single sign-on at the gateway",
       "source": {
@@ -2760,9 +2859,9 @@
         "model": "lakehouse.governance.authentication"
       },
       "kind": "realizes",
-      "id": "wvq625"
+      "id": "qmbl6x"
     },
-    "ym0ofr": {
+    "1py9jkh": {
       "line": "dotted",
       "title": "access rules at the gateway",
       "tags": [
@@ -2775,9 +2874,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "ym0ofr"
+      "id": "1py9jkh"
     },
-    "zwm5v5": {
+    "1ewvjdf": {
       "line": "dotted",
       "title": "decides access policy",
       "tags": [
@@ -2790,9 +2889,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "zwm5v5"
+      "id": "1ewvjdf"
     },
-    "1lrgl7u": {
+    "35fb7o": {
       "line": "dotted",
       "title": "realizes tracing",
       "source": {
@@ -2802,9 +2901,9 @@
         "model": "lakehouse.observability"
       },
       "kind": "realizes",
-      "id": "1lrgl7u"
+      "id": "35fb7o"
     },
-    "1u8fjys": {
+    "19gtkk3": {
       "line": "dashed",
       "title": "receives traces via",
       "source": {
@@ -2814,9 +2913,9 @@
         "model": "otlpSpec"
       },
       "kind": "consumes",
-      "id": "1u8fjys"
+      "id": "19gtkk3"
     },
-    "12vbwlz": {
+    "dd1oqk": {
       "line": "dotted",
       "title": "realizes graph queries over tables",
       "source": {
@@ -2826,9 +2925,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "12vbwlz"
+      "id": "dd1oqk"
     },
-    "1sb06v3": {
+    "cr1xlf": {
       "line": "dotted",
       "title": "serves",
       "source": {
@@ -2838,9 +2937,9 @@
         "model": "openCypherSpec"
       },
       "kind": "implements",
-      "id": "1sb06v3"
+      "id": "cr1xlf"
     },
-    "ewzka2": {
+    "bvsb7m": {
       "line": "dotted",
       "title": "realizes the notebook",
       "source": {
@@ -2850,9 +2949,9 @@
         "model": "lakehouse.interactiveDevelopment"
       },
       "kind": "realizes",
-      "id": "ewzka2"
+      "id": "bvsb7m"
     },
-    "1gzdjn0": {
+    "ggyea4": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -2862,9 +2961,9 @@
         "model": "s3Api"
       },
       "kind": "implements",
-      "id": "1gzdjn0"
+      "id": "ggyea4"
     },
-    "9sklk8": {
+    "1eduphd": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -2874,9 +2973,9 @@
         "model": "s3Api"
       },
       "kind": "implements",
-      "id": "9sklk8"
+      "id": "1eduphd"
     },
-    "n13huq": {
+    "4e99z4": {
       "line": "dotted",
       "title": "emulates",
       "source": {
@@ -2886,9 +2985,9 @@
         "model": "azureBlobApi"
       },
       "kind": "implements",
-      "id": "n13huq"
+      "id": "4e99z4"
     },
-    "138krqb": {
+    "4isp6t": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -2898,7 +2997,7 @@
         "model": "azureBlobApi"
       },
       "kind": "implements",
-      "id": "138krqb"
+      "id": "4isp6t"
     }
   },
   "globals": {
@@ -3278,13 +3377,32 @@
           "kind": "realizes"
         },
         {
+          "id": "fo5h1l",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse",
+          "label": "[...]",
+          "relations": [
+            "1lk3wrl",
+            "1s3mhlm",
+            "t2l3dc"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes",
+          "tags": [
+            "partial"
+          ]
+        },
+        {
           "id": "566u03",
           "parent": null,
           "source": "headwaters",
           "target": "lakehouse",
           "label": "realizes the lineage concern",
           "relations": [
-            "wyp2g2"
+            "1wkrirv"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3298,8 +3416,8 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "wvq625",
-            "ym0ofr"
+            "qmbl6x",
+            "1py9jkh"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3316,7 +3434,7 @@
           "target": "lakehouse",
           "label": "decides access policy",
           "relations": [
-            "zwm5v5"
+            "1ewvjdf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3333,7 +3451,7 @@
           "target": "lakehouse",
           "label": "realizes tracing",
           "relations": [
-            "1lrgl7u"
+            "35fb7o"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3347,7 +3465,7 @@
           "target": "lakehouse",
           "label": "realizes graph queries over tables",
           "relations": [
-            "12vbwlz"
+            "dd1oqk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3361,7 +3479,7 @@
           "target": "lakehouse",
           "label": "realizes the notebook",
           "relations": [
-            "ewzka2"
+            "bvsb7m"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3467,6 +3585,20 @@
           "kind": "implements"
         },
         {
+          "id": "1hllji5",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "ucSpec",
+          "label": "resolves tables via",
+          "relations": [
+            "1o1wt99"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
           "id": "rqwp5z",
           "parent": null,
           "source": "apacheSpark",
@@ -3557,7 +3689,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1gzdjn0"
+            "ggyea4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3571,7 +3703,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "9sklk8"
+            "1eduphd"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3593,13 +3725,27 @@
           "kind": "implements"
         },
         {
+          "id": "gkxlb1",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "flightSqlSpec",
+          "label": "serves",
+          "relations": [
+            "1s8cfwc"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
           "id": "1jkpz26",
           "parent": null,
           "source": "puppygraph",
           "target": "openCypherSpec",
           "label": "serves",
           "relations": [
-            "1sb06v3"
+            "cr1xlf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3613,7 +3759,7 @@
           "target": "azureBlobApi",
           "label": "emulates",
           "relations": [
-            "n13huq"
+            "4e99z4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3627,7 +3773,7 @@
           "target": "azureBlobApi",
           "label": "implements",
           "relations": [
-            "138krqb"
+            "4isp6t"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3641,7 +3787,7 @@
           "target": "openLineageSpec",
           "label": "emits + ingests",
           "relations": [
-            "1a6ro9"
+            "dhgwvm"
           ],
           "color": "gray",
           "line": "dotted",
@@ -3655,12 +3801,26 @@
           "target": "otlpSpec",
           "label": "receives traces via",
           "relations": [
-            "1u8fjys"
+            "19gtkk3"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "1611igm",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "datafusion",
+          "label": "built on",
+          "relations": [
+            "1yntbch"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "dependsOn"
         },
         {
           "id": "viecbk",
@@ -3835,69 +3995,6 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_parquetSpec"
-        },
-        {
-          "id": "flightSqlSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1ffgkda"
-          ],
-          "title": "Arrow Flight SQL",
-          "modelRef": "flightSqlSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Protocol for running SQL against a remote engine over Arrow Flight, returning Arrow record batches."
-          },
-          "tags": [],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://arrow.apache.org/docs/format/FlightSql.html"
-            }
-          ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_flightSqlSpec"
-        },
-        {
-          "id": "datafusion",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "byeu7p",
-            "epvgru"
-          ],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
-          },
-          "tags": [
-            "library"
-          ],
-          "notation": "Implementation (software / service)",
-          "links": [
-            {
-              "url": "https://datafusion.apache.org"
-            }
-          ],
-          "kind": "implementation"
         },
         {
           "id": "apacheSpark",
@@ -4132,6 +4229,40 @@
           "links": [
             {
               "url": "https://mlflow.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "hydrofoil",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "fo5h1l",
+            "1hllji5",
+            "gkxlb1",
+            "1611igm"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
             }
           ],
           "kind": "implementation"
@@ -4574,42 +4705,6 @@
           "kind": "implementation"
         },
         {
-          "id": "ucSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "1jquji4",
-            "ntuq6e",
-            "10ldfu2",
-            "1pglyt6"
-          ],
-          "outEdges": [
-            "1qvv3jy"
-          ],
-          "title": "Unity Catalog",
-          "modelRef": "ucSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open catalog specification for data & AI:\na catalog governing tables, files, functions, and models across engines."
-          },
-          "tags": [],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_ucSpec"
-        },
-        {
           "id": "icebergRestSpec",
           "parent": null,
           "level": 0,
@@ -4643,6 +4738,110 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_icebergRestSpec"
+        },
+        {
+          "id": "ucSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1jquji4",
+            "ntuq6e",
+            "10ldfu2",
+            "1pglyt6",
+            "1hllji5"
+          ],
+          "outEdges": [
+            "1qvv3jy"
+          ],
+          "title": "Unity Catalog",
+          "modelRef": "ucSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open catalog specification for data & AI:\na catalog governing tables, files, functions, and models across engines."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_ucSpec"
+        },
+        {
+          "id": "flightSqlSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "gkxlb1"
+          ],
+          "outEdges": [
+            "1ffgkda"
+          ],
+          "title": "Arrow Flight SQL",
+          "modelRef": "flightSqlSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Protocol for running SQL against a remote engine over Arrow Flight, returning Arrow record batches."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://arrow.apache.org/docs/format/FlightSql.html"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_flightSqlSpec"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1611igm"
+          ],
+          "outEdges": [
+            "byeu7p",
+            "epvgru"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
+          },
+          "tags": [
+            "library"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "kind": "implementation"
         },
         {
           "id": "openLineageSpec",
@@ -4872,6 +5071,7 @@
             "p5ap0i",
             "16rnjn2",
             "1sk4qke",
+            "fo5h1l",
             "566u03",
             "8h3dj8",
             "1072v40",
@@ -4951,7 +5151,7 @@
           }
         ]
       },
-      "hash": "pLFREiya7REPSMh2Yp-9HI_qE-94fpC3AbHSN_7ZmRs"
+      "hash": "kgc2fV1Lwnkl9w_uoxuLl-JYzvx5FGsP2E02TDzg6lQ"
     },
     "ucDeltaApi_managedTableFlow": {
       "_type": "dynamic",
@@ -6272,13 +6472,27 @@
           "kind": "realizes"
         },
         {
+          "id": "1d2b803",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1lk3wrl"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
           "id": "1ra0b9z",
           "parent": null,
           "source": "puppygraph",
           "target": "lakehouse.queryEngine",
           "label": "realizes graph queries over tables",
           "relations": [
-            "12vbwlz"
+            "dd1oqk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6657,6 +6871,37 @@
           "kind": "implementation"
         },
         {
+          "id": "hydrofoil",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1d2b803"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "puppygraph",
           "parent": null,
           "level": 0,
@@ -6888,6 +7133,7 @@
             "8x2yjo",
             "16lmeqg",
             "1dpuyes",
+            "1d2b803",
             "1ra0b9z",
             "se6qb1",
             "fpqd3b",
@@ -6936,7 +7182,7 @@
           }
         ]
       },
-      "hash": "lujj3btmIoeljb4W-MciZZNWdJH-TwGfVVxs3x53n5E"
+      "hash": "Jkoyww1w1ZKxDCaYaAxzJLfWgAY6RSvdQe6AiUGyAZA"
     },
     "explain_orchestration": {
       "_type": "element",
@@ -8083,7 +8329,7 @@
           "target": "lakehouse.interactiveDevelopment",
           "label": "realizes the notebook",
           "relations": [
-            "ewzka2"
+            "bvsb7m"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8349,13 +8595,47 @@
           "kind": "realizes"
         },
         {
+          "id": "13ticu4",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse.governance.authorization",
+          "label": "coarse allow/deny gate before planning",
+          "relations": [
+            "1s3mhlm"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes",
+          "tags": [
+            "partial"
+          ]
+        },
+        {
+          "id": "6sf4et",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse.governance.fineGrainedAccess",
+          "label": "rewrites plans with row filters + column masks",
+          "relations": [
+            "t2l3dc"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes",
+          "tags": [
+            "partial"
+          ]
+        },
+        {
           "id": "134aluy",
           "parent": null,
           "source": "authelia",
           "target": "lakehouse.governance.authentication",
           "label": "single sign-on at the gateway",
           "relations": [
-            "wvq625"
+            "qmbl6x"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8369,7 +8649,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "access rules at the gateway",
           "relations": [
-            "ym0ofr"
+            "1py9jkh"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8386,7 +8666,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "decides access policy",
           "relations": [
-            "zwm5v5"
+            "1ewvjdf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8706,6 +8986,38 @@
           "kind": "implementation"
         },
         {
+          "id": "hydrofoil",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "13ticu4",
+            "6sf4et"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "authelia",
           "parent": null,
           "level": 0,
@@ -8782,6 +9094,8 @@
             "nfoh6f",
             "7kef40",
             "ciid8b",
+            "13ticu4",
+            "6sf4et",
             "134aluy",
             "1xu887l",
             "jl6amt"
@@ -8863,6 +9177,7 @@
           "inEdges": [
             "nfoh6f",
             "ciid8b",
+            "13ticu4",
             "1xu887l",
             "jl6amt"
           ],
@@ -8901,7 +9216,9 @@
           "parent": "lakehouse.governance",
           "level": 1,
           "children": [],
-          "inEdges": [],
+          "inEdges": [
+            "6sf4et"
+          ],
           "outEdges": [
             "3b3mp2",
             "bpsg57",
@@ -9269,7 +9586,7 @@
           }
         ]
       },
-      "hash": "MHwd7zG54KXWfZ-TFDqmy_hUY3lRAbCZsSoccMXBn3c"
+      "hash": "4fMYLmrGLWYc9D8jkIpuusBTt8b0NUCWjL077DngUeY"
     },
     "explain_lineage": {
       "_type": "element",
@@ -9306,7 +9623,7 @@
           "target": "lakehouse.lineage",
           "label": "realizes the lineage concern",
           "relations": [
-            "wyp2g2"
+            "1wkrirv"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9626,7 +9943,7 @@
           "target": "lakehouse.observability",
           "label": "realizes tracing",
           "relations": [
-            "1lrgl7u"
+            "35fb7o"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9950,7 +10267,7 @@
           "target": "lakehouse.governance.authentication",
           "label": "single sign-on at the gateway",
           "relations": [
-            "wvq625"
+            "qmbl6x"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10268,13 +10585,30 @@
           "kind": "realizes"
         },
         {
+          "id": "13ticu4",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse.governance.authorization",
+          "label": "coarse allow/deny gate before planning",
+          "relations": [
+            "1s3mhlm"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes",
+          "tags": [
+            "partial"
+          ]
+        },
+        {
           "id": "1xu887l",
           "parent": null,
           "source": "authelia",
           "target": "lakehouse.governance.authorization",
           "label": "access rules at the gateway",
           "relations": [
-            "ym0ofr"
+            "1py9jkh"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10291,7 +10625,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "decides access policy",
           "relations": [
-            "zwm5v5"
+            "1ewvjdf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10511,6 +10845,37 @@
           "kind": "implementation"
         },
         {
+          "id": "hydrofoil",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "13ticu4"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "authelia",
           "parent": null,
           "level": 0,
@@ -10582,6 +10947,7 @@
           "inEdges": [
             "nfoh6f",
             "ciid8b",
+            "13ticu4",
             "1xu887l",
             "jl6amt"
           ],
@@ -10624,6 +10990,7 @@
           "inEdges": [
             "nfoh6f",
             "ciid8b",
+            "13ticu4",
             "1xu887l",
             "jl6amt"
           ],
@@ -10934,7 +11301,7 @@
           }
         ]
       },
-      "hash": "BimEb5I2Cg29e3zlDJohV7RFXJhjj0CekjdnOhULsvE"
+      "hash": "zgPL0sPr3DgUc315bX4-0x-7oambFq8rVF4We0GUFv8"
     },
     "explain_fineGrainedAccess": {
       "_type": "element",
@@ -10950,6 +11317,23 @@
         "direction": "LR"
       },
       "edges": [
+        {
+          "id": "6sf4et",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse.governance.fineGrainedAccess",
+          "label": "rewrites plans with row filters + column masks",
+          "relations": [
+            "t2l3dc"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes",
+          "tags": [
+            "partial"
+          ]
+        },
         {
           "id": "3b3mp2",
           "parent": null,
@@ -11023,13 +11407,46 @@
       ],
       "nodes": [
         {
+          "id": "hydrofoil",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "6sf4et"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "lakehouse.governance",
           "parent": null,
           "level": 0,
           "children": [
             "lakehouse.governance.fineGrainedAccess"
           ],
-          "inEdges": [],
+          "inEdges": [
+            "6sf4et"
+          ],
           "outEdges": [
             "3b3mp2",
             "bpsg57",
@@ -11061,7 +11478,9 @@
           "parent": "lakehouse.governance",
           "level": 1,
           "children": [],
-          "inEdges": [],
+          "inEdges": [
+            "6sf4et"
+          ],
           "outEdges": [
             "3b3mp2",
             "bpsg57",
@@ -11224,7 +11643,19 @@
           "navigateTo": "explain_queryEngine"
         }
       ],
-      "hash": "-e0x5vHIPli4Hm2hffKMpzLX7oF43x3nhoO1uSguPmk"
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          }
+        ]
+      },
+      "hash": "R7-GDZ0XDDxiputnSh2s_bmXwXzr-lUMvLt3rs-ahTs"
     },
     "explain_deltaSpec": {
       "_type": "element",
@@ -11652,6 +12083,20 @@
           "kind": "implements"
         },
         {
+          "id": "1hllji5",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "ucSpec",
+          "label": "resolves tables via",
+          "relations": [
+            "1o1wt99"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
           "id": "1qvv3jy",
           "parent": null,
           "source": "ucSpec",
@@ -11807,6 +12252,37 @@
           "kind": "implementation"
         },
         {
+          "id": "hydrofoil",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1hllji5"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "ucSpec",
           "parent": null,
           "level": 0,
@@ -11815,7 +12291,8 @@
             "1jquji4",
             "ntuq6e",
             "10ldfu2",
-            "1pglyt6"
+            "1pglyt6",
+            "1hllji5"
           ],
           "outEdges": [
             "1qvv3jy"
@@ -11891,7 +12368,7 @@
           }
         ]
       },
-      "hash": "VkCuiWbk7qYY9ysyqX6u7cfgKIBEQgDZotPPYED9ybA"
+      "hash": "4xH7mSckukWRXTogbixVMSW7iVYP4bMC7EsMirxFZX4"
     },
     "explain_icebergRestSpec": {
       "_type": "element",
@@ -12452,7 +12929,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1gzdjn0"
+            "ggyea4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -12466,7 +12943,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "9sklk8"
+            "1eduphd"
           ],
           "color": "gray",
           "line": "dotted",
@@ -12721,7 +13198,7 @@
           "target": "azureBlobApi",
           "label": "emulates",
           "relations": [
-            "n13huq"
+            "4e99z4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -12735,7 +13212,7 @@
           "target": "azureBlobApi",
           "label": "implements",
           "relations": [
-            "138krqb"
+            "4isp6t"
           ],
           "color": "gray",
           "line": "dotted",
@@ -12925,7 +13402,7 @@
           "target": "openLineageSpec",
           "label": "emits + ingests",
           "relations": [
-            "1a6ro9"
+            "dhgwvm"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13083,7 +13560,7 @@
           "target": "otlpSpec",
           "label": "receives traces via",
           "relations": [
-            "1u8fjys"
+            "19gtkk3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -13394,6 +13871,20 @@
       },
       "edges": [
         {
+          "id": "gkxlb1",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "flightSqlSpec",
+          "label": "serves",
+          "relations": [
+            "1s8cfwc"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
           "id": "1ffgkda",
           "parent": null,
           "source": "flightSqlSpec",
@@ -13410,11 +13901,44 @@
       ],
       "nodes": [
         {
-          "id": "flightSqlSpec",
+          "id": "hydrofoil",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
+          "outEdges": [
+            "gkxlb1"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "flightSqlSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "gkxlb1"
+          ],
           "outEdges": [
             "1ffgkda"
           ],
@@ -13471,6 +13995,14 @@
       "notation": {
         "nodes": [
           {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
             "title": "Specification / open standard",
             "shape": "rectangle",
             "color": "sky",
@@ -13480,7 +14012,7 @@
           }
         ]
       },
-      "hash": "gN8qkBd8hdy-Wrlg6lOiI_lkoNC93VlU2KjdGSTLhI4"
+      "hash": "YnNjejQApWrh32JCukXU0B7LkfSMYPBNsZDqj3FDyL0"
     },
     "explain_openCypherSpec": {
       "_type": "element",
@@ -13503,7 +14035,7 @@
           "target": "openCypherSpec",
           "label": "serves",
           "relations": [
-            "1sb06v3"
+            "cr1xlf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15010,13 +15542,73 @@
           "kind": "realizes"
         },
         {
+          "id": "1d2b803",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1lk3wrl"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1dgfsbt",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse.governance",
+          "label": "[...]",
+          "relations": [
+            "1s3mhlm",
+            "t2l3dc"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes",
+          "tags": [
+            "partial"
+          ]
+        },
+        {
+          "id": "1hllji5",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "ucSpec",
+          "label": "resolves tables via",
+          "relations": [
+            "1o1wt99"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "gkxlb1",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "flightSqlSpec",
+          "label": "serves",
+          "relations": [
+            "1s8cfwc"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
           "id": "10ayark",
           "parent": null,
           "source": "headwaters",
           "target": "lakehouse.lineage",
           "label": "realizes the lineage concern",
           "relations": [
-            "wyp2g2"
+            "1wkrirv"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15030,7 +15622,7 @@
           "target": "openLineageSpec",
           "label": "emits + ingests",
           "relations": [
-            "1a6ro9"
+            "dhgwvm"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15044,8 +15636,8 @@
           "target": "lakehouse.governance",
           "label": "[...]",
           "relations": [
-            "wvq625",
-            "ym0ofr"
+            "qmbl6x",
+            "1py9jkh"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15062,7 +15654,7 @@
           "target": "lakehouse.governance",
           "label": "decides access policy",
           "relations": [
-            "zwm5v5"
+            "1ewvjdf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15079,7 +15671,7 @@
           "target": "lakehouse.observability",
           "label": "realizes tracing",
           "relations": [
-            "1lrgl7u"
+            "35fb7o"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15093,7 +15685,7 @@
           "target": "otlpSpec",
           "label": "receives traces via",
           "relations": [
-            "1u8fjys"
+            "19gtkk3"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15107,7 +15699,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes graph queries over tables",
           "relations": [
-            "12vbwlz"
+            "dd1oqk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15121,7 +15713,7 @@
           "target": "openCypherSpec",
           "label": "serves",
           "relations": [
-            "1sb06v3"
+            "cr1xlf"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15135,7 +15727,7 @@
           "target": "lakehouse.interactiveDevelopment",
           "label": "realizes the notebook",
           "relations": [
-            "ewzka2"
+            "bvsb7m"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15149,7 +15741,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1gzdjn0"
+            "ggyea4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15163,7 +15755,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "9sklk8"
+            "1eduphd"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15177,7 +15769,7 @@
           "target": "azureBlobApi",
           "label": "emulates",
           "relations": [
-            "n13huq"
+            "4e99z4"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15191,12 +15783,26 @@
           "target": "azureBlobApi",
           "label": "implements",
           "relations": [
-            "138krqb"
+            "4isp6t"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "implements"
+        },
+        {
+          "id": "1611igm",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "datafusion",
+          "label": "built on",
+          "relations": [
+            "1yntbch"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "dependsOn"
         },
         {
           "id": "viecbk",
@@ -15304,69 +15910,6 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_parquetSpec"
-        },
-        {
-          "id": "flightSqlSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1d5mogk"
-          ],
-          "title": "Arrow Flight SQL",
-          "modelRef": "flightSqlSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Protocol for running SQL against a remote engine over Arrow Flight, returning Arrow record batches."
-          },
-          "tags": [],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://arrow.apache.org/docs/format/FlightSql.html"
-            }
-          ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_flightSqlSpec"
-        },
-        {
-          "id": "datafusion",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "ipwqn",
-            "epvgru"
-          ],
-          "title": "Apache DataFusion",
-          "modelRef": "datafusion",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
-          },
-          "tags": [
-            "library"
-          ],
-          "notation": "Implementation (software / service)",
-          "links": [
-            {
-              "url": "https://datafusion.apache.org"
-            }
-          ],
-          "kind": "implementation"
         },
         {
           "id": "apacheSpark",
@@ -15601,6 +16144,41 @@
           "links": [
             {
               "url": "https://mlflow.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "hydrofoil",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1d2b803",
+            "1dgfsbt",
+            "1hllji5",
+            "gkxlb1",
+            "1611igm"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
             }
           ],
           "kind": "implementation"
@@ -16043,42 +16621,6 @@
           "kind": "implementation"
         },
         {
-          "id": "ucSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [
-            "1jquji4",
-            "ntuq6e",
-            "10ldfu2",
-            "1pglyt6"
-          ],
-          "outEdges": [
-            "cp7myr"
-          ],
-          "title": "Unity Catalog",
-          "modelRef": "ucSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open catalog specification for data & AI:\na catalog governing tables, files, functions, and models across engines."
-          },
-          "tags": [],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://www.unitycatalog.io"
-            }
-          ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_ucSpec"
-        },
-        {
           "id": "icebergRestSpec",
           "parent": null,
           "level": 0,
@@ -16112,6 +16654,110 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_icebergRestSpec"
+        },
+        {
+          "id": "ucSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1jquji4",
+            "ntuq6e",
+            "10ldfu2",
+            "1pglyt6",
+            "1hllji5"
+          ],
+          "outEdges": [
+            "cp7myr"
+          ],
+          "title": "Unity Catalog",
+          "modelRef": "ucSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open catalog specification for data & AI:\na catalog governing tables, files, functions, and models across engines."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://www.unitycatalog.io"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_ucSpec"
+        },
+        {
+          "id": "flightSqlSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "gkxlb1"
+          ],
+          "outEdges": [
+            "1d5mogk"
+          ],
+          "title": "Arrow Flight SQL",
+          "modelRef": "flightSqlSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Protocol for running SQL against a remote engine over Arrow Flight, returning Arrow record batches."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://arrow.apache.org/docs/format/FlightSql.html"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_flightSqlSpec"
+        },
+        {
+          "id": "datafusion",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1611igm"
+          ],
+          "outEdges": [
+            "ipwqn",
+            "epvgru"
+          ],
+          "title": "Apache DataFusion",
+          "modelRef": "datafusion",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Extensible, high-performance query engine in Rust using Apache Arrow. Embeds as a library."
+          },
+          "tags": [
+            "library"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://datafusion.apache.org"
+            }
+          ],
+          "kind": "implementation"
         },
         {
           "id": "openLineageSpec",
@@ -16353,6 +16999,8 @@
             "14s78i",
             "trju3y",
             "1t5h2fk",
+            "1d2b803",
+            "1dgfsbt",
             "10ayark",
             "1gqkm6c",
             "slqjcw",
@@ -16390,6 +17038,7 @@
           "inEdges": [
             "14s78i",
             "trju3y",
+            "1dgfsbt",
             "1gqkm6c",
             "slqjcw"
           ],
@@ -16699,6 +17348,7 @@
             "8x2yjo",
             "16lmeqg",
             "1dpuyes",
+            "1d2b803",
             "1ra0b9z"
           ],
           "outEdges": [],
@@ -16828,7 +17478,7 @@
           }
         ]
       },
-      "hash": "Kqfum7eBXTQHS4XVjVRoUPzgtxUA_G8XNLY9XuieWqI"
+      "hash": "mr5idsesAmo1c5vFtBxAstUYaOCTvTexBItuyFjQsxA"
     },
     "capabilityMap": {
       "_type": "element",
@@ -17113,13 +17763,27 @@
           "kind": "realizes"
         },
         {
+          "id": "1d2b803",
+          "parent": null,
+          "source": "hydrofoil",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1lk3wrl"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
           "id": "1ra0b9z",
           "parent": null,
           "source": "puppygraph",
           "target": "lakehouse.queryEngine",
           "label": "realizes graph queries over tables",
           "relations": [
-            "12vbwlz"
+            "dd1oqk"
           ],
           "color": "gray",
           "line": "dotted",
@@ -17133,7 +17797,7 @@
           "target": "lakehouse.interactiveDevelopment",
           "label": "realizes the notebook",
           "relations": [
-            "ewzka2"
+            "bvsb7m"
           ],
           "color": "gray",
           "line": "dotted",
@@ -17746,6 +18410,37 @@
           "kind": "implementation"
         },
         {
+          "id": "hydrofoil",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1d2b803"
+          ],
+          "title": "hydrofoil",
+          "modelRef": "hydrofoil",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/hydrofoil"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "puppygraph",
           "parent": null,
           "level": 0,
@@ -17843,6 +18538,7 @@
             "16lmeqg",
             "1dpuyes",
             "1t5h2fk",
+            "1d2b803",
             "1ra0b9z",
             "1mw2f1p"
           ],
@@ -18111,6 +18807,7 @@
             "8x2yjo",
             "16lmeqg",
             "1dpuyes",
+            "1d2b803",
             "1ra0b9z",
             "r98ad1",
             "gx91at"
@@ -18184,7 +18881,7 @@
           }
         ]
       },
-      "hash": "9OGaNuD3CxgBhVvVmfTwZsLwtPSj5zK-VjVyemt6-ps"
+      "hash": "0R0zSbuarRjq81FQMhcEZjZ-x6jmmK0oRDyv1e7x_eE"
     },
     "concernMatrix": {
       "_type": "element",
@@ -21554,9 +22251,9 @@
         "title": "Postgres",
         "id": "trustedCompute.postgres"
       },
-      "trustedCompute.hydrofoil.queryEngine": {
-        "id": "trustedCompute.hydrofoil.queryEngine",
-        "element": "lakehouse.queryEngine",
+      "trustedCompute.hydrofoil.hydrofoil": {
+        "id": "trustedCompute.hydrofoil.hydrofoil",
+        "element": "hydrofoil",
         "style": {}
       },
       "trustedCompute.mangrove.catalog": {

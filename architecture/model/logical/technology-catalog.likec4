@@ -75,6 +75,24 @@ model {
   }
   s3Api -[specifies]-> lakehouse.objectStorage "specifies the object-storage capability"
 
+  azureBlobApi = openSpecification "Azure Blob Storage API" {
+    description "The REST interface to Azure Blob Storage, also served by local emulators."
+    link https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api
+  }
+  azureBlobApi -[specifies]-> lakehouse.objectStorage "specifies the object-storage capability"
+
+  openLineageSpec = openSpecification "OpenLineage" {
+    description "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
+    link https://openlineage.io
+  }
+  openLineageSpec -[specifies]-> lakehouse.lineage "specifies the lineage event model"
+
+  otlpSpec = openSpecification "OpenTelemetry Protocol (OTLP)" {
+    description "The OpenTelemetry wire protocol for exporting traces, metrics, and logs to a backend."
+    link https://opentelemetry.io/docs/specs/otlp/
+  }
+  otlpSpec -[specifies]-> lakehouse.observability "specifies telemetry export"
+
   datafusion = implementation "Apache DataFusion" {
     #library
 
@@ -176,6 +194,7 @@ model {
     }
   }
   unityCatalogOSS -[implements]-> ucSpec "implements"
+  unityCatalogOSS -[implements]-> icebergRestSpec "serves Iceberg tables through"
 
   // Model-tracking implementation --------------------------------------------
   mlflow = implementation "MLflow" {
@@ -190,6 +209,106 @@ model {
     }
   }
   mlflow -[realizes]-> lakehouse.modelTracking "realizes the model-tracking capability"
+
+  // Lineage, governance, and observability implementations -----------------
+  // headwaters is first-party; the technology catalog names our software too
+  // (ADR-0003 amendment), and trustedCompute's headwaters is an instance of it.
+  headwaters = implementation "headwaters" {
+    #service
+
+    description "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
+    link https://github.com/open-lakehouse/headwaters
+  }
+  headwaters -[realizes]-> lakehouse.lineage "realizes the lineage concern"
+  headwaters -[implements]-> openLineageSpec "emits + ingests"
+
+  authelia = implementation "Authelia" {
+    #service
+
+    description "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
+    link https://www.authelia.com
+  }
+  authelia -[realizes]-> lakehouse.governance "authenticates + authorizes requests at the gateway"
+
+  openPolicyAgent = implementation "Open Policy Agent" {
+    #service
+
+    description "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
+    link https://www.openpolicyagent.org
+  }
+  openPolicyAgent -[realizes]-> lakehouse.governance "decides access policy"
+
+  jaeger = implementation "Jaeger" {
+    #service
+
+    description "Open source distributed tracing backend: collects, stores, and visualizes traces."
+    link https://www.jaegertracing.io
+  }
+  jaeger -[realizes]-> lakehouse.observability "realizes tracing"
+  jaeger -[consumes]-> otlpSpec "receives traces via"
+
+  // Other query and notebook surfaces --------------------------------------
+  puppygraph = implementation "PuppyGraph" {
+    #service
+
+    description "Graph query engine that runs graph queries over existing tables without copying them into a graph database."
+    link https://www.puppygraph.com
+  }
+  puppygraph -[realizes]-> lakehouse.queryEngine "realizes graph queries over tables"
+
+  marimo = implementation "marimo" {
+    #service
+
+    description "Reactive Python notebook, stored as plain Python files."
+    link https://marimo.io
+  }
+
+  // Infrastructure the docs environments run on ----------------------------
+  envoy = implementation "Envoy" {
+    #infra
+
+    description "Open source edge and service proxy; the gateway that routes requests to each service."
+    link https://www.envoyproxy.io
+  }
+
+  postgresql = implementation "PostgreSQL" {
+    #infra
+
+    description "Open source relational database; the metadata store behind catalog and tracking services."
+    link https://www.postgresql.org
+  }
+
+  rustfs = implementation "RustFS" {
+    #infra
+
+    description "S3-compatible object storage server written in Rust."
+    link https://rustfs.com
+  }
+  rustfs -[implements]-> s3Api "implements"
+
+  amazonS3 = implementation "Amazon S3" {
+    #infra
+
+    description "AWS's managed object storage service; the origin of the S3 API."
+    link https://aws.amazon.com/s3/
+  }
+  amazonS3 -[implements]-> s3Api "implements"
+
+  azurite = implementation "Azurite" {
+    #infra
+
+    description "Local emulator for Azure Storage, including the Blob service."
+    link https://github.com/Azure/Azurite
+  }
+  azurite -[implements]-> azureBlobApi "emulates"
+
+  azureBlobStorage = implementation "Azure Blob Storage" {
+    #infra
+
+    description "Azure's managed object storage service."
+    link https://azure.microsoft.com/products/storage/blobs
+  }
+  azureBlobStorage -[implements]-> azureBlobApi "implements"
 
   // Omnigent — Databricks' Apache-2.0 AI-agent meta-harness. Deliberately has NO
   // capability edge: it is agent tooling, not a lakehouse capability.

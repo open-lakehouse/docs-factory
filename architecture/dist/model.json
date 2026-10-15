@@ -717,6 +717,60 @@
       "kind": "openSpecification",
       "id": "s3Api"
     },
+    "azureBlobApi": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
+        }
+      ],
+      "description": {
+        "txt": "The REST interface to Azure Blob Storage, also served by local emulators."
+      },
+      "title": "Azure Blob Storage API",
+      "kind": "openSpecification",
+      "id": "azureBlobApi"
+    },
+    "openLineageSpec": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://openlineage.io"
+        }
+      ],
+      "description": {
+        "txt": "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
+      },
+      "title": "OpenLineage",
+      "kind": "openSpecification",
+      "id": "openLineageSpec"
+    },
+    "otlpSpec": {
+      "notation": "Specification / open standard",
+      "style": {
+        "color": "sky",
+        "shape": "rectangle"
+      },
+      "links": [
+        {
+          "url": "https://opentelemetry.io/docs/specs/otlp/"
+        }
+      ],
+      "description": {
+        "txt": "The OpenTelemetry wire protocol for exporting traces, metrics, and logs to a backend."
+      },
+      "title": "OpenTelemetry Protocol (OTLP)",
+      "kind": "openSpecification",
+      "id": "otlpSpec"
+    },
     "datafusion": {
       "notation": "Implementation (software / service)",
       "style": {
@@ -914,6 +968,258 @@
       "title": "MLflow",
       "kind": "implementation",
       "id": "mlflow"
+    },
+    "headwaters": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://github.com/open-lakehouse/headwaters"
+        }
+      ],
+      "tags": [
+        "service"
+      ],
+      "description": {
+        "txt": "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
+      },
+      "title": "headwaters",
+      "kind": "implementation",
+      "id": "headwaters"
+    },
+    "authelia": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://www.authelia.com"
+        }
+      ],
+      "tags": [
+        "service"
+      ],
+      "description": {
+        "txt": "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
+      },
+      "title": "Authelia",
+      "kind": "implementation",
+      "id": "authelia"
+    },
+    "openPolicyAgent": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://www.openpolicyagent.org"
+        }
+      ],
+      "tags": [
+        "service"
+      ],
+      "description": {
+        "txt": "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
+      },
+      "title": "Open Policy Agent",
+      "kind": "implementation",
+      "id": "openPolicyAgent"
+    },
+    "jaeger": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://www.jaegertracing.io"
+        }
+      ],
+      "tags": [
+        "service"
+      ],
+      "description": {
+        "txt": "Open source distributed tracing backend: collects, stores, and visualizes traces."
+      },
+      "title": "Jaeger",
+      "kind": "implementation",
+      "id": "jaeger"
+    },
+    "puppygraph": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://www.puppygraph.com"
+        }
+      ],
+      "tags": [
+        "service"
+      ],
+      "description": {
+        "txt": "Graph query engine that runs graph queries over existing tables without copying them into a graph database."
+      },
+      "title": "PuppyGraph",
+      "kind": "implementation",
+      "id": "puppygraph"
+    },
+    "marimo": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://marimo.io"
+        }
+      ],
+      "tags": [
+        "service"
+      ],
+      "description": {
+        "txt": "Reactive Python notebook, stored as plain Python files."
+      },
+      "title": "marimo",
+      "kind": "implementation",
+      "id": "marimo"
+    },
+    "envoy": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://www.envoyproxy.io"
+        }
+      ],
+      "tags": [
+        "infra"
+      ],
+      "description": {
+        "txt": "Open source edge and service proxy; the gateway that routes requests to each service."
+      },
+      "title": "Envoy",
+      "kind": "implementation",
+      "id": "envoy"
+    },
+    "postgresql": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://www.postgresql.org"
+        }
+      ],
+      "tags": [
+        "infra"
+      ],
+      "description": {
+        "txt": "Open source relational database; the metadata store behind catalog and tracking services."
+      },
+      "title": "PostgreSQL",
+      "kind": "implementation",
+      "id": "postgresql"
+    },
+    "rustfs": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://rustfs.com"
+        }
+      ],
+      "tags": [
+        "infra"
+      ],
+      "description": {
+        "txt": "S3-compatible object storage server written in Rust."
+      },
+      "title": "RustFS",
+      "kind": "implementation",
+      "id": "rustfs"
+    },
+    "amazonS3": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://aws.amazon.com/s3/"
+        }
+      ],
+      "tags": [
+        "infra"
+      ],
+      "description": {
+        "txt": "AWS's managed object storage service; the origin of the S3 API."
+      },
+      "title": "Amazon S3",
+      "kind": "implementation",
+      "id": "amazonS3"
+    },
+    "azurite": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://github.com/Azure/Azurite"
+        }
+      ],
+      "tags": [
+        "infra"
+      ],
+      "description": {
+        "txt": "Local emulator for Azure Storage, including the Blob service."
+      },
+      "title": "Azurite",
+      "kind": "implementation",
+      "id": "azurite"
+    },
+    "azureBlobStorage": {
+      "notation": "Implementation (software / service)",
+      "style": {
+        "shape": "cylinder",
+        "color": "muted"
+      },
+      "links": [
+        {
+          "url": "https://azure.microsoft.com/products/storage/blobs"
+        }
+      ],
+      "tags": [
+        "infra"
+      ],
+      "description": {
+        "txt": "Azure's managed object storage service."
+      },
+      "title": "Azure Blob Storage",
+      "kind": "implementation",
+      "id": "azureBlobStorage"
     },
     "omnigent": {
       "notation": "Implementation (software / service)",
@@ -1682,7 +1988,40 @@
       "kind": "specifies",
       "id": "17kadm8"
     },
-    "bgan4u": {
+    "1qwpi8c": {
+      "title": "specifies the object-storage capability",
+      "source": {
+        "model": "azureBlobApi"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "specifies",
+      "id": "1qwpi8c"
+    },
+    "vi78ep": {
+      "title": "specifies the lineage event model",
+      "source": {
+        "model": "openLineageSpec"
+      },
+      "target": {
+        "model": "lakehouse.lineage"
+      },
+      "kind": "specifies",
+      "id": "vi78ep"
+    },
+    "1l215v5": {
+      "title": "specifies telemetry export",
+      "source": {
+        "model": "otlpSpec"
+      },
+      "target": {
+        "model": "lakehouse.observability"
+      },
+      "kind": "specifies",
+      "id": "1l215v5"
+    },
+    "10da4bd": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1692,9 +2031,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "bgan4u"
+      "id": "10da4bd"
     },
-    "zwpunc": {
+    "vv3m7j": {
       "line": "dashed",
       "title": "reads data files via",
       "source": {
@@ -1704,9 +2043,9 @@
         "model": "s3Api"
       },
       "kind": "consumes",
-      "id": "zwpunc"
+      "id": "vv3m7j"
     },
-    "1s9csku": {
+    "1c1oji9": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1716,9 +2055,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "1s9csku"
+      "id": "1c1oji9"
     },
-    "1p8qxyi": {
+    "m1zrr9": {
       "line": "dashed",
       "title": "reads via",
       "source": {
@@ -1728,9 +2067,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "consumes",
-      "id": "1p8qxyi"
+      "id": "m1zrr9"
     },
-    "1ijogmz": {
+    "j0cwzh": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -1740,9 +2079,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "1ijogmz"
+      "id": "j0cwzh"
     },
-    "nko3vv": {
+    "14yrfdt": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -1752,9 +2091,9 @@
         "model": "deltaSpec"
       },
       "kind": "implements",
-      "id": "nko3vv"
+      "id": "14yrfdt"
     },
-    "xg7wq7": {
+    "9tutb9": {
       "line": "dashed",
       "title": "reads/writes data files via",
       "source": {
@@ -1764,9 +2103,9 @@
         "model": "s3Api"
       },
       "kind": "consumes",
-      "id": "xg7wq7"
+      "id": "9tutb9"
     },
-    "1ficrpy": {
+    "u0ntn7": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -1776,9 +2115,9 @@
         "model": "deltaSpec"
       },
       "kind": "implements",
-      "id": "1ficrpy"
+      "id": "u0ntn7"
     },
-    "17nq6lh": {
+    "1itiaao": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1788,9 +2127,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "17nq6lh"
+      "id": "1itiaao"
     },
-    "9b6b13": {
+    "1v5ihay": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1800,9 +2139,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "9b6b13"
+      "id": "1v5ihay"
     },
-    "1if5kiu": {
+    "1f4d3qj": {
       "line": "dashed",
       "title": "reads Delta tables via",
       "source": {
@@ -1812,9 +2151,9 @@
         "model": "deltaSpec"
       },
       "kind": "consumes",
-      "id": "1if5kiu"
+      "id": "1f4d3qj"
     },
-    "1lef4t7": {
+    "1tp65st": {
       "line": "dashed",
       "title": "reads Iceberg tables via",
       "source": {
@@ -1824,9 +2163,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "consumes",
-      "id": "1lef4t7"
+      "id": "1tp65st"
     },
-    "zqr4xt": {
+    "x7cjr": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -1836,9 +2175,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "zqr4xt"
+      "id": "x7cjr"
     },
-    "yykakx": {
+    "9r397f": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -1848,9 +2187,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "yykakx"
+      "id": "9r397f"
     },
-    "1wxg6ea": {
+    "7hetsx": {
       "line": "dashed",
       "title": "reads/writes Delta via",
       "source": {
@@ -1860,9 +2199,9 @@
         "model": "deltaRs"
       },
       "kind": "dependsOn",
-      "id": "1wxg6ea"
+      "id": "7hetsx"
     },
-    "uib3l5": {
+    "esuv0q": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -1872,9 +2211,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "uib3l5"
+      "id": "esuv0q"
     },
-    "4t63gs": {
+    "suj1ov": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -1884,9 +2223,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "implements",
-      "id": "4t63gs"
+      "id": "suj1ov"
     },
-    "14p4xp1": {
+    "g2x13y": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -1896,9 +2235,21 @@
         "model": "ucSpec"
       },
       "kind": "implements",
-      "id": "14p4xp1"
+      "id": "g2x13y"
     },
-    "gelsz4": {
+    "1or4hza": {
+      "line": "dotted",
+      "title": "serves Iceberg tables through",
+      "source": {
+        "model": "unityCatalogOSS"
+      },
+      "target": {
+        "model": "icebergRestSpec"
+      },
+      "kind": "implements",
+      "id": "1or4hza"
+    },
+    "14pet3t": {
       "line": "dotted",
       "title": "realizes the model-tracking capability",
       "source": {
@@ -1908,7 +2259,139 @@
         "model": "lakehouse.modelTracking"
       },
       "kind": "realizes",
-      "id": "gelsz4"
+      "id": "14pet3t"
+    },
+    "y6t7gg": {
+      "line": "dotted",
+      "title": "realizes the lineage concern",
+      "source": {
+        "model": "headwaters"
+      },
+      "target": {
+        "model": "lakehouse.lineage"
+      },
+      "kind": "realizes",
+      "id": "y6t7gg"
+    },
+    "ypuzsp": {
+      "line": "dotted",
+      "title": "emits + ingests",
+      "source": {
+        "model": "headwaters"
+      },
+      "target": {
+        "model": "openLineageSpec"
+      },
+      "kind": "implements",
+      "id": "ypuzsp"
+    },
+    "1pegcp3": {
+      "line": "dotted",
+      "title": "authenticates + authorizes requests at the gateway",
+      "source": {
+        "model": "authelia"
+      },
+      "target": {
+        "model": "lakehouse.governance"
+      },
+      "kind": "realizes",
+      "id": "1pegcp3"
+    },
+    "170qskl": {
+      "line": "dotted",
+      "title": "decides access policy",
+      "source": {
+        "model": "openPolicyAgent"
+      },
+      "target": {
+        "model": "lakehouse.governance"
+      },
+      "kind": "realizes",
+      "id": "170qskl"
+    },
+    "182npyf": {
+      "line": "dotted",
+      "title": "realizes tracing",
+      "source": {
+        "model": "jaeger"
+      },
+      "target": {
+        "model": "lakehouse.observability"
+      },
+      "kind": "realizes",
+      "id": "182npyf"
+    },
+    "ggwnq6": {
+      "line": "dashed",
+      "title": "receives traces via",
+      "source": {
+        "model": "jaeger"
+      },
+      "target": {
+        "model": "otlpSpec"
+      },
+      "kind": "consumes",
+      "id": "ggwnq6"
+    },
+    "moiwyc": {
+      "line": "dotted",
+      "title": "realizes graph queries over tables",
+      "source": {
+        "model": "puppygraph"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "realizes",
+      "id": "moiwyc"
+    },
+    "af3sgx": {
+      "line": "dotted",
+      "title": "implements",
+      "source": {
+        "model": "rustfs"
+      },
+      "target": {
+        "model": "s3Api"
+      },
+      "kind": "implements",
+      "id": "af3sgx"
+    },
+    "1lycdsw": {
+      "line": "dotted",
+      "title": "implements",
+      "source": {
+        "model": "amazonS3"
+      },
+      "target": {
+        "model": "s3Api"
+      },
+      "kind": "implements",
+      "id": "1lycdsw"
+    },
+    "1s2d6jq": {
+      "line": "dotted",
+      "title": "emulates",
+      "source": {
+        "model": "azurite"
+      },
+      "target": {
+        "model": "azureBlobApi"
+      },
+      "kind": "implements",
+      "id": "1s2d6jq"
+    },
+    "ftnjd4": {
+      "line": "dotted",
+      "title": "implements",
+      "source": {
+        "model": "azureBlobStorage"
+      },
+      "target": {
+        "model": "azureBlobApi"
+      },
+      "kind": "implements",
+      "id": "ftnjd4"
     }
   },
   "globals": {
@@ -2083,13 +2566,55 @@
           "kind": "specifies"
         },
         {
+          "id": "1exg6xb",
+          "parent": null,
+          "source": "azureBlobApi",
+          "target": "lakehouse",
+          "label": "specifies the object-storage capability",
+          "relations": [
+            "1qwpi8c"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "stivld",
+          "parent": null,
+          "source": "openLineageSpec",
+          "target": "lakehouse",
+          "label": "specifies the lineage event model",
+          "relations": [
+            "vi78ep"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "1pqigbz",
+          "parent": null,
+          "source": "otlpSpec",
+          "target": "lakehouse",
+          "label": "specifies telemetry export",
+          "relations": [
+            "1l215v5"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
           "id": "byeu7p",
           "parent": null,
           "source": "datafusion",
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "bgan4u"
+            "10da4bd"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2103,7 +2628,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1s9csku"
+            "1c1oji9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2117,7 +2642,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "17nq6lh"
+            "1itiaao"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2131,7 +2656,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "9b6b13"
+            "1v5ihay"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2145,7 +2670,7 @@
           "target": "lakehouse",
           "label": "realizes the query-engine capability",
           "relations": [
-            "yykakx"
+            "9r397f"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2159,7 +2684,77 @@
           "target": "lakehouse",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "gelsz4"
+            "14pet3t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "566u03",
+          "parent": null,
+          "source": "headwaters",
+          "target": "lakehouse",
+          "label": "realizes the lineage concern",
+          "relations": [
+            "y6t7gg"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "8h3dj8",
+          "parent": null,
+          "source": "authelia",
+          "target": "lakehouse",
+          "label": "authenticates + authorizes requests at the gateway",
+          "relations": [
+            "1pegcp3"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1072v40",
+          "parent": null,
+          "source": "openPolicyAgent",
+          "target": "lakehouse",
+          "label": "decides access policy",
+          "relations": [
+            "170qskl"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "lmgy2b",
+          "parent": null,
+          "source": "jaeger",
+          "target": "lakehouse",
+          "label": "realizes tracing",
+          "relations": [
+            "182npyf"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1i9l0il",
+          "parent": null,
+          "source": "puppygraph",
+          "target": "lakehouse",
+          "label": "realizes graph queries over tables",
+          "relations": [
+            "moiwyc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2173,7 +2768,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "nko3vv"
+            "14yrfdt"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2187,7 +2782,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "1ficrpy"
+            "u0ntn7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2201,7 +2796,7 @@
           "target": "deltaSpec",
           "label": "reads Delta tables via",
           "relations": [
-            "1if5kiu"
+            "1f4d3qj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2215,7 +2810,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1ijogmz"
+            "j0cwzh"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2229,7 +2824,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "zqr4xt"
+            "x7cjr"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2243,7 +2838,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "uib3l5"
+            "esuv0q"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2257,7 +2852,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "14p4xp1"
+            "g2x13y"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2271,7 +2866,7 @@
           "target": "icebergRestSpec",
           "label": "reads via",
           "relations": [
-            "1p8qxyi"
+            "m1zrr9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2285,7 +2880,7 @@
           "target": "icebergRestSpec",
           "label": "reads Iceberg tables via",
           "relations": [
-            "1lef4t7"
+            "1tp65st"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2299,7 +2894,21 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "4t63gs"
+            "suj1ov"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "okzuqp",
+          "parent": null,
+          "source": "unityCatalogOSS",
+          "target": "icebergRestSpec",
+          "label": "serves Iceberg tables through",
+          "relations": [
+            "1or4hza"
           ],
           "color": "gray",
           "line": "dotted",
@@ -2313,7 +2922,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "zwpunc"
+            "vv3m7j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2327,7 +2936,91 @@
           "target": "s3Api",
           "label": "reads/writes data files via",
           "relations": [
-            "xg7wq7"
+            "9tutb9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "dou7t3",
+          "parent": null,
+          "source": "rustfs",
+          "target": "s3Api",
+          "label": "implements",
+          "relations": [
+            "af3sgx"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1pupksk",
+          "parent": null,
+          "source": "amazonS3",
+          "target": "s3Api",
+          "label": "implements",
+          "relations": [
+            "1lycdsw"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1knq7v0",
+          "parent": null,
+          "source": "azurite",
+          "target": "azureBlobApi",
+          "label": "emulates",
+          "relations": [
+            "1s2d6jq"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "qjh4az",
+          "parent": null,
+          "source": "azureBlobStorage",
+          "target": "azureBlobApi",
+          "label": "implements",
+          "relations": [
+            "ftnjd4"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "19dfoig",
+          "parent": null,
+          "source": "headwaters",
+          "target": "openLineageSpec",
+          "label": "emits + ingests",
+          "relations": [
+            "ypuzsp"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "du7fva",
+          "parent": null,
+          "source": "jaeger",
+          "target": "otlpSpec",
+          "label": "receives traces via",
+          "relations": [
+            "ggwnq6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2341,7 +3034,7 @@
           "target": "deltaRs",
           "label": "reads/writes Delta via",
           "relations": [
-            "1wxg6ea"
+            "7hetsx"
           ],
           "color": "gray",
           "line": "dashed",
@@ -2708,13 +3401,171 @@
           "kind": "implementation"
         },
         {
+          "id": "headwaters",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "566u03",
+            "19dfoig"
+          ],
+          "title": "headwaters",
+          "modelRef": "headwaters",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/headwaters"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "authelia",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "8h3dj8"
+          ],
+          "title": "Authelia",
+          "modelRef": "authelia",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.authelia.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "openPolicyAgent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1072v40"
+          ],
+          "title": "Open Policy Agent",
+          "modelRef": "openPolicyAgent",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.openpolicyagent.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "jaeger",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "lmgy2b",
+            "du7fva"
+          ],
+          "title": "Jaeger",
+          "modelRef": "jaeger",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source distributed tracing backend: collects, stores, and visualizes traces."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.jaegertracing.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "puppygraph",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1i9l0il"
+          ],
+          "title": "PuppyGraph",
+          "modelRef": "puppygraph",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Graph query engine that runs graph queries over existing tables without copying them into a graph database."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.puppygraph.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "unityCatalogOSS",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1pglyt6"
+            "1pglyt6",
+            "okzuqp"
           ],
           "title": "Unity Catalog (OSS)",
           "modelRef": "unityCatalogOSS",
@@ -2775,6 +3626,217 @@
           "kind": "implementation"
         },
         {
+          "id": "marimo",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "marimo",
+          "modelRef": "marimo",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Reactive Python notebook, stored as plain Python files."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://marimo.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "envoy",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Envoy",
+          "modelRef": "envoy",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source edge and service proxy; the gateway that routes requests to each service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.envoyproxy.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "postgresql",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "PostgreSQL",
+          "modelRef": "postgresql",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source relational database; the metadata store behind catalog and tracking services."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.postgresql.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "rustfs",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "dou7t3"
+          ],
+          "title": "RustFS",
+          "modelRef": "rustfs",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "S3-compatible object storage server written in Rust."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://rustfs.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "amazonS3",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1pupksk"
+          ],
+          "title": "Amazon S3",
+          "modelRef": "amazonS3",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "AWS's managed object storage service; the origin of the S3 API."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://aws.amazon.com/s3/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azurite",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1knq7v0"
+          ],
+          "title": "Azurite",
+          "modelRef": "azurite",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Local emulator for Azure Storage, including the Blob service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/Azure/Azurite"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azureBlobStorage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "qjh4az"
+          ],
+          "title": "Azure Blob Storage",
+          "modelRef": "azureBlobStorage",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Azure's managed object storage service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://azure.microsoft.com/products/storage/blobs"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "deltaRs",
           "parent": null,
           "level": 0,
@@ -2807,6 +3869,70 @@
             }
           ],
           "kind": "implementation"
+        },
+        {
+          "id": "openLineageSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "19dfoig"
+          ],
+          "outEdges": [
+            "stivld"
+          ],
+          "title": "OpenLineage",
+          "modelRef": "openLineageSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://openlineage.io"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_openLineageSpec"
+        },
+        {
+          "id": "otlpSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "du7fva"
+          ],
+          "outEdges": [
+            "1pqigbz"
+          ],
+          "title": "OpenTelemetry Protocol (OTLP)",
+          "modelRef": "otlpSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The OpenTelemetry wire protocol for exporting traces, metrics, and logs to a backend."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://opentelemetry.io/docs/specs/otlp/"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_otlpSpec"
         },
         {
           "id": "ucSpec",
@@ -2852,7 +3978,8 @@
           "inEdges": [
             "rqwp5z",
             "1ixkizh",
-            "wv3hil"
+            "wv3hil",
+            "okzuqp"
           ],
           "outEdges": [
             "lv7f45"
@@ -2877,6 +4004,39 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_icebergRestSpec"
+        },
+        {
+          "id": "azureBlobApi",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1knq7v0",
+            "qjh4az"
+          ],
+          "outEdges": [
+            "1exg6xb"
+          ],
+          "title": "Azure Blob Storage API",
+          "modelRef": "azureBlobApi",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The REST interface to Azure Blob Storage, also served by local emulators."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_azureBlobApi"
         },
         {
           "id": "deltaSpec",
@@ -2920,7 +4080,9 @@
           "children": [],
           "inEdges": [
             "epvgru",
-            "ycgcej"
+            "ycgcej",
+            "dou7t3",
+            "1pupksk"
           ],
           "outEdges": [
             "zreoid"
@@ -2961,12 +4123,20 @@
             "du97h0",
             "s3zh3y",
             "zreoid",
+            "1exg6xb",
+            "stivld",
+            "1pqigbz",
             "byeu7p",
             "bd1jqg",
             "fwwh2m",
             "1fxphu",
             "sr2fr2",
-            "1sk4qke"
+            "1sk4qke",
+            "566u03",
+            "8h3dj8",
+            "1072v40",
+            "lmgy2b",
+            "1i9l0il"
           ],
           "outEdges": [],
           "title": "Open Lakehouse",
@@ -3040,7 +4210,7 @@
           }
         ]
       },
-      "hash": "4fBy4OvbRVMA7ue9unqajElf2rS_iHVorfnuZYT1s1Y"
+      "hash": "W8fS6_DVj1JkVWxZ5qe_06vd8pVqA-pkqOhfJwELGbM"
     },
     "ucDeltaApi_managedTableFlow": {
       "_type": "dynamic",
@@ -4213,7 +5383,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "bgan4u"
+            "10da4bd"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4227,7 +5397,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1s9csku"
+            "1c1oji9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4241,7 +5411,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "17nq6lh"
+            "1itiaao"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4255,7 +5425,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "9b6b13"
+            "1v5ihay"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4269,7 +5439,21 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "yykakx"
+            "9r397f"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1ra0b9z",
+          "parent": null,
+          "source": "puppygraph",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes graph queries over tables",
+          "relations": [
+            "moiwyc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4530,6 +5714,37 @@
           "kind": "implementation"
         },
         {
+          "id": "puppygraph",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ra0b9z"
+          ],
+          "title": "PuppyGraph",
+          "modelRef": "puppygraph",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Graph query engine that runs graph queries over existing tables without copying them into a graph database."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.puppygraph.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "lakehouse.sqlView",
           "parent": null,
           "level": 0,
@@ -4673,6 +5888,7 @@
             "8x2yjo",
             "16lmeqg",
             "1dpuyes",
+            "1ra0b9z",
             "se6qb1",
             "fpqd3b",
             "evzpms",
@@ -4710,7 +5926,7 @@
           }
         ]
       },
-      "hash": "aOTlUD_u8mBzt0gNGDRmYzYAIpPdK-NCSIHj59hS5KY"
+      "hash": "zgFVRxqI0ofBNjcgxnsKkxLokWZUvuoaDlIp1QIslSM"
     },
     "explain_orchestration": {
       "_type": "element",
@@ -5209,6 +6425,20 @@
           "kind": "specifies"
         },
         {
+          "id": "13jsrzh",
+          "parent": null,
+          "source": "azureBlobApi",
+          "target": "lakehouse.objectStorage",
+          "label": "specifies the object-storage capability",
+          "relations": [
+            "1qwpi8c"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
           "id": "tuvbx4",
           "parent": null,
           "source": "lakehouse.table",
@@ -5309,6 +6539,36 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_s3Api"
+        },
+        {
+          "id": "azureBlobApi",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "13jsrzh"
+          ],
+          "title": "Azure Blob Storage API",
+          "modelRef": "azureBlobApi",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The REST interface to Azure Blob Storage, also served by local emulators."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_azureBlobApi"
         },
         {
           "id": "lakehouse.table",
@@ -5447,6 +6707,7 @@
           "children": [],
           "inEdges": [
             "1ol3q9j",
+            "13jsrzh",
             "tuvbx4",
             "1q3ub9q",
             "wo4v60",
@@ -5484,7 +6745,7 @@
           }
         ]
       },
-      "hash": "OEGkExsP5opo1si5rHsH3o9w5lL9MUvxpi26HcKcris"
+      "hash": "dPAEebVZBClylPXUnW5_Okq_D7pgCvRQhS-Ho1Vw4Ko"
     },
     "explain_modelTracking": {
       "_type": "element",
@@ -5507,7 +6768,7 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "gelsz4"
+            "14pet3t"
           ],
           "color": "gray",
           "line": "dotted",
@@ -5792,6 +7053,34 @@
       },
       "edges": [
         {
+          "id": "1gqkm6c",
+          "parent": null,
+          "source": "authelia",
+          "target": "lakehouse.governance",
+          "label": "authenticates + authorizes requests at the gateway",
+          "relations": [
+            "1pegcp3"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "slqjcw",
+          "parent": null,
+          "source": "openPolicyAgent",
+          "target": "lakehouse.governance",
+          "label": "decides access policy",
+          "relations": [
+            "170qskl"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
           "id": "1onsglj",
           "parent": null,
           "source": "lakehouse.governance",
@@ -5934,11 +7223,76 @@
       ],
       "nodes": [
         {
-          "id": "lakehouse.governance",
+          "id": "authelia",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
+          "outEdges": [
+            "1gqkm6c"
+          ],
+          "title": "Authelia",
+          "modelRef": "authelia",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.authelia.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "openPolicyAgent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "slqjcw"
+          ],
+          "title": "Open Policy Agent",
+          "modelRef": "openPolicyAgent",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.openpolicyagent.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "lakehouse.governance",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1gqkm6c",
+            "slqjcw"
+          ],
           "outEdges": [
             "1onsglj",
             "1fu0di2",
@@ -6234,7 +7588,19 @@
           "kind": "asset"
         }
       ],
-      "hash": "WVnqhJZhS40mPji87Z4EGYkJgz6NOn_apHTbb6kdrZs"
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          }
+        ]
+      },
+      "hash": "5IvxhMBCuvl-ueYpiRUjCpi6QH2tCcyumoJy7RfHN80"
     },
     "explain_lineage": {
       "_type": "element",
@@ -6250,6 +7616,34 @@
         "direction": "LR"
       },
       "edges": [
+        {
+          "id": "15tgtjm",
+          "parent": null,
+          "source": "openLineageSpec",
+          "target": "lakehouse.lineage",
+          "label": "specifies the lineage event model",
+          "relations": [
+            "vi78ep"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "10ayark",
+          "parent": null,
+          "source": "headwaters",
+          "target": "lakehouse.lineage",
+          "label": "realizes the lineage concern",
+          "relations": [
+            "y6t7gg"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
         {
           "id": "1mzyvvd",
           "parent": null,
@@ -6309,11 +7703,75 @@
       ],
       "nodes": [
         {
-          "id": "lakehouse.lineage",
+          "id": "openLineageSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
+          "outEdges": [
+            "15tgtjm"
+          ],
+          "title": "OpenLineage",
+          "modelRef": "openLineageSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://openlineage.io"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_openLineageSpec"
+        },
+        {
+          "id": "headwaters",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "10ayark"
+          ],
+          "title": "headwaters",
+          "modelRef": "headwaters",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/headwaters"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "lakehouse.lineage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "15tgtjm",
+            "10ayark"
+          ],
           "outEdges": [
             "1mzyvvd",
             "6o12f8",
@@ -6442,7 +7900,27 @@
           "kind": "asset"
         }
       ],
-      "hash": "FTUrJ98IOBP52QwZqsugQQKKVZD3mdB_McvIwTzXKjA"
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
+            ]
+          }
+        ]
+      },
+      "hash": "af4LDSODwp8Jfk4ZD9Cj1dfVByklfTlTmTrn_EORN5A"
     },
     "explain_observability": {
       "_type": "element",
@@ -6458,6 +7936,34 @@
         "direction": "LR"
       },
       "edges": [
+        {
+          "id": "1g7d124",
+          "parent": null,
+          "source": "otlpSpec",
+          "target": "lakehouse.observability",
+          "label": "specifies telemetry export",
+          "relations": [
+            "1l215v5"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "hh3pz4",
+          "parent": null,
+          "source": "jaeger",
+          "target": "lakehouse.observability",
+          "label": "realizes tracing",
+          "relations": [
+            "182npyf"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
         {
           "id": "1p88a5o",
           "parent": null,
@@ -6517,6 +8023,67 @@
       ],
       "nodes": [
         {
+          "id": "otlpSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1g7d124"
+          ],
+          "title": "OpenTelemetry Protocol (OTLP)",
+          "modelRef": "otlpSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The OpenTelemetry wire protocol for exporting traces, metrics, and logs to a backend."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://opentelemetry.io/docs/specs/otlp/"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_otlpSpec"
+        },
+        {
+          "id": "jaeger",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "hh3pz4"
+          ],
+          "title": "Jaeger",
+          "modelRef": "jaeger",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source distributed tracing backend: collects, stores, and visualizes traces."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.jaegertracing.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "lakehouse.orchestration",
           "parent": null,
           "level": 0,
@@ -6551,6 +8118,8 @@
           "level": 0,
           "children": [],
           "inEdges": [
+            "1g7d124",
+            "hh3pz4",
             "1p88a5o"
           ],
           "outEdges": [
@@ -6635,7 +8204,27 @@
           "navigateTo": "explain_queryEngine"
         }
       ],
-      "hash": "aaBP-I0qdYg2Shikbw3QlMbMByeA59aEzMEuDpwYCgw"
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
+            ]
+          }
+        ]
+      },
+      "hash": "N8rjpB3rpaLVrWMylP2kRhMyMd2sAqEYidgP9OPtvzI"
     },
     "explain_deltaSpec": {
       "_type": "element",
@@ -6658,7 +8247,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "nko3vv"
+            "14yrfdt"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6672,7 +8261,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "1ficrpy"
+            "u0ntn7"
           ],
           "color": "gray",
           "line": "dotted",
@@ -6686,7 +8275,7 @@
           "target": "deltaSpec",
           "label": "reads Delta tables via",
           "relations": [
-            "1if5kiu"
+            "1f4d3qj"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7013,7 +8602,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1ijogmz"
+            "j0cwzh"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7027,7 +8616,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "zqr4xt"
+            "x7cjr"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7041,7 +8630,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "uib3l5"
+            "esuv0q"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7055,7 +8644,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "14p4xp1"
+            "g2x13y"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7325,7 +8914,7 @@
           "target": "icebergRestSpec",
           "label": "reads via",
           "relations": [
-            "1p8qxyi"
+            "m1zrr9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7339,7 +8928,7 @@
           "target": "icebergRestSpec",
           "label": "reads Iceberg tables via",
           "relations": [
-            "1lef4t7"
+            "1tp65st"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7353,7 +8942,21 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "4t63gs"
+            "suj1ov"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "okzuqp",
+          "parent": null,
+          "source": "unityCatalogOSS",
+          "target": "icebergRestSpec",
+          "label": "serves Iceberg tables through",
+          "relations": [
+            "1or4hza"
           ],
           "color": "gray",
           "line": "dotted",
@@ -7474,6 +9077,41 @@
           "kind": "implementation"
         },
         {
+          "id": "unityCatalogOSS",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "okzuqp"
+          ],
+          "title": "Unity Catalog (OSS)",
+          "modelRef": "unityCatalogOSS",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The open-source reference server implementing the Unity Catalog specification."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog"
+            },
+            {
+              "url": "https://unitycatalog.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "icebergRestSpec",
           "parent": null,
           "level": 0,
@@ -7481,7 +9119,8 @@
           "inEdges": [
             "rqwp5z",
             "1ixkizh",
-            "wv3hil"
+            "wv3hil",
+            "okzuqp"
           ],
           "outEdges": [
             "lv7f45"
@@ -7556,7 +9195,7 @@
           }
         ]
       },
-      "hash": "iIjDJ2IFchDUs8NZH6us_GHcOkhwbEi_uxvJUzOzO2U"
+      "hash": "nVW9HDcRhg8yRl7KqdnN-WaR_t6XK7nnfQ7O74rrLdM"
     },
     "explain_openSharingSpec": {
       "_type": "element",
@@ -7785,7 +9424,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "zwpunc"
+            "vv3m7j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -7799,12 +9438,40 @@
           "target": "s3Api",
           "label": "reads/writes data files via",
           "relations": [
-            "xg7wq7"
+            "9tutb9"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "dou7t3",
+          "parent": null,
+          "source": "rustfs",
+          "target": "s3Api",
+          "label": "implements",
+          "relations": [
+            "af3sgx"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1pupksk",
+          "parent": null,
+          "source": "amazonS3",
+          "target": "s3Api",
+          "label": "implements",
+          "relations": [
+            "1lycdsw"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
         },
         {
           "id": "zreoid",
@@ -7886,13 +9553,77 @@
           "kind": "implementation"
         },
         {
+          "id": "rustfs",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "dou7t3"
+          ],
+          "title": "RustFS",
+          "modelRef": "rustfs",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "S3-compatible object storage server written in Rust."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://rustfs.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "amazonS3",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1pupksk"
+          ],
+          "title": "Amazon S3",
+          "modelRef": "amazonS3",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "AWS's managed object storage service; the origin of the S3 API."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://aws.amazon.com/s3/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "s3Api",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
             "epvgru",
-            "ycgcej"
+            "ycgcej",
+            "dou7t3",
+            "1pupksk"
           ],
           "outEdges": [
             "zreoid"
@@ -7967,7 +9698,527 @@
           }
         ]
       },
-      "hash": "lnuRse82ld9kTN8v-qeDjejh-eFvzLa5ZPKocvZNuFE"
+      "hash": "PGX_spLRDSwKkYV0Y8MYUCA2Msyt8Af2ZG6bKsJ4ouk"
+    },
+    "explain_azureBlobApi": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "viewOf": "azureBlobApi",
+      "_stage": "computed",
+      "sourcePath": "views/explain-views.likec4",
+      "description": null,
+      "title": "Azure Blob Storage API — in context",
+      "id": "explain_azureBlobApi",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "1knq7v0",
+          "parent": null,
+          "source": "azurite",
+          "target": "azureBlobApi",
+          "label": "emulates",
+          "relations": [
+            "1s2d6jq"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "qjh4az",
+          "parent": null,
+          "source": "azureBlobStorage",
+          "target": "azureBlobApi",
+          "label": "implements",
+          "relations": [
+            "ftnjd4"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1exg6xb",
+          "parent": null,
+          "source": "azureBlobApi",
+          "target": "lakehouse",
+          "label": "specifies the object-storage capability",
+          "relations": [
+            "1qwpi8c"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "azurite",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1knq7v0"
+          ],
+          "title": "Azurite",
+          "modelRef": "azurite",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Local emulator for Azure Storage, including the Blob service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/Azure/Azurite"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azureBlobStorage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "qjh4az"
+          ],
+          "title": "Azure Blob Storage",
+          "modelRef": "azureBlobStorage",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Azure's managed object storage service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://azure.microsoft.com/products/storage/blobs"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azureBlobApi",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1knq7v0",
+            "qjh4az"
+          ],
+          "outEdges": [
+            "1exg6xb"
+          ],
+          "title": "Azure Blob Storage API",
+          "modelRef": "azureBlobApi",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The REST interface to Azure Blob Storage, also served by local emulators."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1exg6xb"
+          ],
+          "outEdges": [],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "navigateTo": "capabilityMap"
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
+            ]
+          }
+        ]
+      },
+      "hash": "Fjqf3d_XqtXZqAC4QWX7uKRjXMTiBMB6sCVnEEYH2PA"
+    },
+    "explain_openLineageSpec": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "viewOf": "openLineageSpec",
+      "_stage": "computed",
+      "sourcePath": "views/explain-views.likec4",
+      "description": null,
+      "title": "OpenLineage — in context",
+      "id": "explain_openLineageSpec",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "19dfoig",
+          "parent": null,
+          "source": "headwaters",
+          "target": "openLineageSpec",
+          "label": "emits + ingests",
+          "relations": [
+            "ypuzsp"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "stivld",
+          "parent": null,
+          "source": "openLineageSpec",
+          "target": "lakehouse",
+          "label": "specifies the lineage event model",
+          "relations": [
+            "vi78ep"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "headwaters",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "19dfoig"
+          ],
+          "title": "headwaters",
+          "modelRef": "headwaters",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/open-lakehouse/headwaters"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "openLineageSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "19dfoig"
+          ],
+          "outEdges": [
+            "stivld"
+          ],
+          "title": "OpenLineage",
+          "modelRef": "openLineageSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://openlineage.io"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "stivld"
+          ],
+          "outEdges": [],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "navigateTo": "capabilityMap"
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
+            ]
+          }
+        ]
+      },
+      "hash": "VMebLq9XGDgwrYqmmx-IXIp5XFUQ2QxoaKU3YtaNwXo"
+    },
+    "explain_otlpSpec": {
+      "_type": "element",
+      "tags": null,
+      "links": null,
+      "viewOf": "otlpSpec",
+      "_stage": "computed",
+      "sourcePath": "views/explain-views.likec4",
+      "description": null,
+      "title": "OpenTelemetry Protocol (OTLP) — in context",
+      "id": "explain_otlpSpec",
+      "autoLayout": {
+        "direction": "LR"
+      },
+      "edges": [
+        {
+          "id": "du7fva",
+          "parent": null,
+          "source": "jaeger",
+          "target": "otlpSpec",
+          "label": "receives traces via",
+          "relations": [
+            "ggwnq6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1pqigbz",
+          "parent": null,
+          "source": "otlpSpec",
+          "target": "lakehouse",
+          "label": "specifies telemetry export",
+          "relations": [
+            "1l215v5"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "jaeger",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "du7fva"
+          ],
+          "title": "Jaeger",
+          "modelRef": "jaeger",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source distributed tracing backend: collects, stores, and visualizes traces."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.jaegertracing.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "otlpSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "du7fva"
+          ],
+          "outEdges": [
+            "1pqigbz"
+          ],
+          "title": "OpenTelemetry Protocol (OTLP)",
+          "modelRef": "otlpSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The OpenTelemetry wire protocol for exporting traces, metrics, and logs to a backend."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://opentelemetry.io/docs/specs/otlp/"
+            }
+          ],
+          "kind": "openSpecification"
+        },
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1pqigbz"
+          ],
+          "outEdges": [],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "navigateTo": "capabilityMap"
+        }
+      ],
+      "notation": {
+        "nodes": [
+          {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
+            "title": "Specification / open standard",
+            "shape": "rectangle",
+            "color": "sky",
+            "kinds": [
+              "openSpecification"
+            ]
+          }
+        ]
+      },
+      "hash": "XBxUS_fUAQIQHHH597cmSvxN4WASZ-h7wuUfT7hXNJY"
     },
     "credentialVending": {
       "_type": "dynamic",
@@ -8836,13 +11087,55 @@
           "kind": "specifies"
         },
         {
+          "id": "13jsrzh",
+          "parent": null,
+          "source": "azureBlobApi",
+          "target": "lakehouse.objectStorage",
+          "label": "specifies the object-storage capability",
+          "relations": [
+            "1qwpi8c"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "15tgtjm",
+          "parent": null,
+          "source": "openLineageSpec",
+          "target": "lakehouse.lineage",
+          "label": "specifies the lineage event model",
+          "relations": [
+            "vi78ep"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
+          "id": "1g7d124",
+          "parent": null,
+          "source": "otlpSpec",
+          "target": "lakehouse.observability",
+          "label": "specifies telemetry export",
+          "relations": [
+            "1l215v5"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
           "id": "ipwqn",
           "parent": null,
           "source": "datafusion",
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "bgan4u"
+            "10da4bd"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8856,7 +11149,7 @@
           "target": "s3Api",
           "label": "reads data files via",
           "relations": [
-            "zwpunc"
+            "vv3m7j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8870,7 +11163,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1s9csku"
+            "1c1oji9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8884,7 +11177,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1ijogmz"
+            "j0cwzh"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8898,7 +11191,147 @@
           "target": "icebergRestSpec",
           "label": "reads via",
           "relations": [
-            "1p8qxyi"
+            "m1zrr9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1ym8qa6",
+          "parent": null,
+          "source": "deltaRs",
+          "target": "deltaSpec",
+          "label": "implements",
+          "relations": [
+            "14yrfdt"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "ycgcej",
+          "parent": null,
+          "source": "deltaRs",
+          "target": "s3Api",
+          "label": "reads/writes data files via",
+          "relations": [
+            "9tutb9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "8x2yjo",
+          "parent": null,
+          "source": "deltaSpark",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1itiaao"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "139665w",
+          "parent": null,
+          "source": "deltaSpark",
+          "target": "deltaSpec",
+          "label": "implements",
+          "relations": [
+            "u0ntn7"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "16lmeqg",
+          "parent": null,
+          "source": "duckdb",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "1v5ihay"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "7tsy4o",
+          "parent": null,
+          "source": "duckdb",
+          "target": "deltaSpec",
+          "label": "reads Delta tables via",
+          "relations": [
+            "1f4d3qj"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "ntuq6e",
+          "parent": null,
+          "source": "duckdb",
+          "target": "ucSpec",
+          "label": "resolves tables via",
+          "relations": [
+            "x7cjr"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1ixkizh",
+          "parent": null,
+          "source": "duckdb",
+          "target": "icebergRestSpec",
+          "label": "reads Iceberg tables via",
+          "relations": [
+            "1tp65st"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1dpuyes",
+          "parent": null,
+          "source": "polars",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes the query-engine capability",
+          "relations": [
+            "9r397f"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "10ldfu2",
+          "parent": null,
+          "source": "polars",
+          "target": "ucSpec",
+          "label": "resolves tables via",
+          "relations": [
+            "esuv0q"
           ],
           "color": "gray",
           "line": "dashed",
@@ -8912,7 +11345,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "4t63gs"
+            "suj1ov"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8926,7 +11359,21 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "14p4xp1"
+            "g2x13y"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "okzuqp",
+          "parent": null,
+          "source": "unityCatalogOSS",
+          "target": "icebergRestSpec",
+          "label": "serves Iceberg tables through",
+          "relations": [
+            "1or4hza"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8940,148 +11387,183 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "gelsz4"
+            "14pet3t"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "realizes"
+        },
+        {
+          "id": "10ayark",
+          "parent": null,
+          "source": "headwaters",
+          "target": "lakehouse.lineage",
+          "label": "realizes the lineage concern",
+          "relations": [
+            "y6t7gg"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "19dfoig",
+          "parent": null,
+          "source": "headwaters",
+          "target": "openLineageSpec",
+          "label": "emits + ingests",
+          "relations": [
+            "ypuzsp"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1gqkm6c",
+          "parent": null,
+          "source": "authelia",
+          "target": "lakehouse.governance",
+          "label": "authenticates + authorizes requests at the gateway",
+          "relations": [
+            "1pegcp3"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "slqjcw",
+          "parent": null,
+          "source": "openPolicyAgent",
+          "target": "lakehouse.governance",
+          "label": "decides access policy",
+          "relations": [
+            "170qskl"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "hh3pz4",
+          "parent": null,
+          "source": "jaeger",
+          "target": "lakehouse.observability",
+          "label": "realizes tracing",
+          "relations": [
+            "182npyf"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "du7fva",
+          "parent": null,
+          "source": "jaeger",
+          "target": "otlpSpec",
+          "label": "receives traces via",
+          "relations": [
+            "ggwnq6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "consumes"
+        },
+        {
+          "id": "1ra0b9z",
+          "parent": null,
+          "source": "puppygraph",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes graph queries over tables",
+          "relations": [
+            "moiwyc"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "dou7t3",
+          "parent": null,
+          "source": "rustfs",
+          "target": "s3Api",
+          "label": "implements",
+          "relations": [
+            "af3sgx"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1pupksk",
+          "parent": null,
+          "source": "amazonS3",
+          "target": "s3Api",
+          "label": "implements",
+          "relations": [
+            "1lycdsw"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "1knq7v0",
+          "parent": null,
+          "source": "azurite",
+          "target": "azureBlobApi",
+          "label": "emulates",
+          "relations": [
+            "1s2d6jq"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "qjh4az",
+          "parent": null,
+          "source": "azureBlobStorage",
+          "target": "azureBlobApi",
+          "label": "implements",
+          "relations": [
+            "ftnjd4"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
+          "id": "viecbk",
+          "parent": null,
+          "source": "polars",
+          "target": "deltaRs",
+          "label": "reads/writes Delta via",
+          "relations": [
+            "7hetsx"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "dependsOn"
         }
       ],
       "nodes": [
-        {
-          "id": "lakehouse",
-          "parent": null,
-          "level": 0,
-          "children": [
-            "lakehouse.lineage",
-            "lakehouse.governance",
-            "lakehouse.orchestration",
-            "lakehouse.tableFormat",
-            "lakehouse.sharing",
-            "lakehouse.fileFormat",
-            "lakehouse.modelTracking",
-            "lakehouse.observability",
-            "lakehouse.catalog",
-            "lakehouse.queryEngine",
-            "lakehouse.credentialIssuer",
-            "lakehouse.objectStorage"
-          ],
-          "inEdges": [
-            "1qkmdr7",
-            "67455y",
-            "cp7myr",
-            "dton7c",
-            "g3s102",
-            "1p0amr9",
-            "1ol3q9j",
-            "ipwqn",
-            "zt1zxe",
-            "1t5h2fk"
-          ],
-          "outEdges": [],
-          "title": "Open Lakehouse",
-          "modelRef": "lakehouse",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
-          },
-          "tags": [],
-          "links": [
-            {
-              "url": "https://openlakehouse.io"
-            }
-          ],
-          "kind": "capability",
-          "depth": 1,
-          "navigateTo": "capabilityMap"
-        },
-        {
-          "id": "lakehouse.lineage",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Lineage",
-          "modelRef": "lakehouse.lineage",
-          "shape": "component",
-          "color": "amber",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Records where data came from and where it flows, down to the column."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/lineage-plane.md"
-          },
-          "kind": "concern",
-          "navigateTo": "explain_lineage"
-        },
-        {
-          "id": "lakehouse.governance",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "Governance",
-          "modelRef": "lakehouse.governance",
-          "shape": "component",
-          "color": "amber",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
-          },
-          "tags": [],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "concern",
-          "navigateTo": "explain_governance"
-        },
-        {
-          "id": "deltaSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1qkmdr7"
-          ],
-          "title": "Delta Lake",
-          "modelRef": "deltaSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open table-format specification: ACID transactions,\nschema evolution, and time travel over object storage."
-          },
-          "tags": [],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://delta.io"
-            }
-          ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_deltaSpec"
-        },
         {
           "id": "icebergSpec",
           "parent": null,
@@ -9241,6 +11723,106 @@
           "kind": "implementation"
         },
         {
+          "id": "deltaSpark",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "8x2yjo",
+            "139665w"
+          ],
+          "title": "Delta Spark",
+          "modelRef": "deltaSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://docs.delta.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "duckdb",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "16lmeqg",
+            "7tsy4o",
+            "ntuq6e",
+            "1ixkizh"
+          ],
+          "title": "DuckDB",
+          "modelRef": "duckdb",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "In-process analytical SQL engine."
+          },
+          "tags": [
+            "library"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://duckdb.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "polars",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1dpuyes",
+            "10ldfu2",
+            "viecbk"
+          ],
+          "title": "Polars",
+          "modelRef": "polars",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://avatars.githubusercontent.com/u/83768144?s=200&v=4",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Fast DataFrame library written in Rust with a Python API;"
+          },
+          "tags": [
+            "library"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://pola.rs"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "lakekeeper",
           "parent": null,
           "level": 0,
@@ -9279,7 +11861,8 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "1pglyt6"
+            "1pglyt6",
+            "okzuqp"
           ],
           "title": "Unity Catalog (OSS)",
           "modelRef": "unityCatalogOSS",
@@ -9340,69 +11923,406 @@
           "kind": "implementation"
         },
         {
-          "id": "s3Api",
+          "id": "headwaters",
           "parent": null,
           "level": 0,
           "children": [],
-          "inEdges": [
-            "epvgru"
-          ],
+          "inEdges": [],
           "outEdges": [
-            "1ol3q9j"
+            "10ayark",
+            "19dfoig"
           ],
-          "title": "S3 API",
-          "modelRef": "s3Api",
-          "shape": "rectangle",
-          "color": "sky",
+          "title": "headwaters",
+          "modelRef": "headwaters",
+          "shape": "cylinder",
+          "color": "muted",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement."
+            "txt": "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
           },
-          "tags": [],
-          "notation": "Specification / open standard",
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+              "url": "https://github.com/open-lakehouse/headwaters"
             }
           ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_s3Api"
+          "kind": "implementation"
         },
         {
-          "id": "icebergRestSpec",
+          "id": "authelia",
           "parent": null,
           "level": 0,
           "children": [],
-          "inEdges": [
-            "rqwp5z",
-            "wv3hil"
-          ],
+          "inEdges": [],
           "outEdges": [
-            "dton7c"
+            "1gqkm6c"
           ],
-          "title": "Iceberg REST Catalog",
-          "modelRef": "icebergRestSpec",
-          "shape": "rectangle",
-          "color": "sky",
+          "title": "Authelia",
+          "modelRef": "authelia",
+          "shape": "cylinder",
+          "color": "muted",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "Specification for a REST based Iceberg catalog"
+            "txt": "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
           },
-          "tags": [],
-          "notation": "Specification / open standard",
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://iceberg.apache.org/concepts/catalog/"
+              "url": "https://www.authelia.com"
             }
           ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_icebergRestSpec"
+          "kind": "implementation"
+        },
+        {
+          "id": "openPolicyAgent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "slqjcw"
+          ],
+          "title": "Open Policy Agent",
+          "modelRef": "openPolicyAgent",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.openpolicyagent.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "jaeger",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "hh3pz4",
+            "du7fva"
+          ],
+          "title": "Jaeger",
+          "modelRef": "jaeger",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source distributed tracing backend: collects, stores, and visualizes traces."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.jaegertracing.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "puppygraph",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ra0b9z"
+          ],
+          "title": "PuppyGraph",
+          "modelRef": "puppygraph",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Graph query engine that runs graph queries over existing tables without copying them into a graph database."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.puppygraph.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "marimo",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "marimo",
+          "modelRef": "marimo",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Reactive Python notebook, stored as plain Python files."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://marimo.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "envoy",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "Envoy",
+          "modelRef": "envoy",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source edge and service proxy; the gateway that routes requests to each service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.envoyproxy.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "postgresql",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [],
+          "title": "PostgreSQL",
+          "modelRef": "postgresql",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open source relational database; the metadata store behind catalog and tracking services."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.postgresql.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "rustfs",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "dou7t3"
+          ],
+          "title": "RustFS",
+          "modelRef": "rustfs",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "S3-compatible object storage server written in Rust."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://rustfs.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "amazonS3",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1pupksk"
+          ],
+          "title": "Amazon S3",
+          "modelRef": "amazonS3",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "AWS's managed object storage service; the origin of the S3 API."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://aws.amazon.com/s3/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azurite",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1knq7v0"
+          ],
+          "title": "Azurite",
+          "modelRef": "azurite",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Local emulator for Azure Storage, including the Blob service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/Azure/Azurite"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azureBlobStorage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "qjh4az"
+          ],
+          "title": "Azure Blob Storage",
+          "modelRef": "azureBlobStorage",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Azure's managed object storage service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://azure.microsoft.com/products/storage/blobs"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "deltaRs",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "viecbk"
+          ],
+          "outEdges": [
+            "1ym8qa6",
+            "ycgcej"
+          ],
+          "title": "delta-rs",
+          "modelRef": "deltaRs",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Native Rust implementation of the Delta protocol with Python bindings."
+          },
+          "tags": [
+            "library"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://delta-io.github.io/delta-rs/"
+            }
+          ],
+          "kind": "implementation"
         },
         {
           "id": "ucSpec",
@@ -9411,6 +12331,8 @@
           "children": [],
           "inEdges": [
             "1jquji4",
+            "ntuq6e",
+            "10ldfu2",
             "1pglyt6"
           ],
           "outEdges": [
@@ -9437,6 +12359,271 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_ucSpec"
+        },
+        {
+          "id": "icebergRestSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "rqwp5z",
+            "1ixkizh",
+            "wv3hil",
+            "okzuqp"
+          ],
+          "outEdges": [
+            "dton7c"
+          ],
+          "title": "Iceberg REST Catalog",
+          "modelRef": "icebergRestSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Specification for a REST based Iceberg catalog"
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org/concepts/catalog/"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_icebergRestSpec"
+        },
+        {
+          "id": "openLineageSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "19dfoig"
+          ],
+          "outEdges": [
+            "15tgtjm"
+          ],
+          "title": "OpenLineage",
+          "modelRef": "openLineageSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://openlineage.io"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_openLineageSpec"
+        },
+        {
+          "id": "otlpSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "du7fva"
+          ],
+          "outEdges": [
+            "1g7d124"
+          ],
+          "title": "OpenTelemetry Protocol (OTLP)",
+          "modelRef": "otlpSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The OpenTelemetry wire protocol for exporting traces, metrics, and logs to a backend."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://opentelemetry.io/docs/specs/otlp/"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_otlpSpec"
+        },
+        {
+          "id": "azureBlobApi",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1knq7v0",
+            "qjh4az"
+          ],
+          "outEdges": [
+            "13jsrzh"
+          ],
+          "title": "Azure Blob Storage API",
+          "modelRef": "azureBlobApi",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The REST interface to Azure Blob Storage, also served by local emulators."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_azureBlobApi"
+        },
+        {
+          "id": "deltaSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1ym8qa6",
+            "139665w",
+            "7tsy4o"
+          ],
+          "outEdges": [
+            "1qkmdr7"
+          ],
+          "title": "Delta Lake",
+          "modelRef": "deltaSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Open table-format specification: ACID transactions,\nschema evolution, and time travel over object storage."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://delta.io"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_deltaSpec"
+        },
+        {
+          "id": "s3Api",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "epvgru",
+            "ycgcej",
+            "dou7t3",
+            "1pupksk"
+          ],
+          "outEdges": [
+            "1ol3q9j"
+          ],
+          "title": "S3 API",
+          "modelRef": "s3Api",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_s3Api"
+        },
+        {
+          "id": "lakehouse",
+          "parent": null,
+          "level": 0,
+          "children": [
+            "lakehouse.orchestration",
+            "lakehouse.tableFormat",
+            "lakehouse.sharing",
+            "lakehouse.fileFormat",
+            "lakehouse.lineage",
+            "lakehouse.modelTracking",
+            "lakehouse.governance",
+            "lakehouse.observability",
+            "lakehouse.catalog",
+            "lakehouse.queryEngine",
+            "lakehouse.credentialIssuer",
+            "lakehouse.objectStorage"
+          ],
+          "inEdges": [
+            "1qkmdr7",
+            "67455y",
+            "cp7myr",
+            "dton7c",
+            "g3s102",
+            "1p0amr9",
+            "1ol3q9j",
+            "13jsrzh",
+            "15tgtjm",
+            "1g7d124",
+            "ipwqn",
+            "zt1zxe",
+            "8x2yjo",
+            "16lmeqg",
+            "1dpuyes",
+            "1t5h2fk",
+            "10ayark",
+            "1gqkm6c",
+            "slqjcw",
+            "hh3pz4",
+            "1ra0b9z"
+          ],
+          "outEdges": [],
+          "title": "Open Lakehouse",
+          "modelRef": "lakehouse",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference architecture: warehouse-style governance and query over open\ntable formats on object storage. Assembled from OSS foundations plus the\nconnective tissue they don't ship."
+          },
+          "tags": [],
+          "links": [
+            {
+              "url": "https://openlakehouse.io"
+            }
+          ],
+          "kind": "capability",
+          "depth": 1,
+          "navigateTo": "capabilityMap"
         },
         {
           "id": "lakehouse.orchestration",
@@ -9551,6 +12738,34 @@
           "navigateTo": "explain_fileFormat"
         },
         {
+          "id": "lakehouse.lineage",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "15tgtjm",
+            "10ayark"
+          ],
+          "outEdges": [],
+          "title": "Lineage",
+          "modelRef": "lakehouse.lineage",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Records where data came from and where it flows, down to the column."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/lineage-plane.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_lineage"
+        },
+        {
           "id": "lakehouse.modelTracking",
           "parent": "lakehouse",
           "level": 1,
@@ -9578,12 +12793,42 @@
           "navigateTo": "explain_modelTracking"
         },
         {
+          "id": "lakehouse.governance",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1gqkm6c",
+            "slqjcw"
+          ],
+          "outEdges": [],
+          "title": "Governance",
+          "modelRef": "lakehouse.governance",
+          "shape": "component",
+          "color": "amber",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Decides who may access what, and enforces it (row filters, column masks)."
+          },
+          "tags": [],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "concern",
+          "navigateTo": "explain_governance"
+        },
+        {
           "id": "lakehouse.observability",
           "parent": "lakehouse",
           "level": 1,
           "children": [],
           "inEdges": [
-            "1p88a5o"
+            "1p88a5o",
+            "1g7d124",
+            "hh3pz4"
           ],
           "outEdges": [
             "1078ltw",
@@ -9653,7 +12898,11 @@
             "gx91at",
             "iflpwz",
             "ipwqn",
-            "zt1zxe"
+            "zt1zxe",
+            "8x2yjo",
+            "16lmeqg",
+            "1dpuyes",
+            "1ra0b9z"
           ],
           "outEdges": [],
           "title": "Query engine",
@@ -9709,7 +12958,8 @@
           "children": [],
           "inEdges": [
             "mzhgx2",
-            "1ol3q9j"
+            "1ol3q9j",
+            "13jsrzh"
           ],
           "outEdges": [],
           "title": "Object storage",
@@ -9781,7 +13031,7 @@
           }
         ]
       },
-      "hash": "peFNhM4tRvX3z-AwhD9wqp3QpTeCVmYH1z4zHSjbo3U"
+      "hash": "wZCA1ELX2ujDmU_iqNImZEEQ02pET8GUcyN-OMC5k1k"
     },
     "capabilityMap": {
       "_type": "element",
@@ -9912,13 +13162,27 @@
           "kind": "specifies"
         },
         {
+          "id": "13jsrzh",
+          "parent": null,
+          "source": "azureBlobApi",
+          "target": "lakehouse.objectStorage",
+          "label": "specifies the object-storage capability",
+          "relations": [
+            "1qwpi8c"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "specifies"
+        },
+        {
           "id": "ipwqn",
           "parent": null,
           "source": "datafusion",
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "bgan4u"
+            "10da4bd"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9932,7 +13196,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1s9csku"
+            "1c1oji9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9946,7 +13210,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "17nq6lh"
+            "1itiaao"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9960,7 +13224,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "9b6b13"
+            "1v5ihay"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9974,7 +13238,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "yykakx"
+            "9r397f"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9988,7 +13252,21 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "gelsz4"
+            "14pet3t"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1ra0b9z",
+          "parent": null,
+          "source": "puppygraph",
+          "target": "lakehouse.queryEngine",
+          "label": "realizes graph queries over tables",
+          "relations": [
+            "moiwyc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10276,6 +13554,36 @@
           "navigateTo": "explain_s3Api"
         },
         {
+          "id": "azureBlobApi",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "13jsrzh"
+          ],
+          "title": "Azure Blob Storage API",
+          "modelRef": "azureBlobApi",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The REST interface to Azure Blob Storage, also served by local emulators."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_azureBlobApi"
+        },
+        {
           "id": "datafusion",
           "parent": null,
           "level": 0,
@@ -10466,6 +13774,37 @@
           "kind": "implementation"
         },
         {
+          "id": "puppygraph",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ra0b9z"
+          ],
+          "title": "PuppyGraph",
+          "modelRef": "puppygraph",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Graph query engine that runs graph queries over existing tables without copying them into a graph database."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://www.puppygraph.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "lakehouse",
           "parent": null,
           "level": 0,
@@ -10489,12 +13828,14 @@
             "g3s102",
             "1p0amr9",
             "1ol3q9j",
+            "13jsrzh",
             "ipwqn",
             "zt1zxe",
             "8x2yjo",
             "16lmeqg",
             "1dpuyes",
-            "1t5h2fk"
+            "1t5h2fk",
+            "1ra0b9z"
           ],
           "outEdges": [],
           "title": "Open Lakehouse",
@@ -10728,6 +14069,7 @@
             "8x2yjo",
             "16lmeqg",
             "1dpuyes",
+            "1ra0b9z",
             "gx91at"
           ],
           "outEdges": [],
@@ -10756,6 +14098,7 @@
           "children": [],
           "inEdges": [
             "1ol3q9j",
+            "13jsrzh",
             "mzhgx2"
           ],
           "outEdges": [],
@@ -10798,7 +14141,7 @@
           }
         ]
       },
-      "hash": "UdH922hR8fVqZg7a8c2atLXMzqRk5kx1BQDbj_xWJQU"
+      "hash": "VNZDnf0V1vkHYvfzzps6gvDrq2ubFalEP_lPCuTV8DI"
     },
     "concernMatrix": {
       "_type": "element",
@@ -13815,7 +17158,7 @@
         },
         "kind": "service",
         "description": {
-          "txt": "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capability is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
+          "txt": "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capture is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
         },
         "links": [
           {
@@ -13862,9 +17205,9 @@
         "element": "lakehouse.catalog",
         "style": {}
       },
-      "trustedCompute.headwaters.lineage": {
-        "id": "trustedCompute.headwaters.lineage",
-        "element": "lakehouse.lineage",
+      "trustedCompute.headwaters.headwaters": {
+        "id": "trustedCompute.headwaters.headwaters",
+        "element": "headwaters",
         "style": {}
       },
       "trustedCompute.objstore.objectStorage": {

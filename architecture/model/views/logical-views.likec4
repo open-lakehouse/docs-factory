@@ -39,15 +39,15 @@ views {
       openSharingSpec,
       parquetSpec,
       s3Api,
+      azureBlobApi,
+      openLineageSpec,
+      otlpSpec,
     // implementations (concrete software)
-      datafusion,
-      apacheSpark,
-      lakekeeper,
-      unityCatalogOSS,
-      mlflow,
-      omnigent,
+      element.kind == implementation,
 
-    exclude element.kind == asset
+    exclude
+      element.kind == asset,
+      element.tag == #generated
     autoLayout LeftRight
   }
 

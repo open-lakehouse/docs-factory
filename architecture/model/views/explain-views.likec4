@@ -118,4 +118,22 @@ views {
     include *
     autoLayout LeftRight
   }
+
+  view explain_azureBlobApi of azureBlobApi {
+    title "Azure Blob Storage API — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_openLineageSpec of openLineageSpec {
+    title "OpenLineage — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_otlpSpec of otlpSpec {
+    title "OpenTelemetry Protocol (OTLP) — in context"
+    include *
+    autoLayout LeftRight
+  }
 }

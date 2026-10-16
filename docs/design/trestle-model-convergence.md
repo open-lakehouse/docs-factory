@@ -1,6 +1,6 @@
 # Converging the estate model with Trestle environments
 
-**Status:** design, 2026-10-15. Proposed; nothing is built.
+**Status:** design, 2026-10-15. P0–P2 and P3a are built; the rest is proposed (see the plan).
 **Execution:** [phased plan](trestle-model-convergence-plan.md), one session per phase.
 **Supersedes:** two independent drafts (#216, #217), consolidated here. §10
 records which decisions were settled and which are defaults open to review.
@@ -186,10 +186,11 @@ for diagram enrichment (§8); Trestle never hand-maintains a second mapping.
 | `rustfs` | `rustfs` (`#infra`) | `implements s3Api` |
 | `aws-s3` | `amazonS3` (`#infra`) | `implements s3Api` |
 | `azurite` | `azurite` (`#infra`) | `implements azureBlobApi` |
-| `hosted-azure-storage` | `azureBlobStorage` (`#infra`) | `implements azureBlobApi` |
+| `azure-storage` | `azureBlobStorage` (`#infra`) | `implements azureBlobApi` |
 | `jaeger` | `jaeger` | `realizes observability`, `consumes otlpSpec` |
 | `marimo` | `marimo` | |
 | `puppygraph` | `puppygraph` | `realizes queryEngine` |
+| `rivers` | `rivers` (new in P4) | `realizes orchestration` |
 
 New specs: `azureBlobApi`; optionally `openLineageSpec` and `otlpSpec`.
 
@@ -349,8 +350,9 @@ in a versioned envelope with a JSON schema and fixtures:
 - functional graph nodes with their `model:` ref, plus the service inventory
   and each service's component membership (helpers stay visible here even
   though functional views fold them);
-- typed edges with **stable composite keys** (`kind:from→to[:qualifier]`),
-  because the current DTO has none;
+- typed edges with **stable composite keys** (`kind:from→to:qualifier`; the
+  capability for `uses`, the surface's host port for gateway edges), because
+  the DTO had none;
 - surfaces (listeners, routes, published ports) and the host/container client
   contracts;
 - provenance: schema version, Trestle revision, catalog identity, and a
@@ -430,7 +432,7 @@ scripts). Counts are from 2026-10-15; recount at the start of each phase.
 | The shared `UC_DOCS_ROOT` bind | `extra_mounts` knob. |
 | The UC module always demands a relational store and object store; the default env is H2 + `file://` | `embedded_metadata` knob drops both demands. |
 | Trestle always fronts services with a gateway; docs hit UC on :8080 and S3 on :9000 | `gateway_host_port = 8080`, a dedicated :9000 listener, UC routed at `/api/2.1/unity-catalog` with `Rewrite::Inherit`. Reader URLs stay valid. `content/conftest.py` stops hard-coding `get_service_host_and_port("unitycatalog", 8080)` and reads the host contract from `plan.json`. |
-| Client env spellings: docs export `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP`; Trestle emits `AWS_ENDPOINT_URL_S3`, `AWS_REGION` | Trestle adds the docs aliases on `unity-catalog`/`rustfs` client env, so prose stays unchanged. |
+| Client env spellings: docs export `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP`; Trestle emits `AWS_ENDPOINT_URL_S3`, `AWS_REGION` | Trestle adds the docs aliases to the `rustfs` client env behind an opt-in knob (§10 #27), so prose stays unchanged. |
 | Browser `PlanResultDto.files` omits sensitive files that UC needs (`server.properties`, `hibernate.properties`, `.env`) | `[context] local_secrets = "inline"` writes them as plain files and drops them from the generated `.gitignore`. It is the public-demo materialization policy: throwaway local keys only, and it refuses hosted modules. |
 | aws-sim parity: RustFS root keys, `RUSTFS_SERVER_DOMAINS` (host JVM virtual-hosted requests need `localhost:9000`), cert paths | Diff `envs/aws-sim/compose.yaml` against Trestle's `templates/modules/rustfs/compose.yaml.jinja` before cutover. Spark's host-side virtual-hosted access is the likeliest break; the sts-shim is already identical. |
 
@@ -549,6 +551,14 @@ while consolidating; revisit in review.
 | 21 | Query APIs (Spark Connect, Flight SQL, openCypher) are specs that specify `queryEngine`; a "warehouse" is a served engine | settled | A `queryService` capability |
 | 22 | `interactiveDevelopment` capability realized by marimo; notebooks are files in volumes | settled | A notebook asset kind; leave marimo unmapped |
 | 23 | `hydrofoil` joins the technology catalog; mangrove stays a capability instance | settled | Catalog all first-party services |
+| 24 | Split P3: P3a (refs, projection, `plan.json`, CLI) unblocks P4; P3b (UC knobs, inline secrets, aliases) unblocks P5 | settled | One Trestle PR |
+| 25 | A Trestle handoff is a merge commit SHA on Trestle `main`; no release is cut for it | settled | Tag a release per handoff |
+| 26 | `rivers` (Trestle's orchestration module) refs a `rivers` implementation that P4 adds | settled | Leave it unmapped |
+| 27 | `AWS_ENDPOINT_URL` / `AWS_ALLOW_HTTP` aliases sit behind an opt-in `rustfs` knob: a global endpoint also redirects STS for every SDK client | P3 | Always emit them |
+| 28 | The container inventory comes from declared `Provides.helpers`, checked against every rendered fragment by a test | P3a | Parse rendered Compose at export time |
+| 29 | `plan.json` lists `containers` (name, component, kind) beside `services`; hosted, host, and in-process services are graph nodes, not containers | P3a | Membership on each service |
+| 30 | `embedded_metadata` needs knob-aware demands (`Module::needs_in`), because demands resolve before knobs | P3 | A template-only flag |
+| 31 | The known aws-sim parity gaps (`RUSTFS_SERVER_DOMAINS`, UC `aws.*` keys, S3 host port) move into P3b; P5 step 7 still diffs the rest | P3 | Find them all in P5 |
 
 ## 11. Risks and open questions
 

@@ -442,9 +442,42 @@ is a journey, and the script that runs it claims the cell. A script claims cells
   "(draft)", with each cell's `api` and links to its evidence. Private pages are
   never emitted, so nothing unreviewed reaches readers.
 
+A journey also names the estate-model `asset` it acts on and what its
+participants must support, under `requires`, keyed by participant role. A
+`client` lists the specs it `consumes`; a provider such as `catalog` or
+`storage` lists the specs it `implements` (or the capability or concern it
+`realizes`). Lists are conjunctions. A journey's `family` supplies both, and
+the matrix's `defaults` cover journeys with no family. A journey can override
+either:
+
+```yaml
+families:
+  iceberg:
+    asset: lakehouse.table
+    requires:
+      client: { consumes: [icebergRestSpec] }
+      catalog: { implements: [icebergRestSpec] }
+journeys:
+  iceberg.read:
+    family: iceberg
+    title: Read an Iceberg table
+    summary: Read an Iceberg table by its catalog name, with credentials the catalog vends.
+```
+
+Claims bind an interface and a script; the script's environment supplies the
+configured participants. Express replaceable participants through the
+contracts they require, and keep implementation and version detail on the
+interface `pin`. A reference that doesn't resolve, or names the wrong kind of
+element, fails `docsnip check`. An interface that proves a journey but has no
+model edge to a spec its client consumes is reported separately from the
+outcome; the test evidence stands, and no graph path alone establishes
+support.
+
 A page embeds a table between `<!-- compat:<table> -->` and
-`<!-- /compat:<table> -->`. `uv run docsnip compat --fix` renders it; don't edit
-it by hand. `docsnip check` fails when it's stale (for example after a page is
+`<!-- /compat:<table> -->`; `<!-- compat:asset:<model id> -->` embeds every
+journey on that asset instead, on the page that `explains:` it, dropping
+columns that say nothing there. `uv run docsnip compat --fix` renders it; don't
+edit it by hand. `docsnip check` fails when it's stale (for example after a page is
 promoted) or when a claim doesn't hold up. The emitter strips the markers.
 
 ## Linking prose to the architecture model

@@ -314,12 +314,35 @@ arch-check: _arch-deps
 arch-build: _arch-deps
     cd architecture && bun run build
 
-# Export the model to architecture/dist/model.json (agent / interactive-site input).
+# Export the model to architecture/dist/model.json (agent / interactive-site input),
+# then refresh the Trestle context artifact that quotes it.
 arch-model: _arch-deps
     cd architecture && bun run model
+    uv run docsnip trestle --fix >/dev/null
 
 # Validate + export JSON + build static site in one step. Run after any model edit.
 arch-refresh: arch-check arch-model arch-build
+
+# --- Trestle (environment generator, pinned in envs/trestle.toml) -----------
+
+# Install the pinned Trestle CLI into .tools/trestle; a no-op when it's current.
+# A repo-local root keeps a global `trestle` at another revision out of the way.
+trestle-install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    read -r git rev package < <(uv run docsnip trestle --pin)
+    root=.tools/trestle
+    if [ -x "$root/bin/trestle" ] && [ "$(cat "$root/.rev" 2>/dev/null)" = "$rev" ]; then
+        exit 0
+    fi
+    TRESTLE_REVISION="$rev" cargo install --git "$git" --rev "$rev" --locked --root "$root" "$package"
+    echo "$rev" > "$root/.rev"
+
+# Snapshot the pinned Trestle's module catalog into architecture/dist/trestle-catalog.json,
+# then refresh the context artifact and check the join.
+trestle-catalog: trestle-install
+    .tools/trestle/bin/trestle env list-modules --json > architecture/dist/trestle-catalog.json
+    uv run docsnip trestle --fix
 
 # Install the LikeC4 tooling on first run.
 _arch-deps:

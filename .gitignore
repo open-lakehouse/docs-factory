@@ -29,6 +29,9 @@ coverage.xml
 # Rust
 /target/
 
+# Pinned tool installs (just trestle-install)
+/.tools/
+
 # Node — the site (site/) root symlink points at site/node_modules so
 # content/*.mdx can resolve component imports; server/ and emit/ each have their
 # own. Ignore node_modules anywhere in the tree.

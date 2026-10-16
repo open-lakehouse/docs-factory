@@ -44,8 +44,8 @@ services:
 s3.bucketPath.0=s3://uc-docs
 s3.region.0=us-east-1
 s3.awsRoleArn.0=arn:aws:iam::000000000000:role/uc-storage
-s3.accessKey.0=aws-sim-root
-s3.secretKey.0=aws-sim-root-secret
+s3.accessKey.0=rustfs-root
+s3.secretKey.0=rustfs-root-secret
 ```
 
 On real AWS, the same file works with your bucket, role, and keys.

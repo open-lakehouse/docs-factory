@@ -5,9 +5,9 @@
 # RustFS and STS to a policy-rewriting shim in front of RustFS. The UC server
 # keeps its real-AWS config; only its JVM truststore changes (see README.md).
 
-x-aws-sim-root: &root
-  RUSTFS_ACCESS_KEY: aws-sim-root
-  RUSTFS_SECRET_KEY: aws-sim-root-secret
+x-rustfs-root: &root
+  RUSTFS_ACCESS_KEY: rustfs-root
+  RUSTFS_SECRET_KEY: rustfs-root-secret
 
 services:
   aws-sim-certs:
@@ -38,8 +38,8 @@ services:
     depends_on:
       rustfs: { condition: service_healthy }
     environment:
-      AWS_ACCESS_KEY_ID: aws-sim-root
-      AWS_SECRET_ACCESS_KEY: aws-sim-root-secret
+      AWS_ACCESS_KEY_ID: rustfs-root
+      AWS_SECRET_ACCESS_KEY: rustfs-root-secret
       AWS_REGION: us-east-1
     entrypoint: ["sh", "-c"]
     command:
@@ -52,8 +52,8 @@ services:
     init: true
     environment:
       STS_UPSTREAM: http://rustfs:9000
-      STS_ACCESS_KEY: aws-sim-root
-      STS_SECRET_KEY: aws-sim-root-secret
+      STS_ACCESS_KEY: rustfs-root
+      STS_SECRET_KEY: rustfs-root-secret
       AWS_REGION: us-east-1
     volumes:
       - ./sts-shim/sts_shim.py:/sts_shim.py:ro

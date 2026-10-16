@@ -74,11 +74,13 @@ UNITYCATALOG = Project(
     product=r"Unity Catalog\s+(?:OSS\s+)?",
     scan=(
         ("content/unitycatalog", ("*.md", "*.py", "*.sh", "*.yaml")),
-        ("envs", ("*.yaml", "*.yml", "*.md", "*.py", "Dockerfile")),
+        ("envs", ("*.yaml", "*.yml", "*.md", "*.py", "*.toml", "Dockerfile")),
         ("emit/docs/sites", ("unitycatalog-docs.mjs",)),
     ),
     rules=(
         Rule("release", re.compile(rf"unitycatalog/unitycatalog:v{_V}")),
+        # The tag a generated environment gives its locally built image.
+        Rule("release", re.compile(rf"\buc-docs-unitycatalog:{_V}")),
         Rule("release", re.compile(rf"unitycatalog/unitycatalog/(?:blob|tree)/v{_V}")),
         Rule(
             "release",

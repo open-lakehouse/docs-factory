@@ -10,6 +10,13 @@
 #   client-env  variables a client on the host needs to reach the stack
 #   guide       <bucket>/<slug>[#anchor] of the section that starts it; default
 #               the site's guide (emit/docs/sites/<site>.mjs env.guide)
+#
+# A generated environment (envs/<name>/env.toml, rendered by Trestle) says
+# `generated: <name>` instead of ports and client-env: `docsnip envs --fix`
+# derives them from its plan.json into environments.generated.json.
+#   stands-in-for  the hand-written key it will replace; the environment-fit
+#                  check holds it to that key's claims, and the harness runs
+#                  those scripts on it with DOCS_FACTORY_STAND_IN=<name>
 environments:
   unitycatalog/compose.yaml:
     title: Unity Catalog 0.7.0
@@ -27,3 +34,8 @@ environments:
     title: Unity Catalog 0.7.0 with PostgreSQL
     ports: [8080]
     guide: how-to/configure-backend-db#try-it-on-the-local-server
+
+  uc-aws/compose.yaml:
+    title: Unity Catalog 0.7.0 with simulated S3 (generated)
+    generated: uc-aws
+    stands-in-for: unitycatalog/compose.aws.yaml

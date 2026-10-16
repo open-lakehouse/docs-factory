@@ -1,0 +1,46 @@
+name: Environments pilot
+
+# Runs the scripts of each hand-written environment that a generated one stands
+# in for (`stands-in-for` in envs/environments.yml) against the generated stack,
+# on Linux, before any script moves to it. Not gating until the cutover.
+on:
+  pull_request:
+    paths: &pilot-paths
+      - "envs/uc-aws/**"
+      - "envs/environments.yml"
+      - "envs/environments.generated.json"
+      - "content/conftest.py"
+      - "content/unitycatalog/how-to/009-configure-aws-storage/**"
+      - "content/unitycatalog/how-to/009-python-dataframes/**"
+      - "content/unitycatalog/how-to/010-managed-storage-s3/**"
+      - "content/unitycatalog/how-to/012-iceberg-rest/**"
+      - ".github/workflows/envs-pilot.yml"
+  push:
+    branches: [main]
+    paths: *pilot-paths
+  workflow_dispatch:
+
+concurrency:
+  group: envs-pilot-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  uc-aws:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    continue-on-error: true
+    env:
+      DOCS_FACTORY_STAND_IN: uc-aws
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+      - uses: ./.github/actions/pypi-public
+      - run: uv sync --all-packages --group test-services
+      - run: uv run --group test-services pytest content -m needs_uc_server -v -rxXs

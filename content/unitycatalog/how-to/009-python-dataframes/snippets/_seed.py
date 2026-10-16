@@ -36,8 +36,8 @@ UC_URL = "http://localhost:8080"
 
 # Stands in for the service that owns the data; readers on the page never use it.
 S3_ROOT_KEYS = {
-    "aws_access_key_id": "aws-sim-root",
-    "aws_secret_access_key": "aws-sim-root-secret",
+    "aws_access_key_id": "rustfs-root",
+    "aws_secret_access_key": "rustfs-root-secret",
     "aws_region": "us-east-1",
 }
 

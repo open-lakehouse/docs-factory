@@ -46,6 +46,13 @@ node_modules/
 .env.local
 *.env
 !.env.example
+# Generated environments (envs/<name>/env.toml) render with inline local
+# secrets: their env files are throwaway local credentials, committed so the
+# stack runs from a checkout or the reader bundle.
+!envs/*/.env
+!envs/*/client/*.env
+!envs/*/modules/*/.env/
+!envs/*/modules/*/.env/*.env
 
 # Generated site artifacts (built locally / in CI; not committed).
 site/src/generated/content-versions.json

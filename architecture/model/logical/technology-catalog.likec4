@@ -4,6 +4,7 @@ model {
 
   // Table-format specifications ---------------------------------------------
   deltaSpec = openSpecification "Delta Lake" {
+    #public
     description "
       Open table-format specification: ACID transactions,
       schema evolution, and time travel over object storage.
@@ -17,6 +18,7 @@ model {
   deltaSpec -[specifies]-> lakehouse.tableFormat {}
 
   icebergSpec = openSpecification "Apache Iceberg" {
+    #public
     description "
       Open table-format specification for huge analytic datasets,
       with hidden partitioning and snapshot isolation.
@@ -31,6 +33,7 @@ model {
   icebergSpec -[specifies]-> lakehouse.tableFormat {}
 
   ucSpec = openSpecification "Unity Catalog" {
+    #public
     description "
       Open catalog specification for data & AI:
       a catalog governing tables, files, functions, and models across engines.
@@ -45,6 +48,7 @@ model {
   ucSpec -[specifies]-> lakehouse.catalog "specifies the catalog capability"
 
   icebergRestSpec = openSpecification "Iceberg REST Catalog" {
+    #public
     description "
       Specification for a REST based Iceberg catalog
     "
@@ -60,6 +64,7 @@ model {
   openSharingSpec -[specifies]-> lakehouse.sharing "specifies the sharing capability"
 
   parquetSpec = openSpecification "Apache Parquet" {
+    #public
     description "
       Open columnar file format: column-wise storage with compression and
       statistics, the data-file layer most table formats are written in.
@@ -70,6 +75,7 @@ model {
   parquetSpec -[specifies]-> lakehouse.fileFormat "specifies the file-format capability"
 
   s3Api = openSpecification "S3 API" {
+    #public
     description "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement."
     link https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html
   }
@@ -127,7 +133,7 @@ model {
   datafusion -[consumes]-> s3Api "reads data files via"
 
   apacheSpark = implementation "Apache Spark" {
-    #service
+    #service #public
 
     description "Unified analytics engine for large-scale data processing."
 
@@ -143,7 +149,7 @@ model {
   apacheSpark -[implements]-> sparkConnectSpec "serves"
 
   deltaRs = implementation "delta-rs" {
-    #library
+    #library #public
 
     description "Native Rust implementation of the Delta protocol with Python bindings."
 
@@ -153,7 +159,7 @@ model {
   deltaRs -[consumes]-> s3Api "reads/writes data files via"
 
   deltaSpark = implementation "Delta Spark" {
-    #service
+    #service #public
 
     description "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
 
@@ -163,7 +169,7 @@ model {
   deltaSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
 
   duckdb = implementation "DuckDB" {
-    #library
+    #library #public
 
     description "In-process analytical SQL engine."
 
@@ -175,7 +181,7 @@ model {
   duckdb -[consumes]-> ucSpec "resolves tables via"
 
   polars = implementation "Polars" {
-    #library
+    #library #public
 
     description "Fast DataFrame library written in Rust with a Python API;"
 
@@ -208,7 +214,7 @@ model {
   }
 
   unityCatalogOSS = implementation "Unity Catalog (OSS)" {
-    #service
+    #service #public
     description "The open-source reference server implementing the Unity Catalog specification."
 
     link https://github.com/unitycatalog/unitycatalog
@@ -331,21 +337,21 @@ model {
 
   // Infrastructure the docs environments run on ----------------------------
   envoy = implementation "Envoy" {
-    #infra
+    #infra #public
 
     description "Open source edge and service proxy; the gateway that routes requests to each service."
     link https://www.envoyproxy.io
   }
 
   postgresql = implementation "PostgreSQL" {
-    #infra
+    #infra #public
 
     description "Open source relational database; the metadata store behind catalog and tracking services."
     link https://www.postgresql.org
   }
 
   rustfs = implementation "RustFS" {
-    #infra
+    #infra #public
 
     description "S3-compatible object storage server written in Rust."
     link https://rustfs.com

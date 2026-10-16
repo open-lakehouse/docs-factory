@@ -35,6 +35,7 @@ model {
     link https://openlakehouse.io
 
     catalog = capability "Catalog" {
+      #public
       summary "The metadata authority: a registry of tables, schemas, and access that every query resolves through."
 
       description "
@@ -55,6 +56,7 @@ model {
     }
 
     queryEngine = capability "Query engine" {
+      #public
       summary "Parses, plans, and executes queries over open table formats."
       description "
         A query engine turns a declarative query into a plan of operations and
@@ -97,6 +99,7 @@ model {
     }
 
     tableFormat = capability "Open table format" {
+      #public
       summary "A metadata layer that gives object-storage files ACID table semantics."
 
       description "
@@ -113,6 +116,7 @@ model {
     }
 
     fileFormat = capability "File format" {
+      #public
       summary "The on-disk encoding of the bytes a table's data files are made of."
       description "
         A file format is the on-disk encoding of a data file — how rows, columns,
@@ -126,6 +130,7 @@ model {
     }
 
     objectStorage = capability "Object storage" {
+      #public
       summary "Stores data as flat objects (blobs) addressed by key, not as a file hierarchy."
       description "
         Object storage manages data as discrete objects (blobs) in a flat
@@ -144,6 +149,7 @@ model {
     // key fetched from the storage account, and Google STS downscopes a token
     // with a credential access boundary. The model stays vendor-neutral.
     credentialIssuer = capability "Storage credential issuer" {
+      #public
       summary "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
       description "
         A storage credential issuer turns a trusted, long-lived identity into
@@ -173,6 +179,7 @@ model {
     // The zero-trust points (PAP / PDP / PEP / PIP / PA) are prose in
     // design/governance.md, not elements.
     governance = concern "Governance" {
+      #public
       summary "Decides who may access what, and enforces it (row filters, column masks)."
       description "
         Governance answers 'can this principal do this here?' and, when allowed,

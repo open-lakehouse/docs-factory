@@ -242,9 +242,38 @@ def runtime_files(root: Path, name: str, plan: dict) -> list[str]:
     return sorted(files - {RECIPE, PLAN})
 
 
+def services(plan: dict) -> list[dict[str, object]]:
+    """Each graph node a reader runs, with its model element and, when the
+    gateway routes to it, the host URL of its first route."""
+    module_of = {
+        str(svc["name"]): module
+        for module, instances in (plan.get("services") or {}).items()
+        for svc in instances
+    }
+    urls: dict[str, str] = {}
+    for listener in plan["gateway"].get("listeners") or []:
+        if "host_port" not in listener:
+            continue
+        for route in listener.get("routes") or []:
+            module = module_of.get(str(route.get("cluster")))
+            if module and module not in urls:
+                prefix = str(route.get("prefix") or "").rstrip("/")
+                urls[module] = f"http://localhost:{listener['host_port']}{prefix}"
+    return [
+        {
+            "node": node["id"],
+            "element": node.get("model"),
+            "role": node.get("role"),
+            "url": urls.get(node["id"]),
+        }
+        for node in sorted(plan["graph"]["nodes"], key=lambda n: n["id"])
+        if node.get("kind") != "clients"
+    ]
+
+
 def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
-    """The registry facts a plan settles: host ports, the host client env, and
-    the bundle's runtime files."""
+    """The registry facts a plan settles: host ports, the host client env, the
+    services a reader runs, and the bundle's runtime files."""
     ports = sorted(
         {
             int(listener["host_port"])
@@ -255,6 +284,7 @@ def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
     return {
         "ports": ports,
         "client-env": dict(sorted((plan["client"].get("host") or {}).items())),
+        "services": services(plan),
         "files": files or [],
     }
 

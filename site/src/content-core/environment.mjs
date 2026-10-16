@@ -74,6 +74,7 @@ export function registryEnvironment(key, { registry, bundle, bundleUrl }) {
     ports: env.ports ?? [],
     clientEnv: env.clientEnv ?? {},
     guide: env.guide ?? null,
+    services: env.services ?? [],
     bundleUrl,
     commands: startCommands(key, env, { bundle, bundleUrl }),
     stop: stopCommand(key),

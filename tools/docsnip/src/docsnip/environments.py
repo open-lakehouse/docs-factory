@@ -57,10 +57,10 @@ def load(repo_root: Path) -> dict[str, Environment]:
         title = entry.get("title")
         generated = entry.get("generated")
         if generated is not None:
-            if {"ports", "client-env", "files"} & entry.keys():
+            if {"ports", "client-env", "services", "files"} & entry.keys():
                 raise ValueError(
                     f"{REGISTRY}: {key}: a generated entry takes ports, client-env, "
-                    f"and files from {GENERATED}"
+                    f"services, and files from {GENERATED}"
                 )
             if generated not in derived:
                 raise ValueError(

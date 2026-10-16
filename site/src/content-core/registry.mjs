@@ -1,7 +1,7 @@
 /**
  * envs/environments.yml, read from disk (Node-only, like walk.mjs): the docs
  * emitter and the review app derive a page's environment from the same entries.
- * A `generated: <name>` entry takes its ports, client env, and bundle files
+ * A `generated: <name>` entry takes its ports, client env, services, and bundle files
  * from envs/environments.generated.json, which `docsnip envs --fix` derives
  * from the environment's plan.json; this reader merges it and never derives.
  */
@@ -10,9 +10,10 @@ import { join } from "node:path";
 import yaml from "js-yaml";
 
 /**
- * envs/environments.yml as `{ key: { title, ports, clientEnv, guide, files } }`.
- * `files` (paths relative to the compose file's folder) is null for a
- * hand-written entry.
+ * envs/environments.yml as `{ key: { title, ports, clientEnv, guide, services, files } }`.
+ * `services` is `[{ node, element, role, url }]`, the plan's graph nodes (empty
+ * for a hand-written entry); `files` (paths relative to the compose file's
+ * folder) is null for a hand-written entry.
  */
 export function loadRegistry(repoRoot) {
   const raw = yaml.load(readFileSync(join(repoRoot, "envs", "environments.yml"), "utf8")) ?? {};
@@ -39,6 +40,7 @@ export function loadRegistry(repoRoot) {
           ports: e.ports ?? [],
           clientEnv: e["client-env"] ?? {},
           guide: e.guide ?? null,
+          services: authored.generated ? (e.services ?? []) : [],
           files: authored.generated ? (e.files ?? []) : null,
         },
       ];

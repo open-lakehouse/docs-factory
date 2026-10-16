@@ -213,8 +213,9 @@ page's round-trip and table-feature grids onto the matrix, and project the
 matrix into `concepts.json` (§3.4). Journeys now carry an asset and
 per-journey contract requirements ([`trestle-model-convergence.md`](./trestle-model-convergence.md)
 §5, P2), and `compatibility.json` (version 2) records the model edges gating
-claims exercise. The projection into `concepts.json` and the environment-fit
-check are still planned there (§8, P5).
+claims exercise. The environment-fit check landed in P5, and convergence P7a
+projects the matrix into `concepts.json`: journeys proven on a ready page, and
+the edges they verify (§8 there).
 
 ## 5. Open questions
 

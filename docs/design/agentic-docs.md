@@ -341,6 +341,10 @@ already a dep) + a build-time binding pass over content frontmatter
 explainedBy: <route + .md>, referencedBy: [routes], canonicalDoc, sourceRepo,
 relations: [{kind, target}]}`. Single artifact consumed by the twins' "Related
 concepts" block, the MCP `get_c4_context` tool, and JSON-LD enrichment.
+As built (Trestle convergence P7a), `/concepts.json` is narrower: `#public`
+elements only, allow-listed fields, no `canonicalDoc`, `sourceRepo`, or
+`referencedBy` (see [`trestle-model-convergence.md`](./trestle-model-convergence.md)
+§8 and §10 #65–#69).
 
 **Enrich** `build-md-twins.mjs` — fill each page's "Related concepts" section from
 the projection (element titles, descriptions, canonical routes, source-repo links)

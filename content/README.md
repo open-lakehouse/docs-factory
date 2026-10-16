@@ -508,6 +508,12 @@ preview; every id is validated against the built model by `docsnip validate`.
   external link, else it is plain text. Use it for positional mentions, exactly
   where the concept appears in the prose.
 
+  Only elements tagged `#public` in the model leave the factory: a link to any
+  other element is plain text on the site, and it stays out of the page's
+  JSON-LD and the site's `concepts.json`. Citing an element from a ready page
+  doesn't publish it; tag it in the model (`architecture/README.md`) if readers
+  should see it. `docsnip check` reports each such citation.
+
 - **Page-level** — declare the concepts a page is *about* in frontmatter:
 
   ```yaml

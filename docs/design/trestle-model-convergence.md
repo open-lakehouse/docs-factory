@@ -589,6 +589,7 @@ while consolidating; revisit in review.
 | 57 | `stands-in-for`, `DOCS_FACTORY_STAND_IN`, and `envs-pilot` go with the cutover (#47); `env-bundle-smoke` builds the reader archive, extracts it outside the checkout, starts `uc-aws` from it, and runs one page script with `client/host.env` exported | P6 (aws) | Keep the stand-in for the next variant |
 | 58 | uc-aws's Postgres data is a named volume, via a Trestle postgres `data = bind\|volume` knob (H1e, trestle#146): the bind mount under `.data/` survived the harness's `down -v`, so scripts shared one metastore, readers couldn't reset, and Linux left it owned by the container's uid | P6 (aws) | Harness deletes `.data`; accept and document |
 | 59 | `just bump-uc` re-renders every generated environment after the text rewrite, since recipes carry the image tag | P6 (aws) | Teach `docsnip bump-uc` to call Trestle |
+| 60 | The postgres variant folds into `uc-aws`: H25 runs on its Postgres (`db`, database `unitycatalog`, volume `postgres-data`), and `compose.postgres.yaml` is deleted. Trestle can't render Postgres without an object store (only `embedded_metadata` drops that demand, and it forces H2), and a second generated environment would carry the same RustFS anyway | P6 (postgres) | A `uc-postgres` env with an unused S3; a Trestle knob splitting metadata from storage |
 
 ## 11. Risks and open questions
 

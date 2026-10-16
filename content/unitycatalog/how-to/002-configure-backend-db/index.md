@@ -71,19 +71,17 @@ unset.
 
 ## Try it on the local server
 
-The docs' local environment has a PostgreSQL variant. From the
-`uc-docs-env/unitycatalog` folder, start it instead of the default server:
+The docs' environment with simulated S3 keeps its metadata in PostgreSQL.
+From the `uc-docs-env/uc-aws` folder, start it instead of the default server:
 
 ```bash file=./snippets/backend_db.sh start=start:start-server end=end:start-server
 ```
 
-It runs the same server next to a `postgres` service, with its data in the
-named volume `uc-postgres`:
+It runs the server next to a `db` PostgreSQL service, with its data in the
+`postgres-data` volume. The server's `hibernate.properties` names that
+database:
 
-```yaml file=../../../../envs/unitycatalog/compose.postgres.yaml title="compose.postgres.yaml"
-```
-
-```properties file=../../../../envs/unitycatalog/hibernate.postgres.properties title="hibernate.postgres.properties"
+```properties file=../../../../envs/uc-aws/modules/unity-catalog/secrets/hibernate.properties title="modules/unity-catalog/secrets/hibernate.properties"
 ```
 
 The server starts with an empty metastore. The sample catalog `unity` lives in
@@ -105,7 +103,7 @@ Replace the server container with a new one, then read the catalog back:
 The catalog is still there. On the default H2 server, the new container would
 start from the image's H2 file, without it. `docker compose down` followed by
 `up` keeps the metadata too, because it removes the containers but not the
-`uc-postgres` volume.
+`postgres-data` volume.
 
 The metadata is ordinary PostgreSQL tables, one per object type, named
 `uc_catalogs`, `uc_schemas`, `uc_tables`, and so on:
@@ -138,15 +136,15 @@ no export from H2.
 ## Reset the local metadata
 
 To start over on the local stack, remove the containers and the
-`uc-postgres` volume:
+`postgres-data` volume:
 
 ```bash file=./snippets/backend_db.sh start=start:reset end=end:reset
 ```
 
 :::danger
 `down -v` deletes every catalog, schema, table, volume, and credential that
-the server stored. Files the tables point to stay where they are, but the
-server no longer knows about them.
+the server stored, and the simulated S3 bucket's files. Files the tables point
+to elsewhere stay where they are, but the server no longer knows about them.
 :::
 
 ## Next steps

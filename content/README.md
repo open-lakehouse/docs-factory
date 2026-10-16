@@ -192,9 +192,9 @@ comments) and a `*_cli.py` driver that opens the engine and runs one region at
 a time with `docsnip.sqlregions.run`, or pipes `sqlregions.text(...)` into the
 shell itself, with `verifies = "<name>.sql"`.
 Every Unity Catalog page runs against a shared environment:
-[`envs/unitycatalog/`](../envs/unitycatalog/README.md) has `compose.yaml` for
-the server and `compose.postgres.yaml` for a PostgreSQL metastore, and
-`envs/uc-aws/compose.yaml` runs the server with simulated S3. Scripts point
+[`envs/unitycatalog/compose.yaml`](../envs/unitycatalog/README.md) for the
+server on its own, or the generated `envs/uc-aws/compose.yaml` for the server
+with simulated S3 and a PostgreSQL metastore. Scripts point
 their `[tool.docs-factory] compose` at one of them. Readers get the same files
 as `/env/uc-docs-env.tar.gz` from the emitted site, and the variables a host
 client needs for a stack come from its `client-env` in
@@ -225,7 +225,7 @@ Diátaxis type wants them:
   runs from an earlier tutorial. Don't write a step or sentence that starts
   it.
 - **How-tos** (and reference pages) get one prerequisite bullet,
-  "Unity Catalog 0.7.0 with simulated S3, running:", linking the section that
+  "Unity Catalog 0.7.0 with simulated S3 and PostgreSQL, running:", linking the section that
   starts that stack: the entry's `guide` in `environments.yml`, else the
   site's [Run a local Unity Catalog server](unitycatalog/how-to/011-run-local-server/index.md).
 - **A page whose task is starting the stack** places the commands itself

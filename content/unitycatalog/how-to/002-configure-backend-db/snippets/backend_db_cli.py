@@ -6,7 +6,7 @@
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.postgres.yaml"
+# compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "backend_db.sh"
@@ -21,7 +21,7 @@ from docsnip.shellregions import get, run
 
 HERE = Path(__file__).parent
 SCRIPT = HERE / "backend_db.sh"
-ENV = HERE.parents[4] / "envs" / "unitycatalog"
+ENV = HERE.parents[4] / "envs" / "uc-aws"
 BASE_URL = os.environ.get("UC_BASE_URL", "http://localhost:8080/api/2.1/unity-catalog")
 
 
@@ -34,23 +34,22 @@ def properties(path: Path) -> dict[str, str]:
 
 def check_production_config() -> None:
     """The page's SQL must run, and the page's properties must match it and the local stack."""
-    sql = (HERE / "create-database.sql").read_text()
+    # The local stack already has a database named unitycatalog.
+    sql = (
+        (HERE / "create-database.sql").read_text().replace("unitycatalog", "page_check")
+    )
     subprocess.run(
         [
             "docker",
             "compose",
-            "-f",
-            "compose.postgres.yaml",
             "exec",
             "-T",
-            "postgres",
+            "db",
             "psql",
             "-v",
             "ON_ERROR_STOP=1",
             "-U",
-            "uc",
-            "-d",
-            "ucdb",
+            "postgres",
         ],
         cwd=ENV,
         input=sql,
@@ -59,11 +58,14 @@ def check_production_config() -> None:
         capture_output=True,
     )
     page = properties(HERE.parent / "hibernate.properties")
-    local = properties(ENV / "hibernate.postgres.properties")
+    local = properties(ENV / "modules/unity-catalog/secrets/hibernate.properties")
     assert page.keys() == local.keys(), page.keys() ^ local.keys()
     assert page["hibernate.connection.url"].split("?")[0].endswith("/unitycatalog")
     assert page["hibernate.connection.username"] == "unitycatalog"
-    assert f"PASSWORD '{page['hibernate.connection.password']}'" in sql
+    assert (
+        f"PASSWORD '{page['hibernate.connection.password']}'"
+        in (HERE / "create-database.sql").read_text()
+    )
 
 
 if __name__ == "__main__":

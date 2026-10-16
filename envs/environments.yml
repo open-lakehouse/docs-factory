@@ -20,12 +20,7 @@ environments:
     title: Unity Catalog 0.7.0
     ports: [8080]
 
-  unitycatalog/compose.postgres.yaml:
-    title: Unity Catalog 0.7.0 with PostgreSQL
-    ports: [8080]
-    guide: how-to/configure-backend-db#try-it-on-the-local-server
-
   uc-aws/compose.yaml:
-    title: Unity Catalog 0.7.0 with simulated S3
+    title: Unity Catalog 0.7.0 with simulated S3 and PostgreSQL
     guide: how-to/run-local-server#start-the-server-with-simulated-s3
     generated: uc-aws

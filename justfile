@@ -344,6 +344,17 @@ trestle-catalog: trestle-install
     .tools/trestle/bin/trestle env list-modules --json > architecture/dist/trestle-catalog.json
     uv run docsnip trestle --fix
 
+# Re-render a generated environment (envs/<name>/env.toml), or all of them, with
+# the pinned Trestle, then refresh the model fragments and registry facts.
+env-render name='': trestle-install
+    #!/usr/bin/env bash
+    set -euo pipefail
+    if [ -n "{{ name }}" ]; then dirs=("envs/{{ name }}"); else dirs=(envs/*/env.toml); dirs=("${dirs[@]%/env.toml}"); fi
+    for dir in "${dirs[@]}"; do
+        .tools/trestle/bin/trestle env render "$dir" >/dev/null
+    done
+    uv run docsnip envs --fix
+
 # Install the LikeC4 tooling on first run.
 _arch-deps:
     #!/usr/bin/env bash

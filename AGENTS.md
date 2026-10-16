@@ -136,6 +136,7 @@ uv run ruff check . && uv run ty check # lint + types
 cargo build                            # compile the Rust seed helper and the snippets crate
 just arch-dev                          # LikeC4 architecture model at :5173
 just trestle-catalog                   # snapshot the pinned Trestle's modules + check the model join
+just env-render [name]                 # re-render a generated environment (envs/<name>/env.toml) + its model fragment
 ```
 
 ## Adding a tested snippet to a page

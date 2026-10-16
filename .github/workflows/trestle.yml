@@ -52,7 +52,6 @@ jobs:
         run: |
           rustup toolchain install stable --profile minimal && rustup default stable
           TRESTLE_REVISION="$REV" cargo install --git "$GIT" --rev "$REV" --locked --root .tools/trestle "$PACKAGE"
-          echo "$REV" > .tools/trestle/.rev
       - name: Re-snapshot the catalog
         run: .tools/trestle/bin/trestle env list-modules --json > architecture/dist/trestle-catalog.json
       - name: Fail on a stale snapshot

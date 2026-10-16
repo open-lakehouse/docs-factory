@@ -435,7 +435,8 @@ scripts). Counts are from 2026-10-15; recount at the start of each phase.
 | Trestle always fronts services with a gateway; docs hit UC on :8080 and S3 on :9000 | `gateway_host_port = 8080`, a dedicated :9000 listener, UC routed at `/api/2.1/unity-catalog` with `Rewrite::Inherit`. Reader URLs stay valid. `content/conftest.py` stops hard-coding `get_service_host_and_port("unitycatalog", 8080)` and reads the host contract from `plan.json`. |
 | Client env spellings: docs export `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP`; Trestle emits `AWS_ENDPOINT_URL_S3`, `AWS_REGION` | Trestle adds the docs aliases to the `rustfs` client env behind an opt-in knob (§10 #27), so prose stays unchanged. |
 | Browser `PlanResultDto.files` omits sensitive files that UC needs (`server.properties`, `hibernate.properties`, `.env`) | `[context] local_secrets = "inline"` writes them as plain files and drops them from the generated `.gitignore`. It is the public-demo materialization policy: throwaway local keys only, and it refuses hosted modules. |
-| aws-sim parity: RustFS root keys, `RUSTFS_SERVER_DOMAINS` (host JVM virtual-hosted requests need `localhost:9000`), cert paths | Diff `envs/aws-sim/compose.yaml` against Trestle's `templates/modules/rustfs/compose.yaml.jinja` before cutover. Spark's host-side virtual-hosted access is the likeliest break; the sts-shim is already identical. |
+| aws-sim parity: RustFS root keys, `RUSTFS_SERVER_DOMAINS` (host JVM virtual-hosted requests need `localhost:9000`), cert paths | Diff `envs/aws-sim/compose.yaml` against Trestle's `templates/modules/rustfs/compose.yaml.jinja` before cutover. P3b added `localhost:<port>` to `RUSTFS_SERVER_DOMAINS` and the `aws.*` master-identity keys. Spark's host-side virtual-hosted access is the likeliest break; the sts-shim is already identical. |
+| Trestle's UC registers storage for every bucket; the docs pages register `lake_storage` / `lake` themselves | `storage_bootstrap = none` in docs recipes (§10 #38). |
 
 **Committed renders.** Each environment commits `env.toml`, the build context,
 the rendered Compose / Envoy / client env, and `plan.json`. The bare Vercel
@@ -566,6 +567,13 @@ while consolidating; revisit in review.
 | 35 | A role scope `partial` over a full edge is fine (the role is narrower); `full` over only `#partial` edges is reported | P4 | Require scopes to match the edge tag |
 | 36 | The context artifact carries model facts only, with no `verified` or maturity field; module-side evidence waits for P7 | P4 | Derive `verified` from the clients' `verifiedEdges` |
 | 37 | Trestle installs into a repo-local `.tools/trestle`, built with `TRESTLE_REVISION` | P4 | A global `cargo install` |
+| 38 | Storage bindings live in UC's database: `server.properties` holds only the master identity (`aws.*`), and a `unitycatalog-storage` sidecar registers a credential and an external location per bucket over the API. Docs stacks set `storage_bootstrap = none`, because their pages register storage themselves | settled (P3b) | Numbered `s3.*` keys in `server.properties` |
+| 39 | `default_catalog` is an opt-in knob; in `api` mode it creates the catalog under the first bucket | settled (P3b) | Always create a managed `main` catalog |
+| 40 | `master_role_arn` overrides the role UC reports as its own, because the docs check `uc-master`, not the storage role | P3b | Reuse the store's role ARN |
+| 41 | The registrar is a sidecar that turns healthy when done: `docker compose up --wait` fails on a one-shot job nothing depends on | P3b | An init job |
+| 42 | `build` is a context relative to the render root (fragments are included with `project_directory: .`); `--out-dir` doesn't rebase it | P3b | Relative to the fragment; rebasing in the CLI |
+| 43 | S3 on host :9000 is `dedicated_listener_ports = [9000]`, not a new port knob | P3b | A `rustfs` host-port knob |
+| 44 | docsnip requires catalog v1 with `generator.revision` equal to the pin; the unversioned H1a shape is gone (supersedes #33's "both shapes") | P3b | Keep accepting both |
 
 ## 11. Risks and open questions
 

@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 from docsnip import trestle
 
-REV = "1406bec5f0ce484ce2c5157c87f8a24cdb71bc9a"
+REV = "35dba41fb567e87cb65f02a814c9d22a42460aba"
 
 _MODEL = {
     "elements": {
@@ -112,6 +112,9 @@ aliases: {}
 
 def _catalog(modules: list[dict], **envelope) -> dict:
     return {
+        "format": "trestle-catalog",
+        "version": 1,
+        "generator": {"name": "trestle", "version": "0.0.9", "revision": REV},
         **envelope,
         "catalog": {
             "baseline": "olai-stack-topology@0.0.5",
@@ -278,30 +281,19 @@ def test_map_must_interpret_the_snapshot_catalog(tmp_path):
     assert any("interprets catalog 'someone-else'" in e for e in report.errors)
 
 
-def test_versioned_envelope_checks_the_pin(tmp_path):
-    envelope = {
-        "format": "trestle-catalog",
-        "version": 1,
-        "generator": {"name": "trestle", "version": "0.0.0", "revision": "0" * 40},
-    }
+def test_snapshot_must_come_from_the_pinned_revision(tmp_path):
+    envelope = {"generator": {"name": "trestle", "revision": "0" * 40}}
     report = trestle.check(_repo(tmp_path, envelope=envelope, fixed=False))
     assert any("pins " + REV in e for e in report.errors)
-
-
-def test_matching_revision_passes(tmp_path):
-    envelope = {
-        "format": "trestle-catalog",
-        "version": 1,
-        "generator": {"revision": REV},
-    }
-    assert trestle.check(_repo(tmp_path, envelope=envelope)).errors == []
 
 
 @pytest.mark.parametrize(
     "envelope",
     [
-        {"format": "trestle-catalog", "version": 7},
-        {"format": "something-else", "version": 1},
+        {"version": 7},
+        {"format": "something-else"},
+        {"format": None, "version": None},
+        {"generator": {"name": "trestle", "version": "0.0.9"}},
     ],
 )
 def test_unknown_envelopes_fail(tmp_path, envelope):

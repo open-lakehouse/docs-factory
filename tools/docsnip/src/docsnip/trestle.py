@@ -27,9 +27,7 @@ CONTEXT = "architecture/dist/trestle-context.json"
 MODEL = "architecture/dist/model.json"
 
 CATALOG_FORMAT = "trestle-catalog"
-# 0 is the unversioned `list-modules --json` output of H1a, which carries no
-# generator revision to check the pin against.
-CATALOG_VERSIONS = (0, 1)
+CATALOG_VERSION = 1
 MAP_VERSION = 1
 CONTEXT_FORMAT = "docs-factory-trestle-context"
 CONTEXT_VERSION = 1
@@ -61,7 +59,7 @@ class Catalog:
     version: int
     baseline: str  # e.g. "olai-stack-topology@0.0.5"
     digest: str
-    revision: str | None
+    revision: str
     modules: tuple[Module, ...]
 
     @property
@@ -122,21 +120,23 @@ def load_pin(root: Path) -> Pin:
 
 def load_catalog(root: Path) -> Catalog:
     data = json.loads((root / CATALOG).read_text())
-    if "format" in data:
-        if data["format"] != CATALOG_FORMAT:
-            raise ValueError(
-                f"{CATALOG}: format '{data['format']}' is not {CATALOG_FORMAT}"
-            )
-        version = data.get("version")
-    else:
-        version = 0
-    if version not in CATALOG_VERSIONS:
+    if data.get("format") != CATALOG_FORMAT:
+        raise ValueError(
+            f"{CATALOG}: format {data.get('format')!r} is not {CATALOG_FORMAT}"
+        )
+    version = data.get("version")
+    if version != CATALOG_VERSION:
         raise ValueError(f"{CATALOG}: unsupported version {version!r}")
     identity = data.get("catalog") or {}
     baseline, digest = identity.get("baseline"), identity.get("digest")
     if not isinstance(baseline, str) or not isinstance(digest, str):
         raise ValueError(f"{CATALOG}: catalog.baseline and catalog.digest are required")
     revision = (data.get("generator") or {}).get("revision")
+    if not isinstance(revision, str):
+        # A build without TRESTLE_REVISION; `just trestle-install` always sets it.
+        raise ValueError(
+            f"{CATALOG}: generator.revision is missing; run `just trestle-catalog`"
+        )
     modules = []
     for m in data.get("modules") or []:
         if not isinstance(m, dict) or not isinstance(m.get("id"), str):
@@ -255,7 +255,7 @@ def check(root: Path) -> Report:
     partial = _partial_edges(root)
     errors, gaps = report.errors, report.gaps
 
-    if catalog.revision is not None and catalog.revision != pin.rev:
+    if catalog.revision != pin.rev:
         errors.append(
             f"{CATALOG}: rendered by Trestle {catalog.revision}, but {PIN} pins "
             f"{pin.rev}; run `just trestle-catalog`"

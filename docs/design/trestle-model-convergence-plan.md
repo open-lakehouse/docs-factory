@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-15. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b (Trestle) next.
+**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -267,6 +267,55 @@ inline-secret refusal, and demand-index consistency under `needs_in`.
 **Done when** a merge commit (H1b) exposes the four UC knobs, inline secrets,
 the endpoint aliases, and passing docs-shaped fixtures. The handoff records the
 SHA, the knob names and syntax, and the parity gaps left for P5.
+
+**Done (P3b, trestle#143).** **H1b** = `35dba41fb567e87cb65f02a814c9d22a42460aba`
+on Trestle `main`; `envs/trestle.toml` pins it. `list-modules --json` is now
+catalog v1 (`format: "trestle-catalog"`, schema
+`crates/stack-topology/schema/catalog.v1.schema.json`), and docsnip requires
+it, including a `generator.revision` equal to the pin. `trestle --version`
+prints `trestle <version> (<revision>)`, which `just trestle-install` checks
+instead of a marker file.
+
+The user changed one decision: storage bindings live in UC's database, not in
+`server.properties` (design §10). The numbered `s3.*` keys are gone;
+`server.properties` holds only UC's master identity (`aws.accessKey`,
+`aws.secretKey`, `aws.region`, `aws.masterRoleArn`). A `unitycatalog-storage`
+sidecar registers a storage credential and an external location per bucket
+over the REST API, idempotently, and turns healthy when done (a one-shot job
+nothing depends on fails `docker compose up --wait`).
+
+| Module | Knob | Syntax and default |
+|---|---|---|
+| `unity-catalog` | `storage_bootstrap` | `api` (default) or `none`. Docs stacks use `none`: their pages register `lake_storage` / `lake` themselves. |
+| | `default_catalog` | A UC identifier, unset by default. In `api` mode it also creates the catalog with `storage_root = <first bucket>/<name>`. |
+| | `master_role_arn` | The role UC reports as its own (`aws.masterRoleArn`); defaults to the store's role. The docs check `uc-master`, not the storage role. |
+| | `embedded_metadata` | Bool, `false`. H2 inside the container; `needs_in` drops the `relational_db` and `object_store` demands. |
+| | `container_name` | Validated Compose name, unset. |
+| | `extra_mounts` | `;`-separated Compose short-syntax volumes, verbatim, so `${UC_DOCS_ROOT:-/tmp/uc-docs}:${UC_DOCS_ROOT:-/tmp/uc-docs}` survives. |
+| | `build` | A context relative to the render root (no absolute paths, no `..`); adds `pull_policy: build` and tags `image`. |
+| | `storage_image` | `python:3.13-alpine`, the registrar's image. |
+| `rustfs` | `generic_endpoint_env` | Bool, `false`. Adds `AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP=true` to the client env. |
+| `[context]` | `local_secrets` | `separate` (default) or `inline`; inline writes credential files as ordinary files and refuses hosted modules. |
+
+The UC service always gets `init: true`. `RUSTFS_SERVER_DOMAINS` adds
+`localhost:<port>` when S3 has a host listener, and `dedicated_listener_ports =
+[9000]` already puts S3 on host :9000, so no port knob was needed. Fixtures
+`docs-uc-aws`, `docs-uc-default`, and `uc-api-storage` (in
+`crates/stack-topology/tests/fixtures/plan/`) commit `plan.json` and the
+rendered files. A manual `docker compose up --wait` of `docs-uc-aws`, built
+from `envs/unitycatalog/image/`, passed `aws_storage.py`,
+`aws_storage_cli.py`, `managed_storage.py`, and `managed_storage_cli.py`.
+
+Gaps left for P5:
+- `docs-uc-aws` keeps metadata in Postgres; `compose.aws.yaml` uses H2. Pick
+  one (add `embedded_metadata` with an object store, or accept Postgres) before
+  diffing.
+- `.gitignore` must not ignore `.env` under generated environment directories,
+  or the inline secrets can't be committed.
+- The recipe needs the `uc-docs` bucket as an `extra_resources` entry and the
+  UC 0.7.0 pin from `release.yml` (Trestle still defaults to 0.6.0).
+- Whether `init-storage`'s `chmod 0777 $UC_DOCS_ROOT` is still needed is open.
+- MLflow's UC model registry wasn't exercised against API-registered storage.
 
 ## P4 — Mapping and validation (docs-factory)
 

@@ -1,8 +1,15 @@
 {
+  "format": "trestle-catalog",
+  "version": 1,
+  "generator": {
+    "name": "trestle",
+    "version": "0.0.9",
+    "revision": "35dba41fb567e87cb65f02a814c9d22a42460aba"
+  },
   "catalog": {
     "baseline": "olai-stack-topology@0.0.5",
     "manifests": [],
-    "digest": "sha256:063a91f79a1693a530c88da4ff703800c7a5bfe596d03310fe822155140aac74"
+    "digest": "sha256:5dce43b9894df356bc992068e9ffa17a6dbbaa140b535dd45775a2f28134c136"
   },
   "modules": [
     {
@@ -182,6 +189,17 @@
           "aliases": [
             "STS_SHIM_IMAGE"
           ],
+          "advanced": true
+        },
+        {
+          "key": "generic_endpoint_env",
+          "title": "Generic endpoint variables",
+          "kind": {
+            "kind": "bool"
+          },
+          "default": "false",
+          "required": false,
+          "help": "Also give clients `AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP=true`, for tools that don't read `AWS_ENDPOINT_URL_S3`. Off by default: a global endpoint also redirects every AWS SDK client's STS calls.",
           "advanced": true
         }
       ],
@@ -443,9 +461,103 @@
             "UC_IMAGE"
           ],
           "advanced": true
+        },
+        {
+          "key": "storage_image",
+          "title": "Unity Catalog storage registration image",
+          "kind": {
+            "kind": "string"
+          },
+          "default": "python:3.13-alpine",
+          "required": false,
+          "help": "Container image reference (repository:tag or digest). Override to pin or test a different release.",
+          "aliases": [
+            "UC_STORAGE_IMAGE"
+          ],
+          "advanced": true
+        },
+        {
+          "key": "storage_bootstrap",
+          "title": "Storage registration",
+          "kind": {
+            "kind": "enum",
+            "options": [
+              "api",
+              "none"
+            ]
+          },
+          "default": "api",
+          "required": false,
+          "help": "`api` registers a storage credential and an external location per S3 bucket through UC's API once the server is up. `none` leaves storage unregistered, for docs and tests that register it themselves.",
+          "advanced": true
+        },
+        {
+          "key": "master_role_arn",
+          "title": "Master role ARN",
+          "kind": {
+            "kind": "string"
+          },
+          "required": false,
+          "help": "The IAM role UC reports as its own identity (`aws.masterRoleArn`), which a storage role's trust policy names. Defaults to the object store's role.",
+          "advanced": true
+        },
+        {
+          "key": "default_catalog",
+          "title": "Default catalog",
+          "kind": {
+            "kind": "string"
+          },
+          "required": false,
+          "help": "Also create this catalog, with managed storage under the first registered bucket. Needs `storage_bootstrap = api`.",
+          "advanced": true
+        },
+        {
+          "key": "embedded_metadata",
+          "title": "Embedded metadata",
+          "kind": {
+            "kind": "bool"
+          },
+          "default": "false",
+          "required": false,
+          "help": "Keep metadata in the server's own H2 file and store data on local paths, so the stack runs no relational or object store. Metadata is lost with the container."
+        },
+        {
+          "key": "container_name",
+          "title": "Container name",
+          "kind": {
+            "kind": "string"
+          },
+          "required": false,
+          "help": "A fixed Docker container name, for `docker exec <name> ...` instructions.",
+          "advanced": true
+        },
+        {
+          "key": "extra_mounts",
+          "title": "Extra mounts",
+          "kind": {
+            "kind": "string"
+          },
+          "required": false,
+          "help": "More volumes for the server, `;`-separated, each in Compose short syntax (`source:target[:mode]`). Variable interpolation is passed through.",
+          "advanced": true
+        },
+        {
+          "key": "build",
+          "title": "Build context",
+          "kind": {
+            "kind": "string"
+          },
+          "required": false,
+          "help": "Build the server image from this directory (relative to the rendered compose.yaml) and tag it with the `image` knob.",
+          "advanced": true
         }
       ],
-      "helpers": [],
+      "helpers": [
+        {
+          "name": "unitycatalog-storage",
+          "kind": "sidecar"
+        }
+      ],
       "hosted": null
     },
     {

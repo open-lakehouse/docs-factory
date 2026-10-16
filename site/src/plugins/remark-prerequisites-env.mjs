@@ -17,6 +17,11 @@
  * The commands are plain Markdown, so the site, the review app, and the .md
  * twin render them alike. Both emit targets and the review app run this.
  *
+ * Under the environment's bullet the box lists what the stack runs: each
+ * public service (`services`, `[{ title, href, summary, url }]`, hrefs already
+ * resolved for this target) with its one-line summary and host URL. A how-to
+ * nests them under its pointer; any other page gets a bullet of its own.
+ *
  * `environment` null (no script needs a stack) leaves the page as authored,
  * minus any bare `:::environment` marker. `guide` is `{ href, title }`, or null
  * when this emit doesn't publish it. `resolve(key)` is content-core's
@@ -51,6 +56,26 @@ function pointerItem(env, guide) {
   return guide
     ? listItem(text(`${env.title}, running: `), link(guide.href, guide.title), text("."))
     : listItem(text(`${env.title}, running locally.`));
+}
+
+function serviceItem({ title, href, summary, url }) {
+  return listItem(
+    href ? link(href, title) : text(title),
+    ...(url ? [text(", at "), code(url)] : []),
+    ...(summary ? [text(`: ${summary}`)] : []),
+  );
+}
+
+/** `item` with the services nested under it, as a tight sub-list. */
+function withServices(item, services) {
+  if (!services.length) return item;
+  item.children.push({
+    type: "list",
+    ordered: false,
+    spread: false,
+    children: services.map(serviceItem),
+  });
+  return item;
 }
 
 function startNodes(env) {
@@ -120,13 +145,16 @@ function insertTutorialStep(tree, env) {
 
 /**
  * @param {{ environment: object | null, guide?: { href: string, title: string } | null,
- *   diataxis?: string | null, resolve?: ((key: string) => object) | null }} options
+ *   diataxis?: string | null, resolve?: ((key: string) => object) | null,
+ *   services?: { title: string, href: string | null, summary: string | null,
+ *     url: string | null }[] }} options
  */
 export default function remarkPrerequisitesEnv({
   environment,
   guide = null,
   diataxis = null,
   resolve = null,
+  services = [],
 }) {
   return (tree) => {
     const nodesFor = (key) => {
@@ -140,7 +168,13 @@ export default function remarkPrerequisitesEnv({
     const box = tree.children.find(isDirective("prerequisites"));
     if (!box) return;
     const items = [dockerItem()];
-    if (!placed && diataxis !== "tutorial") items.push(pointerItem(environment, guide));
+    if (!placed && diataxis !== "tutorial") {
+      items.push(withServices(pointerItem(environment, guide), services));
+    } else if (services.length) {
+      items.push(
+        withServices(listItem(text(`${environment.title}, which this page starts:`)), services),
+      );
+    }
     const list = box.children.find((n) => n.type === "list" && !n.ordered);
     if (list) list.children.unshift(...items);
     else box.children.push({ type: "list", ordered: false, spread: false, children: items });

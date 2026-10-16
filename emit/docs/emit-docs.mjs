@@ -80,7 +80,7 @@ import {
 } from "./discovery.mjs";
 import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
-import { loadModel, modelLinkResolver, viewAltText } from "./model.mjs";
+import { loadModel, loadProjection, modelLinkResolver, viewAltText } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
 import { searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
@@ -168,6 +168,8 @@ export async function emitDocs({ site, drafts = false }) {
       return { absPath, meta, body, identity: docIdentity(absPath, meta) };
     });
     const selected = all.filter((p) => isIncluded(p.meta));
+    // Public payloads read the ready-only projection, even in a --drafts preview.
+    const projection = loadProjection(site, all);
     const routes = new Set(selected.map((p) => hrefFor(p.identity)));
 
     // 2. Navigation. Validated against every page so an orphan still fails here.
@@ -297,6 +299,8 @@ export async function emitDocs({ site, drafts = false }) {
           self: route,
         });
       const guideAt = (base) => guide && { href: `${base}${guide.href}`, title: guide.title };
+      const servicesAt = (base) =>
+        environment ? projection.serviceLinks(environment.key, { base, route }) : [];
       const diataxis = page.meta.diataxis ?? identity.bucket;
       const resolve =
         envBundle &&
@@ -319,7 +323,10 @@ export async function emitDocs({ site, drafts = false }) {
           ...linkPlugins(route),
           [remarkScriptLinks, { scripts: scriptUrls }],
           [remarkStripSourceMeta],
-          [remarkPrerequisitesEnv, { environment, guide: guideAt(""), diataxis, resolve }],
+          [
+            remarkPrerequisitesEnv,
+            { environment, guide: guideAt(""), diataxis, resolve, services: servicesAt("") },
+          ],
         ],
       });
       likec4Exported ||= rendered.likec4Dir !== null;
@@ -359,14 +366,27 @@ export async function emitDocs({ site, drafts = false }) {
         plugins: [
           ...linkPlugins(route),
           [remarkAbsoluteLinks, { origin }],
-          [remarkPrerequisitesEnv, { environment, guide: guideAt(origin), diataxis, resolve }],
+          [
+            remarkPrerequisitesEnv,
+            {
+              environment,
+              guide: guideAt(origin),
+              diataxis,
+              resolve,
+              services: servicesAt(origin),
+            },
+          ],
         ],
       });
       let twinOut = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
       if (owned.length) {
         const fm = [
           companionsFrontmatter(owned, origin),
-          environmentFrontmatter(environment, `${origin}/env/environments.json`),
+          environmentFrontmatter(
+            environment,
+            `${origin}/env/environments.json`,
+            servicesAt(origin).map((x) => x.id),
+          ),
         ].filter(Boolean);
         twinOut = prependSection(
           injectFrontmatter(twinOut, fm.join("\n")),

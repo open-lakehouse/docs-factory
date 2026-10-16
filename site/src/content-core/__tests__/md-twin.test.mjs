@@ -257,6 +257,10 @@ test("environmentFrontmatter carries the exact start and stop commands", () => {
   expect(yaml).toContain('"docker compose -f compose.aws.yaml up -d --wait"]');
   expect(yaml).toContain('  stop: "docker compose -f compose.aws.yaml down"');
   expect(yaml).toContain('  index: "https://x.test/env/environments.json"');
+  expect(yaml).not.toContain("elements:");
+  expect(environmentFrontmatter(ENVIRONMENT, null, ["unityCatalogOSS", "rustfs"])).toContain(
+    '  elements: ["unityCatalogOSS", "rustfs"]',
+  );
 });
 
 test("companionsSection gives link, purpose, run command, and the stack", () => {

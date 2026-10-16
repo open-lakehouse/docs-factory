@@ -1,12 +1,14 @@
 // Page → derived environment for the review app, so a reviewer sees the same
 // Docker bullet and start commands (or pointer) the docs emitter adds
 // (emit/docs/emit-docs.mjs). The commands name the published docs site's env
-// bundle: they're what a reader will run, not something the app serves.
+// bundle, and the service list links the published site: they're what a reader
+// will see, not something the app serves.
 //
 // Runs once at vite config load. Without a script index (no uv, or docsnip
 // fails) boxes render as authored, the same as scripts.json degrades.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { loadProjection } from "../../emit/docs/model.mjs";
 import delta from "../../emit/docs/sites/delta-docs.mjs";
 import unitycatalog from "../../emit/docs/sites/unitycatalog-docs.mjs";
 import {
@@ -27,15 +29,23 @@ const SITES = [delta, unitycatalog];
  * `(path, source) => { environment, guide, diataxis, resolve } | null` over docsnip's raw script
  * entries. Scripts are keyed by the docs site's routes, so a page's `runUrl`
  * is the published one; the guide link is the in-app route, for the reviewer.
- * `readPage` returns a page's source (the guide's title comes from it).
+ * `readPage` returns a page's source (the guide's title comes from it);
+ * `projectionFor(site)` is the site's public projection, or null for no service list.
  */
-export function environmentResolver({ entries, registry, sites = SITES, readPage }) {
+export function environmentResolver({
+  entries,
+  registry,
+  sites = SITES,
+  readPage,
+  projectionFor = () => null,
+}) {
   const bySite = sites
     .filter((site) => site.env)
     .map((site) => ({
       site,
       scripts: entries.map((e) => scriptEntry(e, { hrefFor: site.hrefFor })),
       bundleUrl: `${site.origin}/env/${site.env.bundle}.tar.gz`,
+      projection: projectionFor(site),
       guidePage: (bucket, slug) => {
         const identity = { area: "docs", project: site.project, bucket, slug };
         const source = readPage(identity);
@@ -68,7 +78,9 @@ export function environmentResolver({ entries, registry, sites = SITES, readPage
       resolve: entry.guidePage,
       self: hrefFromIdentity(identity),
     });
-    return { environment, guide, diataxis: meta.diataxis ?? identity.bucket, resolve };
+    const services =
+      entry.projection?.serviceLinks(environment.key, { base: entry.site.origin, route }) ?? [];
+    return { environment, guide, diataxis: meta.diataxis ?? identity.bucket, resolve, services };
   };
 }
 
@@ -87,6 +99,15 @@ export function loadEnvironmentResolver(repoRoot) {
   return environmentResolver({
     entries: payload.scripts,
     registry: loadRegistry(repoRoot),
+    projectionFor: (site) =>
+      loadProjection(
+        site,
+        walkContent(join(repoRoot, "content", site.project)).map((path) => {
+          const { meta, body } = splitFrontmatter(readFileSync(path, "utf8"));
+          return { identity: docIdentity(path, meta), meta, body };
+        }),
+        { repoRoot },
+      ),
     readPage: (identity) => {
       const path = walkContent(join(repoRoot, "content", identity.project)).find(
         (p) => hrefFromIdentity(docIdentity(p)) === hrefFromIdentity(identity),

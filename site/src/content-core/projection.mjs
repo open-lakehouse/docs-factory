@@ -148,6 +148,20 @@ export function publicProjection({ model, pages, hrefFor, origin, registry = {},
       .filter((s) => elements.has(s.element))
       .map((s) => ({ ...elements.get(s.element), role: s.role ?? null, endpoint: s.url ?? null }));
 
+  /**
+   * An environment's public services as remark-prerequisites-env lists them:
+   * `{ id, title, href, summary, url }`, `href` the element's page under `base`
+   * (none on that page itself), else its external link.
+   */
+  const serviceLinks = (key, { base = "", route = null } = {}) =>
+    services(key).map((s) => ({
+      id: s.id,
+      title: s.title,
+      href: s.page ? (s.page === route ? null : `${base}${s.page}`) : s.url,
+      summary: s.summary,
+      url: s.endpoint,
+    }));
+
   /** `{ about, mentions }` element ids for one ready page; both empty for any other page. */
   const pageConcepts = ({ identity, meta, body = "" }) => {
     if (!isPublic(meta) || !routeOf(identity)) return { about: [], mentions: [] };
@@ -182,6 +196,7 @@ export function publicProjection({ model, pages, hrefFor, origin, registry = {},
       }),
     journeys: () => journeys,
     services,
+    serviceLinks,
     pageConcepts,
   };
 }

@@ -49,7 +49,8 @@ export function loadModel(path = MODEL_JSON) {
  * model, the environment registry, and the project's compatibility.json.
  * `pages` is `[{ identity, meta, body }]`; only ready ones count.
  */
-export function loadProjection(site, pages, { repoRoot = REPO_ROOT, modelPath = MODEL_JSON } = {}) {
+export function loadProjection(site, pages, { repoRoot = REPO_ROOT } = {}) {
+  const modelPath = join(repoRoot, "architecture", "dist", "model.json");
   const compatPath = join(repoRoot, "content", site.project, "compatibility.json");
   return publicProjection({
     model: readModelJson(modelPath),

@@ -106,10 +106,21 @@ const COMMANDS = [
   "export AWS_ALLOW_HTTP=true",
 ].join("\n");
 
+const SERVICES = [
+  {
+    title: "Unity Catalog (OSS)",
+    href: "/explanation/what-is-unity-catalog",
+    summary: "The open catalog.",
+    url: "http://localhost:8080/api/2.1/unity-catalog",
+  },
+  { title: "RustFS", href: "https://rustfs.com", summary: "S3-compatible storage.", url: null },
+  { title: "Envoy", href: null, summary: null, url: null },
+];
+
 async function render(
   target,
   page,
-  { environment = ENV, diataxis = "how-to", resolve = RESOLVE } = {},
+  { environment = ENV, diataxis = "how-to", resolve = RESOLVE, services = [] } = {},
 ) {
   const dir = mkdtempSync(join(tmpdir(), "prereqs-"));
   try {
@@ -119,7 +130,9 @@ async function render(
       inputPath,
       target,
       likec4OutDir: join(dir, "likec4"),
-      plugins: [[remarkPrerequisitesEnv, { environment, guide: GUIDE, diataxis, resolve }]],
+      plugins: [
+        [remarkPrerequisitesEnv, { environment, guide: GUIDE, diataxis, resolve, services }],
+      ],
     });
     return output;
   } finally {
@@ -191,4 +204,36 @@ test("a keyed :::environment renders just that stack's commands, and no pointer"
 test("a keyed :::environment naming no registry stack fails the emit", async () => {
   const page = KEYED.replace("uc/compose.aws.yaml", "uc/nope.yaml");
   await expect(render(site(), page)).rejects.toThrow("uc/nope.yaml is not in");
+});
+
+const SERVICE_LINES = [
+  "  - [Unity Catalog (OSS)](/explanation/what-is-unity-catalog), at `http://localhost:8080/api/2.1/unity-catalog`: The open catalog.",
+  "  - [RustFS](https://rustfs.com): S3-compatible storage.",
+  "  - Envoy",
+].join("\n");
+
+test("how-to: the environment's services nest under the pointer", async () => {
+  const out = await render(site(), HOWTO, { services: SERVICES });
+  expect(out).toContain(
+    `- UC with S3, running: [Run a local server](/how-to/run-local-server#with-s3).\n${SERVICE_LINES}\n- Python 3.11 or later.`,
+  );
+});
+
+test("tutorial: the services get a bullet of their own", async () => {
+  const out = await render(site(), TUTORIAL, { diataxis: "tutorial", services: SERVICES });
+  expect(out).toContain(
+    `${DOCKER}\n- UC with S3, which this page starts:\n${SERVICE_LINES}\n- Python 3.11 or later.`,
+  );
+});
+
+test("md-twin: the twin carries the same service list", async () => {
+  const out = await render(mdTwin, HOWTO, { services: SERVICES });
+  expect(out).toContain("[Unity Catalog (OSS)](/explanation/what-is-unity-catalog)");
+  expect(out).toContain("`http://localhost:8080/api/2.1/unity-catalog`: The open catalog.");
+  expect(out).toContain("[RustFS](https://rustfs.com): S3-compatible storage.");
+});
+
+test("no services, no service list", async () => {
+  const out = await render(site(), TUTORIAL, { diataxis: "tutorial" });
+  expect(out).not.toContain("which this page starts");
 });

@@ -115,9 +115,10 @@ export function companionsFrontmatter(scripts, origin = "") {
 /**
  * The twin's `environment:` frontmatter (pure, for testing): the stack the
  * page's scripts need (content-core pageEnvironment) with its exact start and
- * stop commands, and `index`, the site's environments.json. Empty if none.
+ * stop commands, the public model elements it runs (`elements`, ids into the
+ * site's concepts.json), and `index`, the site's environments.json. Empty if none.
  */
-export function environmentFrontmatter(environment, index) {
+export function environmentFrontmatter(environment, index, elements = []) {
   if (!environment) return "";
   const q = JSON.stringify;
   return [
@@ -126,6 +127,7 @@ export function environmentFrontmatter(environment, index) {
     `  dir: ${q(environment.dir)}`,
     `  start: [${environment.commands.map(q).join(", ")}]`,
     `  stop: ${q(environment.stop)}`,
+    ...(elements.length ? [`  elements: [${elements.map(q).join(", ")}]`] : []),
     ...(index ? [`  index: ${q(index)}`] : []),
   ].join("\n");
 }

@@ -109,13 +109,12 @@ _MODEL_ENV["elements"].update(
 
 _REGISTRY = """\
 environments:
-  unitycatalog/compose.aws.yaml:
-    title: UC with S3
-    ports: [8080, 9000]
+  unitycatalog/compose.yaml:
+    title: UC
+    ports: [8080]
   uc-aws/compose.yaml:
-    title: UC with S3 (generated)
+    title: UC with S3
     generated: uc-aws
-    stands-in-for: unitycatalog/compose.aws.yaml
 """
 
 
@@ -205,10 +204,6 @@ def test_registry_merges_derived_facts(tmp_path):
     env = environments.load(root)["uc-aws/compose.yaml"]
     assert env.ports == [8080, 9000]
     assert env.client_env["UNITY_CATALOG_URL"].endswith("/api/2.1/unity-catalog")
-    assert env.stands_in_for == "unitycatalog/compose.aws.yaml"
-    assert environments.stand_in(root, "unitycatalog/compose.aws.yaml", "uc-aws") == (
-        "uc-aws/compose.yaml"
-    )
 
 
 def test_a_generated_entry_cant_author_derived_facts(tmp_path):
@@ -217,15 +212,6 @@ def test_a_generated_entry_cant_author_derived_facts(tmp_path):
     )
     root = _fixed(tmp_path, registry=registry)
     with pytest.raises(ValueError, match="takes ports, client-env, and files"):
-        environments.load(root)
-
-
-def test_stands_in_for_must_name_a_hand_written_entry(tmp_path):
-    registry = _REGISTRY.replace(
-        "stands-in-for: unitycatalog/compose.aws.yaml", "stands-in-for: nope.yaml"
-    )
-    root = _fixed(tmp_path, registry=registry)
-    with pytest.raises(ValueError, match="stands-in-for must name"):
         environments.load(root)
 
 
@@ -286,7 +272,7 @@ def test_an_unknown_edge_kind_fails(tmp_path):
 
 
 def test_an_environment_without_a_registry_entry_fails(tmp_path):
-    registry = "environments:\n  unitycatalog/compose.aws.yaml:\n    title: UC\n"
+    registry = "environments:\n  unitycatalog/compose.yaml:\n    title: UC\n"
     root = _fixed(tmp_path, registry=registry)
     assert envgen.check(root) == [
         "envs/uc-aws: no envs/environments.yml entry says `generated: uc-aws`"
@@ -338,7 +324,7 @@ _SCRIPT = """\
 # dependencies = []
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
+# compose = "../../../../../envs/{compose}"
 {claims}# ///
 # --8<-- [start:read]
 print("read")
@@ -360,12 +346,16 @@ status: ready
 """
 
 
-def _with_claims(root: Path, *claims: str) -> Path:
+def _with_claims(
+    root: Path, *claims: str, compose: str = "uc-aws/compose.yaml"
+) -> Path:
     page = root / "content" / "proj" / "how-to" / "001-engine"
     (page / "snippets").mkdir(parents=True)
     (page / "index.md").write_text(_PAGE)
     lines = "".join(f"# {c}\n" for c in claims)
-    (page / "snippets" / "x.py").write_text(_SCRIPT.format(claims=lines))
+    (page / "snippets" / "x.py").write_text(
+        _SCRIPT.format(compose=compose, claims=lines)
+    )
     (root / "content" / "proj" / "compatibility.yml").write_text(_MATRIX)
     return root
 
@@ -381,7 +371,7 @@ def test_fit_holds_when_the_environment_runs_every_provider(tmp_path):
 
 
 def test_fit_fails_when_no_implementation_provides_a_requirement(tmp_path):
-    # the stand-in's catalog implements ucSpec but not Iceberg REST
+    # the environment's catalog implements ucSpec but not Iceberg REST
     fit = envgen.fit(_with_claims(_fixed(tmp_path), _ICEBERG))
     assert len(fit.errors) == 1
     assert (
@@ -418,9 +408,6 @@ def test_several_candidates_are_reported_not_failed(tmp_path):
     )
 
 
-def test_without_a_stand_in_a_hand_written_environment_isnt_checked(tmp_path):
-    registry = _REGISTRY.replace(
-        "    stands-in-for: unitycatalog/compose.aws.yaml\n", ""
-    )
-    fit = envgen.fit(_with_claims(_fixed(tmp_path, registry=registry), _ICEBERG))
-    assert fit.errors == []
+def test_a_hand_written_environment_isnt_checked(tmp_path):
+    root = _with_claims(_fixed(tmp_path), _ICEBERG, compose="unitycatalog/compose.yaml")
+    assert envgen.fit(root).errors == []

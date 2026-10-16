@@ -38,7 +38,6 @@ class Environment:
     generated: str | None = (
         None  # the envs/<name>/ whose plan.json settles ports and env
     )
-    stands_in_for: str | None = None  # the hand-written key it will replace
 
 
 def _generated_facts(repo_root: Path) -> dict[str, dict]:
@@ -57,7 +56,6 @@ def load(repo_root: Path) -> dict[str, Environment]:
         entry = entry or {}
         title = entry.get("title")
         generated = entry.get("generated")
-        stands_in_for = entry.get("stands-in-for")
         if generated is not None:
             if {"ports", "client-env", "files"} & entry.keys():
                 raise ValueError(
@@ -70,8 +68,6 @@ def load(repo_root: Path) -> dict[str, Environment]:
                     "run `uv run docsnip envs --fix`"
                 )
             entry = {**entry, **derived[generated]}
-        elif stands_in_for is not None:
-            raise ValueError(f"{REGISTRY}: {key}: only a generated entry stands in")
         ports = entry.get("ports", []) or []
         client_env = entry.get("client-env", {}) or {}
         guide = entry.get("guide")
@@ -88,24 +84,9 @@ def load(repo_root: Path) -> dict[str, Environment]:
                 f"{REGISTRY}: {key}: guide must be <bucket>/<slug>[#anchor]"
             )
         envs[key] = Environment(
-            key, title, list(ports), dict(client_env), guide, generated, stands_in_for
+            key, title, list(ports), dict(client_env), guide, generated
         )
-    for key, env in envs.items():
-        if env.stands_in_for is not None and (
-            env.stands_in_for not in envs or envs[env.stands_in_for].generated
-        ):
-            raise ValueError(
-                f"{REGISTRY}: {key}: stands-in-for must name a hand-written entry"
-            )
     return envs
-
-
-def stand_in(repo_root: Path, key: str, name: str) -> str | None:
-    """The key of generated environment ``name`` when it stands in for ``key``."""
-    for env in load(repo_root).values():
-        if env.generated == name and env.stands_in_for == key:
-            return env.key
-    return None
 
 
 def key_for(compose_path: Path, repo_root: Path) -> str | None:

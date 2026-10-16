@@ -392,9 +392,7 @@ def fit(root: Path) -> Fit:
     """Each working claim's provider requirements (``requires`` other than the
     client) must be met by an implementation its environment runs.
 
-    Only generated environments know what they run. A generated entry that
-    ``stands-in-for`` a hand-written one is held to that entry's claims too, so
-    a cutover's fit is known before any script moves."""
+    Only generated environments know what they run."""
     report = Fit([], [])
     if not names(root):
         return report
@@ -407,8 +405,6 @@ def fit(root: Path) -> Fit:
     for key, env in registry.items():
         if env.generated in plans:
             against.setdefault(key, []).append(env.generated)
-            if env.stands_in_for:
-                against.setdefault(env.stands_in_for, []).append(env.generated)
     if not against:
         return report
 

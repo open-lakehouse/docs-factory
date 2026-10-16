@@ -36,7 +36,6 @@ test("a generated entry takes ports, client env, and files from the derived fact
     `${AUTHORED}  uc-aws/compose.yaml:
     title: UC with S3
     generated: uc-aws
-    stands-in-for: unitycatalog/compose.yaml
 `,
     {
       version: 1,

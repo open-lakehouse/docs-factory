@@ -210,9 +210,11 @@ external link, wait on the emitted sites having a glossary.
 
 Next: derive R10's "Query engines" labels from claims, move the coverage
 page's round-trip and table-feature grids onto the matrix, and project the
-matrix into `concepts.json` (§3.4). Journeys gaining an asset and per-journey
-contract requirements, and the projection itself, are planned in
-[`trestle-model-convergence.md`](./trestle-model-convergence.md) §5 and §8.
+matrix into `concepts.json` (§3.4). Journeys now carry an asset and
+per-journey contract requirements ([`trestle-model-convergence.md`](./trestle-model-convergence.md)
+§5, P2), and `compatibility.json` (version 2) records the model edges gating
+claims exercise. The projection into `concepts.json` and the environment-fit
+check are still planned there (§8, P5).
 
 ## 5. Open questions
 

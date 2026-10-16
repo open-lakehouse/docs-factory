@@ -346,3 +346,214 @@ def test_evidence_can_cite_another_projects_page(tmp_path) -> None:
     )
     errors, _ = compat.check(root)
     assert any("no such page" in e for e in errors), errors
+
+
+# --- journeys joined to the estate model ---------------------------------------
+
+_MODEL = {
+    "elements": {
+        "ucSpec": {"kind": "openSpecification", "title": "Unity Catalog"},
+        "icebergRestSpec": {"kind": "openSpecification", "title": "Iceberg REST"},
+        "apacheSpark": {"kind": "implementation", "title": "Apache Spark"},
+        "lakehouse.catalog": {"kind": "capability", "title": "Catalog"},
+        "lakehouse.table": {"kind": "asset", "title": "Table"},
+        "lakehouse.volume": {"kind": "asset", "title": "Volume"},
+    },
+    "relations": {
+        "r1": {
+            "kind": "consumes",
+            "source": {"model": "apacheSpark"},
+            "target": {"model": "ucSpec"},
+        },
+        "r2": {
+            "kind": "governs",
+            "source": {"model": "ucSpec"},
+            "target": {"model": "lakehouse.table"},
+        },
+        "r3": {
+            "kind": "governs",
+            "source": {"model": "ucSpec"},
+            "target": {"model": "lakehouse.volume"},
+        },
+    },
+}
+
+_FAMILIES = """\
+families:
+  table:
+    asset: lakehouse.table
+    requires:
+      client: { consumes: [ucSpec] }
+      catalog: { implements: [ucSpec] }
+"""
+
+
+def _modeled(root: Path, journeys: str = "", families: str = _FAMILIES) -> Path:
+    """Give the repo an exported model and journeys with families."""
+    dist = root / "architecture" / "dist"
+    dist.mkdir(parents=True, exist_ok=True)
+    (dist / "model.json").write_text(json.dumps(_MODEL))
+    matrix = root / "content/proj/compatibility.yml"
+    text = matrix.read_text().replace(
+        "  table.read: {title: Read, summary: Read rows}",
+        journeys or "  table.read: {title: Read, summary: Read rows, family: table}",
+    )
+    matrix.write_text(text.replace("interfaces:\n", families + "interfaces:\n", 1))
+    return root
+
+
+_SPARK_READS = _claims('claims.spark = [{ journey = "table.read", region = "read" }]')
+
+
+def _artifact(root: Path) -> dict:
+    compat.fix(root)
+    return json.loads((root / "content/proj/compatibility.json").read_text())
+
+
+def test_a_journey_inherits_its_family_and_can_override_it(tmp_path) -> None:
+    root = _modeled(
+        _repo(tmp_path, _SPARK_READS),
+        "  table.read:\n"
+        "    {title: Read, summary: Read rows, family: table,\n"
+        "     requires: {client: {consumes: [icebergRestSpec]}}}",
+    )
+    data = _artifact(root)
+    assert data["version"] == compat.ARTIFACT_VERSION
+    read, write = data["journeys"]
+    assert read["family"] == "table"
+    assert read["asset"] == "lakehouse.table"  # inherited
+    assert read["requires"] == {"client": {"consumes": ["icebergRestSpec"]}}
+    assert write["asset"] is None
+    assert {"kind": "unmigrated", "journeys": ["table.write"]} in data["diagnostics"]
+
+
+@pytest.mark.parametrize(
+    ("journey", "message"),
+    [
+        ("{title: R, summary: S, asset: apacheSpark}", "is of kind implementation"),
+        ("{title: R, summary: S, family: nope}", "is not a family"),
+        (
+            "{title: R, summary: S, requires: {client: {consumes: [lakehouse.catalog]}}}",
+            "expected openSpecification",
+        ),
+        ("{title: R, summary: S, requires: {client: {uses: [ucSpec]}}}", "unknown"),
+        ("{title: R, summary: S, asset: lakehouse.nope}", "not in the estate model"),
+    ],
+)
+def test_bad_journey_references_are_errors(
+    tmp_path, journey: str, message: str
+) -> None:
+    root = _modeled(_repo(tmp_path, ""), f"  table.read: {journey}")
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors
+
+
+def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
+    data = _artifact(_modeled(_repo(tmp_path, _SPARK_READS)))
+    assert data["verifiedEdges"] == [
+        {
+            "source": "apacheSpark",
+            "kind": "consumes",
+            "target": "ucSpec",
+            "interfaces": ["spark"],
+            "journeys": ["table.read"],
+        }
+    ]
+    kinds = [d["kind"] for d in data["diagnostics"]]
+    assert "missing-edge" not in kinds
+    # ucSpec governs volumes too, and no verified journey acts on one.
+    assert {"kind": "unverified-asset", "asset": "lakehouse.volume"} in data[
+        "diagnostics"
+    ]
+
+
+def test_a_missing_client_edge_is_reported_not_failed(tmp_path) -> None:
+    root = _modeled(
+        _repo(tmp_path, _SPARK_READS),
+        "  table.read: {title: Read, summary: Read rows, family: table,"
+        " requires: {client: {consumes: [icebergRestSpec]}}}",
+    )
+    assert compat.fix(root)
+    assert compat.check(root)[0] == []
+    gaps = compat.model_gaps(root)
+    assert any("spark: proves table.read against icebergRestSpec" in g for g in gaps), (
+        gaps
+    )
+
+
+def test_a_negative_claim_needs_no_edge(tmp_path) -> None:
+    root = _modeled(
+        _repo(
+            tmp_path,
+            _claims('claims.spark = [{ journey = "table.read", fails = true }]'),
+        ),
+        "  table.read: {title: Read, summary: Read rows, family: table,"
+        " requires: {client: {consumes: [icebergRestSpec]}}}",
+    )
+    data = _artifact(root)
+    assert not [d for d in data["diagnostics"] if d["kind"] == "missing-edge"]
+    assert data["verifiedEdges"] == []
+
+
+def test_an_unannotated_journey_falls_back_to_the_matrix_spec(tmp_path) -> None:
+    root = _modeled(_repo(tmp_path, _SPARK_READS), families="")
+    model = root / "architecture/dist/model.json"
+    bare = dict(_MODEL, relations={})  # Spark no longer consumes ucSpec
+    model.write_text(json.dumps(bare))
+    root_matrix = root / "content/proj/compatibility.yml"
+    root_matrix.write_text(root_matrix.read_text().replace(", family: table", ""))
+    gaps = compat.model_gaps(root)
+    assert any("spark: proves table.read against ucSpec" in g for g in gaps), gaps
+    assert any("2 journey(s) with no asset" in g for g in gaps), gaps
+
+
+def test_unmodeled_clients_and_local_participants_are_valid(tmp_path) -> None:
+    # DuckDB has no model element, and a client-only journey needs no environment.
+    root = _modeled(
+        _repo(
+            tmp_path,
+            _claims('claims.duckdb = [{ journey = "table.read", region = "read" }]'),
+        ),
+        families="defaults:\n  asset: lakehouse.table\n"
+        "  requires: { client: { consumes: [ucSpec] } }\n",
+    )
+    root_matrix = root / "content/proj/compatibility.yml"
+    root_matrix.write_text(root_matrix.read_text().replace(", family: table", ""))
+    data = _artifact(root)
+    assert compat.check(root)[0] == []
+    assert all(j["asset"] == "lakehouse.table" for j in data["journeys"])
+    assert {"kind": "unmodeled", "interface": "duckdb"} in data["diagnostics"]
+
+
+def test_an_asset_rollup_renders_its_journeys(tmp_path) -> None:
+    root = _modeled(_repo(tmp_path, _SPARK_READS))
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text().replace(
+            "summary: Append rows}", "summary: Append rows, family: table}"
+        )
+    )
+    embed = root / "content/proj/reference/002-matrix/index.md"
+    embed.write_text(
+        embed.read_text().replace(
+            "<!-- compat:ops -->\n<!-- /compat:ops -->",
+            "<!-- compat:ops -->\n<!-- /compat:ops -->\n\n"
+            "<!-- compat:asset:lakehouse.table -->\n"
+            "<!-- /compat:asset:lakehouse.table -->",
+        )
+    )
+    compat.fix(root)
+    lines = _table(root)
+    rollup = lines[len(lines) // 2 :]
+    assert rollup == [
+        "| Operation | [Spark 4.1](model:apacheSpark) | DuckDB |",
+        "| --- | --- | --- |",
+        "| Read | [✓](../../how-to/engine/index.md#read-it) | — |",
+        "| Write | — | ✗ |",
+    ]
+    assert compat.check(root)[0] == []
+    embed.write_text(
+        embed.read_text().replace("asset:lakehouse.table", "asset:lakehouse.volume")
+    )
+    errors, _ = compat.check(root)
+    assert any("acts on lakehouse.volume" in e for e in errors), errors

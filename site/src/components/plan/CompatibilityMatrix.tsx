@@ -60,6 +60,7 @@ export default function CompatibilityMatrix() {
   const [params, setParams] = useSearchParams();
   const matrix = matrices.find((m) => m.project === params.get("project")) ?? matrices[0];
   const gapsOnly = params.get("gaps") === "1";
+  const byAsset = params.get("group") === "asset";
   const selected = parseCell(params.get("cell"));
   const set = (patch: Record<string, string | null>) =>
     setParams(
@@ -92,6 +93,14 @@ export default function CompatibilityMatrix() {
             </button>
           ))}
         </fieldset>
+        <span className="compat-gaps-toggle">
+          <Switch
+            id="compat-by-asset"
+            checked={byAsset}
+            onCheckedChange={(on) => set({ group: on ? "asset" : null })}
+          />
+          <label htmlFor="compat-by-asset">By asset</label>
+        </span>
         <span className="compat-gaps-toggle">
           <Switch
             id="compat-gaps"
@@ -129,6 +138,7 @@ export default function CompatibilityMatrix() {
       {matrix ? (
         <MatrixTables
           matrix={matrix}
+          byAsset={byAsset}
           gapsOnly={gapsOnly}
           selected={selected}
           onSelect={(s) => set({ cell: s ? `${s.journey}:${s.iface}` : null })}
@@ -142,11 +152,13 @@ export default function CompatibilityMatrix() {
 
 function MatrixTables({
   matrix,
+  byAsset,
   gapsOnly,
   selected,
   onSelect,
 }: {
   matrix: CompatMatrix;
+  byAsset: boolean;
   gapsOnly: boolean;
   selected: Selected | null;
   onSelect: (s: Selected | null) => void;
@@ -159,18 +171,21 @@ function MatrixTables({
   );
   return (
     <>
-      {matrix.tables.map((table) => {
+      {(byAsset ? matrix.assets : matrix.tables).map((table) => {
         const rows = table.rows
           .map((id) => journeys.get(id))
           .filter((j): j is CompatJourney => !!j && (!gapsOnly || isGap(j, table.columns)));
-        const asked = requested.filter((r) => r.placement === table.id);
+        // Journey requests are placed on a table, so asset groups show none.
+        const asked = byAsset ? [] : requested.filter((r) => r.placement === table.id);
         const columnStats = columnCounts(matrix, table);
         if (rows.length === 0 && asked.length === 0) return null;
         return (
           <div key={table.id} className="mt-6">
             <div className="compat-table-head">
               <h2 className="blog-aside-title">{table.title}</h2>
-              {isAllowlisted && <TrackJourneyButton project={matrix.project} table={table.id} />}
+              {isAllowlisted && !byAsset && (
+                <TrackJourneyButton project={matrix.project} table={table.id} />
+              )}
             </div>
             <table className="admin-table compat-table">
               <thead>

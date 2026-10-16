@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-15. P0 done (#219); P1a and P1b done; P2 next.
+**Status:** plan, 2026-10-15. P0 done (#219); P1a, P1b, and P2 done; P3 (Trestle) next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -174,6 +174,16 @@ clients, negative claims, and environment-free realizations.
 
 **Done when** every journey resolves an asset and requirements, edge
 verification reports in CI, and one explanation page carries a rollup.
+
+**Done (P2).** Journeys name their family explicitly (`family:`), never from the
+ID prefix; Delta uses matrix-level `defaults`. All journeys migrated at once,
+with every cell outcome unchanged (138 UC, 245 Delta). Edge verification
+accepts `consumes` or `implements` from the client's interface model and
+reports through `docsnip check`'s model-quality section; `compatibility.json` is
+version 2 (`assets`, `verifiedEdges`, `diagnostics`, and per-journey `family`,
+`asset`, `requires`). The rollup is on UC's external-and-managed-tables
+explanation. Row-header `model:` links for journeys are deferred: they would
+change every existing table.
 
 ## P3 — Trestle: identity refs, export, and knobs (Trestle repo)
 

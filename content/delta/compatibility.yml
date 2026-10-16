@@ -8,6 +8,14 @@
 # See content/README.md, "Compatibility claims".
 spec: deltaSpec
 
+# Every journey acts on a Delta table, and its client must read or write the
+# Delta protocol. No catalog or server takes part, so a journey runs without an
+# environment.
+defaults:
+  asset: lakehouse.table
+  requires:
+    client: { consumes: [deltaSpec] }
+
 # An interface is an engine through one language binding, and its label is
 # `<Engine> · <Language>`: the label of the page tab that shows it. This order
 # is the tab order on every Delta page.

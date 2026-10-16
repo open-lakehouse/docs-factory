@@ -8,6 +8,31 @@
 # See content/README.md, "Compatibility claims".
 spec: ucSpec
 
+# A journey's family supplies the asset it acts on and what its participants
+# must support; a journey can override either. Requirements name the contract a
+# participant needs, not an implementation (ADR-0004), so a script's environment
+# can supply any catalog that implements it.
+families:
+  table: &uc-table
+    asset: lakehouse.table
+    requires: &uc
+      client: { consumes: [ucSpec] }
+      catalog: { implements: [ucSpec] }
+  external: *uc-table
+  managed: *uc-table
+  iceberg:
+    asset: lakehouse.table
+    requires:
+      client: { consumes: [icebergRestSpec] }
+      catalog: { implements: [icebergRestSpec] }
+  metricview: { asset: lakehouse.metricView, requires: *uc }
+  catalog: { asset: lakehouse.namespace, requires: *uc }
+  schema: { asset: lakehouse.namespace, requires: *uc }
+  volume: { asset: lakehouse.volume, requires: *uc }
+  credential: { asset: lakehouse.credential, requires: *uc }
+  location: { asset: lakehouse.externalLocation, requires: *uc }
+  function: { asset: lakehouse.registeredFunction, requires: *uc }
+
 interfaces:
   spark:
     label: Spark
@@ -53,195 +78,267 @@ interfaces:
 
 journeys:
   table.list:
+    family: table
     title: List tables
     summary: List the tables in a schema from the engine, by their catalog names.
   external.read:
+    family: external
     title: Read an external table
     summary: Read an external table by its catalog name, from files the reader can already reach.
   external.read-vended:
+    family: external
+    requires:
+      client: { consumes: [ucSpec] }
+      catalog: { implements: [ucSpec] }
+      storage: { implements: [s3Api] }
     title: Read with vended S3 credentials
     summary: Read an external table on S3 with the short-lived credentials the server vends for it.
   external.append:
+    family: external
     title: Append to an external table
     summary: Append rows to an external table, named through the catalog.
   managed.create:
+    family: managed
     title: Create a managed table
     summary: Create a catalog-managed Delta table, with storage the catalog allocates.
   managed.read:
+    family: managed
     title: Read a managed table
     summary: Read a catalog-managed table through the catalog.
   managed.append:
+    family: managed
     title: Append to a managed table
     summary: Append rows to a catalog-managed table, with the catalog accepting the commit.
   managed.update:
+    family: managed
     title: Update rows in a managed table
     summary: Change rows that match a condition in a catalog-managed table.
   managed.delete:
+    family: managed
     title: Delete rows from a managed table
     summary: Remove rows that match a condition from a catalog-managed table.
   managed.drop:
+    family: managed
     title: Drop a managed table
     summary: Drop a catalog-managed table and its data.
   managed.time-travel:
+    family: managed
     title: Read an earlier version of a managed table
     summary: Query a catalog-managed table as it was at an earlier version.
   external.read-format:
+    family: external
     title: Read a Parquet, CSV, or JSON table
     summary: Read a non-Delta external table, using the format and location the catalog records.
   iceberg.schema-create:
+    family: iceberg
+    asset: lakehouse.namespace
     title: Create a schema through Iceberg REST
     summary: Create a schema as an Iceberg namespace, under the catalog the client names as its warehouse.
   iceberg.create:
+    family: iceberg
     title: Create a managed Iceberg table
     summary: Create an Iceberg table through Iceberg REST, with storage the catalog allocates.
   iceberg.append:
+    family: iceberg
     title: Append to an Iceberg table
     summary: Append rows to an Iceberg table, with credentials the catalog vends for its storage.
   iceberg.read:
+    family: iceberg
     title: Read an Iceberg table
     summary: Read an Iceberg table by its catalog name, with credentials the catalog vends.
   iceberg.update:
+    family: iceberg
     title: Update rows in an Iceberg table
     summary: Change rows that match a condition in an Iceberg table, committed through the catalog.
   iceberg.delete:
+    family: iceberg
     title: Delete rows from an Iceberg table
     summary: Remove rows that match a condition from an Iceberg table, committed through the catalog.
   iceberg.rename:
+    family: iceberg
     title: Rename an Iceberg table
     summary: Give an Iceberg table a new name in its schema.
   iceberg.drop:
+    family: iceberg
     title: Drop an Iceberg table
     summary: Drop an Iceberg table, and for a managed one its data.
   iceberg.join-delta:
+    family: iceberg
+    requires:
+      client: { consumes: [icebergRestSpec, ucSpec] }
+      catalog: { implements: [icebergRestSpec, ucSpec] }
     title: Join Delta and Iceberg tables
     summary: Query a Delta table and an Iceberg table from the same catalog together in one session.
   metricview.create:
+    family: metricview
     title: Create a metric view
     summary: Define dimensions and measures in YAML over a table or a query, and store the definition in the catalog.
   metricview.list:
+    family: metricview
     title: List metric views
     summary: Find a schema's metric views by name.
   metricview.describe:
+    family: metricview
     title: Inspect a metric view
     summary: Read a metric view's dimensions, measures, and stored definition.
   metricview.query:
+    family: metricview
     title: Query a metric view
     summary: Compute measures with `measure()`, grouped and filtered by dimensions.
   metricview.replace:
+    family: metricview
     title: Change a metric view's definition
     summary: Replace a metric view's definition in place, keeping its name.
   metricview.rename:
+    family: metricview
     title: Rename a metric view
     summary: Give a metric view a new name in its schema.
   metricview.drop:
+    family: metricview
     title: Drop a metric view
     summary: Remove a metric view; its source tables stay.
   catalog.create:
+    family: catalog
     title: Create a catalog
     summary: Create a catalog, the top level of the three-level namespace.
   catalog.list:
+    family: catalog
     title: View catalogs
     summary: List catalogs or get one by name, with its properties.
   catalog.update:
+    family: catalog
     title: Update a catalog
     summary: Change a catalog's comment, properties, or name.
   catalog.delete:
+    family: catalog
     title: Delete a catalog
     summary: Delete a catalog, including everything in it when forced.
   schema.create:
+    family: schema
     title: Create a schema
     summary: Create a schema inside a catalog.
   schema.list:
+    family: schema
     title: View schemas
     summary: List a catalog's schemas or get one by its full name.
   schema.update:
+    family: schema
     title: Update or rename a schema
     summary: Change a schema's comment, properties, or name.
   schema.delete:
+    family: schema
     title: Delete a schema
     summary: Delete an empty schema.
   table.register-external:
+    family: table
     title: Register an external Delta table
     summary: Register Delta files that already exist in storage as a table, without copying them.
   table.register-format:
+    family: table
     title: Register a Parquet, CSV, or JSON table
     summary: Register files in another format as an external table, with its columns declared.
   table.describe:
+    family: table
     title: View a table
     summary: Get a table's columns, format, type, and storage location by its full name.
   table.read:
+    family: table
     title: Read a table's rows from a client
     summary: Read rows of a registered Delta table without starting an engine.
   table.write-sample:
+    family: table
     title: Write sample rows
     summary: Write generated rows into a table to try things out.
   table.drop:
+    family: table
     title: Drop a table
     summary: Remove a table from the catalog. Data files of an external table stay in place.
   volume.create-external:
+    family: volume
     title: Create an external volume
     summary: Register an existing storage folder as a volume.
   volume.create-managed:
+    family: volume
     title: Create a managed volume
     summary: Create a volume whose storage the catalog allocates under a managed storage root.
   volume.view:
+    family: volume
     title: View volumes
     summary: List a schema's volumes or get one by its full name, with its storage location.
   volume.list-files:
+    family: volume
     title: List a volume's files
     summary: See which files a volume holds.
   volume.update:
+    family: volume
     title: Rename or update a volume
     summary: Change a volume's comment or name.
   volume.delete:
+    family: volume
     title: Delete a volume
     summary: Remove a volume from the catalog.
   credential.create:
+    family: credential
     title: Create a storage credential
     summary: Store the cloud identity the server assumes to reach a bucket.
   location.create:
+    family: location
     title: Create an external location
     summary: Pair a storage path with the credential that can access it.
   storage.view:
+    family: location
     title: View credentials and external locations
     summary: List or get the storage credentials and external locations the server holds.
   credential.update:
+    family: credential
     title: Update a storage credential
     summary: Change a storage credential's role, comment, or name.
   location.update:
+    family: location
     title: Update an external location
     summary: Change an external location's URL, credential, or name.
   storage.delete:
+    family: location
     title: Delete an external location and its credential
     summary: Remove an external location, then the credential nothing else uses.
   storage.managed-root:
+    family: schema
     title: Give a catalog or schema managed storage
     summary: Set the storage root under which the catalog allocates managed tables and volumes.
   credentials.vend-path:
+    family: credential
     title: Get credentials for a storage path
     summary: Ask the server for short-lived credentials scoped to a path under an external location.
   credentials.vend-volume:
+    family: credential
     title: Get credentials for a volume
     summary: Ask the server for short-lived credentials to read or write one volume's files.
   volume.read-files:
+    family: volume
     title: Read a volume's files
     summary: Read files in a volume on object storage with credentials the server vends.
   volume.write-files:
+    family: volume
     title: Write files to a volume
     summary: Write files into a managed volume on object storage with vended credentials.
   function.create:
+    family: function
     title: Register a Python function
     summary: Register a Python function in a schema, with its signature and source code.
   function.describe:
+    family: function
     title: View a function
     summary: Get a function's parameters, return type, and source code by its full name.
   function.execute:
+    family: function
     title: Run a function by name
     summary: Run a registered function by name with typed parameters, on the caller's side.
   function.list:
+    family: function
     title: List functions
     summary: List the functions in a schema.
   function.delete:
+    family: function
     title: Delete a function
     summary: Remove a function from the catalog.
 

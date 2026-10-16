@@ -1,5 +1,6 @@
 {
   "generated": "by `uv run docsnip compat --fix`; edit compatibility.yml and script claims, not this file",
+  "version": 2,
   "project": "delta",
   "spec": "deltaSpec",
   "interfaces": [
@@ -218,12 +219,88 @@
       ]
     }
   ],
+  "assets": [
+    {
+      "id": "lakehouse.table",
+      "title": "Table",
+      "columns": [
+        "spark-sql",
+        "spark-python",
+        "delta-rs-python",
+        "delta-rs-rust",
+        "duckdb-sql"
+      ],
+      "rows": [
+        "create.table",
+        "create.ctas",
+        "create.partitioned",
+        "write.append",
+        "write.overwrite",
+        "write.replace-where",
+        "write.dynamic-partitions",
+        "write.enforce-schema",
+        "write.idempotent",
+        "write.commit-metadata",
+        "dml.update",
+        "dml.delete",
+        "merge.upsert",
+        "merge.not-matched-by-source",
+        "merge.schema-evolution",
+        "read.scan",
+        "read.pushdown",
+        "read.version",
+        "read.timestamp",
+        "read.past-retention",
+        "history.list",
+        "history.detail",
+        "history.restore",
+        "history.shallow-clone",
+        "schema.merge-on-write",
+        "schema.overwrite",
+        "schema.add-column",
+        "schema.rename-drop",
+        "schema.type-widening",
+        "quality.check",
+        "quality.not-null",
+        "columns.generated",
+        "columns.identity",
+        "columns.default",
+        "cdf.read",
+        "stream.source-sink",
+        "stream.foreach-batch-merge",
+        "layout.compact",
+        "layout.zorder",
+        "layout.clustering",
+        "maint.vacuum",
+        "maint.checkpoint",
+        "maint.purge-dvs",
+        "maint.manifest",
+        "maint.repair",
+        "migrate.convert-parquet",
+        "feature.enable",
+        "feature.drop",
+        "feature.properties",
+        "storage.s3-multi-writer",
+        "storage.azure-gcs",
+        "catalog.unity"
+      ]
+    }
+  ],
   "journeys": [
     {
       "id": "create.table",
       "title": "Create a table",
       "summary": "Create a new, empty Delta table with a schema.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -345,6 +422,15 @@
       "title": "Create from select",
       "summary": "Create a Delta table from the result of a query, in one step.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -417,6 +503,15 @@
       "title": "Create partitioned table",
       "summary": "Create a table whose files are split by the values of one or more columns.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -489,6 +584,15 @@
       "title": "Append rows",
       "summary": "Add new rows to an existing table without touching the rows already there.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -661,6 +765,15 @@
       "title": "Overwrite rows",
       "summary": "Replace all of a table's rows with new data in one commit.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -773,6 +886,15 @@
       "title": "Replace where",
       "summary": "Replace only the rows that match a predicate, leaving the rest in place.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -861,6 +983,15 @@
       "title": "Dynamic partitions",
       "summary": "Overwrite only the partitions the new data touches.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -917,6 +1048,15 @@
       "title": "Enforce schema",
       "summary": "Have a write that doesn't match the table's schema rejected instead of applied.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-python": {
           "status": "tested",
@@ -985,6 +1125,15 @@
       "title": "Idempotent writes",
       "summary": "Retry a write safely, so a batch that already committed isn't applied twice.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -1073,6 +1222,15 @@
       "title": "Commit metadata",
       "summary": "Attach your own metadata to a commit and find it in the table's history.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -1145,6 +1303,15 @@
       "title": "Update rows",
       "summary": "Change the values of rows that match a condition.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -1245,6 +1412,15 @@
       "title": "Delete rows",
       "summary": "Remove the rows that match a condition.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -1345,6 +1521,15 @@
       "title": "Merge upsert",
       "summary": "Update matching rows and insert new ones from a source, in one operation.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -1433,6 +1618,15 @@
       "title": "Merge not matched by source",
       "summary": "In a merge, update or delete target rows that have no match in the source.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -1521,6 +1715,15 @@
       "title": "Merge schema evolution",
       "summary": "Let a merge add the source's new columns to the target table.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -1609,6 +1812,15 @@
       "title": "Scan table",
       "summary": "Read a table's current rows into a query or DataFrame.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -1868,6 +2080,15 @@
       "title": "Filter pushdown",
       "summary": "Filter on read so the engine skips files that can't match.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -1964,6 +2185,15 @@
       "title": "Read version",
       "summary": "Read the table as it was at an earlier version number.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -2143,6 +2373,15 @@
       "title": "Read timestamp",
       "summary": "Read the table as it was at a point in time.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -2255,6 +2494,15 @@
       "title": "Read past retention",
       "summary": "Learn what happens when you read a version whose files were already vacuumed.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "fails",
@@ -2349,6 +2597,15 @@
       "title": "List history",
       "summary": "List the commits that changed a table, with their operations and versions.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -2560,6 +2817,15 @@
       "title": "History detail",
       "summary": "Show a table's current location, size, file count, and properties.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -2654,6 +2920,15 @@
       "title": "Restore version",
       "summary": "Roll a table back to an earlier version.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -2742,6 +3017,15 @@
       "title": "Shallow clone",
       "summary": "Make a new table that references another table's files without copying them.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -2830,6 +3114,15 @@
       "title": "Merge on write",
       "summary": "Add a write's new columns to the table's schema as part of the write.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -2918,6 +3211,15 @@
       "title": "Overwrite schema",
       "summary": "Replace a table's schema along with its data.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3006,6 +3308,15 @@
       "title": "Add column",
       "summary": "Add a column to an existing table's schema.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3094,6 +3405,15 @@
       "title": "Rename/drop column",
       "summary": "Rename or drop a column without rewriting the data files.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3182,6 +3502,15 @@
       "title": "Type widening",
       "summary": "Change a column to a wider type, such as int to long, without rewriting the data.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3270,6 +3599,15 @@
       "title": "Check constraint",
       "summary": "Add a CHECK constraint that rejects rows that violate it.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3342,6 +3680,15 @@
       "title": "Not null constraint",
       "summary": "Declare a column NOT NULL so writes with nulls fail.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3414,6 +3761,15 @@
       "title": "Generated columns",
       "summary": "Define a column whose value is computed from other columns on write.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3486,6 +3842,15 @@
       "title": "Identity columns",
       "summary": "Give a column unique values the table assigns on insert.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3558,6 +3923,15 @@
       "title": "Default columns",
       "summary": "Give a column a default value for writes that leave it out.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3598,6 +3972,15 @@
       "title": "Read change data",
       "summary": "Read the row-level changes (inserts, updates, deletes) between versions.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3686,6 +4069,15 @@
       "title": "Stream source/sink",
       "summary": "Use a table as a streaming source or sink.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "fails",
@@ -3774,6 +4166,15 @@
       "title": "Stream foreach batch merge",
       "summary": "Merge each micro-batch of a stream into a table.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "fails",
@@ -3862,6 +4263,15 @@
       "title": "Compact/optimize",
       "summary": "Rewrite many small files into fewer, larger ones.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -3950,6 +4360,15 @@
       "title": "Z-order",
       "summary": "Co-locate related values across files so filters skip more data.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4038,6 +4457,15 @@
       "title": "Clustering",
       "summary": "Cluster a table by chosen columns and let maintenance keep it clustered.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4126,6 +4554,15 @@
       "title": "Vacuum",
       "summary": "Delete data files that no version within the retention period still needs.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4214,6 +4651,15 @@
       "title": "Checkpoint",
       "summary": "Write a checkpoint so readers don't replay the whole commit log.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4302,6 +4748,15 @@
       "title": "Purge deletion vectors",
       "summary": "Rewrite files to physically remove rows marked deleted by deletion vectors.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4358,6 +4813,15 @@
       "title": "Generate manifest",
       "summary": "Generate manifest files so engines without Delta support can read the table.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4446,6 +4910,15 @@
       "title": "Repair table",
       "summary": "Repair a table whose log references data files that no longer exist.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "fails",
@@ -4534,6 +5007,15 @@
       "title": "Convert to Delta",
       "summary": "Turn an existing Parquet directory into a Delta table in place.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4622,6 +5104,15 @@
       "title": "Enable feature",
       "summary": "Turn on a table feature, which may raise the table's protocol version.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4710,6 +5201,15 @@
       "title": "Drop feature",
       "summary": "Remove a table feature so older readers and writers can use the table again.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4798,6 +5298,15 @@
       "title": "Feature properties",
       "summary": "Read and set a table's properties.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -4896,6 +5405,15 @@
       "title": "S3 multi-writer",
       "summary": "Let several writers commit to the same table on S3 safely.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -4968,6 +5486,15 @@
       "title": "Azure/GCS",
       "summary": "Read and write tables on Azure Data Lake Storage or Google Cloud Storage.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "documented",
@@ -5056,6 +5583,15 @@
       "title": "Unity Catalog",
       "summary": "Create, read, and write tables through Unity Catalog instead of by path.",
       "request": null,
+      "family": null,
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "deltaSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-sql": {
           "status": "tested",
@@ -5145,5 +5681,42 @@
         }
       }
     }
-  ]
+  ],
+  "verifiedEdges": [
+    {
+      "source": "deltaSpark",
+      "kind": "implements",
+      "target": "deltaSpec",
+      "interfaces": [
+        "spark-python",
+        "spark-sql"
+      ],
+      "journeys": [
+        "catalog.unity",
+        "create.table",
+        "dml.delete",
+        "dml.update",
+        "feature.properties",
+        "history.detail",
+        "history.list",
+        "read.scan",
+        "read.version",
+        "write.append"
+      ]
+    },
+    {
+      "source": "duckdb",
+      "kind": "consumes",
+      "target": "deltaSpec",
+      "interfaces": [
+        "duckdb-sql"
+      ],
+      "journeys": [
+        "catalog.unity",
+        "read.scan",
+        "write.append"
+      ]
+    }
+  ],
+  "diagnostics": []
 }

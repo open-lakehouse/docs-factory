@@ -43,11 +43,18 @@ export interface CompatCell {
   evidence: CompatEvidence[];
 }
 
+/** Participant role → requirement edge (consumes / implements / realizes) → model ids. */
+export type CompatRequirements = Record<string, Record<string, string[]>>;
+
 export interface CompatJourney {
   id: string;
   title: string;
   summary: string;
   request: string | null;
+  family: string | null;
+  /** The model asset kind it acts on, resolved by docsnip from family and defaults. */
+  asset: string | null;
+  requires: CompatRequirements;
   /** Keyed by interface; an interface nothing says anything about is absent. */
   cells: Record<string, CompatCell>;
 }
@@ -67,12 +74,37 @@ export interface CompatTable {
   rows: string[];
 }
 
+/** A model edge a gating claim exercises. */
+export interface CompatVerifiedEdge {
+  source: string;
+  kind: string;
+  target: string;
+  interfaces: string[];
+  journeys: string[];
+}
+
+/** Report-only model gaps (`docsnip compat.diagnostics`); `kind` names the shape. */
+export interface CompatDiagnostic {
+  kind: "unmodeled" | "missing-edge" | "unmigrated" | "unverified-asset";
+  interface?: string;
+  source?: string;
+  target?: string;
+  asset?: string;
+  journeys?: string[];
+}
+
 export interface CompatMatrix {
+  /** Bumped when a field is removed or changes meaning. */
+  version: number;
   project: string;
   spec: string | null;
   interfaces: CompatInterface[];
   tables: CompatTable[];
+  /** The journeys grouped by asset, shaped like tables; `id` is the asset's model id. */
+  assets: CompatTable[];
   journeys: CompatJourney[];
+  verifiedEdges: CompatVerifiedEdge[];
+  diagnostics: CompatDiagnostic[];
 }
 
 const modules = import.meta.glob<CompatMatrix>("../../content/*/compatibility.json", {

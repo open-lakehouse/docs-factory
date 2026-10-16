@@ -1,0 +1,65 @@
+name: Trestle
+
+# The committed catalog snapshot must be what the pinned Trestle prints. Only
+# this job builds Trestle; `docsnip check` (CI's content job) reads the
+# committed snapshot and needs no cargo.
+on:
+  push:
+    branches: [main]
+    paths: &trestle-paths
+      - "envs/trestle.toml"
+      - "architecture/integrations/**"
+      - "architecture/dist/trestle-*.json"
+      - ".github/workflows/trestle.yml"
+  pull_request:
+    paths: *trestle-paths
+  schedule:
+    - cron: "41 4 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: trestle-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+        with:
+          enable-cache: true
+      - uses: ./.github/actions/pypi-public
+      - run: uv sync --all-packages
+      - id: pin
+        run: uv run docsnip trestle --pin | awk '{print "git="$1"\nrev="$2"\npackage="$3}' >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        id: cache
+        with:
+          path: .tools/trestle
+          key: trestle-${{ steps.pin.outputs.rev }}
+      - name: Install the pinned Trestle
+        if: steps.cache.outputs.cache-hit != 'true'
+        env:
+          GIT: ${{ steps.pin.outputs.git }}
+          REV: ${{ steps.pin.outputs.rev }}
+          PACKAGE: ${{ steps.pin.outputs.package }}
+        run: |
+          rustup toolchain install stable --profile minimal && rustup default stable
+          TRESTLE_REVISION="$REV" cargo install --git "$GIT" --rev "$REV" --locked --root .tools/trestle "$PACKAGE"
+          echo "$REV" > .tools/trestle/.rev
+      - name: Re-snapshot the catalog
+        run: .tools/trestle/bin/trestle env list-modules --json > architecture/dist/trestle-catalog.json
+      - name: Fail on a stale snapshot
+        run: |
+          if ! git diff --exit-code architecture/dist/trestle-catalog.json; then
+            echo "::error::The catalog snapshot doesn't match the pinned Trestle. Run 'just trestle-catalog' and commit the result."
+            exit 1
+          fi
+      - name: Check the join
+        run: uv run docsnip trestle

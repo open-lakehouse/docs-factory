@@ -16,6 +16,14 @@ referenced by a pinned ref (never copied). See [`CONVENTIONS.md`](./CONVENTIONS.
   path. → graduated to a brief: `blogs/unity-catalog-storage/`.
   `src:` Google Doc "Unity Catalog Concepts" (tab "Storage") · `repos:` unitycatalog
 
+- [x] **The Composable Lakehouse series** — what a "databrick" is, then one post
+  per Trestle-generated lakehouse configuration (composable → governed →
+  observable → interoperable → portable → interactive → agentic), each tied to
+  the C4 model. → graduated to idea folders: `blogs/what-is-a-databrick/`,
+  `blogs/{composable,governed,observable,interoperable,portable,interactive,agentic}-lakehouse/`
+  (series: The Composable Lakehouse).
+  `repos:` trestle (`crates/stack-topology`) · `src:` architecture/, docs/design/trestle-model-convergence.md
+
 - [ ] **Delta Kernel, explained by reading the Rust** — walk the scan API to
   show how an engine reads a Delta table without reimplementing the protocol.
   `repos:` delta-kernel-rs, delta-rs · `audience:` Rust engineers who use

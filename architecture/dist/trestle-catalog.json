@@ -4,7 +4,7 @@
   "generator": {
     "name": "trestle",
     "version": "0.0.9",
-    "revision": "16bf943d44b35d2373cd90b02893932585f77947"
+    "revision": "c643cf0246b79973af90bdc3d1686581e1bd566f"
   },
   "catalog": {
     "baseline": "olai-stack-topology@0.0.5",

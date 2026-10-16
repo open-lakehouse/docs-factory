@@ -395,7 +395,8 @@ checks in the service lane.
 **Done when** `uc-aws` renders reproducibly, appears in the model, and passes
 the aws scripts, with no claim weakened. Readers don't see it yet.
 
-**Done (P5, against H1c).** `envs/uc-aws/` holds the recipe, a copy of the
+**Done (P5, against H1c).** **H1c** = `c643cf0246b79973af90bdc3d1686581e1bd566f`
+on Trestle `main` (trestle#144); `envs/trestle.toml` pins it. `envs/uc-aws/` holds the recipe, a copy of the
 image, the committed render, and `plan.json`. It runs Postgres, not H2 (design
 §10 #45). The diff against aws-sim (step 7) found five gaps, all fixed in Trestle
 as H1c, trestle#144 (#49): Envoy 1.38; `sts-shim` init; an envoy

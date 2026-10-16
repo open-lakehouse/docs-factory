@@ -584,6 +584,11 @@ while consolidating; revisit in review.
 | 52 | The re-render check runs in the Trestle workflow's job, sharing the cached install, not in a separate job | P5 | A second job that rebuilds Trestle |
 | 53 | aws-sim adopts Trestle's RustFS root keys (`rustfs-root`), because the DataFrame seed writes as the store's owner and Trestle's keys are constants | P5 | A Trestle root-key knob |
 | 54 | `UC_DOCS_ROOT` is opened by a Trestle UC knob, `writable_mounts` (H1d, trestle#145): a one-shot runs `chmod 0777` on listed paths, which are listed rather than parsed because `${VAR:-default}` contains colons | P5 | Harness pre-creates the directory; parse targets from `extra_mounts` |
+| 55 | A generated environment's bundle is a manifest: `docsnip envs --fix` writes `files` (plan.json's rendered files plus each recipe `build` context, never `env.toml` or `plan.json`) into `environments.generated.json`, and the bundle ships exactly that, failing on an untracked entry | P6 (aws) | Bundle `git ls-files` minus a deny list; have JS read `plan.json` and `env.toml` |
+| 56 | The aws variant's hand-written files (`compose.aws.yaml`, `server.aws.properties`, all of `envs/aws-sim`) are deleted in the cutover PR; rollback is a revert | P6 (aws) | Keep them unregistered for a release |
+| 57 | `stands-in-for`, `DOCS_FACTORY_STAND_IN`, and `envs-pilot` go with the cutover (#47); `env-bundle-smoke` builds the reader archive, extracts it outside the checkout, starts `uc-aws` from it, and runs one page script with `client/host.env` exported | P6 (aws) | Keep the stand-in for the next variant |
+| 58 | uc-aws's Postgres data is a named volume, via a Trestle postgres `data = bind\|volume` knob (H1e, trestle#146): the bind mount under `.data/` survived the harness's `down -v`, so scripts shared one metastore, readers couldn't reset, and Linux left it owned by the container's uid | P6 (aws) | Harness deletes `.data`; accept and document |
+| 59 | `just bump-uc` re-renders every generated environment after the text rewrite, since recipes carry the image tag | P6 (aws) | Teach `docsnip bump-uc` to call Trestle |
 
 ## 11. Risks and open questions
 

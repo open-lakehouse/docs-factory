@@ -82,8 +82,10 @@ Each page has companions an agent can use without the HTML:
   `docsnip check` fails a served file that mentions repo paths or the harness.
 - **The environment bundle** at `/env/<bundle>.tar.gz`: the `envs/` folders the
   site declares (`env.dirs` in `emit/docs/sites/<site>.mjs`), re-rooted under one
-  folder so `include: ../aws-sim/…` still resolves, minus the factory READMEs,
-  plus a README generated from `envs/environments.yml`. The archive is
+  folder so relative references still resolve, minus the factory READMEs,
+  plus a README generated from `envs/environments.yml`. A generated environment
+  contributes only its runtime-file manifest (`files` in
+  `envs/environments.generated.json`), never its recipe or `plan.json`. The archive is
   byte-identical across runs and machines, so planSync rewrites it only when envs
   change. `/env/environments.json` lists each stack with its start and stop
   commands. A page gets the same commands for the stack its scripts need

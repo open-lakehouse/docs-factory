@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 next.
+**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 postgres next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -460,6 +460,19 @@ environment (which needs `embedded_metadata`).
 **Done when** no script names a hand-written compose file, the reader bundle
 ships generated environments only, emission needs neither Trestle nor Rust, and
 each variant can be rolled back to its previous files.
+
+**Done (P6, aws variant, against H1e).** **H1e** = trestle#146, a postgres
+`data` knob; uc-aws sets `data = "volume"` (design §10 #58). The 11 S3 scripts
+name `envs/uc-aws/compose.yaml`, and `compose.aws.yaml`, `server.aws.properties`,
+and `envs/aws-sim` are deleted (#56). Step 2 needed nothing new: the plan.json
+base URL landed in P5 (#48). Step 3: the bundle ships each generated
+environment's `files` manifest (#55), and `env-bundle-smoke` replaces
+`envs-pilot` (#57). Step 4: `just bump-uc` re-renders (#59), and the
+release-bump skill says so. Step 6: the §12 text is in `architecture/README.md`,
+the update-architecture skill, `content/README.md`, and `AGENTS.md`;
+`docs/design/agentic-docs.md` waits for the last variant. The stand-in
+mechanism is gone, so the postgres and default variants are verified by
+repointing on their own branch and letting the service lane run them.
 
 ## P7 — Reader and agent surfaces (docs-factory)
 

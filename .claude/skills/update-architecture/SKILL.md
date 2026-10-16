@@ -46,9 +46,14 @@ With no args, do a full reconciliation pass across all modeled repos.
      repo/service/infra names** ever appear here. The technology catalog is
      logical too but names specs and software, including our own first-party
      software (`headwaters`).
-   - **Deployment (concrete):** our repos/services as nodes that `instanceOf`
-     their implementation where one is cataloged, else the capability they
-     play, in the `trustedCompute` environment.
+   - **Deployment (concrete):** configured occurrences. Our repos/services are
+     nodes that `instanceOf` their implementation where one is cataloged, else
+     the capability they play, in the authored `trustedCompute` reference
+     scenario. Generated docs environments (`deployment/generated/`,
+     `#generated`) come from a pinned Trestle plan: never hand-edit them; change
+     `envs/<name>/env.toml` and run `just env-render <name>`.
+   Implementation and specification edges are architectural relationships,
+   not release-specific proof of support (that is a compat claim).
    A repo change almost always edits the **deployment** layer, not the logical one.
    Only touch logical files if a genuinely new *capability* or *asset kind*
    (not a new service) appears. The zero-trust points (PAP/PDP/PEP/PIP/PA) are

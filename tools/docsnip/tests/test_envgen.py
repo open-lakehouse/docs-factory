@@ -160,6 +160,27 @@ def test_fix_projects_nodes_edges_and_facts(tmp_path):
     assert facts["environments"]["uc-aws"] == {
         "ports": [8080, 9000],
         "client-env": _PLAN["client"]["host"],
+        "services": [
+            {"node": "envoy", "element": "envoy", "role": "gateway", "url": None},
+            {
+                "node": "postgres",
+                "element": "postgresql",
+                "role": "relational_db",
+                "url": None,
+            },
+            {
+                "node": "rustfs",
+                "element": "rustfs",
+                "role": "object_store",
+                "url": "http://localhost:9000",
+            },
+            {
+                "node": "unity-catalog",
+                "element": "unityCatalogOSS",
+                "role": "data_catalog",
+                "url": "http://localhost:8080/api/2.1/unity-catalog",
+            },
+        ],
         "files": [],
     }
     assert envgen.check(root) == []
@@ -211,7 +232,18 @@ def test_a_generated_entry_cant_author_derived_facts(tmp_path):
         "generated: uc-aws", "generated: uc-aws\n    ports: [1]"
     )
     root = _fixed(tmp_path, registry=registry)
-    with pytest.raises(ValueError, match="takes ports, client-env, and files"):
+    with pytest.raises(
+        ValueError, match="takes ports, client-env, services, and files"
+    ):
+        environments.load(root)
+
+
+def test_a_generated_entry_cant_author_services(tmp_path):
+    registry = _REGISTRY.replace(
+        "generated: uc-aws", "generated: uc-aws\n    services: []"
+    )
+    root = _fixed(tmp_path, registry=registry)
+    with pytest.raises(ValueError, match="services"):
         environments.load(root)
 
 

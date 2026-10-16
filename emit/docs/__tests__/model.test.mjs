@@ -7,9 +7,15 @@ const model = readModel({
       title: "Delta Lake",
       description: { txt: "Open table format.\nACID over object storage." },
       links: [{ url: "https://delta.io" }],
+      tags: ["public"],
     },
-    "lakehouse.catalog": { title: "Catalog", summary: { txt: "The metadata authority." } },
-    "lakehouse.table": { title: "Table" },
+    "lakehouse.catalog": {
+      title: "Catalog",
+      summary: { txt: "The metadata authority." },
+      tags: ["public"],
+    },
+    "lakehouse.table": { title: "Table", tags: ["public"] },
+    hydrofoil: { title: "Hydrofoil", links: [{ url: "https://example.com/hydrofoil" }] },
   },
   views: {
     flow: { title: "A flow", description: { txt: "How it\nworks." } },
@@ -44,6 +50,11 @@ test("model links prefer the explaining page, then the element's own link", () =
   });
   expect(resolve("lakehouse.table")).toBeNull();
   expect(resolve("unknown")).toBeNull();
+});
+
+test("an element without #public unwraps, even with an explainer or a link", () => {
+  const resolve = modelLinkResolver(model, new Map([["hydrofoil", "/explanation/hydrofoil"]]));
+  expect(resolve("hydrofoil")).toBeNull();
 });
 
 const resolveExternal = modelLinkResolver(model, new Map());

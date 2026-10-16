@@ -71,6 +71,7 @@ import { docsSiteTarget } from "../targets/docs-site.mjs";
 import mdTwin, { LIKEC4_ASSET_BASE } from "../targets/md-twin.mjs";
 import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
+  renderConcepts,
   renderLlmsFull,
   renderLlmsIndex,
   renderRobots,
@@ -80,7 +81,7 @@ import {
 } from "./discovery.mjs";
 import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
-import { loadModel, modelLinkResolver, viewAltText } from "./model.mjs";
+import { loadModel, loadProjection, modelLinkResolver, viewAltText } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
 import { searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
@@ -168,6 +169,8 @@ export async function emitDocs({ site, drafts = false }) {
       return { absPath, meta, body, identity: docIdentity(absPath, meta) };
     });
     const selected = all.filter((p) => isIncluded(p.meta));
+    // Public payloads read the ready-only projection, even in a --drafts preview.
+    const projection = loadProjection(site, all);
     const routes = new Set(selected.map((p) => hrefFor(p.identity)));
 
     // 2. Navigation. Validated against every page so an orphan still fails here.
@@ -240,7 +243,8 @@ export async function emitDocs({ site, drafts = false }) {
           throw new Error(`envs/environments.yml: ${key}: guide ${env.guide} is not a page`);
       }
       files.set(`public/env/${site.env.bundle}.tar.gz`, envBundle.archive);
-      files.set("public/env/environments.json", `${JSON.stringify(envBundle.index, null, 2)}\n`);
+      const index = { ...envBundle.index, concepts: `${origin}/concepts.json` };
+      files.set("public/env/environments.json", `${JSON.stringify(index, null, 2)}\n`);
     }
 
     // 3. Pages.
@@ -260,6 +264,7 @@ export async function emitDocs({ site, drafts = false }) {
     const altText = (entry) =>
       entry.altText || (entry.likec4 && viewAltText(model, entry.likec4)) || "";
     const pages = [];
+    const environments = new Map();
     const search = [];
     const manifestPages = {};
     let hasLikeC4 = false;
@@ -289,6 +294,7 @@ export async function emitDocs({ site, drafts = false }) {
       } catch (err) {
         throw new Error(`${relative(REPO_ROOT, absPath)}: ${err.message}`);
       }
+      if (environment) environments.set(route, environment);
       const guide =
         environment &&
         environmentGuide(environment, {
@@ -297,6 +303,8 @@ export async function emitDocs({ site, drafts = false }) {
           self: route,
         });
       const guideAt = (base) => guide && { href: `${base}${guide.href}`, title: guide.title };
+      const servicesAt = (base) =>
+        environment ? projection.serviceLinks(environment.key, { base, route }) : [];
       const diataxis = page.meta.diataxis ?? identity.bucket;
       const resolve =
         envBundle &&
@@ -319,7 +327,10 @@ export async function emitDocs({ site, drafts = false }) {
           ...linkPlugins(route),
           [remarkScriptLinks, { scripts: scriptUrls }],
           [remarkStripSourceMeta],
-          [remarkPrerequisitesEnv, { environment, guide: guideAt(""), diataxis, resolve }],
+          [
+            remarkPrerequisitesEnv,
+            { environment, guide: guideAt(""), diataxis, resolve, services: servicesAt("") },
+          ],
         ],
       });
       likec4Exported ||= rendered.likec4Dir !== null;
@@ -359,14 +370,27 @@ export async function emitDocs({ site, drafts = false }) {
         plugins: [
           ...linkPlugins(route),
           [remarkAbsoluteLinks, { origin }],
-          [remarkPrerequisitesEnv, { environment, guide: guideAt(origin), diataxis, resolve }],
+          [
+            remarkPrerequisitesEnv,
+            {
+              environment,
+              guide: guideAt(origin),
+              diataxis,
+              resolve,
+              services: servicesAt(origin),
+            },
+          ],
         ],
       });
       let twinOut = injectCanonical(twin.output, canonicalUrl(identity, origin, hrefFor));
       if (owned.length) {
         const fm = [
           companionsFrontmatter(owned, origin),
-          environmentFrontmatter(environment, `${origin}/env/environments.json`),
+          environmentFrontmatter(
+            environment,
+            `${origin}/env/environments.json`,
+            servicesAt(origin).map((x) => x.id),
+          ),
         ].filter(Boolean);
         twinOut = prependSection(
           injectFrontmatter(twinOut, fm.join("\n")),
@@ -465,7 +489,10 @@ export async function emitDocs({ site, drafts = false }) {
       },
     };
     for (const p of ordered) {
-      heads[p.route] = docPageHead(site, p);
+      heads[p.route] = docPageHead(site, p, {
+        projection,
+        environment: environments.get(p.route) ?? null,
+      });
     }
     for (const a of apis) {
       heads[a.route] = {
@@ -512,6 +539,25 @@ export async function emitDocs({ site, drafts = false }) {
           bundleUrl: envBundle.bundleUrl,
           guide: envBundle.guide && `${origin}${envBundle.guide.route}.md`,
         },
+        concepts: true,
+      }),
+    );
+    files.set(
+      "public/concepts.json",
+      renderConcepts(projection, {
+        title: site.title,
+        origin,
+        bundle: envBundle?.bundleUrl ?? null,
+        environments: envBundle
+          ? envBundle.index.environments.map(({ key, title }) => {
+              const [bucket, slug] = (registry[key].guide ?? "").split("#")[0].split("/");
+              const anchor = registry[key].guide?.split("#")[1];
+              const guide = registry[key].guide
+                ? `${routeFor(bucket, slug)}${anchor ? `#${anchor}` : ""}`
+                : routeFor(site.env.guide.bucket, site.env.guide.slug);
+              return { key, title, guide };
+            })
+          : [],
       }),
     );
     files.set(

@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 done (aws, postgres folded into uc-aws, default generated in place); P7 next.
+**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 done (aws, postgres folded into uc-aws, default generated in place); P7a done (reader surfaces); P7b next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -500,7 +500,9 @@ bundle ships generated environments only, and emission reads committed files
 
 ## P7 — Reader and agent surfaces (docs-factory)
 
-**Depends on** P2 (model-only parts) and P5 (environment parts).
+**Depends on** P2 (model-only parts) and P5 (environment parts). Split in two
+PRs (design §10 #64): **P7a**, steps 1–4 (reader surfaces), and **P7b**, steps
+5–6 (agent queries and docsnip reports).
 
 1. "What's in this environment" in `:::prerequisites`
    (`site/src/content-core/environment.mjs`, `emit/docs`), carried by twins.
@@ -526,6 +528,43 @@ and inspect the page text, twins, and public payloads.
 **Done when** a reader or agent can go page → script → environment →
 implementation → spec/capability → explanation using static artifacts, and the
 negative visibility fixtures pass.
+
+**Done (P7a, steps 1–4, against H1e).** The public selection is a LikeC4
+`#public` tag (§10 #65), on the 30 elements ready pages cite or docs
+environments run. content-core's `publicProjection`
+(`site/src/content-core/projection.mjs`) is the one rule every public payload
+goes through: #public elements, ready pages of the site, edges with both ends
+public, journeys proven by a working proof on a ready page of the site, and
+records rebuilt from allow-listed fields (#67). Step 1: `docsnip envs --fix`
+adds each environment's `services` (node, element, role, gateway URL) to
+`environments.generated.json` (#66), and `:::prerequisites` lists the public
+ones, on the site, in the twin (plus `environment.elements`), and in the
+review app. Step 2: JSON-LD `about`/`mentions` are `DefinedTerm`s or
+`SoftwareApplication`s keyed into `concepts.json`, and a how-to or tutorial
+that runs an environment is also a `HowTo` with `tool` and `dependencies`
+(#68). Step 3: `/concepts.json` v1 (#69), linked from llms.txt, robots.txt,
+and environments.json. Step 4: a `model:` link to a non-public element
+unwraps (#67), drafts never feed a payload, even in a `--drafts` preview (#70),
+`emit/docs/__tests__/visibility.test.mjs` runs one negative corpus through
+every payload, and `docsnip check` reports ready pages citing non-public
+elements. On the UC site, 5 of 57 public edges are verified by 120 proven
+journey × interface pairs; the Delta site's ready proofs all sit on UC pages,
+so it publishes none yet.
+
+**P7b next** (steps 5–6): `docsnip query <explain|environment-for|examples-for|explain-selection|impact> <id> --json`
+over the committed artifacts, internal scope, each answer with stable IDs and
+an evidence state (*configured*: an environment's plan runs it; *tested in
+this revision*: a working proof on a ready page, compat current;
+*documented*: a ready page explains or references it; else *unknown*). A
+`#partial` edge or `scope: partial` role never satisfies a broader target, and
+a parent concern holds only when every facet is fully realized in the same
+environment. The impact report maps a changed module, element, or pin to
+environments, scripts by `compose` key, their pages and claims, citing pages,
+and views. The fixed task set runs as a pytest file with exact expected IDs,
+and a `.claude/skills/docs-query` skill names the queries. Step 6 adds two
+reports: a plan graph node with no `model`, and a concern no implementation
+realizes (decide whether facets count for `lakehouse.governance`); "no
+`appliesTo` edge" already exists.
 
 ## P8 (optional) — Trestle diagram annotations (Trestle repo)
 

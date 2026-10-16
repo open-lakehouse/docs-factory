@@ -39,6 +39,7 @@ from .frontmatter import (
     load_model_element_ids,
     load_page_worthy_elements,
     model_quality_gaps,
+    publication_gaps,
     validate,
 )
 from .scriptmeta import ScriptMetaError
@@ -137,6 +138,7 @@ def cmd_validate(p) -> int:
     errors.extend(fit.errors)
     quality = (
         model_quality_gaps(p["arch_model"])
+        + publication_gaps(p["arch_model"], content_pages, p["root"])
         + compat.model_gaps(p["root"])
         + joined.gaps
         + fit.reports

@@ -86,3 +86,11 @@ test("llms.txt points agents at the env bundle when the site has one", () => {
   expect(out).toContain("Setup guide: https://x.test/how-to/run-local-server.md.");
   expect(renderLlmsIndex([], SITE)).not.toContain("Local environment");
 });
+
+test("llms.txt links concepts.json when the site emits one", () => {
+  const opts = { ...SITE, origin: "https://x.test" };
+  expect(renderLlmsIndex([], opts)).not.toContain("concepts.json");
+  expect(renderLlmsIndex([], { ...opts, concepts: true })).toContain(
+    "- [Concepts](https://x.test/concepts.json): ",
+  );
+});

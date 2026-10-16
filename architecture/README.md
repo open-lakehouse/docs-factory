@@ -35,6 +35,12 @@ source-level implementation.
   `trustedCompute` stay separately identified. Implementation and
   specification edges are architectural relationships, not release-specific
   proof of support.
+- **Public by selection.** The docs sites publish only elements tagged
+  `#public` (concepts.json, JSON-LD, `model:` links), and an edge only when both
+  ends are. Tag an element when a reader-facing page cites it or a docs
+  environment runs it; a ready page citing an untagged element doesn't publish
+  it (`docsnip check` reports the citation). Keep governance facets, internal
+  services, and people untagged unless a page needs them.
 - **Ref-free.** Names and edges only — never a commit SHA or release tag.
 - **One model, many views.** Names and relationships are defined once and
   rendered through views. The `.likec4` files are the source of truth; `dist/` is

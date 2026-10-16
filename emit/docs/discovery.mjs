@@ -97,7 +97,7 @@ export function renderRobots(origin) {
     "User-agent: *",
     "Allow: /",
     `Sitemap: ${origin}/sitemap.xml`,
-    "# Machine-readable corpus: /llms.txt, /llms-full.txt, and per-page .md twins",
+    "# Machine-readable corpus: /llms.txt, /llms-full.txt, /concepts.json, and per-page .md twins",
     "# (the .md twins are noindex; this HTML is the canonical).",
     "",
   ].join("\n");
@@ -134,11 +134,12 @@ export function toEntry(
  * by Diátaxis quadrant (from their identity/meta); blogs go under a Blog section.
  * Each line links the canonical route and its `.md` twin. `apis` (api.mjs
  * apiEntries) link their OpenAPI spec instead of a twin. `environments`
- * (`{ bundleUrl, guide }`) adds the env bundle the runnable scripts need.
+ * (`{ bundleUrl, guide }`) adds the env bundle the runnable scripts need, and
+ * `concepts` the site's concepts.json.
  */
 export function renderLlmsIndex(
   entries,
-  { title, summary, origin = "", apis = [], environments = null },
+  { title, summary, origin = "", apis = [], environments = null, concepts = false },
 ) {
   const lines = [`# ${title}`, "", `> ${summary}`, ""];
   const bySection = Object.fromEntries(DIATAXIS.map((k) => [k, []]));
@@ -166,13 +167,17 @@ export function renderLlmsIndex(
     );
   }
 
-  // Resources (Phase 2 adds concepts.json here).
   lines.push(
     "## Resources",
     "",
     `- [Full-text corpus](${origin}/llms-full.txt): every page's Markdown twin concatenated.`,
     `- [Runnable scripts index](${origin}/scripts.json): CI-verified PEP 723 tutorial scripts + their runtime contracts.`,
   );
+  if (concepts) {
+    lines.push(
+      `- [Concepts](${origin}/concepts.json): the capabilities, specifications, and software these docs cover, how they relate, which edges a tested page proves, and what each local environment runs.`,
+    );
+  }
   if (environments) {
     const guide = environments.guide ? ` Setup guide: ${environments.guide}.` : "";
     lines.push(
@@ -182,6 +187,42 @@ export function renderLlmsIndex(
   lines.push("");
 
   return `${lines.join("\n").replace(/\s+$/, "")}\n`;
+}
+
+/**
+ * Render /concepts.json (pure over a content-core public projection): the
+ * site's public concepts with their typed edges, the docs environments and
+ * the public services each runs, and the journeys a ready page proves. An
+ * edge is `verified` when a working proof on this site exercises it.
+ * `environments` is `[{ key, title, guide }]` (guide a ready page's route, or
+ * null); `bundle` the env bundle's URL.
+ */
+export function renderConcepts(projection, { title, origin, bundle = null, environments = [] }) {
+  const body = {
+    version: 1,
+    site: { title, origin },
+    concepts: projection.elements().map(({ id, kind, title, summary, url, sameAs }) => ({
+      id,
+      kind,
+      title,
+      summary,
+      url,
+      sameAs,
+    })),
+    edges: projection.edges(),
+    environments: environments.map((env) => ({
+      key: env.key,
+      title: env.title,
+      bundle,
+      guide:
+        env.guide && projection.hasPage(env.guide.split("#")[0]) ? `${origin}${env.guide}` : null,
+      services: projection
+        .services(env.key)
+        .map((s) => ({ element: s.id, role: s.role, url: s.endpoint })),
+    })),
+    journeys: projection.journeys(),
+  };
+  return `${JSON.stringify(body, null, 2)}\n`;
 }
 
 /** Render /llms-full.txt (pure over entries + a body resolver, for testing). */

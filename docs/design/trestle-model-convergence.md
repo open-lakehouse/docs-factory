@@ -473,7 +473,8 @@ guarantees indexing or citations.
   from proven journeys; `mentions` takes resolved `model:` links. How-tos and
   tutorials get `tool` (the environment's implementations as
   `SoftwareApplication`, `sameAs` the element's link) and `requirements` (the
-  environment title and bundle link).
+  environment title and bundle link). As built (P7a, §10 #68), `requirements`
+  is `dependencies`: schema.org articles have no `requirements`.
 - **`concepts.json`** (`emit/docs/discovery.mjs`): logical and technology-catalog
   elements including concerns, with typed edges; `environments[]` as a public
   projection; verified journeys (interface × journey × asset, each linked to
@@ -593,6 +594,13 @@ while consolidating; revisit in review.
 | 61 | The default environment is generated in place, as `envs/unitycatalog` (`embedded_metadata`, `extra_mounts` + `writable_mounts` for `UC_DOCS_ROOT`), so its registry key `unitycatalog/compose.yaml` and the reader folder `uc-docs-env/unitycatalog` don't change; only the hand-written `compose.yaml` and `server.properties` go | P6 (default) | A new `uc-local` name, moving 20 scripts and their docstrings |
 | 62 | The default server sits behind the Envoy gateway too: every client path is under `/api/2.1/unity-catalog`, which the gateway routes, and the CLI runs in the container | P6 (default) | Publish UC's port directly |
 | 63 | The harness keeps the service-port lookup and the registry keeps authored `ports`/`client-env`, though no environment uses them now, for a future stack Trestle can't express | P6 (default) | Require `generated:` on every entry |
+| 64 | Split P7: P7a (steps 1–4, reader surfaces) ships first; P7b (steps 5–6, agent queries and docsnip reports) follows | settled (P7a) | One PR |
+| 65 | The public selection is a LikeC4 `tag public` on each element readers may see, tagged deliberately: what ready pages cite and what docs environments run. A ready page citing an untagged element doesn't publish it; `docsnip check` reports the citation | settled (P7a) | Derive it from ready `explains:` pages; a per-site allow-list file |
+| 66 | Environment services are registry facts: `docsnip envs --fix` writes `services` (node, element, role, the first gateway route's host URL) into `environments.generated.json`, still version 1 (additive), and a generated entry may not author them | P7a | JS reads `plan.json` (breaks #46) |
+| 67 | The projection runs in JS content-core (`publicProjection`), because it needs the site's routes; Python only reports. It rebuilds every record from allow-listed fields, since the inputs carry `canonicalDoc` metadata and proof script paths. A `model:` link to a non-public element unwraps to its label | settled (P7a) | In docsnip, emitting per-site JSON; keep the external link |
+| 68 | JSON-LD terms are `DefinedTerm`s (`SoftwareApplication` for implementations) with `@id` `<origin>/concepts.json#<id>`; a how-to or tutorial that runs an environment is `["TechArticle", "HowTo"]`, with `tool` from its public services and `dependencies` naming the environment and bundle | settled (P7a) | Plain TechArticle with tools under `mentions` |
+| 69 | `concepts.json` v1: public concepts, edges with `partial` and `verified`, environments with their public services, and journeys; an edge is `verified` only through a working proof on a ready page of this site | P7a | Verified from `verifiedEdges` as computed over every proof |
+| 70 | A `--drafts` preview keeps linking draft explainers, but every public payload (service lists, JSON-LD, `concepts.json`) uses the ready-only projection, and the review app's Head tab does too | settled (P7a) | Ready-only for links too |
 
 ## 11. Risks and open questions
 

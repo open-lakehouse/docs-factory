@@ -135,6 +135,47 @@ def model_quality_gaps(model_json: Path) -> list[str]:
     return gaps
 
 
+# The positive selection the docs sites publish from (specification.likec4).
+PUBLIC_TAG = "public"
+
+
+def publication_gaps(model_json: Path, pages: list[Page], root: Path) -> list[str]:
+    """What the docs sites will drop or publish bare, one line per finding.
+
+    A ready page's ``explains:`` / ``references:`` / inline ``model:`` id that
+    lacks ``#public`` unwraps to its label and stays out of JSON-LD and
+    concepts.json. A ``#public`` element with no description publishes no
+    summary. Reported, not failing: tagging an element public is a deliberate
+    decision for the model's owner.
+    """
+    if not model_json.is_file():
+        return []
+    elements = json.loads(model_json.read_text()).get("elements") or {}
+    public = {
+        eid for eid, el in elements.items() if PUBLIC_TAG in (el.get("tags") or [])
+    }
+    gaps = []
+    for page in pages:
+        if page.meta.get("status") != "ready":
+            continue
+        cited = effective_reference_ids(page.meta) | set(
+            MODEL_LINK_RE.findall(page.body)
+        )
+        for eid in sorted(cited & elements.keys() - public):
+            rel = (
+                page.path.relative_to(root)
+                if page.path.is_relative_to(root)
+                else page.path
+            )
+            gaps.append(
+                f"  - {rel}: cites {eid}, which isn't #public, so the site drops it"
+            )
+    for eid in sorted(public):
+        if not elements[eid].get("description") and not elements[eid].get("summary"):
+            gaps.append(f"  - {eid}: #public with no description")
+    return gaps
+
+
 def _as_str_list(value: object) -> list[str]:
     if isinstance(value, list):
         return [v for v in value if isinstance(v, str)]

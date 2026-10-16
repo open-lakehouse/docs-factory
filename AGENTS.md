@@ -83,7 +83,9 @@ research/         existing research reports (leave alone)
    approval. Reviewers can also request missing content under a nav section; an
    accepted request becomes a `planned:` slot (see `content/README.md`). An
    explanation page also declares `explains: <c4-element-id>` (its canonical
-   model concept); see `content/README.md`.
+   model concept); see `content/README.md`. The emitted sites publish only
+   model elements tagged `#public`: a ready page citing another element
+   doesn't publish it.
 
 6. **Richness is a property of the renderer.** Blog constructs (`:::tip`, `::::journey`,
    LikeC4 diagrams) degrade to plain Markdown on GitHub; the preview upgrades them.

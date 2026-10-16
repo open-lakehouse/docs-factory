@@ -39,7 +39,9 @@ With no args, do a full reconciliation pass across all modeled repos.
    release tag.
 4. **Minimal patches.** Change the fewest lines. Preserve `metadata.canonicalDoc`
    on logical elements and `metadata.sourceRepo` + GitHub `link` on deployment
-   services. Tags come first in an element body.
+   services. Tags come first in an element body. `#public` is a publication
+   decision, not a structural fact: never add or drop it while reconciling a
+   repo; leave it to the PR that adds or removes the page citing the element.
 5. **Respect the layering.** The model is layered:
    - **Logical (abstract):** technology-agnostic capabilities, concerns
      (governance, lineage, observability), and asset kinds. **NO

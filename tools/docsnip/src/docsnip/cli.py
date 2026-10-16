@@ -140,6 +140,7 @@ def cmd_validate(p) -> int:
         model_quality_gaps(p["arch_model"])
         + publication_gaps(p["arch_model"], content_pages, p["root"])
         + compat.model_gaps(p["root"])
+        + trestle.concern_gaps(p["root"])
         + joined.gaps
         + fit.reports
     )

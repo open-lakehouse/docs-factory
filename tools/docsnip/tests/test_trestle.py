@@ -349,3 +349,56 @@ def test_committed_join_is_clean():
     if not (root / trestle.CATALOG).is_file():
         pytest.skip("no committed Trestle catalog snapshot")
     assert trestle.check(root).errors == []
+
+
+def _concerns_repo(tmp_path: Path, relations: dict) -> Path:
+    dist = tmp_path / "architecture" / "dist"
+    dist.mkdir(parents=True)
+    elements = {
+        "gov": {"kind": "concern"},
+        "gov.authn": {"kind": "concern"},
+        "gov.authz": {"kind": "concern"},
+        "lineage": {"kind": "concern"},
+        "olSpec": {"kind": "openSpecification"},
+        "idp": {"kind": "implementation"},
+        "policy": {"kind": "implementation"},
+        "tracker": {"kind": "implementation"},
+    }
+    (dist / "model.json").write_text(
+        json.dumps({"elements": elements, "relations": relations})
+    )
+    return tmp_path
+
+
+def _rel(kind: str, source: str, target: str, *tags: str) -> dict:
+    return {
+        "kind": kind,
+        "source": {"model": source},
+        "target": {"model": target},
+        "tags": list(tags),
+    }
+
+
+def test_concern_gaps_roll_facets_up_and_flag_partial_leaves(tmp_path):
+    root = _concerns_repo(
+        tmp_path,
+        {
+            "r1": _rel("realizes", "idp", "gov.authn"),
+            "r2": _rel("realizes", "policy", "gov.authz", "partial"),
+            "r3": _rel("specifies", "olSpec", "lineage"),
+            "r4": _rel("implements", "tracker", "olSpec"),
+        },
+    )
+    # gov has no realizes edge of its own; its facets carry it.
+    assert trestle.concern_gaps(root) == [
+        "  - gov.authz (concern): realized only #partial (policy)"
+    ]
+
+
+def test_concern_gaps_name_a_parent_missing_a_facet_and_a_bare_leaf(tmp_path):
+    root = _concerns_repo(tmp_path, {"r1": _rel("realizes", "idp", "gov.authn")})
+    assert trestle.concern_gaps(root) == [
+        "  - gov (concern): no implementation realizes facet gov.authz",
+        "  - gov.authz (concern): no implementation realizes it",
+        "  - lineage (concern): no implementation realizes it",
+    ]

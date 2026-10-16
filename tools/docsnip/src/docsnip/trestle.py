@@ -233,6 +233,53 @@ def backing(model: Model, ref: str, target: str) -> list[tuple[str, str, str]]:
     return found
 
 
+def realizers(model: Model, target: str) -> dict[str, list[tuple[str, str, str]]]:
+    """Implementation id → its :func:`backing` edges to ``target``."""
+    impls = sorted(
+        {s for k, s, _ in model.edges if k in ("realizes", "implements")}
+        & {e for e, kind in model.kinds.items() if kind == "implementation"}
+    )
+    return {i: edges for i in impls if (edges := backing(model, i, target))}
+
+
+def facets(model: Model, concern: str) -> list[str]:
+    """The concerns directly nested under ``concern``."""
+    prefix = concern + "."
+    return sorted(
+        e
+        for e, kind in model.kinds.items()
+        if kind == "concern" and e.startswith(prefix) and "." not in e[len(prefix) :]
+    )
+
+
+def concern_gaps(root: Path) -> list[str]:
+    """Concerns nothing realizes, one line each. Report-only.
+
+    A parent concern is realized through its facets, so it is reported only for
+    a facet with no realizer; a facet realized only ``#partial`` is reported on
+    its own line."""
+    model = load_model(root)
+    partial = _partial_edges(root)
+    gaps = []
+    for eid in sorted(e for e, kind in model.kinds.items() if kind == "concern"):
+        if parts := facets(model, eid):
+            bare = [f for f in parts if not realizers(model, f)]
+            if bare:
+                gaps.append(
+                    f"  - {eid} (concern): no implementation realizes facet "
+                    f"{', '.join(bare)}"
+                )
+            continue
+        found = realizers(model, eid)
+        if not found:
+            gaps.append(f"  - {eid} (concern): no implementation realizes it")
+        elif all(e in partial for edges in found.values() for e in edges):
+            gaps.append(
+                f"  - {eid} (concern): realized only #partial ({', '.join(found)})"
+            )
+    return gaps
+
+
 @dataclasses.dataclass
 class Report:
     errors: list[str]

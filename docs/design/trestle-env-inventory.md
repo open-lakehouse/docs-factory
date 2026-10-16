@@ -168,6 +168,37 @@ repeated as image tags (`compose.yaml` `init-storage`, `image/Dockerfile`
 `rustfs/rustfs:1.0.1`, `eclipse-temurin:17-jdk-noble`, `python:3.13-alpine`.
 `amazon/aws-cli:latest` and `envoyproxy/envoy:v1.38-latest` float.
 
+## `envs/uc-aws/` — the generated stand-in (P5)
+
+Rendered by Trestle from `envs/uc-aws/env.toml`; it stands in for
+`compose.aws.yaml` (`stands-in-for` in `envs/environments.yml`) and isn't in
+the reader bundle yet. Metadata lives in Postgres, not H2: at H1b
+`embedded_metadata` also drops the object-store demand, so H2 plus S3 can't be
+expressed, and the scripts don't depend on the metadata store. UC is reached
+through the gateway (`envoy` publishes `8080:10000` and `9000:9000`); the UC
+container only `expose`s 8080, so the harness takes the base URL from
+`plan.json`'s host client env.
+
+Parity with `aws-sim` and `compose.aws.yaml`, after H1c (trestle#144):
+
+| aws-sim / compose.aws.yaml | Rendered | Status |
+|---|---|---|
+| Envoy `v1.38-latest` | was `v1.34-latest` | fixed in H1c (default bumped) |
+| `sts-shim` `init: true` | was missing | fixed in H1c |
+| No host :9901 | Envoy admin published on the host | fixed in H1c (`publish_admin = "false"`) |
+| One bucket, `uc-docs` | an extra `unity` bucket, aliases, cert names | fixed in H1c (UC `bucket` knob) |
+| `x-amz-bucket-region: us-east-1` on S3 responses | missing; every Iceberg REST write failed with "Could not resolve the AWS region for S3 bucket" | fixed in H1c (impersonated-host `response_headers`) |
+| Root keys `aws-sim-root` | `rustfs-root` | equivalent: pages use vended credentials |
+| `rustfs-init` restarts never; inline env | `restart: on-failure`; `env_file` | equivalent |
+| H2 metadata, `init-storage` chmods `UC_DOCS_ROOT` | Postgres; no `init-storage` | Postgres accepted; the chmod question is settled by the Linux pilot (`envs-pilot`) |
+| Client env `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` | also `AWS_ENDPOINT_URL_S3`, `AWS_REGION`, `UNITY_CATALOG_URL` | reader-visible at the P6 cutover |
+| Envoy healthcheck on admin `/ready` | none; services gate on their own healthchecks | equivalent for `up --wait` |
+
+Runs against it (macOS, Colima): the four Iceberg REST scripts and the two
+`bin/uc` CLI scripts pass. The five Python SDK and DataFrame scripts couldn't
+resolve `unitycatalog-client==0.7.0` through the internal package proxy, so
+their first run is the `envs-pilot` CI job on public PyPI.
+
 ## Gaps → phases
 
 Every P3 row shipped in H1b (P3b, trestle#143); the knob table is in the
@@ -183,11 +214,11 @@ Every P3 row shipped in H1b (P3b, trestle#143); the knob table is in the
 | `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` client env | `rustfs` `generic_endpoint_env = true` — done | P5 |
 | UC 0.7.0 pin (Trestle defaults to 0.6.0) | Recipe takes the release pin; `bump-uc` rewrites `env.toml` and the `FROM` | P5, P6 step 4 |
 | aws-sim: RustFS root keys, `RUSTFS_SERVER_DOMAINS` incl. `localhost:9000`, TLS leaf + truststore, Envoy aliases, sts-shim | `localhost:<port>` server domain and UC `aws.*` keys done; diff the rest against Trestle's `rustfs` template | P5 step 7 |
-| Harness hard-codes `("unitycatalog", 8080)` | Host contract from `plan.json` | P6 step 2 |
+| Harness hard-codes `("unitycatalog", 8080)` | Host contract from `plan.json` — done for generated environments (P5) | P5, P6 step 2 |
 | Bundle = `git ls-files envs/<dir>/` | Explicit runtime-file manifest + archive smoke test | P6 step 3 |
 | `011-run-local-server` inlines the hand-written compose files | Repoint the fences at the generated render | P6 |
 | One compose project name (`uc-docs`) across variants | Keep a shared project name, or document the change | P5/P6 |
 | `server.aws.properties` with no storage bindings; pages register `lake_storage` / `lake` | `storage_bootstrap = "none"`, `master_role_arn` (`uc-master`) — done | P5 |
-| `rustfs-init` makes `uc-docs` | `[[selection.extra_resources]]` `object_store` `uc-docs` | P5 |
+| `rustfs-init` makes `uc-docs` | UC `bucket = "uc-docs"` (H1c), not an extra resource — done | P5 |
 
 Variant order for P6 stays aws (11) → postgres (1) → default (20).

@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 next.
+**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144); P6 next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -394,6 +394,35 @@ checks in the service lane.
 
 **Done when** `uc-aws` renders reproducibly, appears in the model, and passes
 the aws scripts, with no claim weakened. Readers don't see it yet.
+
+**Done (P5, against H1c).** `envs/uc-aws/` holds the recipe, a copy of the
+image, the committed render, and `plan.json`. It runs Postgres, not H2 (design
+§10 #45). The diff against aws-sim (step 7) found five gaps, all fixed in Trestle
+as H1c, trestle#144 (#49): Envoy 1.38; `sts-shim` init; an envoy
+`publish_admin` knob; a UC `bucket` knob, which replaces the extra resource;
+and `x-amz-bucket-region` on emulated S3, without which every Iceberg REST
+write failed. The parity table is in the
+[inventory](trestle-env-inventory.md#envsuc-aws--the-generated-stand-in-p5).
+
+`docsnip envs [--fix]` (`envgen.py`) writes
+`architecture/model/deployment/generated/uc-aws.likec4` (nodes `instanceOf`
+their implementations, edges keyed by plan edge, plus a `ucAwsDeploy` view)
+and `envs/environments.generated.json`, which both registry readers merge
+(#46). `docsnip check` fails when the plan's revision or catalog digest isn't
+the pin's, a node has no implementation, a projection is stale, or an
+environment has no `generated:` entry. Environment fit runs on every working
+claim against generated environments and their stand-ins (#47, #50).
+`just env-render [name]` re-renders. The Trestle workflow re-renders and
+fails on a diff, and `envs-pilot` runs the stood-in scripts on Linux without
+gating.
+
+Results: the re-render is deterministic, the fit check is clean, and locally
+the four Iceberg scripts and two CLI scripts pass on `uc-aws`. The five SDK and
+DataFrame scripts can't resolve `unitycatalog-client==0.7.0` through the
+internal proxy here; `envs-pilot` is their first run. The UC site's bundle and
+`environments.json` are unchanged. P6 then switches the aws variant over: it
+removes `stands-in-for`, repoints the 11 scripts, and accepts the larger
+client env.
 
 ## P6 — Switch readers to generated environments (docs-factory)
 

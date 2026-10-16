@@ -574,6 +574,14 @@ while consolidating; revisit in review.
 | 42 | `build` is a context relative to the render root (fragments are included with `project_directory: .`); `--out-dir` doesn't rebase it | P3b | Relative to the fragment; rebasing in the CLI |
 | 43 | S3 on host :9000 is `dedicated_listener_ports = [9000]`, not a new port knob | P3b | A `rustfs` host-port knob |
 | 44 | docsnip requires catalog v1 with `generator.revision` equal to the pin; the unversioned H1a shape is gone (supersedes #33's "both shapes") | P3b | Keep accepting both |
+| 45 | `uc-aws` keeps metadata in Postgres: at H1b `embedded_metadata` also drops the object-store demand, and no script depends on the metadata store | P5 | Split the knob in Trestle for H2 plus S3 |
+| 46 | Derived registry facts live in `envs/environments.generated.json`; `environments.py` and `registry.mjs` both merge it into a `generated: <name>` entry, which may not author `ports` or `client-env` | P5 | Rewrite `environments.yml`; have JS read `plan.json` |
+| 47 | A generated entry `stands-in-for` the hand-written key it will replace: the fit check holds it to that key's claims, and `DOCS_FACTORY_STAND_IN=<name>` runs those scripts on it. Removed at the cutover | P5 | A one-off compose override |
+| 48 | For a generated environment the harness takes the base URL from `plan.json`'s host client env (UC is only reachable through the gateway); hand-written ones keep the service-port lookup | P5 (pulled from P6 step 2) | Publish UC's port directly |
+| 49 | Parity gaps are fixed in Trestle as H1c (trestle#144): Envoy 1.38, `sts-shim` init, `publish_admin`, UC `bucket`, and `x-amz-bucket-region` on emulated S3, which UC 0.7 needs before it vends Iceberg table credentials | P5 | Patch the generated YAML |
+| 50 | Environment fit runs in `envgen.py` (it needs the plans), checks every provider participant (not `client`) of each working claim, fails on none, reports several; `binding:` stays deferred until a case arises | P5 | In `compat.py`; check every participant |
+| 51 | Each generated fragment also carries a deployment view (`<env>Deploy`), and each edge its plan key as `metadata { trestleEdge … }` | P5 | Keys in comments; no per-environment view |
+| 52 | The re-render check runs in the Trestle workflow's job, sharing the cached install, not in a separate job | P5 | A second job that rebuilds Trestle |
 
 ## 11. Risks and open questions
 

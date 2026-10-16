@@ -1,4 +1,5 @@
 ---
+
 title: Open table format
 summary: The metadata layer that turns a directory of data files in object storage into a transactional table.
 diataxis: explanation
@@ -6,11 +7,13 @@ project: open-lakehouse
 status: draft
 explains: lakehouse.tableFormat
 references:
-  - deltaSpec
-  - icebergSpec
-  - parquetSpec
-  - lakehouse.fileFormat
-  - lakehouse.objectStorage
+
+- deltaSpec
+- icebergSpec
+- parquetSpec
+- lakehouse.fileFormat
+- lakehouse.objectStorage
+
 ---
 
 An open table format is an open specification for a metadata layer that turns
@@ -47,16 +50,16 @@ of a table is a *snapshot*, and the metadata maps every snapshot to its list of
 data files and its schema.
 
 - **Reading** resolves the current snapshot to its file list and reads only
-  those files. Files written by an unfinished commit aren't in the list, so the
-  reader never sees them.
+those files. Files written by an unfinished commit aren't in the list, so the
+reader never sees them.
 - **Writing** produces new data files first, then commits new metadata that
-  points to them in a single atomic step. If two writers race, one commit lands
-  and the other has to retry against the new version.
+points to them in a single atomic step. If two writers race, one commit lands
+and the other has to retry against the new version.
 - **Older snapshots** stay readable until they're cleaned up. That gives time
-  travel and rollback, and comparing two snapshots tells an incremental job what
-  changed between them.
+travel and rollback, and comparing two snapshots tells an incremental job what
+changed between them.
 - **Schema and partitioning** live in the metadata, so they can change without
-  rewriting the files already written.
+rewriting the files already written.
 
 Something has to make that commit atomic. Often it's the storage system, through
 an atomic put-if-absent or rename. It can also be the catalog: in a
@@ -102,12 +105,4 @@ version 4 restructures table metadata into an
 [adaptive metadata tree](https://github.com/apache/iceberg/issues/16694) that
 makes frequent small commits cheaper, and a
 [Delta Lake protocol RFC](https://github.com/delta-io/delta/issues/6640) would
-adopt that tree as Delta's native metadata format. Neither has shipped.
-
-Where formats haven't converged, translation fills in. Delta Lake's UniForm
-writes Iceberg-compatible metadata for a Delta table over the same data files,
-and [Apache XTable](https://xtable.apache.org/) translates metadata among Delta,
-Iceberg, and Hudi without rewriting data.
-
-The specifications that specify this capability, and the implementations that
-realize them, are listed in the context panel alongside this page.
+adopt that tree as Delta's native metadata format.

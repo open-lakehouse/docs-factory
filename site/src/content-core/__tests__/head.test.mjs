@@ -94,6 +94,49 @@ test("jsonLd is TechArticle for docs and BlogPosting for blogs", () => {
   expect(blog.author).toEqual({ "@type": "Person", name: "Robert Pack" });
 });
 
+test("jsonLd names concepts as terms in the site's concepts.json", () => {
+  const set = `${ORIGIN}/concepts.json`;
+  const doc = jsonLd({
+    identity: { area: "docs", project: "delta", bucket: "how-to", slug: "x" },
+    meta: { title: "T", diataxis: "how-to" },
+    origin: ORIGIN,
+    concepts: {
+      about: [{ id: "lakehouse.table", kind: "asset", title: "Table", summary: null, sameAs: [] }],
+      mentions: [
+        {
+          id: "duckdb",
+          kind: "implementation",
+          title: "DuckDB",
+          summary: "An engine.",
+          url: "https://duckdb.org",
+          sameAs: [],
+        },
+      ],
+      tool: [],
+      dependencies: null,
+    },
+  });
+  expect(doc["@type"]).toBe("TechArticle");
+  expect(doc.about).toEqual([
+    {
+      "@type": "DefinedTerm",
+      "@id": `${set}#lakehouse.table`,
+      name: "Table",
+      inDefinedTermSet: { "@type": "DefinedTermSet", url: set },
+    },
+  ]);
+  expect(doc.mentions).toEqual([
+    {
+      "@type": "SoftwareApplication",
+      "@id": `${set}#duckdb`,
+      name: "DuckDB",
+      description: "An engine.",
+      url: "https://duckdb.org",
+    },
+  ]);
+  expect(doc.tool).toBeUndefined();
+});
+
 test("pageHead assembles a canonical, a .md twin alternate, and og/twitter tags", () => {
   const head = pageHead({
     identity: { area: "docs", project: "delta", bucket: "how-to", slug: "read" },

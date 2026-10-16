@@ -262,6 +262,7 @@ export async function emitDocs({ site, drafts = false }) {
     const altText = (entry) =>
       entry.altText || (entry.likec4 && viewAltText(model, entry.likec4)) || "";
     const pages = [];
+    const environments = new Map();
     const search = [];
     const manifestPages = {};
     let hasLikeC4 = false;
@@ -291,6 +292,7 @@ export async function emitDocs({ site, drafts = false }) {
       } catch (err) {
         throw new Error(`${relative(REPO_ROOT, absPath)}: ${err.message}`);
       }
+      if (environment) environments.set(route, environment);
       const guide =
         environment &&
         environmentGuide(environment, {
@@ -485,7 +487,10 @@ export async function emitDocs({ site, drafts = false }) {
       },
     };
     for (const p of ordered) {
-      heads[p.route] = docPageHead(site, p);
+      heads[p.route] = docPageHead(site, p, {
+        projection,
+        environment: environments.get(p.route) ?? null,
+      });
     }
     for (const a of apis) {
       heads[a.route] = {

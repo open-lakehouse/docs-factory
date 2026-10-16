@@ -15,6 +15,7 @@ import type { ShikiTransformer } from "shiki";
 import type { VFile } from "vfile";
 import { defineConfig, type Plugin } from "vite";
 import { docPageHead } from "../emit/docs/heads.mjs";
+import { loadProjection } from "../emit/docs/model.mjs";
 import { DOCS_SITES } from "../emit/docs/sites/index.mjs";
 import { loadEnvironmentResolver } from "./scripts/page-environments.mjs";
 import { isEmitted, isPublic, splitFrontmatter } from "./src/content-core/frontmatter.mjs";
@@ -189,19 +190,32 @@ function buildPageHeads(): Record<string, unknown> {
   const repoRoot = path.resolve(__dirname, "..");
   const out: Record<string, unknown> = {};
   for (const site of DOCS_SITES) {
-    for (const absPath of walkContent(path.join(repoRoot, "content", site.project))) {
-      const { meta, body } = splitFrontmatter(readFileSync(absPath, "utf8")) as {
-        meta: Record<string, unknown>;
-        body: string;
-      };
+    const pages = walkContent(path.join(repoRoot, "content", site.project)).map(
+      (absPath: string) => {
+        const source = readFileSync(absPath, "utf8");
+        const { meta, body } = splitFrontmatter(source) as {
+          meta: Record<string, unknown>;
+          body: string;
+        };
+        return { absPath, source, meta, body, identity: docIdentity(absPath, meta) };
+      },
+    );
+    // Ready-only, as the emitter's: the tab shows what the page will publish.
+    const projection = loadProjection(site, pages, { repoRoot });
+    for (const { absPath, source, meta, body, identity } of pages) {
       if (!isEmitted(meta, { drafts: true })) continue;
-      const identity = docIdentity(absPath, meta);
+      let environment = null;
+      try {
+        environment = environmentFor?.(absPath, source)?.environment ?? null;
+      } catch {
+        // remarkPageEnvironment already warns about this page.
+      }
       const summary = typeof meta.summary === "string" ? meta.summary.trim() : "";
       out[`${identity.project}/${identity.bucket}/${identity.slug}`] = {
         site: site.name,
         published: isPublic(meta),
         descriptionSource: summary ? "summary" : "body",
-        head: docPageHead(site, { identity, meta, body }),
+        head: docPageHead(site, { identity, meta, body }, { projection, environment }),
       };
     }
   }

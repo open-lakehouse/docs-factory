@@ -141,11 +141,32 @@ export function twitterTags({ title, description, image } = {}) {
   return tags.filter(([, v]) => v != null && v !== "");
 }
 
+/** The site's concept index; JSON-LD terms take their `@id` from it. */
+export const CONCEPTS_PATH = "/concepts.json";
+
+// A public model element (content-core projection) as a schema.org node.
+function termLd(el, setUrl) {
+  const software = el.kind === "implementation";
+  return prune({
+    "@type": software ? "SoftwareApplication" : "DefinedTerm",
+    "@id": `${setUrl}#${el.id}`,
+    name: el.title,
+    description: el.summary || undefined,
+    url: el.url || undefined,
+    sameAs: el.sameAs?.length ? el.sameAs : undefined,
+    inDefinedTermSet: software ? undefined : { "@type": "DefinedTermSet", url: setUrl },
+  });
+}
+
+const terms = (els, setUrl) => (els?.length ? els.map((el) => termLd(el, setUrl)) : undefined);
+
 /**
  * schema.org JSON-LD for a page, as a plain object ready to JSON.stringify.
  *   - home (`/`)      → WebSite + Organization
- *   - docs page       → TechArticle
+ *   - docs page       → TechArticle; also HowTo when it runs an environment
  *   - blog post       → BlogPosting
+ * `concepts` (docs pages) is `{ about, mentions, tool, dependencies }`: public
+ * elements from the site's projection, and the environment as text.
  * Callers stringify and wrap in `<script type="application/ld+json">`.
  */
 export function jsonLd({
@@ -155,6 +176,7 @@ export function jsonLd({
   description,
   origin = siteOrigin(),
   siteName = PAGE_TITLE_SUFFIX,
+  concepts = null,
 }) {
   if (!identity || identity.area === "site") {
     return {
@@ -194,15 +216,31 @@ export function jsonLd({
     });
   }
 
+  const setUrl = `${origin}${CONCEPTS_PATH}`;
+  // `tool` is a HowTo property and `dependencies` a TechArticle one, so a page
+  // that runs an environment is both.
+  const howTo = Boolean(concepts?.dependencies);
   return prune({
     ...base,
-    "@type": "TechArticle",
+    "@type": howTo ? ["TechArticle", "HowTo"] : "TechArticle",
     // The Diátaxis quadrant is a useful proficiency/section hint for crawlers.
     articleSection: typeof meta.diataxis === "string" ? meta.diataxis : undefined,
     isPartOf:
       identity.area === "docs" && identity.project
         ? { "@type": "TechArticle", name: `${siteName} documentation` }
         : undefined,
+    about: terms(concepts?.about, setUrl),
+    mentions: terms(concepts?.mentions, setUrl),
+    tool:
+      howTo && concepts.tool?.length
+        ? concepts.tool.map((el) =>
+            prune({
+              ...termLd(el, setUrl),
+              "@type": ["HowToTool", "SoftwareApplication"],
+            }),
+          )
+        : undefined,
+    dependencies: howTo ? concepts.dependencies : undefined,
   });
 }
 
@@ -231,6 +269,7 @@ export function pageHead({
   type,
   hrefFor = hrefFromIdentity,
   siteName = PAGE_TITLE_SUFFIX,
+  concepts = null,
 }) {
   const url = canonicalUrl(identity, origin, hrefFor);
   const title = pageTitle(meta, identity, siteName);
@@ -245,6 +284,6 @@ export function pageHead({
     twin: twinUrl(identity, origin, hrefFor),
     og: ogTags({ title, description, url, type: ogType, siteName }),
     twitter: twitterTags({ title, description }),
-    jsonLd: jsonLd({ identity, meta, url, description, origin, siteName }),
+    jsonLd: jsonLd({ identity, meta, url, description, origin, siteName, concepts }),
   };
 }

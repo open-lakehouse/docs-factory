@@ -71,6 +71,7 @@ import { docsSiteTarget } from "../targets/docs-site.mjs";
 import mdTwin, { LIKEC4_ASSET_BASE } from "../targets/md-twin.mjs";
 import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
+  renderConcepts,
   renderLlmsFull,
   renderLlmsIndex,
   renderRobots,
@@ -242,7 +243,8 @@ export async function emitDocs({ site, drafts = false }) {
           throw new Error(`envs/environments.yml: ${key}: guide ${env.guide} is not a page`);
       }
       files.set(`public/env/${site.env.bundle}.tar.gz`, envBundle.archive);
-      files.set("public/env/environments.json", `${JSON.stringify(envBundle.index, null, 2)}\n`);
+      const index = { ...envBundle.index, concepts: `${origin}/concepts.json` };
+      files.set("public/env/environments.json", `${JSON.stringify(index, null, 2)}\n`);
     }
 
     // 3. Pages.
@@ -537,6 +539,25 @@ export async function emitDocs({ site, drafts = false }) {
           bundleUrl: envBundle.bundleUrl,
           guide: envBundle.guide && `${origin}${envBundle.guide.route}.md`,
         },
+        concepts: true,
+      }),
+    );
+    files.set(
+      "public/concepts.json",
+      renderConcepts(projection, {
+        title: site.title,
+        origin,
+        bundle: envBundle?.bundleUrl ?? null,
+        environments: envBundle
+          ? envBundle.index.environments.map(({ key, title }) => {
+              const [bucket, slug] = (registry[key].guide ?? "").split("#")[0].split("/");
+              const anchor = registry[key].guide?.split("#")[1];
+              const guide = registry[key].guide
+                ? `${routeFor(bucket, slug)}${anchor ? `#${anchor}` : ""}`
+                : routeFor(site.env.guide.bucket, site.env.guide.slug);
+              return { key, title, guide };
+            })
+          : [],
       }),
     );
     files.set(

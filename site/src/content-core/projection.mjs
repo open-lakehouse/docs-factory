@@ -57,8 +57,9 @@ export function publicProjection({ model, pages, hrefFor, origin, registry = {},
     .filter((p) => isPublic(p.meta))
     .map((p) => ({ ...p, route: hrefFor(p.identity) }))
     .filter((p) => p.route);
+  // compatibility.json names a proof's page by project, bucket, and slug only.
   const routeOf = (identity) => {
-    const route = identity && hrefFor(identity);
+    const route = identity && hrefFor({ area: "docs", ...identity });
     return route && ready.some((p) => p.route === route) ? route : null;
   };
 
@@ -186,6 +187,8 @@ export function publicProjection({ model, pages, hrefFor, origin, registry = {},
 
   return {
     origin,
+    /** Whether `route` is a ready page of this site. */
+    hasPage: (route) => ready.some((p) => p.route === route),
     isPublic: (id) => elements.has(id),
     element: (id) => elements.get(id) ?? null,
     elements: () => [...elements.values()].sort((a, b) => a.id.localeCompare(b.id)),

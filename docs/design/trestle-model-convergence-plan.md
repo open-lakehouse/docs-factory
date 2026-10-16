@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 postgres variant done (folded into uc-aws); P6 default (H2) next.
+**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 done (aws, postgres folded into uc-aws, default generated in place); P7 next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -485,6 +485,18 @@ registry title becomes "with simulated S3 and PostgreSQL".
 `compose.postgres.yaml` and `hibernate.postgres.properties` are deleted. The
 default H2 variant (`embedded_metadata`) is the last to move; after it,
 `envs/unitycatalog` goes.
+
+**Done (P6, default variant).** `envs/unitycatalog` is now generated in place
+from an `env.toml` (`embedded_metadata`, the same image, container name, and
+`UC_DOCS_ROOT` knobs as uc-aws), so the 20 scripts, their docstrings, and the
+reader folder keep their key (design §10 #61). The server is behind the
+gateway like uc-aws (#62), and the reader's client env gains
+`UNITY_CATALOG_URL`. The hand-written `compose.yaml` and `server.properties`
+are deleted, the run-local-server page embeds the generated UC module, and
+`docs/design/agentic-docs.md` drops its proposal to build WASM bindings that
+Trestle now ships. No script names a hand-written compose file, the reader
+bundle ships generated environments only, and emission reads committed files
+(no Trestle or Rust). The fallbacks stay for a future authored stack (#63).
 
 ## P7 — Reader and agent surfaces (docs-factory)
 

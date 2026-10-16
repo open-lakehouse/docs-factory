@@ -1,18 +1,20 @@
 # unitycatalog: the shared local server for the Unity Catalog docs
 
 Every page under `content/unitycatalog/` runs against this environment, except
-the S3 and PostgreSQL pages, which use the generated
-[`../uc-aws`](../uc-aws/env.toml). Readers
+the S3 and PostgreSQL pages, which use [`../uc-aws`](../uc-aws/env.toml). Readers
 download both as described in
 [Run a local Unity Catalog server](../../content/unitycatalog/how-to/011-run-local-server/index.md).
 
-| File | Starts |
-| --- | --- |
-| `compose.yaml` | Unity Catalog on `:8080`, authorization off, `UC_DOCS_ROOT` (default `/tmp/uc-docs`) mounted at the same path in the container. |
+Trestle generates it from [`env.toml`](env.toml) (`just env-render unitycatalog`):
+Unity Catalog behind an Envoy gateway on `:8080`, authorization off, metadata
+in the server's own H2 file (with the image's sample catalogs), and
+`UC_DOCS_ROOT` (default `/tmp/uc-docs`) mounted at the same path in the
+container. Never edit the rendered files (`compose.yaml`, `modules/`,
+`client/`, `LAYOUT.md`, `plan.json`); change the recipe and re-render.
 
-It and `uc-aws` use the compose project `uc-docs` and the container name `unitycatalog`,
-so `docker exec unitycatalog bin/uc …` works from any folder and the
-variants replace each other instead of running side by side.
+It and `uc-aws` use the compose project `uc-docs` and the container name
+`unitycatalog`, so `docker exec unitycatalog bin/uc …` works from any folder and
+the two replace each other instead of running side by side.
 
 The server runs from [`image/`](image/Dockerfile), the upstream image with two
 fixes for Linux:
@@ -34,12 +36,14 @@ has them.
 `uc-aws` builds the same image from its own copy, `../uc-aws/image/`. The docs
 site serves both folders as one archive, `/env/uc-docs-env.tar.gz`, with this
 folder at `uc-docs-env/unitycatalog`. READMEs stay out of the archive.
-[`../environments.yml`](../environments.yml) describes each compose file to
-readers: its title, host ports, and the variables a host client exports.
+The archive holds only the runtime files each environment's manifest lists
+(`files` in [`../environments.generated.json`](../environments.generated.json)),
+and [`../environments.yml`](../environments.yml) gives each one its title for
+readers.
 
 ## Tests
 
-Snippet scripts name one of the compose files in `[tool.docs-factory] compose`.
+Snippet scripts name `compose.yaml` here or in `../uc-aws` in `[tool.docs-factory] compose`.
 `content/conftest.py` starts a fresh stack per script and stops it afterwards,
 so scripts don't see each other's catalogs. On Colima, run the service lane
 with `UC_DOCS_ROOT=$HOME/tmp/uc-docs`, because Colima shares only `$HOME` with

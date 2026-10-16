@@ -12,7 +12,7 @@ Paths are relative to the repo root.
 
 | Variant | Scripts | Gate CI | Metadata | Storage | Host ports | Client env |
 |---|---|---|---|---|---|---|
-| `envs/unitycatalog/compose.yaml` | 20 | all 20 | H2, in the container | `file://` under `UC_DOCS_ROOT` | 8080 | — |
+| `envs/unitycatalog/compose.yaml` (generated in place since P6) | 20 | all 20 | H2, in the container | `file://` under `UC_DOCS_ROOT` | 8080 | — |
 | `envs/unitycatalog/compose.aws.yaml` (removed in P6; now `envs/uc-aws`) | 11 | all 11 | H2, in the container | S3 via aws-sim (bucket `uc-docs`) | 8080, 9000 | `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` |
 | `envs/unitycatalog/compose.postgres.yaml` (removed in P6; H25 runs on `envs/uc-aws`) | 1 | 1 | Postgres 16 (named volume) | `file://` under `UC_DOCS_ROOT` | 8080 | — |
 | `envs/aws-sim/` (removed in P6) | — (included by `compose.aws.yaml`) | — | — | RustFS | 9000 (Envoy) | — |

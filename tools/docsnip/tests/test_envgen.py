@@ -161,9 +161,43 @@ def test_fix_projects_nodes_edges_and_facts(tmp_path):
     assert facts["environments"]["uc-aws"] == {
         "ports": [8080, 9000],
         "client-env": _PLAN["client"]["host"],
+        "files": [],
     }
     assert envgen.check(root) == []
     assert envgen.fix(root) == []  # idempotent
+
+
+def test_files_are_the_render_and_its_build_contexts(tmp_path):
+    plan = copy.deepcopy(_PLAN)
+    plan["files"] = [
+        {"path": "compose.yaml", "sensitive": False},
+        {"path": "modules/rustfs/.env/rustfs.env", "sensitive": False},
+    ]
+    root = _repo(tmp_path, plan=plan)
+    env = root / "envs" / "uc-aws"
+    (env / "env.toml").write_text(
+        'version = 3\n[selection.knob_overrides.unity-catalog]\nbuild = "image"\n'
+    )
+    (env / "image" / "bin").mkdir(parents=True)
+    (env / "image" / "Dockerfile").write_text("FROM x\n")
+    (env / "image" / "bin" / "uc").write_text("#!/bin/sh\n")
+    (env / "notes.txt").write_text("not rendered\n")
+    envgen.fix(root)
+    facts = json.loads((root / envgen.FACTS).read_text())
+    assert facts["environments"]["uc-aws"]["files"] == [
+        "compose.yaml",
+        "image/Dockerfile",
+        "image/bin/uc",
+        "modules/rustfs/.env/rustfs.env",
+    ]
+
+
+def test_a_missing_build_context_fails(tmp_path):
+    root = _repo(tmp_path)
+    (root / "envs" / "uc-aws" / "env.toml").write_text(
+        'version = 3\n[selection.knob_overrides.unity-catalog]\nbuild = "image"\n'
+    )
+    assert any("build context image/ is missing" in e for e in envgen.check(root))
 
 
 def test_registry_merges_derived_facts(tmp_path):
@@ -182,7 +216,7 @@ def test_a_generated_entry_cant_author_derived_facts(tmp_path):
         "generated: uc-aws", "generated: uc-aws\n    ports: [1]"
     )
     root = _fixed(tmp_path, registry=registry)
-    with pytest.raises(ValueError, match="takes ports and client-env"):
+    with pytest.raises(ValueError, match="takes ports, client-env, and files"):
         environments.load(root)
 
 

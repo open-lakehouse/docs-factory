@@ -59,10 +59,10 @@ def load(repo_root: Path) -> dict[str, Environment]:
         generated = entry.get("generated")
         stands_in_for = entry.get("stands-in-for")
         if generated is not None:
-            if "ports" in entry or "client-env" in entry:
+            if {"ports", "client-env", "files"} & entry.keys():
                 raise ValueError(
-                    f"{REGISTRY}: {key}: a generated entry takes ports and client-env "
-                    f"from {GENERATED}"
+                    f"{REGISTRY}: {key}: a generated entry takes ports, client-env, "
+                    f"and files from {GENERATED}"
                 )
             if generated not in derived:
                 raise ValueError(

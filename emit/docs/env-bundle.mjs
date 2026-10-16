@@ -4,9 +4,10 @@
  * plus `environments.json`, its machine-readable index for agents.
  *
  * The archive keeps the envs/ layout under one root folder, so relative
- * references between stacks (compose.aws.yaml's `include: ../aws-sim/…`) still
- * resolve. Byte-identical output for identical inputs keeps planSync from
- * rewriting it on every emit.
+ * references between stacks still resolve. A generated environment ships only
+ * its runtime-file manifest (`files` in envs/environments.generated.json), never
+ * its recipe or plan. Byte-identical output for identical inputs keeps planSync
+ * from rewriting it on every emit.
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
@@ -25,18 +26,37 @@ export { loadRegistry } from "../../site/src/content-core/registry.mjs";
 // READMEs describe the repo's test setup; example/ is aws-sim's own demo.
 const EXCLUDE = /(^|\/)(README\.md|example\/.*)$/;
 
-/** Tracked files under `envs/<dir>/` for each dir, as paths relative to envs/. */
-export function bundlePaths(repoRoot, dirs) {
+/**
+ * The files under `envs/<dir>/` for each dir, as paths relative to envs/: a
+ * generated environment's manifest, else every tracked file. A manifest file
+ * that isn't tracked throws, since CI couldn't have run it.
+ */
+export function bundlePaths(repoRoot, dirs, registry = {}) {
   const out = execFileSync("git", ["ls-files", "-z", "--", ...dirs.map((d) => `envs/${d}/`)], {
     cwd: repoRoot,
     encoding: "utf8",
   });
-  return out
+  const tracked = out
     .split("\0")
     .filter(Boolean)
-    .map((p) => p.slice("envs/".length))
-    .filter((p) => !EXCLUDE.test(p))
-    .sort();
+    .map((p) => p.slice("envs/".length));
+  const manifests = new Map(
+    Object.entries(registry)
+      .filter(([, env]) => env.files)
+      .map(([key, env]) => [
+        composeParts(key).dir,
+        env.files.map((f) => `${composeParts(key).dir}/${f}`),
+      ]),
+  );
+  const paths = dirs.flatMap((dir) => {
+    const manifest = manifests.get(dir);
+    if (!manifest) return tracked.filter((p) => p.startsWith(`${dir}/`) && !EXCLUDE.test(p));
+    const missing = manifest.filter((p) => !tracked.includes(p));
+    if (missing.length)
+      throw new Error(`env bundle: not tracked by git: envs/${missing.join(", envs/")}`);
+    return manifest;
+  });
+  return paths.sort();
 }
 
 function octal(n, width) {
@@ -121,7 +141,7 @@ export function bundleReadme({ bundle, registry, keys, siteTitle, guideUrl }) {
  * the stacks it contains with their exact start and stop commands.
  */
 export function buildEnvBundle({ repoRoot, bundle, dirs, registry, origin, siteTitle, guideUrl }) {
-  const paths = bundlePaths(repoRoot, dirs);
+  const paths = bundlePaths(repoRoot, dirs, registry);
   // Registry order: the base stack first, then its variants.
   const keys = Object.keys(registry).filter((k) => paths.includes(k));
   const bundleUrl = `${origin}/env/${bundle}.tar.gz`;

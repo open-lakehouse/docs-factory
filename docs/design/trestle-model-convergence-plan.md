@@ -461,8 +461,9 @@ environment (which needs `embedded_metadata`).
 ships generated environments only, emission needs neither Trestle nor Rust, and
 each variant can be rolled back to its previous files.
 
-**Done (P6, aws variant, against H1e).** **H1e** = trestle#146, a postgres
-`data` knob; uc-aws sets `data = "volume"` (design §10 #58). The 11 S3 scripts
+**Done (P6, aws variant, against H1e).** **H1e** =
+`605216846ced82fad886f22513f59a3c8ea88717` (trestle#146, a postgres `data`
+knob), which `envs/trestle.toml` pins; uc-aws sets `data = "volume"` (design §10 #58). The 11 S3 scripts
 name `envs/uc-aws/compose.yaml`, and `compose.aws.yaml`, `server.aws.properties`,
 and `envs/aws-sim` are deleted (#56). Step 2 needed nothing new: the plan.json
 base URL landed in P5 (#48). Step 3: the bundle ships each generated

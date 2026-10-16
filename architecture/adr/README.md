@@ -20,7 +20,7 @@ see `ADR-0002` for the fact-vs-factory dividing line.
 |---|---|---|---|
 | [ADR-0001](./ADR-0001-likec4-over-structurizr.md) | LikeC4 over Structurizr for the architecture model | Accepted | 2026-07-13 |
 | [ADR-0002](./ADR-0002-facts-here-narrative-separate.md) | Architectural facts live in the model; narrative lives separately | Accepted | 2026-07-13 |
-| [ADR-0003](./ADR-0003-logical-abstract-deployment-concrete.md) | Logical layer is abstract; deployment layer is concrete | Accepted (amendment proposed 2026-10-16) | 2026-07-13 |
+| [ADR-0003](./ADR-0003-logical-abstract-deployment-concrete.md) | Logical layer is abstract; deployment layer is concrete | Accepted (amended 2026-10-16) | 2026-07-13 |
 | [ADR-0004](./ADR-0004-capability-specification-implementation.md) | Capability / specification / implementation typing | Accepted | 2026-07-18 |
 | [ADR-0005](./ADR-0005-governed-asset-kinds.md) | Governed asset kinds (securables) as a logical dimension | Accepted | 2026-07-18 |
 | [ADR-0006](./ADR-0006-system-boundary-and-generic-relations.md) | System boundary semantics and generic relationships | Accepted | 2026-07-21 |

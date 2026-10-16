@@ -535,6 +535,9 @@ while consolidating; revisit in review.
 | 14 | Trestle rev + recipe digest; image-digest locks deferred | default | Digest-lock every image now |
 | 15 | Contradictory proofs across recipes stay an error | default | Scoped per-recipe views now |
 | 16 | `generate_stack` and public MCP deferred | default | Ship with P7 |
+| 17 | The view asset kind's ID is `sqlView` (`view` is a LikeC4 keyword) | P1a | `logicalView`, `tableView` |
+| 18 | Add `openLineageSpec` and `otlpSpec` now, as anchors for headwaters and Jaeger | P1a | Leave them optional |
+| 19 | Split P1: P1a (kinds, catalog) unblocks P2; P1b (governance facets, `#partial`, query-API specs, `interactiveDevelopment`, hydrofoil) amends §2/§4 | settled | One PR |
 
 ## 11. Risks and open questions
 

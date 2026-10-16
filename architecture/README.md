@@ -8,10 +8,14 @@ source-level implementation.
 ## Modeling choices
 
 - **Two layers.** A *logical* layer of abstract capabilities (catalog, query
-  engine, table format, object storage, lineage, governance) and a *deployment*
-  layer of the concrete services that realize them. A deployment `service`
-  `instanceOf`s the logical capabilities it plays; one service can play several.
-  See [ADR-0003](./adr/ADR-0003-logical-abstract-deployment-concrete.md).
+  engine, table format, object storage) and a *deployment* layer of the concrete
+  services that realize them. A deployment `service` `instanceOf`s the
+  implementation it runs, or the capability it plays where no implementation is
+  modeled. See [ADR-0003](./adr/ADR-0003-logical-abstract-deployment-concrete.md).
+- **Concerns span the layers' subjects.** Governance, lineage, and observability
+  are `concern`s, not capabilities: each `appliesTo` the asset kinds or
+  capabilities it spans, and implementations realize them. The `concernMatrix`
+  view shows them. See [ADR-0007](./adr/ADR-0007-cross-cutting-concerns.md).
 - **The logical layer names no service, repo, or technology.** Those appear only
   in the deployment layer. The logical layer is the reference architecture; the
   deployment layer is one realization of it.
@@ -46,12 +50,13 @@ architecture/
     specification.likec4        # SHARED: element/deploymentNode/relationship kinds, tags
     globals.likec4              # SHARED: predicate groups reused across views
     logical/
-      capabilities.likec4       # abstract reference: people + capabilities
+      capabilities.likec4       # abstract reference: people + capabilities + concerns
+      concerns.likec4           # what each concern appliesTo
       technology-catalog.likec4 # concrete tech: specs + implementations (still logical)
       assets.likec4             # governed asset kinds (securables) + dependsOn/governs
       relationships.likec4      # capability chain + specifies/implements/realizes/vends/reads
     deployment/
-      deployments.likec4        # trustedCompute: services instanceOf capabilities
+      deployments.likec4        # trustedCompute: services instanceOf implementations/capabilities
     views/
       logical-views.likec4      # logical views
       deployment-views.likec4   # one view per deployment environment
@@ -60,7 +65,7 @@ architecture/
       blog-views.likec4         # blog-specific preview views (not the reference model)
   design/                       # architecture-focused prose (canonicalDoc targets)
   adr/                          # architecture decision records
-  canonicals.yaml               # capability/service -> design-doc -> source-repo registry
+  canonicals.yaml               # capability/concern/service -> design-doc -> source-repo registry
   estate.yml                   # ref-free repo facts
   glossary.md                  # canonical terminology
   conflicts.md                 # open-questions register
@@ -82,7 +87,7 @@ just arch-refresh   # check + model + build — run after any model edit
 ## Update process
 
 1. Decide which **layer** the change touches, then edit the owning file (logical
-   capability → `logical/capabilities`; spec/implementation → `logical/technology-catalog`;
+   capability or concern → `logical/capabilities`; concern `appliesTo` edge → `logical/concerns`; spec/implementation → `logical/technology-catalog`;
    asset kind → `logical/assets`; cross-capability edge → `logical/relationships`;
    service/environment → `deployment/deployments`; kinds/tags → `specification`; views →
    `views/logical-views`/`views/deployment-views`/`views/flows`).

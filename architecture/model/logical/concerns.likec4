@@ -1,0 +1,31 @@
+// LOGICAL LAYER — what each cross-cutting concern applies to (ADR-0007).
+//
+// The concerns are declared with the capabilities in capabilities.likec4; this
+// file holds only their `appliesTo` edges and the flows that end at one.
+
+model {
+  extend lakehouse {
+
+    lineage -[appliesTo]-> table "tracks lineage of"
+    lineage -[appliesTo]-> volume "tracks lineage of"
+    lineage -[appliesTo]-> mlModel "tracks lineage of"
+    lineage -[appliesTo]-> sqlView "tracks lineage of"
+
+    governance -[appliesTo]-> namespace "secures"
+    governance -[appliesTo]-> table "secures"
+    governance -[appliesTo]-> volume "secures"
+    governance -[appliesTo]-> registeredFunction "secures"
+    governance -[appliesTo]-> mlModel "secures"
+    governance -[appliesTo]-> agentSkill "secures"
+    governance -[appliesTo]-> sqlView "secures"
+    governance -[appliesTo]-> metricView "secures"
+    governance -[appliesTo]-> credential "secures"
+    governance -[appliesTo]-> externalLocation "secures"
+
+    observability -[appliesTo]-> queryEngine "observes"
+    observability -[appliesTo]-> catalog "observes"
+    observability -[appliesTo]-> orchestration "observes"
+
+    orchestration -[flows]-> observability "emits run status + metrics"
+  }
+}

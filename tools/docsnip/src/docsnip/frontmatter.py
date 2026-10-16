@@ -85,13 +85,17 @@ def load_page_worthy_elements(model_json: Path) -> dict[str, str]:
     }
 
 
-# The edges that anchor a concrete element to the concept it stands for. A spec or
+# The edges that anchor an element to what it stands for. A spec or
 # implementation with none floats free of the logical layer, so nothing can
-# navigate to it from a capability.
+# navigate to it from a capability; a concern with none spans nothing.
 _ANCHOR_EDGES = {
+    "concern": {"appliesTo"},
     "openSpecification": {"specifies"},
     "implementation": {"implements", "realizes"},
 }
+
+# Concrete elements point readers at their upstream home; abstract ones don't have one.
+_LINKED_KINDS = {"openSpecification", "implementation"}
 
 
 def model_quality_gaps(model_json: Path) -> list[str]:
@@ -100,7 +104,8 @@ def model_quality_gaps(model_json: Path) -> list[str]:
     Emitted sites turn ``model:`` links into links to an element's explanation
     page or external ``link``, with its summary as the tooltip, so a page-worthy
     element needs a description, a spec or implementation needs an external
-    link, and both need an edge to the concept they realize. Reported, not
+    link, both need an edge to the concept they realize, and a concern needs
+    an edge to what it applies to. Reported, not
     failing: the model grows ahead of its facts.
     """
     if not model_json.is_file():
@@ -119,9 +124,9 @@ def model_quality_gaps(model_json: Path) -> list[str]:
         missing = []
         if not el.get("description") and not el.get("summary"):
             missing.append("no description")
+        if kind in _LINKED_KINDS and not el.get("links"):
+            missing.append("no external link")
         if kind in _ANCHOR_EDGES:
-            if not el.get("links"):
-                missing.append("no external link")
             if not outgoing.get(eid, set()) & _ANCHOR_EDGES[kind]:
                 edges = "/".join(sorted(_ANCHOR_EDGES[kind]))
                 missing.append(f"no {edges} edge")

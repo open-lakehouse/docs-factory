@@ -6,7 +6,7 @@
 | Date | 2026-07-13 |
 | Supersedes | — |
 | Superseded by | — |
-| Amended | 2026-10-16 (proposed; see [Amendment](#amendment-2026-10-16-proposed)) |
+| Amended | 2026-10-16 (see [Amendment](#amendment-2026-10-16)) |
 
 ## Context
 
@@ -68,7 +68,9 @@ abstract→concrete link is expressed via deployment `instanceOf` (not a logical
 - Ordering rules inside deployment nodes (metadata/link before `instanceOf`) are a
   minor authoring gotcha, documented in the README.
 
-## Amendment (2026-10-16, proposed)
+## Amendment (2026-10-16)
+
+Accepted 2026-10-16 with the Trestle convergence P1 model refactor.
 
 The Decision above stands. Two things have changed around it, and the Trestle
 convergence ([design](../../docs/design/trestle-model-convergence.md)) needs a
@@ -88,13 +90,14 @@ credential-vending bypass are prose in `design/governance.md` and
   technology. That is the rule this ADR set.
 - The **technology catalog** ([ADR-0004](./ADR-0004-capability-specification-implementation.md))
   names specifications and software implementations, including first-party
-  software (`omnigent` today, `headwaters` next). It is still logical:
+  software (`omnigent`, `headwaters`). It is still logical:
   implementations are types of software, not running things.
 
 **Deployment instances are configured occurrences of implementations.** A
 deployment node `instanceOf` an implementation where one is modeled, and a
-capability only where no implementation is (the `trustedCompute` nodes predate
-the technology catalog and still point at capabilities). Deployment fragments
+capability only where no implementation is (`trustedCompute`'s `headwaters`
+points at its implementation; nodes whose software isn't in the technology
+catalog still point at capabilities). Deployment fragments
 generated from Trestle plans
 ([factory ADR-0003](../../docs/decisions/ADR-0003-trestle-generated-environments.md))
 always point at implementations, so each generated node reaches its

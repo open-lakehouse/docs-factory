@@ -1,6 +1,6 @@
 ---
 name: update-architecture
-description: Keep the canonical, LAYERED Open Lakehouse architecture model (LikeC4, in architecture/) in sync with the estate. Logical layer = abstract capabilities, asset kinds, and the technology catalog (no repo names in the reference); deployment layer = our services realizing them. Traverses sibling repos' docs/ADRs, proposes minimal .likec4 patches for human approval, then regenerates artifacts. Use when a service/deployment changes, a new capability or asset kind appears, an instanceOf mapping changes, or designed work becomes built.
+description: Keep the canonical, LAYERED Open Lakehouse architecture model (LikeC4, in architecture/) in sync with the estate. Logical layer = abstract capabilities, concerns, asset kinds, and the technology catalog (no repo names in the reference); deployment layer = our services realizing them. Traverses sibling repos' docs/ADRs, proposes minimal .likec4 patches for human approval, then regenerates artifacts. Use when a service/deployment changes, a new capability or asset kind appears, an instanceOf mapping changes, or designed work becomes built.
 user-invocable: true
 version: 0.2.0
 ---
@@ -41,10 +41,14 @@ With no args, do a full reconciliation pass across all modeled repos.
    on logical elements and `metadata.sourceRepo` + GitHub `link` on deployment
    services. Tags come first in an element body.
 5. **Respect the layering.** The model is layered:
-   - **Logical (abstract):** technology-agnostic capabilities and asset kinds.
-     **NO repo/service/infra names** ever appear here.
-   - **Deployment (concrete):** our repos/services as nodes that `instanceOf` the
-     logical elements they realize, in the `trustedCompute` environment.
+   - **Logical (abstract):** technology-agnostic capabilities, concerns
+     (governance, lineage, observability), and asset kinds. **NO
+     repo/service/infra names** ever appear here. The technology catalog is
+     logical too but names specs and software, including our own first-party
+     software (`headwaters`).
+   - **Deployment (concrete):** our repos/services as nodes that `instanceOf`
+     their implementation where one is cataloged, else the capability they
+     play, in the `trustedCompute` environment.
    A repo change almost always edits the **deployment** layer, not the logical one.
    Only touch logical files if a genuinely new *capability* or *asset kind*
    (not a new service) appears. The zero-trust points (PAP/PDP/PEP/PIP/PA) are
@@ -85,7 +89,8 @@ discovers `**/*.likec4` recursively, so location is organization only.)
 
 | Change | Owning file |
 |---|---|
-| New/changed abstract **capability** | `model/logical/capabilities.likec4` |
+| New/changed abstract **capability** or **concern** | `model/logical/capabilities.likec4` |
+| What a concern spans (`appliesTo` edge) | `model/logical/concerns.likec4` |
 | New/changed **specification** or **implementation** (OSS tech) | `model/logical/technology-catalog.likec4` |
 | New/changed **asset kind** (securable) or dependsOn/governs edge | `model/logical/assets.likec4` |
 | Capability-chain / realizes / vends / reads edge | `model/logical/relationships.likec4` |
@@ -100,6 +105,10 @@ discovers `**/*.likec4` recursively, so location is organization only.)
   introduces a genuinely new capability.
 - A new **capability** goes in the logical layer (tech-agnostic name, a
   `metadata.canonicalDoc`), and is then realized by one or more services.
+
+A Trestle module's `model:` ref always names an **implementation** in the
+technology catalog, never a capability or concern; what a Trestle *role*
+contributes lives in `architecture/integrations/trestle.yaml`.
 
 If a design doc's scope changed, also propose the `design/*.md` edit and the
 `canonicals.yaml` update.

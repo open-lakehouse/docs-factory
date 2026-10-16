@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-15. Nothing is built.
+**Status:** plan, 2026-10-15. P0 done (#219); P1a done; P1b next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -98,6 +98,39 @@ emitted `model:` links before and after; nothing should change.
 
 **Done when** the model validates, `dist/model.json` is regenerated, explain and
 emit treat concerns as page-worthy, and no content reference breaks.
+
+**Done (P1a).** LikeC4 has no hexagon shape, so concerns render as amber
+`component`s; `view` is a keyword, so the view asset is `sqlView`. The
+`technologyCatalog` view includes implementations by kind. Added
+`openLineageSpec` and `otlpSpec` (headwaters and Jaeger anchor on them).
+`explainNav` has no renderer today, so concerns join it as top-level nodes.
+
+## P1b — Governance facets and query surfaces (docs-factory)
+
+**Depends on** P1a. Split out during P1 planning; P2 doesn't need it.
+
+- Revise ADR-0007 while it's Proposed, then accept it: governance is a parent
+  concern with nested facets (`authentication`, `authorization`,
+  `fineGrainedAccess`; audit deferred). `#partial` marks a `realizes` edge that
+  meets a facet only together with another contributor. Whether a facet is fully
+  met is a property of an environment, not of one implementation. Amend design
+  §2, §4 (`auth` → authentication full, `policy` → authorization partial,
+  `notebooks` → interactiveDevelopment) and §10.
+- FGAC: the catalog defines row filters and column masks (`#partial`); a trusted
+  engine enforces them in-plan (`#partial`). `hydrofoil` joins the technology
+  catalog and `trustedCompute.hydrofoil` becomes its instance; mangrove stays
+  `instanceOf lakehouse.catalog`.
+- Ad-hoc query APIs are specs that specify `queryEngine`, only where something
+  in the estate implements them (Spark Connect, Arrow Flight SQL, openCypher).
+  A "warehouse" is a served engine, not a new capability.
+- New capability `interactiveDevelopment` (notebooks, editors), realized by
+  marimo; it flows to the query engine and persists notebooks as files in
+  volumes. No notebook asset kind.
+- Governance breadth stays on the spec (`governs`); implementations inherit it
+  through `implements`.
+
+**Verify:** as P1. **Done when** the facets validate, the explain nav shows
+them under governance, and design §2/§4/§10 match the model.
 
 ## P2 — Journeys join the model (docs-factory)
 

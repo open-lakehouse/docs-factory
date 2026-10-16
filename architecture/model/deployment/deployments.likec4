@@ -23,12 +23,12 @@ deployment {
     }
 
     headwaters = service "headwaters" {
-      description "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capability is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
+      description "Captures column-level lineage at planning time and ingests events into a queryable store. Its lineage capture is built; the dynamic lineage / taint PIP role that feeds the PDP is designed, not built."
       link https://github.com/open-lakehouse/headwaters
 
       metadata { sourceRepo "open-lakehouse/headwaters" }
 
-      instanceOf lakehouse.lineage
+      instanceOf headwaters
     }
 
     // Object storage + relational store backing the stack.

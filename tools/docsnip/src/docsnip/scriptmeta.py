@@ -207,7 +207,7 @@ class DocsFactoryMeta:
     variable the harness sets to the started server's base URL — the script
     reads it, so the same code a reader runs is what the test exercises.
     ``env`` is extra environment the harness sets for the run, e.g. the
-    ``AWS_ENDPOINT_URL`` that points host-side clients at ``envs/aws-sim``
+    ``AWS_ENDPOINT_URL`` that points host-side clients at a simulated S3
     while the snippet code stays endpoint-free. ``verifies`` (relative to the
     script's directory) marks the script as a test harness for a non-Python
     snippet the page actually shows, e.g. a ``*_cli.py`` driving ``foo.sh`` or

@@ -6,7 +6,7 @@
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
+# compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "aws_storage.sh"
@@ -48,7 +48,10 @@ def check_policies() -> None:
         for a in s["Action"]
     }
     assert {"s3:GetObject", "s3:PutObject", "s3:ListBucket"} <= actions, actions
-    local = HERE.parents[4] / "envs" / "unitycatalog" / "server.aws.properties"
+    local = (
+        HERE.parents[4]
+        / "envs/uc-aws/modules/unity-catalog/secrets/server.properties"
+    )
     for props in (local, HERE.parent / "server.aws.properties"):
         assert f"aws.masterRoleArn={MASTER}" in props.read_text(), props
 

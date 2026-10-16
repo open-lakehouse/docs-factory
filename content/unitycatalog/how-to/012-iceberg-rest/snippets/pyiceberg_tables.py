@@ -3,7 +3,7 @@
 # dependencies = ["pyiceberg[pyarrow]==0.12.0"]
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
+# compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # claims.pyiceberg = [
 #   { journey = "iceberg.schema-create", region = "schema", api = "create_namespace" },
@@ -18,9 +18,9 @@
 # ///
 """Create, change, and drop an Iceberg table in Unity Catalog from PyIceberg, through Iceberg REST.
 
-Start the docs' local server from `uc-docs-env/unitycatalog`:
+Start the docs' local server from `uc-docs-env/uc-aws`:
 
-    docker compose -f compose.aws.yaml up -d --wait
+    docker compose up -d --wait
 
 Then run this script, with `_setup.py` from the same page beside it:
 

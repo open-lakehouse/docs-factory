@@ -27,7 +27,7 @@ glossary/         hand-written databricks.com glossary pages adapted from explan
 emit/             deterministic renders: blog draft → unitycatalog.io / delta.io MDX; project docs → sites/ (emit/docs)
 sites/            static docs sites the emitter renders into (unitycatalog-docs, delta-docs), sharing sites/docs-shell; emitted content gitignored
 seed/             docs-factory-seed: deterministic Delta-table seeder (Python + Rust)
-envs/             reusable compose fragments for test stacks (aws-sim: fake AWS S3/STS for UC)
+envs/             docs environments: hand-written compose stacks, and Trestle-generated ones (env.toml + render)
 tools/docsnip/    content validation tooling (frontmatter validate, snippet check)
 agents/           Omnigent agents for factory workflows (blog-writer: dump → reviewed blog draft)
 site/             review + planning + admin app (Vite + React + MDX): renders docs + blogs in the review workspace, roadmap/compat/backlog under /plan; site/src/content-core is the shared parsing authority
@@ -159,9 +159,11 @@ just env-render [name]                 # re-render a generated environment (envs
    `content/conftest.py` runs the script in the default test lane.
 4. Unity Catalog pages don't ship a compose file. Point the script's
    `[tool.docs-factory] compose` at the shared
-   [`envs/unitycatalog`](envs/unitycatalog/README.md) server (`compose.yaml`, or
-   `compose.aws.yaml` for S3); every compose file needs an entry in
-   [`envs/environments.yml`](envs/environments.yml). Open the page with a
+   [`envs/unitycatalog`](envs/unitycatalog/README.md) server (`compose.yaml`),
+   or the generated `envs/uc-aws/compose.yaml` for S3; every compose file needs
+   an entry in [`envs/environments.yml`](envs/environments.yml). A generated
+   environment is regenerated as a unit (`just env-render`), never hand-edited
+   (`content/README.md`). Open the page with a
    `:::prerequisites` box naming only the tools to install (linked) and the
    state the page assumes, in a line each; package pins go in the session
    command (`content/README.md` item 2). The emitter adds Docker and the

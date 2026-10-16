@@ -19,7 +19,7 @@ export default {
   // that explains them.
   env: {
     bundle: "uc-docs-env",
-    dirs: ["unitycatalog", "aws-sim"],
+    dirs: ["unitycatalog", "uc-aws"],
     guide: { bucket: "how-to", slug: "run-local-server" },
   },
   // REST API references (emit/docs/api.mjs): the shell renders each spec in the

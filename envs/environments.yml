@@ -13,22 +13,12 @@
 #
 # A generated environment (envs/<name>/env.toml, rendered by Trestle) says
 # `generated: <name>` instead of ports and client-env: `docsnip envs --fix`
-# derives them from its plan.json into environments.generated.json.
-#   stands-in-for  the hand-written key it will replace; the environment-fit
-#                  check holds it to that key's claims, and the harness runs
-#                  those scripts on it with DOCS_FACTORY_STAND_IN=<name>
+# derives them, and the files its bundle ships, from its plan.json into
+# environments.generated.json.
 environments:
   unitycatalog/compose.yaml:
     title: Unity Catalog 0.7.0
     ports: [8080]
-
-  unitycatalog/compose.aws.yaml:
-    title: Unity Catalog 0.7.0 with simulated S3
-    ports: [8080, 9000]
-    guide: how-to/run-local-server#start-the-server-with-simulated-s3
-    client-env:
-      AWS_ENDPOINT_URL: http://localhost:9000
-      AWS_ALLOW_HTTP: "true"
 
   unitycatalog/compose.postgres.yaml:
     title: Unity Catalog 0.7.0 with PostgreSQL
@@ -36,6 +26,6 @@ environments:
     guide: how-to/configure-backend-db#try-it-on-the-local-server
 
   uc-aws/compose.yaml:
-    title: Unity Catalog 0.7.0 with simulated S3 (generated)
+    title: Unity Catalog 0.7.0 with simulated S3
+    guide: how-to/run-local-server#start-the-server-with-simulated-s3
     generated: uc-aws
-    stands-in-for: unitycatalog/compose.aws.yaml

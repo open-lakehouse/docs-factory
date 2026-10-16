@@ -23,8 +23,8 @@ import {
 
 export { loadRegistry } from "../../site/src/content-core/registry.mjs";
 
-// READMEs describe the repo's test setup; example/ is aws-sim's own demo.
-const EXCLUDE = /(^|\/)(README\.md|example\/.*)$/;
+// READMEs describe the repo's test setup.
+const EXCLUDE = /(^|\/)README\.md$/;
 
 /**
  * The files under `envs/<dir>/` for each dir, as paths relative to envs/: a

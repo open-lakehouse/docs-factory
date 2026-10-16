@@ -9,7 +9,7 @@
 # ]
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
+# compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # claims.daft = [
 #   { journey = "table.list", region = "list" },
@@ -19,9 +19,9 @@
 # ///
 """List and read a Unity Catalog table on local storage from Daft.
 
-Start the docs' local server from `uc-docs-env/unitycatalog`:
+Start the docs' local server from `uc-docs-env/uc-aws`:
 
-    docker compose -f compose.aws.yaml up -d --wait
+    docker compose up -d --wait
 
 Then run this script, with `_seed.py` from the same page beside it:
 

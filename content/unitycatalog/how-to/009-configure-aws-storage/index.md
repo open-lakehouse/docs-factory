@@ -110,8 +110,8 @@ default credential chain, so the configuration above doesn't change. If that
 isn't possible, use an IAM user as the master identity. Grant it the same
 policy, set `aws.masterRoleArn` to the user's ARN, and pass its keys in
 `aws.accessKey` and `aws.secretKey` (or the standard `AWS_ACCESS_KEY_ID` and
-`AWS_SECRET_ACCESS_KEY` variables). The local stack does this, with aws-sim's
-keys.
+`AWS_SECRET_ACCESS_KEY` variables). The local stack does this, with its simulated
+S3 keys.
 
 ## Create a storage credential
 

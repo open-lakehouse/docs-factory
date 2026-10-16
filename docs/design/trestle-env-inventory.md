@@ -170,19 +170,24 @@ repeated as image tags (`compose.yaml` `init-storage`, `image/Dockerfile`
 
 ## Gaps → phases
 
+Every P3 row shipped in H1b (P3b, trestle#143); the knob table is in the
+[plan](trestle-model-convergence-plan.md#p3b--uc-knobs-inline-secrets-endpoint-aliases-known-aws-sim-gaps).
+
 | Today | Needed from Trestle (P3) | Lands in |
 |---|---|---|
-| Local image build (`build: image`) | `unity-catalog` `build` knob (context relative to the recipe) | P5 (aws), P6 |
-| `container_name: unitycatalog` (8 shell snippets, harness logs) | `container_name` knob | P5 |
-| `UC_DOCS_ROOT` same-path bind; `server*.properties` / `hibernate.properties` mounts | `extra_mounts` knob; `local_secrets = "inline"` for the properties files | P5 |
-| Default variant has no relational store or object store | `embedded_metadata` knob (drops both demands) | P6 (last variant) |
-| UC on host :8080, S3 on host :9000 | `gateway_host_port = 8080`, a :9000 listener, UC at `/api/2.1/unity-catalog` with `Rewrite::Inherit` | P5 |
-| `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` client env | Aliases beside `AWS_ENDPOINT_URL_S3` / `AWS_REGION` | P5 |
+| Local image build (`build: image`) | `unity-catalog` `build` knob (context relative to the render root) — done | P5 (aws), P6 |
+| `container_name: unitycatalog` (8 shell snippets, harness logs) | `container_name` knob — done | P5 |
+| `UC_DOCS_ROOT` same-path bind; `server*.properties` / `hibernate.properties` mounts | `extra_mounts` knob; `local_secrets = "inline"` for the properties files — done | P5 |
+| Default variant has no relational store or object store | `embedded_metadata` knob (drops both demands) — done | P6 (last variant) |
+| UC on host :8080, S3 on host :9000 | `gateway_host_port = 8080`, `dedicated_listener_ports = [9000]` (done), UC at `/api/2.1/unity-catalog` with `Rewrite::Inherit` | P5 |
+| `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` client env | `rustfs` `generic_endpoint_env = true` — done | P5 |
 | UC 0.7.0 pin (Trestle defaults to 0.6.0) | Recipe takes the release pin; `bump-uc` rewrites `env.toml` and the `FROM` | P5, P6 step 4 |
-| aws-sim: RustFS root keys, `RUSTFS_SERVER_DOMAINS` incl. `localhost:9000`, TLS leaf + truststore, Envoy aliases, sts-shim | Diff against Trestle's `rustfs` template; fix gaps in Trestle | P5 step 7 |
+| aws-sim: RustFS root keys, `RUSTFS_SERVER_DOMAINS` incl. `localhost:9000`, TLS leaf + truststore, Envoy aliases, sts-shim | `localhost:<port>` server domain and UC `aws.*` keys done; diff the rest against Trestle's `rustfs` template | P5 step 7 |
 | Harness hard-codes `("unitycatalog", 8080)` | Host contract from `plan.json` | P6 step 2 |
 | Bundle = `git ls-files envs/<dir>/` | Explicit runtime-file manifest + archive smoke test | P6 step 3 |
 | `011-run-local-server` inlines the hand-written compose files | Repoint the fences at the generated render | P6 |
 | One compose project name (`uc-docs`) across variants | Keep a shared project name, or document the change | P5/P6 |
+| `server.aws.properties` with no storage bindings; pages register `lake_storage` / `lake` | `storage_bootstrap = "none"`, `master_role_arn` (`uc-master`) — done | P5 |
+| `rustfs-init` makes `uc-docs` | `[[selection.extra_resources]]` `object_store` `uc-docs` | P5 |
 
 Variant order for P6 stays aws (11) → postgres (1) → default (20).

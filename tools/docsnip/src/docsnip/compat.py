@@ -1406,3 +1406,12 @@ def model_gaps(repo_root: Path) -> list[str]:
                     "journey on it is verified"
                 )
     return gaps
+
+
+def stale(repo_root: Path) -> list[Path]:
+    """The committed compatibility artifacts ``compat --fix`` would rewrite."""
+    try:
+        result = resolve(repo_root)
+    except (OSError, ValueError):
+        return []
+    return [path for path, old, new in _artifacts(repo_root, result) if old != new]

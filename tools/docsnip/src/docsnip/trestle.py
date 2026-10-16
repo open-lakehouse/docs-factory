@@ -191,7 +191,7 @@ def load_map(root: Path) -> RoleMap:
     return RoleMap(catalog, roles, {str(k): str(v) for k, v in aliases.items()})
 
 
-def _partial_edges(root: Path) -> set[tuple[str, str, str]]:
+def partial_edges(root: Path) -> set[tuple[str, str, str]]:
     path = root / MODEL
     if not path.is_file():
         return set()
@@ -210,7 +210,7 @@ def _partial_edges(root: Path) -> set[tuple[str, str, str]]:
 # --- checks -------------------------------------------------------------------
 
 
-def _within(element: str, target: str) -> bool:
+def within(element: str, target: str) -> bool:
     """A facet (lakehouse.governance.authentication) counts toward its parent."""
     return element == target or element.startswith(target + ".")
 
@@ -221,12 +221,12 @@ def backing(model: Model, ref: str, target: str) -> list[tuple[str, str, str]]:
     found = [
         (kind, source, dest)
         for kind, source, dest in sorted(model.edges)
-        if kind == "realizes" and source == ref and _within(dest, target)
+        if kind == "realizes" and source == ref and within(dest, target)
     ]
     for kind, source, spec in sorted(model.edges):
         if kind == "implements" and source == ref:
             if any(
-                k == "specifies" and s == spec and _within(t, target)
+                k == "specifies" and s == spec and within(t, target)
                 for k, s, t in model.edges
             ):
                 found.append((kind, source, spec))
@@ -259,7 +259,7 @@ def concern_gaps(root: Path) -> list[str]:
     a facet with no realizer; a facet realized only ``#partial`` is reported on
     its own line."""
     model = load_model(root)
-    partial = _partial_edges(root)
+    partial = partial_edges(root)
     gaps = []
     for eid in sorted(e for e, kind in model.kinds.items() if kind == "concern"):
         if parts := facets(model, eid):
@@ -299,7 +299,7 @@ def check(root: Path) -> Report:
         report.errors.append(str(exc))
         return report
     model = load_model(root)
-    partial = _partial_edges(root)
+    partial = partial_edges(root)
     errors, gaps = report.errors, report.gaps
 
     if catalog.revision != pin.rev:

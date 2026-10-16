@@ -27,7 +27,16 @@ import re
 import sys
 from pathlib import Path
 
-from . import ciplan, compat, envgen, environments, published, trestle, versions
+from . import (
+    ciplan,
+    compat,
+    envgen,
+    environments,
+    published,
+    query,
+    trestle,
+    versions,
+)
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -377,6 +386,16 @@ def cmd_envs(p, fix: bool = False) -> int:
     return 0
 
 
+def cmd_query(p, kind: str, ident: str) -> int:
+    try:
+        answer = query.run(query.load(p["root"]), kind, ident)
+    except query.QueryError as exc:
+        print(f"docsnip query {kind}: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(answer, indent=2, ensure_ascii=False))
+    return 0
+
+
 def cmd_check(p) -> int:
     """CI entry point: validate + snippetcheck + versions + compat."""
     rc = cmd_validate(p) or cmd_snippetcheck(p) or cmd_versions(p) or cmd_compat(p)
@@ -457,6 +476,18 @@ def main(argv: list[str] | None = None) -> int:
     sp_envs.add_argument(
         "--fix", action="store_true", help="rewrite the fragments and registry facts"
     )
+    # Internal agent queries over the committed artifacts (skill docs-query).
+    sp_query = sub.add_parser("query")
+    sp_query.add_argument("kind", choices=query.KINDS)
+    sp_query.add_argument(
+        "id",
+        help="a model element; module:<id>, pin:<project>/<key>, or pin:trestle "
+        "(impact); a script path or <project>/<journey> (environment-for); "
+        "an environment name or registry key (explain-selection)",
+    )
+    sp_query.add_argument(
+        "--json", action="store_true", default=True, help="emit JSON (default)"
+    )
     sp_plan = sub.add_parser("plan")
     sp_plan.add_argument(
         "--changed-from",
@@ -489,6 +520,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_trestle(p, fix=args.fix, pin=args.pin)
     if args.cmd == "envs":
         return cmd_envs(p, fix=args.fix)
+    if args.cmd == "query":
+        return cmd_query(p, args.kind, args.id)
     if args.cmd == "plan":
         return cmd_plan(p, args.changed_from, args.github_output)
     if args.cmd == "durations":

@@ -209,6 +209,23 @@ def _applies(rule: Rule, rel: str) -> bool:
     return not rule.files or rel in rule.files
 
 
+def matches(repo_root: Path, project: Project, key: str) -> list[str]:
+    """Repo-relative files holding a pin that ``key`` of ``project`` moves."""
+    versions = load(repo_root, project)
+    found = []
+    for path in _files(repo_root, project):
+        rel = path.relative_to(repo_root).as_posix()
+        text = path.read_text()
+        if any(
+            rule.key_for(m, versions) == key
+            for rule in project.rules
+            if _applies(rule, rel)
+            for m in rule.pattern.finditer(text)
+        ):
+            found.append(rel)
+    return found
+
+
 def check(repo_root: Path) -> list[str]:
     """Pins that disagree with their manifest, and ranged installs in pages."""
     errors: list[str] = []

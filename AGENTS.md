@@ -134,6 +134,7 @@ uv run pytest                          # docsnip tests + colocated tutorial scri
 cd site && bun test src/content-core   # content-core parsing-contract drift tests
 uv run docsnip check                   # frontmatter + snippets + pins + compat tables
 uv run docsnip compat --fix            # re-render compatibility tables from script claims
+uv run docsnip query <kind> <id>       # agent queries + impact over committed artifacts (skill docs-query)
 uv run ruff check . && uv run ty check # lint + types
 cargo build                            # compile the Rust seed helper and the snippets crate
 just arch-dev                          # LikeC4 architecture model at :5173

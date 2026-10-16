@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 postgres next.
+**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 postgres variant done (folded into uc-aws); P6 default (H2) next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -474,6 +474,17 @@ the update-architecture skill, `content/README.md`, and `AGENTS.md`;
 `docs/design/agentic-docs.md` waits for the last variant. The stand-in
 mechanism is gone, so the postgres and default variants are verified by
 repointing on their own branch and letting the service lane run them.
+
+**Done (P6, postgres variant).** No new environment: H25 (configure-backend-db)
+runs on `uc-aws`, which already keeps its metadata in Postgres (design §10
+#60). Its commands become `docker compose exec db psql -U postgres -d
+unitycatalog`, its verifier renames the page's database in the
+`create-database.sql` check (the stack already has `unitycatalog`), and the
+run-local-server page folds the PostgreSQL section into the S3 one, whose
+registry title becomes "with simulated S3 and PostgreSQL".
+`compose.postgres.yaml` and `hibernate.postgres.properties` are deleted. The
+default H2 variant (`embedded_metadata`) is the last to move; after it,
+`envs/unitycatalog` goes.
 
 ## P7 — Reader and agent surfaces (docs-factory)
 

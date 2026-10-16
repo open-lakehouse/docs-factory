@@ -6,7 +6,7 @@
 # docsnip = { path = "../../../../../tools/docsnip", editable = true }
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
+# compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # verifies = "managed_storage.sh"

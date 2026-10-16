@@ -3,7 +3,7 @@
 # dependencies = ["unitycatalog-client==0.7.0", "obstore==0.11.1"]
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
+# compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # claims."python-sdk" = [
@@ -18,9 +18,9 @@
 # ///
 """Register an S3 storage credential and external location, and check vending.
 
-Start the docs' local server from `uc-docs-env/unitycatalog`:
+Start the docs' local server from `uc-docs-env/uc-aws`:
 
-    docker compose -f compose.aws.yaml up -d --wait
+    docker compose up -d --wait
 
 Then run this script:
 

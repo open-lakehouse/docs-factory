@@ -92,7 +92,7 @@ def test_environment_and_client_env_come_from_the_registry(capsys) -> None:
     aws = by_path[
         "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py"
     ]
-    assert aws["environment"] == "unitycatalog/compose.aws.yaml"
+    assert aws["environment"] == "uc-aws/compose.yaml"
     assert aws["client_env"]["AWS_ENDPOINT_URL"] == "http://localhost:9000"
     assert aws["env"] == {}
 

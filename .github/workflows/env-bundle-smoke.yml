@@ -1,0 +1,65 @@
+name: Env bundle smoke
+
+# Builds the Unity Catalog docs' env bundle, extracts it outside the repo the
+# way a reader does, starts the generated S3 environment from it, and runs one
+# page's script against it with the exports the page shows. The service lane
+# runs every script from the repo checkout; this proves the archive alone works.
+on:
+  pull_request:
+    paths: &smoke-paths
+      - "envs/**"
+      - "emit/docs/env-bundle.mjs"
+      - "emit/docs/build-env-bundle.mjs"
+      - "emit/docs/sites/unitycatalog-docs.mjs"
+      - "site/src/content-core/registry.mjs"
+      - "site/src/content-core/environment.mjs"
+      - "content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py"
+      - ".github/workflows/env-bundle-smoke.yml"
+  push:
+    branches: [main]
+    paths: *smoke-paths
+  workflow_dispatch:
+
+concurrency:
+  group: env-bundle-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  uc-aws:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      - uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+      - uses: ./.github/actions/pypi-public
+      - run: cd emit && bun install --frozen-lockfile && cd ../site && bun install --frozen-lockfile
+      - name: Build and extract the bundle outside the repo
+        run: |
+          archive=$(bun emit/docs/build-env-bundle.mjs unitycatalog-docs "$RUNNER_TEMP/dist")
+          mkdir -p "$RUNNER_TEMP/reader"
+          tar -xzf "$archive" -C "$RUNNER_TEMP/reader"
+          cp content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py "$RUNNER_TEMP/reader/"
+      - name: Start uc-aws from the bundle
+        working-directory: ${{ runner.temp }}/reader/uc-docs-env/uc-aws
+        run: docker compose up -d --wait
+      - name: Run a page's script with the reader's exports
+        working-directory: ${{ runner.temp }}/reader
+        run: |
+          set -a
+          . uc-docs-env/uc-aws/client/host.env
+          set +a
+          uv run aws_storage.py
+      - name: Server log
+        if: failure()
+        working-directory: ${{ runner.temp }}/reader/uc-docs-env/uc-aws
+        run: docker compose logs --no-color --tail 200
+      - name: Stop
+        if: always()
+        working-directory: ${{ runner.temp }}/reader/uc-docs-env/uc-aws
+        run: docker compose down -v

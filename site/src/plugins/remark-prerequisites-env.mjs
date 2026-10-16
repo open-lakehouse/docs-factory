@@ -6,7 +6,7 @@
  *
  * - an authored, empty `:::environment` container anywhere in the body is
  *   replaced by the commands (a page whose task is starting the stack);
- *   `:::environment{key="unitycatalog/compose.aws.yaml"}` is replaced by just
+ *   `:::environment{key="uc-aws/compose.yaml"}` is replaced by just
  *   the code block for that registry stack, so one page can start several;
  * - else a tutorial gets them as its first step, `### Start the environment`
  *   at the top of its first `::::journey` (or a `##` section before its first

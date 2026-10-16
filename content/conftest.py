@@ -25,9 +25,7 @@ commands they show stay unchanged.
 
 CI runs a shard of scripts per runner: ``DOCS_FACTORY_SELECT`` holds a JSON list
 of repo-relative script paths (from ``docsnip plan``), and every other script is
-deselected. ``DOCS_FACTORY_STAND_IN=<name>`` runs only the scripts of the
-hand-written environment that the generated ``envs/<name>`` stands in for
-(``stands-in-for`` in ``envs/environments.yml``), against ``envs/<name>``. ``DOCS_FACTORY_DURATIONS_OUT`` names a JSON file to record each
+deselected. ``DOCS_FACTORY_DURATIONS_OUT`` names a JSON file to record each
 script's duration in, which ``docsnip durations`` folds into the next plan.
 
 Only scripts on ``status: ready`` pages gate. A script whose page is still a
@@ -54,7 +52,7 @@ if TYPE_CHECKING:
 
 # tools/docsnip is a workspace package; its scriptmeta reader is the single
 # source of truth for discovering + parsing a script's inline metadata.
-from docsnip.environments import client_env, key_for, stand_in
+from docsnip.environments import client_env
 from docsnip.frontmatter import page_status
 from docsnip.scriptmeta import ScriptMeta, parse_script, runner_for
 
@@ -79,24 +77,6 @@ _DELTA_LOCK = Path(tempfile.gettempdir()) / "docs-factory-delta.lock"
 _SCRIPT_TIMEOUT_S = int(os.environ.get("DOCS_FACTORY_SCRIPT_TIMEOUT", "600"))
 
 
-_STAND_IN = os.environ.get("DOCS_FACTORY_STAND_IN")
-
-
-def _compose_path(meta: ScriptMeta) -> Path | None:
-    """The compose file a script runs against: its own, or under
-    ``DOCS_FACTORY_STAND_IN`` the generated environment standing in for it."""
-    compose = meta.compose_path()
-    if compose is None or _STAND_IN is None:
-        return compose
-    key = key_for(compose, _REPO_ROOT)
-    found = stand_in(_REPO_ROOT, key, _STAND_IN) if key else None
-    return (_REPO_ROOT / "envs" / found) if found else compose
-
-
-def _stands_in(meta: ScriptMeta) -> bool:
-    return _STAND_IN is not None and _compose_path(meta) != meta.compose_path()
-
-
 def pytest_collect_file(parent, file_path):
     """Collect any script under content/ that carries its runner's metadata block."""
     if runner_for(file_path) is None:
@@ -108,19 +88,16 @@ def pytest_collect_file(parent, file_path):
 
 
 def pytest_collection_modifyitems(config, items):
-    """Keep only the scripts ``DOCS_FACTORY_SELECT`` lists, when it is set, and
-    under ``DOCS_FACTORY_STAND_IN`` only those its environment stands in for."""
+    """Keep only the scripts ``DOCS_FACTORY_SELECT`` lists, when it is set."""
     selected = os.environ.get("DOCS_FACTORY_SELECT")
-    if selected is None and _STAND_IN is None:
+    if selected is None:
         return
-    wanted = set(json.loads(selected)) if selected is not None else None
+    wanted = set(json.loads(selected))
     keep, drop = [], []
     for item in items:
         if isinstance(item, TutorialScriptItem):
             path = item.script_meta.path.resolve().relative_to(_REPO_ROOT).as_posix()
-            ok = wanted is None or path in wanted
-            ok = ok and (_STAND_IN is None or _stands_in(item.script_meta))
-            (keep if ok else drop).append(item)
+            (keep if path in wanted else drop).append(item)
         else:
             keep.append(item)
     if drop:
@@ -214,7 +191,7 @@ class TutorialScriptItem(pytest.Item):
         # the script's own env holds harness-only extras on top of it.
         env = {
             **os.environ,
-            **client_env(_compose_path(self.script_meta), _REPO_ROOT),
+            **client_env(self.script_meta.compose_path(), _REPO_ROOT),
             **self.script_meta.docs_factory.env,
             **_maven_mirror_env(),
         }
@@ -413,7 +390,7 @@ def _start_services(meta: ScriptMeta) -> str | None:
     (``needs_uc_server``), so once selected they must run for real or fail loudly
     — never skip.
     """
-    compose_path = _compose_path(meta)
+    compose_path = meta.compose_path()
     if compose_path is None:
         return None
 
@@ -440,7 +417,7 @@ def _start_services(meta: ScriptMeta) -> str | None:
 
 def _server_log(meta: ScriptMeta, lines: int = 80) -> str | None:
     """The last lines of the running server's log, for a failing script's report."""
-    compose_path = _compose_path(meta)
+    compose_path = meta.compose_path()
     compose = _ACTIVE.get(str(compose_path)) if compose_path else None
     if compose is None:
         return None
@@ -452,7 +429,7 @@ def _server_log(meta: ScriptMeta, lines: int = 80) -> str | None:
 
 
 def _stop_services(meta: ScriptMeta) -> None:
-    compose_path = _compose_path(meta)
+    compose_path = meta.compose_path()
     if compose_path is None:
         return
     compose = _ACTIVE.pop(str(compose_path), None)

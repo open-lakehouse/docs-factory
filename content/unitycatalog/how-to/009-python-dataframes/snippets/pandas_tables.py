@@ -8,7 +8,7 @@
 # ]
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
+# compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # # deltalake 1.6.6 sometimes stalls opening a uc:// table after the credentials
 # # are vended; a run that stalls is retried on a fresh server.
@@ -22,9 +22,9 @@
 # ///
 """Read and append to a Unity Catalog table on S3 from pandas, through deltalake.
 
-Start the docs' local server from `uc-docs-env/unitycatalog`:
+Start the docs' local server from `uc-docs-env/uc-aws`:
 
-    docker compose -f compose.aws.yaml up -d --wait
+    docker compose up -d --wait
 
 Then run this script, with `_seed.py` from the same page beside it:
 

@@ -33,6 +33,11 @@ just bump-uc X.Y.Z        # or: just bump-delta X.Y.Z
 uv run docsnip check
 ```
 
+`just bump-uc` also re-renders the generated environments (`envs/<name>/env.toml`,
+`uc-aws` today) with the pinned Trestle, because their recipe and image
+`Dockerfile` carry the release: commit the re-render with the bump. The
+Trestle workflow fails a PR whose render differs from a fresh one.
+
 For Unity Catalog, the companion pins in `content/unitycatalog/release.yml`
 (client, Spark connector, delta-spark, PySpark, Iceberg) follow the release
 upstream, and the bump doesn't move them all. Look up each one at the new tag

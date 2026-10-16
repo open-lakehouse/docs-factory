@@ -26,6 +26,15 @@ source-level implementation.
   untrusted cases are prose in [`design/deployments.md`](./design/deployments.md).
 - **Maturity-honest.** Designed-but-not-built elements/edges carry `#designed`
   (or `#prototype`) and render amber, so the model never overstates what exists.
+- **Catalog, instances, generated wiring.** Capabilities, concerns, and asset
+  kinds are technology-neutral. The technology catalog identifies
+  specifications and software implementations, including first-party
+  software. Deployment instances are configured occurrences. Generated
+  environment wiring (`model/deployment/generated/`, tagged `#generated`)
+  comes from a pinned Trestle plan; authored reference scenarios such as
+  `trustedCompute` stay separately identified. Implementation and
+  specification edges are architectural relationships, not release-specific
+  proof of support.
 - **Ref-free.** Names and edges only — never a commit SHA or release tag.
 - **One model, many views.** Names and relationships are defined once and
   rendered through views. The `.likec4` files are the source of truth; `dist/` is
@@ -57,6 +66,7 @@ architecture/
       relationships.likec4      # capability chain + specifies/implements/realizes/vends/reads
     deployment/
       deployments.likec4        # trustedCompute: services instanceOf implementations/capabilities
+      generated/                # one fragment per Trestle-rendered docs environment (`docsnip envs --fix`)
     views/
       logical-views.likec4      # logical views
       deployment-views.likec4   # one view per deployment environment

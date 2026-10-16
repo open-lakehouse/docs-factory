@@ -5,7 +5,7 @@
 # setup_catalog.py — give the `retail` catalog managed storage on S3, as an admin would once.
 # Run:      uv run setup_catalog.py
 # Needs:    the Unity Catalog docs environment with simulated S3
-#           (`docker compose -f compose.aws.yaml up -d --wait` in uc-docs-env/unitycatalog).
+#           (`docker compose up -d --wait` in uc-docs-env/uc-aws).
 # Verified: unitycatalog v0.7.0 (docker image unitycatalog/unitycatalog:v0.7.0).
 import json
 import urllib.error

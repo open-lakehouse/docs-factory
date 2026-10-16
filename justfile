@@ -217,35 +217,16 @@ ci-durations run-id:
     gh run download {{run-id}} --pattern 'durations-*' --dir "$dir"
     uv run docsnip durations "$dir"
 
-# --- aws-sim (pretend-AWS S3/STS for UC; see envs/aws-sim/README.md) --------
-
-# Start the example stack: UC + RustFS + Envoy answering *.amazonaws.com.
-# UC listens on $UC_PORT (default 8080) on the host.
-aws-sim-up:
-    cd envs/aws-sim/example && docker compose up -d --wait
-
-# Vend S3 credentials through UC and read/write with them from the host.
-aws-sim-smoke: aws-sim-up
-    cd envs/aws-sim/example && \
-      UC_BASE_URL=http://localhost:${UC_PORT:-8080}/api/2.1/unity-catalog \
-      AWS_ENDPOINT_URL=http://localhost:9000 AWS_ALLOW_HTTP=true \
-      uv run --no-project smoke.py
-
-# Follow Envoy's access log: every S3/STS request with the host it was sent to.
-aws-sim-logs:
-    cd envs/aws-sim/example && docker compose logs -f --no-log-prefix envoy
-
-aws-sim-down:
-    cd envs/aws-sim/example && docker compose down -v
-
 # Re-render compatibility tables (e.g. R10's) from script claims.
 compat:
     uv run docsnip compat --fix
 
-# Move the UC docs to a new release: rewrite release.yml and every pin matching it.
+# Move the UC docs to a new release: rewrite release.yml and every pin matching it,
+# then re-render the generated environments, whose recipes carry the image tag.
 # Then run the release review (docs/design/docs-versioning.md, skill release-bump).
 bump-uc VERSION:
     uv run docsnip bump-uc {{VERSION}}
+    just env-render
 
 # Move the Delta docs to a new Delta Spark release: rewrite content/delta/release.yml
 # and every pin matching it. deltalake and DuckDB pins: edit release.yml, then

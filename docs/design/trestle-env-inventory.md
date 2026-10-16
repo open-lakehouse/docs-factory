@@ -13,9 +13,9 @@ Paths are relative to the repo root.
 | Variant | Scripts | Gate CI | Metadata | Storage | Host ports | Client env |
 |---|---|---|---|---|---|---|
 | `envs/unitycatalog/compose.yaml` | 20 | all 20 | H2, in the container | `file://` under `UC_DOCS_ROOT` | 8080 | — |
-| `envs/unitycatalog/compose.aws.yaml` | 11 | all 11 | H2, in the container | S3 via aws-sim (bucket `uc-docs`) | 8080, 9000 | `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` |
+| `envs/unitycatalog/compose.aws.yaml` (removed in P6; now `envs/uc-aws`) | 11 | all 11 | H2, in the container | S3 via aws-sim (bucket `uc-docs`) | 8080, 9000 | `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` |
 | `envs/unitycatalog/compose.postgres.yaml` | 1 | 1 | Postgres 16 (named volume) | `file://` under `UC_DOCS_ROOT` | 8080 | — |
-| `envs/aws-sim/` | — (included by `compose.aws.yaml`) | — | — | RustFS | 9000 (Envoy) | — |
+| `envs/aws-sim/` (removed in P6) | — (included by `compose.aws.yaml`) | — | — | RustFS | 9000 (Envoy) | — |
 
 Every script sits on a `ready` page, and all of them run in the `default` lane.
 None uses `lane = "spark"`, `"jvm"`, or `"rust"`. The kind-lane deployment pages
@@ -168,11 +168,11 @@ repeated as image tags (`compose.yaml` `init-storage`, `image/Dockerfile`
 `rustfs/rustfs:1.0.1`, `eclipse-temurin:17-jdk-noble`, `python:3.13-alpine`.
 `amazon/aws-cli:latest` and `envoyproxy/envoy:v1.38-latest` float.
 
-## `envs/uc-aws/` — the generated stand-in (P5)
+## `envs/uc-aws/` — the generated S3 environment (P5, live since P6)
 
-Rendered by Trestle from `envs/uc-aws/env.toml`; it stands in for
-`compose.aws.yaml` (`stands-in-for` in `envs/environments.yml`) and isn't in
-the reader bundle yet. Metadata lives in Postgres, not H2: at H1b
+Rendered by Trestle from `envs/uc-aws/env.toml`. P5 added it as a stand-in for
+`compose.aws.yaml`; since P6 the 11 scripts name it, the reader bundle ships
+it as `uc-docs-env/uc-aws/`, and the hand-written files are gone. Metadata lives in Postgres, not H2: at H1b
 `embedded_metadata` also drops the object-store demand, so H2 plus S3 can't be
 expressed, and the scripts don't depend on the metadata store. UC is reached
 through the gateway (`envoy` publishes `8080:10000` and `9000:9000`); the UC
@@ -194,6 +194,7 @@ Parity with `aws-sim` and `compose.aws.yaml`, after H1c (trestle#144) and H1d (t
 | `init-storage` chmods `UC_DOCS_ROOT` | nothing; on Linux Docker creates it root-owned and Daft can't write `file://` tables | fixed in H1d (UC `writable_mounts`, a `unitycatalog-mounts` one-shot) |
 | Client env `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` | also `AWS_ENDPOINT_URL_S3`, `AWS_REGION`, `UNITY_CATALOG_URL` | reader-visible at the P6 cutover |
 | Envoy healthcheck on admin `/ready` | none; services gate on their own healthchecks | equivalent for `up --wait` |
+| H2 metadata discarded with the container | Postgres data bind-mounted under `.data/`, which `down -v` keeps | fixed in H1e (postgres `data = "volume"`) |
 
 Runs against it: locally (macOS, Colima) the four Iceberg REST scripts and the
 two `bin/uc` CLI scripts pass; the SDK and DataFrame scripts can't resolve
@@ -219,8 +220,8 @@ Every P3 row shipped in H1b (P3b, trestle#143); the knob table is in the
 | UC 0.7.0 pin (Trestle defaults to 0.6.0) | Recipe takes the release pin; `bump-uc` rewrites `env.toml` and the `FROM` | P5, P6 step 4 |
 | aws-sim: RustFS root keys, `RUSTFS_SERVER_DOMAINS` incl. `localhost:9000`, TLS leaf + truststore, Envoy aliases, sts-shim | `localhost:<port>` server domain and UC `aws.*` keys done; diff the rest against Trestle's `rustfs` template | P5 step 7 |
 | Harness hard-codes `("unitycatalog", 8080)` | Host contract from `plan.json` — done for generated environments (P5) | P5, P6 step 2 |
-| Bundle = `git ls-files envs/<dir>/` | Explicit runtime-file manifest + archive smoke test | P6 step 3 |
-| `011-run-local-server` inlines the hand-written compose files | Repoint the fences at the generated render | P6 |
+| Bundle = `git ls-files envs/<dir>/` | Explicit runtime-file manifest + archive smoke test — done for generated environments | P6 step 3 |
+| `011-run-local-server` inlines the hand-written compose files | Repoint the fences at the generated render — done for S3 | P6 |
 | One compose project name (`uc-docs`) across variants | Keep a shared project name, or document the change | P5/P6 |
 | `server.aws.properties` with no storage bindings; pages register `lake_storage` / `lake` | `storage_bootstrap = "none"`, `master_role_arn` (`uc-master`) — done | P5 |
 | `rustfs-init` makes `uc-docs` | UC `bucket = "uc-docs"` (H1c), not an extra resource — done | P5 |

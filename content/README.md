@@ -191,17 +191,26 @@ the same way: a region-marked `snippets/*.sql` (markers are `-- --8<-- …`
 comments) and a `*_cli.py` driver that opens the engine and runs one region at
 a time with `docsnip.sqlregions.run`, or pipes `sqlregions.text(...)` into the
 shell itself, with `verifies = "<name>.sql"`.
-Every Unity Catalog page runs against the shared environment in
-[`envs/unitycatalog/`](../envs/unitycatalog/README.md): `compose.yaml` for the
-server, `compose.aws.yaml` for the server plus aws-sim, `compose.postgres.yaml`
-for a PostgreSQL metastore. Scripts point their `[tool.docs-factory] compose`
-at one of them. Readers get the same files as `/env/uc-docs-env.tar.gz` from
-the emitted site, and the variables a host client needs for a stack
-(`AWS_ENDPOINT_URL` for aws-sim) come from its `client-env` in
+Every Unity Catalog page runs against a shared environment:
+[`envs/unitycatalog/`](../envs/unitycatalog/README.md) has `compose.yaml` for
+the server and `compose.postgres.yaml` for a PostgreSQL metastore, and
+`envs/uc-aws/compose.yaml` runs the server with simulated S3. Scripts point
+their `[tool.docs-factory] compose` at one of them. Readers get the same files
+as `/env/uc-docs-env.tar.gz` from the emitted site, and the variables a host
+client needs for a stack come from its `client-env` in
 `envs/environments.yml`. The server bind-mounts
 `UC_DOCS_ROOT` (default `/tmp/uc-docs`) at the same path in the container, for
 pages whose server must see your files. A page that needs a different server
 configuration is the exception: give it its own compose file and say why.
+
+A generated environment (`envs/<name>/env.toml`, `uc-aws` today) commits its
+recipe, Trestle pin, build context, runnable render, and `plan.json`
+together; regenerate it as a unit with `just env-render <name>`, never by
+editing the render. Pages and scripts keep one registered environment key;
+client addresses come from the generated host contract (`plan.json`'s
+`client.host`, merged into the registry as `client-env`). Reader bundles
+contain only files from the explicit manifest of what CI runs (`files` in
+`envs/environments.generated.json`).
 
 ### Starting the environment
 
@@ -223,10 +232,10 @@ Diátaxis type wants them:
   with an empty `:::environment` container (`:::environment` then `:::`).
   The marker takes precedence over both rules above. A page that starts
   several stacks puts a keyed marker in each one's section,
-  `:::environment{key="unitycatalog/compose.aws.yaml"}`, which renders just
+  `:::environment{key="uc-aws/compose.yaml"}`, which renders just
   that stack's download, start, and `export` commands. A page with no scripts
   that still walks through a stack declares it:
-  `:::prerequisites{environment="unitycatalog/compose.aws.yaml"}`.
+  `:::prerequisites{environment="uc-aws/compose.yaml"}`.
 
 The `.md` twin also gives the commands under **Companion files**, so an agent
 reading a how-to's twin doesn't have to follow the link.

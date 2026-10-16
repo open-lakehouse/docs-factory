@@ -9,7 +9,9 @@ model export and writes two projections of each plan:
   nodes (each ``instanceOf`` its module's implementation) and the runtime edges,
   every edge carrying its plan edge key;
 - ``envs/environments.generated.json``: the reader-facing facts the registry
-  merges into an entry that says ``generated: <name>`` (host ports, client env).
+  merges into an entry that says ``generated: <name>`` (host ports, client env),
+  and the files the reader bundle ships: the render's runtime files plus each
+  ``build`` context, never the recipe or the plan.
 
 It never infers an edge the plan doesn't have: a logical blueprint edge is not
 a runtime call. Malformed or stale projections fail; ambiguous environment fit
@@ -21,6 +23,7 @@ from __future__ import annotations
 import dataclasses
 import json
 import re
+import tomllib
 from pathlib import Path
 
 from . import environments, trestle
@@ -209,8 +212,39 @@ def render_fragment(
     return "\n".join(lines)
 
 
-def facts(plan: dict) -> dict[str, object]:
-    """The registry facts a plan settles: host ports and the host client env."""
+def build_contexts(root: Path, name: str) -> list[str]:
+    """The ``build`` knobs in a recipe: folders under ``envs/<name>/`` an image is built from."""
+    recipe = tomllib.loads((root / ENVS / name / RECIPE).read_text())
+    overrides = (recipe.get("selection") or {}).get("knob_overrides") or {}
+    return sorted(
+        {
+            str(knobs["build"]).strip("/")
+            for knobs in overrides.values()
+            if isinstance(knobs, dict) and knobs.get("build")
+        }
+    )
+
+
+def runtime_files(root: Path, name: str, plan: dict) -> list[str]:
+    """What a reader needs to start the environment, relative to ``envs/<name>/``:
+    the files the plan says it rendered, and every build context's files."""
+    where = ENVS / name
+    files = {str(f["path"]) for f in plan.get("files") or []}
+    for context in build_contexts(root, name):
+        folder = root / where / context
+        if not folder.is_dir():
+            raise ValueError(f"{where / RECIPE}: build context {context}/ is missing")
+        files |= {
+            p.relative_to(root / where).as_posix()
+            for p in folder.rglob("*")
+            if p.is_file()
+        }
+    return sorted(files - {RECIPE, PLAN})
+
+
+def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
+    """The registry facts a plan settles: host ports, the host client env, and
+    the bundle's runtime files."""
     ports = sorted(
         {
             int(listener["host_port"])
@@ -221,13 +255,16 @@ def facts(plan: dict) -> dict[str, object]:
     return {
         "ports": ports,
         "client-env": dict(sorted((plan["client"].get("host") or {}).items())),
+        "files": files or [],
     }
 
 
-def render_facts(plans: dict[str, dict]) -> str:
+def render_facts(plans: dict[str, dict], files: dict[str, list[str]]) -> str:
     body = {
         "version": FACTS_VERSION,
-        "environments": {name: facts(plan) for name, plan in sorted(plans.items())},
+        "environments": {
+            name: facts(plan, files.get(name)) for name, plan in sorted(plans.items())
+        },
     }
     return json.dumps(body, indent=2, ensure_ascii=False) + "\n"
 
@@ -263,12 +300,17 @@ def project(root: Path) -> tuple[dict[Path, str], list[str]]:
         plans[name] = plan
     model = load_model(root)
     out: dict[Path, str] = {}
+    files: dict[str, list[str]] = {}
     for name, plan in plans.items():
         out[FRAGMENTS / f"{name}.likec4"] = render_fragment(
             name, plan, model, roles, errors
         )
+        try:
+            files[name] = runtime_files(root, name, plan)
+        except ValueError as exc:
+            errors.append(str(exc))
     if plans or (root / FACTS).is_file():
-        out[FACTS] = render_facts(plans)
+        out[FACTS] = render_facts(plans, files)
     return out, errors
 
 
@@ -350,9 +392,7 @@ def fit(root: Path) -> Fit:
     """Each working claim's provider requirements (``requires`` other than the
     client) must be met by an implementation its environment runs.
 
-    Only generated environments know what they run. A generated entry that
-    ``stands-in-for`` a hand-written one is held to that entry's claims too, so
-    a cutover's fit is known before any script moves."""
+    Only generated environments know what they run."""
     report = Fit([], [])
     if not names(root):
         return report
@@ -365,8 +405,6 @@ def fit(root: Path) -> Fit:
     for key, env in registry.items():
         if env.generated in plans:
             against.setdefault(key, []).append(env.generated)
-            if env.stands_in_for:
-                against.setdefault(env.stands_in_for, []).append(env.generated)
     if not against:
         return report
 

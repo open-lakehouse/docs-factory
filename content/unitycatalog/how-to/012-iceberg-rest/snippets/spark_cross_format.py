@@ -3,7 +3,7 @@
 # dependencies = ["pyspark==4.1.0"]
 #
 # [tool.docs-factory]
-# compose = "../../../../../envs/unitycatalog/compose.aws.yaml"
+# compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
 # claims.spark = [
 #   { journey = "iceberg.join-delta", region = "join", note = "UC connector and Iceberg REST catalogs in one session" },
@@ -11,9 +11,9 @@
 # ///
 """Join a Delta table and an Iceberg table from the same Unity Catalog catalog in one Spark session.
 
-Start the docs' local server from `uc-docs-env/unitycatalog`:
+Start the docs' local server from `uc-docs-env/uc-aws`:
 
-    docker compose -f compose.aws.yaml up -d --wait
+    docker compose up -d --wait
 
 Then run this script, with `_setup.py` from the same page beside it:
 

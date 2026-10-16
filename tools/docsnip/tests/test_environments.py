@@ -36,11 +36,10 @@ def test_repo_registry_covers_every_script() -> None:
 
 def test_aws_client_env_comes_from_the_registry() -> None:
     root = _repo_root()
-    compose = (root / "envs" / "unitycatalog" / "compose.aws.yaml").resolve()
-    assert environments.client_env(compose, root) == {
-        "AWS_ENDPOINT_URL": "http://localhost:9000",
-        "AWS_ALLOW_HTTP": "true",
-    }
+    compose = (root / "envs" / "uc-aws" / "compose.yaml").resolve()
+    env = environments.client_env(compose, root)
+    assert env["AWS_ENDPOINT_URL"] == "http://localhost:9000"
+    assert env["AWS_ALLOW_HTTP"] == "true"
     assert environments.client_env(None, root) == {}
 
 

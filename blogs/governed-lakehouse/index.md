@@ -49,4 +49,4 @@ stack you already have.
 - Does OSS UC with authorization enabled carry enough of the demo, or does it
   need the mangrove/breakwater path (and its pre-release disclosure)?
 
-**Prev:** *The Composable Lakehouse* · **Next:** *The Observable Lakehouse*
+**Prev:** *The Composable Lakehouse* · **Next:** *The Trusted Lakehouse*

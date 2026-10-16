@@ -4,7 +4,7 @@ slug: agentic-lakehouse
 status: idea
 tags: [lakehouse, agents, governance, observability]
 series: The Composable Lakehouse
-series_order: 8
+series_order: 9
 author: Robert Pack
 ---
 

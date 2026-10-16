@@ -4,7 +4,7 @@ slug: interactive-lakehouse
 status: idea
 tags: [lakehouse, unity-catalog]
 series: The Composable Lakehouse
-series_order: 7
+series_order: 8
 author: Robert Pack
 ---
 

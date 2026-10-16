@@ -4,7 +4,7 @@ slug: portable-lakehouse
 status: idea
 tags: [lakehouse, codegen]
 series: The Composable Lakehouse
-series_order: 6
+series_order: 7
 author: Robert Pack
 ---
 

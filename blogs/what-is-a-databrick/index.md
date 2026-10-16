@@ -57,7 +57,7 @@ post fills in with concrete modules.
 
 **Series map:** introduce the posts that follow. Each one is a Trestle
 configuration that adds bricks to the same stack: Composable → Governed →
-Observable → Interoperable → Portable → Interactive → Agentic.
+Trusted → Observable → Interoperable → Portable → Interactive → Agentic.
 
 **Open questions:**
 - How hard to lean into the "databrick" pun vs. a straight architecture opener.

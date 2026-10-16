@@ -4,7 +4,7 @@ slug: observable-lakehouse
 status: idea
 tags: [lakehouse, observability, data-lineage]
 series: The Composable Lakehouse
-series_order: 4
+series_order: 5
 author: Robert Pack
 ---
 
@@ -44,4 +44,4 @@ so they belong to the platform, not to any one engine.
   unpublished when we draft (CONVENTIONS §6).
 - Fold in MLflow tracing here or save it for *Interactive* / *Agentic*?
 
-**Prev:** *The Governed Lakehouse* · **Next:** *The Interoperable Lakehouse*
+**Prev:** *The Trusted Lakehouse* · **Next:** *The Interoperable Lakehouse*

@@ -3,7 +3,7 @@
 // the registry), so the docs emitter, the twins, and the bundle README derive
 // the same commands from one place.
 
-/** `unitycatalog/compose.postgres.yaml` → its folder and the `-f` flag to pass. */
+/** `<dir>/compose.<variant>.yaml` → its folder and the `-f` flag to pass (none for `compose.yaml`). */
 export function composeParts(key) {
   const slash = key.lastIndexOf("/");
   const dir = key.slice(0, slash);

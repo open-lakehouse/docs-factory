@@ -1,8 +1,8 @@
 name: Trestle
 
-# The committed catalog snapshot must be what the pinned Trestle prints. Only
-# this job builds Trestle; `docsnip check` (CI's content job) reads the
-# committed snapshot and needs no cargo.
+# The committed catalog snapshot, and every generated environment under envs/,
+# must be what the pinned Trestle produces. Only this job builds Trestle;
+# `docsnip check` (CI's content job) reads the committed files and needs no cargo.
 on:
   push:
     branches: [main]
@@ -10,6 +10,8 @@ on:
       - "envs/trestle.toml"
       - "architecture/integrations/**"
       - "architecture/dist/trestle-*.json"
+      - "architecture/model/deployment/generated/**"
+      - "envs/**"
       - ".github/workflows/trestle.yml"
   pull_request:
     paths: *trestle-paths
@@ -62,3 +64,16 @@ jobs:
           fi
       - name: Check the join
         run: uv run docsnip trestle
+      - name: Re-render the generated environments
+        run: |
+          for recipe in envs/*/env.toml; do
+            .tools/trestle/bin/trestle env render "$(dirname "$recipe")" >/dev/null
+          done
+          uv run docsnip envs --fix
+      - name: Fail on a stale environment
+        run: |
+          git add -N envs/ architecture/model/deployment/generated/
+          if ! git diff --exit-code envs/ architecture/model/deployment/generated/; then
+            echo "::error::A generated environment doesn't match the pinned Trestle. Run 'just env-render' and commit the result."
+            exit 1
+          fi

@@ -8,6 +8,7 @@ Subcommands:
   bump-delta    — move the Delta docs to a new Delta release and rewrite every pin
   compat        — compatibility tables from script claims (--fix rewrites)
   trestle       — Trestle catalog ↔ model coverage (--fix rewrites the context artifact)
+  envs          — generated environments' plan.json → model fragments + registry facts (--fix rewrites)
   check         — validate + snippetcheck + versions + compat (CI entry)
   plan          — which tutorial scripts a CI run executes, per lane and shard
   durations     — fold CI-recorded script durations into the shard plan's input
@@ -26,7 +27,7 @@ import re
 import sys
 from pathlib import Path
 
-from . import ciplan, compat, environments, published, trestle, versions
+from . import ciplan, compat, envgen, environments, published, trestle, versions
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -131,8 +132,14 @@ def cmd_validate(p) -> int:
 
     joined = trestle.check(p["root"])
     errors.extend(joined.errors)
+    errors.extend(envgen.check(p["root"]))
+    fit = envgen.fit(p["root"])
+    errors.extend(fit.errors)
     quality = (
-        model_quality_gaps(p["arch_model"]) + compat.model_gaps(p["root"]) + joined.gaps
+        model_quality_gaps(p["arch_model"])
+        + compat.model_gaps(p["root"])
+        + joined.gaps
+        + fit.reports
     )
     if quality:
         print(f"model quality: {len(quality)} gap(s) (not failing):", file=sys.stderr)
@@ -342,6 +349,31 @@ def cmd_trestle(p, fix: bool = False, pin: bool = False) -> int:
     return 0
 
 
+def cmd_envs(p, fix: bool = False) -> int:
+    root = p["root"]
+    if fix:
+        try:
+            changed = envgen.fix(root)
+        except (OSError, ValueError) as exc:
+            print(exc, file=sys.stderr)
+            print("\ngenerated environments not projected", file=sys.stderr)
+            return 1
+        for path in changed:
+            print(f"rewrote {path}")
+    errors = envgen.check(root)
+    fit = envgen.fit(root)
+    errors += fit.errors
+    if fit.reports:
+        print(f"{len(fit.reports)} ambiguous fit(s) (not failing):", file=sys.stderr)
+        print("\n".join(fit.reports), file=sys.stderr)
+    if errors:
+        print("\n".join(errors), file=sys.stderr)
+        print(f"\n{len(errors)} environment error(s)", file=sys.stderr)
+        return 1
+    print("envs OK")
+    return 0
+
+
 def cmd_check(p) -> int:
     """CI entry point: validate + snippetcheck + versions + compat."""
     rc = cmd_validate(p) or cmd_snippetcheck(p) or cmd_versions(p) or cmd_compat(p)
@@ -418,6 +450,10 @@ def main(argv: list[str] | None = None) -> int:
     sp_trestle.add_argument(
         "--pin", action="store_true", help="print the pinned git URL, rev, package"
     )
+    sp_envs = sub.add_parser("envs")
+    sp_envs.add_argument(
+        "--fix", action="store_true", help="rewrite the fragments and registry facts"
+    )
     sp_plan = sub.add_parser("plan")
     sp_plan.add_argument(
         "--changed-from",
@@ -448,6 +484,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_compat(p, fix=args.fix)
     if args.cmd == "trestle":
         return cmd_trestle(p, fix=args.fix, pin=args.pin)
+    if args.cmd == "envs":
+        return cmd_envs(p, fix=args.fix)
     if args.cmd == "plan":
         return cmd_plan(p, args.changed_from, args.github_output)
     if args.cmd == "durations":

@@ -590,6 +590,9 @@ while consolidating; revisit in review.
 | 58 | uc-aws's Postgres data is a named volume, via a Trestle postgres `data = bind\|volume` knob (H1e, trestle#146): the bind mount under `.data/` survived the harness's `down -v`, so scripts shared one metastore, readers couldn't reset, and Linux left it owned by the container's uid | P6 (aws) | Harness deletes `.data`; accept and document |
 | 59 | `just bump-uc` re-renders every generated environment after the text rewrite, since recipes carry the image tag | P6 (aws) | Teach `docsnip bump-uc` to call Trestle |
 | 60 | The postgres variant folds into `uc-aws`: H25 runs on its Postgres (`db`, database `unitycatalog`, volume `postgres-data`), and `compose.postgres.yaml` is deleted. Trestle can't render Postgres without an object store (only `embedded_metadata` drops that demand, and it forces H2), and a second generated environment would carry the same RustFS anyway | P6 (postgres) | A `uc-postgres` env with an unused S3; a Trestle knob splitting metadata from storage |
+| 61 | The default environment is generated in place, as `envs/unitycatalog` (`embedded_metadata`, `extra_mounts` + `writable_mounts` for `UC_DOCS_ROOT`), so its registry key `unitycatalog/compose.yaml` and the reader folder `uc-docs-env/unitycatalog` don't change; only the hand-written `compose.yaml` and `server.properties` go | P6 (default) | A new `uc-local` name, moving 20 scripts and their docstrings |
+| 62 | The default server sits behind the Envoy gateway too: every client path is under `/api/2.1/unity-catalog`, which the gateway routes, and the CLI runs in the container | P6 (default) | Publish UC's port directly |
+| 63 | The harness keeps the service-port lookup and the registry keeps authored `ports`/`client-env`, though no environment uses them now, for a future stack Trestle can't express | P6 (default) | Require `generated:` on every entry |
 
 ## 11. Risks and open questions
 

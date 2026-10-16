@@ -18,7 +18,7 @@
 environments:
   unitycatalog/compose.yaml:
     title: Unity Catalog 0.7.0
-    ports: [8080]
+    generated: unitycatalog
 
   uc-aws/compose.yaml:
     title: Unity Catalog 0.7.0 with simulated S3 and PostgreSQL

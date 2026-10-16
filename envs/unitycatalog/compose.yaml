@@ -1,51 +1,17 @@
-# A local, single-user Unity Catalog server for the unitycatalog docs.
-# Start it from this folder with `docker compose up -d --wait`. Pages that need
-# S3 or a PostgreSQL metastore use ../uc-aws instead; see README.md.
+# Top-level compose entrypoint. Every backing service is pulled in via `include:`.
+# The file list is owned by the planner, not edited by hand.
 name: uc-docs
 
-# UC_DOCS_ROOT is bind-mounted at the same path inside the container, so a
-# file:// location means the same directory to the server and to your client.
-x-docs-root: &docs-root
-  type: bind
-  source: ${UC_DOCS_ROOT:-/tmp/uc-docs}
-  target: ${UC_DOCS_ROOT:-/tmp/uc-docs}
+configs:
+  envoy_config:
+    file: ./modules/envoy/envoy.yaml
 
-services:
-  # Docker creates a missing UC_DOCS_ROOT as root; open it up so both you and
-  # the server can write there.
-  init-storage:
-    image: unitycatalog/unitycatalog:v0.7.0
-    user: root
-    entrypoint: ["chmod", "0777", "${UC_DOCS_ROOT:-/tmp/uc-docs}"]
-    volumes:
-      - *docs-root
+secrets:
+  unitycatalog_server_properties:
+    file: ./modules/unity-catalog/secrets/server.properties
 
-  unitycatalog:
-    # The release image with local fixes (image/Dockerfile), rebuilt from cache on
-    # every `up` so a newer copy of this folder never runs an older build.
-    build: image
-    pull_policy: build
-    # A fixed name lets `docker exec unitycatalog bin/uc` work from any folder.
-    container_name: unitycatalog
-    # The server ignores SIGTERM as PID 1; an init forwards it, so `down` takes
-    # a second instead of the 10-second kill timeout.
-    init: true
-    depends_on:
-      init-storage:
-        condition: service_completed_successfully
-    ports:
-      - "8080:8080"
-    volumes:
-      - type: bind
-        source: ./server.properties
-        target: /home/unitycatalog/etc/conf/server.properties
-        read_only: true
-      - *docs-root
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - "wget -q -O /dev/null http://localhost:8080/api/2.1/unity-catalog/catalogs || exit 1"
-      interval: 5s
-      timeout: 5s
-      retries: 30
-      start_period: 20s
+include:
+  - path: ./modules/envoy/compose.yaml
+    project_directory: .
+  - path: ./modules/unity-catalog/compose.yaml
+    project_directory: .

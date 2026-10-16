@@ -191,19 +191,20 @@ the same way: a region-marked `snippets/*.sql` (markers are `-- --8<-- …`
 comments) and a `*_cli.py` driver that opens the engine and runs one region at
 a time with `docsnip.sqlregions.run`, or pipes `sqlregions.text(...)` into the
 shell itself, with `verifies = "<name>.sql"`.
-Every Unity Catalog page runs against a shared environment:
+Every Unity Catalog page runs against a shared, Trestle-generated environment:
 [`envs/unitycatalog/compose.yaml`](../envs/unitycatalog/README.md) for the
-server on its own, or the generated `envs/uc-aws/compose.yaml` for the server
-with simulated S3 and a PostgreSQL metastore. Scripts point
+server on its own, or `envs/uc-aws/compose.yaml` for the server with simulated
+S3 and a PostgreSQL metastore. Scripts point
 their `[tool.docs-factory] compose` at one of them. Readers get the same files
 as `/env/uc-docs-env.tar.gz` from the emitted site, and the variables a host
 client needs for a stack come from its `client-env` in
 `envs/environments.yml`. The server bind-mounts
 `UC_DOCS_ROOT` (default `/tmp/uc-docs`) at the same path in the container, for
 pages whose server must see your files. A page that needs a different server
-configuration is the exception: give it its own compose file and say why.
+configuration is the exception: give it its own generated environment (or,
+failing that, a registered compose file) and say why.
 
-A generated environment (`envs/<name>/env.toml`, `uc-aws` today) commits its
+A generated environment (`envs/<name>/env.toml`) commits its
 recipe, Trestle pin, build context, runnable render, and `plan.json`
 together; regenerate it as a unit with `just env-render <name>`, never by
 editing the render. Pages and scripts keep one registered environment key;

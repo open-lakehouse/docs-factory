@@ -37,6 +37,29 @@
         "modules/unity-catalog/secrets/hibernate.properties",
         "modules/unity-catalog/secrets/server.properties"
       ]
+    },
+    "unitycatalog": {
+      "ports": [
+        8080
+      ],
+      "client-env": {
+        "UNITY_CATALOG_URL": "http://localhost:8080/api/2.1/unity-catalog"
+      },
+      "files": [
+        ".env",
+        ".gitignore",
+        "LAYOUT.md",
+        "client/container.env",
+        "client/host.env",
+        "compose.yaml",
+        "image/Dockerfile",
+        "image/run-as-owner",
+        "image/uc",
+        "modules/envoy/compose.yaml",
+        "modules/envoy/envoy.yaml",
+        "modules/unity-catalog/compose.yaml",
+        "modules/unity-catalog/secrets/server.properties"
+      ]
     }
   }
 }

@@ -23,6 +23,7 @@ lakehouse we document. The dividing line is `architecture/adr/ADR-0002`.
 ```
 content/          Diátaxis-organized Markdown + colocated, tested snippets/ per page (tutorials / how-to / reference / explanation)
 blogs/            narrative blog drafts (index.md + assets/ + snippets/ per post) + STORYLINE
+glossary/         hand-written databricks.com glossary pages adapted from explanation pages (not emitted)
 emit/             deterministic renders: blog draft → unitycatalog.io / delta.io MDX; project docs → sites/ (emit/docs)
 sites/            static docs sites the emitter renders into (unitycatalog-docs, delta-docs), sharing sites/docs-shell; emitted content gitignored
 seed/             docs-factory-seed: deterministic Delta-table seeder (Python + Rust)

@@ -396,9 +396,9 @@ checks in the service lane.
 the aws scripts, with no claim weakened. Readers don't see it yet.
 
 **Done (P5, against H1d).** **H1c** = `c643cf0246b79973af90bdc3d1686581e1bd566f`
-(trestle#144, the parity fixes); **H1d** is trestle#145's merge commit (the UC
-`writable_mounts` knob, found by the first Linux pilot run), which
-`envs/trestle.toml` pins. `envs/uc-aws/` holds the recipe, a copy of the
+(trestle#144, the parity fixes); **H1d** = `4ff53d5b23e7318d9c266b5f56f0ea57fcc1c67f`
+(trestle#145, the UC `writable_mounts` knob, found by the first Linux pilot
+run), which `envs/trestle.toml` pins. `envs/uc-aws/` holds the recipe, a copy of the
 image, the committed render, and `plan.json`. It runs Postgres, not H2 (design
 §10 #45). The diff against aws-sim (step 7) found five gaps, all fixed in Trestle
 as H1c, trestle#144 (#49): Envoy 1.38; `sts-shim` init; an envoy

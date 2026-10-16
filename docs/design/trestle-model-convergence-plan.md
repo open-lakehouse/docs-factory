@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-15. P0 done (#219); P1a, P1b, and P2 done; P3 (Trestle) next.
+**Status:** plan, 2026-10-15. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P3b (Trestle) and P4 next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -15,13 +15,15 @@ packages or deploys as a side effect.
 ```
 P0 baseline + ADRs ─► P1 model ─┬─► P2 journeys ───────────────┐
                                 │                              ├─► P7 surfaces
-P3 Trestle (parallel) ──────────┴─► P4 map ─► P5 pilot ─► P6 cutover
+P3a export (H1a) ───────────────┴─► P4 map ─► P5 pilot ─► P6 cutover
+P3b knobs (H1b) ──────────────────────────────┘
                                          └──────────────────────► P8 diagram (optional)
 ```
 
 - P0 → P1 → P2 need no Trestle change, and P2 ships value on its own.
-- P3 runs in parallel with P0–P2; its tagged revision is handoff **H1**.
-- P4 needs P1 and H1. P5's environment-fit check also needs P2.
+- P3 runs in Trestle in two PRs. Each handoff is a merge commit on Trestle's
+  `main`, not a release: P3a's is **H1a**, P3b's is **H1b**.
+- P4 needs P1 and H1a. P5 needs H1b, and its environment-fit check also needs P2.
 - P7's model-only parts (JSON-LD from claims, `concepts.json` without
   `environments[]`) can start after P2; its environment parts wait for P5.
 - P8 needs P3 and P4's context artifact.
@@ -187,51 +189,80 @@ change every existing table.
 
 ## P3 — Trestle: identity refs, export, and knobs (Trestle repo)
 
-**Depends on** P0's inventory (for the knobs). Can start alongside P0.
+**Depends on** P0's inventory (for the knobs). Split into P3a (export, unblocks
+P4) and P3b (knobs, unblocks P5), stacked PRs in Trestle.
 
-- `crates/stack-topology/src/catalog/module.rs`: add `model: Option<String>` to
-  `DataModule` with `serde(default, skip_serializing_if = "Option::is_none")`,
-  and a defaulted `Module::model()`. Use a typed field, not `Provides.extras`.
-  Roles get no model ref; their mapping lives in docs-factory.
-- `crates/stack-topology/src/catalog/baseline.rs`: set the module refs from design §4.
-- Projection: move the pure projection into `crates/stack-topology/src/projection.rs`
-  (*new*), re-exported by `crates/stack-topology-wasm/src/{dto,topology}.rs`. Check
-  the dependency cost before settling the boundary. Add `GraphNodeDto.model`,
-  `ModuleDto.model`, the service inventory and component membership, and
-  composite edge keys.
-- `plan.json` envelope (design §6) with a JSON schema and fixtures: baseline
-  UC, nondefault context (gateway port, provider preference), and a hosted provider.
-- `plan_result`: add a full-context variant; keep the defaulting call.
-- `crates/trestle/src/cli/env.rs`:
-  - `list-modules --json` prints the catalog DTO (module IDs, model refs, roles).
-  - `env.toml` `[catalog] manifests = [...]`, merged through
-    `Catalog::from_manifests` and `Catalog::merge` (enables the CLI's `catalog`
-    feature, which today loads only `baseline_catalog()`).
-  - `render` also writes `plan.json`.
-  - `[context] local_secrets = "inline"`, which refuses hosted modules.
-- `unity-catalog` module knobs: `container_name`, `extra_mounts`,
-  `embedded_metadata` (H2, no relational/object-store demand), and `build`
-  (a build context path relative to the recipe). `image` already exists.
-- Client env aliases: `AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP` next to
-  `AWS_ENDPOINT_URL_S3` and `AWS_REGION` on `unity-catalog`/`rustfs`.
-- Keep v1 diagram snapshots readable in `node/env-editor/src/diagram/`, or bump
-  the version with a migration. Validate node IDs, edge endpoints, duplicates,
-  and supported versions.
+### P3a — Identity refs, shared projection, `plan.json`, CLI
 
-**Verify:** `cargo test -p olai-stack-topology`, `cargo test -p stack-topology-wasm`
-(update goldens), the WASM build, the diagram snapshot tests, `cargo fmt --all`,
-and `cargo clippy --all-targets --all-features -- -D warnings`.
+**Done (P3a, trestle#142).** **H1a** = `1406bec5f0ce484ce2c5157c87f8a24cdb71bc9a`
+on Trestle `main` (no release; install with
+`cargo install --git https://github.com/open-lakehouse/trestle --rev 1406bec5f0ce484ce2c5157c87f8a24cdb71bc9a --locked olai-trestle`).
 
-**Done when** a tagged revision (H1) exposes the module refs, the JSON catalog,
-manifest loading, a deterministic `plan.json` (identical inputs give identical
-bytes, custom context survives, no credentials), inline secrets, and the four
-UC knobs. The handoff records the tag, the schema, and the exact CLI flags.
+- `Module::model()` / `DataModule.model`: a typed, optional ref to a model
+  element, checked for shape only (dot-separated identifiers). Every baseline
+  module has one (design §4), including the hand-written `headwaters` and
+  `omnigent` and the `mlflow` wrapper. `rivers` refs `rivers`, which P4 adds
+  to the model.
+- The projection moved unchanged into `olai_stack_topology::projection`; the
+  WASM crate re-exports it. Nodes and modules carry `model`, and every edge
+  carries `key` = `kind:from→to:qualifier` (the capability for `uses`, the
+  surface's host port for gateway edges). `Provides.helpers` declares the init
+  jobs and sidecars that only templates named before; a test fails on any
+  rendered container that is neither a service nor a declared helper.
+- `plan.json` (format `trestle-plan`, version 1), schema
+  `crates/stack-topology/schema/plan.v1.schema.json`, fixtures in
+  `crates/stack-topology/tests/fixtures/plan/{baseline-uc,custom-context,hosted}/`.
+  It holds `context`, `graph`, `containers` (name, component, and `service`,
+  `init`, or `sidecar`), `services`, `gateway`, `client.{host,container}`,
+  `files` (path and `sensitive`, never contents), and provenance (`generator`,
+  `catalog.{baseline,manifests,digest}`, `recipe.digest`). It's byte-stable,
+  and no secret value reaches it.
+- `plan_result_for_manifest` (and WASM `planManifest`) honours a manifest's
+  whole context; `plan_result` still defaults it.
+- CLI: `trestle env new` and `trestle env render [<dir>] [--out-dir <dir>]`
+  write `<out>/plan.json`. `env.toml` `[catalog] manifests = [...]` merges
+  module manifests (relative to `env.toml`) over the baseline.
+  `trestle env list-modules --json [--dir <env>]` prints the catalog projection
+  with the same `catalog` identity `plan.json` records. Building with
+  `TRESTLE_REVISION` set adds `generator.revision`.
+- Diagram snapshots: v1 stays readable (missing edge keys are derived on read).
+  Parsing now checks supported versions, unique node IDs, edge endpoints, known
+  kinds, and unique keys. `bun run test` runs in Trestle's Web CI job.
+
+### P3b — UC knobs, inline secrets, endpoint aliases, known aws-sim gaps
+
+- `unity-catalog` knobs: `container_name`; `extra_mounts` (`;`-separated
+  Compose short-syntax volumes); `build` (a context path relative to the render
+  root); `embedded_metadata` (H2, drops both demands). Demands resolve before
+  knobs today, so `embedded_metadata` needs a knob-aware `Module::needs_in`,
+  with every demand-index site switched to it. Add `init: true` to the UC
+  service.
+- `[context] local_secrets = "inline"`: sensitive files are written as ordinary,
+  un-ignored files and included in `PlanResultDto.files`; planning refuses
+  hosted modules.
+- `AWS_ENDPOINT_URL` and `AWS_ALLOW_HTTP` beside `AWS_ENDPOINT_URL_S3` and
+  `AWS_REGION`, behind an opt-in `rustfs` knob. A global endpoint also
+  redirects STS for every SDK client, so turning it on by default would change
+  existing stacks.
+- Known parity gaps, pulled forward from P5 step 7: `localhost:<port>` in
+  `RUSTFS_SERVER_DOMAINS` when S3 has a host listener; UC `server.properties`
+  with the `aws.*` master-identity keys the docs use (check which keys UC 0.7
+  reads); a recipe-settable S3 host port (:9000).
+- Docs-shaped fixtures `docs-uc-aws` and `docs-uc-default` with committed
+  goldens, and a manual `docker compose up` smoke of `docs-uc-aws`.
+
+**Verify:** P3a's checks, plus tests for each knob (set, unset, invalid), the
+inline-secret refusal, and demand-index consistency under `needs_in`.
+
+**Done when** a merge commit (H1b) exposes the four UC knobs, inline secrets,
+the endpoint aliases, and passing docs-shaped fixtures. The handoff records the
+SHA, the knob names and syntax, and the parity gaps left for P5.
 
 ## P4 — Mapping and validation (docs-factory)
 
-**Depends on** P1 and H1.
+**Depends on** P1 and H1a.
 
-1. `envs/trestle.toml` (*new*) pins the H1 revision. CI installs it with
+1. `envs/trestle.toml` (*new*) pins the H1a revision. CI installs it with
    `cargo install --git … --rev … --locked`, cached (or a release binary once
    one exists). Rendering doesn't use the private npm WASM package.
 2. `architecture/integrations/trestle.yaml` (*new*): role → target + `scope`,
@@ -253,7 +284,7 @@ and no network.
 
 ## P5 — The first generated environment, beside the hand-written ones (docs-factory)
 
-**Depends on** P4; P2 for the environment-fit check.
+**Depends on** P4 and H1b; P2 for the environment-fit check.
 
 1. `envs/uc-aws/env.toml` (*new*): modules `unity-catalog`, `rustfs`, `postgres`;
    `gateway_host_port = 8080` plus a :9000 listener; UC at
@@ -367,7 +398,7 @@ site and in Trestle.
 
 Each session records, in its PR description:
 
-- the phase and repo, plus the input artifact and schema versions (Trestle tag,
+- the phase and repo, plus the input artifact and schema versions (Trestle SHA,
   `plan.json` schema, `compatibility.json` version);
 - decisions made and any amendment to the design (update design §10 in the same PR);
 - changed contracts, fixtures, and the downstream entry point;

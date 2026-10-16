@@ -3,7 +3,7 @@
   "version": 1,
   "catalog": {
     "baseline": "olai-stack-topology@0.0.5",
-    "digest": "sha256:063a91f79a1693a530c88da4ff703800c7a5bfe596d03310fe822155140aac74"
+    "digest": "sha256:5dce43b9894df356bc992068e9ffa17a6dbbaa140b535dd45775a2f28134c136"
   },
   "modules": {
     "authelia": {

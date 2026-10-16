@@ -332,11 +332,11 @@ trestle-install:
     set -euo pipefail
     read -r git rev package < <(uv run docsnip trestle --pin)
     root=.tools/trestle
-    if [ -x "$root/bin/trestle" ] && [ "$(cat "$root/.rev" 2>/dev/null)" = "$rev" ]; then
+    # `trestle --version` prints `trestle <version> (<revision>)` when built with TRESTLE_REVISION.
+    if [ -x "$root/bin/trestle" ] && [[ "$("$root/bin/trestle" --version)" == *"($rev)" ]]; then
         exit 0
     fi
     TRESTLE_REVISION="$rev" cargo install --git "$git" --rev "$rev" --locked --root "$root" "$package"
-    echo "$rev" > "$root/.rev"
 
 # Snapshot the pinned Trestle's module catalog into architecture/dist/trestle-catalog.json,
 # then refresh the context artifact and check the join.

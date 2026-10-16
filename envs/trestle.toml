@@ -3,5 +3,5 @@
 # Trestle's main, not a release; `just trestle-catalog` installs it.
 [trestle]
 git = "https://github.com/open-lakehouse/trestle"
-rev = "c643cf0246b79973af90bdc3d1686581e1bd566f"
+rev = "e8d8dc1d7b786a017a37ea0f70804970762e3a75"
 package = "olai-trestle"

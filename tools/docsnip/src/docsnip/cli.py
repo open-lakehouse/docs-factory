@@ -7,6 +7,7 @@ Subcommands:
   bump-uc       — move the docs to a new UC release and rewrite every pin
   bump-delta    — move the Delta docs to a new Delta release and rewrite every pin
   compat        — compatibility tables from script claims (--fix rewrites)
+  trestle       — Trestle catalog ↔ model coverage (--fix rewrites the context artifact)
   check         — validate + snippetcheck + versions + compat (CI entry)
   plan          — which tutorial scripts a CI run executes, per lane and shard
   durations     — fold CI-recorded script durations into the shard plan's input
@@ -25,7 +26,7 @@ import re
 import sys
 from pathlib import Path
 
-from . import ciplan, compat, environments, published, versions
+from . import ciplan, compat, environments, published, trestle, versions
 from .blog import (
     iter_blog_drafts,
     load_tag_registry,
@@ -128,7 +129,11 @@ def cmd_validate(p) -> int:
             )
             print("\n".join(f"  - {u}" for u in uncovered), file=sys.stderr)
 
-    quality = model_quality_gaps(p["arch_model"]) + compat.model_gaps(p["root"])
+    joined = trestle.check(p["root"])
+    errors.extend(joined.errors)
+    quality = (
+        model_quality_gaps(p["arch_model"]) + compat.model_gaps(p["root"]) + joined.gaps
+    )
     if quality:
         print(f"model quality: {len(quality)} gap(s) (not failing):", file=sys.stderr)
         print("\n".join(quality), file=sys.stderr)
@@ -311,6 +316,32 @@ def cmd_compat(p, fix: bool = False) -> int:
     return 0
 
 
+def cmd_trestle(p, fix: bool = False, pin: bool = False) -> int:
+    root = p["root"]
+    try:
+        if pin:
+            found = trestle.load_pin(root)
+            print(found.git, found.rev, found.package)
+            return 0
+        if fix and trestle.fix(root):
+            print(f"rewrote {trestle.CONTEXT}")
+        lines = trestle.coverage(root)
+    except (OSError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 1
+    print("\n".join(lines))
+    report = trestle.check(root)
+    if report.gaps:
+        print(f"\n{len(report.gaps)} gap(s) (not failing):", file=sys.stderr)
+        print("\n".join(report.gaps), file=sys.stderr)
+    if report.errors:
+        print("\n".join(report.errors), file=sys.stderr)
+        print(f"\n{len(report.errors)} trestle error(s)", file=sys.stderr)
+        return 1
+    print("trestle OK")
+    return 0
+
+
 def cmd_check(p) -> int:
     """CI entry point: validate + snippetcheck + versions + compat."""
     rc = cmd_validate(p) or cmd_snippetcheck(p) or cmd_versions(p) or cmd_compat(p)
@@ -380,6 +411,13 @@ def main(argv: list[str] | None = None) -> int:
     sp_compat.add_argument(
         "--fix", action="store_true", help="rewrite the embedded tables first"
     )
+    sp_trestle = sub.add_parser("trestle")
+    sp_trestle.add_argument(
+        "--fix", action="store_true", help="rewrite the context artifact first"
+    )
+    sp_trestle.add_argument(
+        "--pin", action="store_true", help="print the pinned git URL, rev, package"
+    )
     sp_plan = sub.add_parser("plan")
     sp_plan.add_argument(
         "--changed-from",
@@ -408,6 +446,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_versions(p, fix=args.fix)
     if args.cmd == "compat":
         return cmd_compat(p, fix=args.fix)
+    if args.cmd == "trestle":
+        return cmd_trestle(p, fix=args.fix, pin=args.pin)
     if args.cmd == "plan":
         return cmd_plan(p, args.changed_from, args.github_output)
     if args.cmd == "durations":

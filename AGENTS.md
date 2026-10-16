@@ -135,6 +135,7 @@ uv run docsnip compat --fix            # re-render compatibility tables from scr
 uv run ruff check . && uv run ty check # lint + types
 cargo build                            # compile the Rust seed helper and the snippets crate
 just arch-dev                          # LikeC4 architecture model at :5173
+just trestle-catalog                   # snapshot the pinned Trestle's modules + check the model join
 ```
 
 ## Adding a tested snippet to a page

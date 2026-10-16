@@ -1,6 +1,6 @@
 # Converging the estate model with Trestle environments
 
-**Status:** design, 2026-10-15. P0–P2 and P3a are built; the rest is proposed (see the plan).
+**Status:** design, 2026-10-15. P0–P2, P3a, and P4 are built; the rest is proposed (see the plan).
 **Execution:** [phased plan](trestle-model-convergence-plan.md), one session per phase.
 **Supersedes:** two independent drafts (#216, #217), consolidated here. §10
 records which decisions were settled and which are defaults open to review.
@@ -190,7 +190,7 @@ for diagram enrichment (§8); Trestle never hand-maintains a second mapping.
 | `jaeger` | `jaeger` | `realizes observability`, `consumes otlpSpec` |
 | `marimo` | `marimo` | |
 | `puppygraph` | `puppygraph` | `realizes queryEngine` |
-| `rivers` | `rivers` (new in P4) | `realizes orchestration` |
+| `rivers` | `rivers` (added in P4) | `realizes orchestration` |
 
 New specs: `azureBlobApi`; optionally `openLineageSpec` and `otlpSpec`.
 
@@ -213,6 +213,7 @@ and deployment instances are their configured occurrences.
 | `auth` | `lakehouse.governance.authentication` | full | |
 | `policy` | `lakehouse.governance.authorization` | partial | A policy engine decides; something else enforces. |
 | `notebooks` | `lakehouse.interactiveDevelopment` | full | Notebooks are files in volumes, not an asset kind. |
+| `orchestration` | `lakehouse.orchestration` | full | Rivers. |
 | `gateway`, `relational_db`, `app_runtime`, `agent_platform` | — | — | Explicitly unmapped infrastructure. Don't invent a capability to fill the cell. |
 
 These are mappings to validate, not equivalence claims. Unmapped roles and
@@ -559,6 +560,12 @@ while consolidating; revisit in review.
 | 29 | `plan.json` lists `containers` (name, component, kind) beside `services`; hosted, host, and in-process services are graph nodes, not containers | P3a | Membership on each service |
 | 30 | `embedded_metadata` needs knob-aware demands (`Module::needs_in`), because demands resolve before knobs | P3 | A template-only flag |
 | 31 | The known aws-sim parity gaps (`RUSTFS_SERVER_DOMAINS`, UC `aws.*` keys, S3 host port) move into P3b; P5 step 7 still diffs the rest | P3 | Find them all in P5 |
+| 32 | P4 runs before P3b, so its findings join P3b's scope | settled | P3b first |
+| 33 | The catalog snapshot is `list-modules --json` verbatim; the envelope is Trestle's to add (P3b), and docsnip accepts both shapes meanwhile | P4 | A docs-factory wrapper with the pin |
+| 34 | The role map carries `version`, the `catalog` baseline it interprets, and flat role `aliases`; duplicate keys fail | P4 | Module aliases (nothing in the map keys on modules) |
+| 35 | A role scope `partial` over a full edge is fine (the role is narrower); `full` over only `#partial` edges is reported | P4 | Require scopes to match the edge tag |
+| 36 | The context artifact carries model facts only, with no `verified` or maturity field; module-side evidence waits for P7 | P4 | Derive `verified` from the clients' `verifiedEdges` |
+| 37 | Trestle installs into a repo-local `.tools/trestle`, built with `TRESTLE_REVISION` | P4 | A global `cargo install` |
 
 ## 11. Risks and open questions
 

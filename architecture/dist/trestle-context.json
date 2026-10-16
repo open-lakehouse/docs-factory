@@ -1,0 +1,407 @@
+{
+  "format": "docs-factory-trestle-context",
+  "version": 1,
+  "catalog": {
+    "baseline": "olai-stack-topology@0.0.5",
+    "digest": "sha256:063a91f79a1693a530c88da4ff703800c7a5bfe596d03310fe822155140aac74"
+  },
+  "modules": {
+    "authelia": {
+      "title": "Authelia",
+      "role": "auth",
+      "model": "authelia"
+    },
+    "aws-s3": {
+      "title": "Amazon S3",
+      "role": "object_store",
+      "model": "amazonS3",
+      "implements": [
+        "s3Api"
+      ]
+    },
+    "azure-storage": {
+      "title": "Azure Storage",
+      "role": "object_store",
+      "model": "azureBlobStorage",
+      "implements": [
+        "azureBlobApi"
+      ]
+    },
+    "azurite": {
+      "title": "Azurite",
+      "role": "object_store",
+      "model": "azurite",
+      "implements": [
+        "azureBlobApi"
+      ]
+    },
+    "envoy": {
+      "title": "Envoy",
+      "role": "gateway",
+      "model": "envoy"
+    },
+    "headwaters": {
+      "title": "Headwaters",
+      "role": "lineage",
+      "model": "headwaters",
+      "implements": [
+        "openLineageSpec"
+      ]
+    },
+    "hosted-postgres": {
+      "title": "Hosted Postgres",
+      "role": "relational_db",
+      "model": "postgresql"
+    },
+    "jaeger": {
+      "title": "Jaeger",
+      "role": "tracing",
+      "model": "jaeger"
+    },
+    "marimo": {
+      "title": "marimo",
+      "role": "notebooks",
+      "model": "marimo"
+    },
+    "mlflow": {
+      "title": "MLflow",
+      "role": "experiment_tracking",
+      "model": "mlflow"
+    },
+    "omnigent": {
+      "title": "Omnigent",
+      "role": "agent_platform",
+      "model": "omnigent"
+    },
+    "opa": {
+      "title": "Open Policy Agent",
+      "role": "policy",
+      "model": "openPolicyAgent"
+    },
+    "postgres": {
+      "title": "Postgres",
+      "role": "relational_db",
+      "model": "postgresql"
+    },
+    "puppygraph": {
+      "title": "PuppyGraph",
+      "role": "graph",
+      "model": "puppygraph",
+      "implements": [
+        "openCypherSpec"
+      ]
+    },
+    "rivers": {
+      "title": "Rivers",
+      "role": "orchestration",
+      "model": "rivers"
+    },
+    "rustfs": {
+      "title": "RustFS",
+      "role": "object_store",
+      "model": "rustfs",
+      "implements": [
+        "s3Api"
+      ]
+    },
+    "unity-catalog": {
+      "title": "Unity Catalog",
+      "role": "data_catalog",
+      "model": "unityCatalogOSS",
+      "implements": [
+        "icebergRestSpec",
+        "ucSpec"
+      ]
+    }
+  },
+  "roles": {
+    "agent_platform": {
+      "unmapped": "infrastructure"
+    },
+    "app_runtime": {
+      "unmapped": "infrastructure"
+    },
+    "auth": {
+      "target": "lakehouse.governance.authentication",
+      "scope": "full"
+    },
+    "data_catalog": {
+      "target": "lakehouse.catalog",
+      "scope": "full"
+    },
+    "experiment_tracking": {
+      "target": "lakehouse.modelTracking",
+      "scope": "partial"
+    },
+    "gateway": {
+      "unmapped": "infrastructure"
+    },
+    "graph": {
+      "target": "lakehouse.queryEngine",
+      "scope": "full"
+    },
+    "lineage": {
+      "target": "lakehouse.lineage",
+      "scope": "full"
+    },
+    "notebooks": {
+      "target": "lakehouse.interactiveDevelopment",
+      "scope": "full"
+    },
+    "object_store": {
+      "target": "lakehouse.objectStorage",
+      "scope": "full"
+    },
+    "orchestration": {
+      "target": "lakehouse.orchestration",
+      "scope": "full"
+    },
+    "policy": {
+      "target": "lakehouse.governance.authorization",
+      "scope": "partial"
+    },
+    "relational_db": {
+      "unmapped": "infrastructure"
+    },
+    "sql_engine": {
+      "target": "lakehouse.queryEngine",
+      "scope": "full"
+    },
+    "tracing": {
+      "target": "lakehouse.observability",
+      "scope": "partial"
+    }
+  },
+  "concepts": {
+    "amazonS3": {
+      "kind": "implementation",
+      "title": "Amazon S3",
+      "description": "AWS's managed object storage service; the origin of the S3 API.",
+      "links": [
+        "https://aws.amazon.com/s3/"
+      ]
+    },
+    "authelia": {
+      "kind": "implementation",
+      "title": "Authelia",
+      "description": "Open source authentication and authorization server that fronts web services with single sign-on and access rules.",
+      "links": [
+        "https://www.authelia.com"
+      ]
+    },
+    "azureBlobApi": {
+      "kind": "openSpecification",
+      "title": "Azure Blob Storage API",
+      "description": "The REST interface to Azure Blob Storage, also served by local emulators.",
+      "links": [
+        "https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api"
+      ]
+    },
+    "azureBlobStorage": {
+      "kind": "implementation",
+      "title": "Azure Blob Storage",
+      "description": "Azure's managed object storage service.",
+      "links": [
+        "https://azure.microsoft.com/products/storage/blobs"
+      ]
+    },
+    "azurite": {
+      "kind": "implementation",
+      "title": "Azurite",
+      "description": "Local emulator for Azure Storage, including the Blob service.",
+      "links": [
+        "https://github.com/Azure/Azurite"
+      ]
+    },
+    "envoy": {
+      "kind": "implementation",
+      "title": "Envoy",
+      "description": "Open source edge and service proxy; the gateway that routes requests to each service.",
+      "links": [
+        "https://www.envoyproxy.io"
+      ]
+    },
+    "headwaters": {
+      "kind": "implementation",
+      "title": "headwaters",
+      "description": "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store.",
+      "links": [
+        "https://github.com/open-lakehouse/headwaters"
+      ]
+    },
+    "icebergRestSpec": {
+      "kind": "openSpecification",
+      "title": "Iceberg REST Catalog",
+      "description": "Specification for a REST based Iceberg catalog",
+      "links": [
+        "https://iceberg.apache.org/concepts/catalog/"
+      ]
+    },
+    "jaeger": {
+      "kind": "implementation",
+      "title": "Jaeger",
+      "description": "Open source distributed tracing backend: collects, stores, and visualizes traces.",
+      "links": [
+        "https://www.jaegertracing.io"
+      ]
+    },
+    "lakehouse.catalog": {
+      "kind": "capability",
+      "title": "Catalog",
+      "description": "A catalog is the metadata layer that records which tables and schemas\nexist, where their data lives, and who may touch it — the authoritative\nnamespace a query resolves a table name against before any bytes are read.\n\nIn the lakehouse it also brokers access: at resolution time it issues a\nshort-lived, scoped storage credential for exactly the data a query needs\n(credential vending), so raw storage keys are never handed out.",
+      "links": [
+        "https://www.openlakehouse.io/technologies/catalogs"
+      ]
+    },
+    "lakehouse.governance.authentication": {
+      "kind": "concern",
+      "title": "Authentication",
+      "description": "Authentication verifies a principal's identity, whether a user, a\nservice, or an agent, and passes it on as a token every later\ndecision can trust."
+    },
+    "lakehouse.governance.authorization": {
+      "kind": "concern",
+      "title": "Authorization",
+      "description": "Authorization answers 'may this principal do this to that asset?'\nfrom grants, privileges, and policies, and returns allow or deny."
+    },
+    "lakehouse.interactiveDevelopment": {
+      "kind": "capability",
+      "title": "Interactive development",
+      "description": "Interactive development is where a person explores data and builds\nlogic: a notebook or editor holds a live session, sends queries to the\nquery engine, and shows results as they arrive.\n\nIts notebooks are files, so the lakehouse governs them like any other\nfile, in a volume, rather than as an asset kind of their own."
+    },
+    "lakehouse.lineage": {
+      "kind": "concern",
+      "title": "Lineage",
+      "description": "Data lineage traces the origin and movement of data through the system —\nwhich inputs produced which outputs, dataset- and column-level.\n\nHere it is captured at query planning time, so provenance is derived from\nthe plan the engine is about to run rather than reconstructed after."
+    },
+    "lakehouse.modelTracking": {
+      "kind": "capability",
+      "title": "Model tracking",
+      "description": "Model tracking manages machine-learning artifacts over time: experiment\ntracking, a model registry with versions and stages, and the path from a\ntrained model to a governed, deployable one.\n\nIt sits alongside the query/governance capabilities: models are data\nassets too, catalogued and governed like tables rather than living in a\nseparate, ungoverned silo."
+    },
+    "lakehouse.objectStorage": {
+      "kind": "capability",
+      "title": "Object storage",
+      "description": "Object storage manages data as discrete objects (blobs) in a flat\nnamespace addressed by key, rather than as a file hierarchy or fixed\nblocks. It scales cheaply and horizontally, which is why it is the byte\ncontainer the lakehouse writes table data files into.\n\nIt sits beneath the table format: object storage holds the bytes; the\ntable format is what makes those bytes a governed, transactional table."
+    },
+    "lakehouse.observability": {
+      "kind": "concern",
+      "title": "Observability",
+      "description": "Observability is the concern that makes the running platform legible: distributed traces, metrics, and logs emitted by the\nquery engine and services, so operators can reason about latency,\nfailures, and cost.\n\nLike governance and lineage it attaches across the stack rather than\nsitting in the query path."
+    },
+    "lakehouse.orchestration": {
+      "kind": "capability",
+      "title": "Orchestration",
+      "description": "Orchestration turns individual jobs into managed pipelines: it schedules\nthem, resolves their dependencies as a DAG, retries on failure, and fires\nthem on time- or event-based triggers.\n\nIn the lakehouse it drives the compute rather than replacing it: the\npipelines it runs resolve tables through the catalog and execute on the\nquery engine, so governance and lineage attach to orchestrated runs the\nsame way they do to ad-hoc queries."
+    },
+    "lakehouse.queryEngine": {
+      "kind": "capability",
+      "title": "Query engine",
+      "description": "A query engine turns a declarative query into a plan of operations and\nexecutes it: it parses the query, resolves the tables it references,\noptimizes an execution plan, and runs it to produce results.\n\nHere it is catalog-native — it resolves tables through the catalog, and\ncredentials, policy enforcement, and lineage capture all attach to the\nplan at resolution / planning time rather than being bolted on after."
+    },
+    "marimo": {
+      "kind": "implementation",
+      "title": "marimo",
+      "description": "Reactive Python notebook, stored as plain Python files.",
+      "links": [
+        "https://marimo.io"
+      ]
+    },
+    "mlflow": {
+      "kind": "implementation",
+      "title": "MLflow",
+      "description": "Open source platform for the ML lifecycle: experiment tracking, model registry, and deployment.",
+      "links": [
+        "https://mlflow.org"
+      ]
+    },
+    "omnigent": {
+      "kind": "implementation",
+      "title": "Omnigent",
+      "description": "Open source meta-harness for AI agents: composes, governs, and shares sessions across multiple agent harnesses.",
+      "links": [
+        "https://omnigent.ai"
+      ]
+    },
+    "openCypherSpec": {
+      "kind": "openSpecification",
+      "title": "openCypher",
+      "description": "Open specification of the Cypher graph query language.",
+      "links": [
+        "https://opencypher.org"
+      ]
+    },
+    "openLineageSpec": {
+      "kind": "openSpecification",
+      "title": "OpenLineage",
+      "description": "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column.",
+      "links": [
+        "https://openlineage.io"
+      ]
+    },
+    "openPolicyAgent": {
+      "kind": "implementation",
+      "title": "Open Policy Agent",
+      "description": "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision.",
+      "links": [
+        "https://www.openpolicyagent.org"
+      ]
+    },
+    "postgresql": {
+      "kind": "implementation",
+      "title": "PostgreSQL",
+      "description": "Open source relational database; the metadata store behind catalog and tracking services.",
+      "links": [
+        "https://www.postgresql.org"
+      ]
+    },
+    "puppygraph": {
+      "kind": "implementation",
+      "title": "PuppyGraph",
+      "description": "Graph query engine that runs graph queries over existing tables without copying them into a graph database.",
+      "links": [
+        "https://www.puppygraph.com"
+      ]
+    },
+    "rivers": {
+      "kind": "implementation",
+      "title": "Rivers",
+      "description": "Asset-based orchestrator for Python pipelines, with a run UI.",
+      "links": [
+        "https://orchestrator.rs"
+      ]
+    },
+    "rustfs": {
+      "kind": "implementation",
+      "title": "RustFS",
+      "description": "S3-compatible object storage server written in Rust.",
+      "links": [
+        "https://rustfs.com"
+      ]
+    },
+    "s3Api": {
+      "kind": "openSpecification",
+      "title": "S3 API",
+      "description": "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement.",
+      "links": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html"
+      ]
+    },
+    "ucSpec": {
+      "kind": "openSpecification",
+      "title": "Unity Catalog",
+      "description": "Open catalog specification for data & AI:\na catalog governing tables, files, functions, and models across engines.",
+      "links": [
+        "https://www.unitycatalog.io"
+      ]
+    },
+    "unityCatalogOSS": {
+      "kind": "implementation",
+      "title": "Unity Catalog (OSS)",
+      "description": "The open-source reference server implementing the Unity Catalog specification.",
+      "links": [
+        "https://github.com/unitycatalog/unitycatalog",
+        "https://unitycatalog.io"
+      ]
+    }
+  }
+}

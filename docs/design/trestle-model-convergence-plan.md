@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-15. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P3b (Trestle) and P4 next.
+**Status:** plan, 2026-10-15. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b (Trestle) next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -251,6 +251,16 @@ on Trestle `main` (no release; install with
 - Docs-shaped fixtures `docs-uc-aws` and `docs-uc-default` with committed
   goldens, and a manual `docker compose up` smoke of `docs-uc-aws`.
 
+- Asks from P4, which ran first so that its findings land in this PR:
+  - `list-modules --json` gains the envelope `plan.json` has: `format:
+    "trestle-catalog"`, `version: 1`, and the same `generator {name, version,
+    revision}` block, plus `schema/catalog.v1.schema.json` and a golden fixture.
+    docsnip already accepts it and then fails when the revision isn't the pin.
+  - `trestle --version` prints the embedded `TRESTLE_REVISION`, so a cached
+    install can be checked against the pin instead of a marker file.
+  - No module ref needs correcting: all 17 resolve to implementations, and every
+    mapped role has a model path to its target.
+
 **Verify:** P3a's checks, plus tests for each knob (set, unset, invalid), the
 inline-secret refusal, and demand-index consistency under `needs_in`.
 
@@ -281,6 +291,26 @@ module, and unmapped infrastructure. Everything runs with no sibling checkout
 and no network.
 
 **Done when** CI fails on a dangling Trestle reference and reports coverage.
+
+**Done (P4, against H1a).** `rivers` joined the technology catalog
+(`realizes lakehouse.orchestration`). `envs/trestle.toml` pins H1a, and
+`just trestle-install` builds it into a repo-local `.tools/trestle`.
+`architecture/dist/trestle-catalog.json` is `list-modules --json` verbatim; the
+`Trestle` workflow (path-filtered, nightly) rebuilds the pin and fails on a diff.
+The role map has a `version`, the `catalog` baseline it interprets, and flat
+role `aliases`; its loader rejects duplicate keys, which PyYAML would otherwise
+drop silently. `tools/docsnip/src/docsnip/trestle.py` runs inside
+`docsnip check`: dangling or wrong-kind refs and targets fail; modules with no
+ref, unmapped roles, roles no module provides, contributions with no
+`realizes` / `implements`→`specifies` path, and full-scope roles over only
+`#partial` edges are reported. The context artifact,
+`architecture/dist/trestle-context.json`, holds model facts only (titles,
+descriptions, external links, the specs each implementation implements). It
+has no `verified` field: CI evidence in `compatibility.json` is about the
+clients' edges, not the modules', so it can't vouch for a module. P7's
+`concepts.json` carries that evidence. First run: 0 errors; the only gaps are
+`sql_engine` and `app_runtime`, mapped before any module provides them. The
+Trestle asks are under P3b.
 
 ## P5 — The first generated environment, beside the hand-written ones (docs-factory)
 

@@ -1,0 +1,33 @@
+# What each Trestle role contributes to the estate model.
+#
+# A Trestle module names the implementation it packages itself (its `model:`
+# ref); this file owns the interpretation of its role: which capability or
+# concern the role contributes to, and whether fully or only together with
+# another contributor (`partial`). Infrastructure roles stay explicitly
+# unmapped rather than getting an invented capability. Validated by
+# `docsnip check` against architecture/dist/{model,trestle-catalog}.json.
+version: 1
+# The catalog baseline this map interprets, without its version.
+catalog: olai-stack-topology
+roles:
+  object_store: { target: lakehouse.objectStorage, scope: full }
+  data_catalog: { target: lakehouse.catalog, scope: full }
+  sql_engine: { target: lakehouse.queryEngine, scope: full }
+  # PuppyGraph queries tables in place.
+  graph: { target: lakehouse.queryEngine, scope: full }
+  # Tracking experiments isn't the whole model lifecycle.
+  experiment_tracking: { target: lakehouse.modelTracking, scope: partial }
+  lineage: { target: lakehouse.lineage, scope: full }
+  # A trace backend doesn't instrument the services that send it traces.
+  tracing: { target: lakehouse.observability, scope: partial }
+  auth: { target: lakehouse.governance.authentication, scope: full }
+  # A policy engine decides; something else enforces.
+  policy: { target: lakehouse.governance.authorization, scope: partial }
+  notebooks: { target: lakehouse.interactiveDevelopment, scope: full }
+  orchestration: { target: lakehouse.orchestration, scope: full }
+  gateway: { unmapped: infrastructure }
+  relational_db: { unmapped: infrastructure }
+  app_runtime: { unmapped: infrastructure }
+  agent_platform: { unmapped: infrastructure }
+# Former Trestle role id → current id, for a role Trestle renames.
+aliases: {}

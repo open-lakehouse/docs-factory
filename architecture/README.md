@@ -69,7 +69,8 @@ architecture/
   estate.yml                   # ref-free repo facts
   glossary.md                  # canonical terminology
   conflicts.md                 # open-questions register
-  dist/                         # generated build artifact (model.json)
+  integrations/trestle.yaml     # Trestle role -> capability/concern contribution (full|partial)
+  dist/                         # generated: model.json, trestle-catalog.json, trestle-context.json
 ```
 
 ## Commands
@@ -82,6 +83,7 @@ just arch-check     # validate syntax + semantics
 just arch-model     # export dist/model.json
 just arch-build     # build the static site into dist/static
 just arch-refresh   # check + model + build — run after any model edit
+just trestle-catalog  # snapshot the pinned Trestle's modules, refresh the context, check the join
 ```
 
 ## Update process
@@ -93,8 +95,8 @@ just arch-refresh   # check + model + build — run after any model edit
    `views/logical-views`/`views/deployment-views`/`views/flows`).
 2. Make the minimal change. Never add a service/repo/technology name to a logical
    file. Tag designed-but-not-built work `#designed`/`#prototype`. Stay ref-free.
-3. Run `just arch-refresh`; commit the `.likec4` sources and `dist/model.json`
-   together.
+3. Run `just arch-refresh`; commit the `.likec4` sources, `dist/model.json`, and
+   `dist/trestle-context.json` (refreshed by `arch-model`) together.
 
 The [`/update-architecture`](../.claude/skills/update-architecture/SKILL.md)
 skill automates the traversal across sibling repos and proposes the patches.

@@ -115,7 +115,11 @@ parent.
 
 A Trestle module's `model:` ref always names an **implementation** in the
 technology catalog, never a capability or concern; what a Trestle *role*
-contributes lives in `architecture/integrations/trestle.yaml`.
+contributes lives in `architecture/integrations/trestle.yaml`. When the Trestle
+pin (`envs/trestle.toml`) moves or a module gains a ref the model lacks, add the
+implementation, run `just trestle-catalog`, and fix what `uv run docsnip
+trestle` reports: a dangling ref fails `docsnip check`, and a role whose
+implementation has no `realizes` / `implements` path to its target is a gap.
 
 If a design doc's scope changed, also propose the `design/*.md` edit and the
 `canonicals.yaml` update.

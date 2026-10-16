@@ -320,6 +320,15 @@ model {
   }
   marimo -[realizes]-> lakehouse.interactiveDevelopment "realizes the notebook"
 
+  // Orchestration implementation -------------------------------------------
+  rivers = implementation "Rivers" {
+    #service
+
+    description "Asset-based orchestrator for Python pipelines, with a run UI."
+    link https://orchestrator.rs
+  }
+  rivers -[realizes]-> lakehouse.orchestration "realizes the orchestration capability"
+
   // Infrastructure the docs environments run on ----------------------------
   envoy = implementation "Envoy" {
     #infra

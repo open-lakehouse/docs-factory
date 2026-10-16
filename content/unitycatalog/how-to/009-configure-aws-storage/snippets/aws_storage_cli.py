@@ -49,8 +49,7 @@ def check_policies() -> None:
     }
     assert {"s3:GetObject", "s3:PutObject", "s3:ListBucket"} <= actions, actions
     local = (
-        HERE.parents[4]
-        / "envs/uc-aws/modules/unity-catalog/secrets/server.properties"
+        HERE.parents[4] / "envs/uc-aws/modules/unity-catalog/secrets/server.properties"
     )
     for props in (local, HERE.parent / "server.aws.properties"):
         assert f"aws.masterRoleArn={MASTER}" in props.read_text(), props

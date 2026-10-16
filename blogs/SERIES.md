@@ -80,7 +80,9 @@ to end. Facts come from `architecture/` (capabilities, concerns, asset kinds)
 and Trestle's `stack-topology` module catalog; the role → capability mapping
 is in `docs/design/trestle-model-convergence.md` §4.
 **Cross-links:** Governed ↔ *Trust in your Open Lakehouse* / *cross-repo-abac*
-(the argument lives there; this arc is the configuration); Interoperable ↔
+(the argument lives there; this arc is the configuration); Trusted ↔ *Trust
+in your Open Lakehouse* §Trusted Compute / the IDEAS attestation entry;
+Interoperable ↔
 `uc-iceberg-rest`; Agentic ↔ the Chef Casper arc.
 
 **Posts (in order):**
@@ -90,18 +92,20 @@ is in `docs/design/trestle-model-convergence.md` §4.
    object store + gateway; roles vs. implementations, swapping a brick.
 3. The Governed Lakehouse — `blogs/governed-lakehouse/` — idea — + auth + policy;
    PDP/PEP placement, credential vending.
-4. The Observable Lakehouse — `blogs/observable-lakehouse/` — idea — + tracing +
+4. The Trusted Lakehouse — `blogs/trusted-lakehouse/` — idea — + workload
+   identity; SPIFFE/SPIRE, mTLS between bricks, no standing secrets.
+5. The Observable Lakehouse — `blogs/observable-lakehouse/` — idea — + tracing +
    lineage; concerns that span capabilities.
-5. The Interoperable Lakehouse — `blogs/interoperable-lakehouse/` — idea — peer
+6. The Interoperable Lakehouse — `blogs/interoperable-lakehouse/` — idea — peer
    formats, Iceberg REST, many engines on one table.
-6. The Portable Lakehouse — `blogs/portable-lakehouse/` — idea — in-stack vs.
+7. The Portable Lakehouse — `blogs/portable-lakehouse/` — idea — in-stack vs.
    hosted providers, deploy targets.
-7. The Interactive Lakehouse — `blogs/interactive-lakehouse/` — idea — notebooks
+8. The Interactive Lakehouse — `blogs/interactive-lakehouse/` — idea — notebooks
    + experiment tracking; AI asset kinds.
-8. The Agentic Lakehouse — `blogs/agentic-lakehouse/` — idea — the finale: agent
+9. The Agentic Lakehouse — `blogs/agentic-lakehouse/` — idea — the finale: agent
    platform + everything above, deployed A to Z.
 
-Adjectives for 5–7 are still open; reorder or replace freely, but keep 1–4 and
+Adjectives for 6–8 are still open; reorder or replace freely, but keep 1–5 and
 the agentic finale as the spine.
 
 ## Build on Unity Catalog

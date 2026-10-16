@@ -18,9 +18,9 @@ referenced by a pinned ref (never copied). See [`CONVENTIONS.md`](./CONVENTIONS.
 
 - [x] **The Composable Lakehouse series** — what a "databrick" is, then one post
   per Trestle-generated lakehouse configuration (composable → governed →
-  observable → interoperable → portable → interactive → agentic), each tied to
+  trusted → observable → interoperable → portable → interactive → agentic), each tied to
   the C4 model. → graduated to idea folders: `blogs/what-is-a-databrick/`,
-  `blogs/{composable,governed,observable,interoperable,portable,interactive,agentic}-lakehouse/`
+  `blogs/{composable,governed,trusted,observable,interoperable,portable,interactive,agentic}-lakehouse/`
   (series: The Composable Lakehouse).
   `repos:` trestle (`crates/stack-topology`) · `src:` architecture/, docs/design/trestle-model-convergence.md
 
@@ -106,7 +106,9 @@ referenced by a pinned ref (never copied). See [`CONVENTIONS.md`](./CONVENTIONS.
   Estate: extends the governance storyline's "trusted compute" thread. **Producer/
   consumer pair** with the "Credential-less releases" entry below — that post *produces*
   the signed artifacts + checksums this one *consumes* for runtime attestation
-  (two halves of one trust chain; cross-link).
+  (two halves of one trust chain; cross-link). Configuration counterpart:
+  `blogs/trusted-lakehouse/` (The Composable Lakehouse) stands up SPIRE + mTLS;
+  this post stays the deep cut on attesting against artifact facts.
 
 - [ ] **Credential-less releases: a keyless, verifiable distribution pipeline** — the
   CI/CD we built across the five estate repos to publish four artifact types — **crates

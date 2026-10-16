@@ -4,7 +4,7 @@ slug: interoperable-lakehouse
 status: idea
 tags: [lakehouse, delta-lake, iceberg, table-formats]
 series: The Composable Lakehouse
-series_order: 5
+series_order: 6
 author: Robert Pack
 ---
 

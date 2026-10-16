@@ -582,6 +582,8 @@ while consolidating; revisit in review.
 | 50 | Environment fit runs in `envgen.py` (it needs the plans), checks every provider participant (not `client`) of each working claim, fails on none, reports several; `binding:` stays deferred until a case arises | P5 | In `compat.py`; check every participant |
 | 51 | Each generated fragment also carries a deployment view (`<env>Deploy`), and each edge its plan key as `metadata { trestleEdge … }` | P5 | Keys in comments; no per-environment view |
 | 52 | The re-render check runs in the Trestle workflow's job, sharing the cached install, not in a separate job | P5 | A second job that rebuilds Trestle |
+| 53 | aws-sim adopts Trestle's RustFS root keys (`rustfs-root`), because the DataFrame seed writes as the store's owner and Trestle's keys are constants | P5 | A Trestle root-key knob |
+| 54 | `UC_DOCS_ROOT` is opened by a Trestle UC knob, `writable_mounts` (H1d, trestle#145): a one-shot runs `chmod 0777` on listed paths, which are listed rather than parsed because `${VAR:-default}` contains colons | P5 | Harness pre-creates the directory; parse targets from `extra_mounts` |
 
 ## 11. Risks and open questions
 

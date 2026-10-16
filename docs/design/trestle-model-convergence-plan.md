@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144); P6 next.
+**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 next.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -395,14 +395,18 @@ checks in the service lane.
 **Done when** `uc-aws` renders reproducibly, appears in the model, and passes
 the aws scripts, with no claim weakened. Readers don't see it yet.
 
-**Done (P5, against H1c).** **H1c** = `c643cf0246b79973af90bdc3d1686581e1bd566f`
-on Trestle `main` (trestle#144); `envs/trestle.toml` pins it. `envs/uc-aws/` holds the recipe, a copy of the
+**Done (P5, against H1d).** **H1c** = `c643cf0246b79973af90bdc3d1686581e1bd566f`
+(trestle#144, the parity fixes); **H1d** is trestle#145's merge commit (the UC
+`writable_mounts` knob, found by the first Linux pilot run), which
+`envs/trestle.toml` pins. `envs/uc-aws/` holds the recipe, a copy of the
 image, the committed render, and `plan.json`. It runs Postgres, not H2 (design
 §10 #45). The diff against aws-sim (step 7) found five gaps, all fixed in Trestle
 as H1c, trestle#144 (#49): Envoy 1.38; `sts-shim` init; an envoy
 `publish_admin` knob; a UC `bucket` knob, which replaces the extra resource;
 and `x-amz-bucket-region` on emulated S3, without which every Iceberg REST
-write failed. The parity table is in the
+write failed. The first Linux pilot found two more: the DataFrame seed writes
+with aws-sim's root keys (aws-sim now uses Trestle's, #53), and nothing opened
+`UC_DOCS_ROOT` (H1d's `writable_mounts`, #54). The parity table is in the
 [inventory](trestle-env-inventory.md#envsuc-aws--the-generated-stand-in-p5).
 
 `docsnip envs [--fix]` (`envgen.py`) writes

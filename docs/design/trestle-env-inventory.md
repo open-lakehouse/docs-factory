@@ -179,7 +179,7 @@ through the gateway (`envoy` publishes `8080:10000` and `9000:9000`); the UC
 container only `expose`s 8080, so the harness takes the base URL from
 `plan.json`'s host client env.
 
-Parity with `aws-sim` and `compose.aws.yaml`, after H1c (trestle#144):
+Parity with `aws-sim` and `compose.aws.yaml`, after H1c (trestle#144) and H1d (trestle#145):
 
 | aws-sim / compose.aws.yaml | Rendered | Status |
 |---|---|---|
@@ -188,16 +188,18 @@ Parity with `aws-sim` and `compose.aws.yaml`, after H1c (trestle#144):
 | No host :9901 | Envoy admin published on the host | fixed in H1c (`publish_admin = "false"`) |
 | One bucket, `uc-docs` | an extra `unity` bucket, aliases, cert names | fixed in H1c (UC `bucket` knob) |
 | `x-amz-bucket-region: us-east-1` on S3 responses | missing; every Iceberg REST write failed with "Could not resolve the AWS region for S3 bucket" | fixed in H1c (impersonated-host `response_headers`) |
-| Root keys `aws-sim-root` | `rustfs-root` | equivalent: pages use vended credentials |
+| Root keys `aws-sim-root` | `rustfs-root` (constants) | fixed in docs: the DataFrame seed helper writes with the root keys, so aws-sim now uses `rustfs-root` too |
 | `rustfs-init` restarts never; inline env | `restart: on-failure`; `env_file` | equivalent |
-| H2 metadata, `init-storage` chmods `UC_DOCS_ROOT` | Postgres; no `init-storage` | Postgres accepted; the chmod question is settled by the Linux pilot (`envs-pilot`) |
+| H2 metadata | Postgres | accepted (design §10 #45) |
+| `init-storage` chmods `UC_DOCS_ROOT` | nothing; on Linux Docker creates it root-owned and Daft can't write `file://` tables | fixed in H1d (UC `writable_mounts`, a `unitycatalog-mounts` one-shot) |
 | Client env `AWS_ENDPOINT_URL`, `AWS_ALLOW_HTTP` | also `AWS_ENDPOINT_URL_S3`, `AWS_REGION`, `UNITY_CATALOG_URL` | reader-visible at the P6 cutover |
 | Envoy healthcheck on admin `/ready` | none; services gate on their own healthchecks | equivalent for `up --wait` |
 
-Runs against it (macOS, Colima): the four Iceberg REST scripts and the two
-`bin/uc` CLI scripts pass. The five Python SDK and DataFrame scripts couldn't
-resolve `unitycatalog-client==0.7.0` through the internal package proxy, so
-their first run is the `envs-pilot` CI job on public PyPI.
+Runs against it: locally (macOS, Colima) the four Iceberg REST scripts and the
+two `bin/uc` CLI scripts pass; the SDK and DataFrame scripts can't resolve
+`unitycatalog-client==0.7.0` through the internal proxy there. The first
+`envs-pilot` run on Linux passed 8 of 11 and found the last two gaps above
+(root keys, `UC_DOCS_ROOT` ownership).
 
 ## Gaps → phases
 

@@ -199,7 +199,9 @@ Runs against it: locally (macOS, Colima) the four Iceberg REST scripts and the
 two `bin/uc` CLI scripts pass; the SDK and DataFrame scripts can't resolve
 `unitycatalog-client==0.7.0` through the internal proxy there. The first
 `envs-pilot` run on Linux passed 8 of 11 and found the last two gaps above
-(root keys, `UC_DOCS_ROOT` ownership).
+(root keys, `UC_DOCS_ROOT` ownership). With both fixed, all 11 pass on Linux. One run's
+`pandas_tables.py` stalled through its retries: deltalake 1.6.6's known `uc://`
+open stall (R01), which the re-run didn't hit.
 
 ## Gaps → phases
 

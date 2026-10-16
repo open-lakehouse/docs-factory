@@ -1,5 +1,6 @@
 {
   "generated": "by `uv run docsnip compat --fix`; edit compatibility.yml and script claims, not this file",
+  "version": 2,
   "project": "unitycatalog",
   "spec": "ucSpec",
   "interfaces": [
@@ -206,12 +207,172 @@
       ]
     }
   ],
+  "assets": [
+    {
+      "id": "lakehouse.table",
+      "title": "Table",
+      "columns": [
+        "spark",
+        "duckdb",
+        "polars",
+        "daft",
+        "pandas",
+        "pyiceberg",
+        "cli",
+        "python-sdk"
+      ],
+      "rows": [
+        "table.list",
+        "external.read",
+        "external.read-vended",
+        "external.append",
+        "managed.create",
+        "managed.read",
+        "managed.append",
+        "managed.update",
+        "managed.delete",
+        "managed.drop",
+        "managed.time-travel",
+        "external.read-format",
+        "iceberg.create",
+        "iceberg.append",
+        "iceberg.read",
+        "iceberg.update",
+        "iceberg.delete",
+        "iceberg.rename",
+        "iceberg.drop",
+        "iceberg.join-delta",
+        "table.register-external",
+        "table.register-format",
+        "table.describe",
+        "table.read",
+        "table.write-sample",
+        "table.drop"
+      ]
+    },
+    {
+      "id": "lakehouse.namespace",
+      "title": "Namespace",
+      "columns": [
+        "spark",
+        "duckdb",
+        "pyiceberg",
+        "cli",
+        "python-sdk"
+      ],
+      "rows": [
+        "iceberg.schema-create",
+        "catalog.create",
+        "catalog.list",
+        "catalog.update",
+        "catalog.delete",
+        "schema.create",
+        "schema.list",
+        "schema.update",
+        "schema.delete",
+        "storage.managed-root"
+      ]
+    },
+    {
+      "id": "lakehouse.metricView",
+      "title": "Metric view",
+      "columns": [
+        "spark-4.2",
+        "python-sdk"
+      ],
+      "rows": [
+        "metricview.create",
+        "metricview.list",
+        "metricview.describe",
+        "metricview.query",
+        "metricview.replace",
+        "metricview.rename",
+        "metricview.drop"
+      ]
+    },
+    {
+      "id": "lakehouse.volume",
+      "title": "Volume",
+      "columns": [
+        "cli",
+        "python-sdk"
+      ],
+      "rows": [
+        "volume.create-external",
+        "volume.create-managed",
+        "volume.view",
+        "volume.list-files",
+        "volume.update",
+        "volume.delete",
+        "volume.read-files",
+        "volume.write-files"
+      ]
+    },
+    {
+      "id": "lakehouse.credential",
+      "title": "Credential",
+      "columns": [
+        "cli",
+        "python-sdk"
+      ],
+      "rows": [
+        "credential.create",
+        "credential.update",
+        "credentials.vend-path",
+        "credentials.vend-volume"
+      ]
+    },
+    {
+      "id": "lakehouse.externalLocation",
+      "title": "External location",
+      "columns": [
+        "cli",
+        "python-sdk"
+      ],
+      "rows": [
+        "location.create",
+        "storage.view",
+        "location.update",
+        "storage.delete"
+      ]
+    },
+    {
+      "id": "lakehouse.registeredFunction",
+      "title": "Function",
+      "columns": [
+        "cli",
+        "python-sdk",
+        "unitycatalog-ai"
+      ],
+      "rows": [
+        "function.create",
+        "function.describe",
+        "function.execute",
+        "function.list",
+        "function.delete"
+      ]
+    }
+  ],
   "journeys": [
     {
       "id": "table.list",
       "title": "List tables",
       "summary": "List the tables in a schema from the engine, by their catalog names.",
       "request": null,
+      "family": "table",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -350,6 +511,20 @@
       "title": "Read an external table",
       "summary": "Read an external table by its catalog name, from files the reader can already reach.",
       "request": null,
+      "family": "external",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "duckdb": {
           "status": "tested",
@@ -476,6 +651,25 @@
       "title": "Read with vended S3 credentials",
       "summary": "Read an external table on S3 with the short-lived credentials the server vends for it.",
       "request": null,
+      "family": "external",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        },
+        "storage": {
+          "implements": [
+            "s3Api"
+          ]
+        }
+      },
       "cells": {
         "polars": {
           "status": "tested",
@@ -528,6 +722,20 @@
       "title": "Append to an external table",
       "summary": "Append rows to an external table, named through the catalog.",
       "request": null,
+      "family": "external",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "polars": {
           "status": "tested",
@@ -602,6 +810,20 @@
       "title": "Create a managed table",
       "summary": "Create a catalog-managed Delta table, with storage the catalog allocates.",
       "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -654,6 +876,20 @@
       "title": "Read a managed table",
       "summary": "Read a catalog-managed table through the catalog.",
       "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -766,6 +1002,20 @@
       "title": "Append to a managed table",
       "summary": "Append rows to a catalog-managed table, with the catalog accepting the commit.",
       "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -878,6 +1128,20 @@
       "title": "Update rows in a managed table",
       "summary": "Change rows that match a condition in a catalog-managed table.",
       "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -930,6 +1194,20 @@
       "title": "Delete rows from a managed table",
       "summary": "Remove rows that match a condition from a catalog-managed table.",
       "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -982,6 +1260,20 @@
       "title": "Drop a managed table",
       "summary": "Drop a catalog-managed table and its data.",
       "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1034,6 +1326,20 @@
       "title": "Read an earlier version of a managed table",
       "summary": "Query a catalog-managed table as it was at an earlier version.",
       "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1064,6 +1370,20 @@
       "title": "Read a Parquet, CSV, or JSON table",
       "summary": "Read a non-Delta external table, using the format and location the catalog records.",
       "request": null,
+      "family": "external",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "duckdb": {
           "status": "tested",
@@ -1116,6 +1436,20 @@
       "title": "Create a schema through Iceberg REST",
       "summary": "Create a schema as an Iceberg namespace, under the catalog the client names as its warehouse.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1190,6 +1524,20 @@
       "title": "Create a managed Iceberg table",
       "summary": "Create an Iceberg table through Iceberg REST, with storage the catalog allocates.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1264,6 +1612,20 @@
       "title": "Append to an Iceberg table",
       "summary": "Append rows to an Iceberg table, with credentials the catalog vends for its storage.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1338,6 +1700,20 @@
       "title": "Read an Iceberg table",
       "summary": "Read an Iceberg table by its catalog name, with credentials the catalog vends.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1412,6 +1788,20 @@
       "title": "Update rows in an Iceberg table",
       "summary": "Change rows that match a condition in an Iceberg table, committed through the catalog.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1486,6 +1876,20 @@
       "title": "Delete rows from an Iceberg table",
       "summary": "Remove rows that match a condition from an Iceberg table, committed through the catalog.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1560,6 +1964,20 @@
       "title": "Rename an Iceberg table",
       "summary": "Give an Iceberg table a new name in its schema.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1634,6 +2052,20 @@
       "title": "Drop an Iceberg table",
       "summary": "Drop an Iceberg table, and for a managed one its data.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1708,6 +2140,22 @@
       "title": "Join Delta and Iceberg tables",
       "summary": "Query a Delta table and an Iceberg table from the same catalog together in one session.",
       "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec",
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec",
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark": {
           "status": "tested",
@@ -1738,6 +2186,20 @@
       "title": "Create a metric view",
       "summary": "Define dimensions and measures in YAML over a table or a query, and store the definition in the catalog.",
       "request": null,
+      "family": "metricview",
+      "asset": "lakehouse.metricView",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-4.2": {
           "status": "tested",
@@ -1805,6 +2267,20 @@
       "title": "List metric views",
       "summary": "Find a schema's metric views by name.",
       "request": null,
+      "family": "metricview",
+      "asset": "lakehouse.metricView",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-4.2": {
           "status": "tested",
@@ -1857,6 +2333,20 @@
       "title": "Inspect a metric view",
       "summary": "Read a metric view's dimensions, measures, and stored definition.",
       "request": null,
+      "family": "metricview",
+      "asset": "lakehouse.metricView",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-4.2": {
           "status": "tested",
@@ -1924,6 +2414,20 @@
       "title": "Query a metric view",
       "summary": "Compute measures with `measure()`, grouped and filtered by dimensions.",
       "request": null,
+      "family": "metricview",
+      "asset": "lakehouse.metricView",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-4.2": {
           "status": "tested",
@@ -1989,6 +2493,20 @@
       "title": "Change a metric view's definition",
       "summary": "Replace a metric view's definition in place, keeping its name.",
       "request": null,
+      "family": "metricview",
+      "asset": "lakehouse.metricView",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-4.2": {
           "status": "fails",
@@ -2037,6 +2555,20 @@
       "title": "Rename a metric view",
       "summary": "Give a metric view a new name in its schema.",
       "request": null,
+      "family": "metricview",
+      "asset": "lakehouse.metricView",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-4.2": {
           "status": "fails",
@@ -2085,6 +2617,20 @@
       "title": "Drop a metric view",
       "summary": "Remove a metric view; its source tables stay.",
       "request": null,
+      "family": "metricview",
+      "asset": "lakehouse.metricView",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "spark-4.2": {
           "status": "tested",
@@ -2152,6 +2698,20 @@
       "title": "Create a catalog",
       "summary": "Create a catalog, the top level of the three-level namespace.",
       "request": null,
+      "family": "catalog",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2204,6 +2764,20 @@
       "title": "View catalogs",
       "summary": "List catalogs or get one by name, with its properties.",
       "request": null,
+      "family": "catalog",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2256,6 +2830,20 @@
       "title": "Update a catalog",
       "summary": "Change a catalog's comment, properties, or name.",
       "request": null,
+      "family": "catalog",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2308,6 +2896,20 @@
       "title": "Delete a catalog",
       "summary": "Delete a catalog, including everything in it when forced.",
       "request": null,
+      "family": "catalog",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2360,6 +2962,20 @@
       "title": "Create a schema",
       "summary": "Create a schema inside a catalog.",
       "request": null,
+      "family": "schema",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2412,6 +3028,20 @@
       "title": "View schemas",
       "summary": "List a catalog's schemas or get one by its full name.",
       "request": null,
+      "family": "schema",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2464,6 +3094,20 @@
       "title": "Update or rename a schema",
       "summary": "Change a schema's comment, properties, or name.",
       "request": null,
+      "family": "schema",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2516,6 +3160,20 @@
       "title": "Delete a schema",
       "summary": "Delete an empty schema.",
       "request": null,
+      "family": "schema",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2568,6 +3226,20 @@
       "title": "Register an external Delta table",
       "summary": "Register Delta files that already exist in storage as a table, without copying them.",
       "request": null,
+      "family": "table",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2650,6 +3322,20 @@
       "title": "Register a Parquet, CSV, or JSON table",
       "summary": "Register files in another format as an external table, with its columns declared.",
       "request": null,
+      "family": "table",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2702,6 +3388,20 @@
       "title": "View a table",
       "summary": "Get a table's columns, format, type, and storage location by its full name.",
       "request": null,
+      "family": "table",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2769,6 +3469,20 @@
       "title": "Read a table's rows from a client",
       "summary": "Read rows of a registered Delta table without starting an engine.",
       "request": null,
+      "family": "table",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2836,6 +3550,20 @@
       "title": "Write sample rows",
       "summary": "Write generated rows into a table to try things out.",
       "request": null,
+      "family": "table",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2866,6 +3594,20 @@
       "title": "Drop a table",
       "summary": "Remove a table from the catalog. Data files of an external table stay in place.",
       "request": null,
+      "family": "table",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -2963,6 +3705,20 @@
       "title": "Create an external volume",
       "summary": "Register an existing storage folder as a volume.",
       "request": null,
+      "family": "volume",
+      "asset": "lakehouse.volume",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3030,6 +3786,20 @@
       "title": "Create a managed volume",
       "summary": "Create a volume whose storage the catalog allocates under a managed storage root.",
       "request": null,
+      "family": "volume",
+      "asset": "lakehouse.volume",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3112,6 +3882,20 @@
       "title": "View volumes",
       "summary": "List a schema's volumes or get one by its full name, with its storage location.",
       "request": null,
+      "family": "volume",
+      "asset": "lakehouse.volume",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3179,6 +3963,20 @@
       "title": "List a volume's files",
       "summary": "See which files a volume holds.",
       "request": null,
+      "family": "volume",
+      "asset": "lakehouse.volume",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3231,6 +4029,20 @@
       "title": "Rename or update a volume",
       "summary": "Change a volume's comment or name.",
       "request": null,
+      "family": "volume",
+      "asset": "lakehouse.volume",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3283,6 +4095,20 @@
       "title": "Delete a volume",
       "summary": "Remove a volume from the catalog.",
       "request": null,
+      "family": "volume",
+      "asset": "lakehouse.volume",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3335,6 +4161,20 @@
       "title": "Create a storage credential",
       "summary": "Store the cloud identity the server assumes to reach a bucket.",
       "request": null,
+      "family": "credential",
+      "asset": "lakehouse.credential",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3387,6 +4227,20 @@
       "title": "Create an external location",
       "summary": "Pair a storage path with the credential that can access it.",
       "request": null,
+      "family": "location",
+      "asset": "lakehouse.externalLocation",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3439,6 +4293,20 @@
       "title": "View credentials and external locations",
       "summary": "List or get the storage credentials and external locations the server holds.",
       "request": null,
+      "family": "location",
+      "asset": "lakehouse.externalLocation",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3491,6 +4359,20 @@
       "title": "Update a storage credential",
       "summary": "Change a storage credential's role, comment, or name.",
       "request": null,
+      "family": "credential",
+      "asset": "lakehouse.credential",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3543,6 +4425,20 @@
       "title": "Update an external location",
       "summary": "Change an external location's URL, credential, or name.",
       "request": null,
+      "family": "location",
+      "asset": "lakehouse.externalLocation",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3595,6 +4491,20 @@
       "title": "Delete an external location and its credential",
       "summary": "Remove an external location, then the credential nothing else uses.",
       "request": null,
+      "family": "location",
+      "asset": "lakehouse.externalLocation",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3647,6 +4557,20 @@
       "title": "Give a catalog or schema managed storage",
       "summary": "Set the storage root under which the catalog allocates managed tables and volumes.",
       "request": null,
+      "family": "schema",
+      "asset": "lakehouse.namespace",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "tested",
@@ -3729,6 +4653,20 @@
       "title": "Get credentials for a storage path",
       "summary": "Ask the server for short-lived credentials scoped to a path under an external location.",
       "request": null,
+      "family": "credential",
+      "asset": "lakehouse.credential",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "cli": {
           "status": "missing",
@@ -3779,6 +4717,20 @@
       "title": "Get credentials for a volume",
       "summary": "Ask the server for short-lived credentials to read or write one volume's files.",
       "request": null,
+      "family": "credential",
+      "asset": "lakehouse.credential",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "python-sdk": {
           "status": "tested",
@@ -3824,6 +4776,20 @@
       "title": "Read a volume's files",
       "summary": "Read files in a volume on object storage with credentials the server vends.",
       "request": null,
+      "family": "volume",
+      "asset": "lakehouse.volume",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "python-sdk": {
           "status": "tested",
@@ -3854,6 +4820,20 @@
       "title": "Write files to a volume",
       "summary": "Write files into a managed volume on object storage with vended credentials.",
       "request": null,
+      "family": "volume",
+      "asset": "lakehouse.volume",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "python-sdk": {
           "status": "tested",
@@ -3884,6 +4864,20 @@
       "title": "Register a Python function",
       "summary": "Register a Python function in a schema, with its signature and source code.",
       "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "unitycatalog-ai": {
           "status": "tested",
@@ -3914,6 +4908,20 @@
       "title": "View a function",
       "summary": "Get a function's parameters, return type, and source code by its full name.",
       "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "unitycatalog-ai": {
           "status": "tested",
@@ -3944,6 +4952,20 @@
       "title": "Run a function by name",
       "summary": "Run a registered function by name with typed parameters, on the caller's side.",
       "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "unitycatalog-ai": {
           "status": "tested",
@@ -3974,6 +4996,20 @@
       "title": "List functions",
       "summary": "List the functions in a schema.",
       "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "unitycatalog-ai": {
           "status": "tested",
@@ -4004,6 +5040,20 @@
       "title": "Delete a function",
       "summary": "Remove a function from the catalog.",
       "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
       "cells": {
         "unitycatalog-ai": {
           "status": "tested",
@@ -4028,6 +5078,138 @@
           "evidence": []
         }
       }
+    }
+  ],
+  "verifiedEdges": [
+    {
+      "source": "apacheSpark",
+      "kind": "consumes",
+      "target": "icebergRestSpec",
+      "interfaces": [
+        "spark"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.join-delta",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.schema-create",
+        "iceberg.update"
+      ]
+    },
+    {
+      "source": "apacheSpark",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "spark",
+        "spark-4.2"
+      ],
+      "journeys": [
+        "iceberg.join-delta",
+        "managed.append",
+        "managed.create",
+        "managed.delete",
+        "managed.drop",
+        "managed.read",
+        "managed.time-travel",
+        "managed.update",
+        "metricview.create",
+        "metricview.describe",
+        "metricview.drop",
+        "metricview.list",
+        "metricview.query",
+        "table.list"
+      ]
+    },
+    {
+      "source": "duckdb",
+      "kind": "consumes",
+      "target": "icebergRestSpec",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.schema-create",
+        "iceberg.update"
+      ]
+    },
+    {
+      "source": "duckdb",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "external.read",
+        "external.read-format",
+        "managed.append",
+        "managed.read",
+        "table.list"
+      ]
+    },
+    {
+      "source": "polars",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "polars"
+      ],
+      "journeys": [
+        "external.append",
+        "external.read",
+        "external.read-format",
+        "external.read-vended",
+        "table.list"
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "kind": "unmodeled",
+      "interface": "cli"
+    },
+    {
+      "kind": "unmodeled",
+      "interface": "daft"
+    },
+    {
+      "kind": "unmodeled",
+      "interface": "pandas"
+    },
+    {
+      "kind": "unmodeled",
+      "interface": "pyiceberg"
+    },
+    {
+      "kind": "unmodeled",
+      "interface": "python-sdk"
+    },
+    {
+      "kind": "unmodeled",
+      "interface": "unitycatalog-ai"
+    },
+    {
+      "kind": "unverified-asset",
+      "asset": "lakehouse.agentSkill"
+    },
+    {
+      "kind": "unverified-asset",
+      "asset": "lakehouse.mlModel"
+    },
+    {
+      "kind": "unverified-asset",
+      "asset": "lakehouse.sqlView"
     }
   ]
 }

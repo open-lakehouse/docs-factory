@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Status | Proposed |
+| Status | Accepted |
 | Date | 2026-10-16 |
 | Supersedes | — |
 | Superseded by | — |
@@ -64,6 +64,34 @@ kind, so `lineage = concern "Lineage"` inside `lakehouse` is still
 mapping, and `canonicals.yaml` entry stays intact. Only code that filters by
 kind changes.
 
+**Governance has facets.** No single component meets governance. A gateway
+authenticates, a policy engine decides, a catalog holds grants, and row filters
+and column masks need a trusted engine to enforce what the catalog defines.
+So governance is a parent concern with nested **facets**, each itself a
+`concern`:
+
+- `lakehouse.governance.authentication` — who the principal is.
+- `lakehouse.governance.authorization` — whether the principal may act on an
+  asset (grants, privileges, policy decisions).
+- `lakehouse.governance.fineGrainedAccess` — row filters and column masks.
+
+Nesting keeps `lakehouse.governance` and every reference to it intact; only the
+facets are new IDs. Audit is not a facet until something in the estate realizes
+it.
+
+**`#partial` marks a contribution, not a property of the software.** An
+implementation `realizes` a facet; the edge carries `#partial` when that
+implementation meets the facet only together with another contributor (the
+catalog *defines* fine-grained policy, a trusted engine *enforces* it). Which
+contributors are deployed together differs per architecture, so whether a facet
+is fully met is a fact about an environment, checked over its deployed
+instances, never read off one logical edge.
+
+**Breadth stays on the specification.** Which asset kinds a catalog governs is
+`<spec> -[governs]-> <asset>` (ADR-0005). An implementation inherits that
+breadth through `implements`; release-specific gaps come from compatibility
+claims, not from extra edges.
+
 **Asset → capability is `dependsOn`.** The `requires` edge named in ADR-0005
 and ADR-0006 is recorded here as `dependsOn` (ADR-0006's generic dependency),
 which is what the model has always used. No `requires` kind is added.
@@ -82,7 +110,10 @@ which is what the model has always used. No `requires` kind is added.
   `content/vocab.json`, the explain lists, docsnip's anchor edges, the emit
   targets) loses governance, lineage, and observability until it is updated.
   The kind change and those updates land together.
-- Authentication and authorization stay folded into governance until an
-  identity spec gives a separate concern something to anchor on.
+- Facets add nesting that views and the explain nav must handle (a concern can
+  contain concerns).
+- `#partial` on its own says nothing about a deployment; the environment-level
+  check that complementary contributors are present lands with generated
+  environments (convergence P5/P7).
 - `appliesTo` titles are free text for now; a controlled verb list is an open
   question.

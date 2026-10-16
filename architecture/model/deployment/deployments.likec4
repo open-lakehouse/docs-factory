@@ -10,7 +10,7 @@ deployment {
 
       metadata { sourceRepo "open-lakehouse/hydrofoil" }
 
-      instanceOf lakehouse.queryEngine
+      instanceOf hydrofoil
     }
 
     mangrove = service "mangrove" {

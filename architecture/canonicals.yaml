@@ -21,6 +21,10 @@ capabilities:
   queryEngine:
     element: lakehouse.queryEngine
     doc: design/reference-architecture.md
+  interactiveDevelopment:
+    element: lakehouse.interactiveDevelopment
+    doc: design/reference-architecture.md
+    note: Notebooks + editors; notebooks are files governed in volumes, not an asset kind.
   orchestration:
     element: lakehouse.orchestration
     doc: design/reference-architecture.md
@@ -52,6 +56,16 @@ concerns:
   governance:
     element: lakehouse.governance
     doc: design/governance.md
+  authentication:
+    element: lakehouse.governance.authentication
+    doc: design/governance.md
+  authorization:
+    element: lakehouse.governance.authorization
+    doc: design/governance.md
+  fineGrainedAccess:
+    element: lakehouse.governance.fineGrainedAccess
+    doc: design/governance.md
+    note: Row filters + column masks; needs a trusted engine to enforce (ADR-0007).
   lineage:
     element: lakehouse.lineage
     doc: design/lineage-plane.md
@@ -92,7 +106,7 @@ services:
   hydrofoil:
     source_repo: open-lakehouse/hydrofoil
     doc: design/integration-hub.md
-    realizes: [queryEngine]   # embeds breakwater (decide/enforce) as a library
+    realizes: [queryEngine, fineGrainedAccess]   # embeds breakwater (decide/enforce) as a library; fineGrainedAccess is #partial
 
 # --- Deployment environments ----------------------------------------------
 deployments:

@@ -57,6 +57,12 @@ views {
     autoLayout LeftRight
   }
 
+  view explain_interactiveDevelopment of lakehouse.interactiveDevelopment {
+    title "Interactive development — in context"
+    include *
+    autoLayout LeftRight
+  }
+
   // --- Concerns ----------------------------------------------------------
   view explain_governance of lakehouse.governance {
     title "Governance — in context"
@@ -72,6 +78,24 @@ views {
 
   view explain_observability of lakehouse.observability {
     title "Observability — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_authentication of lakehouse.governance.authentication {
+    title "Authentication — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_authorization of lakehouse.governance.authorization {
+    title "Authorization — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_fineGrainedAccess of lakehouse.governance.fineGrainedAccess {
+    title "Fine-grained access — in context"
     include *
     autoLayout LeftRight
   }
@@ -133,6 +157,24 @@ views {
 
   view explain_otlpSpec of otlpSpec {
     title "OpenTelemetry Protocol (OTLP) — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_sparkConnectSpec of sparkConnectSpec {
+    title "Spark Connect — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_flightSqlSpec of flightSqlSpec {
+    title "Arrow Flight SQL — in context"
+    include *
+    autoLayout LeftRight
+  }
+
+  view explain_openCypherSpec of openCypherSpec {
+    title "openCypher — in context"
     include *
     autoLayout LeftRight
   }

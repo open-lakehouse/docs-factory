@@ -22,6 +22,26 @@ model {
     governance -[appliesTo]-> credential "secures"
     governance -[appliesTo]-> externalLocation "secures"
 
+    governance.authentication -[appliesTo]-> catalog "identifies callers of"
+    governance.authentication -[appliesTo]-> queryEngine "identifies callers of"
+
+    governance.authorization -[appliesTo]-> namespace "grants access to"
+    governance.authorization -[appliesTo]-> table "grants access to"
+    governance.authorization -[appliesTo]-> sqlView "grants access to"
+    governance.authorization -[appliesTo]-> metricView "grants access to"
+    governance.authorization -[appliesTo]-> volume "grants access to"
+    governance.authorization -[appliesTo]-> registeredFunction "grants access to"
+    governance.authorization -[appliesTo]-> mlModel "grants access to"
+    governance.authorization -[appliesTo]-> agentSkill "grants access to"
+    governance.authorization -[appliesTo]-> credential "grants access to"
+    governance.authorization -[appliesTo]-> externalLocation "grants access to"
+
+    governance.fineGrainedAccess -[appliesTo]-> table "filters rows + masks columns of"
+    governance.fineGrainedAccess -[appliesTo]-> sqlView "filters rows + masks columns of"
+    governance.fineGrainedAccess -[appliesTo]-> metricView "filters rows + masks columns of"
+    governance.fineGrainedAccess -[dependsOn]-> queryEngine "enforced in-plan by a trusted"
+    governance.fineGrainedAccess -[dependsOn]-> catalog "resolves resource facts through"
+
     observability -[appliesTo]-> queryEngine "observes"
     observability -[appliesTo]-> catalog "observes"
     observability -[appliesTo]-> orchestration "observes"

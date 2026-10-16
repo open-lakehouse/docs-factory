@@ -116,7 +116,8 @@ unknown coverage stays unknown.
 
 | Element | Kind after | Why |
 |---|---|---|
-| `lakehouse.governance` | concern | Applies to every asset kind. Authentication and authorization fold in until an identity spec anchors a separate concern. |
+| `lakehouse.governance` | concern | Applies to every asset kind. Parent of three facets (below). |
+| `lakehouse.governance.{authentication,authorization,fineGrainedAccess}` | concern | Facets: no single component meets governance. FGAC needs the catalog to define it and a trusted engine to enforce it. |
 | `lakehouse.lineage` | concern | Tracks assets across engines; not a layer in the read path. |
 | `lakehouse.observability` | concern | Observes running capabilities. |
 | `lakehouse.sharing` | stays capability | Has a contract (`openSharingSpec`) and is a protocol surface. |
@@ -126,6 +127,10 @@ A LikeC4 FQN comes from nesting, not kind, so `lineage = concern "Lineage"`
 inside `lakehouse` keeps `lakehouse.lineage`. Every `model:` link, `explains:`,
 `references:`, `blogs/tags.yml` element, `canonicals.yaml` entry, and headwaters'
 `instanceOf` stays intact; only code that filters *by kind* changes.
+
+A `realizes` edge carries `#partial` when the implementation meets a facet only
+together with another contributor. Whether a facet is fully met is a property
+of an environment's deployed instances, not of one edge (ADR-0007).
 
 The spanning edge is a single kind, `appliesTo` (concern → asset or capability,
 dotted), with the verb in the title ("tracks lineage of", "secures",
@@ -204,8 +209,10 @@ and deployment instances are their configured occurrences.
 | `experiment_tracking` | `lakehouse.modelTracking` | partial | Tracking isn't the whole model lifecycle. |
 | `lineage` | `lakehouse.lineage` | full | concern |
 | `tracing` | `lakehouse.observability` | partial | A trace backend doesn't instrument every service. |
-| `auth`, `policy` | `lakehouse.governance` | partial | Gateway authorization isn't row/column enforcement. |
-| `gateway`, `relational_db`, `app_runtime`, `notebooks`, `agent_platform` | — | — | Explicitly unmapped infrastructure. Don't invent a capability to fill the cell. |
+| `auth` | `lakehouse.governance.authentication` | full | |
+| `policy` | `lakehouse.governance.authorization` | partial | A policy engine decides; something else enforces. |
+| `notebooks` | `lakehouse.interactiveDevelopment` | full | Notebooks are files in volumes, not an asset kind. |
+| `gateway`, `relational_db`, `app_runtime`, `agent_platform` | — | — | Explicitly unmapped infrastructure. Don't invent a capability to fill the cell. |
 
 These are mappings to validate, not equivalence claims. Unmapped roles and
 modules survive every export and show in a coverage report. Only the pilot's
@@ -538,6 +545,10 @@ while consolidating; revisit in review.
 | 17 | The view asset kind's ID is `sqlView` (`view` is a LikeC4 keyword) | P1a | `logicalView`, `tableView` |
 | 18 | Add `openLineageSpec` and `otlpSpec` now, as anchors for headwaters and Jaeger | P1a | Leave them optional |
 | 19 | Split P1: P1a (kinds, catalog) unblocks P2; P1b (governance facets, `#partial`, query-API specs, `interactiveDevelopment`, hydrofoil) amends §2/§4 | settled | One PR |
+| 20 | Governance splits into authentication, authorization, fineGrainedAccess facets; `#partial` on realizes edges; "fully met" is per environment | settled | One governance concern; a `scope` attribute on edges |
+| 21 | Query APIs (Spark Connect, Flight SQL, openCypher) are specs that specify `queryEngine`; a "warehouse" is a served engine | settled | A `queryService` capability |
+| 22 | `interactiveDevelopment` capability realized by marimo; notebooks are files in volumes | settled | A notebook asset kind; leave marimo unmapped |
+| 23 | `hydrofoil` joins the technology catalog; mangrove stays a capability instance | settled | Catalog all first-party services |
 
 ## 11. Risks and open questions
 

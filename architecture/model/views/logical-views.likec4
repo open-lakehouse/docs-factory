@@ -42,6 +42,9 @@ views {
       azureBlobApi,
       openLineageSpec,
       otlpSpec,
+      sparkConnectSpec,
+      flightSqlSpec,
+      openCypherSpec,
     // implementations (concrete software)
       element.kind == implementation,
 
@@ -69,7 +72,7 @@ views {
   // --- Concerns: what governance, lineage, and observability span ---------
   view concernMatrix {
     title "Cross-cutting concerns"
-    description "Governance, lineage, and observability are concerns, not layers in the read path: each appliesTo the asset kinds or capabilities it spans, and implementations realize them like capabilities."
+    description "Governance, lineage, and observability are concerns, not layers in the read path: each appliesTo the asset kinds or capabilities it spans, and implementations realize them like capabilities. Governance splits into authentication, authorization, and fine-grained access; a #partial realizes edge meets a facet only together with another contributor."
 
     include
       element.kind == concern,

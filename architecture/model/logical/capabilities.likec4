@@ -68,6 +68,19 @@ model {
       metadata { canonicalDoc "design/reference-architecture.md" }
     }
 
+    interactiveDevelopment = capability "Interactive development" {
+      summary "Notebooks and editors where people author code and run it in a live session."
+      description "
+        Interactive development is where a person explores data and builds
+        logic: a notebook or editor holds a live session, sends queries to the
+        query engine, and shows results as they arrive.
+
+        Its notebooks are files, so the lakehouse governs them like any other
+        file, in a volume, rather than as an asset kind of their own.
+      "
+      metadata { canonicalDoc "design/reference-architecture.md" }
+    }
+
     orchestration = capability "Orchestration" {
       summary "Schedules and coordinates jobs and data pipelines — dependencies, retries, and triggers."
       description "
@@ -169,6 +182,40 @@ model {
         gateway enforces the decision where the data flows.
       "
       metadata { canonicalDoc "design/governance.md" }
+
+      // Facets (ADR-0007): no single component meets governance, so each
+      // facet is realized, often #partial, by the components that contribute.
+      authentication = concern "Authentication" {
+        summary "Establishes who the principal behind a request is."
+        description "
+          Authentication verifies a principal's identity, whether a user, a
+          service, or an agent, and passes it on as a token every later
+          decision can trust.
+        "
+        metadata { canonicalDoc "design/governance.md" }
+      }
+
+      authorization = concern "Authorization" {
+        summary "Decides whether a principal may act on an asset: grants, privileges, and policy."
+        description "
+          Authorization answers 'may this principal do this to that asset?'
+          from grants, privileges, and policies, and returns allow or deny.
+        "
+        metadata { canonicalDoc "design/governance.md" }
+      }
+
+      fineGrainedAccess = concern "Fine-grained access" {
+        summary "Row filters and column masks: governs what an allowed principal sees."
+        description "
+          Fine-grained access control narrows what an allowed query returns,
+          filtering rows and masking columns per principal.
+
+          A catalog can describe the policy, but only the engine that runs the
+          query can apply it, so it needs a trusted engine. A client that reads
+          storage directly with a vended credential bypasses it.
+        "
+        metadata { canonicalDoc "design/governance.md" }
+      }
     }
 
     modelTracking = capability "Model tracking" {

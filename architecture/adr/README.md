@@ -24,7 +24,7 @@ see `ADR-0002` for the fact-vs-factory dividing line.
 | [ADR-0004](./ADR-0004-capability-specification-implementation.md) | Capability / specification / implementation typing | Accepted | 2026-07-18 |
 | [ADR-0005](./ADR-0005-governed-asset-kinds.md) | Governed asset kinds (securables) as a logical dimension | Accepted | 2026-07-18 |
 | [ADR-0006](./ADR-0006-system-boundary-and-generic-relations.md) | System boundary semantics and generic relationships | Accepted | 2026-07-21 |
-| [ADR-0007](./ADR-0007-cross-cutting-concerns.md) | Cross-cutting concerns as their own element kind | Proposed | 2026-10-16 |
+| [ADR-0007](./ADR-0007-cross-cutting-concerns.md) | Cross-cutting concerns as their own element kind | Accepted | 2026-10-16 |
 
 ---
 

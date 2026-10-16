@@ -17,7 +17,8 @@ cross-cutting governance decomposition is in [`governance.md`](./governance.md).
 ## The capabilities
 
 An open lakehouse serves warehouse-style governance and query over open table
-formats on object storage. The reference model factors that into six capabilities:
+formats on object storage. The reference model factors that into capabilities, and the concerns that span
+them ([ADR-0007](../adr/ADR-0007-cross-cutting-concerns.md)). The core ones:
 
 | Capability | What it is |
 |---|---|
@@ -25,8 +26,9 @@ formats on object storage. The reference model factors that into six capabilitie
 | **Catalog** | Governs tables, schemas, and credentials — the surface every query resolves through. Issues short-lived scoped storage credentials at resolution time (**credential vending**). |
 | **Open table format** | Gives raw object-storage bytes *table semantics* — ACID transactions, schema, snapshots. The technology-agnostic layer that turns bytes into a governed, transactional table. |
 | **Object storage** | The byte container where table data files are written. Beneath the table format. |
-| **Lineage** | Captures dataset- and column-level provenance (OpenLineage) at query **planning time**. |
-| **Governance** | Decides "can this principal do this here?" and governs what they see (row filters, column masks). A cross-cutting zero-trust decomposition — see [`governance.md`](./governance.md). |
+| **Interactive development** | Notebooks and editors where people run code in live sessions against the query engine; notebooks are files in volumes. |
+| **Lineage** (concern) | Captures dataset- and column-level provenance (OpenLineage) at query **planning time**. |
+| **Governance** (concern) | Decides "can this principal do this here?" and governs what they see (row filters, column masks), as authentication, authorization, and fine-grained-access facets — see [`governance.md`](./governance.md). |
 
 ## The capability chain
 

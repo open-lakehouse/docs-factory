@@ -75,6 +75,26 @@ model {
   }
   s3Api -[specifies]-> lakehouse.objectStorage "specifies the object-storage capability"
 
+  // Query APIs: how a client reaches a served engine (a "warehouse" is a
+  // query engine behind one of these). Only protocols something here implements.
+  sparkConnectSpec = openSpecification "Spark Connect" {
+    description "Client-server protocol for Apache Spark: thin clients send unresolved plans over gRPC to a remote Spark server."
+    link https://spark.apache.org/docs/latest/spark-connect-overview.html
+  }
+  sparkConnectSpec -[specifies]-> lakehouse.queryEngine "specifies remote query submission"
+
+  flightSqlSpec = openSpecification "Arrow Flight SQL" {
+    description "Protocol for running SQL against a remote engine over Arrow Flight, returning Arrow record batches."
+    link https://arrow.apache.org/docs/format/FlightSql.html
+  }
+  flightSqlSpec -[specifies]-> lakehouse.queryEngine "specifies remote SQL"
+
+  openCypherSpec = openSpecification "openCypher" {
+    description "Open specification of the Cypher graph query language."
+    link https://opencypher.org
+  }
+  openCypherSpec -[specifies]-> lakehouse.queryEngine "specifies graph queries"
+
   azureBlobApi = openSpecification "Azure Blob Storage API" {
     description "The REST interface to Azure Blob Storage, also served by local emulators."
     link https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api
@@ -120,6 +140,7 @@ model {
   apacheSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
   apacheSpark -[consumes]-> icebergRestSpec "reads via"
   apacheSpark -[consumes]-> ucSpec "resolves tables via"
+  apacheSpark -[implements]-> sparkConnectSpec "serves"
 
   deltaRs = implementation "delta-rs" {
     #library
@@ -181,6 +202,10 @@ model {
     }
   }
   lakekeeper -[implements]-> icebergRestSpec "implements"
+  lakekeeper -[realizes]-> lakehouse.governance.authorization "table-level permissions via OpenFGA"
+  lakekeeper -[realizes]-> lakehouse.governance.authentication "validates OIDC tokens" {
+    #partial
+  }
 
   unityCatalogOSS = implementation "Unity Catalog (OSS)" {
     #service
@@ -195,6 +220,10 @@ model {
   }
   unityCatalogOSS -[implements]-> ucSpec "implements"
   unityCatalogOSS -[implements]-> icebergRestSpec "serves Iceberg tables through"
+  unityCatalogOSS -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
+  unityCatalogOSS -[realizes]-> lakehouse.governance.authentication "validates access tokens" {
+    #partial
+  }
 
   // Model-tracking implementation --------------------------------------------
   mlflow = implementation "MLflow" {
@@ -209,6 +238,27 @@ model {
     }
   }
   mlflow -[realizes]-> lakehouse.modelTracking "realizes the model-tracking capability"
+
+  // First-party query engine ------------------------------------------------
+  // trustedCompute's hydrofoil is an instance of this. Fine-grained access is
+  // #partial: it decides and enforces in-plan, but needs the catalog's resource
+  // facts and a policy bundle to do it.
+  hydrofoil = implementation "hydrofoil" {
+    #service
+
+    description "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
+    link https://github.com/open-lakehouse/hydrofoil
+  }
+  hydrofoil -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  hydrofoil -[implements]-> flightSqlSpec "serves"
+  hydrofoil -[consumes]-> ucSpec "resolves tables via"
+  hydrofoil -[dependsOn]-> datafusion "built on"
+  hydrofoil -[realizes]-> lakehouse.governance.authorization "coarse allow/deny gate before planning" {
+    #partial
+  }
+  hydrofoil -[realizes]-> lakehouse.governance.fineGrainedAccess "rewrites plans with row filters + column masks" {
+    #partial
+  }
 
   // Lineage, governance, and observability implementations -----------------
   // headwaters is first-party; the technology catalog names our software too
@@ -228,7 +278,10 @@ model {
     description "Open source authentication and authorization server that fronts web services with single sign-on and access rules."
     link https://www.authelia.com
   }
-  authelia -[realizes]-> lakehouse.governance "authenticates + authorizes requests at the gateway"
+  authelia -[realizes]-> lakehouse.governance.authentication "single sign-on at the gateway"
+  authelia -[realizes]-> lakehouse.governance.authorization "access rules at the gateway" {
+    #partial
+  }
 
   openPolicyAgent = implementation "Open Policy Agent" {
     #service
@@ -236,7 +289,9 @@ model {
     description "General-purpose policy engine: evaluates policies written in Rego against a request and returns a decision."
     link https://www.openpolicyagent.org
   }
-  openPolicyAgent -[realizes]-> lakehouse.governance "decides access policy"
+  openPolicyAgent -[realizes]-> lakehouse.governance.authorization "decides access policy" {
+    #partial
+  }
 
   jaeger = implementation "Jaeger" {
     #service
@@ -255,6 +310,7 @@ model {
     link https://www.puppygraph.com
   }
   puppygraph -[realizes]-> lakehouse.queryEngine "realizes graph queries over tables"
+  puppygraph -[implements]-> openCypherSpec "serves"
 
   marimo = implementation "marimo" {
     #service
@@ -262,6 +318,7 @@ model {
     description "Reactive Python notebook, stored as plain Python files."
     link https://marimo.io
   }
+  marimo -[realizes]-> lakehouse.interactiveDevelopment "realizes the notebook"
 
   // Infrastructure the docs environments run on ----------------------------
   envoy = implementation "Envoy" {

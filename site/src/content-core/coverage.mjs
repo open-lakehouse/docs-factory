@@ -82,9 +82,11 @@ function evidenceHref(ev, href) {
  *   href: (page: {project: string, bucket: string, slug: string}, anchor: string | null) => string | null,
  *   scriptUrl: (gitPath: string) => string | null,
  *   drafts: boolean,
- * }} options `href` returns null for a page the consumer doesn't publish.
+ *   pageTitle?: (page: {project: string, bucket: string, slug: string}) => string | null,
+ * }} options `href` returns null for a page the consumer doesn't publish;
+ *   `pageTitle` names the example a proof links to.
  */
-export function engineReport(matrix, engine, { href, scriptUrl, drafts }) {
+export function engineReport(matrix, engine, { href, scriptUrl, drafts, pageTitle }) {
   const ifaces = new Map(matrix.interfaces.map((i) => [i.key, i]));
   const journeys = new Map(matrix.journeys.map((j) => [j.id, j]));
   const tables = new Map(matrix.tables.map((t) => [t.id, t]));
@@ -104,6 +106,7 @@ export function engineReport(matrix, engine, { href, scriptUrl, drafts }) {
           bucket: found.bucket,
           proofs: found.proofs.map((p) => ({
             href: href(p.page, p.anchor),
+            page: pageTitle?.(p.page) ?? null,
             script: scriptUrl(p.script),
             api: p.api,
             note: p.note,

@@ -100,6 +100,7 @@ test("a journey takes its best interface, and unpublished drafts don't count", (
   expect(read.proofs).toEqual([
     {
       href: "/how-to/read#read-it",
+      page: null,
       script: "/how-to/read/snippets/x.py",
       api: "SELECT",
       note: null,

@@ -5,7 +5,7 @@
 // site/src/components/ and sites/docs-shell/src/components/ hold byte-identical
 // copies of this file and engine-coverage.css;
 // site/src/components/engine-coverage-view.test.ts fails when they differ.
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import "./engine-coverage.css";
 
 type Bucket = "proven" | "draft" | "documented" | "no" | "unknown";
@@ -13,6 +13,8 @@ type Counts = Record<Bucket, number>;
 
 interface Proof {
   href: string | null;
+  /** The proving page's title, when the consumer knows it. */
+  page: string | null;
   script: string | null;
   api: string | null;
   note: string | null;
@@ -204,7 +206,7 @@ function Detail({ journey, variant }: { journey: JourneyReport; variant: Variant
           {p.version && <span className="cov-num">{p.version}</span>}
           {p.href && (
             <a className="cov-action" href={p.href}>
-              See the example
+              {p.page ? `Example: ${p.page}` : "See the example"}
             </a>
           )}
           {p.script && (
@@ -262,8 +264,22 @@ function GroupMatrix({
   const rows = gapsOnly
     ? group.journeys.filter((j) => j.variants.some((v) => v.bucket !== "proven"))
     : group.journeys;
+  const id = groupAnchor(engine, group.id);
+  const details = useRef<HTMLDetailsElement>(null);
+  // Groups start collapsed; one the overview links to opens on arrival.
+  useEffect(() => {
+    const reveal = () => {
+      if (window.location.hash === `#${id}` && details.current) {
+        details.current.open = true;
+        details.current.scrollIntoView();
+      }
+    };
+    reveal();
+    window.addEventListener("hashchange", reveal);
+    return () => window.removeEventListener("hashchange", reveal);
+  }, [id]);
   return (
-    <details className="cov-group" id={groupAnchor(engine, group.id)} open>
+    <details className="cov-group" id={id} ref={details}>
       <summary>
         <span className="cov-group-title">{group.title}</span>
         <Bar counts={group.counts} />

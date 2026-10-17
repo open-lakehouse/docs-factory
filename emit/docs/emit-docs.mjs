@@ -257,6 +257,7 @@ export async function emitDocs({ site, drafts = false }) {
           },
           scriptUrl: (gitPath) => scriptUrls.get(gitPath) ?? null,
           drafts,
+          pageTitle: (page) => byRoute.get(routeFor(page.bucket, page.slug))?.meta.title ?? null,
         })
       : [];
     files.set(

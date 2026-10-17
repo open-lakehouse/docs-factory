@@ -502,7 +502,8 @@ automatically. **Impact reports** list the environments, claims, pages, and
 diagrams affected by a changed module, concept, or release pin, and route
 findings through the existing review workflow. A public MCP and a
 `generate_stack(capabilities[])` tool are deferred until the local queries
-prove accurate.
+prove accurate. As built (P7b, §10 #71–74): `docsnip query`, with `environment_for` taking
+a script or journey and `impact` taking an element, module, or pin.
 
 **Measure** mapping coverage, environment reproducibility, broken references,
 successful example runs, and agent task accuracy. Evaluate search/citation
@@ -601,6 +602,10 @@ while consolidating; revisit in review.
 | 68 | JSON-LD terms are `DefinedTerm`s (`SoftwareApplication` for implementations) with `@id` `<origin>/concepts.json#<id>`; a how-to or tutorial that runs an environment is `["TechArticle", "HowTo"]`, with `tool` from its public services and `dependencies` naming the environment and bundle | settled (P7a) | Plain TechArticle with tools under `mentions` |
 | 69 | `concepts.json` v1: public concepts, edges with `partial` and `verified`, environments with their public services, and journeys; an edge is `verified` only through a working proof on a ready page of this site | P7a | Verified from `verifiedEdges` as computed over every proof |
 | 70 | A `--drafts` preview keeps linking draft explainers, but every public payload (service lists, JSON-LD, `concepts.json`) uses the ready-only projection, and the review app's Head tab does too | settled (P7a) | Ready-only for links too |
+| 71 | A parent concern is realized through its facets: `docsnip check` reports it only for a facet nothing realizes, and reports a leaf realized only `#partial` (fineGrainedAccess today). In an environment the parent holds only when every facet is `full` | settled (P7b) | A parent needs its own `realizes` edge |
+| 72 | Query IDs are prefixed: a bare ID is a model element, `module:<id>` a Trestle module, `pin:<project>/<key>` a `release.yml` key, `pin:trestle` the Trestle pin | settled (P7b) | Auto-detect, returning every match |
+| 73 | Evidence is the sorted list of states that hold (`configured`, `documented`, `tested`), else `["unknown"]`; `tested` is withheld, and the answer marked `compat: stale`, while `compat --fix` would rewrite a committed artifact | P7b | One strongest state per item |
+| 74 | `docsnip query` answers in a `docsnip-query` v1 envelope over committed files only, internal scope (drafts and non-public elements appear); a public MCP waits for these to prove accurate (§8) | P7b | Query the live `compat.resolve` result |
 
 ## 11. Risks and open questions
 

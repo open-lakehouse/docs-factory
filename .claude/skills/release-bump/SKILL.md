@@ -71,8 +71,11 @@ Keep it as a short "what's new" list. It goes in the PR description.
 
 ## 4. Review the claims
 
-Follow *After a bump* in the design doc, steps 3–5. Work through the
-release-sensitive pages table, then grep the rest of `content/<project>/` for
+Follow *After a bump* in the design doc, steps 3–5. Start from what the pin
+reaches: `uv run docsnip query impact pin:<project>/release` (or
+`pin:<project>/<key>` for a companion pin) lists the environments, scripts,
+claims, and pages. Work through those and the release-sensitive pages table,
+then grep the rest of `content/<project>/` for
 absence wording and check each hit against the step 3 list.
 
 Record each claim you checked:

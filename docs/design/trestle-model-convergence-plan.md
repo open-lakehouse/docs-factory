@@ -1,6 +1,6 @@
 # Trestle ↔ model convergence: execution plan
 
-**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 done (aws, postgres folded into uc-aws, default generated in place); P7a done (reader surfaces); P7b next.
+**Status:** plan, 2026-10-16. P0 done (#219); P1a, P1b, and P2 done; P3a done (trestle#142, H1a); P4 done, ahead of P3b; P3b done (trestle#143, H1b); P5 done (H1c, trestle#144; H1d, trestle#145); P6 aws variant done (H1e, trestle#146); P6 done (aws, postgres folded into uc-aws, default generated in place); P7 done (P7a reader surfaces, P7b agent queries); P8 optional.
 **Design:** [convergence design](trestle-model-convergence.md). Decisions and
 their rationale live there (§10); this file says what each session does.
 
@@ -551,20 +551,27 @@ elements. On the UC site, 5 of 57 public edges are verified by 120 proven
 journey × interface pairs; the Delta site's ready proofs all sit on UC pages,
 so it publishes none yet.
 
-**P7b next** (steps 5–6): `docsnip query <explain|environment-for|examples-for|explain-selection|impact> <id> --json`
-over the committed artifacts, internal scope, each answer with stable IDs and
-an evidence state (*configured*: an environment's plan runs it; *tested in
-this revision*: a working proof on a ready page, compat current;
-*documented*: a ready page explains or references it; else *unknown*). A
-`#partial` edge or `scope: partial` role never satisfies a broader target, and
-a parent concern holds only when every facet is fully realized in the same
-environment. The impact report maps a changed module, element, or pin to
-environments, scripts by `compose` key, their pages and claims, citing pages,
-and views. The fixed task set runs as a pytest file with exact expected IDs,
-and a `.claude/skills/docs-query` skill names the queries. Step 6 adds two
-reports: a plan graph node with no `model`, and a concern no implementation
-realizes (decide whether facets count for `lakehouse.governance`); "no
-`appliesTo` edge" already exists.
+**Done (P7b, steps 5–6, against H1e).** `docsnip query
+<explain|environment-for|examples-for|explain-selection|impact> <id>`
+(`tools/docsnip/src/docsnip/query.py`) reads only committed artifacts and
+answers in a `docsnip-query` v1 envelope with stable IDs (§10 #74). Each
+item lists the evidence states that hold: *configured*, *tested*, and
+*documented*, else *unknown*. *tested* is withheld while a
+compatibility artifact is stale (§10 #73). A `#partial` edge or `scope:
+partial` role never satisfies a target, and a parent concern holds in an
+environment only when every facet is `full` there. `impact` takes an
+element, `module:<id>`, `pin:<project>/<key>` (the files `versions` rules
+match), or `pin:trestle` (§10 #72), and lists environments, scripts by
+`compose` key, claims, pages, citing pages, and views.
+`tools/docsnip/tests/test_query_tasks.py` runs the five tasks with exact IDs:
+both environments hold governance `partial`, with fineGrainedAccess missing
+and authentication `#partial`, and a UC release change reaches 22 pages.
+The `docs-query` skill names the queries, and `release-bump` starts its
+review from `impact pin:<project>/release`. Step 6: "a plan graph node with no
+`model`" already failed `docsnip envs` (and the catalog join reports a
+module with none), so the new report is `trestle.concern_gaps`. Facets roll
+up into their parent (§10 #71), and a leaf realized only `#partial` is
+reported, which today is fineGrainedAccess (hydrofoil).
 
 ## P8 (optional) — Trestle diagram annotations (Trestle repo)
 

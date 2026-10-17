@@ -346,7 +346,6 @@ export function EngineCoverageView({ report }: { report: EngineReport }) {
               </span>
             ))}
           </p>
-          <Bar counts={report.counts} />
           <Legend counts={report.counts} />
         </div>
       </header>

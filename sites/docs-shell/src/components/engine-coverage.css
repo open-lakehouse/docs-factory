@@ -51,7 +51,7 @@
 .cov-iface + .cov-iface::before {
   content: " · ";
 }
-.cov-legend {
+.cov .cov-legend {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 1rem;

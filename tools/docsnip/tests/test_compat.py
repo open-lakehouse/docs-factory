@@ -375,6 +375,16 @@ _MODEL = {
             "source": {"model": "ucSpec"},
             "target": {"model": "lakehouse.volume"},
         },
+        "r4": {
+            "kind": "operatesOn",
+            "source": {"model": "apacheSpark"},
+            "target": {"model": "lakehouse.table"},
+        },
+        "r5": {
+            "kind": "operatesOn",
+            "source": {"model": "apacheSpark"},
+            "target": {"model": "lakehouse.volume"},
+        },
     },
 }
 
@@ -457,6 +467,13 @@ def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
             "target": "ucSpec",
             "interfaces": ["spark"],
             "journeys": ["table.read"],
+        },
+        {
+            "source": "apacheSpark",
+            "kind": "operatesOn",
+            "target": "lakehouse.table",
+            "interfaces": ["spark"],
+            "journeys": ["table.read"],
         }
     ]
     kinds = [d["kind"] for d in data["diagnostics"]]
@@ -493,6 +510,79 @@ def test_a_negative_claim_needs_no_edge(tmp_path) -> None:
     data = _artifact(root)
     assert not [d for d in data["diagnostics"] if d["kind"] == "missing-edge"]
     assert data["verifiedEdges"] == []
+
+
+def test_a_missing_asset_edge_is_reported_not_failed(tmp_path) -> None:
+    root = _modeled(_repo(tmp_path, _SPARK_READS))
+    model = root / "architecture/dist/model.json"
+    bare = dict(
+        _MODEL,
+        relations={
+            key: value
+            for key, value in _MODEL["relations"].items()
+            if value["kind"] != "operatesOn"
+        },
+    )
+    model.write_text(json.dumps(bare))
+    assert compat.fix(root)
+    assert compat.check(root)[0] == []
+    data = json.loads((root / "content/proj/compatibility.json").read_text())
+    assert {
+        "kind": "missing-asset-edge",
+        "interface": "spark",
+        "source": "apacheSpark",
+        "asset": "lakehouse.table",
+        "journeys": ["table.read"],
+    } in data["diagnostics"]
+    assert not [e for e in data["verifiedEdges"] if e["kind"] == "operatesOn"]
+
+
+def test_an_operates_on_edge_for_an_unproven_matrix_asset_is_reported(
+    tmp_path,
+) -> None:
+    root = _modeled(_repo(tmp_path, _SPARK_READS))
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text()
+        .replace(
+            "families:\n",
+            "families:\n"
+            "  volume:\n"
+            "    asset: lakehouse.volume\n"
+            "    requires: {client: {consumes: [ucSpec]}}\n",
+            1,
+        )
+        .replace(
+            "  table.write: {title: Write, summary: Append rows}",
+            "  table.write: {title: Write, summary: Append rows, family: volume}",
+        )
+    )
+    data = _artifact(root)
+    assert {
+        "kind": "unverified-asset-edge",
+        "source": "apacheSpark",
+        "asset": "lakehouse.volume",
+    } in data["diagnostics"]
+
+
+def test_interface_summary_separates_modeled_breadth_from_verified_journeys(
+    tmp_path,
+) -> None:
+    root = _modeled(_repo(tmp_path, _SPARK_READS))
+    result = compat.resolve(root)
+    matrix = result.matrices["proj"]
+    embed = root / "content/proj/reference/002-matrix/index.md"
+    lines = compat.render_interfaces(result, matrix, embed, root / "content")
+    spark = next(line for line in lines if line.startswith("| Spark 4.1.0 |"))
+    assert "[Apache Spark](model:apacheSpark)" in spark
+    assert "[Unity Catalog](model:ucSpec)" in spark
+    assert (
+        "[Table](model:lakehouse.table), [Volume](model:lakehouse.volume)" in spark
+    )
+    assert (
+        "[Table: 1 journey](../../how-to/engine/index.md#read-it)" in spark
+    )
+    assert "Volume:" not in spark
 
 
 def test_an_unannotated_journey_falls_back_to_the_matrix_spec(tmp_path) -> None:

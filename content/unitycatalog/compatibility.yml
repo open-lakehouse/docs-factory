@@ -56,25 +56,31 @@ interfaces:
   daft:
     label: Daft
     package: daft
+    model: daft
   pandas:
     label: pandas
     package: pandas
+    model: deltaRs
   pyiceberg:
     label: PyIceberg
     package: pyiceberg
+    model: pyIceberg
   # The catalog clients. They manage catalog objects; scripts that read or write
   # data through them pair them with a storage library, named in the claim's note.
   cli:
     label: uc CLI
     pin: release
+    model: ucCli
   python-sdk:
     label: Python SDK
     pin: unitycatalog-client
     package: unitycatalog-client
+    model: unityCatalogPythonSdk
   unitycatalog-ai:
     label: unitycatalog-ai
     pin: unitycatalog-ai
     package: unitycatalog-ai
+    model: unityCatalogAI
 
 journeys:
   table.list:

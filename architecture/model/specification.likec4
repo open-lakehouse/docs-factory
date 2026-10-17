@@ -131,6 +131,7 @@ specification {
 
   // Governed-asset edges (the subject axis — see ADR-0005):
   relationship governs                     // a catalog specification governs an asset kind
+  relationship operatesOn { line dashed }  // an implementation can act on an asset kind; not proof of a journey
 
   // Cross-cutting edge (ADR-0007): a concern spans an asset kind or capability.
   // One kind for every concern; the verb goes in the title.

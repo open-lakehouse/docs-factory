@@ -37,42 +37,42 @@
       "label": "Daft",
       "version": "0.7.25",
       "package": "daft",
-      "model": null
+      "model": "daft"
     },
     {
       "key": "pandas",
       "label": "pandas",
       "version": "2.3.3",
       "package": "pandas",
-      "model": null
+      "model": "deltaRs"
     },
     {
       "key": "pyiceberg",
       "label": "PyIceberg",
       "version": "0.12.0",
       "package": "pyiceberg",
-      "model": null
+      "model": "pyIceberg"
     },
     {
       "key": "cli",
       "label": "uc CLI",
       "version": "0.7.0",
       "package": null,
-      "model": null
+      "model": "ucCli"
     },
     {
       "key": "python-sdk",
       "label": "Python SDK",
       "version": "0.7.0",
       "package": "unitycatalog-client",
-      "model": null
+      "model": "unityCatalogPythonSdk"
     },
     {
       "key": "unitycatalog-ai",
       "label": "unitycatalog-ai",
       "version": "0.4.0",
       "package": "unitycatalog-ai",
-      "model": null
+      "model": "unityCatalogAI"
     }
   ],
   "tables": [
@@ -5126,6 +5126,108 @@
       ]
     },
     {
+      "source": "apacheSpark",
+      "kind": "operatesOn",
+      "target": "lakehouse.metricView",
+      "interfaces": [
+        "spark-4.2"
+      ],
+      "journeys": [
+        "metricview.create",
+        "metricview.describe",
+        "metricview.drop",
+        "metricview.list",
+        "metricview.query"
+      ]
+    },
+    {
+      "source": "apacheSpark",
+      "kind": "operatesOn",
+      "target": "lakehouse.namespace",
+      "interfaces": [
+        "spark"
+      ],
+      "journeys": [
+        "iceberg.schema-create"
+      ]
+    },
+    {
+      "source": "apacheSpark",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "spark"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.join-delta",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.update",
+        "managed.append",
+        "managed.create",
+        "managed.delete",
+        "managed.drop",
+        "managed.read",
+        "managed.time-travel",
+        "managed.update",
+        "table.list"
+      ]
+    },
+    {
+      "source": "daft",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "daft"
+      ],
+      "journeys": [
+        "external.read",
+        "table.list"
+      ]
+    },
+    {
+      "source": "daft",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "daft"
+      ],
+      "journeys": [
+        "external.read",
+        "table.list"
+      ]
+    },
+    {
+      "source": "deltaRs",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "pandas"
+      ],
+      "journeys": [
+        "external.append",
+        "external.read",
+        "external.read-vended"
+      ]
+    },
+    {
+      "source": "deltaRs",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "pandas"
+      ],
+      "journeys": [
+        "external.append",
+        "external.read",
+        "external.read-vended"
+      ]
+    },
+    {
       "source": "duckdb",
       "kind": "consumes",
       "target": "icebergRestSpec",
@@ -5159,6 +5261,39 @@
       ]
     },
     {
+      "source": "duckdb",
+      "kind": "operatesOn",
+      "target": "lakehouse.namespace",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "iceberg.schema-create"
+      ]
+    },
+    {
+      "source": "duckdb",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "duckdb"
+      ],
+      "journeys": [
+        "external.read",
+        "external.read-format",
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.update",
+        "managed.append",
+        "managed.read",
+        "table.list"
+      ]
+    },
+    {
       "source": "polars",
       "kind": "consumes",
       "target": "ucSpec",
@@ -5172,33 +5307,354 @@
         "external.read-vended",
         "table.list"
       ]
+    },
+    {
+      "source": "polars",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "polars"
+      ],
+      "journeys": [
+        "external.append",
+        "external.read",
+        "external.read-format",
+        "external.read-vended",
+        "table.list"
+      ]
+    },
+    {
+      "source": "pyIceberg",
+      "kind": "consumes",
+      "target": "icebergRestSpec",
+      "interfaces": [
+        "pyiceberg"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.schema-create",
+        "iceberg.update"
+      ]
+    },
+    {
+      "source": "pyIceberg",
+      "kind": "operatesOn",
+      "target": "lakehouse.namespace",
+      "interfaces": [
+        "pyiceberg"
+      ],
+      "journeys": [
+        "iceberg.schema-create"
+      ]
+    },
+    {
+      "source": "pyIceberg",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "pyiceberg"
+      ],
+      "journeys": [
+        "iceberg.append",
+        "iceberg.create",
+        "iceberg.delete",
+        "iceberg.drop",
+        "iceberg.read",
+        "iceberg.rename",
+        "iceberg.update"
+      ]
+    },
+    {
+      "source": "ucCli",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "cli"
+      ],
+      "journeys": [
+        "catalog.create",
+        "catalog.delete",
+        "catalog.list",
+        "catalog.update",
+        "credential.create",
+        "credential.update",
+        "location.create",
+        "location.update",
+        "schema.create",
+        "schema.delete",
+        "schema.list",
+        "schema.update",
+        "storage.delete",
+        "storage.managed-root",
+        "storage.view",
+        "table.describe",
+        "table.drop",
+        "table.list",
+        "table.read",
+        "table.register-external",
+        "table.register-format",
+        "table.write-sample",
+        "volume.create-external",
+        "volume.create-managed",
+        "volume.delete",
+        "volume.list-files",
+        "volume.update",
+        "volume.view"
+      ]
+    },
+    {
+      "source": "ucCli",
+      "kind": "operatesOn",
+      "target": "lakehouse.credential",
+      "interfaces": [
+        "cli"
+      ],
+      "journeys": [
+        "credential.create",
+        "credential.update"
+      ]
+    },
+    {
+      "source": "ucCli",
+      "kind": "operatesOn",
+      "target": "lakehouse.externalLocation",
+      "interfaces": [
+        "cli"
+      ],
+      "journeys": [
+        "location.create",
+        "location.update",
+        "storage.delete",
+        "storage.view"
+      ]
+    },
+    {
+      "source": "ucCli",
+      "kind": "operatesOn",
+      "target": "lakehouse.namespace",
+      "interfaces": [
+        "cli"
+      ],
+      "journeys": [
+        "catalog.create",
+        "catalog.delete",
+        "catalog.list",
+        "catalog.update",
+        "schema.create",
+        "schema.delete",
+        "schema.list",
+        "schema.update",
+        "storage.managed-root"
+      ]
+    },
+    {
+      "source": "ucCli",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "cli"
+      ],
+      "journeys": [
+        "table.describe",
+        "table.drop",
+        "table.list",
+        "table.read",
+        "table.register-external",
+        "table.register-format",
+        "table.write-sample"
+      ]
+    },
+    {
+      "source": "ucCli",
+      "kind": "operatesOn",
+      "target": "lakehouse.volume",
+      "interfaces": [
+        "cli"
+      ],
+      "journeys": [
+        "volume.create-external",
+        "volume.create-managed",
+        "volume.delete",
+        "volume.list-files",
+        "volume.update",
+        "volume.view"
+      ]
+    },
+    {
+      "source": "unityCatalogAI",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "unitycatalog-ai"
+      ],
+      "journeys": [
+        "function.create",
+        "function.delete",
+        "function.describe",
+        "function.execute",
+        "function.list"
+      ]
+    },
+    {
+      "source": "unityCatalogAI",
+      "kind": "operatesOn",
+      "target": "lakehouse.registeredFunction",
+      "interfaces": [
+        "unitycatalog-ai"
+      ],
+      "journeys": [
+        "function.create",
+        "function.delete",
+        "function.describe",
+        "function.execute",
+        "function.list"
+      ]
+    },
+    {
+      "source": "unityCatalogPythonSdk",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "journeys": [
+        "catalog.create",
+        "catalog.delete",
+        "catalog.list",
+        "catalog.update",
+        "credential.create",
+        "credential.update",
+        "credentials.vend-path",
+        "credentials.vend-volume",
+        "location.create",
+        "location.update",
+        "metricview.create",
+        "metricview.describe",
+        "metricview.drop",
+        "metricview.list",
+        "schema.create",
+        "schema.delete",
+        "schema.list",
+        "schema.update",
+        "storage.delete",
+        "storage.managed-root",
+        "storage.view",
+        "table.describe",
+        "table.drop",
+        "table.read",
+        "table.register-external",
+        "table.register-format",
+        "volume.create-external",
+        "volume.create-managed",
+        "volume.delete",
+        "volume.list-files",
+        "volume.read-files",
+        "volume.update",
+        "volume.view",
+        "volume.write-files"
+      ]
+    },
+    {
+      "source": "unityCatalogPythonSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.credential",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "journeys": [
+        "credential.create",
+        "credential.update",
+        "credentials.vend-path",
+        "credentials.vend-volume"
+      ]
+    },
+    {
+      "source": "unityCatalogPythonSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.externalLocation",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "journeys": [
+        "location.create",
+        "location.update",
+        "storage.delete",
+        "storage.view"
+      ]
+    },
+    {
+      "source": "unityCatalogPythonSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.metricView",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "journeys": [
+        "metricview.create",
+        "metricview.describe",
+        "metricview.drop",
+        "metricview.list"
+      ]
+    },
+    {
+      "source": "unityCatalogPythonSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.namespace",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "journeys": [
+        "catalog.create",
+        "catalog.delete",
+        "catalog.list",
+        "catalog.update",
+        "schema.create",
+        "schema.delete",
+        "schema.list",
+        "schema.update",
+        "storage.managed-root"
+      ]
+    },
+    {
+      "source": "unityCatalogPythonSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "journeys": [
+        "table.describe",
+        "table.drop",
+        "table.read",
+        "table.register-external",
+        "table.register-format"
+      ]
+    },
+    {
+      "source": "unityCatalogPythonSdk",
+      "kind": "operatesOn",
+      "target": "lakehouse.volume",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "journeys": [
+        "volume.create-external",
+        "volume.create-managed",
+        "volume.delete",
+        "volume.list-files",
+        "volume.read-files",
+        "volume.update",
+        "volume.view",
+        "volume.write-files"
+      ]
     }
   ],
   "diagnostics": [
-    {
-      "kind": "unmodeled",
-      "interface": "cli"
-    },
-    {
-      "kind": "unmodeled",
-      "interface": "daft"
-    },
-    {
-      "kind": "unmodeled",
-      "interface": "pandas"
-    },
-    {
-      "kind": "unmodeled",
-      "interface": "pyiceberg"
-    },
-    {
-      "kind": "unmodeled",
-      "interface": "python-sdk"
-    },
-    {
-      "kind": "unmodeled",
-      "interface": "unitycatalog-ai"
-    },
     {
       "kind": "unverified-asset",
       "asset": "lakehouse.agentSkill"

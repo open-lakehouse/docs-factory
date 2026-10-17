@@ -486,15 +486,24 @@ contracts they require, and keep implementation and version detail on the
 interface `pin`. A reference that doesn't resolve, or names the wrong kind of
 element, fails `docsnip check`. An interface that proves a journey but has no
 model edge to a spec its client consumes is reported separately from the
-outcome; the test evidence stands, and no graph path alone establishes
-support.
+outcome. A ready working claim also checks that the interface's implementation
+has an `operatesOn` edge to the journey's asset. Both are model gaps, not cell
+failures: the test evidence stands, and no graph path alone establishes
+support. Conversely, an `operatesOn` edge with no ready proof is reported as
+modeled, unverified breadth.
 
 A page embeds a table between `<!-- compat:<table> -->` and
 `<!-- /compat:<table> -->`; `<!-- compat:asset:<model id> -->` embeds every
 journey on that asset instead, on the page that `explains:` it, dropping
-columns that say nothing there. `uv run docsnip compat --fix` renders it; don't
-edit it by hand. `docsnip check` fails when it's stale (for example after a page is
-promoted) or when a claim doesn't hold up. The emitter strips the markers.
+columns that say nothing there. `<!-- compat:interfaces -->` renders a summary
+of each interface's model binding, contracts, modeled asset breadth, and ready
+journey counts. `uv run docsnip compat --fix` renders these blocks; don't edit
+them by hand. `docsnip check` fails when one is stale (for example after a page
+is promoted) or when a claim doesn't hold up. The emitter strips the markers.
+
+Keep journey families, participant requirements, and `tables.*` rows/columns
+authored. They are reader-task and editorial choices. The model supplies
+validation and breadth; it never creates a journey or a green cell.
 
 ## Environment diagrams
 

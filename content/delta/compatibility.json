@@ -5705,6 +5705,27 @@
       ]
     },
     {
+      "source": "deltaSpark",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "spark-python",
+        "spark-sql"
+      ],
+      "journeys": [
+        "catalog.unity",
+        "create.table",
+        "dml.delete",
+        "dml.update",
+        "feature.properties",
+        "history.detail",
+        "history.list",
+        "read.scan",
+        "read.version",
+        "write.append"
+      ]
+    },
+    {
       "source": "duckdb",
       "kind": "consumes",
       "target": "deltaSpec",
@@ -5716,7 +5737,26 @@
         "read.scan",
         "write.append"
       ]
+    },
+    {
+      "source": "duckdb",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
+      "interfaces": [
+        "duckdb-sql"
+      ],
+      "journeys": [
+        "catalog.unity",
+        "read.scan",
+        "write.append"
+      ]
     }
   ],
-  "diagnostics": []
+  "diagnostics": [
+    {
+      "kind": "unverified-asset-edge",
+      "source": "deltaRs",
+      "asset": "lakehouse.table"
+    }
+  ]
 }

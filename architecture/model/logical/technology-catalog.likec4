@@ -147,6 +147,9 @@ model {
   apacheSpark -[consumes]-> icebergRestSpec "reads via"
   apacheSpark -[consumes]-> ucSpec "resolves tables via"
   apacheSpark -[implements]-> sparkConnectSpec "serves"
+  apacheSpark -[operatesOn]-> lakehouse.namespace "creates and lists"
+  apacheSpark -[operatesOn]-> lakehouse.table "queries and changes"
+  apacheSpark -[operatesOn]-> lakehouse.metricView "defines and queries"
 
   deltaRs = implementation "delta-rs" {
     #library #public
@@ -156,7 +159,9 @@ model {
     link https://delta-io.github.io/delta-rs/
   }
   deltaRs -[implements]-> deltaSpec "implements"
+  deltaRs -[consumes]-> ucSpec "resolves tables via"
   deltaRs -[consumes]-> s3Api "reads/writes data files via"
+  deltaRs -[operatesOn]-> lakehouse.table "reads and changes"
 
   deltaSpark = implementation "Delta Spark" {
     #service #public
@@ -167,6 +172,7 @@ model {
   }
   deltaSpark -[implements]-> deltaSpec "implements"
   deltaSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  deltaSpark -[operatesOn]-> lakehouse.table "queries and changes"
 
   duckdb = implementation "DuckDB" {
     #library #public
@@ -179,6 +185,8 @@ model {
   duckdb -[consumes]-> deltaSpec "reads Delta tables via"
   duckdb -[consumes]-> icebergRestSpec "reads Iceberg tables via"
   duckdb -[consumes]-> ucSpec "resolves tables via"
+  duckdb -[operatesOn]-> lakehouse.namespace "creates and lists"
+  duckdb -[operatesOn]-> lakehouse.table "queries and changes"
 
   polars = implementation "Polars" {
     #library #public
@@ -195,6 +203,64 @@ model {
   // impl -> impl is a DEPENDENCY, not spec-consumption (`consumes` is impl -> spec). See ADR-0006.
   polars -[dependsOn]-> deltaRs "reads/writes Delta via"
   polars -[consumes]-> ucSpec "resolves tables via"
+  polars -[operatesOn]-> lakehouse.table "reads and appends"
+
+  daft = implementation "Daft" {
+    #library #public
+
+    description "Distributed Python DataFrame library with a Unity Catalog integration."
+    link https://docs.daft.ai/en/stable/connectors/unity_catalog/
+  }
+  daft -[consumes]-> ucSpec "resolves tables via"
+  daft -[operatesOn]-> lakehouse.table "lists and reads"
+
+  pyIceberg = implementation "PyIceberg" {
+    #library #public
+
+    description "Python implementation of Apache Iceberg with REST catalog and table APIs."
+    link https://py.iceberg.apache.org
+  }
+  pyIceberg -[consumes]-> icebergRestSpec "uses the REST catalog"
+  pyIceberg -[operatesOn]-> lakehouse.namespace "creates and lists"
+  pyIceberg -[operatesOn]-> lakehouse.table "creates and changes"
+
+  // Unity Catalog's local clients are separate interfaces even though they
+  // ship from the same upstream repository and release.
+  ucCli = implementation "Unity Catalog CLI" {
+    #library #public
+
+    description "Command-line client for managing Unity Catalog objects and storage access."
+    link https://docs.unitycatalog.io/usage/cli/
+  }
+  ucCli -[consumes]-> ucSpec "calls"
+  ucCli -[operatesOn]-> lakehouse.namespace "manages"
+  ucCli -[operatesOn]-> lakehouse.table "manages"
+  ucCli -[operatesOn]-> lakehouse.volume "manages"
+  ucCli -[operatesOn]-> lakehouse.credential "manages"
+  ucCli -[operatesOn]-> lakehouse.externalLocation "manages"
+
+  unityCatalogPythonSdk = implementation "Unity Catalog Python SDK" {
+    #library #public
+
+    description "Generated asynchronous Python client for Unity Catalog REST APIs."
+    link https://pypi.org/project/unitycatalog-client/
+  }
+  unityCatalogPythonSdk -[consumes]-> ucSpec "calls"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.namespace "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.table "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.volume "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.metricView "stores definitions for"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.credential "manages"
+  unityCatalogPythonSdk -[operatesOn]-> lakehouse.externalLocation "manages"
+
+  unityCatalogAI = implementation "unitycatalog-ai" {
+    #library #public
+
+    description "Python client library for registering and executing functions through Unity Catalog."
+    link https://github.com/unitycatalog/unitycatalog/tree/main/ai
+  }
+  unityCatalogAI -[consumes]-> ucSpec "calls"
+  unityCatalogAI -[operatesOn]-> lakehouse.registeredFunction "registers and executes"
 
   // Catalog implementations --------------------------------------------------
   lakekeeper = implementation "Lakekeeper" {

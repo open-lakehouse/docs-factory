@@ -32,6 +32,7 @@ blogs/
 | Unity Catalog storage | [`unity-catalog-storage/`](./unity-catalog-storage/) | — | unity-catalog, governance, lakehouse, devrel | draft | unitycatalog |
 | The UC Delta API | [`unity-catalog-delta-api/`](./unity-catalog-delta-api/) | — | unity-catalog, delta-lake, iceberg, lakehouse | draft | unitycatalog |
 | One catalog, both formats, any engine | [`uc-iceberg-rest/`](./uc-iceberg-rest/) | — | unity-catalog, iceberg, apache-spark, table-formats | draft | unitycatalog |
+| The true Unity Catalog docs | [`true-unity-catalog-docs/`](./true-unity-catalog-docs/) | — | unity-catalog, delta-lake, devrel, lakehouse | draft | unitycatalog |
 
 ## Workflow
 

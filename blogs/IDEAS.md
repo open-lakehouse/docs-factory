@@ -277,6 +277,12 @@ verified `snippets/` (§5) over sketches; be honest about pre-release status (§
   Delta table. → graduated to a brief: `blogs/uc-iceberg-rest/`.
   `repos:` unitycatalog (v0.7.0) · docs: H21 `how-to/012-iceberg-rest`
 
+- [x] **The true Unity Catalog docs** — fight misinformation about what works
+  with which catalog: every docs claim is a script CI runs, support tables
+  render from tested claims (failures included), deployments are generated and
+  tested too. → graduated to a brief: `blogs/true-unity-catalog-docs/`.
+  `src:` content/conftest.py, tools/docsnip, envs/, emit/docs
+
 - [ ] **Metric views: one YAML, many engines** — translate a metric view's YAML
   definition into a portable AST (via [SQLGlot](https://github.com/tobymao/sqlglot))
   and emit dialect-correct SQL for several engines, plus a DataFusion integration —

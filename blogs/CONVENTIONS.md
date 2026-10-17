@@ -540,14 +540,14 @@ findings. Human approval in the review app is what clears a post for
   rest of the E-E-A-T signal) are supplied by the publishing target at release, not
   duplicated per post — see the QUALITY.md publish-target section.
 
-## 11. Agent-driven drafting (Omnigent `blog-writer`)
+## 11. Agent-driven drafting (Omnigent `author`)
 
-[`agents/blog-writer/`](../agents/blog-writer/) is an Omnigent multi-agent
+[`agents/author/`](../agents/author/) is an Omnigent multi-agent
 workflow that runs the same process from a different starting point: the
 author dumps thoughts, a rough structure, and references into the prompt, and
 the agent turns them into a review-ready draft. Run it with
-`omni run ./agents/blog-writer/`. The agent's README covers the phases and
-gates.
+`omni run ./agents/author/`. The same agent also writes docs pages, and its
+README covers the phases and gates for both.
 
 How it differs from the skill-driven lifecycle (§1):
 

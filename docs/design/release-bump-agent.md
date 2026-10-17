@@ -10,7 +10,7 @@ procedure.
 ## Shape
 
 It would live at `agents/release-bump/` and follow
-[`agents/blog-writer`](../../agents/blog-writer/README.md): an orchestrator
+[`agents/author`](../../agents/author/README.md): an orchestrator
 that sequences and never writes, and one sub-agent per role, each with the
 narrowest write scope its job needs.
 
@@ -24,12 +24,12 @@ narrowest write scope its job needs.
 
 Phase 3 fans out because each page is reviewed on its own against the same
 phase 2 list, and parallel read-only verifiers keep each context small. A
-cross-harness verifier, like blog-writer's `cross_reviewer`, could take the
+cross-harness verifier, like the author agent's `cross_reviewer`, could take the
 claims marked `unsure`.
 
 ## Gates and guardrails
 
-- The author confirms the claims table before phase 4, as blog-writer's plan
+- The author confirms the claims table before phase 4, as the author agent's plan
   gate does. A wrong `holds` costs less than an unreviewed edit to a `ready`
   page.
 - `blast_radius` with `gate_pushes: true`: pushes and `gh pr create` ask.

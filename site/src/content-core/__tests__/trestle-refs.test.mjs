@@ -1,6 +1,11 @@
 // nodeConcepts / buildTrestleRefs: a diagram node's model concepts, public-only on a site.
 import { expect, test } from "bun:test";
-import { buildTrestleRefs, nodeConcepts, TRESTLE_REFS_FORMAT } from "../trestle-refs.mjs";
+import {
+  buildTrestleRefs,
+  nodeAssets,
+  nodeConcepts,
+  TRESTLE_REFS_FORMAT,
+} from "../trestle-refs.mjs";
 
 const context = {
   roles: {
@@ -11,7 +16,9 @@ const context = {
   concepts: {
     "lakehouse.catalog": {},
     "lakehouse.governance.authorization": {},
-    unityCatalogOSS: {},
+    unityCatalogOSS: { assets: ["lakehouse.table", "lakehouse.sqlView"] },
+    "lakehouse.table": {},
+    "lakehouse.sqlView": {},
   },
 };
 
@@ -54,6 +61,8 @@ test("refs keep only public concepts, and drop roles pointing at the rest", () =
       kind: "concern",
       public: false,
     },
+    "lakehouse.table": { title: "Table", kind: "asset", summary: null, public: true },
+    "lakehouse.sqlView": { title: "View", kind: "asset", summary: null, public: false },
     unityCatalogOSS: {
       title: "Unity Catalog (OSS)",
       kind: "implementation",
@@ -67,7 +76,11 @@ test("refs keep only public concepts, and drop roles pointing at the rest", () =
     href: (id) => (id === "lakehouse.catalog" ? "/docs/explanation/catalog" : null),
   });
   expect(refs.format).toBe(TRESTLE_REFS_FORMAT);
-  expect(Object.keys(refs.concepts)).toEqual(["lakehouse.catalog", "unityCatalogOSS"]);
+  expect(Object.keys(refs.concepts)).toEqual([
+    "lakehouse.catalog",
+    "lakehouse.table",
+    "unityCatalogOSS",
+  ]);
   expect(refs.concepts["lakehouse.catalog"]).toEqual({
     title: "Catalog",
     kind: "capability",
@@ -76,7 +89,17 @@ test("refs keep only public concepts, and drop roles pointing at the rest", () =
     href: "/docs/explanation/catalog",
   });
   expect(refs.concepts.unityCatalogOSS.href).toBeNull();
+  // a non-public asset drops out of the list, and an empty list is left out
+  expect(refs.concepts.unityCatalogOSS.assets).toEqual(["lakehouse.table"]);
+  expect(refs.concepts["lakehouse.catalog"]).not.toHaveProperty("assets");
+  expect(refs.concepts["lakehouse.table"].kindLabel).toBe("Asset kind");
   expect(refs.roles).toEqual({ data_catalog: { concept: "lakehouse.catalog", scope: "full" } });
   // refs.json's role map reads the same way as the context's.
   expect(nodeConcepts(node(), refs.roles).role).toEqual({ id: "lakehouse.catalog", scope: "full" });
+});
+
+test("a node lists the asset kinds its implementation manages", () => {
+  expect(nodeAssets(node(), context.concepts)).toEqual(["lakehouse.table", "lakehouse.sqlView"]);
+  expect(nodeAssets(node({ model: "lakehouse.catalog" }), context.concepts)).toEqual([]);
+  expect(nodeAssets({ id: "@clients", model: null }, context.concepts)).toEqual([]);
 });

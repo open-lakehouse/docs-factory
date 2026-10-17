@@ -84,7 +84,12 @@ test("trestle refs link a node's concepts like model: links, public-only", () =>
         policy: { target: "hydrofoil", scope: "partial" },
         gateway: { unmapped: "infrastructure" },
       },
-      concepts: { "lakehouse.catalog": {}, deltaSpec: {}, hydrofoil: {} },
+      concepts: {
+        "lakehouse.catalog": {},
+        "lakehouse.table": {},
+        deltaSpec: { assets: ["lakehouse.table"] },
+        hydrofoil: {},
+      },
     }),
   );
   const resolve = modelLinkResolver(
@@ -96,10 +101,12 @@ test("trestle refs link a node's concepts like model: links, public-only", () =>
   expect(refs.concepts["lakehouse.catalog"].href).toBe("/explanation/catalog");
   expect(refs.concepts.deltaSpec.href).toBe("https://delta.io");
   expect(refs.concepts.hydrofoil).toBeUndefined();
+  expect(refs.concepts.deltaSpec.assets).toEqual(["lakehouse.table"]);
 });
 
 test("the committed trestle context maps the catalog role", () => {
   const refs = trestleRefs(loadModel(), () => null);
   expect(refs.roles.data_catalog).toEqual({ concept: "lakehouse.catalog", scope: "full" });
   expect(refs.concepts.unityCatalogOSS.kindLabel).toBe("Implementation");
+  expect(refs.concepts.unityCatalogOSS.assets).toContain("lakehouse.table");
 });

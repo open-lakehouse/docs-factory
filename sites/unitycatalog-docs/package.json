@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@mdx-js/react": "^3.1.1",
-    "@open-lakehouse/trestle-diagram": "0.2.0",
+    "@open-lakehouse/trestle-diagram": "0.3.0",
     "@scalar/api-reference-react": "0.9.74",
     "lucide-react": "^1.23.0",
     "minisearch": "^7.2.0",

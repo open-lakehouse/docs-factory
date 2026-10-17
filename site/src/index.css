@@ -1745,6 +1745,44 @@ button.tag {
   line-height: 1.45;
   color: var(--muted-foreground);
 }
+.entity-card-assets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 0.85rem;
+  margin: 0;
+  padding: 0.7rem 0.85rem;
+  list-style: none;
+  font-size: 0.82rem;
+}
+/* Asset-kind count in a diagram node's header. Inside the diagram scope the
+   tokens are HSL components, and its preflight resets borders, hence hsl() and
+   the extra class. */
+.trestle-diagram .node-assets {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.25rem;
+  color: hsl(var(--muted-foreground));
+  font: 600 10px/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+}
+.trestle-diagram .node-assets svg {
+  width: 11px;
+  height: 11px;
+  stroke-width: 1.75;
+}
+.trestle-diagram .node-assets:hover,
+.trestle-diagram .node-assets:focus-visible,
+.trestle-diagram .node-assets[data-state="open"] {
+  border-color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  outline: none;
+}
 .entity-card-links {
   display: flex;
   flex-direction: column;

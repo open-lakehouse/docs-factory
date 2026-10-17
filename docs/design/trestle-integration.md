@@ -417,6 +417,14 @@ raw `model.json` stays internal.
   so a role whose concept isn't public stays plain text. A `partial` role says
   so in its card. The review app resolves every element, as its `model:` links
   do.
+- **A node counts the asset kinds it manages.** A chip at the end of the node's
+  header (the package's `aside` slot) shows how many asset kinds the
+  implementation manages, and its hover card lists them. The kinds are what the
+  specs it `implements` `governs`, plus what it `operatesOn` directly, in model
+  order. `docsnip trestle --fix` writes them to the implementation's `assets` in
+  the context artifact, and `nodeAssets` reads them. A site's `refs.json`
+  keeps only the public kinds and drops the chip when none remain. The header
+  has a fixed height, so the layout and the PNG don't change.
 
 ## 9. Agent queries
 

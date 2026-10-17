@@ -1222,6 +1222,50 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   color: var(--muted-foreground);
 }
 .concept-card-title { display: block; margin-top: 0.15rem; font-weight: 600; }
+/* Inside the expand dialog the card sits in .prose, whose list padding would win. */
+.concept-card .concept-card-assets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.75rem;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.concept-card .concept-card-assets li { margin: 0; }
+.concept-card-assets a { color: inherit; text-decoration: underline dotted; text-underline-offset: 2px; }
+.concept-card-assets a:hover { text-decoration-style: solid; }
+/* Asset-kind count in a node's header. Inside the diagram scope the tokens are
+   HSL components, and its preflight resets borders, hence hsl() and the extra
+   class. */
+.trestle-diagram .node-assets {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.1rem 0.3rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: 0.25rem;
+  color: hsl(var(--muted-foreground));
+  font: 600 10px/1 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  cursor: default;
+  transition: color 0.15s, border-color 0.15s, background-color 0.15s;
+}
+.trestle-diagram .node-assets svg {
+  width: 11px;
+  height: 11px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.trestle-diagram .node-assets:hover,
+.trestle-diagram .node-assets:focus-visible {
+  border-color: hsl(var(--muted-foreground));
+  background: hsl(var(--muted));
+  color: hsl(var(--foreground));
+  outline: none;
+}
 .concept-card p { margin: 0.3rem 0 0; color: var(--muted-foreground); }
 .concept-card .concept-card-note { font-style: italic; }
 

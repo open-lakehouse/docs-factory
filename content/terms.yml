@@ -1,0 +1,76 @@
+# Prose terminology for `docsnip prose`, alongside the product names it derives
+# from the model (`#public` specifications and implementations in
+# architecture/dist/model.json). Warnings only; see content/QUALITY.md (e).
+
+# Wrong form → canonical form, matched case-insensitively as whole words, for
+# names the model doesn't carry (or carries under a different title).
+names:
+  github: GitHub
+  pyspark: PySpark
+  pyiceberg: PyIceberg
+  pyarrow: PyArrow
+  minio: MinIO
+  likec4: LikeC4
+  iceberg rest catalog: Iceberg REST Catalog
+  unity catalog oss: Unity Catalog OSS
+
+# Variants that read as a common noun, not a misspelled name: "an Iceberg REST
+# catalog" is any server that speaks the spec.
+allow:
+  - Iceberg REST catalog
+
+# Term → replacement. Whole words, case-insensitive; docs and blogs.
+prohibited:
+  blacklist: denylist
+  blacklisted: denylisted
+  whitelist: allowlist
+  whitelisted: allowlisted
+  master/slave: primary/replica
+  sanity check: final check
+  dummy: placeholder
+  he/she: they
+  his or her: their
+  manpower: staff
+
+# Docs only: words that claim ease instead of showing it. Cut them or state the
+# measurable fact. Blogs keep their author's register.
+marketing:
+  - simply
+  - easily
+  - seamlessly
+  - effortlessly
+  - blazing fast
+  - cutting-edge
+  - state-of-the-art
+  - world-class
+
+# Acronyms a reader may not know: the first use on a page must define them,
+# as "Security Token Service (STS)" or "STS (Security Token Service)".
+# Anything not listed here is treated as known.
+acronyms:
+  - ABAC
+  - ARN
+  - CDC
+  - CIDR
+  - FFI
+  - FGA
+  - IdP
+  - IRSA
+  - JWT
+  - KMS
+  - MFA
+  - OIDC
+  - OTLP
+  - PAP
+  - PAT
+  - PDP
+  - PII
+  - PIP
+  - RBAC
+  - SAML
+  - SCIM
+  - SPIFFE
+  - SPIRE
+  - SSO
+  - STS
+  - SVID

@@ -327,7 +327,7 @@ def _before(project: Project) -> re.Pattern[str]:
 _AFTER = re.compile(r"^\s*(?:or later|or newer|and later|or earlier)", re.IGNORECASE)
 
 
-def _prose_lines(text: str):
+def prose_lines(text: str):
     """(line number, prose) for a page, with code, tables, and URLs masked.
     Of the frontmatter only ``summary:`` is prose."""
     text = _FENCE_RE.sub(lambda m: "\n" * m.group(0).count("\n"), text)
@@ -369,7 +369,7 @@ def _project_prose_warnings(
         if md.relative_to(root).parts[0] not in _PROSE_BUCKETS:
             continue
         prev = ""
-        for n, line in _prose_lines(md.read_text()):
+        for n, line in prose_lines(md.read_text()):
             for m in number.finditer(line):
                 before, after = line[: m.start()], line[m.end() :]
                 if not before.strip():  # wrapped: "`unitycatalog-client`\n  0.6.0"

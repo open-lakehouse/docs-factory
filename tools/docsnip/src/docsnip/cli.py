@@ -10,7 +10,8 @@ Subcommands:
   trestle       — Trestle catalog ↔ model coverage (--fix rewrites the context artifact)
   envs          — generated environments' plan.json → model fragments + registry facts (--fix rewrites)
   diagrams      — Trestle diagram embeds and their PNGs (--list: the snapshots to render)
-  check         — validate + snippetcheck + versions + compat (CI entry)
+  prose         — mechanical prose rules: names, terms, hedges, acronyms, secrets
+  check         — validate + snippetcheck + versions + compat + prose (CI entry)
   plan          — which tutorial scripts a CI run executes, per lane and shard
   durations     — fold CI-recorded script durations into the shard plan's input
 
@@ -23,6 +24,7 @@ longer emits artifacts.
 from __future__ import annotations
 
 import argparse
+import dataclasses
 import json
 import re
 import sys
@@ -34,6 +36,7 @@ from . import (
     diagrams,
     envgen,
     environments,
+    prose,
     published,
     query,
     trestle,
@@ -422,9 +425,32 @@ def cmd_query(p, kind: str, ident: str) -> int:
     return 0
 
 
+def cmd_prose(p, as_json: bool = False) -> int:
+    """Prose findings are warnings; only a credential-shaped string fails."""
+    findings = prose.check(p["root"])
+    errors = [f for f in findings if f.error]
+    if as_json:
+        print(json.dumps([dataclasses.asdict(f) for f in findings], indent=2))
+    else:
+        for f in findings:
+            print(f"{'error' if f.error else 'warning'}: {f}", file=sys.stderr)
+    if errors:
+        print(f"\n{len(errors)} prose error(s)", file=sys.stderr)
+        return 1
+    if not as_json:
+        print(f"prose OK ({len(findings)} warning(s))")
+    return 0
+
+
 def cmd_check(p) -> int:
-    """CI entry point: validate + snippetcheck + versions + compat."""
-    rc = cmd_validate(p) or cmd_snippetcheck(p) or cmd_versions(p) or cmd_compat(p)
+    """CI entry point: validate + snippetcheck + versions + compat + prose."""
+    rc = (
+        cmd_validate(p)
+        or cmd_snippetcheck(p)
+        or cmd_versions(p)
+        or cmd_compat(p)
+        or cmd_prose(p)
+    )
     if rc == 0:
         print("check OK")
     return rc
@@ -506,6 +532,10 @@ def main(argv: list[str] | None = None) -> int:
     sp_diagrams.add_argument(
         "--list", action="store_true", help="print the snapshots a PNG is rendered for"
     )
+    sp_prose = sub.add_parser("prose")
+    sp_prose.add_argument(
+        "--json", action="store_true", help="emit findings as JSON (for agents)"
+    )
     # Internal agent queries over the committed artifacts (skill docs-query).
     sp_query = sub.add_parser("query")
     sp_query.add_argument("kind", choices=query.KINDS)
@@ -552,6 +582,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_envs(p, fix=args.fix)
     if args.cmd == "diagrams":
         return cmd_diagrams(p, list_only=args.list)
+    if args.cmd == "prose":
+        return cmd_prose(p, as_json=args.json)
     if args.cmd == "query":
         return cmd_query(p, args.kind, args.id)
     if args.cmd == "plan":

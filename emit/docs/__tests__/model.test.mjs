@@ -1,5 +1,8 @@
 import { expect, test } from "bun:test";
-import { loadModel, modelLinkResolver, readModel, viewAltText } from "../model.mjs";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { loadModel, modelLinkResolver, readModel, trestleRefs, viewAltText } from "../model.mjs";
 
 const model = readModel({
   elements: {
@@ -69,4 +72,34 @@ test("the committed model resolves the ids content links to", () => {
   const live = loadModel();
   expect(live.elements.get("deltaSpec")?.link).toBe("https://delta.io");
   expect(live.views.has("ucCredentialVending_tableRead")).toBe(true);
+});
+
+test("trestle refs link a node's concepts like model: links, public-only", () => {
+  const context = join(mkdtempSync(join(tmpdir(), "trestle-refs-")), "trestle-context.json");
+  writeFileSync(
+    context,
+    JSON.stringify({
+      roles: {
+        data_catalog: { target: "lakehouse.catalog", scope: "full" },
+        policy: { target: "hydrofoil", scope: "partial" },
+        gateway: { unmapped: "infrastructure" },
+      },
+      concepts: { "lakehouse.catalog": {}, deltaSpec: {}, hydrofoil: {} },
+    }),
+  );
+  const resolve = modelLinkResolver(
+    model,
+    new Map([["lakehouse.catalog", "/explanation/catalog"]]),
+  );
+  const refs = trestleRefs(model, resolve, context);
+  expect(refs.roles).toEqual({ data_catalog: { concept: "lakehouse.catalog", scope: "full" } });
+  expect(refs.concepts["lakehouse.catalog"].href).toBe("/explanation/catalog");
+  expect(refs.concepts.deltaSpec.href).toBe("https://delta.io");
+  expect(refs.concepts.hydrofoil).toBeUndefined();
+});
+
+test("the committed trestle context maps the catalog role", () => {
+  const refs = trestleRefs(loadModel(), () => null);
+  expect(refs.roles.data_catalog).toEqual({ concept: "lakehouse.catalog", scope: "full" });
+  expect(refs.concepts.unityCatalogOSS.kindLabel).toBe("Implementation");
 });

@@ -81,7 +81,13 @@ import {
 } from "./discovery.mjs";
 import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
-import { loadModel, loadProjection, modelLinkResolver, viewAltText } from "./model.mjs";
+import {
+  loadModel,
+  loadProjection,
+  modelLinkResolver,
+  trestleRefs,
+  viewAltText,
+} from "./model.mjs";
 import { projectNav } from "./nav.mjs";
 import { searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
@@ -279,6 +285,7 @@ export async function emitDocs({ site, drafts = false }) {
     const search = [];
     const manifestPages = {};
     let hasLikeC4 = false;
+    let hasTrestle = false;
     let likec4Exported = false;
     for (const page of ordered) {
       const { absPath, identity, route } = page;
@@ -361,6 +368,7 @@ export async function emitDocs({ site, drafts = false }) {
           );
         }
         hasLikeC4 ||= Boolean(image.likec4);
+        hasTrestle ||= Boolean(image.trestle);
       }
 
       // Twin URLs are absolute: the twin is read away from the site.
@@ -478,6 +486,14 @@ export async function emitDocs({ site, drafts = false }) {
       const bundle = join(tmp, "likec4-webcomponent.mjs");
       generateLikeC4WebComponent(defaultModelDir(), bundle, true);
       files.set("public/likec4/likec4-webcomponent.mjs", readFileSync(bundle));
+    }
+
+    // TrestleDiagram links each node's name and role through it.
+    if (hasTrestle) {
+      files.set(
+        `public${TRESTLE_ASSET_BASE}/refs.json`,
+        `${JSON.stringify(trestleRefs(model, resolveModelLink), null, 2)}\n`,
+      );
     }
 
     for (const name of VENDORED_PLUGINS) {

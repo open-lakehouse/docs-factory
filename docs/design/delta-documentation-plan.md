@@ -371,7 +371,7 @@ SQL = Spark SQL, PyS = PySpark, Py = `deltalake`, Duck = DuckDB.
 | T05 | Keep a table fast with compaction, clustering, and vacuum | P1 / J04 | SQL | Many small appends, `OPTIMIZE`, `CLUSTER BY`, `VACUUM … DRY RUN`; assert file counts and that time travel inside retention still works. |
 | T06 | *Retired: merged into T01.* | — | — | — |
 | T07 | Stream changes between tables with PySpark | P1 / J03 | PyS | Structured Streaming source and sink with a checkpoint, a restart, and an exactly-once assertion in the declared configuration. |
-| T08 | Read and write a Delta table on S3-compatible storage | P1 / J07 | SQL | `envs/aws-sim`; storage settings outside the snippet; a second writer with the shared locking mode; assert both commits land. Phase 0 confirms which locking works on aws-sim. |
+| T08 | Read and write a Delta table on S3-compatible storage | P1 / J07 | SQL | a generated RustFS environment (like `envs/uc-aws`); storage settings outside the snippet; a second writer with the shared locking mode; assert both commits land. Phase 0 confirms which locking works on RustFS. |
 | T09 | Read your first table with Delta Kernel (Rust) | Later / J09 | Rust Kernel | Default engine, snapshot, scan with a predicate, a DAT table as fixture. |
 | T10 | Expose a table to Iceberg readers with UniForm | Later / J08 | SQL + PyIceberg | Enable `icebergCompatV2`, read through an Iceberg client. |
 | T11 | Build a Delta table in Python and query it with DuckDB | P0 / J01, J06 | Py, then Duck | No JVM. Write `orders` with `write_deltalake`, append, then query with `delta_scan` and `AT (VERSION => 0)`; assert counts in both engines. Doubles as a cross-engine test. |
@@ -438,7 +438,7 @@ is missing, propose a model change instead of inventing an id.
 | ID | Article | Priority / journeys | Interfaces | Required content |
 | --- | --- | --- | --- | --- |
 | H27 | Write safely to S3 from multiple writers | P0 / J07 | SQL, Py; Duck ? | `S3DynamoDBLogStore`, the `deltalake` DynamoDB provider and conditional put, the shared DynamoDB table, IAM, mixing engines, why unsafe rename isn't a production setting. |
-| H28 | Use S3-compatible object stores | P1 / J07 | SQL, Py, Duck | Endpoints, path style, conditional-put support per store; tested on aws-sim. |
+| H28 | Use S3-compatible object stores | P1 / J07 | SQL, Py, Duck | Endpoints, path style, conditional-put support per store; tested on RustFS. |
 | H29 | Configure Azure storage | P1 / J07 | SQL, Py, Duck | ADLS Gen2 and Blob; credential options; DuckDB secrets. |
 | H30 | Configure Google Cloud Storage | P1 / J07 | SQL, Py, Duck | Connector, credentials, concurrency guarantees. |
 | H31 | Address tables by path, metastore, or catalog | P1 / J08 | SQL, PyS, Py, Duck | Path-based tables, the Spark session catalog, Unity Catalog with links to the UC site. |
@@ -670,7 +670,7 @@ passes against the stated release. Delta adds:
 | DuckDB | `.sql` regions run by a PEP 723 driver through the `duckdb` package. | Default lane; no Docker needed. |
 | Spark | `.sql` regions run through `spark.sql()` in one session per driver; PySpark snippets run as scripts; exact Delta × Spark × Scala tuple. | Needs Java and the Maven proxy, not Docker. Required for every page with a Spark tab. |
 | Cross-engine | A table written by one engine and read by another, for every `tested` read cell in the coverage page, including feature-enabled tables. | T11 and H53 double as these. |
-| Storage | `envs/aws-sim` for S3 semantics, conditional writes, and DynamoDB locking. | Required for H27, H28, T08. |
+| Storage | A Trestle-generated RustFS environment (like `envs/uc-aws`) for S3 semantics, conditional writes, and DynamoDB locking. | Required for H27, H28, T08. |
 
 Displayed SQL should be exactly what runs. Proposed helper: `docsnip.sqlregions`,
 a sibling of `tools/docsnip/src/docsnip/shellregions.py` with the same

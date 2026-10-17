@@ -78,7 +78,7 @@ between them. Trestle assembles a configuration from roles, and each post adds
 roles to the same stack until it is the full agentic lakehouse, deployed end
 to end. Facts come from `architecture/` (capabilities, concerns, asset kinds)
 and Trestle's `stack-topology` module catalog; the role → capability mapping
-is in `docs/design/trestle-model-convergence.md` §4.
+is in `docs/design/trestle-integration.md` §4.
 **Cross-links:** Governed ↔ *Trust in your Open Lakehouse* / *cross-repo-abac*
 (the argument lives there; this arc is the configuration); Trusted ↔ *Trust
 in your Open Lakehouse* §Trusted Compute / the IDEAS attestation entry;

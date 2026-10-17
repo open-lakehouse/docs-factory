@@ -22,7 +22,7 @@ referenced by a pinned ref (never copied). See [`CONVENTIONS.md`](./CONVENTIONS.
   the C4 model. → graduated to idea folders: `blogs/what-is-a-databrick/`,
   `blogs/{composable,governed,trusted,observable,interoperable,portable,interactive,agentic}-lakehouse/`
   (series: The Composable Lakehouse).
-  `repos:` trestle (`crates/stack-topology`) · `src:` architecture/, docs/design/trestle-model-convergence.md
+  `repos:` trestle (`crates/stack-topology`) · `src:` architecture/, docs/design/trestle-integration.md
 
 - [ ] **Delta Kernel, explained by reading the Rust** — walk the scan API to
   show how an engine reads a Delta table without reimplementing the protocol.

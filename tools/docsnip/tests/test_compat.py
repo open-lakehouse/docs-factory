@@ -691,6 +691,8 @@ def test_the_artifact_records_each_engines_journeys_and_page(tmp_path) -> None:
             "title": "Spark",
             "interfaces": ["spark"],
             "page": {"project": "proj", "bucket": "reference", "slug": "spark"},
+            "anchor": None,
+            "heading": None,
             "groups": [
                 {
                     "table": "ops",
@@ -704,6 +706,8 @@ def test_the_artifact_records_each_engines_journeys_and_page(tmp_path) -> None:
             "title": "DuckDB",
             "interfaces": ["duckdb"],
             "page": None,
+            "anchor": None,
+            "heading": None,
             "groups": [
                 {
                     "table": "ops",
@@ -735,3 +739,22 @@ def test_an_unknown_engine_is_an_error(tmp_path) -> None:
     page.write_text(page.read_text().replace("engine:apacheSpark", "engine:flink"))
     errors, _ = compat.check(root)
     assert any("no interface" in e and "has model flink" in e for e in errors), errors
+
+
+def test_a_hub_links_reports_on_its_own_page_by_heading(tmp_path) -> None:
+    root = _repo(tmp_path, _SPARK_READS)
+    page = root / "content/proj/reference/002-matrix/index.md"
+    page.write_text(
+        page.read_text().replace(
+            "<!-- compat:ops -->\n<!-- /compat:ops -->",
+            "<!-- compat:ops -->\n<!-- /compat:ops -->\n\n"
+            "<!-- compat:engines -->\n<!-- /compat:engines -->\n\n"
+            "## Apache Spark\n\n"
+            "<!-- compat:engine:apacheSpark -->\n<!-- /compat:engine:apacheSpark -->",
+        )
+    )
+    data = _artifact(root)
+    assert "| [Apache Spark](#apache-spark) | Spark | 1 of 2 |" in _table(root)
+    assert data["engines"][0]["anchor"] == "apache-spark"
+    assert data["engines"][0]["heading"] == "Apache Spark"
+    assert compat.check(root)[0] == []

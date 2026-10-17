@@ -36,7 +36,7 @@ from typing import Any
 import yaml
 
 from . import shellregions, sqlregions, tabs
-from .anchors import headings
+from .anchors import Heading, headings
 from .frontmatter import iter_content_files, page_status
 from .frontmatter import parse as parse_page
 from .scriptmeta import Claim, ScriptMeta, discover, without_metadata
@@ -537,11 +537,16 @@ def _without_frontmatter(text: str) -> str:
     return "\n" * m.group(0).count("\n") + text[m.end() :]
 
 
-def _heading_above(page: Path, line: int) -> str | None:
+def _section_above(page: Path, line: int) -> Heading | None:
     found = [
         h for h in headings(_without_frontmatter(page.read_text())) if h.line < line
     ]
-    return found[-1].id if found else None
+    return found[-1] if found else None
+
+
+def _heading_above(page: Path, line: int) -> str | None:
+    found = _section_above(page, line)
+    return found.id if found else None
 
 
 # --- claims -------------------------------------------------------------------
@@ -1050,18 +1055,22 @@ def _engine_rows(
     ]
 
 
-def _engine_pages(content_root: Path) -> dict[tuple[str, str], Path]:
-    """(project, engine id) → the page that embeds its report."""
-    pages: dict[tuple[str, str], Path] = {}
+def _engine_pages(
+    content_root: Path,
+) -> dict[tuple[str, str], tuple[Path, Heading | None]]:
+    """(project, engine id) → the page that embeds its report, and the heading
+    the report sits under, which names the engine for readers."""
+    pages: dict[tuple[str, str], tuple[Path, Heading | None]] = {}
     for page in iter_content_files(content_root):
         text = page.read_text()
         if f"<!-- compat:{_ENGINE}" not in text:
             continue
         project = _project_of(page, content_root) or ""
-        for line in text.split("\n"):
+        for number, line in enumerate(text.split("\n"), start=1):
             m = _OPEN_RE.match(line)
             if m and m.group("table").startswith(_ENGINE):
-                pages.setdefault((project, m.group("table")[len(_ENGINE) :]), page)
+                key = (project, m.group("table")[len(_ENGINE) :])
+                pages.setdefault(key, (page, _section_above(page, number)))
     return pages
 
 
@@ -1122,12 +1131,15 @@ def render_engines(
     pages = _engine_pages(content_root)
     lines = ["| Engine | Interfaces | Verified journeys |", "| --- | --- | --- |"]
     for engine in engines(matrix, result.model):
-        page = pages.get((matrix.project, engine.id))
-        name = (
-            f"[{engine.title}]({_link(page, None, embed, content_root)})"
-            if page
-            else engine.title
-        )
+        found = pages.get((matrix.project, engine.id))
+        name = engine.title
+        if found:
+            page, heading = found
+            anchor = heading.id if heading else None
+            same = page.resolve() == embed.resolve()
+            href = f"#{anchor}" if same and anchor else None
+            href = href or _link(page, anchor, embed, content_root)
+            name = f"[{heading.text if heading else engine.title}]({href})"
         labels = dict.fromkeys(matrix.interfaces[k].label for k in engine.interfaces)
         rows = [
             pair
@@ -1608,14 +1620,16 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                 "id": e.id,
                 "title": e.title,
                 "interfaces": list(e.interfaces),
-                "page": _page_ref(page, content_root) if page else None,
+                "page": _page_ref(found[0], content_root) if found else None,
+                "anchor": found[1].id if found and found[1] else None,
+                "heading": found[1].text if found and found[1] else None,
                 "groups": [
                     {"table": g.id, "columns": list(g.columns), "rows": list(g.rows)}
                     for g in e.groups
                 ],
             }
             for e in engines(matrix, result.model)
-            for page in [engine_pages.get((matrix.project, e.id))]
+            for found in [engine_pages.get((matrix.project, e.id))]
         ],
         "journeys": journeys,
         "verifiedEdges": verified_edges(result, matrix),

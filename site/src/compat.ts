@@ -104,8 +104,10 @@ export interface CompatEngine {
   id: string;
   title: string;
   interfaces: string[];
-  /** The page embedding `compat:engine:<id>`. */
+  /** The page embedding `compat:engine:<id>`, and the heading it sits under. */
   page: PageRef | null;
+  anchor: string | null;
+  heading: string | null;
   /** A table narrowed to this engine's interfaces. */
   groups: { table: string; columns: string[]; rows: string[] }[];
 }

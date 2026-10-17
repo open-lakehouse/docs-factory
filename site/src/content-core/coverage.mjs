@@ -140,8 +140,9 @@ export function engineReport(matrix, engine, { href, scriptUrl, drafts }) {
   });
   return {
     id: engine.id,
-    title: engine.title,
-    href: engine.page ? href(engine.page, null) : null,
+    // The heading a report sits under is the reader's name for the engine.
+    title: engine.heading ?? engine.title,
+    href: engine.page ? href(engine.page, engine.anchor ?? null) : null,
     interfaces: engine.interfaces.map((key) => ({
       key,
       label: ifaces.get(key)?.label ?? key,

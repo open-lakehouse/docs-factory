@@ -42,7 +42,7 @@ for a stance, that *is* a finding (flattened voice).
 
 ## (c) Audience & tone fit
 
-Inspect against QUALITY.md facet (c), using `brief.md` as the yardstick. Flag
+Inspect against QUALITY.md facet (c), using the brief (SKILL.md step 1) as the yardstick. Flag
 over-explaining or under-explaining relative to the brief's stated **audience** and
 assumed prior knowledge, and tone/register drift from the brief's stated voice.
 

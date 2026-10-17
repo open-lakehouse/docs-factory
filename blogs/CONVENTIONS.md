@@ -554,8 +554,9 @@ How it differs from the skill-driven lifecycle (§1):
 - **One evolving document.** The planner writes the outline skeleton straight
   into `index.md` at `status: draft`, and the writer grows it in place. The
   plan (thesis, audience, stance, reader questions, sources) travels in the
-  session and the PR description, and stands in for `brief.md` wherever this
-  doc or `QUALITY.md` names the brief. `IDEAS.md` and `brief.md` remain
+  session and opens the PR description as a `## Plan` section, and stands in
+  for `brief.md` wherever this doc or `QUALITY.md` names the brief. A later
+  review or revise session reads it back from that PR. `IDEAS.md` and `brief.md` remain
   available but are optional under the agent.
 - **Reader questions.** The plan names 3–6 questions readers would ask a search
   box or an AI assistant. The GEO phase optimizes the draft's answer passages

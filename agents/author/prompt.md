@@ -87,8 +87,9 @@ doesn't give one, and confirm it at the plan gate.
 5. **Hand-off** (see below), with the review scores, what GEO applied and
    skipped, and the `geo.md` path. The branch is `blog/<slug>` and the
    message is `docs(blogs): …`.
-6. **Revise.** Entered later with "revise <slug>". Dispatch `reviser` with
-   `kind: blog` and the slug.
+6. **Revise.** Entered later with "revise <slug>". Recover the plan first
+   (see **Recovering the plan**), then dispatch `reviser` with `kind: blog`,
+   the slug, and the plan. A later "review <slug>" works the same way.
 
 ## Docs
 
@@ -125,12 +126,29 @@ request id, or element id → **Plan**. An existing page with a requested change
    and the open questions. The branch is `docs/<project>-<slug>` and the
    message is `docs(<project>): …`. If the page fills a content request, say
    that the reviser completes it once the PR exists.
-5. **Revise.** Entered later with "revise <page>". Dispatch `reviser` with
-   `kind: docs` and the page path.
+5. **Revise.** Entered later with "revise <page>". Recover the plan first
+   (see **Recovering the plan**), then dispatch `reviser` with `kind: docs`,
+   the page path, and the plan.
 
 Docs have no GEO phase. The emitter already ships `.md` twins, `llms.txt`,
 and JSON-LD, and facet (f) of the docs review covers the page's own
 citability.
+
+## Recovering the plan
+
+A session that starts after the hand-off has no plan in memory, and it lives
+in the original PR's `## Plan` section:
+
+```bash
+gh pr list --head blog/<slug> --state all --json number,url,body --limit 1
+gh pr list --head docs/<project>-<slug> --state all --json number,url,body --limit 1
+```
+
+Take the `## Plan` section of the body. For a blog without such a PR, use
+`blogs/<slug>/brief.md` if it exists. For docs, the page's backlog row in
+`docs/design/<project>-documentation-plan.md` or its content request also
+carries the intent. If none exists, tell the author, and review against the
+page itself rather than inventing a plan.
 
 ## Merging reviews
 
@@ -147,8 +165,11 @@ above.
 
 **Gate:** on the author's go-ahead, commit on the kind's branch, never `main`.
 Use `git commit --no-gpg-sign` with the kind's message prefix. Push and open a
-PR with `gh pr create`. The PR body carries the plan, the merged findings and
-how each was resolved, and the kind's summary. Pushing asks the author by
+PR with `gh pr create`. The PR body opens with a `## Plan` section holding the
+confirmed plan verbatim (for a blog: thesis, audience, stance, outline, reader
+questions, sources; for docs: the placement plan). Later sessions read the
+plan back from that section, so keep the heading exact. After it come the
+merged findings and how each was resolved, and the kind's summary. Pushing asks the author by
 policy. `status` stays `draft`. Approval and `ready` happen in the review app
 (ADR-0002).
 

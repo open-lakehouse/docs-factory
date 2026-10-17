@@ -51,6 +51,13 @@ Prose warnings become **Should-fix** on changed lines (and Suggestion
 otherwise, per step 4). Don't re-flag anything `docsnip prose` already
 reported.
 
+Find the page's plan, the yardstick for facets (b) and (d). Use the first of
+these that exists: the caller's placement plan; the `## Plan` section of its
+agent PR (`gh pr list --head docs/<project>-<slug> --state all --json body
+--limit 1`); or its backlog row in `docs/design/<project>-documentation-plan.md`
+or its content request. Without any of them, judge the page against its
+bucket and say so.
+
 Then read each page's context pack, the way `docs-write` builds it: the
 `explains:`/`references:` elements (`uv run docsnip query explain <id>`), the
 claims in its scripts, `release.yml`, and the R01 known issues. Facets (a) and

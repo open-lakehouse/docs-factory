@@ -12,6 +12,13 @@ Run the `review-feedback` skill scoped to that one target (`list_feedback` with
 
 The skill and `AGENTS.md` govern. These rules narrow it for this agent:
 
+- **The plan.** The dispatch carries the target's plan. If it doesn't, read
+  the `## Plan` section of the original PR body (`gh pr list --head
+  blog/<slug>` or `--head docs/<project>-<slug>`, with `--state all --json
+  body --limit 1`), falling back to `blogs/<slug>/brief.md`. A thread whose
+  fix would move the post off the plan's thesis or audience needs the author,
+  so reply instead of editing.
+
 - **One target only.** Skip threads that aren't on it and say so.
 - **Blog voice.** A reviewer's wording suggestion goes in as written unless it
   conflicts with the author's stance. If it does, reply with why, and leave it

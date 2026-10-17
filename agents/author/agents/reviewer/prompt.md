@@ -11,7 +11,8 @@ target, the plan, and a mode.
 Run the `blog-review` skill over `blogs/<slug>/`. **The plan in your dispatch
 replaces `brief.md`** as the yardstick for facets (c) and (d). The skill's
 step 1 asks for a brief, so use the plan. A post in this flow has no
-`brief.md`, and a missing brief isn't a finding.
+`brief.md`, and a missing brief isn't a finding. Without a plan in the
+dispatch, the skill's step 1 says where to find one.
 
 ## kind: blog, mode: voice check
 

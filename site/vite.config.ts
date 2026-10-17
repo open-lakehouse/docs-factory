@@ -34,6 +34,7 @@ import remarkResolveImages from "./src/plugins/remark-resolve-images.mjs";
 import remarkSourceLinks from "./src/plugins/remark-source-links.mjs";
 import remarkTabs from "./src/plugins/remark-tabs.mjs";
 import remarkTldr from "./src/plugins/remark-tldr.mjs";
+import remarkTrestleViews from "./src/plugins/remark-trestle-views.mjs";
 
 // Shiki rebuilds the <pre>/<code> subtree, so any data-* set upstream is lost.
 // remark-fence-meta preserves the fence meta as <code metastring="…">, which
@@ -286,6 +287,7 @@ export default defineConfig({
           remarkFenceMeta,
           remarkResolveImages,
           remarkLikeC4Views,
+          remarkTrestleViews,
         ],
         rehypePlugins: [
           rehypeSlug,

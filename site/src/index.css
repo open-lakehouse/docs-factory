@@ -2540,6 +2540,17 @@ button.tag {
   max-height: 80vh;
 }
 
+/* A Trestle diagram sizes itself to its aspect ratio; the PNG stands in until it loads. */
+.trestle-frame {
+  margin: 1.5rem 0;
+}
+.trestle-frame-image {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
 /* --- Model links (inline model: refs + concept header + popup) ---------- */
 
 /* Inline reference in prose: label + a small graph-icon that opens the popup. */

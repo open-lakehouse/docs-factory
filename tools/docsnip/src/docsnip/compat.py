@@ -918,18 +918,20 @@ def render_interfaces(
     """A model/evidence summary for every authored compatibility interface."""
 
     def refs(ids: list[str]) -> str:
-        return ", ".join(
-            f"[{result.model.titles.get(eid, eid)}](model:{eid})" for eid in ids
-        ) or "—"
+        return (
+            ", ".join(
+                f"[{result.model.titles.get(eid, eid)}](model:{eid})" for eid in ids
+            )
+            or "—"
+        )
 
     lines = [
         "| Interface | Implementation | Contracts | Modeled breadth | Verified here |",
         "| --- | --- | --- | --- | --- |",
     ]
     for iface in matrix.interfaces.values():
-        version = (
-            matrix.pins.get(iface.pin or "")
-            or _tested_version(result, matrix, iface.key)
+        version = matrix.pins.get(iface.pin or "") or _tested_version(
+            result, matrix, iface.key
         )
         label = iface.label + (f" {version}" if version else "")
         model_id = iface.model
@@ -952,9 +954,7 @@ def render_interfaces(
         )
         proven: dict[str, list[tuple[str, Proof]]] = {}
         for journey in matrix.journeys.values():
-            proofs = result.proofs.get(
-                (matrix.project, iface.key, journey.id), []
-            )
+            proofs = result.proofs.get((matrix.project, iface.key, journey.id), [])
             ready = next(
                 (proof for proof in proofs if proof.ready and proof.claim.works),
                 None,

@@ -178,9 +178,7 @@ test("journeys count only working proofs on this site's ready pages", () => {
   ]);
   expect(p.edges().find((e) => e.kind === "operatesOn")).toMatchObject({
     verified: true,
-    journeys: [
-      { id: "table.list", interface: "spark", page: `${ORIGIN}/how-to/list#go` },
-    ],
+    journeys: [{ id: "table.list", interface: "spark", page: `${ORIGIN}/how-to/list#go` }],
   });
   expect(p.edges().find((e) => e.kind === "specifies").verified).toBe(false);
 });

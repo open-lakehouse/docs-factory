@@ -474,7 +474,7 @@ def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
             "target": "lakehouse.table",
             "interfaces": ["spark"],
             "journeys": ["table.read"],
-        }
+        },
     ]
     kinds = [d["kind"] for d in data["diagnostics"]]
     assert "missing-edge" not in kinds
@@ -576,12 +576,8 @@ def test_interface_summary_separates_modeled_breadth_from_verified_journeys(
     spark = next(line for line in lines if line.startswith("| Spark 4.1.0 |"))
     assert "[Apache Spark](model:apacheSpark)" in spark
     assert "[Unity Catalog](model:ucSpec)" in spark
-    assert (
-        "[Table](model:lakehouse.table), [Volume](model:lakehouse.volume)" in spark
-    )
-    assert (
-        "[Table: 1 journey](../../how-to/engine/index.md#read-it)" in spark
-    )
+    assert "[Table](model:lakehouse.table), [Volume](model:lakehouse.volume)" in spark
+    assert "[Table: 1 journey](../../how-to/engine/index.md#read-it)" in spark
     assert "Volume:" not in spark
 
 

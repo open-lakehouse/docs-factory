@@ -104,8 +104,13 @@ test("a journey takes its best interface, and unpublished drafts don't count", (
       api: "SELECT",
       note: null,
       fails: null,
+      version: "4.1.0",
       draft: false,
     },
+  ]);
+  expect(group.columns.map((c) => [c.key, c.counts.proven, c.counts.no])).toEqual([
+    ["sql", 0, 1],
+    ["py", 1, 0],
   ]);
   expect(group.journeys[2].variants[0].evidence[0].href).toBe("https://example.com/issue");
 });

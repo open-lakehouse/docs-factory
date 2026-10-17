@@ -91,11 +91,13 @@ export function engineReport(matrix, engine, { href, scriptUrl, drafts }) {
   const counts = emptyCounts();
   const groups = engine.groups.map((group) => {
     const groupCounts = emptyCounts();
+    const columnCounts = new Map(group.columns.map((key) => [key, emptyCounts()]));
     const rows = group.rows.map((id) => {
       const journey = journeys.get(id);
       const variants = group.columns.map((key) => {
         const iface = ifaces.get(key);
         const found = resolveCell(journey?.cells[key], drafts);
+        columnCounts.get(key)[found.bucket]++;
         return {
           key,
           label: iface?.label ?? key,
@@ -106,6 +108,7 @@ export function engineReport(matrix, engine, { href, scriptUrl, drafts }) {
             api: p.api,
             note: p.note,
             fails: p.fails,
+            version: p.version,
             draft: !p.ready,
           })),
           evidence: found.evidence.map((e) => ({
@@ -125,6 +128,13 @@ export function engineReport(matrix, engine, { href, scriptUrl, drafts }) {
       id: group.table,
       title: tables.get(group.table)?.title ?? group.table,
       counts: groupCounts,
+      // Per interface, so a matrix header can show each one's progress.
+      columns: group.columns.map((key) => ({
+        key,
+        label: ifaces.get(key)?.label ?? key,
+        version: ifaces.get(key)?.version ?? null,
+        counts: columnCounts.get(key),
+      })),
       journeys: rows,
     };
   });

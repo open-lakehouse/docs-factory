@@ -3,69 +3,53 @@
    when they differ. Fallbacks cover the review app, whose theme has no status
    tokens. Green is verified; the untested remainder stays neutral so a short bar
    reads as "not yet", not "no". */
-.cov,
-.cov-hub {
+.cov {
   --cov-proven: var(--ok, #4f9c5a);
   --cov-draft: color-mix(in srgb, var(--cov-proven) 45%, transparent);
   --cov-documented: var(--accent);
   --cov-no: var(--err, #c2410c);
   --cov-unknown: var(--border-muted, var(--border));
-}
-.cov {
   margin: 1.5rem 0;
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
+  font-size: 0.9rem;
 }
+.cov-num {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+.cov-note {
+  color: var(--muted-foreground);
+}
+
+/* Header: ring, summary, overall bar, legend. */
 .cov-head {
-  padding: 1rem 1rem 0.75rem;
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1rem;
   border-bottom: 1px solid var(--border);
+}
+.cov-head-text {
+  flex: 1;
+  min-width: 0;
 }
 .cov-summary {
   margin: 0;
   color: var(--heading);
+  font-size: 1rem;
 }
 .cov-ifaces {
-  margin: 0.25rem 0 0.75rem;
+  display: block;
+  margin: 0.2rem 0 0.6rem;
   color: var(--muted-foreground);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 .cov-iface + .cov-iface::before {
   content: " · ";
-}
-.cov-num {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--muted-foreground);
-}
-.cov-bar {
-  display: flex;
-  height: 0.5rem;
-  min-width: 6rem;
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--cov-unknown);
-  gap: 1px;
-}
-.cov-seg,
-.cov-swatch {
-  background: var(--cov-unknown);
-}
-.cov-seg.cov-proven,
-.cov-swatch.cov-proven {
-  background: var(--cov-proven);
-}
-.cov-seg.cov-draft,
-.cov-swatch.cov-draft {
-  background: var(--cov-draft);
-}
-.cov-seg.cov-documented,
-.cov-swatch.cov-documented {
-  background: var(--cov-documented);
-}
-.cov-seg.cov-no,
-.cov-swatch.cov-no {
-  background: var(--cov-no);
 }
 .cov-legend {
   display: flex;
@@ -74,7 +58,7 @@
   margin: 0.6rem 0 0;
   padding: 0;
   list-style: none;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--muted-foreground);
 }
 .cov-swatch {
@@ -83,9 +67,89 @@
   height: 0.6rem;
   margin-right: 0.35rem;
   border-radius: 2px;
+  background: var(--cov-unknown);
 }
+
+/* Bars and the ring share the status colors. */
+.cov-bar {
+  display: flex;
+  height: 0.45rem;
+  min-width: 4rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--cov-unknown);
+  gap: 1px;
+}
+.cov-seg {
+  background: var(--cov-unknown);
+}
+.cov-proven:is(.cov-seg, .cov-swatch) {
+  background: var(--cov-proven);
+}
+.cov-draft:is(.cov-seg, .cov-swatch) {
+  background: var(--cov-draft);
+}
+.cov-documented:is(.cov-seg, .cov-swatch) {
+  background: var(--cov-documented);
+}
+.cov-no:is(.cov-seg, .cov-swatch) {
+  background: var(--cov-no);
+}
+.cov-ring {
+  flex: none;
+}
+.cov-ring circle {
+  fill: none;
+  stroke-width: 3.6;
+}
+.cov-ring-track {
+  stroke: var(--cov-unknown);
+}
+.cov-ring-seg.cov-proven {
+  stroke: var(--cov-proven);
+}
+.cov-ring-seg.cov-draft {
+  stroke: var(--cov-draft);
+}
+.cov-ring-seg.cov-documented {
+  stroke: var(--cov-documented);
+}
+.cov-ring-seg.cov-no {
+  stroke: var(--cov-no);
+}
+.cov-ring-text {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  fill: var(--heading);
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+/* Toolbar. */
+.cov-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--muted-foreground);
+}
+.cov-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  color: var(--foreground);
+}
+.cov-toggle input {
+  accent-color: var(--accent);
+}
+
+/* One collapsible matrix per journey group. */
 .cov-group + .cov-group {
-  border-top: 1px solid var(--cov-unknown);
+  border-top: 1px solid var(--border);
 }
 .cov-group > summary {
   list-style: none;
@@ -93,17 +157,18 @@
   grid-template-columns: minmax(10rem, 1fr) minmax(6rem, 2fr) 3rem;
   align-items: center;
   gap: 1rem;
-  padding: 0.6rem 1rem;
+  padding: 0.65rem 1rem;
   cursor: pointer;
-}
-.cov-group > summary .cov-num {
-  text-align: right;
 }
 .cov-group > summary::-webkit-details-marker {
   display: none;
 }
+.cov-group > summary .cov-num {
+  text-align: right;
+}
 .cov-group-title {
   color: var(--heading);
+  font-weight: 500;
 }
 .cov-group-title::before {
   content: "▸";
@@ -115,85 +180,211 @@
 .cov-group[open] .cov-group-title::before {
   transform: rotate(90deg);
 }
-.cov-journeys {
+.cov-empty {
   margin: 0;
   padding: 0 1rem 0.75rem;
-  list-style: none;
+  color: var(--muted-foreground);
 }
-.cov-journey {
-  display: grid;
-  grid-template-columns: 2.5rem 1fr;
-  padding: 0.35rem 0;
-  font-size: 0.9rem;
+.cov-scroll {
+  overflow-x: auto;
 }
-.cov-journey + .cov-journey {
-  border-top: 1px dashed var(--cov-unknown);
+
+/* The matrix. Resets the prose table style it sits inside. */
+.cov .cov-matrix {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  border: 0;
+  font-size: 0.86rem;
+  display: table;
 }
-.cov-mark {
+.cov .cov-matrix :is(th, td) {
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-sans, inherit);
+  font-size: 0.86rem;
+  text-transform: none;
+  letter-spacing: normal;
+  border: 0;
+  border-top: 1px solid var(--cov-unknown);
+  background: none;
+  text-align: left;
+  vertical-align: middle;
+}
+.cov .cov-matrix thead th {
+  border-top: 1px solid var(--border);
+  font-weight: 500;
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  vertical-align: bottom;
+}
+.cov .cov-matrix tbody th {
+  font-weight: 400;
+  color: var(--foreground);
+}
+.cov .cov-matrix :is(td, thead th:not(:first-child)) {
+  text-align: center;
+  width: 7.5rem;
+}
+.cov-col-label {
+  color: var(--heading);
+}
+.cov-col-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.3rem;
+}
+.cov-col-stat .cov-bar {
+  flex: 1;
+  min-width: 3rem;
+}
+.cov-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.4rem;
+  height: 1.6rem;
+  padding: 0 0.4rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm, 4px);
+  background: none;
+  font: inherit;
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--muted-foreground);
+  cursor: pointer;
 }
-.cov-mark.cov-proven,
-.cov-mark.cov-draft {
+button.cov-cell:hover,
+.cov-cell.is-selected {
+  border-color: var(--border);
+  background: var(--background, transparent);
+}
+.cov-cell.cov-proven {
   color: var(--cov-proven);
+  background: color-mix(in srgb, var(--cov-proven) 12%, transparent);
 }
-.cov-mark.cov-no {
+.cov-cell.cov-draft {
+  color: var(--cov-proven);
+  border-style: dashed;
+  border-color: var(--cov-draft);
+}
+.cov-cell.cov-documented {
+  color: var(--cov-documented);
+  background: color-mix(in srgb, var(--cov-documented) 10%, transparent);
+}
+.cov-cell.cov-no {
   color: var(--cov-no);
+  background: color-mix(in srgb, var(--cov-no) 10%, transparent);
 }
-.cov-mark.cov-documented {
-  color: var(--accent);
+.cov-cell.is-selected {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
-.cov-variant {
+.cov-matrix tr.is-open > * {
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+.cov .cov-matrix .cov-detail-row td {
+  border-top: 0;
+  text-align: left;
+  background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+
+/* A selected cell's proof. */
+.cov-detail {
+  padding: 0.25rem 0 0.5rem;
+  text-align: left;
+}
+.cov-detail p {
+  margin: 0 0 0.4rem;
+}
+.cov-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.cov-detail-head .cov-cell {
+  cursor: default;
+  min-width: 1.8rem;
+  height: 1.4rem;
+}
+.cov-proof {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.25rem 0.6rem;
-  margin-top: 0.15rem;
-  font-size: 0.8rem;
+  gap: 0.3rem 0.75rem;
+  margin-top: 0.3rem;
+}
+.cov-action {
+  font-weight: 500;
+  white-space: nowrap;
+}
+.cov-badge {
+  padding: 0 0.4rem;
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+  font-size: 0.75rem;
   color: var(--muted-foreground);
 }
-.cov-tag {
-  font-family: var(--font-mono);
-}
-.cov-tag.cov-no {
-  color: var(--cov-no);
-}
-.cov-note {
-  color: var(--muted-foreground);
-}
+
+/* The hub: engines × journey groups. */
 .cov-hub {
-  margin: 1.5rem 0;
-  padding: 0;
-  list-style: none;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  padding-bottom: 0.75rem;
 }
-.cov-hub > li {
-  display: grid;
-  grid-template-columns: minmax(9rem, 1fr) minmax(8rem, 1.5fr) minmax(6rem, 2fr) 3rem;
+.cov-hub .cov-legend {
+  padding: 0 1rem;
+}
+.cov .cov-hub-matrix thead th:not(:first-child) {
+  width: auto;
+  min-width: 6.5rem;
+}
+.cov .cov-hub-matrix tbody th {
+  min-width: 10rem;
+}
+.cov-hub-matrix tbody th a {
+  font-weight: 500;
+}
+.cov-hub-matrix .cov-ifaces {
+  margin: 0.1rem 0 0;
+  font-size: 0.75rem;
+}
+.cov-hub-overall {
+  white-space: nowrap;
+}
+.cov-hub-overall .cov-ring {
+  vertical-align: middle;
+  margin-right: 0.35rem;
+}
+.cov-hub-overall .cov-ring-text {
+  font-size: 9px;
+}
+.cov-hub-cell {
+  display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.6rem 1rem;
+  gap: 0.35rem;
+  padding: 0.25rem 0.35rem;
+  border-radius: var(--radius-sm, 4px);
+  text-decoration: none;
+  color: inherit;
 }
-.cov-hub > li + li {
-  border-top: 1px solid var(--cov-unknown);
+a.cov-hub-cell:hover {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
 }
-.cov-hub .cov-ifaces {
-  margin: 0;
+.cov-hub-cell .cov-bar {
+  flex: 1;
+  min-width: 2.5rem;
 }
-.cov-hub .cov-num {
-  text-align: right;
+.cov-hub-na::after {
+  content: "—";
+  color: var(--muted-foreground);
 }
+
 @media (max-width: 640px) {
-  .cov-hub > li,
+  .cov-head {
+    align-items: flex-start;
+  }
   .cov-group > summary {
     grid-template-columns: 1fr 3rem;
   }
-  .cov-hub .cov-ifaces {
-    display: none;
-  }
-  .cov-hub .cov-bar,
   .cov-group > summary .cov-bar {
     grid-column: 1 / -1;
     order: 3;

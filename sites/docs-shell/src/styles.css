@@ -1191,6 +1191,39 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 .prose .likec4-view img { display: block; width: 100%; border: 0; border-radius: 0; }
 .prose .trestle-frame { margin: 1.75rem 0; }
 .prose .trestle-frame > img { display: block; width: 100%; border: 1px solid var(--border); border-radius: var(--radius); }
+/* Diagram node links. The diagram's scoped preflight resets link decoration
+   inside it, hence the extra class on .concept-ref; the card portals outside. */
+.trestle-diagram .concept-ref {
+  color: inherit;
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.trestle-diagram a.concept-ref:hover { text-decoration-style: solid; }
+.trestle-diagram .concept-ref:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; border-radius: 2px; }
+.concept-card {
+  position: fixed;
+  z-index: 60;
+  max-width: 18rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: var(--shadow);
+  font: 0.8rem/1.4 var(--font-sans);
+  pointer-events: none;
+}
+.concept-card-kind {
+  display: block;
+  font: 600 0.65rem/1.2 var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+}
+.concept-card-title { display: block; margin-top: 0.15rem; font-weight: 600; }
+.concept-card p { margin: 0.3rem 0 0; color: var(--muted-foreground); }
+.concept-card .concept-card-note { font-style: italic; }
 
 /* --- REST API reference ---
    Scalar brings its own endpoint sidebar, so API pages render without the docs

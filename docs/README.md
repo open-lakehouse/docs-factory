@@ -33,6 +33,7 @@ docs/
     information-system.md            how the site consumes the estate model
     interactive-docs-site.md         islands / roadmap / auth platform study
     multi-domain-single-deployment.md one deployment, three doc domains
+    prompt-tracking.md               assistant prompts we track, each mapped to the page it should cite
     release-bump-agent.md            the Omnigent agent a bump could become (not built)
     trestle-integration.md           generated environments ↔ estate model ↔ journeys, as built
   deploy/       operational runbooks

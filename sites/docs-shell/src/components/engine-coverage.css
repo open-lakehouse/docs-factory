@@ -1,0 +1,201 @@
+/* site/src/components/ and sites/docs-shell/src/components/ hold byte-identical
+   copies of this file; site/src/components/engine-coverage-view.test.ts fails
+   when they differ. Fallbacks cover the review app, whose theme has no status
+   tokens. Green is verified; the untested remainder stays neutral so a short bar
+   reads as "not yet", not "no". */
+.cov,
+.cov-hub {
+  --cov-proven: var(--ok, #4f9c5a);
+  --cov-draft: color-mix(in srgb, var(--cov-proven) 45%, transparent);
+  --cov-documented: var(--accent);
+  --cov-no: var(--err, #c2410c);
+  --cov-unknown: var(--border-muted, var(--border));
+}
+.cov {
+  margin: 1.5rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+.cov-head {
+  padding: 1rem 1rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.cov-summary {
+  margin: 0;
+  color: var(--heading);
+}
+.cov-ifaces {
+  margin: 0.25rem 0 0.75rem;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+}
+.cov-iface + .cov-iface::before {
+  content: " · ";
+}
+.cov-num {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+.cov-bar {
+  display: flex;
+  height: 0.5rem;
+  min-width: 6rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--cov-unknown);
+  gap: 1px;
+}
+.cov-seg,
+.cov-swatch {
+  background: var(--cov-unknown);
+}
+.cov-seg.cov-proven,
+.cov-swatch.cov-proven {
+  background: var(--cov-proven);
+}
+.cov-seg.cov-draft,
+.cov-swatch.cov-draft {
+  background: var(--cov-draft);
+}
+.cov-seg.cov-documented,
+.cov-swatch.cov-documented {
+  background: var(--cov-documented);
+}
+.cov-seg.cov-no,
+.cov-swatch.cov-no {
+  background: var(--cov-no);
+}
+.cov-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+.cov-swatch {
+  display: inline-block;
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-right: 0.35rem;
+  border-radius: 2px;
+}
+.cov-group + .cov-group {
+  border-top: 1px solid var(--cov-unknown);
+}
+.cov-group > summary {
+  list-style: none;
+  display: grid;
+  grid-template-columns: minmax(10rem, 1fr) minmax(6rem, 2fr) 3rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+}
+.cov-group > summary .cov-num {
+  text-align: right;
+}
+.cov-group > summary::-webkit-details-marker {
+  display: none;
+}
+.cov-group-title {
+  color: var(--heading);
+}
+.cov-group-title::before {
+  content: "▸";
+  display: inline-block;
+  width: 1rem;
+  color: var(--muted-foreground);
+  transition: transform 0.15s;
+}
+.cov-group[open] .cov-group-title::before {
+  transform: rotate(90deg);
+}
+.cov-journeys {
+  margin: 0;
+  padding: 0 1rem 0.75rem;
+  list-style: none;
+}
+.cov-journey {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr;
+  padding: 0.35rem 0;
+  font-size: 0.9rem;
+}
+.cov-journey + .cov-journey {
+  border-top: 1px dashed var(--cov-unknown);
+}
+.cov-mark {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+.cov-mark.cov-proven,
+.cov-mark.cov-draft {
+  color: var(--cov-proven);
+}
+.cov-mark.cov-no {
+  color: var(--cov-no);
+}
+.cov-mark.cov-documented {
+  color: var(--accent);
+}
+.cov-variant {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+.cov-tag {
+  font-family: var(--font-mono);
+}
+.cov-tag.cov-no {
+  color: var(--cov-no);
+}
+.cov-note {
+  color: var(--muted-foreground);
+}
+.cov-hub {
+  margin: 1.5rem 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.cov-hub > li {
+  display: grid;
+  grid-template-columns: minmax(9rem, 1fr) minmax(8rem, 1.5fr) minmax(6rem, 2fr) 3rem;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.6rem 1rem;
+}
+.cov-hub > li + li {
+  border-top: 1px solid var(--cov-unknown);
+}
+.cov-hub .cov-ifaces {
+  margin: 0;
+}
+.cov-hub .cov-num {
+  text-align: right;
+}
+@media (max-width: 640px) {
+  .cov-hub > li,
+  .cov-group > summary {
+    grid-template-columns: 1fr 3rem;
+  }
+  .cov-hub .cov-ifaces {
+    display: none;
+  }
+  .cov-hub .cov-bar,
+  .cov-group > summary .cov-bar {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+}

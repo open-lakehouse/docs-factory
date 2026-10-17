@@ -80,6 +80,7 @@ export async function docsSiteConfig({
     remarkFenceMeta,
     remarkLikeC4Views,
     remarkTrestleViews,
+    remarkEngineCoverage,
   ] = await Promise.all(
     [
       "remark-directive-prose-guard.mjs",
@@ -91,6 +92,7 @@ export async function docsSiteConfig({
       "remark-fence-meta.mjs",
       "remark-likec4-views.mjs",
       "remark-trestle-views.mjs",
+      "remark-engine-coverage.mjs",
     ].map(plugin),
   );
 
@@ -120,6 +122,7 @@ export async function docsSiteConfig({
             remarkFenceMeta,
             remarkLikeC4Views,
             remarkTrestleViews,
+            remarkEngineCoverage,
           ],
           rehypePlugins: [
             rehypeSlug,

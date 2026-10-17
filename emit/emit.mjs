@@ -289,6 +289,7 @@ export async function emitOne({
   assetsDir,
   webComponentPath: webComponentOut,
   likec4Exported = false,
+  prePlugins = [],
   plugins = [],
 }) {
   if (!existsSync(inputPath)) throw new Error(`source not found: ${inputPath}`);
@@ -320,7 +321,10 @@ export async function emitOne({
     .use(remarkGfm)
     .use(remarkDirective) // parse :::/:::: container directives
     .use(remarkDirectiveProseGuard) // undo false-positive :x text directives in prose
-    .use(remarkFrontmatter) // parse the YAML block into a `yaml` node
+    .use(remarkFrontmatter); // parse the YAML block into a `yaml` node
+  // Before the prelude, which drops the HTML comments some embeds are marked by.
+  for (const [plugin, options] of prePlugins) processor = processor.use(plugin, options);
+  processor = processor
     .use(remarkPrelude, capture, {
       titleAsH1: target.titleAsH1,
       frontmatter: target.frontmatter,

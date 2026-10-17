@@ -280,6 +280,12 @@ button.cov-cell:hover,
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
+.cov-matrix tr.cov-row {
+  cursor: pointer;
+}
+.cov-matrix tr.cov-row:hover > * {
+  background: color-mix(in srgb, var(--accent) 4%, transparent);
+}
 .cov-matrix tr.is-open > * {
   background: color-mix(in srgb, var(--accent) 5%, transparent);
 }

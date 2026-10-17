@@ -286,23 +286,38 @@ function GroupMatrix({ group, gapsOnly }: { group: GroupReport; gapsOnly: boolea
             <tbody>
               {rows.map((journey) => {
                 const open = journey.variants.find((v) => `${journey.id}:${v.key}` === selected);
+                // A click anywhere on the row opens it: on a cell, that interface;
+                // elsewhere, the first one with something to show.
+                const fallback =
+                  journey.variants.find((v) => v.bucket !== "unknown") ?? journey.variants[0];
+                const toggle = (key: string | undefined) => {
+                  const id = `${journey.id}:${key ?? fallback?.key}`;
+                  setSelected(open && (!key || selected === id) ? null : id);
+                };
                 return (
                   <Fragment key={journey.id}>
-                    <tr className={open ? "is-open" : undefined}>
+                    <tr
+                      className={`cov-row${open ? " is-open" : ""}`}
+                      onClick={(e) =>
+                        toggle(
+                          (e.target as HTMLElement).closest<HTMLElement>("[data-variant]")?.dataset
+                            .variant,
+                        )
+                      }
+                    >
                       <th scope="row" title={journey.summary}>
                         {journey.title}
                       </th>
                       {journey.variants.map((v) => {
                         const id = `${journey.id}:${v.key}`;
                         return (
-                          <td key={v.key}>
+                          <td key={v.key} data-variant={v.key}>
                             <button
                               type="button"
                               className={`cov-cell cov-${v.bucket}${selected === id ? " is-selected" : ""}`}
                               aria-expanded={selected === id}
                               aria-label={`${journey.title}, ${v.label}: ${LABEL[v.bucket]}`}
                               title={LABEL[v.bucket]}
-                              onClick={() => setSelected(selected === id ? null : id)}
                             >
                               {MARK[v.bucket]}
                             </button>

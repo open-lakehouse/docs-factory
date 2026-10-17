@@ -245,6 +245,14 @@
         "https://www.jaegertracing.io"
       ]
     },
+    "lakehouse.agentSkill": {
+      "kind": "asset",
+      "title": "Agent skill",
+      "description": "An agent skill bundles instructions, scripts, and reference files that\nteach an agent a task. Governed as an asset, it is catalogued, access\ncontrolled, and distributed like data.",
+      "links": [
+        "https://agentskills.io"
+      ]
+    },
     "lakehouse.catalog": {
       "kind": "capability",
       "title": "Catalog",
@@ -252,6 +260,16 @@
       "links": [
         "https://www.openlakehouse.io/technologies/catalogs"
       ]
+    },
+    "lakehouse.credential": {
+      "kind": "asset",
+      "title": "Credential",
+      "description": "A credential stores a long-lived cloud identity (an IAM role, a managed\nidentity, a service account) in the catalog. The catalog never hands it\nout: it uses it to ask the issuer for short-lived, narrowed credentials."
+    },
+    "lakehouse.externalLocation": {
+      "kind": "asset",
+      "title": "External location",
+      "description": "An external location binds a storage path prefix to a credential, so\nthe catalog can authorize access to anything under that path and vend\ncredentials for it."
     },
     "lakehouse.governance.authentication": {
       "kind": "concern",
@@ -273,10 +291,25 @@
       "title": "Lineage",
       "description": "Data lineage traces the origin and movement of data through the system —\nwhich inputs produced which outputs, dataset- and column-level.\n\nHere it is captured at query planning time, so provenance is derived from\nthe plan the engine is about to run rather than reconstructed after."
     },
+    "lakehouse.metricView": {
+      "kind": "asset",
+      "title": "Metric view",
+      "description": "A metric view defines business metrics once: measures (aggregations)\nand the dimensions they can be grouped by, over a source view or table.\nQueries name a measure instead of re-writing its aggregation."
+    },
+    "lakehouse.mlModel": {
+      "kind": "asset",
+      "title": "Model",
+      "description": "A model is the ML asset kind: a trained machine-learning artifact with\nversions and lifecycle stages, tracked and governed as a catalogued asset."
+    },
     "lakehouse.modelTracking": {
       "kind": "capability",
       "title": "Model tracking",
       "description": "Model tracking manages machine-learning artifacts over time: experiment\ntracking, a model registry with versions and stages, and the path from a\ntrained model to a governed, deployable one.\n\nIt sits alongside the query/governance capabilities: models are data\nassets too, catalogued and governed like tables rather than living in a\nseparate, ungoverned silo."
+    },
+    "lakehouse.namespace": {
+      "kind": "asset",
+      "title": "Namespace",
+      "description": "An addressable namespace that tables, volumes, functions, models, and\nother securables are organized and governed within."
     },
     "lakehouse.objectStorage": {
       "kind": "capability",
@@ -297,6 +330,26 @@
       "kind": "capability",
       "title": "Query engine",
       "description": "A query engine turns a declarative query into a plan of operations and\nexecutes it: it parses the query, resolves the tables it references,\noptimizes an execution plan, and runs it to produce results.\n\nHere it is catalog-native — it resolves tables through the catalog, and\ncredentials, policy enforcement, and lineage capture all attach to the\nplan at resolution / planning time rather than being bolted on after."
+    },
+    "lakehouse.registeredFunction": {
+      "kind": "asset",
+      "title": "Function",
+      "description": "A function is the executable asset kind: a registered, reusable unit of\ncomputation (a UDF or routine) that the query engine can resolve and run."
+    },
+    "lakehouse.sqlView": {
+      "kind": "asset",
+      "title": "View",
+      "description": "A view is a stored query: it has a schema like a table but no data of\nits own. The catalog records its definition, and the query engine\nexpands it against the tables it reads at query time."
+    },
+    "lakehouse.table": {
+      "kind": "asset",
+      "title": "Table",
+      "description": "A table is the tabular asset kind: schema'd rows and columns with ACID table semantics."
+    },
+    "lakehouse.volume": {
+      "kind": "asset",
+      "title": "Volume",
+      "description": "A governed location of arbitrary files (images, PDFs, checkpoints) in object storage,\ncatalogued and access-controlled."
     },
     "marimo": {
       "kind": "implementation",
@@ -401,6 +454,18 @@
       "links": [
         "https://github.com/unitycatalog/unitycatalog",
         "https://unitycatalog.io"
+      ],
+      "assets": [
+        "lakehouse.namespace",
+        "lakehouse.table",
+        "lakehouse.sqlView",
+        "lakehouse.metricView",
+        "lakehouse.volume",
+        "lakehouse.registeredFunction",
+        "lakehouse.mlModel",
+        "lakehouse.agentSkill",
+        "lakehouse.credential",
+        "lakehouse.externalLocation"
       ]
     }
   }

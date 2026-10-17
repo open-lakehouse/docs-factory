@@ -18,6 +18,9 @@ _MODEL = {
         "lakehouse.governance.authorization": {"kind": "concern", "title": "Authz"},
         "lakehouse.observability": {"kind": "concern", "title": "Observability"},
         "ucSpec": {"kind": "openSpecification", "title": "Unity Catalog API"},
+        "lakehouse.table": {"kind": "asset", "title": "Table"},
+        "lakehouse.volume": {"kind": "asset", "title": "Volume"},
+        "lakehouse.namespace": {"kind": "asset", "title": "Namespace"},
         "s3Api": {"kind": "openSpecification", "title": "S3 API"},
         "unityCatalogOSS": {
             "kind": "implementation",
@@ -67,6 +70,26 @@ _MODEL = {
             "kind": "realizes",
             "source": {"model": "jaeger"},
             "target": {"model": "lakehouse.observability"},
+        },
+        "r7": {
+            "kind": "governs",
+            "source": {"model": "ucSpec"},
+            "target": {"model": "lakehouse.table"},
+        },
+        "r8": {
+            "kind": "governs",
+            "source": {"model": "ucSpec"},
+            "target": {"model": "lakehouse.volume"},
+        },
+        "r9": {
+            "kind": "operatesOn",
+            "source": {"model": "unityCatalogOSS"},
+            "target": {"model": "lakehouse.table"},
+        },
+        "r10": {
+            "kind": "operatesOn",
+            "source": {"model": "unityCatalogOSS"},
+            "target": {"model": "lakehouse.namespace"},
         },
     },
 }
@@ -339,6 +362,14 @@ def test_context_carries_model_facts_only(tmp_path):
         "target": "lakehouse.governance.authorization",
         "scope": "partial",
     }
+    # what its specs govern plus what it operates on, once each, in model order
+    assert context["concepts"]["unityCatalogOSS"]["assets"] == [
+        "lakehouse.table",
+        "lakehouse.volume",
+        "lakehouse.namespace",
+    ]
+    assert context["concepts"]["lakehouse.volume"]["title"] == "Volume"
+    assert "assets" not in context["concepts"]["rustfs"]
     # generated elements and repo paths never leak into the artifact
     assert "internalThing" not in context["concepts"]
     assert "content/" not in (root / trestle.CONTEXT).read_text()

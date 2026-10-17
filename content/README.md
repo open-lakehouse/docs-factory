@@ -490,6 +490,25 @@ columns that say nothing there. `uv run docsnip compat --fix` renders it; don't
 edit it by hand. `docsnip check` fails when it's stale (for example after a page is
 promoted) or when a claim doesn't hold up. The emitter strips the markers.
 
+## Environment diagrams
+
+Show what an environment runs with its Trestle diagram, as a standalone image:
+
+```md
+![Clients reach Envoy on port 8080, which routes the Unity Catalog REST API to the server](../../../../envs/unitycatalog/diagram.png "trestle=unitycatalog")
+```
+
+`trestle=<name>` names a generated environment; `docsnip envs --fix` writes its
+snapshot (`envs/<name>/diagram.trestle-graph.json`) from `plan.json`, and
+`just env-render` re-renders the PNG beside it. For a stack no environment
+runs, export a snapshot from Trestle's editor into the page's `assets/` and
+reference it as `trestle=./assets/<stem>.trestle-graph.json`, with the image
+`./assets/<stem>.png`; `just trestle-diagrams` renders it. The PNG is what GitHub
+and the `.md` twin show; the preview and the site draw the interactive canvas.
+`docsnip check` fails when the image isn't the snapshot's sibling PNG or the
+PNG is stale. The alt text is the diagram's only text equivalent: say what
+talks to what.
+
 ## Linking prose to the architecture model
 
 Pages connect to the [estate model](../architecture/) (LikeC4) two ways. Both are

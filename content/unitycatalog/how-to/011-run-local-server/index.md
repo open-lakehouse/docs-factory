@@ -59,6 +59,8 @@ your home directory, or the server fails with a `not a directory` mount error.
   mounted at the same path, for tables and volume files on local storage.
 :::
 
+![Clients reach Envoy on port 8080, which routes the Unity Catalog REST API to the Unity Catalog server](../../../../envs/unitycatalog/diagram.png "trestle=unitycatalog")
+
 `docker compose up --wait` returns once the server reports healthy. The server
 builds from the upstream release image, with two fixes for running on Linux.
 
@@ -95,6 +97,8 @@ To register tables whose files you already have, see
 - The `export` lines point clients in the current terminal at the stack.
   Run them again in each terminal you run examples from.
 :::
+
+![Clients reach Envoy on ports 8080 and 9000. Envoy routes the Unity Catalog API to the server and S3 and STS to RustFS. The server keeps its metadata in PostgreSQL and its tables in a RustFS bucket](../../../../envs/uc-aws/diagram.png "trestle=uc-aws")
 
 The simulated STS enforces the session policy that the server attaches to
 the credentials it vends. It doesn't check IAM trust policies or external

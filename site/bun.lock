@@ -5,7 +5,7 @@
     "": {
       "name": "docs-factory-site",
       "dependencies": {
-        "@open-lakehouse/trestle-diagram": "0.1.2",
+        "@open-lakehouse/trestle-diagram": "0.2.0",
         "@bufbuild/protobuf": "^2.12.1",
         "@connectrpc/connect": "^2.1.2",
         "@connectrpc/connect-query": "^2.2.0",
@@ -241,7 +241,7 @@
 
     "@noble/hashes": ["@noble/hashes@2.2.0", "", {}, "sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg=="],
 
-    "@open-lakehouse/trestle-diagram": ["@open-lakehouse/trestle-diagram@0.1.2", "", { "dependencies": { "@radix-ui/react-tooltip": "^1.2.8", "@xyflow/react": "^12.4.0", "clsx": "^2.1.1", "elkjs": "^0.11.0", "html-to-image": "^1.11.13", "lucide-react": "^0.475.0", "tailwind-merge": "^3.6.0" }, "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-ihunUyeam8InEyQtSSg/Mtt8dGjFStZOBkKdCvhQtuiG+CV0fIKWOOuwY3XARDKEBRSKJ8cWaRekTENc7RBtkQ=="],
+    "@open-lakehouse/trestle-diagram": ["@open-lakehouse/trestle-diagram@0.2.0", "", { "dependencies": { "@radix-ui/react-tooltip": "^1.2.8", "@xyflow/react": "^12.4.0", "clsx": "^2.1.1", "elkjs": "^0.11.0", "html-to-image": "^1.11.13", "lucide-react": "^0.475.0", "tailwind-merge": "^3.6.0" }, "peerDependencies": { "react": "^19.0.0", "react-dom": "^19.0.0" } }, "sha512-drVsYwCGQw0mQNSzt81BkhRoQ6mECz6jW9FxDbHX97e4+pIt0i7HKKt+qb403pc7lHokl2ElZrvyuJyzuq08TA=="],
 
     "@oxc-project/types": ["@oxc-project/types@0.138.0", "", {}, "sha512-1a7ZKmrRTCoN1XMZ4L0PyyqrMnrNlLyPuOkdSX2MZg7IiIGRUyurNhAm73ptDOraoBcIordsIGKNPKUzy3ZmfA=="],
 

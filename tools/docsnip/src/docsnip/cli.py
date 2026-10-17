@@ -9,6 +9,7 @@ Subcommands:
   compat        — compatibility tables from script claims (--fix rewrites)
   trestle       — Trestle catalog ↔ model coverage (--fix rewrites the context artifact)
   envs          — generated environments' plan.json → model fragments + registry facts (--fix rewrites)
+  diagrams      — Trestle diagram embeds and their PNGs (--list: the snapshots to render)
   check         — validate + snippetcheck + versions + compat (CI entry)
   plan          — which tutorial scripts a CI run executes, per lane and shard
   durations     — fold CI-recorded script durations into the shard plan's input
@@ -30,6 +31,7 @@ from pathlib import Path
 from . import (
     ciplan,
     compat,
+    diagrams,
     envgen,
     environments,
     published,
@@ -183,6 +185,7 @@ def cmd_snippetcheck(p) -> int:
         errors.extend(served_errors)
         for warning in warnings:
             print(f"warning: {warning}", file=sys.stderr)
+    errors.extend(diagrams.check(p["root"], _diagram_pages(p), envgen.names(p["root"])))
     if errors:
         print("\n".join(errors), file=sys.stderr)
         print(f"\n{len(errors)} snippet error(s)", file=sys.stderr)
@@ -386,6 +389,29 @@ def cmd_envs(p, fix: bool = False) -> int:
     return 0
 
 
+def _diagram_pages(p) -> list[Path]:
+    from .frontmatter import iter_content_files
+
+    blogs = sorted(p["blogs"].glob("*/index.md")) if p["blogs"].is_dir() else []
+    return [*iter_content_files(p["content"]), *blogs]
+
+
+def cmd_diagrams(p, list_only: bool = False) -> int:
+    root, envs = p["root"], envgen.names(p["root"])
+    pages = _diagram_pages(p)
+    if list_only:
+        for snapshot in diagrams.snapshots(root, pages, envs):
+            print(snapshot)
+        return 0
+    errors = diagrams.check(root, pages, envs)
+    if errors:
+        print("\n".join(errors), file=sys.stderr)
+        print(f"\n{len(errors)} diagram error(s)", file=sys.stderr)
+        return 1
+    print("diagrams OK")
+    return 0
+
+
 def cmd_query(p, kind: str, ident: str) -> int:
     try:
         answer = query.run(query.load(p["root"]), kind, ident)
@@ -476,6 +502,10 @@ def main(argv: list[str] | None = None) -> int:
     sp_envs.add_argument(
         "--fix", action="store_true", help="rewrite the fragments and registry facts"
     )
+    sp_diagrams = sub.add_parser("diagrams")
+    sp_diagrams.add_argument(
+        "--list", action="store_true", help="print the snapshots a PNG is rendered for"
+    )
     # Internal agent queries over the committed artifacts (skill docs-query).
     sp_query = sub.add_parser("query")
     sp_query.add_argument("kind", choices=query.KINDS)
@@ -520,6 +550,8 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_trestle(p, fix=args.fix, pin=args.pin)
     if args.cmd == "envs":
         return cmd_envs(p, fix=args.fix)
+    if args.cmd == "diagrams":
+        return cmd_diagrams(p, list_only=args.list)
     if args.cmd == "query":
         return cmd_query(p, args.kind, args.id)
     if args.cmd == "plan":

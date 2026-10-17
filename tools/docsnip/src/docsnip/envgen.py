@@ -11,7 +11,9 @@ model export and writes two projections of each plan:
 - ``envs/environments.generated.json``: the reader-facing facts the registry
   merges into an entry that says ``generated: <name>`` (host ports, client env),
   and the files the reader bundle ships: the render's runtime files plus each
-  ``build`` context, never the recipe or the plan.
+  ``build`` context, never the recipe or the plan;
+- ``envs/<name>/diagram.trestle-graph.json``: the plan's graph as a Trestle
+  diagram snapshot, titled from the registry (see :mod:`docsnip.diagrams`).
 
 It never infers an edge the plan doesn't have: a logical blueprint edge is not
 a runtime call. Malformed or stale projections fail; ambiguous environment fit
@@ -26,7 +28,9 @@ import re
 import tomllib
 from pathlib import Path
 
-from . import environments, trestle
+import yaml
+
+from . import diagrams, environments, trestle
 from .compat import Model, _check_element, load_model
 from .compat import resolve as resolve_claims
 from .scriptmeta import discover
@@ -341,7 +345,26 @@ def project(root: Path) -> tuple[dict[Path, str], list[str]]:
             errors.append(str(exc))
     if plans or (root / FACTS).is_file():
         out[FACTS] = render_facts(plans, files)
+    titles = registry_titles(root)
+    for name, plan in plans.items():
+        out[diagrams.env_snapshot_path(name)] = diagrams.render_env_snapshot(
+            plan, titles.get(name)
+        )
     return out, errors
+
+
+def registry_titles(root: Path) -> dict[str, str]:
+    """Generated environment → the title its registry entry gives it. Read raw:
+    the registry's derived facts may be the very projection being rewritten."""
+    path = root / environments.REGISTRY
+    if not path.is_file():
+        return {}
+    raw = yaml.safe_load(path.read_text()) or {}
+    return {
+        str(entry["generated"]): str(entry["title"])
+        for entry in (raw.get("environments") or {}).values()
+        if isinstance(entry, dict) and entry.get("generated") and entry.get("title")
+    }
 
 
 def _stale(root: Path, files: dict[Path, str]) -> list[Path]:

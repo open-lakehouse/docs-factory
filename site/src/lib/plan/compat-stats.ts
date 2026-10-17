@@ -1,33 +1,14 @@
 // How much of a compatibility matrix is proven. A cell counts once per table
 // it appears in, matching what a reader scans.
-import type { CompatCell, CompatJourney, CompatMatrix, CompatTable } from "../../compat";
+import type { CompatJourney, CompatMatrix, CompatTable } from "../../compat";
+import { bucketOf, type CellBucket, emptyCounts } from "../../content-core/coverage.mjs";
 
-/**
- * `proven`: a ready page's script shows it; `draft`: only a draft page does;
- * `documented`: upstream docs say so, untested here; `no`: known to fail or
- * lack the API; `unknown`: nothing says anything.
- */
-export type CellBucket = "proven" | "draft" | "documented" | "no" | "unknown";
+export { bucketOf, type CellBucket };
 
 export type CellCounts = Record<CellBucket, number>;
 
 export function emptyCellCounts(): CellCounts {
-  return { proven: 0, draft: 0, documented: 0, no: 0, unknown: 0 };
-}
-
-export function bucketOf(cell: CompatCell | undefined): CellBucket {
-  if (!cell) return "unknown";
-  switch (cell.status) {
-    case "tested":
-      return cell.draft ? "draft" : "proven";
-    case "documented":
-      return "documented";
-    case "fails":
-    case "missing":
-      return "no";
-    default:
-      return "unknown";
-  }
+  return emptyCounts();
 }
 
 export function totalCells(c: CellCounts): number {

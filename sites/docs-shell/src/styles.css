@@ -1222,7 +1222,8 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   color: var(--muted-foreground);
 }
 .concept-card-title { display: block; margin-top: 0.15rem; font-weight: 600; }
-.concept-card-assets {
+/* Inside the expand dialog the card sits in .prose, whose list padding would win. */
+.concept-card .concept-card-assets {
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem 0.75rem;
@@ -1230,6 +1231,7 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   padding: 0;
   list-style: none;
 }
+.concept-card .concept-card-assets li { margin: 0; }
 .concept-card-assets a { color: inherit; text-decoration: underline dotted; text-underline-offset: 2px; }
 .concept-card-assets a:hover { text-decoration-style: solid; }
 /* Asset-kind count in a node's header. Inside the diagram scope the tokens are

@@ -19,7 +19,7 @@ deployment {
 
       metadata { sourceRepo "open-lakehouse/mangrove" }
 
-      instanceOf lakehouse.catalog
+      instanceOf mangrove
     }
 
     headwaters = service "headwaters" {

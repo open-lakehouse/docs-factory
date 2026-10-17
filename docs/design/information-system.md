@@ -47,14 +47,17 @@ flowchart LR
   tagsyml -->|"optional element:"| elem
   tagsyml -->|"optional externalRefs:"| ext["external expert sites"]
   elem -->|"resolve / alias"| modeljson["architecture/dist/model.json"]
-  modeljson --> ui["entity pages · backlinks · focused diagrams · llms.txt"]
+  modeljson --> ui["explanation pages · ModelRef · focused diagrams · concepts.json · llms.txt"]
 ```
 
-The site reads `dist/model.json` live (via the `likec4:single-project` Vite plugin
-over `architecture/model`) to drive `ui`; the generated reader artifacts (each
-emitted site's `llms.txt`, sitemap, and `.md` twins) come from the docs-site
-emitter ([`emit/docs`](../../emit/docs/)). (The former `examples-manifest.json` — an engine/coverage
-matrix nothing consumed — was removed; see [`build-pipeline.md`](./build-pipeline.md) §10.)
+The review app reads the `.likec4` workspace live (via the
+`likec4:single-project` Vite plugin over `architecture/model`). Emit and
+`docsnip` read the committed
+[`architecture/dist/model.json`](../../architecture/dist/model.json). Reader
+artifacts (`llms.txt`, sitemap, `.md` twins, `concepts.json`) come from the
+docs-site emitter ([`emit/docs`](../../emit/docs/)). (The former
+`examples-manifest.json` — an engine/coverage matrix nothing consumed — was
+removed; see [`build-pipeline.md`](./build-pipeline.md) §10.)
 
 ### 1.1 Tags gain optional structure (backward-compatible)
 
@@ -121,47 +124,52 @@ the page's linkage survives even if `lakehouse.catalog` is renamed in a model re
 
 ## 2. Reading the model in `site/`
 
-The site consumes the LikeC4 estate model **live** — it does not read a generated
-join artifact. `site/src/explain.ts` loads the model (via the
-`likec4:single-project` Vite plugin over `architecture/model`) and joins its typed
-nodes and edges to content frontmatter at build/render time. From that live join it
-derives, per element:
+The review app consumes the LikeC4 estate model **live**. `site/src/explain.ts`
+loads it via the `likec4:single-project` Vite plugin over `architecture/model`
+and enumerates page-worthy kinds (`capability`, `concern`,
+`openSpecification`, `implementation`). `site/src/explain-bindings.ts` maps
+each `explains:` id to the content page that is that element's canonical URL.
+There is no `/explain/<id>` route.
 
-- `kind` (capability | specification | implementation | role | service), `title`,
-  `summary`, and `maturity` (from `#built` / `#designed` / `#prototype`);
-- `canonicalDoc`, `sourceRepo`, and `link` / curated `externalRefs`;
-- typed neighbours (in/out `specifies` / `implements` / `consumes` / `realizes` /
-  `governs` / `requires` / … edges);
-- **backlinks** — the inverse index of content whose effective references
-  (frontmatter `references:` ∪ its tags' `element:` ids) include this element. This
-  drives the "Referenced by" list on each `/explain/<id>` page.
+From the live model plus content frontmatter the app derives:
 
-The site build emits only the per-project `*.llms.txt`; no `graph.json`,
-`examples-manifest.json`, or other join file is written.
+- `kind`, `title`, and `summary` (element `summary`, else the first sentence of
+  `description`);
+- typed neighbours (`specifies` / `implements` / `consumes` / `realizes` /
+  `governs` / `dependsOn` / …);
+- focused diagrams from `element.defaultView` (the `explain_*` views);
+- inline `model:` links as `ModelRef` (label + neighborhood modal);
+- the explanation backlog at `/plan/coverage`.
+
+The **emitted** docs sites do **not** read the live plugin. They load the
+committed [`architecture/dist/model.json`](../../architecture/dist/model.json)
+and project only `#public` elements into `concepts.json`, JSON-LD, resolved
+`model:` links, and environment service lists
+([`emit/docs/model.mjs`](../../emit/docs/model.mjs),
+[`projection.mjs`](../../site/src/content-core/projection.mjs)).
+
+`docsnip query` also reads `model.json` (plus compatibility.json and generated
+environments). No `graph.json` or `examples-manifest.json` is written.
 
 ## 3. Validation & coverage (tiered gate)
 
-Because the model churns, we do **not** hard-fail on every unresolved reference. The
-gate, implemented in `docsnip validate`, is tiered:
+The gate is `docsnip check` (`docsnip validate` for frontmatter). Unknown
+element ids **fail CI**. Coverage that lags the model **warns**.
 
-- **Tier 1 — malformed (fails CI).** A `references:` entry or a tag `element:` that
-  is syntactically invalid, or an `externalRefs` entry missing `role`/`url`. These
-  are author mistakes, always fatal.
-- **Tier 2 — unresolved but well-formed (coverage gap, not fatal).** A reference to
-  an element id that isn't (yet) in `model.json`. This is authoring ahead of the
-  model, which we want to allow while the model is reworked.
-- **Tier 3 — resolved (counts toward coverage).**
+- **Fails CI.** A `references:`, `explains:`, tag `element:`, or inline
+  `model:` id that is not in `model.json`; a duplicate `explains:`; malformed
+  frontmatter or `externalRefs` missing `role`/`url`.
+- **Warns (stderr, not fatal).** Page-worthy elements with no `explains:`
+  page (`explanation coverage: X/Y`); content pages with no model references
+  (`model-reference coverage: X/Y`); `#public` citations missing, floating
+  specs/implementations, Trestle concern gaps, unmodeled compat interfaces.
 
-The tier-2 result is **ephemeral**: `docsnip validate` prints it to stderr
-(`model-reference coverage: X/Y`, `explanation coverage: X/Y`) rather than persisting
-it. The live, human-facing equivalent is the "No explanation yet" gap rows in
-`site/src/pages/AxisIndex.tsx`, which surface modeled-but-unreferenced elements
-directly in the UI. There is no on-disk coverage record.
+The live, human-facing equivalent of the explanation ratchet is
+[`CoverageGaps.tsx`](../../site/src/components/plan/CoverageGaps.tsx) at
+`/plan/coverage`. There is no on-disk coverage record.
 
-This makes correctness a *measurable, monotonic* property: the unresolved-reference
-and unreferenced-element counts should trend to zero as the model and content
-converge. Model rework is never blocked — a renamed element simply shows up as a
-coverage gap until content (or an alias) catches up.
+Renames still fail until content is updated (the alias map in §4 is unbuilt).
+Partial explanation coverage is expected and tracked, never fatal.
 
 ## 4. Id-stability / alias policy
 
@@ -199,15 +207,18 @@ delete the file. If a future rework can express every residual field as model
 ## 6. UX surfaces (prioritized)
 
 > **Status (2026-10).** The `/explain/<id>` pages and reader routes left the
-> factory app in #153; readers now meet the model only on the emitted docs
-> sites. What ships there, and the re-prioritized plan, is in
-> [`model-leverage.md`](./model-leverage.md).
+> factory app in #153; readers now meet the model on ordinary explanation
+> pages (`explains:`) and on the emitted docs sites. What ships there, and
+> the re-prioritized plan, is in [`model-leverage.md`](./model-leverage.md).
+> The numbered list below is the **historical factory UX**, not current
+> behavior.
 
-Ordered by value-to-effort, all deriving from the live model join (§2):
+Ordered by value-to-effort as designed for `/explain` (do not implement from
+this list; see `model-leverage.md`):
 
 1. **Entity pages + hover cards.** Every model element resolves to a canonical
    card/page: summary, maturity badge, external expert links, canonical doc,
-   neighbors (in/out edges), and "referenced by" backlinks. This is the join hub —
+   neighbors (in/out edges), and "referenced by" backlinks. This was the join hub —
    served at `/explain/<id>`.
 2. **Backlinks & related-by-topic.** Auto "referenced by" and "related content" (via
    shared references) — the graph-native replacement for hand-maintained see-also

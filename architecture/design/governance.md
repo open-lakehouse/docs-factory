@@ -55,8 +55,10 @@ source one OCI policy bundle.
 The cleanest, most complete zero-trust topology lives in hydrofoil's
 `docs/platform-policy-architecture.md`, which is explicitly *"a menu of options
 with tradeoffs, not a single prescription."* Much of the distributed topology is
-**designed, not built**. The model tags designed-only elements/edges `#designed`
-(they render amber).
+**designed, not built**. `#designed` / `#prototype` are legal tags (amber);
+this table is the source for which rows to attach, and the estate is not
+bulk-tagged yet. Incomplete realization of something that *is* built uses
+`#partial` on `realizes` edges.
 
 | Concept | Status |
 |---|---|

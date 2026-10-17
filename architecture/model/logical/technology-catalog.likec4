@@ -231,6 +231,19 @@ model {
     #partial
   }
 
+  // First-party catalog. trustedCompute's mangrove is an instance of this.
+  // It implements the UC specification; it is not the storage credential
+  // issuer (that capability is the cloud identity plane — STS/SAS — which
+  // the catalog dependsOn).
+  mangrove = implementation "mangrove" {
+    #service
+
+    description "Pluggable framework for Unity Catalog APIs: governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
+    link https://github.com/open-lakehouse/mangrove
+  }
+  mangrove -[implements]-> ucSpec "implements"
+  mangrove -[realizes]-> lakehouse.catalog "realizes the catalog capability"
+
   // Model-tracking implementation --------------------------------------------
   mlflow = implementation "MLflow" {
     #service

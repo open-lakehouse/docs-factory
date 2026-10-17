@@ -145,6 +145,15 @@ specification {
   // with another contributor. Whether the target is fully met is a property of
   // an environment's deployed instances, never of one edge (ADR-0007).
   tag partial
+  // Designed-but-not-built work. Declared so the DSL accepts them; do not
+  // bulk-tag the estate — apply on a reconciliation pass when a source repo
+  // shows the work is unbuilt. Amber so views do not look like production.
+  tag designed {
+    color #d97706
+  }
+  tag prototype {
+    color #d97706
+  }
   // A positive selection for the docs sites' public artifacts (concepts.json,
   // JSON-LD, model: links): only elements tagged here leave the factory, and an
   // edge only when both ends are public. A ready page citing an element doesn't

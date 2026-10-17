@@ -85,11 +85,12 @@ directly.
 
 ## Maturity
 
-Asset *kinds* are conceptual and carry no maturity tag. A `governs` edge may be
-tagged `#designed` where a catalog's coverage of a kind is not yet real; the
-agent-skill augmentation is built today (Open Sharing "agent skills" as a
-resource type — see [`catalog-plane.md`](./catalog-plane.md)), so its edge is not
-degraded.
+Asset *kinds* are conceptual and carry no maturity tag. A `governs` edge may
+be tagged `#designed` where a catalog's coverage of a kind is not yet real
+(the tag is declared; do not bulk-apply). The agent-skill augmentation is
+built today (Open Sharing "agent skills" as a resource type — see
+[`catalog-plane.md`](./catalog-plane.md)), so its edge is not degraded.
+Incomplete realization of built coverage uses `#partial`.
 
 ## The sharing capability
 

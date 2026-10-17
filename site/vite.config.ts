@@ -309,7 +309,8 @@ export default defineConfig({
     tailwindcss(),
     // Single LikeC4 runtime for the site. Blog-specific diagrams live as
     // dedicated views in ../architecture/model/views/blog-views.likec4 so markdown
-    // `likec4=<viewId>` embeds and /explain share the same virtual modules.
+    // `likec4=<viewId>` embeds and explanation-page diagrams share the same
+    // virtual modules.
     LikeC4VitePlugin({
       workspace: path.resolve(__dirname, "../architecture/model"),
     }),

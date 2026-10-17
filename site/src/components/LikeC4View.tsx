@@ -3,7 +3,7 @@ import { LikeC4View as LikeC4ViewEmbed } from "likec4:react";
 /**
  * Markdown-facing LikeC4 renderer. `remark-likec4-views` turns
  * `![...](... "likec4=<viewId>")` into this component, so blog and docs
- * diagrams use the same LikeC4 Vite plugin/runtime as /explain.
+ * diagrams use the same LikeC4 Vite plugin/runtime as explanation pages.
  *
  * The inline embed stays a contained, aspect-fit preview (non-pannable, so you
  * can't scroll out of it) with the sequence walkthrough controls in the toolbar.

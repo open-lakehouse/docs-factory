@@ -11,10 +11,11 @@ the emitted docs sites.
 
 ## 1. Where the model stood
 
-The model holds facts nothing else in the repo has in one place: 39 typed
-elements (capabilities, open specifications, implementations, assets), 44
-typed edges (`specifies`, `implements`, `realizes`, `governs`, …), maturity tags,
-external links, and 27 views, two of them step-annotated sequence flows. Before
+The model holds facts nothing else in the repo has in one place: typed
+elements (capabilities, concerns, open specifications, implementations, assets),
+typed edges (`specifies`, `implements`, `realizes`, `governs`, …), external
+links, and views including step-annotated sequence flows. Counts churn; read
+[`architecture/dist/model.json`](../../architecture/dist/model.json). Before
 this change, almost none of it reached a reader:
 
 - **Model links were deleted at emit.** `remark-model-links-text` unwrapped
@@ -67,8 +68,9 @@ The model says which implementations realize which specifications and
 capabilities. Colocated snippets prove which combinations work, because CI runs
 them. Joined, they give one page per project: engine × operation (read or write
 external and managed tables, credential vending, volumes, …). Each cell is
-**verified** (links the tested how-to), **modeled but untested** (`#designed`),
-or **unsupported**. This answers the questions people ask search engines and
+**verified** (links the tested how-to), **unsupported**, or untested. (A
+"modeled but untested" cell would need `#designed` operation-level edges; the
+model has neither those edges nor that tag.) This answers the questions people ask search engines and
 LLMs ("can DuckDB write Unity Catalog managed tables?"), nobody else has
 CI-backed claims, and it stays honest by construction. It would turn the
 hand-maintained parts of R01 (features and limitations) and the Delta coverage
@@ -223,8 +225,10 @@ ready page, and the edges they verify (§8 there).
   component bundle carries the whole estate model; the PNG fallback needs a
   Chromium export the Vercel and upstream builds may not run; `min-height` on
   a shadow-DOM host collapsing. Diagnose before investing in more embeds.
-- **Which elements are public?** The public projection (§3.4) needs an explicit
-  rule, likely a tag, rather than "everything outside the deployment layer".
+- ~~**Which elements are public?**~~ `#public` on the element. The docs sites
+  publish only tagged elements (and edges whose both ends are tagged). A ready
+  page citing an untagged element does not publish it (`docsnip check` reports
+  the citation).
 - ~~Snippet → capability mapping~~ for the compatibility matrix (§3.1):
   per-script `claims` against a per-project vocabulary (§4b).
 - **Alias map** (`information-system.md` §4) is still unbuilt; the public

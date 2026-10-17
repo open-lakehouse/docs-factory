@@ -15,8 +15,8 @@ covers one of them. It shows the journeys this site has verified with it: a
 journey is a task a reader sets out to do, such as appending rows to a table.
 
 A journey is **verified** when an example on this site runs it, in CI, against
-the versions these docs cover. Select a cell to open that example and download
-its script.
+the versions these docs cover. Select a journey to open that
+example and download its script.
 
 The other states don't say that an engine can't do something:
 

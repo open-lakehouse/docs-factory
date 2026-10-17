@@ -125,27 +125,6 @@
   dominant-baseline: central;
 }
 
-/* Toolbar. */
-.cov-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 0.5rem 1rem;
-  padding: 0.6rem 1rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.82rem;
-  color: var(--muted-foreground);
-}
-.cov-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  color: var(--foreground);
-}
-.cov-toggle input {
-  accent-color: var(--accent);
-}
 
 /* One collapsible matrix per journey group. */
 .cov-group + .cov-group {
@@ -179,11 +158,6 @@
 }
 .cov-group[open] .cov-group-title::before {
   transform: rotate(90deg);
-}
-.cov-empty {
-  margin: 0;
-  padding: 0 1rem 0.75rem;
-  color: var(--muted-foreground);
 }
 .cov-scroll {
   overflow-x: auto;
@@ -286,7 +260,7 @@ button.cov-cell:hover {
   cursor: pointer;
 }
 .cov-matrix tr.cov-row:hover > * {
-  background: color-mix(in srgb, var(--accent) 4%, transparent);
+  background: color-mix(in srgb, var(--foreground) 5%, transparent);
 }
 .cov-matrix tr.is-open > * {
   background: color-mix(in srgb, var(--accent) 5%, transparent);

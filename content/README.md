@@ -501,6 +501,18 @@ journey counts. `uv run docsnip compat --fix` renders these blocks; don't edit
 them by hand. `docsnip check` fails when one is stale (for example after a page
 is promoted) or when a claim doesn't hold up. The emitter strips the markers.
 
+An engine is a model implementation together with every interface bound to it:
+UC's `spark` and `spark-4.2` are both Apache Spark, and Delta's four Spark
+languages are one engine. `<!-- compat:engine:<model id> -->` renders that
+engine's journeys, grouped by the tables whose columns show one of its
+interfaces. `<!-- compat:engines -->` renders one row per engine and links the
+page that embeds its report. Each engine has a page under
+`reference/<engine>-support/`, and the hub is `reference/engine-support/`. The
+docs sites and the review preview replace the rendered table with an
+interactive report: a bar per table, expandable to each journey's example and
+script (`remark-engine-coverage.mjs`, counted by `content-core/coverage.mjs`).
+The `.md` twins keep the table.
+
 Keep journey families, participant requirements, and `tables.*` rows/columns
 authored. They are reader-task and editorial choices. The model supplies
 validation and breadth; it never creates a journey or a green cell.

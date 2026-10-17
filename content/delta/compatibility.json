@@ -296,7 +296,11 @@
         "spark-scala",
         "spark-java"
       ],
-      "page": null,
+      "page": {
+        "project": "delta",
+        "bucket": "reference",
+        "slug": "apache-spark-support"
+      },
       "groups": [
         {
           "table": "create-and-write",
@@ -431,7 +435,11 @@
         "delta-rs-python",
         "delta-rs-rust"
       ],
-      "page": null,
+      "page": {
+        "project": "delta",
+        "bucket": "reference",
+        "slug": "delta-rs-support"
+      },
       "groups": [
         {
           "table": "create-and-write",
@@ -566,7 +574,11 @@
         "duckdb-sql",
         "duckdb-python"
       ],
-      "page": null,
+      "page": {
+        "project": "delta",
+        "bucket": "reference",
+        "slug": "duckdb-support"
+      },
       "groups": [
         {
           "table": "create-and-write",

@@ -361,7 +361,11 @@
         "spark",
         "spark-4.2"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "apache-spark-support"
+      },
       "groups": [
         {
           "table": "table-operations",
@@ -423,7 +427,11 @@
       "interfaces": [
         "duckdb"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "duckdb-support"
+      },
       "groups": [
         {
           "table": "table-operations",
@@ -470,7 +478,11 @@
       "interfaces": [
         "polars"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "polars-support"
+      },
       "groups": [
         {
           "table": "table-operations",
@@ -500,7 +512,11 @@
       "interfaces": [
         "daft"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "daft-support"
+      },
       "groups": [
         {
           "table": "table-operations",
@@ -530,7 +546,11 @@
       "interfaces": [
         "pandas"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "pandas-support"
+      },
       "groups": [
         {
           "table": "table-operations",
@@ -560,7 +580,11 @@
       "interfaces": [
         "pyiceberg"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "pyiceberg-support"
+      },
       "groups": [
         {
           "table": "iceberg-rest",
@@ -587,7 +611,11 @@
       "interfaces": [
         "cli"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "uc-cli-support"
+      },
       "groups": [
         {
           "table": "catalog-objects",
@@ -658,7 +686,11 @@
       "interfaces": [
         "python-sdk"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "python-client-support"
+      },
       "groups": [
         {
           "table": "catalog-objects",
@@ -744,7 +776,11 @@
       "interfaces": [
         "unitycatalog-ai"
       ],
-      "page": null,
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "unitycatalog-ai-support"
+      },
       "groups": [
         {
           "table": "functions",

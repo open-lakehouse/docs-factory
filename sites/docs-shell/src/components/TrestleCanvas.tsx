@@ -1,6 +1,7 @@
 // The interactive half of <TrestleDiagram>, split out so the diagram package
 // (React Flow + ELK) loads only on pages that have a diagram. Each node's name
-// and role line links to the concept it stands for, from the site's refs.json.
+// and role line links to the concept it stands for, from the site's refs.json,
+// and a chip counts the asset kinds it manages.
 import {
   EnvironmentDiagram,
   type GraphNodeDto,
@@ -8,6 +9,7 @@ import {
 } from "@open-lakehouse/trestle-diagram";
 import "@open-lakehouse/trestle-diagram/styles.css";
 import { useEffect, useMemo, useState } from "react";
+import { AssetsChip } from "./AssetsChip";
 import { type Concept, ConceptRef } from "./ConceptRef";
 
 type TrestleRefs = {
@@ -45,6 +47,11 @@ function nodeSlots(refs: TrestleRefs): NodeSlots {
           {fallback}
         </ConceptRef>
       );
+    },
+    aside: (node: GraphNodeDto) => {
+      const ids = node.model ? refs.concepts[node.model]?.assets : undefined;
+      const assets = (ids ?? []).flatMap((id) => refs.concepts[id] ?? []);
+      return assets.length ? <AssetsChip assets={assets} /> : undefined;
     },
   };
 }

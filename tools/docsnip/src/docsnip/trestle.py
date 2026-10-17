@@ -378,6 +378,17 @@ def check(root: Path) -> Report:
     return report
 
 
+def managed_assets(model: Model, ref: str) -> set[str]:
+    """The asset kinds implementation ``ref`` manages: what the specs it
+    ``implements`` govern, plus what it ``operatesOn`` itself."""
+    specs = {t for k, s, t in model.edges if k == "implements" and s == ref}
+    return {
+        t
+        for k, s, t in model.edges
+        if (k == "governs" and s in specs) or (k == "operatesOn" and s == ref)
+    }
+
+
 # --- the portable context artifact --------------------------------------------
 
 
@@ -397,6 +408,7 @@ def render_context(root: Path, catalog: Catalog, roles: RoleMap, model: Model) -
     elements = (
         (json.loads(path.read_text()).get("elements") or {}) if path.is_file() else {}
     )
+    order = {eid: i for i, eid in enumerate(elements)}
     concepts: dict[str, dict[str, object]] = {}
 
     def concept(eid: str) -> None:
@@ -429,6 +441,15 @@ def render_context(root: Path, catalog: Catalog, roles: RoleMap, model: Model) -
                 concept(spec)
             if specs:
                 entry["implements"] = specs
+            # Model order lists containers first (namespace, table, …), not A–Z.
+            assets = sorted(
+                managed_assets(model, module.model),
+                key=lambda a: order.get(a, len(order)),
+            )
+            if assets:
+                for asset in assets:
+                    concept(asset)
+                concepts[module.model]["assets"] = assets
         modules[module.id] = entry
 
     role_entries: dict[str, dict[str, object]] = {}

@@ -1,7 +1,7 @@
 // The interactive half of <TrestleDiagram>, loaded only on pages with a
 // diagram. Each node's name and role line becomes a model reference with the
-// same hover card as inline `model:` links. Internal scope: drafts and
-// non-public elements resolve too.
+// same hover card as inline `model:` links, and a chip counts the asset kinds it
+// manages. Internal scope: drafts and non-public elements resolve too.
 import {
   EnvironmentDiagram,
   type GraphNodeDto,
@@ -9,11 +9,12 @@ import {
   useDiagramPortal,
 } from "@open-lakehouse/trestle-diagram";
 import "@open-lakehouse/trestle-diagram/styles.css";
+import { Layers } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import context from "../../../architecture/dist/trestle-context.json";
-import { nodeConcepts } from "../content-core/trestle-refs.mjs";
-import { resolveRef } from "../model-refs";
+import { nodeAssets, nodeConcepts } from "../content-core/trestle-refs.mjs";
+import { type ModelRefInfo, resolveRef } from "../model-refs";
 import EntityCard from "./EntityCard";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
@@ -69,6 +70,43 @@ function DiagramModelRef({
   );
 }
 
+function AssetsChip({ assets }: { assets: ModelRefInfo[] }) {
+  const portal = useDiagramPortal();
+  const label = `${assets.length} asset ${assets.length === 1 ? "kind" : "kinds"}`;
+  return (
+    <HoverCard openDelay={120} closeDelay={80}>
+      <HoverCardTrigger asChild>
+        {/* biome-ignore lint/a11y/noNoninteractiveTabindex: focus opens the card for keyboard readers. */}
+        <span className="node-assets" tabIndex={0}>
+          <Layers aria-hidden="true" />
+          {assets.length}
+        </span>
+      </HoverCardTrigger>
+      <HoverCardContent align="end" className="entity-hovercard" container={portal}>
+        <div className="entity-card">
+          <div className="entity-card-header">
+            <p className="entity-card-title">Manages</p>
+            <span className="kind-badge entity-card-kind">{label}</span>
+          </div>
+          <ul className="entity-card-assets">
+            {assets.map((asset) => (
+              <li key={asset.id}>
+                {asset.href ? (
+                  <Link to={asset.href} className="model-ref-label">
+                    {asset.title}
+                  </Link>
+                ) : (
+                  asset.title
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </HoverCardContent>
+    </HoverCard>
+  );
+}
+
 const slots: NodeSlots = {
   name: (node: GraphNodeDto, fallback) => {
     const { name } = nodeConcepts(node, context.roles);
@@ -84,6 +122,10 @@ const slots: NodeSlots = {
         {fallback}
       </DiagramModelRef>
     );
+  },
+  aside: (node: GraphNodeDto) => {
+    const assets = nodeAssets(node, context.concepts).flatMap((id: string) => resolveRef(id) ?? []);
+    return assets.length ? <AssetsChip assets={assets} /> : undefined;
   },
 };
 

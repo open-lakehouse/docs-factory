@@ -24,6 +24,8 @@ export function kindLabel(kind) {
       return "Specification";
     case "implementation":
       return "Implementation";
+    case "asset":
+      return "Asset kind";
     default:
       return kind;
   }
@@ -45,11 +47,20 @@ export function nodeConcepts(node, roles = {}) {
 }
 
 /**
+ * The asset kinds a node's implementation manages, as concept ids in model
+ * order. `concepts` is trestle-context.json's (or refs.json's) concept map.
+ */
+export function nodeAssets(node, concepts = {}) {
+  return (node?.model && concepts[node.model]?.assets) || [];
+}
+
+/**
  * A site's refs.json: the role map plus a card for every concept a diagram
  * node can point at, limited to what the site publishes. `element(id)` returns
  * `{ title, kind, summary, public }` or null; `href(id)` where the site links
  * it (null for no link). A role whose concept isn't public is dropped, so its
- * label stays plain text.
+ * label stays plain text; so is a non-public asset from an implementation's
+ * `assets`, which is left out when none remain.
  */
 export function buildTrestleRefs({ context, element, href }) {
   const concepts = {};
@@ -63,6 +74,10 @@ export function buildTrestleRefs({ context, element, href }) {
       summary: el.summary ?? null,
       href: href(id) ?? null,
     };
+  }
+  for (const [id, card] of Object.entries(concepts)) {
+    const assets = nodeAssets({ model: id }, context.concepts).filter((a) => concepts[a]);
+    if (assets.length) card.assets = assets;
   }
   const roles = {};
   for (const [role, mapped] of Object.entries(context?.roles ?? {}).sort()) {

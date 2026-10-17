@@ -51,7 +51,7 @@ vendor-neutral `asset` (the glossary records the mapping) so the differentiator
 stays a structural fact rather than a vendor label.
 
 First-pass kinds (children of `lakehouse`): schema, table, volume, function,
-model, agent skill. Two relationship kinds connect the axis:
+model, agent skill. Two relationship kinds originally connected the axis:
 
 - **`requires`** (asset → capability) — what a platform must be able to do to
   manage the kind. Every kind requires the `catalog`; domain capabilities
@@ -64,6 +64,20 @@ model, agent skill. Two relationship kinds connect the axis:
 Instances remain out of scope (deployment/runtime, per ADR-0003). Maturity is
 honest: kinds are untagged; a `governs` edge carries `#designed` where coverage
 is not yet real.
+
+## Amendment (2026-10-17): implementations operate on asset kinds
+
+The subject axis also needs the client side. `governs` says which asset kinds a
+catalog contract covers, but not which kinds an engine or client can act on.
+We add:
+
+- **`operatesOn`** (implementation → asset) — architectural breadth: the
+  software can act on that kind through one or more contracts.
+
+This is deliberately coarser than a compatibility journey. It never means that
+every operation works, and it never fills a compatibility cell. Runnable
+journey claims remain the evidence that a particular interface and version
+completed a reader task.
 
 ## Consequences
 

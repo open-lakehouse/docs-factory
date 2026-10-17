@@ -85,7 +85,13 @@ export interface CompatVerifiedEdge {
 
 /** Report-only model gaps (`docsnip compat.diagnostics`); `kind` names the shape. */
 export interface CompatDiagnostic {
-  kind: "unmodeled" | "missing-edge" | "unmigrated" | "unverified-asset";
+  kind:
+    | "unmodeled"
+    | "missing-edge"
+    | "unmigrated"
+    | "unverified-asset"
+    | "missing-asset-edge"
+    | "unverified-asset-edge";
   interface?: string;
   source?: string;
   target?: string;

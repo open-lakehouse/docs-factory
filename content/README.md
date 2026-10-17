@@ -486,15 +486,24 @@ contracts they require, and keep implementation and version detail on the
 interface `pin`. A reference that doesn't resolve, or names the wrong kind of
 element, fails `docsnip check`. An interface that proves a journey but has no
 model edge to a spec its client consumes is reported separately from the
-outcome; the test evidence stands, and no graph path alone establishes
-support.
+outcome. A ready working claim also checks that the interface's implementation
+has an `operatesOn` edge to the journey's asset. Both are model gaps, not cell
+failures: the test evidence stands, and no graph path alone establishes
+support. Conversely, an `operatesOn` edge with no ready proof is reported as
+modeled, unverified breadth.
 
 A page embeds a table between `<!-- compat:<table> -->` and
 `<!-- /compat:<table> -->`; `<!-- compat:asset:<model id> -->` embeds every
 journey on that asset instead, on the page that `explains:` it, dropping
-columns that say nothing there. `uv run docsnip compat --fix` renders it; don't
-edit it by hand. `docsnip check` fails when it's stale (for example after a page is
-promoted) or when a claim doesn't hold up. The emitter strips the markers.
+columns that say nothing there. `<!-- compat:interfaces -->` renders a summary
+of each interface's model binding, contracts, modeled asset breadth, and ready
+journey counts. `uv run docsnip compat --fix` renders these blocks; don't edit
+them by hand. `docsnip check` fails when one is stale (for example after a page
+is promoted) or when a claim doesn't hold up. The emitter strips the markers.
+
+Keep journey families, participant requirements, and `tables.*` rows/columns
+authored. They are reader-task and editorial choices. The model supplies
+validation and breadth; it never creates a journey or a green cell.
 
 ## Environment diagrams
 
@@ -517,9 +526,18 @@ talks to what.
 
 ## Linking prose to the architecture model
 
-Pages connect to the [estate model](../architecture/) (LikeC4) two ways. Both are
-plain, portable Markdown that degrades gracefully off-site and is upgraded by the
-preview; every id is validated against the built model by `docsnip validate`.
+Pages connect to the [estate model](../architecture/) (LikeC4) three ways. All
+are plain, portable Markdown that degrades gracefully off-site and is upgraded
+by the preview; every id is validated against the built model by `docsnip
+check`. An unknown id is a **hard error**. Missing explanation pages and
+ready-page citations of non-`#public` elements are **warnings**.
+
+- **Canonical explanation** — one page may declare `explains: <id>`. That
+  page is the element's canonical URL. Duplicate `explains:` values fail
+  `docsnip check`. There is no `/explain/<id>` route. Page-worthy kinds
+  (capability, concern, openSpecification, implementation) without an
+  `explains:` page show up on `/plan/coverage` and in the explanation-coverage
+  ratchet.
 
 - **Inline** — reference a model element mid-sentence with a `model:` link:
 
@@ -528,10 +546,10 @@ preview; every id is validated against the built model by `docsnip validate`.
   ```
 
   On GitHub this is an ordinary link; in the preview it renders the label plus a
-  small graph icon that pops open the element's focused view. On an emitted
-  site it links to the page that `explains:` the element, else to the element's
-  external link, else it is plain text. Use it for positional mentions, exactly
-  where the concept appears in the prose.
+  small graph icon that pops open the element's focused view (`ModelRef`). On an
+  emitted site it links to the page that `explains:` the element, else to the
+  element's external link, else it is plain text. Use it for positional
+  mentions, exactly where the concept appears in the prose.
 
   Only elements tagged `#public` in the model leave the factory: a link to any
   other element is plain text on the site, and it stays out of the page's
@@ -539,7 +557,7 @@ preview; every id is validated against the built model by `docsnip validate`.
   doesn't publish it; tag it in the model (`architecture/README.md`) if readers
   should see it. `docsnip check` reports each such citation.
 
-- **Page-level** — declare the concepts a page is *about* in frontmatter:
+- **Page-level** — declare the concepts a page is *about* in `references:`:
 
   ```yaml
   references:
@@ -548,8 +566,9 @@ preview; every id is validated against the built model by `docsnip validate`.
     - lakehouse.tableFormat
   ```
 
-  This renders a concept header at the top of the page and drives the reverse
-  "Referenced by" index on each `/explain/<id>` page — the link is bidirectional.
+  Those ids feed JSON-LD `about`/`mentions` and the public `concepts.json`
+  projection. They do not render a concept header, and they do not drive a
+  `/explain` backlink index.
 
 Ids are model element FQNs (e.g. `deltaSpec`, `lakehouse.tableFormat`); list them
 with `python3 -c "import json;print(*json.load(open('architecture/dist/model.json'))['elements'])"`.

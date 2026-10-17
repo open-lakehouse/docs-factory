@@ -9,6 +9,7 @@ import {
   type CellStatus,
   type CompatCell,
   type CompatEvidence,
+  type CompatInterface,
   type CompatJourney,
   type CompatMatrix,
   type CompatProof,
@@ -22,6 +23,7 @@ import { ContentRequestKind } from "../../gen/docs_factory/review/v1/messages_pb
 import { useAuth } from "../../lib/auth-context";
 import { docRef, refHref } from "../../lib/content-ref";
 import { answeredShare, columnCounts, matrixCounts, totalCells } from "../../lib/plan/compat-stats";
+import { ModelRef } from "../ModelRef";
 import {
   requestStatusLabel,
   TrackJourneyButton,
@@ -171,6 +173,7 @@ function MatrixTables({
   );
   return (
     <>
+      <ModelCoverageGaps matrix={matrix} />
       {(byAsset ? matrix.assets : matrix.tables).map((table) => {
         const rows = table.rows
           .map((id) => journeys.get(id))
@@ -220,8 +223,9 @@ function MatrixTables({
                   <JourneyRows
                     key={journey.id}
                     journey={journey}
+                    matrix={matrix}
                     columns={table.columns}
-                    label={(k) => interfaces.get(k)?.label ?? k}
+                    interfaceOf={(k) => interfaces.get(k)}
                     selected={selected?.journey === journey.id ? selected.iface : null}
                     onSelect={(iface) =>
                       onSelect(
@@ -255,14 +259,16 @@ function MatrixTables({
 
 function JourneyRows({
   journey,
+  matrix,
   columns,
-  label,
+  interfaceOf,
   selected,
   onSelect,
 }: {
   journey: CompatJourney;
+  matrix: CompatMatrix;
   columns: string[];
-  label: (iface: string) => string;
+  interfaceOf: (iface: string) => CompatInterface | undefined;
   selected: string | null;
   onSelect: (iface: string) => void;
 }) {
@@ -286,7 +292,7 @@ function JourneyRows({
                   selected === iface && "is-selected",
                 )}
                 aria-expanded={selected === iface}
-                aria-label={`${label(iface)}: ${STATUS_LABEL[cell.status]}${cell.draft ? " (draft)" : ""}`}
+                aria-label={`${interfaceOf(iface)?.label ?? iface}: ${STATUS_LABEL[cell.status]}${cell.draft ? " (draft)" : ""}`}
                 title={STATUS_LABEL[cell.status]}
                 onClick={() => onSelect(iface)}
               >
@@ -300,7 +306,12 @@ function JourneyRows({
       {selected && (
         <tr className="compat-detail-row">
           <td colSpan={columns.length + 1}>
-            <CellDetail iface={label(selected)} cell={cellOf(journey, selected)} />
+            <CellDetail
+              iface={interfaceOf(selected)}
+              journey={journey}
+              matrix={matrix}
+              cell={cellOf(journey, selected)}
+            />
           </td>
         </tr>
       )}
@@ -308,13 +319,141 @@ function JourneyRows({
   );
 }
 
-function CellDetail({ iface, cell }: { iface: string; cell: CompatCell }) {
+function ModelCoverageGaps({ matrix }: { matrix: CompatMatrix }) {
+  const actionable = matrix.diagnostics.filter((d) =>
+    ["unmodeled", "missing-edge", "missing-asset-edge", "unverified-asset-edge"].includes(d.kind),
+  );
+  if (actionable.length === 0) return null;
+  return (
+    <aside className="compat-model-gaps">
+      <h2 className="blog-aside-title">Model coverage</h2>
+      <ul className="draft-list compact">
+        {actionable.map((gap) => (
+          <li
+            key={`${gap.kind}:${gap.interface ?? ""}:${gap.source ?? ""}:${gap.target ?? ""}:${gap.asset ?? ""}:${gap.journeys?.join(",") ?? ""}`}
+          >
+            {gap.kind === "unmodeled" && (
+              <>
+                <code>{gap.interface}</code> has ready evidence but no model element.
+              </>
+            )}
+            {gap.kind === "missing-edge" && (
+              <>
+                <code>{gap.interface}</code> proves {gap.journeys?.join(", ")} but{" "}
+                {gap.source && <ModelRef id={gap.source} />} has no contract edge to{" "}
+                {gap.target && <ModelRef id={gap.target} />}.
+              </>
+            )}
+            {gap.kind === "missing-asset-edge" && (
+              <>
+                <code>{gap.interface}</code> proves {gap.journeys?.join(", ")} but{" "}
+                {gap.source && <ModelRef id={gap.source} />} has no <code>operatesOn</code> edge to{" "}
+                {gap.asset && <ModelRef id={gap.asset} />}.
+              </>
+            )}
+            {gap.kind === "unverified-asset-edge" && (
+              <>
+                {gap.source && <ModelRef id={gap.source} />} is modeled to operate on{" "}
+                {gap.asset && <ModelRef id={gap.asset} />}, but no ready journey verifies it.
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    </aside>
+  );
+}
+
+function JourneyModelContext({
+  journey,
+  iface,
+  matrix,
+  cell,
+}: {
+  journey: CompatJourney;
+  iface: CompatInterface | undefined;
+  matrix: CompatMatrix;
+  cell: CompatCell;
+}) {
+  const modelId = iface?.model;
+  const verified = Boolean(
+    modelId &&
+      journey.asset &&
+      matrix.verifiedEdges.some(
+        (edge) =>
+          edge.kind === "operatesOn" &&
+          edge.source === modelId &&
+          edge.target === journey.asset &&
+          edge.interfaces.includes(iface.key),
+      ),
+  );
+  const missing = matrix.diagnostics.some(
+    (gap) =>
+      gap.kind === "missing-asset-edge" &&
+      gap.interface === iface?.key &&
+      gap.asset === journey.asset,
+  );
+  const modeledUnverified = matrix.diagnostics.some(
+    (gap) =>
+      gap.kind === "unverified-asset-edge" && gap.source === modelId && gap.asset === journey.asset,
+  );
+  const modelState = missing
+    ? "missing operatesOn edge"
+    : verified
+      ? "modeled and verified by a ready journey"
+      : cell.draft && (modeledUnverified || modelId)
+        ? "modeled; evidence is draft-only"
+        : modeledUnverified
+          ? "modeled; no ready journey verifies it"
+          : modelId
+            ? "not modeled for this asset"
+            : "interface has no model element";
+  return (
+    <div className="compat-model-context">
+      <p>
+        Asset: {journey.asset ? <ModelRef id={journey.asset} /> : "not declared"} · Model:{" "}
+        {modelState}
+      </p>
+      {Object.entries(journey.requires).length > 0 && (
+        <ul className="compat-requirements">
+          {Object.entries(journey.requires).flatMap(([role, edges]) =>
+            Object.entries(edges).map(([edge, ids]) => (
+              <li key={`${role}:${edge}`}>
+                <strong>{role}</strong> {edge}{" "}
+                {ids.map((id, i) => (
+                  <span key={id}>
+                    {i > 0 && ", "}
+                    <ModelRef id={id} />
+                  </span>
+                ))}
+              </li>
+            )),
+          )}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function CellDetail({
+  iface,
+  journey,
+  matrix,
+  cell,
+}: {
+  iface: CompatInterface | undefined;
+  journey: CompatJourney;
+  matrix: CompatMatrix;
+  cell: CompatCell;
+}) {
+  const label = iface?.label ?? "Unknown interface";
   return (
     <div className="compat-detail">
       <p>
-        <strong>{iface}</strong>: {STATUS_LABEL[cell.status]}
+        <strong>{label}</strong>: {STATUS_LABEL[cell.status]}
         {cell.draft && " (only a draft page proves it)"}
       </p>
+      <JourneyModelContext journey={journey} iface={iface} matrix={matrix} cell={cell} />
       {cell.proofs.length === 0 && cell.evidence.length === 0 && (
         <p className="muted">No script or evidence covers this cell yet.</p>
       )}

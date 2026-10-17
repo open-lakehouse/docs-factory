@@ -2,7 +2,7 @@
 //
 // Two linkage mechanisms share these helpers:
 //   • inline `[label](model:<id>)` links (remark-model-links -> <ModelRef>)
-//   • page-level `references:` frontmatter (ConceptHeader + backlinks)
+//   • page-level `references:` frontmatter (projection / JSON-LD; preview lookups)
 //
 // Unlike explain.ts (which only concerns itself with page-worthy kinds), this
 // layer resolves ANY element id and computes the reverse index (backlinks) from

@@ -38,6 +38,11 @@ const MODEL = {
   relations: {
     a: { kind: "specifies", source: { model: "ucSpec" }, target: { model: "lakehouse.catalog" } },
     b: { kind: "implements", source: { model: "unityCatalogOSS" }, target: { model: "ucSpec" } },
+    d: {
+      kind: "operatesOn",
+      source: { model: "unityCatalogOSS" },
+      target: { model: "lakehouse.table" },
+    },
     c: {
       kind: "realizes",
       tags: ["partial"],
@@ -97,6 +102,13 @@ const COMPAT = {
       interfaces: ["spark"],
       journeys: ["table.list"],
     },
+    {
+      source: "unityCatalogOSS",
+      kind: "operatesOn",
+      target: "lakehouse.table",
+      interfaces: ["spark"],
+      journeys: ["table.list"],
+    },
   ],
 };
 
@@ -144,6 +156,7 @@ test("edges need both ends public", () => {
   expect(p.edges().map((e) => `${e.source} ${e.kind} ${e.target}`)).toEqual([
     "ucSpec specifies lakehouse.catalog",
     "unityCatalogOSS implements ucSpec",
+    "unityCatalogOSS operatesOn lakehouse.table",
   ]);
 });
 
@@ -163,6 +176,10 @@ test("journeys count only working proofs on this site's ready pages", () => {
   expect(edge.journeys).toEqual([
     { id: "table.list", interface: "spark", page: `${ORIGIN}/how-to/list#go` },
   ]);
+  expect(p.edges().find((e) => e.kind === "operatesOn")).toMatchObject({
+    verified: true,
+    journeys: [{ id: "table.list", interface: "spark", page: `${ORIGIN}/how-to/list#go` }],
+  });
   expect(p.edges().find((e) => e.kind === "specifies").verified).toBe(false);
 });
 

@@ -1,8 +1,9 @@
-// Scoped element views for the site's /explain pages. One `view of <element>`
-// per capability, concern, and specification, each an ad-hoc neighborhood
-// (`include *` = the element plus its direct neighbors). The preview seeds the explanation
-// diagram with the element's own view (element.defaultView) instead of a
-// whole-estate reference view, so each page is focused on its subject.
+// Scoped element views for explanation pages (`explains:` in content/). One
+// `view of <element>` per capability, concern, and specification, each an
+// ad-hoc neighborhood (`include *` = the element plus its direct neighbors).
+// The review preview seeds the diagram with the element's own view
+// (`element.defaultView`) instead of a whole-estate reference view. There is
+// no `/explain/<id>` route; the canonical URL is the content page.
 //
 // Convention: id `explain_<element>`, title "<Title> — in context".
 

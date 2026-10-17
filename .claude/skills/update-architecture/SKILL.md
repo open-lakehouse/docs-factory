@@ -60,9 +60,11 @@ With no args, do a full reconciliation pass across all modeled repos.
    Only touch logical files if a genuinely new *capability* or *asset kind*
    (not a new service) appears. The zero-trust points (PAP/PDP/PEP/PIP/PA) are
    prose in `design/governance.md`, not elements.
-6. **Maturity honesty.** Tag designed-but-not-built elements/edges `#designed` (or
-   `#prototype`). Never present designed work as built. When unsure, check the
-   source repo's docs (much of the distributed zero-trust topology is designed).
+6. **Maturity honesty.** Tag designed-but-not-built elements/edges `#designed`
+   (or `#prototype`) when the source repo shows they are unbuilt. Never present
+   designed work as built. Do **not** bulk-tag the estate. Incomplete
+   realization of something that is built gets `#partial` on the `realizes`
+   edge; designed-only topology also lives in `design/governance.md`.
 
 ## Phase 1 — Load current truth
 

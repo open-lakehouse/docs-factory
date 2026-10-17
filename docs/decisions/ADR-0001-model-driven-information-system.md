@@ -118,6 +118,23 @@ coverage is expected and tracked, never fatal.
 The full mechanism (join contract, validation tiers, alias policy, UX surfaces,
 agent surface) is specified in [`../design/information-system.md`](../design/information-system.md).
 
+## Current practice (2026-10)
+
+The Decision stands (hybrid join, live model in the review app, `canonicals.yaml`
+kept). Practice has moved in three places; do not read the "as shipped" bullets
+as today's product:
+
+- **No `/explain/<id>` pages.** Canonical URLs are `content/**/explanation/`
+  pages with `explains:`. The review app still reads the model live
+  (`explain.ts`, `ModelRef`, `/plan/coverage`). Emitted sites read
+  `architecture/dist/model.json` and publish only `#public` elements
+  (`concepts.json`, JSON-LD, resolved `model:` links, `llms.txt`).
+- **Unknown ids fail CI.** `docsnip check` hard-fails a `references:`,
+  `explains:`, or `model:` id that is not in `model.json`. Missing
+  explanation pages and publication gaps still **warn**.
+- **No ConceptHeader / reverse `/explain` index.** `references:` feeds
+  projection and JSON-LD; it does not render a concept header.
+
 ## Consequences
 
 ### Positive

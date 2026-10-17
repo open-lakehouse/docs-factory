@@ -42,7 +42,7 @@ The set, limited to kinds a tracked compatibility journey acts on:
 
 Deferred until a journey acts on them: shares, connections, and MCP servers.
 
-## The two edges
+## The three edges
 
 ### `dependsOn` — what a kind is materialized on
 
@@ -83,13 +83,27 @@ tables — is the differentiator, and here it is a **structural fact of the grap
 rather than a marketing claim. The `assetGovernanceBreadth` view renders it
 directly.
 
+### `operatesOn` — which clients and engines act on which kinds
+
+An implementation `operatesOn` an asset kind when the software is
+architecturally able to act on that kind through one or more contracts. The
+edge belongs to the implementation, not to a versioned compatibility
+interface: Spark 4.1 and Spark 4.2 both map to `apacheSpark`.
+
+This edge records breadth, not an operation result. It does not imply that
+create, read, update, or delete all work. `compatibility.yml` names those
+reader journeys, and runnable claims or recorded evidence determine each
+cell. A ready working claim can verify an `operatesOn` edge; a modeled edge
+without a claim remains modeled but unverified.
+
 ## Maturity
 
-Asset *kinds* are conceptual and carry no maturity tag. A `governs` edge may be
-tagged `#designed` where a catalog's coverage of a kind is not yet real; the
-agent-skill augmentation is built today (Open Sharing "agent skills" as a
-resource type — see [`catalog-plane.md`](./catalog-plane.md)), so its edge is not
-degraded.
+Asset *kinds* are conceptual and carry no maturity tag. A `governs` edge may
+be tagged `#designed` where a catalog's coverage of a kind is not yet real
+(the tag is declared; do not bulk-apply). The agent-skill augmentation is
+built today (Open Sharing "agent skills" as a resource type — see
+[`catalog-plane.md`](./catalog-plane.md)), so its edge is not degraded.
+Incomplete realization of built coverage uses `#partial`.
 
 ## The sharing capability
 

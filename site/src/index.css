@@ -1012,6 +1012,10 @@ a.roadmap-slot-title:hover { color: var(--accent); }
 .compat-detail { font-size: 0.85rem; }
 .compat-detail-list { list-style: none; padding: 0; margin: 0.4rem 0 0; display: grid; gap: 0.5rem; }
 .compat-link { text-decoration: underline; text-underline-offset: 2px; }
+.compat-model-gaps { margin: 1rem 0; }
+.compat-model-context { margin: 0.4rem 0 0.7rem; padding: 0.55rem 0.7rem; border-left: 2px solid var(--border); }
+.compat-model-context p { margin: 0; }
+.compat-requirements { margin: 0.35rem 0 0; padding-left: 1.1rem; }
 
 .content { max-width: 60rem; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
 .muted { color: var(--muted-foreground); }

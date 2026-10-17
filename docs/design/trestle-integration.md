@@ -105,6 +105,7 @@ unknown.
 | A module's implementation identity | the Trestle module, as its `model:` ref |
 | Role → capability/concern contribution, with scope | `architecture/integrations/trestle.yaml` |
 | A docs recipe's selections, release pins, local image | `envs/<name>/env.toml` and its `image/` |
+| Implementation → asset-kind breadth (`operatesOn`) | the model, `architecture/` |
 | Journey identity, asset, requirements | `compatibility.yml` |
 | Client/journey support | script claims |
 | Execution result | the CI run |
@@ -165,6 +166,12 @@ keyword; `metricView`, `credential`, `externalLocation`, and the earlier
 kinds). Instances stay out of the model (ADR-0005). `share` and `connection`
 wait for a journey; agents are `person`s, not assets.
 
+Three edges use the subject axis: an asset `dependsOn` the capabilities that
+materialize it; a catalog specification `governs` the kinds its contract
+covers; an implementation `operatesOn` the kinds it can act on. `operatesOn`
+is architectural breadth, not a successful journey. Compatibility claims
+verify it without deriving cells from it.
+
 ## 5. Journeys join the model
 
 Journeys stay in `compatibility.yml`, not in LikeC4, and keep the
@@ -210,6 +217,8 @@ Malformed references fail; gaps are reported.
 | `asset`/`requires` doesn't resolve, wrong kind, malformed | `compat.py` | fail |
 | Journey with no asset or requires after family resolution | `compat.py` | report |
 | Edge verification: an interface with a ✓ claim on a journey whose `client` consumes S lacks a `consumes S` edge | `compat.py` | report (a model gap; the evidence stands) |
+| Asset verification: an interface with a ✓ claim on asset A lacks `operatesOn A` | `compat.py` | report (a model gap; the evidence stands) |
+| A modeled `operatesOn` edge has no ready working journey in the project | `compat.py` | report (modeled, unverified breadth) |
 | Environment fit: no instance in the claiming script's environment provides a provider participant's requirement | `envgen.fit` | fail |
 | Environment fit with several candidates | `envgen.fit` | report |
 | Opposing ready claims in one cell | `compat.py` | error |
@@ -225,7 +234,11 @@ every journey on an asset, on the page that `explains:` it. Row headers link
 concepts through `model:` links. A page's proven journeys supply its JSON-LD
 `about` (assets) and `mentions` (specs, interfaces); hand-written `references:`
 covers the rest. `compatibility.json` records which model edges have CI
-evidence (`verifiedEdges`).
+evidence (`verifiedEdges`), including both contract and `operatesOn` edges.
+`<!-- compat:interfaces -->` renders each interface's model binding, contracts,
+modeled asset breadth, and ready journey counts. The review app reads the same
+artifact, shows each journey's resolved participants, and reports model gaps
+without changing cell outcomes.
 
 ## 6. Joining the graphs
 

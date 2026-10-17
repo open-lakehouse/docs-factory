@@ -9,6 +9,14 @@
 model {
   extend lakehouse {
 
+    // The read path: a query engine resolves names in the catalog, the catalog
+    // points at a table format, the table format lays out a file format, and
+    // object storage holds the bytes.
+    queryEngine -[dependsOn]-> catalog "resolves table names and credentials through"
+    catalog -[dependsOn]-> tableFormat "registers tables whose layout is"
+    tableFormat -[dependsOn]-> fileFormat "stores data files in"
+    fileFormat -[dependsOn]-> objectStorage "writes files to"
+
     // Orchestration drives the compute: it schedules pipelines onto the query
     // engine. Its run status flows to observability (concerns.likec4).
     orchestration -[flows]-> queryEngine "schedules + triggers pipelines that run on"

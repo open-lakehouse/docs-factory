@@ -11,10 +11,11 @@ the emitted docs sites.
 
 ## 1. Where the model stood
 
-The model holds facts nothing else in the repo has in one place: 39 typed
-elements (capabilities, open specifications, implementations, assets), 44
-typed edges (`specifies`, `implements`, `realizes`, `governs`, …), maturity tags,
-external links, and 27 views, two of them step-annotated sequence flows. Before
+The model holds facts nothing else in the repo has in one place: typed
+elements (capabilities, concerns, open specifications, implementations, assets),
+typed edges (`specifies`, `implements`, `realizes`, `governs`, …), external
+links, and views including step-annotated sequence flows. Counts churn; read
+[`architecture/dist/model.json`](../../architecture/dist/model.json). Before
 this change, almost none of it reached a reader:
 
 - **Model links were deleted at emit.** `remark-model-links-text` unwrapped
@@ -67,8 +68,9 @@ The model says which implementations realize which specifications and
 capabilities. Colocated snippets prove which combinations work, because CI runs
 them. Joined, they give one page per project: engine × operation (read or write
 external and managed tables, credential vending, volumes, …). Each cell is
-**verified** (links the tested how-to), **modeled but untested** (`#designed`),
-or **unsupported**. This answers the questions people ask search engines and
+**verified** (links the tested how-to), **unsupported**, or untested. (A
+"modeled but untested" cell would need `#designed` operation-level edges; the
+model has neither those edges nor that tag.) This answers the questions people ask search engines and
 LLMs ("can DuckDB write Unity Catalog managed tables?"), nobody else has
 CI-backed claims, and it stays honest by construction. It would turn the
 hand-maintained parts of R01 (features and limitations) and the Delta coverage
@@ -189,10 +191,12 @@ external link, wait on the emitted sites having a glossary.
   claim that doesn't hold up (missing region, anchor, or asserted text;
   scripts that disagree; evidence contradicting a ✓). The table reads in
   review, on GitHub, and in twins with no new renderer; emit strips the markers.
-- **The model joins as a check.** Header cells are `model:` links, and
-  `docsnip validate` reports tested interfaces with no element (Daft, pandas)
-  or no `consumes`/`implements` edge to the matrix's spec. That report added
-  Spark, DuckDB, and Polars `consumes ucSpec` edges.
+- **The model joins as a check and a breadth axis.** Header cells are `model:`
+  links. `docsnip validate` reports a tested interface with no element, no
+  `consumes`/`implements` edge to a required client contract, or no
+  `operatesOn` edge to the journey's asset. The evidence still stands. The
+  reverse gap is visible too: modeled `operatesOn` breadth with no ready
+  working journey. None of these paths creates a green cell.
 
 - **Delta joined in October 2026.** `content/delta/compatibility.yml` renders
   the private coverage page's journey tables. Evidence gained `outcome: works`
@@ -208,14 +212,15 @@ external link, wait on the emitted sites having a glossary.
   `journeys:` entry carrying `request: <id>` in a PR, so git stays the
   authority.
 
-Next: derive R10's "Query engines" labels from claims, move the coverage
-page's round-trip and table-feature grids onto the matrix, and project the
-matrix into `concepts.json` (§3.4). Journeys now carry an asset and
+The generated `compat:interfaces` summary now replaces R10's hand-maintained
+client inventory with model bindings, contracts, modeled asset breadth, and
+ready journey counts. Next: move the coverage page's round-trip and
+table-feature grids onto the matrix. Journeys carry an asset and
 per-journey contract requirements ([`trestle-integration.md`](./trestle-integration.md)
 §5), and `compatibility.json` (version 2) records the model edges gating
 claims exercise. Environment fit is checked against the generated
 environments, and `concepts.json` carries the matrix: journeys proven on a
-ready page, and the edges they verify (§8 there).
+ready page, and the contract and `operatesOn` edges they verify (§8 there).
 
 ## 5. Open questions
 
@@ -223,8 +228,10 @@ ready page, and the edges they verify (§8 there).
   component bundle carries the whole estate model; the PNG fallback needs a
   Chromium export the Vercel and upstream builds may not run; `min-height` on
   a shadow-DOM host collapsing. Diagnose before investing in more embeds.
-- **Which elements are public?** The public projection (§3.4) needs an explicit
-  rule, likely a tag, rather than "everything outside the deployment layer".
+- ~~**Which elements are public?**~~ `#public` on the element. The docs sites
+  publish only tagged elements (and edges whose both ends are tagged). A ready
+  page citing an untagged element does not publish it (`docsnip check` reports
+  the citation).
 - ~~Snippet → capability mapping~~ for the compatibility matrix (§3.1):
   per-script `claims` against a per-project vocabulary (§4b).
 - **Alias map** (`information-system.md` §4) is still unbuilt; the public

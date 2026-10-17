@@ -95,11 +95,18 @@ credential-vending bypass are prose in `design/governance.md` and
 
 **Deployment instances are configured occurrences of implementations.** A
 deployment node `instanceOf` an implementation where one is modeled, and a
-capability only where no implementation is (`trustedCompute`'s `headwaters`
-points at its implementation; nodes whose software isn't in the technology
-catalog still point at capabilities). Deployment fragments
+capability only where no implementation is (`trustedCompute`'s `mangrove` and
+`headwaters` point at their implementations; nodes whose software isn't in the
+technology catalog still point at capabilities). Deployment fragments
 generated from Trestle plans
 ([factory ADR-0003](../../docs/decisions/ADR-0003-trestle-generated-environments.md))
 always point at implementations, so each generated node reaches its
 capabilities through the implementation's `implements` and `realizes` edges.
+
+## Current practice (2026-10)
+
+`#designed` / `#prototype` are declared in `specification.likec4` (amber).
+They are not bulk-applied; attach them when reconciling a repo. Incomplete
+realization of built work uses `#partial` on `realizes` edges. Designed-vs-built
+topology is also prose in `design/governance.md`.
 

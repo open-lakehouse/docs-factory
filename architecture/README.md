@@ -25,7 +25,11 @@ source-level implementation.
   bypassed). The model holds one reference deployment, `trustedCompute`; the
   untrusted cases are prose in [`design/deployments.md`](./design/deployments.md).
 - **Maturity-honest.** Designed-but-not-built elements/edges carry `#designed`
-  (or `#prototype`) and render amber, so the model never overstates what exists.
+  (or `#prototype`) and render amber. The tags are declared; the estate is not
+  bulk-tagged yet — apply them when reconciling a repo, not as a sweep.
+  Incomplete realization of something that *is* built uses `#partial` on
+  `realizes` edges. Designed-only topology also lives in prose
+  (`design/governance.md`). Do not present designed work as built.
 - **Catalog, instances, generated wiring.** Capabilities, concerns, and asset
   kinds are technology-neutral. The technology catalog identifies
   specifications and software implementations, including first-party
@@ -77,7 +81,7 @@ architecture/
       logical-views.likec4      # logical views
       deployment-views.likec4   # one view per deployment environment
       flows.likec4              # dynamic/sequence views
-      explain-views.likec4      # per-element views for the site's /explain pages
+      explain-views.likec4      # per-element neighborhoods; seed element.defaultView on explanation pages
       blog-views.likec4         # blog-specific preview views (not the reference model)
   design/                       # architecture-focused prose (canonicalDoc targets)
   adr/                          # architecture decision records
@@ -110,7 +114,9 @@ just trestle-catalog  # snapshot the pinned Trestle's modules, refresh the conte
    service/environment → `deployment/deployments`; kinds/tags → `specification`; views →
    `views/logical-views`/`views/deployment-views`/`views/flows`).
 2. Make the minimal change. Never add a service/repo/technology name to a logical
-   file. Tag designed-but-not-built work `#designed`/`#prototype`. Stay ref-free.
+   file. Stay ref-free. Tag designed-but-not-built work `#designed`/`#prototype`
+   when you have source-repo evidence; do not bulk-tag. Use `#partial` on
+   incomplete `realizes` edges.
 3. Run `just arch-refresh`; commit the `.likec4` sources, `dist/model.json`, and
    `dist/trestle-context.json` (refreshed by `arch-model`) together.
 

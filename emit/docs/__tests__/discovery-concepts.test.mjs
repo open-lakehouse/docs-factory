@@ -14,6 +14,7 @@ const ready = (bucket, slug, meta = {}) => ({
 const projection = publicProjection({
   model: {
     elements: {
+      "lakehouse.table": { kind: "asset", title: "Table", tags: ["public"] },
       ucSpec: { kind: "openSpecification", title: "UC", tags: ["public"] },
       unityCatalogOSS: {
         kind: "implementation",
@@ -25,6 +26,11 @@ const projection = publicProjection({
     },
     relations: {
       a: { kind: "implements", source: { model: "unityCatalogOSS" }, target: { model: "ucSpec" } },
+      b: {
+        kind: "operatesOn",
+        source: { model: "unityCatalogOSS" },
+        target: { model: "lakehouse.table" },
+      },
     },
   },
   pages: [ready("how-to", "run-local-server"), ready("how-to", "list")],
@@ -39,12 +45,12 @@ const projection = publicProjection({
     },
   },
   compat: {
-    interfaces: [{ key: "spark", model: null }],
+    interfaces: [{ key: "spark", model: "unityCatalogOSS" }],
     journeys: [
       {
         id: "table.list",
         title: "List tables",
-        asset: null,
+        asset: "lakehouse.table",
         cells: {
           spark: {
             proofs: [
@@ -59,6 +65,13 @@ const projection = publicProjection({
         source: "unityCatalogOSS",
         kind: "implements",
         target: "ucSpec",
+        interfaces: ["spark"],
+        journeys: ["table.list"],
+      },
+      {
+        source: "unityCatalogOSS",
+        kind: "operatesOn",
+        target: "lakehouse.table",
         interfaces: ["spark"],
         journeys: ["table.list"],
       },
@@ -81,8 +94,13 @@ const out = JSON.parse(
 test("concepts, edges, environments, and journeys", () => {
   expect(out.version).toBe(1);
   expect(out.site).toEqual({ title: "Test", origin: ORIGIN });
-  expect(out.concepts.map((c) => c.id)).toEqual(["rustfs", "ucSpec", "unityCatalogOSS"]);
-  expect(out.concepts[2]).toEqual({
+  expect(out.concepts.map((c) => c.id)).toEqual([
+    "lakehouse.table",
+    "rustfs",
+    "ucSpec",
+    "unityCatalogOSS",
+  ]);
+  expect(out.concepts[3]).toEqual({
     id: "unityCatalogOSS",
     kind: "implementation",
     title: "UC OSS",
@@ -96,6 +114,15 @@ test("concepts, edges, environments, and journeys", () => {
       kind: "implements",
       title: null,
       target: "ucSpec",
+      partial: false,
+      verified: true,
+      journeys: [{ id: "table.list", interface: "spark", page: `${ORIGIN}/how-to/list#a` }],
+    },
+    {
+      source: "unityCatalogOSS",
+      kind: "operatesOn",
+      title: null,
+      target: "lakehouse.table",
       partial: false,
       verified: true,
       journeys: [{ id: "table.list", interface: "spark", page: `${ORIGIN}/how-to/list#a` }],

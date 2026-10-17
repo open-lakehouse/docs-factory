@@ -5,6 +5,7 @@ diataxis: explanation
 project: delta
 delta_features: []
 status: ready
+explains: deltaSpec
 references:
   - deltaSpec
   - parquetSpec

@@ -1,0 +1,20 @@
+{
+  "skill_name": "docs-write",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Use docs-write to draft the how-to into .claude/skills/docs-write/evals/fixtures/page-table-credentials.md from the spec in .claude/skills/docs-write/evals/fixtures/spec-table-credentials.md. Treat it as a trivial-tier draft: no placement, no scripts, no nav change.",
+      "expected_output": "Altitude, labeled. The page tells the reader how to get and use a table credential: look up the table ID, call POST /temporary-table-credentials with READ or READ_WRITE, the privileges each needs (USE CATALOG, USE SCHEMA, SELECT; MODIFY to write; ownership covers both), expiration_time in epoch milliseconds with a one-hour maximum, and renewing before it expires. It EXCLUDES everything under the spec's 'Internal implementation' section: external-location resolution, STS AssumeRole with a session policy, Azure user-delegation SAS, non-overlapping locations. It may link the credential-vending explanation for the mechanism. It does not inline code without flagging that the commands need a tested snippet."
+    },
+    {
+      "id": 2,
+      "prompt": "Use docs-write to draft the how-to into .claude/skills/docs-write/evals/fixtures/page-aws-storage-role.md from the spec in .claude/skills/docs-write/evals/fixtures/spec-aws-storage-role.md. Trivial tier: no placement, scripts, or nav.",
+      "expected_output": "Procedure, third-party console. The Unity Catalog steps are concrete and ordered: create the storage credential with the role ARN and note the generated external ID, update the role's trust policy to trust uc-master with that external ID, create the external location for s3://uc-docs/lake naming lake_storage, then request temporary path credentials to check the chain. The missing IAM console navigation for editing a trust policy is reported as an open question (a TODO marker in the page and in the return), NOT invented and NOT papered over with a vague step such as 'configure the trust policy in AWS'. Steps are numbered or imperative task sections, not bare headings."
+    },
+    {
+      "id": 3,
+      "prompt": "Use docs-write to draft the explanation into .claude/skills/docs-write/evals/fixtures/page-time-travel.md from the spec in .claude/skills/docs-write/evals/fixtures/spec-time-travel.md. Trivial tier: no placement, scripts, or nav.",
+      "expected_output": "Control / no-regression. A trap-free concept spec. The page explains versions in the transaction log, reading by version or timestamp, why readers use it, and that retention (VACUUM with delta.deletedFileRetentionDuration, 7 days; delta.logRetentionDuration, 30 days) bounds how far back they can read, plus raising both to keep longer history. It contains no procedure steps (explanation bucket), raises no spurious open questions or SME flags, drops no spec fact, and uses no temporal hedges ('currently', 'for now')."
+    }
+  ]
+}

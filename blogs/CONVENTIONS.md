@@ -100,8 +100,29 @@ series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
 author: <Full Name>           # real person; the byline (§10). never "Admin"
 target: <delta | unitycatalog | openlakehouse | …>   # not needed for idea / private
+post_type: essay | how-to | deep-dive | announcement | comparison | benchmark
+audience: <who it's for and what they already know, one line>
+summary: <the answer-first one-liner, ≤160 chars>
 ---
 ```
+
+**The brief's durable fields.** `post_type`, `audience`, and `summary` are the
+parts of a brief that stay true for the post's whole life. In front matter they
+survive without a `brief.md`, a session, or a PR:
+
+- **`post_type`** is from `content/vocab.json` (`postTypes`). Review calibrates
+  fact density by it (`QUALITY.md` facet (a)): an `essay` is carried by
+  reasoning, and every other type is fact-dense.
+- **`audience`** is the yardstick for facet (c). Name the reader and what they
+  already know.
+- **`summary`** is at most 160 characters and states the answer, not "this post
+  is about". The emitters publish it as the target site's `description`, which
+  delta.io requires.
+
+They're optional, so older posts stay valid, and `docsnip validate` lists
+draft and ready posts that lack them. Stance, tone, outline, sources, and
+reader questions stay in the brief or plan: they change while drafting, and
+the prose shows them.
 
 Publish timing is **not** frontmatter. Last-updated comes from registered
 `content_version` rows (review app); the intended ship day is RevOps
@@ -540,22 +561,23 @@ findings. Human approval in the review app is what clears a post for
   rest of the E-E-A-T signal) are supplied by the publishing target at release, not
   duplicated per post — see the QUALITY.md publish-target section.
 
-## 11. Agent-driven drafting (Omnigent `blog-writer`)
+## 11. Agent-driven drafting (Omnigent `author`)
 
-[`agents/blog-writer/`](../agents/blog-writer/) is an Omnigent multi-agent
+[`agents/author/`](../agents/author/) is an Omnigent multi-agent
 workflow that runs the same process from a different starting point: the
 author dumps thoughts, a rough structure, and references into the prompt, and
 the agent turns them into a review-ready draft. Run it with
-`omni run ./agents/blog-writer/`. The agent's README covers the phases and
-gates.
+`omni run ./agents/author/`. The same agent also writes docs pages, and its
+README covers the phases and gates for both.
 
 How it differs from the skill-driven lifecycle (§1):
 
 - **One evolving document.** The planner writes the outline skeleton straight
   into `index.md` at `status: draft`, and the writer grows it in place. The
   plan (thesis, audience, stance, reader questions, sources) travels in the
-  session and the PR description, and stands in for `brief.md` wherever this
-  doc or `QUALITY.md` names the brief. `IDEAS.md` and `brief.md` remain
+  session and opens the PR description as a `## Plan` section, and stands in
+  for `brief.md` wherever this doc or `QUALITY.md` names the brief. A later
+  review or revise session reads it back from that PR. `IDEAS.md` and `brief.md` remain
   available but are optional under the agent.
 - **Reader questions.** The plan names 3–6 questions readers would ask a search
   box or an AI assistant. The GEO phase optimizes the draft's answer passages

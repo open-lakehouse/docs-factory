@@ -28,6 +28,7 @@ docs/
   decisions/    factory-scoped ADRs (own sequence; see decisions/README.md)
   design/       factory-scoped design & feasibility docs
     authorization-model.md           Cedar PDP for the review server (living study)
+    docs-quality.md                  the rubric docs pages are written and reviewed against
     docs-site-emission.md            emitting a project's docs into a static site (sites/)
     docs-versioning.md               latest-only docs: one release manifest, pin lint, bump, release review
     information-system.md            how the site consumes the estate model

@@ -25,7 +25,7 @@ def _json() -> dict:
 
 def test_vocab_json_has_expected_keys() -> None:
     data = _json()
-    for key in ("diataxis", "projects", "statuses", "pageWorthyKinds"):
+    for key in ("diataxis", "projects", "statuses", "pageWorthyKinds", "postTypes"):
         assert isinstance(data[key], list) and data[key], f"{key} missing/empty"
 
 
@@ -44,3 +44,4 @@ def test_vocab_accessors_match_json() -> None:
     assert vocab.projects() == set(data["projects"])
     assert vocab.statuses() == set(data["statuses"])
     assert vocab.page_worthy_kinds() == set(data["pageWorthyKinds"])
+    assert vocab.post_types() == set(data["postTypes"])

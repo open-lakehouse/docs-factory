@@ -57,7 +57,9 @@ reflects how well the draft meets these, weighted by how load-bearing each miss 
     show") left unsourced.
   - **Mixed** — apply each bar to the matching passages.
 
-  When the post type is unclear, infer it from the brief's thesis/outline (§4). The
+  The type is the front matter's `post_type` (CONVENTIONS §3): `essay` takes the
+  essay bar, and every other type takes the fact-dense bar. When it's absent,
+  infer it from the brief's thesis/outline (§4). The
   failure this guards against is an *unsourced specific claim*, in any post type —
   not a low fact count in an essay that is doing its work through argument.
 

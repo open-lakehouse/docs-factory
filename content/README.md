@@ -13,6 +13,12 @@ content/<project>/
   explanation/   understanding-oriented, language-agnostic (incl. kernel architecture)
 ```
 
+What makes a page *good* beyond this contract (evidence, reader altitude,
+concrete procedures, citability) is the rubric in
+[`docs/design/docs-quality.md`](../docs/design/docs-quality.md). Product names,
+prohibited terms, and acronyms that `docsnip prose` checks live in
+[`terms.yml`](terms.yml).
+
 ## Status and release
 
 Frontmatter `status` is the release switch

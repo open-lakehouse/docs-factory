@@ -15,6 +15,9 @@ series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
 author: <Full Name>           # real person; the byline. never "Admin"
 target: <delta | unitycatalog | openlakehouse | …>
+post_type: essay | how-to | deep-dive | announcement | comparison | benchmark
+audience: <who it's for and what they already know, one line>
+summary: <the answer-first one-liner, ≤160 chars>
 ---
 ```
 
@@ -34,6 +37,11 @@ CONVENTIONS.md §5, "Emit to a downstream target".
   facet (e)). The visible bio/credentials and the `Person`/`sameAs` Microdata are
   supplied by the **publishing target** at release, not duplicated per post — see
   QUALITY.md's publish-target section.
+- **`post_type`, `audience`, `summary`**: the brief's durable fields (CONVENTIONS
+  §3). Set them when the brief or plan settles, and keep them in sync if the
+  post's type or reader changes. `post_type` must be in `content/vocab.json`
+  `postTypes`, and `summary` is at most 160 characters and doubles as the
+  published description.
 - **`status`** advances through the lifecycle (idea → draft → ready). `ready`
   follows a reviewer's approval in the review app, and merging it to main is the
   release. `private` marks a post that is reviewed but never published; it needs

@@ -32,8 +32,18 @@ clears `status: ready`, and merging that to main is the release.
 
 1. Read `blogs/QUALITY.md` (the rubric) and this skill's
    [`references/facets.md`](references/facets.md).
-2. Read the target `index.md` **and** its `brief.md` (the brief is the yardstick for
-   facets c and d — the draft is judged against what it set out to do).
+2. Read the target `index.md` and its front matter: `post_type` sets the
+   fact-density bar for facet (a), and `audience` is the yardstick for (c).
+   Then read its brief, the yardstick for facets c and d (the draft is judged
+   against what it set out to do). The brief is the first of these that
+   exists:
+   - a plan passed in by the caller (the `author` agent);
+   - `blogs/<slug>/brief.md`;
+   - the `## Plan` section of the post's agent PR:
+     `gh pr list --head blog/<slug> --state all --json url,body --limit 1`.
+
+   If none exists, say so in the report and judge (c) and (d) against the post's
+   own thesis, without inventing a brief.
 3. Read `blogs/tags.yml` and `blogs/SERIES.md` — facet (e) checks against them.
 
 ### 2. Dispatch six parallel facet reviewers

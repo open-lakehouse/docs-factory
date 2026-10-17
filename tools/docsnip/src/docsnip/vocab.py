@@ -38,6 +38,10 @@ def projects() -> set[str]:
     return set(_load()["projects"])
 
 
+def post_types() -> set[str]:
+    return set(_load()["postTypes"])
+
+
 def statuses() -> set[str]:
     return set(_load()["statuses"])
 

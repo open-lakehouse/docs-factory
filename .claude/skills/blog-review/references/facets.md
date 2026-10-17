@@ -23,7 +23,8 @@ cites a moving branch instead of a tag/SHA; any internal or pre-release detail t
 must not ship. Cross-check each pinned pointer actually resolves.
 
 **Fact density is calibrated to the post type** — read the "Fact density" bullet in
-QUALITY.md facet (a). First infer the post type from the brief's thesis/outline
+QUALITY.md facet (a). Take the post type from the front matter's `post_type`;
+only when it's absent, infer it from the brief's thesis/outline
 (§4). For a reference/comparison/how-to post, hold the ~5-sourced-facts-per-500-words
 bar. For a first-principles/argument/opinion essay, do **not** penalize low raw fact
 density — the bar there is that every *specific factual assertion* (a named
@@ -42,7 +43,9 @@ for a stance, that *is* a finding (flattened voice).
 
 ## (c) Audience & tone fit
 
-Inspect against QUALITY.md facet (c), using `brief.md` as the yardstick. Flag
+Inspect against QUALITY.md facet (c), using the front matter's `audience` and the
+brief (SKILL.md step 1) as the yardstick. A brief whose audience disagrees with
+the front matter is itself a finding. Flag
 over-explaining or under-explaining relative to the brief's stated **audience** and
 assumed prior knowledge, and tone/register drift from the brief's stated voice.
 

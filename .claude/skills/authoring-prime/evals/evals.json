@@ -1,0 +1,30 @@
+{
+  "skill_name": "authoring-prime",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Load authoring-prime. I'm about to draft a Unity Catalog how-to. Which exemplar pages should I read to match the house style, and where is the exemplar list?",
+      "expected_output": "Names `.claude/skills/authoring-prime/references/exemplars.md` as the catalog and reads it. Recommends the How-to section's pages: `content/unitycatalog/how-to/004-manage-catalogs-and-schemas/index.md` (and optionally 006-manage-volumes, 009-python-dataframes). Pass condition is cross-type isolation: it does NOT read or recommend tutorial, explanation, reference, landing, or blog exemplars. Does not claim a separate exemplar skill or slash command exists."
+    },
+    {
+      "id": 2,
+      "prompt": "Load authoring-prime. Is there a separate command or skill for style examples I should run first?",
+      "expected_output": "States that the exemplar catalog is a reference file inside authoring-prime (`references/exemplars.md`), read on demand only when drafting or reviewing, and that there is no separate exemplar skill or command. Does not invent one."
+    },
+    {
+      "id": 3,
+      "prompt": "Using authoring-prime, which exemplar best models an explanation page that canonically explains a model element, and which models an opinionated blog essay?",
+      "expected_output": "Reads the exemplar catalog. For the explanation, names `content/unitycatalog/explanation/004-external-and-managed-tables/index.md` (it declares `explains: lakehouse.table`). For the opinionated essay, names `blogs/uc-metric-views/index.md`. Uses the catalog rather than guessing paths."
+    },
+    {
+      "id": 4,
+      "prompt": "Load authoring-prime. Where does a new Delta how-to page go, and how do I make it reachable in the docs navigation?",
+      "expected_output": "Control / no-regression. Answers from the primer's structure: `content/delta/how-to/<NNN-slug>/index.md` (folder mode when it has snippets), plus an entry in `content/delta/nav.yml` (or filling a `planned:` slot), since orphans fail the build. Answers WITHOUT reading `references/exemplars.md`: a placement question does not need style examples."
+    },
+    {
+      "id": 5,
+      "prompt": "i need to write up how duckdb reads our catalog tables for the docs, want it to look like the other pages. got anything i can copy the style from?",
+      "expected_output": "Real-world routing. Without being told the skill name, the agent recognizes docs authoring, consults authoring-prime's exemplar catalog, infers a how-to (task: read tables from an engine), and surfaces the How-to exemplars (e.g. 004-manage-catalogs-and-schemas or 009-python-dataframes). Asking a brief clarifying question about the page type first is acceptable. Does not pull in unrelated types' exemplars."
+    }
+  ]
+}

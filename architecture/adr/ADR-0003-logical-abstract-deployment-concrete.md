@@ -73,7 +73,7 @@ abstract→concrete link is expressed via deployment `instanceOf` (not a logical
 Accepted 2026-10-16 with the Trestle convergence P1 model refactor.
 
 The Decision above stands. Two things have changed around it, and the Trestle
-convergence ([design](../../docs/design/trestle-model-convergence.md)) needs a
+convergence ([design](../../docs/design/trestle-integration.md)) needs a
 third stated explicitly.
 
 **The model no longer has the three topologies or the governance roles.** #73

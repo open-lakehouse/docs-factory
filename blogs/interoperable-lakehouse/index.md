@@ -33,7 +33,7 @@ engines, meet the same governed tables.
 ## Model hooks
 
 - `deltaSpec`, `icebergSpec`, `icebergRestSpec`; `lakehouse.queryEngine`;
-  journeys joined to the model (convergence plan §5).
+  journeys joined to the model (`docs/design/trestle-integration.md` §5).
 
 ## Cross-links
 

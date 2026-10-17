@@ -1,7 +1,7 @@
-"""The P7b task set: docsnip query against this repo's committed artifacts.
+"""The agent task set: docsnip query against this repo's committed artifacts.
 
 Expected IDs are exact, so a content, model, or environment change that moves
-an answer fails here and gets re-read by hand (convergence plan, P7)."""
+an answer fails here and gets re-read by hand."""
 
 from __future__ import annotations
 

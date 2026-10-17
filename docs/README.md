@@ -34,9 +34,7 @@ docs/
     interactive-docs-site.md         islands / roadmap / auth platform study
     multi-domain-single-deployment.md one deployment, three doc domains
     release-bump-agent.md            the Omnigent agent a bump could become (not built)
-    trestle-model-convergence.md      estate model ↔ Trestle environments ↔ journeys: concepts, ownership, joins
-    trestle-model-convergence-plan.md phased execution plan for that design (one session per phase)
-    trestle-env-inventory.md          the hand-written UC environments, as P3/P5 inputs (P0)
+    trestle-integration.md           generated environments ↔ estate model ↔ journeys, as built
   deploy/       operational runbooks
     runbook.md                       go-live provisioning (Neon / Vercel / GitHub)
 ```

@@ -19,7 +19,7 @@ participants must ``requires`` (a client ``consumes`` a spec, a provider
 ``implements`` one or ``realizes`` a capability or concern), inherited from its
 ``family`` or the matrix ``defaults`` and overridable per journey. This module
 is the only resolver of those: the artifact carries the resolved form, and JS
-never re-resolves it. See docs/design/trestle-model-convergence.md §5.
+never re-resolves it. See docs/design/trestle-integration.md §5.
 """
 
 from __future__ import annotations

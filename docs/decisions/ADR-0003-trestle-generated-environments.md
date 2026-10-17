@@ -2,15 +2,15 @@
 
 | Field | Value |
 |---|---|
-| Status | Proposed |
-| Date | 2026-10-16 |
+| Status | Accepted |
+| Date | 2026-10-17 |
 | Supersedes | — |
 | Superseded by | — |
 
 ## Context
 
 The docs environments under `envs/` (`envs/unitycatalog` in three variants,
-plus `envs/aws-sim`) are hand-written Compose. `envs/environments.yml` repeats
+plus `envs/aws-sim`) were hand-written Compose. `envs/environments.yml` repeats
 facts a planner computes (ports, client env), and the estate model's deployment
 layer knows nothing about them. Its one environment, `trustedCompute`, is a
 narrative reference deployment.
@@ -29,9 +29,8 @@ contribution to observability") is an interpretation of our concepts that
 Trestle shouldn't carry. The bare Vercel build and the reader bundle also have no
 cargo, so nothing in emission can call Trestle.
 
-The full design is
-[`trestle-model-convergence.md`](../design/trestle-model-convergence.md); its §10
-logs each decision below.
+The design as built is
+[`trestle-integration.md`](../design/trestle-integration.md).
 
 ## Considered Options
 
@@ -97,8 +96,8 @@ hypothetical services to a generated one. Estate views exclude `#generated`.
   cold `cargo install` (about 3–5 minutes) when it runs.
 - Rendered files are committed. Reviews see generated diffs, and a hand edit to
   a render fails CI.
-- Trestle needs new knobs before the UC environments can move (`build`,
-  `container_name`, `extra_mounts`, `embedded_metadata`, client-env aliases), and
-  aws-sim parity is the likeliest break at cutover.
+- Docs-specific needs (the local image, the container name, shared mounts,
+  embedded metadata, client-env aliases) become Trestle knobs, so a docs change
+  can wait on a Trestle merge and a re-pin.
 - Two deployment stories coexist in the model. The `#generated` tag and this ADR
   keep them apart.

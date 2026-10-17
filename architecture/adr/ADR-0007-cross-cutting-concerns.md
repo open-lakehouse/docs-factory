@@ -114,6 +114,6 @@ which is what the model has always used. No `requires` kind is added.
   contain concerns).
 - `#partial` on its own says nothing about a deployment; the environment-level
   check that complementary contributors are present lands with generated
-  environments (convergence P5/P7).
+  environments (`docs/design/trestle-integration.md`).
 - `appliesTo` titles are free text for now; a controlled verb list is an open
   question.

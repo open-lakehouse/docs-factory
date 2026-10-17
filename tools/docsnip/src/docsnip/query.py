@@ -1,4 +1,6 @@
-"""Internal agent queries over the committed artifacts (design §8).
+"""Internal agent queries over the committed artifacts.
+
+See docs/design/trestle-integration.md §9.
 
 Reads ``architecture/dist/model.json``, each ``content/<project>/compatibility.json``,
 the generated environments (``envs/<name>/plan.json``, the registry and its

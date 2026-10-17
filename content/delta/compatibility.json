@@ -286,6 +286,407 @@
       ]
     }
   ],
+  "engines": [
+    {
+      "id": "deltaSpark",
+      "title": "Delta Spark",
+      "interfaces": [
+        "spark-sql",
+        "spark-python",
+        "spark-scala",
+        "spark-java"
+      ],
+      "page": null,
+      "groups": [
+        {
+          "table": "create-and-write",
+          "columns": [
+            "spark-sql",
+            "spark-python"
+          ],
+          "rows": [
+            "create.table",
+            "create.ctas",
+            "create.partitioned",
+            "write.append",
+            "write.overwrite",
+            "write.replace-where",
+            "write.dynamic-partitions",
+            "write.enforce-schema",
+            "write.idempotent",
+            "write.commit-metadata"
+          ]
+        },
+        {
+          "table": "modify-rows",
+          "columns": [
+            "spark-sql",
+            "spark-python"
+          ],
+          "rows": [
+            "dml.update",
+            "dml.delete",
+            "merge.upsert",
+            "merge.not-matched-by-source",
+            "merge.schema-evolution"
+          ]
+        },
+        {
+          "table": "read-and-history",
+          "columns": [
+            "spark-sql",
+            "spark-python"
+          ],
+          "rows": [
+            "read.scan",
+            "read.pushdown",
+            "read.version",
+            "read.timestamp",
+            "read.past-retention",
+            "history.list",
+            "history.detail",
+            "history.restore",
+            "history.shallow-clone"
+          ]
+        },
+        {
+          "table": "schema-and-quality",
+          "columns": [
+            "spark-sql",
+            "spark-python"
+          ],
+          "rows": [
+            "schema.merge-on-write",
+            "schema.overwrite",
+            "schema.add-column",
+            "schema.rename-drop",
+            "schema.type-widening",
+            "quality.check",
+            "quality.not-null",
+            "columns.generated",
+            "columns.identity",
+            "columns.default"
+          ]
+        },
+        {
+          "table": "cdf-and-streaming",
+          "columns": [
+            "spark-sql",
+            "spark-python"
+          ],
+          "rows": [
+            "cdf.read",
+            "stream.source-sink",
+            "stream.foreach-batch-merge"
+          ]
+        },
+        {
+          "table": "layout-and-maintenance",
+          "columns": [
+            "spark-sql",
+            "spark-python"
+          ],
+          "rows": [
+            "layout.compact",
+            "layout.zorder",
+            "layout.clustering",
+            "maint.vacuum",
+            "maint.checkpoint",
+            "maint.purge-dvs",
+            "maint.manifest",
+            "maint.repair",
+            "migrate.convert-parquet"
+          ]
+        },
+        {
+          "table": "features-and-protocol",
+          "columns": [
+            "spark-sql",
+            "spark-python"
+          ],
+          "rows": [
+            "feature.enable",
+            "feature.drop",
+            "feature.properties"
+          ]
+        },
+        {
+          "table": "storage-and-catalogs",
+          "columns": [
+            "spark-sql",
+            "spark-python"
+          ],
+          "rows": [
+            "storage.s3-multi-writer",
+            "storage.azure-gcs",
+            "catalog.unity"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "deltaRs",
+      "title": "delta-rs",
+      "interfaces": [
+        "delta-rs-python",
+        "delta-rs-rust"
+      ],
+      "page": null,
+      "groups": [
+        {
+          "table": "create-and-write",
+          "columns": [
+            "delta-rs-python",
+            "delta-rs-rust"
+          ],
+          "rows": [
+            "create.table",
+            "create.ctas",
+            "create.partitioned",
+            "write.append",
+            "write.overwrite",
+            "write.replace-where",
+            "write.dynamic-partitions",
+            "write.enforce-schema",
+            "write.idempotent",
+            "write.commit-metadata"
+          ]
+        },
+        {
+          "table": "modify-rows",
+          "columns": [
+            "delta-rs-python",
+            "delta-rs-rust"
+          ],
+          "rows": [
+            "dml.update",
+            "dml.delete",
+            "merge.upsert",
+            "merge.not-matched-by-source",
+            "merge.schema-evolution"
+          ]
+        },
+        {
+          "table": "read-and-history",
+          "columns": [
+            "delta-rs-python",
+            "delta-rs-rust"
+          ],
+          "rows": [
+            "read.scan",
+            "read.pushdown",
+            "read.version",
+            "read.timestamp",
+            "read.past-retention",
+            "history.list",
+            "history.detail",
+            "history.restore",
+            "history.shallow-clone"
+          ]
+        },
+        {
+          "table": "schema-and-quality",
+          "columns": [
+            "delta-rs-python",
+            "delta-rs-rust"
+          ],
+          "rows": [
+            "schema.merge-on-write",
+            "schema.overwrite",
+            "schema.add-column",
+            "schema.rename-drop",
+            "schema.type-widening",
+            "quality.check",
+            "quality.not-null",
+            "columns.generated",
+            "columns.identity",
+            "columns.default"
+          ]
+        },
+        {
+          "table": "cdf-and-streaming",
+          "columns": [
+            "delta-rs-python",
+            "delta-rs-rust"
+          ],
+          "rows": [
+            "cdf.read",
+            "stream.source-sink",
+            "stream.foreach-batch-merge"
+          ]
+        },
+        {
+          "table": "layout-and-maintenance",
+          "columns": [
+            "delta-rs-python",
+            "delta-rs-rust"
+          ],
+          "rows": [
+            "layout.compact",
+            "layout.zorder",
+            "layout.clustering",
+            "maint.vacuum",
+            "maint.checkpoint",
+            "maint.purge-dvs",
+            "maint.manifest",
+            "maint.repair",
+            "migrate.convert-parquet"
+          ]
+        },
+        {
+          "table": "features-and-protocol",
+          "columns": [
+            "delta-rs-python",
+            "delta-rs-rust"
+          ],
+          "rows": [
+            "feature.enable",
+            "feature.drop",
+            "feature.properties"
+          ]
+        },
+        {
+          "table": "storage-and-catalogs",
+          "columns": [
+            "delta-rs-python",
+            "delta-rs-rust"
+          ],
+          "rows": [
+            "storage.s3-multi-writer",
+            "storage.azure-gcs",
+            "catalog.unity"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "duckdb",
+      "title": "DuckDB",
+      "interfaces": [
+        "duckdb-sql",
+        "duckdb-python"
+      ],
+      "page": null,
+      "groups": [
+        {
+          "table": "create-and-write",
+          "columns": [
+            "duckdb-sql"
+          ],
+          "rows": [
+            "create.table",
+            "create.ctas",
+            "create.partitioned",
+            "write.append",
+            "write.overwrite",
+            "write.replace-where",
+            "write.dynamic-partitions",
+            "write.enforce-schema",
+            "write.idempotent",
+            "write.commit-metadata"
+          ]
+        },
+        {
+          "table": "modify-rows",
+          "columns": [
+            "duckdb-sql"
+          ],
+          "rows": [
+            "dml.update",
+            "dml.delete",
+            "merge.upsert",
+            "merge.not-matched-by-source",
+            "merge.schema-evolution"
+          ]
+        },
+        {
+          "table": "read-and-history",
+          "columns": [
+            "duckdb-sql"
+          ],
+          "rows": [
+            "read.scan",
+            "read.pushdown",
+            "read.version",
+            "read.timestamp",
+            "read.past-retention",
+            "history.list",
+            "history.detail",
+            "history.restore",
+            "history.shallow-clone"
+          ]
+        },
+        {
+          "table": "schema-and-quality",
+          "columns": [
+            "duckdb-sql"
+          ],
+          "rows": [
+            "schema.merge-on-write",
+            "schema.overwrite",
+            "schema.add-column",
+            "schema.rename-drop",
+            "schema.type-widening",
+            "quality.check",
+            "quality.not-null",
+            "columns.generated",
+            "columns.identity",
+            "columns.default"
+          ]
+        },
+        {
+          "table": "cdf-and-streaming",
+          "columns": [
+            "duckdb-sql"
+          ],
+          "rows": [
+            "cdf.read",
+            "stream.source-sink",
+            "stream.foreach-batch-merge"
+          ]
+        },
+        {
+          "table": "layout-and-maintenance",
+          "columns": [
+            "duckdb-sql"
+          ],
+          "rows": [
+            "layout.compact",
+            "layout.zorder",
+            "layout.clustering",
+            "maint.vacuum",
+            "maint.checkpoint",
+            "maint.purge-dvs",
+            "maint.manifest",
+            "maint.repair",
+            "migrate.convert-parquet"
+          ]
+        },
+        {
+          "table": "features-and-protocol",
+          "columns": [
+            "duckdb-sql"
+          ],
+          "rows": [
+            "feature.enable",
+            "feature.drop",
+            "feature.properties"
+          ]
+        },
+        {
+          "table": "storage-and-catalogs",
+          "columns": [
+            "duckdb-sql"
+          ],
+          "rows": [
+            "storage.s3-multi-writer",
+            "storage.azure-gcs",
+            "catalog.unity"
+          ]
+        }
+      ]
+    }
+  ],
   "journeys": [
     {
       "id": "create.table",

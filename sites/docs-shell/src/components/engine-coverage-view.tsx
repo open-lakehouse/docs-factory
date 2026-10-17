@@ -74,7 +74,7 @@ const SEGMENTS: { bucket: Bucket; label: string }[] = [
   { bucket: "draft", label: "Verified on a draft page" },
   { bucket: "documented", label: "Upstream docs only" },
   { bucket: "no", label: "Doesn't work" },
-  { bucket: "unknown", label: "Not yet verified" },
+  { bucket: "unknown", label: "Not verified here" },
 ];
 const LABEL = Object.fromEntries(SEGMENTS.map((s) => [s.bucket, s.label])) as Record<
   Bucket,
@@ -98,9 +98,9 @@ function share(c: Counts): number {
   return all ? Math.round((c.proven / all) * 100) : 0;
 }
 
-/** The anchor a hub cell links to on the engine page. */
-export function groupAnchor(group: string): string {
-  return `coverage-${group}`;
+/** The anchor a hub cell links to; one page can hold several engines' reports. */
+export function groupAnchor(engine: string, group: string): string {
+  return `coverage-${engine}-${group}`;
 }
 
 function Bar({ counts, label }: { counts: Counts; label?: string }) {
@@ -241,19 +241,29 @@ function Detail({ journey, variant }: { journey: JourneyReport; variant: Variant
           </div>
         ))}
       {variant.bucket === "unknown" && (
-        <p className="cov-note">No example on this site runs this yet.</p>
+        <p className="cov-note">
+          No example on this site runs this. The tool may still support it.
+        </p>
       )}
     </div>
   );
 }
 
-function GroupMatrix({ group, gapsOnly }: { group: GroupReport; gapsOnly: boolean }) {
+function GroupMatrix({
+  engine,
+  group,
+  gapsOnly,
+}: {
+  engine: string;
+  group: GroupReport;
+  gapsOnly: boolean;
+}) {
   const [selected, setSelected] = useState<string | null>(null);
   const rows = gapsOnly
     ? group.journeys.filter((j) => j.variants.some((v) => v.bucket !== "proven"))
     : group.journeys;
   return (
-    <details className="cov-group" id={groupAnchor(group.id)} open>
+    <details className="cov-group" id={groupAnchor(engine, group.id)} open>
       <summary>
         <span className="cov-group-title">{group.title}</span>
         <Bar counts={group.counts} />
@@ -371,12 +381,12 @@ export function EngineCoverageView({ report }: { report: EngineReport }) {
             checked={gapsOnly}
             onChange={(e) => setGapsOnly(e.target.checked)}
           />
-          Only journeys not yet verified
+          Only journeys not verified here
         </label>
         <span className="cov-hint">Select a cell to see its example and script.</span>
       </div>
       {report.groups.map((group) => (
-        <GroupMatrix key={group.id} group={group} gapsOnly={gapsOnly} />
+        <GroupMatrix key={group.id} engine={report.id} group={group} gapsOnly={gapsOnly} />
       ))}
     </section>
   );
@@ -429,7 +439,10 @@ export function EngineSupportView({ reports }: { reports: EngineReport[] }) {
                   return (
                     <td key={id}>
                       {r.href ? (
-                        <a className="cov-hub-cell" href={`${r.href}#${groupAnchor(id)}`}>
+                        <a
+                          className="cov-hub-cell"
+                          href={`${r.href.split("#")[0]}#${groupAnchor(r.id, id)}`}
+                        >
                           {body}
                         </a>
                       ) : (

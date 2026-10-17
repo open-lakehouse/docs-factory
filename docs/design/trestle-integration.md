@@ -45,7 +45,7 @@ flowchart LR
 | `envs/trestle.toml` | hand (`git`, `rev`, `package`) | `just trestle-install`, `docsnip trestle --pin`, CI |
 | `architecture/dist/trestle-catalog.json` | `just trestle-catalog` (`trestle env list-modules --json`) | `docsnip trestle`, `docsnip query` |
 | `architecture/integrations/trestle.yaml` | hand | `docsnip trestle`, `envgen`, `query` |
-| `architecture/dist/trestle-context.json` | `docsnip trestle --fix` | Trestle's diagram (optional enrichment) |
+| `architecture/dist/trestle-context.json` | `docsnip trestle --fix` | the docs emitter (`refs.json`), the review app's diagrams |
 | `envs/<name>/env.toml` + `image/` | hand | `trestle env render` |
 | `envs/<name>/{compose.yaml,modules/,client/,LAYOUT.md,.env,plan.json}` | `just env-render <name>` | Compose, `docsnip envs`, the harness |
 | `architecture/model/deployment/generated/<name>.likec4` | `docsnip envs --fix` | LikeC4 (everything under `model/` loads) |
@@ -389,9 +389,21 @@ raw `model.json` stays internal.
   machines, so `docsnip check` compares that digest, never the bytes, and the
   renderer skips current PNGs. The emitter ships the committed PNG; emission
   needs no Chromium.
-- **The context artifact** (`trestle-context.json`) gives Trestle's diagram,
-  per module and role, the concept refs, titles, summaries, and links. It
-  carries model facts only, no evidence.
+- **The context artifact** (`trestle-context.json`) records, per module and
+  role, the concept refs, titles, summaries, and links. It carries model facts
+  only, no evidence.
+- **Diagram nodes link to the model.** A node's name links to its module's
+  implementation and its role line ("Data catalog") to the role's capability or
+  concern, each with a hover card. Trestle knows nothing of the model: the
+  package takes `slots` (a renderer for the name and role lines, given the
+  node) and `useDiagramPortal()` (where a host popover goes, outside the
+  diagram's style scope), and the snapshot stays as Trestle wrote it. The
+  mapping is `nodeConcepts` in content-core (`trestle-refs.mjs`). On a site the
+  emitter writes `/assets/trestle/refs.json` from the context artifact, keeping
+  only `#public` concepts and linking them through the `model:` link resolver,
+  so a role whose concept isn't public stays plain text. A `partial` role says
+  so in its card. The review app resolves every element, as its `model:` links
+  do.
 
 ## 9. Agent queries
 

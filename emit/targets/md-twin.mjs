@@ -37,6 +37,8 @@ import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
 /** Where the twin driver serves the regenerated LikeC4 PNGs from. Kept here so the
  * driver's PNG copy destination and this renderImage URL agree on one path. */
 export const LIKEC4_ASSET_BASE = "/assets/likec4";
+/** Where environment diagrams are served, one per environment, beside their snapshots. */
+export const TRESTLE_ASSET_BASE = "/assets/trestle";
 
 /**
  * The mdast node left for a STANDALONE image: a likec4 view points at the
@@ -45,7 +47,11 @@ export const LIKEC4_ASSET_BASE = "/assets/likec4";
  * `image` would glue the following block onto it.
  */
 export function renderImage(entry) {
-  const url = entry.likec4 ? `${LIKEC4_ASSET_BASE}/${entry.likec4}.png` : entry.filename;
+  const url = entry.likec4
+    ? `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`
+    : entry.trestle?.env
+      ? `${TRESTLE_ASSET_BASE}/${entry.trestle.env}.png`
+      : entry.filename;
   return {
     type: "paragraph",
     children: [{ type: "image", url, alt: entry.altText, title: null }],

@@ -1189,6 +1189,8 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 }
 .prose .likec4-view { display: block; min-height: 20rem; }
 .prose .likec4-view img { display: block; width: 100%; border: 0; border-radius: 0; }
+.prose .trestle-frame { margin: 1.75rem 0; }
+.prose .trestle-frame > img { display: block; width: 100%; border: 1px solid var(--border); border-radius: var(--radius); }
 
 /* --- REST API reference ---
    Scalar brings its own endpoint sidebar, so API pages render without the docs

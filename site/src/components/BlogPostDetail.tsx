@@ -3,13 +3,19 @@ import type { ContentPage } from "../content";
 import AuthorBadge from "./AuthorBadge";
 import TagList from "./TagList";
 
-/** Expandable metadata panel for a blog post (summary + series/author/status/target/tags). */
+/** Expandable metadata panel for a blog post (summary, audience, series/author/status/type/target/tags). */
 export default function BlogPostDetail({ post }: { post: ContentPage }) {
   const fm = post.frontmatter;
   return (
     <div className="blog-detail">
       {fm.summary && <p className="blog-detail-summary">{fm.summary}</p>}
       <dl className="blog-meta-grid">
+        {fm.audience && (
+          <div className="blog-meta blog-meta-wide">
+            <dt>Audience</dt>
+            <dd>{fm.audience}</dd>
+          </div>
+        )}
         {fm.series && (
           <div className="blog-meta blog-meta-wide">
             <dt>Series</dt>
@@ -33,6 +39,12 @@ export default function BlogPostDetail({ post }: { post: ContentPage }) {
           <div className="blog-meta">
             <dt>Status</dt>
             <dd className="mono">{fm.status}</dd>
+          </div>
+        )}
+        {fm.post_type && (
+          <div className="blog-meta">
+            <dt>Type</dt>
+            <dd className="mono">{fm.post_type}</dd>
           </div>
         )}
         {fm.target && (

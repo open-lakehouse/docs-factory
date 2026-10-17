@@ -32,6 +32,9 @@ create a `brief.md`.
   pass.
 - Diagrams are LikeC4 views in `architecture/model/views/blog-views.likec4`,
   with the rendered image in the post's `assets/` (skill step 5).
+- Keep `post_type`, `audience`, and `summary` in the front matter true to the
+  draft. If the draft's thesis moved, update `summary` and say so in your
+  report.
 - Every factual claim traces to a source in the plan. If a claim has none, cut
   it or mark it `<!-- TODO(source): … -->` and list it in your report.
 - Finish with the `humanizer` skill over the prose, keeping the stance. Then run

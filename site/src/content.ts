@@ -15,6 +15,10 @@ export interface Frontmatter {
   series_order?: number;
   author?: string;
   target?: string;
+  /** Blog only: one of vocab.json `postTypes`; review calibrates fact density by it. */
+  post_type?: string;
+  /** Blog only: who the post is for and what they already know. */
+  audience?: string;
   diataxis?: string;
   project?: string;
   summary?: string;

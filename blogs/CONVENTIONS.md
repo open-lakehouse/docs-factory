@@ -100,8 +100,29 @@ series: <arc name>            # omit if the post is standalone
 series_order: <n>             # omit if standalone
 author: <Full Name>           # real person; the byline (§10). never "Admin"
 target: <delta | unitycatalog | openlakehouse | …>   # not needed for idea / private
+post_type: essay | how-to | deep-dive | announcement | comparison | benchmark
+audience: <who it's for and what they already know, one line>
+summary: <the answer-first one-liner, ≤160 chars>
 ---
 ```
+
+**The brief's durable fields.** `post_type`, `audience`, and `summary` are the
+parts of a brief that stay true for the post's whole life. In front matter they
+survive without a `brief.md`, a session, or a PR:
+
+- **`post_type`** is from `content/vocab.json` (`postTypes`). Review calibrates
+  fact density by it (`QUALITY.md` facet (a)): an `essay` is carried by
+  reasoning, and every other type is fact-dense.
+- **`audience`** is the yardstick for facet (c). Name the reader and what they
+  already know.
+- **`summary`** is at most 160 characters and states the answer, not "this post
+  is about". The emitters publish it as the target site's `description`, which
+  delta.io requires.
+
+They're optional, so older posts stay valid, and `docsnip validate` lists
+draft and ready posts that lack them. Stance, tone, outline, sources, and
+reader questions stay in the brief or plan: they change while drafting, and
+the prose shows them.
 
 Publish timing is **not** frontmatter. Last-updated comes from registered
 `content_version` rows (review app); the intended ship day is RevOps

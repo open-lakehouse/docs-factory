@@ -86,7 +86,9 @@ flatten the stance is skipped and logged, never applied.
 
 ## Publish-target proposals
 Per QUALITY.md "Publish-target concerns", for whoever renders the post:
-- Meta description (≤160 chars): "<text>"
+- Meta description: the front matter's `summary` is published as it. Tighten
+  `summary` in `index.md` (≤160 chars, answer-first, names the subject) and
+  record the before and after here.
 - FAQPage candidates: <question → passage>, or "none — opinion piece"
 - HowTo: yes/no
 - Entities for `about`/`mentions`: <canonical names>

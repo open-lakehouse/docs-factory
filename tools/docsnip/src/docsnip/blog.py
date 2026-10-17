@@ -12,9 +12,16 @@ from pathlib import Path
 
 import yaml
 
+from . import vocab
 from .frontmatter import STATUSES, Page, parse
 
 BLOG_STATUSES = STATUSES
+
+# The search-result description length; the summary doubles as it on publish.
+SUMMARY_MAX = 160
+# The brief's durable fields: optional, but a missing one is reported (see
+# blog_metadata_gaps), because review judges fact density and fit by them.
+BRIEF_FIELDS = ("post_type", "audience", "summary")
 
 
 def load_tag_registry(blogs_root: Path) -> set[str]:
@@ -112,4 +119,25 @@ def validate_blog(page: Page, known_tags: set[str]) -> list[str]:
             if tag not in known_tags:
                 errors.append(f"tag '{tag}' not in blogs/tags.yml")
 
+    post_type = m.get("post_type")
+    if post_type is not None and post_type not in vocab.post_types():
+        errors.append(f"post_type '{post_type}' not in {sorted(vocab.post_types())}")
+    for key in ("audience", "summary"):
+        value = m.get(key)
+        if value is not None and (not isinstance(value, str) or not value.strip()):
+            errors.append(f"'{key}' must be a non-empty string")
+    summary = m.get("summary")
+    if isinstance(summary, str) and len(summary) > SUMMARY_MAX:
+        errors.append(f"'summary' is {len(summary)} chars (max {SUMMARY_MAX})")
+
     return [f"{page.path}: {e}" for e in errors]
+
+
+def blog_metadata_gaps(page: Page) -> list[str]:
+    """Brief fields a draft or ready post doesn't carry yet. Reported, not
+    failing, so existing posts don't block CI; ideas and private posts are
+    skipped because they aren't being reviewed for release."""
+    if page.meta.get("status") in ("idea", "private"):
+        return []
+    missing = [key for key in BRIEF_FIELDS if not page.meta.get(key)]
+    return [f"{page.path}: missing {', '.join(missing)}"] if missing else []

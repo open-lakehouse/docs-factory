@@ -43,6 +43,7 @@ from . import (
     versions,
 )
 from .blog import (
+    blog_metadata_gaps,
     iter_blog_drafts,
     load_tag_registry,
     validate_blog,
@@ -107,8 +108,17 @@ def cmd_validate(p) -> int:
 
     known_tags = load_tag_registry(p["blogs"])
     errors.extend(validate_tag_registry(p["blogs"], model_ids))
+    blog_gaps: list[str] = []
     for page in iter_blog_drafts(p["blogs"]):
         errors.extend(validate_blog(page, known_tags))
+        blog_gaps.extend(blog_metadata_gaps(page))
+    if blog_gaps:
+        print(
+            f"{len(blog_gaps)} blog post(s) without post_type/audience/summary "
+            "(not failing):",
+            file=sys.stderr,
+        )
+        print("\n".join(blog_gaps), file=sys.stderr)
 
     # Tier-2 coverage ratchet: report how many content pages relate to at least
     # one model node. Gaps are surfaced but never fail CI (see PageValidation).

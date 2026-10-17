@@ -25,7 +25,10 @@ disagree, flag the conflict in the plan rather than resolving it silently.
 
 1. **Plan**, returned in your final message:
    - **Thesis**: one sentence, in the author's voice.
-   - **Audience**: who it's for and what they already know.
+   - **Audience**: who it's for and what they already know. This becomes the
+     `audience` front matter.
+   - **Post type**: one of `content/vocab.json` `postTypes`. Review sets its
+     fact-density bar by it.
    - **Stance**: what the post argues against or pushes back on.
    - **Outline**: descriptive, sentence-case H2s, each with a line on what it
      must establish. Use the author's order unless it buries the thesis.
@@ -42,7 +45,9 @@ disagree, flag the conflict in the plan rather than resolving it silently.
      can answer.
 2. **Outline skeleton** at `blogs/<slug>/index.md`:
    - front matter per CONVENTIONS §3 with `status: draft`, a real `author`,
-     and tags that exist in `tags.yml`
+     tags that exist in `tags.yml`, and the plan's durable fields: `post_type`
+     (from `content/vocab.json` `postTypes`), `audience` (one line), and
+     `summary` (the thesis as an answer, at most 160 characters)
    - the H2 outline
    - under each heading, the author's own notes and fragments for that section,
      placed verbatim where they fit

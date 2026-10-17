@@ -7,7 +7,9 @@ Lifted from `blogs/CONVENTIONS.md` §4 — that file wins if they diverge.
 1. **Hook / thesis** — one sentence: the single claim or promise. If you can't write
    it in one line, the post isn't ready to draft.
 2. **Audience** — who it's for and what they already know; name the assumed prior
-   knowledge so the draft doesn't over- or under-explain.
+   knowledge so the draft doesn't over- or under-explain. Its one-line form, the
+   post type, and the thesis-as-answer go in the front matter (`audience`,
+   `post_type`, `summary`; CONVENTIONS §3), where they outlive the brief.
 3. **Tone / voice** — first person, *how* opinionated, register, and the stance the
    post takes. This is authored, not neutral — state the point of view.
 4. **Key takeaways** — 3–5 bullets the reader should remember; the spine of the

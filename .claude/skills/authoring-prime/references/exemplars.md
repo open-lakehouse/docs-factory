@@ -59,18 +59,22 @@ scripts gate CI and its claims render.
 
 ## Blogs
 
-### Opinion / argument essay
+Grouped by front matter `post_type`. Types without an exemplar yet (`how-to`,
+`comparison`, `benchmark`) borrow the closest: a blog how-to reads like the
+docs how-tos above, with the author's voice.
+
+### `essay`: opinion or argument
 
 - `blogs/uc-metric-views/index.md`: a first-person stance carried by an
   analogy (entropy), a `:::tldr` that links the tutorial, and a `::::journey`
   walkthrough with tested snippets. It ends on what the author learned.
 
-### Platform / concept essay
+### `essay`: platform or concept
 
 - `blogs/uc-volumes/index.md`: argues why a primitive matters (volumes for
   agents) in a few long sections, with voice over citability.
 
-### Announcement / technical deep dive
+### `announcement` / `deep-dive`
 
 - `blogs/unity-catalog-delta-api/index.md`: a fact-dense `:::tldr`, a
   getting-started path early, then the API in detail with two journeys and a

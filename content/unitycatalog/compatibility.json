@@ -364,8 +364,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "apache-spark-support"
+        "slug": "engine-support"
       },
+      "anchor": "apache-spark",
+      "heading": "Apache Spark",
       "groups": [
         {
           "table": "table-operations",
@@ -430,8 +432,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "duckdb-support"
+        "slug": "engine-support"
       },
+      "anchor": "duckdb",
+      "heading": "DuckDB",
       "groups": [
         {
           "table": "table-operations",
@@ -481,8 +485,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "polars-support"
+        "slug": "engine-support"
       },
+      "anchor": "polars",
+      "heading": "Polars",
       "groups": [
         {
           "table": "table-operations",
@@ -515,8 +521,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "daft-support"
+        "slug": "engine-support"
       },
+      "anchor": "daft",
+      "heading": "Daft",
       "groups": [
         {
           "table": "table-operations",
@@ -549,8 +557,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "pandas-support"
+        "slug": "engine-support"
       },
+      "anchor": "pandas",
+      "heading": "pandas",
       "groups": [
         {
           "table": "table-operations",
@@ -583,8 +593,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "pyiceberg-support"
+        "slug": "engine-support"
       },
+      "anchor": "pyiceberg",
+      "heading": "PyIceberg",
       "groups": [
         {
           "table": "iceberg-rest",
@@ -614,8 +626,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "uc-cli-support"
+        "slug": "engine-support"
       },
+      "anchor": "uc-cli",
+      "heading": "uc CLI",
       "groups": [
         {
           "table": "catalog-objects",
@@ -689,8 +703,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "python-client-support"
+        "slug": "engine-support"
       },
+      "anchor": "python-client",
+      "heading": "Python client",
       "groups": [
         {
           "table": "catalog-objects",
@@ -779,8 +795,10 @@
       "page": {
         "project": "unitycatalog",
         "bucket": "reference",
-        "slug": "unitycatalog-ai-support"
+        "slug": "engine-support"
       },
+      "anchor": "unitycatalog-ai",
+      "heading": "unitycatalog-ai",
       "groups": [
         {
           "table": "functions",

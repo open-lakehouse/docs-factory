@@ -505,10 +505,10 @@ An engine is a model implementation together with every interface bound to it:
 UC's `spark` and `spark-4.2` are both Apache Spark, and Delta's four Spark
 languages are one engine. `<!-- compat:engine:<model id> -->` renders that
 engine's journeys, grouped by the tables whose columns show one of its
-interfaces. `<!-- compat:engines -->` renders one row per engine and links the
-page that embeds its report. Each engine has a page under
-`reference/<engine>-support/`, and the hub is `reference/engine-support/`. The
-docs sites and the review preview replace the rendered table with an
+interfaces. `<!-- compat:engines -->` renders one row per engine, named and
+linked by the heading its report sits under. Each project's
+`reference/engine-support/` page holds the overview and a section per engine.
+The docs sites and the review preview replace the rendered table with an
 interactive report: a bar per table, expandable to each journey's example and
 script (`remark-engine-coverage.mjs`, counted by `content-core/coverage.mjs`).
 The `.md` twins keep the table.

@@ -181,12 +181,7 @@ nav:
         title: Operation equivalents across engines
       - page: reference/table-features
         id: R02
-      - section: Engine and client support
-        items:
-          - page: reference/engine-support
-          - page: reference/apache-spark-support
-          - page: reference/delta-rs-support
-          - page: reference/duckdb-support
+      - page: reference/engine-support
       - planned: R03
         title: Table properties
       - planned: R05

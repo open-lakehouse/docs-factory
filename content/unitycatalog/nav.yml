@@ -206,18 +206,7 @@ nav:
     items:
       - page: reference/features-and-limitations
         id: R01
-      - section: Engine and client support
-        items:
-          - page: reference/engine-support
-          - page: reference/apache-spark-support
-          - page: reference/duckdb-support
-          - page: reference/polars-support
-          - page: reference/daft-support
-          - page: reference/pandas-support
-          - page: reference/pyiceberg-support
-          - page: reference/uc-cli-support
-          - page: reference/python-client-support
-          - page: reference/unitycatalog-ai-support
+      - page: reference/engine-support
       - planned: R02
         title: Resource model, identifiers, types, and table/view kinds
       - planned: R03

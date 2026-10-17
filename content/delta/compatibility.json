@@ -299,8 +299,10 @@
       "page": {
         "project": "delta",
         "bucket": "reference",
-        "slug": "apache-spark-support"
+        "slug": "engine-support"
       },
+      "anchor": "apache-spark",
+      "heading": "Apache Spark",
       "groups": [
         {
           "table": "create-and-write",
@@ -438,8 +440,10 @@
       "page": {
         "project": "delta",
         "bucket": "reference",
-        "slug": "delta-rs-support"
+        "slug": "engine-support"
       },
+      "anchor": "delta-rs",
+      "heading": "delta-rs",
       "groups": [
         {
           "table": "create-and-write",
@@ -577,8 +581,10 @@
       "page": {
         "project": "delta",
         "bucket": "reference",
-        "slug": "duckdb-support"
+        "slug": "engine-support"
       },
+      "anchor": "duckdb",
+      "heading": "DuckDB",
       "groups": [
         {
           "table": "create-and-write",

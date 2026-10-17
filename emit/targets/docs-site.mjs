@@ -8,13 +8,14 @@
  * resolve on its own: `file=` snippets are inlined (core), and images point at
  * the URLs the emitter serves them from. A `likec4=` image keeps its title, so
  * the vendored remark-likec4-views still upgrades it to an interactive view,
- * with the PNG as its fallback.
+ * with the PNG as its fallback; a `trestle=` image likewise keeps its title for
+ * remark-trestle-views, which finds the snapshot beside the served PNG.
  *
  * The result is portable Markdown, so a PR into the target repo reads like a
  * docs change rather than a JSX diff.
  */
 import remarkLikeC4Md from "../plugins/remark-likec4-md.mjs";
-import { LIKEC4_ASSET_BASE } from "./md-twin.mjs";
+import { LIKEC4_ASSET_BASE, TRESTLE_ASSET_BASE } from "./md-twin.mjs";
 
 /** Keep only what the site renders; drafting fields (status, id, refs…) stay home. */
 function frontmatter(draft) {
@@ -54,9 +55,11 @@ export function docsSiteTarget({ assetBase, altText = (entry) => entry.altText }
           }
         : {
             type: "image",
-            url: `${assetBase}/${entry.filename}`,
+            url: entry.trestle?.env
+              ? `${TRESTLE_ASSET_BASE}/${entry.trestle.env}.png`
+              : `${assetBase}/${entry.filename}`,
             alt: altText(entry),
-            title: null,
+            title: entry.trestle ? entry.originalTitle : null,
           };
       return { type: "paragraph", children: [image] };
     },

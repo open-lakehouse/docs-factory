@@ -68,7 +68,7 @@ import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget } from "../targets/docs-site.mjs";
-import mdTwin, { LIKEC4_ASSET_BASE } from "../targets/md-twin.mjs";
+import mdTwin, { LIKEC4_ASSET_BASE, TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
 import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
   renderConcepts,
@@ -108,6 +108,7 @@ const VENDORED_PLUGINS = [
   "remark-journey.mjs",
   "remark-fence-meta.mjs",
   "remark-likec4-views.mjs",
+  "remark-trestle-views.mjs",
   "lib/mdx-helpers.mjs",
 ];
 
@@ -152,6 +153,16 @@ function linkErrors() {
     onUnresolved: ({ url, mdPath }) =>
       errors.add(`${relative(REPO_ROOT, mdPath)}: ${url} is not a page this emit publishes`),
   };
+}
+
+const SNAPSHOT_SUFFIX = ".trestle-graph.json";
+
+/** Where the site serves a manifest image: LikeC4 views and environment diagrams
+ * site-wide, anything else under its page's `assetBase`. */
+function imageUrl(entry, assetBase) {
+  if (entry.likec4) return `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`;
+  if (entry.trestle?.env) return `${TRESTLE_ASSET_BASE}/${entry.trestle.env}.png`;
+  return `${assetBase}/${entry.filename}`;
 }
 
 export async function emitDocs({ site, drafts = false }) {
@@ -340,10 +351,15 @@ export async function emitDocs({ site, drafts = false }) {
 
       for (const image of rendered.manifest) {
         if (!image.localPath) continue;
-        const url = image.likec4
-          ? `/assets/likec4/${image.likec4}.png`
-          : `${assetBase}/${image.filename}`;
+        const url = imageUrl(image, assetBase);
         files.set(`public${url}`, readFileSync(image.localPath));
+        // remark-trestle-views fetches the snapshot from beside the PNG.
+        if (image.trestle) {
+          files.set(
+            `public${url.replace(/\.png$/, SNAPSHOT_SUFFIX)}`,
+            readFileSync(image.localPath.replace(/\.png$/, SNAPSHOT_SUFFIX)),
+          );
+        }
         hasLikeC4 ||= Boolean(image.likec4);
       }
 
@@ -355,9 +371,7 @@ export async function emitDocs({ site, drafts = false }) {
           children: [
             {
               type: "image",
-              url: entry.likec4
-                ? `${origin}${LIKEC4_ASSET_BASE}/${entry.likec4}.png`
-                : `${origin}${assetBase}/${entry.filename}`,
+              url: `${origin}${imageUrl(entry, assetBase)}`,
               alt: altText(entry),
               title: null,
             },

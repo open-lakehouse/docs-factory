@@ -50,6 +50,8 @@ flowchart LR
 | `envs/<name>/{compose.yaml,modules/,client/,LAYOUT.md,.env,plan.json}` | `just env-render <name>` | Compose, `docsnip envs`, the harness |
 | `architecture/model/deployment/generated/<name>.likec4` | `docsnip envs --fix` | LikeC4 (everything under `model/` loads) |
 | `envs/environments.generated.json` | `docsnip envs --fix` | `environments.py`, `registry.mjs` |
+| `envs/<name>/diagram.trestle-graph.json` | `docsnip envs --fix` (the plan's `graph`) | `trestle=` embeds, the renderer |
+| `envs/<name>/diagram.png` | `just trestle-diagrams` (Chromium) | GitHub, `.md` twins, the sites' no-JS fallback |
 
 Only the Trestle CI workflow builds Trestle. Everything else (the content job,
 the bare Vercel build, the reader bundle) reads committed files and needs no
@@ -373,6 +375,20 @@ raw `model.json` stays internal.
 - A `--drafts` preview keeps linking draft explainers, but every public payload
   (service lists, JSON-LD, `concepts.json`), and the review app's Head tab, uses
   the ready-only projection.
+- **Environment diagrams.** A page embeds an environment's topology as
+  `![alt](…/envs/<name>/diagram.png "trestle=<name>")`, or a snapshot exported
+  from Trestle's editor as `![alt](./assets/<stem>.png
+  "trestle=./assets/<stem>.trestle-graph.json")`. The snapshot is the
+  `trestle-graph` v1 envelope `@open-lakehouse/trestle-diagram` draws; for an
+  environment, `docsnip envs --fix` writes it from `plan.json`'s `graph`. The
+  PNG beside it is what GitHub, the twins, and no-JS readers see; the preview
+  and the sites swap in the interactive canvas (`remark-trestle-views`, which
+  fetches the snapshot beside the PNG). `just trestle-diagrams` renders the PNG
+  by screenshotting the package in headless Chromium, and stamps it with the
+  snapshot's SHA-256 in a `tEXt` chunk. Chromium's bytes aren't stable across
+  machines, so `docsnip check` compares that digest, never the bytes, and the
+  renderer skips current PNGs. The emitter ships the committed PNG; emission
+  needs no Chromium.
 - **The context artifact** (`trestle-context.json`) gives Trestle's diagram,
   per module and role, the concept refs, titles, summaries, and links. It
   carries model facts only, no evidence.
@@ -408,7 +424,7 @@ When content moves an answer, update the test by hand.
 - **Move the Trestle pin.** Set `rev` in `envs/trestle.toml` to a merge commit
   on Trestle's `main` (no release is cut for it), then
   `just trestle-catalog && just env-render`, and commit the snapshot, renders,
-  fragments, and facts together.
+  fragments, facts, and diagrams together.
 - **Map a new module or role.** The module's `model:` ref is Trestle's; add the
   implementation (and its edges) to the technology catalog if missing, add the
   role to `trestle.yaml` with a scope, then `just trestle-catalog`.
@@ -429,3 +445,6 @@ When content moves an answer, update the test by hand.
   tag, which `release.yml` moves.
 - A public MCP and a `generate_stack(capabilities[])` tool wait until the
   internal queries prove accurate.
+- Diagram PNGs are element screenshots of the embed; a headless image export
+  in `@open-lakehouse/trestle-diagram` would drop the framing heuristics.
+  The blog MDX targets ship a `trestle=` image as a plain static image.

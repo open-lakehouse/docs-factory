@@ -47,6 +47,11 @@ import {
   scriptSummary,
 } from "../../site/scripts/build-script-index.mjs";
 import {
+  COVERAGE_FORMAT,
+  COVERAGE_VERSION,
+  coverageReports,
+} from "../../site/src/content-core/coverage.mjs";
+import {
   declaredEnvironment,
   environmentGuide,
   pageEnvironment,
@@ -59,6 +64,7 @@ import { resolveNav } from "../../site/src/content-core/nav.mjs";
 import { entryFor, gitSha } from "../../site/src/content-core/pipeline.mjs";
 import { extractHeadings } from "../../site/src/content-core/slug.mjs";
 import { walkContent } from "../../site/src/content-core/walk.mjs";
+import { collapseCoverageEmbeds } from "../../site/src/plugins/remark-engine-coverage.mjs";
 import remarkPrerequisitesEnv from "../../site/src/plugins/remark-prerequisites-env.mjs";
 import remarkSourceLinks from "../../site/src/plugins/remark-source-links.mjs";
 import { defaultModelDir, emitOne, generateLikeC4WebComponent } from "../emit.mjs";
@@ -103,6 +109,10 @@ import {
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const PLUGIN_DIR = join(REPO_ROOT, "site", "src", "plugins");
 
+// The site page's engine reports become directives the shell renders; the twin
+// keeps docsnip's table.
+const remarkCollapseCoverage = (project) => (tree) => collapseCoverageEmbeds(tree, project);
+
 // The preview plugins the target renders directives with. Copied verbatim so a
 // page renders the same in both; the shell's vite.config.ts loads them by name.
 const VENDORED_PLUGINS = [
@@ -115,6 +125,7 @@ const VENDORED_PLUGINS = [
   "remark-fence-meta.mjs",
   "remark-likec4-views.mjs",
   "remark-trestle-views.mjs",
+  "remark-engine-coverage.mjs",
   "lib/mdx-helpers.mjs",
 ];
 
@@ -234,6 +245,26 @@ export async function emitDocs({ site, drafts = false }) {
     files.set("public/scripts.json", `${JSON.stringify({ version: 2, scripts }, null, 2)}\n`);
     const scriptUrls = new Map(scripts.map((s) => [s.gitPath, s.fetchUrl]));
 
+    // Engine reports link only what this emit publishes; a draft claim counts
+    // only in a --drafts preview.
+    const matrixPath = join(contentDir, "compatibility.json");
+    const coverage = existsSync(matrixPath)
+      ? coverageReports(JSON.parse(readFileSync(matrixPath, "utf8")), {
+          href: (page, anchor) => {
+            const route = routeFor(page.bucket, page.slug);
+            if (page.project !== site.project || !routes.has(route)) return null;
+            return anchor ? `${route}#${anchor}` : route;
+          },
+          scriptUrl: (gitPath) => scriptUrls.get(gitPath) ?? null,
+          drafts,
+          pageTitle: (page) => byRoute.get(routeFor(page.bucket, page.slug))?.meta.title ?? null,
+        })
+      : [];
+    files.set(
+      "src/generated/coverage.json",
+      `${JSON.stringify({ format: COVERAGE_FORMAT, version: COVERAGE_VERSION, engines: coverage }, null, 2)}\n`,
+    );
+
     // The env bundle. Its guide link only resolves when this emit publishes the page.
     const registry = loadRegistry(REPO_ROOT);
     let envBundle = null;
@@ -341,6 +372,7 @@ export async function emitDocs({ site, drafts = false }) {
       const rendered = await emitOne({
         ...common,
         target: docsSiteTarget({ assetBase, altText }),
+        prePlugins: [[remarkCollapseCoverage, site.project]],
         plugins: [
           ...linkPlugins(route),
           [remarkScriptLinks, { scripts: scriptUrls }],

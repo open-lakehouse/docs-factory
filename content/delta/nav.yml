@@ -181,6 +181,7 @@ nav:
         title: Operation equivalents across engines
       - page: reference/table-features
         id: R02
+      - page: reference/engine-support
       - planned: R03
         title: Table properties
       - planned: R05

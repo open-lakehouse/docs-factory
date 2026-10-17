@@ -353,6 +353,469 @@
       ]
     }
   ],
+  "engines": [
+    {
+      "id": "apacheSpark",
+      "title": "Apache Spark",
+      "interfaces": [
+        "spark",
+        "spark-4.2"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "apache-spark",
+      "heading": "Apache Spark",
+      "groups": [
+        {
+          "table": "table-operations",
+          "columns": [
+            "spark"
+          ],
+          "rows": [
+            "table.list",
+            "external.read",
+            "external.read-vended",
+            "external.append",
+            "managed.create",
+            "managed.read",
+            "managed.append",
+            "managed.update",
+            "managed.delete",
+            "managed.drop",
+            "managed.time-travel",
+            "external.read-format"
+          ]
+        },
+        {
+          "table": "iceberg-rest",
+          "columns": [
+            "spark"
+          ],
+          "rows": [
+            "iceberg.schema-create",
+            "iceberg.create",
+            "iceberg.append",
+            "iceberg.read",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.rename",
+            "iceberg.drop",
+            "iceberg.join-delta"
+          ]
+        },
+        {
+          "table": "metric-views",
+          "columns": [
+            "spark-4.2"
+          ],
+          "rows": [
+            "metricview.create",
+            "metricview.list",
+            "metricview.describe",
+            "metricview.query",
+            "metricview.replace",
+            "metricview.rename",
+            "metricview.drop"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "duckdb",
+      "title": "DuckDB",
+      "interfaces": [
+        "duckdb"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "duckdb",
+      "heading": "DuckDB",
+      "groups": [
+        {
+          "table": "table-operations",
+          "columns": [
+            "duckdb"
+          ],
+          "rows": [
+            "table.list",
+            "external.read",
+            "external.read-vended",
+            "external.append",
+            "managed.create",
+            "managed.read",
+            "managed.append",
+            "managed.update",
+            "managed.delete",
+            "managed.drop",
+            "managed.time-travel",
+            "external.read-format"
+          ]
+        },
+        {
+          "table": "iceberg-rest",
+          "columns": [
+            "duckdb"
+          ],
+          "rows": [
+            "iceberg.schema-create",
+            "iceberg.create",
+            "iceberg.append",
+            "iceberg.read",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.rename",
+            "iceberg.drop",
+            "iceberg.join-delta"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "polars",
+      "title": "Polars",
+      "interfaces": [
+        "polars"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "polars",
+      "heading": "Polars",
+      "groups": [
+        {
+          "table": "table-operations",
+          "columns": [
+            "polars"
+          ],
+          "rows": [
+            "table.list",
+            "external.read",
+            "external.read-vended",
+            "external.append",
+            "managed.create",
+            "managed.read",
+            "managed.append",
+            "managed.update",
+            "managed.delete",
+            "managed.drop",
+            "managed.time-travel",
+            "external.read-format"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "daft",
+      "title": "Daft",
+      "interfaces": [
+        "daft"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "daft",
+      "heading": "Daft",
+      "groups": [
+        {
+          "table": "table-operations",
+          "columns": [
+            "daft"
+          ],
+          "rows": [
+            "table.list",
+            "external.read",
+            "external.read-vended",
+            "external.append",
+            "managed.create",
+            "managed.read",
+            "managed.append",
+            "managed.update",
+            "managed.delete",
+            "managed.drop",
+            "managed.time-travel",
+            "external.read-format"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "deltaRs",
+      "title": "delta-rs",
+      "interfaces": [
+        "pandas"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "pandas",
+      "heading": "pandas",
+      "groups": [
+        {
+          "table": "table-operations",
+          "columns": [
+            "pandas"
+          ],
+          "rows": [
+            "table.list",
+            "external.read",
+            "external.read-vended",
+            "external.append",
+            "managed.create",
+            "managed.read",
+            "managed.append",
+            "managed.update",
+            "managed.delete",
+            "managed.drop",
+            "managed.time-travel",
+            "external.read-format"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pyIceberg",
+      "title": "PyIceberg",
+      "interfaces": [
+        "pyiceberg"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "pyiceberg",
+      "heading": "PyIceberg",
+      "groups": [
+        {
+          "table": "iceberg-rest",
+          "columns": [
+            "pyiceberg"
+          ],
+          "rows": [
+            "iceberg.schema-create",
+            "iceberg.create",
+            "iceberg.append",
+            "iceberg.read",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.rename",
+            "iceberg.drop",
+            "iceberg.join-delta"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ucCli",
+      "title": "Unity Catalog CLI",
+      "interfaces": [
+        "cli"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "uc-cli",
+      "heading": "uc CLI",
+      "groups": [
+        {
+          "table": "catalog-objects",
+          "columns": [
+            "cli"
+          ],
+          "rows": [
+            "catalog.create",
+            "catalog.list",
+            "catalog.update",
+            "catalog.delete",
+            "schema.create",
+            "schema.list",
+            "schema.update",
+            "schema.delete",
+            "table.register-external",
+            "table.register-format",
+            "table.list",
+            "table.describe",
+            "table.read",
+            "table.write-sample",
+            "table.drop",
+            "volume.create-external",
+            "volume.create-managed",
+            "volume.view",
+            "volume.list-files",
+            "volume.update",
+            "volume.delete"
+          ]
+        },
+        {
+          "table": "storage-and-access",
+          "columns": [
+            "cli"
+          ],
+          "rows": [
+            "credential.create",
+            "credential.update",
+            "location.create",
+            "location.update",
+            "storage.view",
+            "storage.delete",
+            "storage.managed-root",
+            "credentials.vend-path",
+            "credentials.vend-volume",
+            "volume.read-files",
+            "volume.write-files"
+          ]
+        },
+        {
+          "table": "functions",
+          "columns": [
+            "cli"
+          ],
+          "rows": [
+            "function.create",
+            "function.describe",
+            "function.execute",
+            "function.list",
+            "function.delete"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unityCatalogPythonSdk",
+      "title": "Unity Catalog Python SDK",
+      "interfaces": [
+        "python-sdk"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "python-client",
+      "heading": "Python client",
+      "groups": [
+        {
+          "table": "catalog-objects",
+          "columns": [
+            "python-sdk"
+          ],
+          "rows": [
+            "catalog.create",
+            "catalog.list",
+            "catalog.update",
+            "catalog.delete",
+            "schema.create",
+            "schema.list",
+            "schema.update",
+            "schema.delete",
+            "table.register-external",
+            "table.register-format",
+            "table.list",
+            "table.describe",
+            "table.read",
+            "table.write-sample",
+            "table.drop",
+            "volume.create-external",
+            "volume.create-managed",
+            "volume.view",
+            "volume.list-files",
+            "volume.update",
+            "volume.delete"
+          ]
+        },
+        {
+          "table": "storage-and-access",
+          "columns": [
+            "python-sdk"
+          ],
+          "rows": [
+            "credential.create",
+            "credential.update",
+            "location.create",
+            "location.update",
+            "storage.view",
+            "storage.delete",
+            "storage.managed-root",
+            "credentials.vend-path",
+            "credentials.vend-volume",
+            "volume.read-files",
+            "volume.write-files"
+          ]
+        },
+        {
+          "table": "functions",
+          "columns": [
+            "python-sdk"
+          ],
+          "rows": [
+            "function.create",
+            "function.describe",
+            "function.execute",
+            "function.list",
+            "function.delete"
+          ]
+        },
+        {
+          "table": "metric-views",
+          "columns": [
+            "python-sdk"
+          ],
+          "rows": [
+            "metricview.create",
+            "metricview.list",
+            "metricview.describe",
+            "metricview.query",
+            "metricview.replace",
+            "metricview.rename",
+            "metricview.drop"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unityCatalogAI",
+      "title": "unitycatalog-ai",
+      "interfaces": [
+        "unitycatalog-ai"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "unitycatalog-ai",
+      "heading": "unitycatalog-ai",
+      "groups": [
+        {
+          "table": "functions",
+          "columns": [
+            "unitycatalog-ai"
+          ],
+          "rows": [
+            "function.create",
+            "function.describe",
+            "function.execute",
+            "function.list",
+            "function.delete"
+          ]
+        }
+      ]
+    }
+  ],
   "journeys": [
     {
       "id": "table.list",

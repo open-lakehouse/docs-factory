@@ -643,3 +643,118 @@ def test_an_asset_rollup_renders_its_journeys(tmp_path) -> None:
     )
     errors, _ = compat.check(root)
     assert any("acts on lakehouse.volume" in e for e in errors), errors
+
+
+def _engine_pages(root: Path) -> Path:
+    """An engine page for Spark and a hub beside the matrix page."""
+    ref = root / "content/proj/reference"
+    for folder, marker in (("003-spark", "engine:apacheSpark"), ("004-hub", "engines")):
+        (ref / folder).mkdir()
+        (ref / folder / "index.md").write_text(
+            _EMBED.replace("compat:ops", f"compat:{marker}")
+        )
+    return ref
+
+
+def _lines(page: Path) -> list[str]:
+    text = page.read_text()
+    return [line for line in text.splitlines() if line.startswith(("|", "Verified"))]
+
+
+def test_an_engine_report_lists_what_works_and_what_doesnt(tmp_path) -> None:
+    root = _repo(tmp_path, _SPARK_READS)
+    ref = _engine_pages(root)
+    compat.fix(root)
+    assert _lines(ref / "003-spark/index.md") == [
+        "Verified here: 1 of 2 journeys.",
+        "| Journeys | Verified | Works | Doesn't work | Upstream docs only |",
+        "| --- | --- | --- | --- | --- |",
+        "| ops | 1 of 2 | [Read](../../how-to/engine/index.md#read-it) | — | — |",
+    ]
+    # DuckDB has no model element: its interface key is its engine id.
+    assert _lines(ref / "004-hub/index.md") == [
+        "| Engine | Interfaces | Verified journeys |",
+        "| --- | --- | --- |",
+        "| [Spark](../spark/index.md) | Spark | 1 of 2 |",
+        "| DuckDB | DuckDB | 0 of 2 |",
+    ]
+    assert compat.check(root)[0] == []
+
+
+def test_the_artifact_records_each_engines_journeys_and_page(tmp_path) -> None:
+    root = _repo(tmp_path, _SPARK_READS)
+    _engine_pages(root)
+    data = _artifact(root)
+    assert data["engines"] == [
+        {
+            "id": "apacheSpark",
+            "title": "Spark",
+            "interfaces": ["spark"],
+            "page": {"project": "proj", "bucket": "reference", "slug": "spark"},
+            "anchor": None,
+            "heading": None,
+            "groups": [
+                {
+                    "table": "ops",
+                    "columns": ["spark"],
+                    "rows": ["table.read", "table.write"],
+                }
+            ],
+        },
+        {
+            "id": "duckdb",
+            "title": "DuckDB",
+            "interfaces": ["duckdb"],
+            "page": None,
+            "anchor": None,
+            "heading": None,
+            "groups": [
+                {
+                    "table": "ops",
+                    "columns": ["duckdb"],
+                    "rows": ["table.read", "table.write"],
+                }
+            ],
+        },
+    ]
+
+
+def test_an_engine_draft_claim_shows_only_on_a_private_page(tmp_path) -> None:
+    root = _repo(tmp_path, _SPARK_READS, status="draft")
+    ref = _engine_pages(root)
+    compat.fix(root)
+    assert "| ops | 0 of 2 | — | — | — |" in _lines(ref / "003-spark/index.md")
+    page = ref / "003-spark/index.md"
+    page.write_text(page.read_text().replace("status: ready", "status: private"))
+    compat.fix(root)
+    assert (
+        "| ops | 0 of 2 | [Read (draft)](../../how-to/engine/index.md#read-it) | — | — |"
+        in _lines(page)
+    )
+
+
+def test_an_unknown_engine_is_an_error(tmp_path) -> None:
+    root = _repo(tmp_path, _SPARK_READS)
+    page = _engine_pages(root) / "003-spark/index.md"
+    page.write_text(page.read_text().replace("engine:apacheSpark", "engine:flink"))
+    errors, _ = compat.check(root)
+    assert any("no interface" in e and "has model flink" in e for e in errors), errors
+
+
+def test_a_hub_links_reports_on_its_own_page_by_heading(tmp_path) -> None:
+    root = _repo(tmp_path, _SPARK_READS)
+    page = root / "content/proj/reference/002-matrix/index.md"
+    page.write_text(
+        page.read_text().replace(
+            "<!-- compat:ops -->\n<!-- /compat:ops -->",
+            "<!-- compat:ops -->\n<!-- /compat:ops -->\n\n"
+            "<!-- compat:engines -->\n<!-- /compat:engines -->\n\n"
+            "## Apache Spark\n\n"
+            "<!-- compat:engine:apacheSpark -->\n<!-- /compat:engine:apacheSpark -->",
+        )
+    )
+    data = _artifact(root)
+    assert "| [Apache Spark](#apache-spark) | Spark | 1 of 2 |" in _table(root)
+    assert data["engines"][0]["anchor"] == "apache-spark"
+    assert data["engines"][0]["heading"] == "Apache Spark"
+    assert compat.check(root)[0] == []

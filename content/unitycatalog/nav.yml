@@ -206,6 +206,7 @@ nav:
     items:
       - page: reference/features-and-limitations
         id: R01
+      - page: reference/engine-support
       - planned: R02
         title: Resource model, identifiers, types, and table/view kinds
       - planned: R03

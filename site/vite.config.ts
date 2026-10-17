@@ -24,6 +24,7 @@ import { walkContent } from "./src/content-core/walk.mjs";
 import remarkCallouts from "./src/plugins/remark-callouts.mjs";
 import remarkCodeSnippets from "./src/plugins/remark-code-snippets.mjs";
 import remarkDirectiveProseGuard from "./src/plugins/remark-directive-prose-guard.mjs";
+import remarkEngineCoverage from "./src/plugins/remark-engine-coverage.mjs";
 import remarkFenceMeta from "./src/plugins/remark-fence-meta.mjs";
 import remarkJourney from "./src/plugins/remark-journey.mjs";
 import remarkLikeC4Views from "./src/plugins/remark-likec4-views.mjs";
@@ -288,6 +289,7 @@ export default defineConfig({
           remarkResolveImages,
           remarkLikeC4Views,
           remarkTrestleViews,
+          remarkEngineCoverage,
         ],
         rehypePlugins: [
           rehypeSlug,

@@ -99,6 +99,19 @@ export interface CompatDiagnostic {
   journeys?: string[];
 }
 
+/** A model implementation and its interfaces, with the journeys that apply to it. */
+export interface CompatEngine {
+  id: string;
+  title: string;
+  interfaces: string[];
+  /** The page embedding `compat:engine:<id>`, and the heading it sits under. */
+  page: PageRef | null;
+  anchor: string | null;
+  heading: string | null;
+  /** A table narrowed to this engine's interfaces. */
+  groups: { table: string; columns: string[]; rows: string[] }[];
+}
+
 export interface CompatMatrix {
   /** Bumped when a field is removed or changes meaning. */
   version: number;
@@ -108,6 +121,7 @@ export interface CompatMatrix {
   tables: CompatTable[];
   /** The journeys grouped by asset, shaped like tables; `id` is the asset's model id. */
   assets: CompatTable[];
+  engines: CompatEngine[];
   journeys: CompatJourney[];
   verifiedEdges: CompatVerifiedEdge[];
   diagnostics: CompatDiagnostic[];

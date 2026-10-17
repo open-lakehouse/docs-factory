@@ -1,27 +1,17 @@
 spec_version: 1
-name: cross_reviewer
+name: reviewer
 description: >-
-  Review phase, second model: an independent non-Claude read of a draft's
-  sources, audience fit, and argument against QUALITY.md and the plan.
-  Read-only.
+  Review phase: runs blog-review or docs-review (six scored facets) over a
+  draft, or a facet (b) voice-only check on a blog's GEO diff. Read-only.
 
-# A different vendor than the writer is the point: it catches what a
-# same-family reviewer shares blind spots on. The codex harness (not
-# openai-agents) has no fallback that silently routes an unpinned model
-# through Databricks.
 executor:
   type: omnigent
   config:
-    harness: codex
+    harness: claude-sdk
 
 instructions: prompt.md
 
-skills: none
-
-# On codex this passes through to OpenAI's native web search; no provider key.
-tools:
-  builtins:
-    - web_search
+skills: [authoring-prime, blog-review, docs-review, docs-query, humanizer]
 
 os_env:
   type: caller_process
@@ -38,6 +28,7 @@ guardrails:
         path: omnigent.inner.nessie.policies.blast_radius
         arguments:
           gate_pushes: true
+    # Findings are the deliverable; the writer applies them.
     read_only:
       type: function
       on: [tool_call]
@@ -47,5 +38,5 @@ guardrails:
           expression: >-
             event.type == "tool_call"
             && event.data.name in ["sys_os_write", "sys_os_edit", "Write", "Edit", "MultiEdit", "NotebookEdit"]
-            ? {"result": "DENY", "reason": "cross_reviewer is read-only; report the finding instead."}
+            ? {"result": "DENY", "reason": "reviewer is read-only; report the finding instead."}
             : {"result": "ALLOW"}

@@ -4,7 +4,7 @@ description: >-
   Generative Engine Optimization pass over a blog draft: apply QUALITY.md
   facet (f) moves aimed at the post's reader questions and the gaps an
   answer-engine probe found, bounded by the author's voice, and write the
-  geo.md report. Use for the GEO phase of blog_writer.
+  geo.md report. Use for the GEO phase of the author agent (blogs).
 ---
 
 # geo: make the draft the source answer engines cite

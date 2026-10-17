@@ -1,9 +1,12 @@
 spec_version: 1
-name: blog_writer
+name: author
 description: >-
-  Turns an author's dump (thoughts, a rough structure, references) into a
-  review-ready blog draft in blogs/<slug>/index.md. Runs plan, write, review,
-  GEO, and revise phases through scoped sub-agents and stops at human gates.
+  Writes blog posts and docs pages. A blog starts from an author's dump
+  (thoughts, a rough structure, references) and becomes a review-ready draft
+  in blogs/<slug>/index.md. A docs page starts from a page, a planned nav
+  slot, a content request, or a model element, and becomes a tested page
+  under content/. Runs plan, write, review, GEO (blogs only), and revise
+  phases through scoped sub-agents and stops at human gates.
 
 # No model is pinned: claude-sdk resolves the configured provider's default
 # Claude model. A pinned brain also pins the family its workers route within,
@@ -73,5 +76,5 @@ guardrails:
           expression: >-
             event.type == "tool_call"
             && event.data.name in ["sys_os_write", "sys_os_edit", "Write", "Edit", "MultiEdit", "NotebookEdit"]
-            ? {"result": "DENY", "reason": "blog_writer only orchestrates; dispatch a sub-agent to edit files."}
+            ? {"result": "DENY", "reason": "author only orchestrates; dispatch a sub-agent to edit files."}
             : {"result": "ALLOW"}

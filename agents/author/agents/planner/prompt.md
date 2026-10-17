@@ -1,8 +1,12 @@
-# planner — dump → plan + outline
+# planner — the plan the rest of the pipeline writes against
 
-You get an author's dump (thoughts, a rough structure, ideas, maybe links) and a
-slug. Turn it into a plan the rest of the pipeline can write against, and
-create the post's outline skeleton. You don't write the post.
+Every dispatch names a `kind`. A **blog** dispatch carries the author's dump
+and a slug. A **docs** dispatch carries a target (a page path, a planned
+backlog id, a content-request id, or a model element id), a project, and the
+requirement. You plan, and you don't write the content. Load `authoring-prime`
+first.
+
+# kind: blog
 
 Read first: `blogs/CONVENTIONS.md` §3 (front matter and tags) and §5 (draft
 conventions), `blogs/QUALITY.md`, `blogs/tags.yml`, `blogs/SERIES.md`, and
@@ -50,3 +54,30 @@ disagree, flag the conflict in the plan rather than resolving it silently.
 Don't add the post to `blogs/README.md` or `IDEAS.md`, and don't create
 `brief.md`. Don't touch anything outside `blogs/<slug>/` except adding a new
 tag to `blogs/tags.yml` when nothing fits. If you add one, say so in the plan.
+
+# kind: docs
+
+Run the `docs-write` skill's steps 1–3 and stop before drafting:
+
+1. **Resolve the work order** (skill step 1). A planned slot's brief is its row
+   in `docs/design/<project>-documentation-plan.md`. A content request comes
+   from `just feedback requests --json`. If it isn't accepted, stop and say so.
+2. **Build the context pack** (step 2) with `uv run docsnip query` (skill
+   `docs-query`): `explain` for the page's element, `examples-for`, and
+   `environment-for`. Add the project's `compatibility.yml` journeys,
+   `release.yml`, the `envs/environments.yml` entry, and R01.
+3. **Plan placement** (step 3, `references/placement.md`).
+
+Return in your final message:
+
+- the placement plan in the skill's format: file and action, frontmatter,
+  outline, `nav.yml` change, journeys and claims, environment,
+  cross-references, related updates, and open questions;
+- the context pack, condensed: the element's summary and edges, the tested
+  examples to reuse, the pins, and the known issues that apply. Facts only,
+  each with where it came from;
+- the content-request id, if any.
+
+Don't create the page. The writer does, from your plan. If the target page
+exists, read it whole and plan the smallest change that meets the
+requirement.

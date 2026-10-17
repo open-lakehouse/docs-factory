@@ -2,18 +2,10 @@
 // what crawlers and no-JS readers get; once hydrated, the component fetches the
 // snapshot served beside it and swaps in the interactive canvas. React Flow and
 // ELK (~2 MB) load only on pages that have a diagram.
-import { type ComponentType, lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useDarkMode } from "../lib/theme";
 
-type DiagramProps = { snapshot: unknown; colorMode: "light" | "dark"; label?: string };
-
-const EnvironmentDiagram = lazy(async () => {
-  const [m] = await Promise.all([
-    import("@open-lakehouse/trestle-diagram"),
-    import("@open-lakehouse/trestle-diagram/styles.css"),
-  ]);
-  return { default: m.EnvironmentDiagram as ComponentType<DiagramProps> };
-});
+const TrestleCanvas = lazy(() => import("./TrestleCanvas"));
 
 export function TrestleDiagram({
   image,
@@ -43,7 +35,7 @@ export function TrestleDiagram({
     <figure className="trestle-frame" aria-label={alt || undefined}>
       {data ? (
         <Suspense fallback={picture}>
-          <EnvironmentDiagram
+          <TrestleCanvas
             snapshot={data}
             label={alt || undefined}
             colorMode={dark ? "dark" : "light"}

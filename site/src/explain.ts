@@ -171,18 +171,5 @@ export function getExplainElement(id: string): ElementModel | null {
   return el && EXPLAIN_KINDS.has(el.kind) ? el : null;
 }
 
-/** Human label for a kind badge. */
-export function kindLabel(kind: string): string {
-  switch (kind) {
-    case "capability":
-      return "Capability";
-    case "concern":
-      return "Concern";
-    case "openSpecification":
-      return "Specification";
-    case "implementation":
-      return "Implementation";
-    default:
-      return kind;
-  }
-}
+/** Human label for a kind badge (shared with the emitted sites' diagram cards). */
+export { kindLabel } from "./content-core/trestle-refs.mjs";

@@ -10,19 +10,22 @@ import {
   publicProjection,
 } from "../../site/src/content-core/projection.mjs";
 import { loadRegistry } from "../../site/src/content-core/registry.mjs";
+import { buildTrestleRefs } from "../../site/src/content-core/trestle-refs.mjs";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 export const MODEL_JSON = join(REPO_ROOT, "architecture", "dist", "model.json");
+export const TRESTLE_CONTEXT_JSON = join(REPO_ROOT, "architecture", "dist", "trestle-context.json");
 
 const text = (v) => (typeof v === "string" ? v : (v?.txt ?? "")).replace(/\s+/g, " ").trim();
 
-/** `{ elements: Map<id, {title, summary, link, public}>, views: Map<id, {title, description}> }`.
+/** `{ elements: Map<id, {title, kind, summary, link, public}>, views: Map<id, {title, description}> }`.
  *  `summary` is the element's `summary`, else the first sentence of its description. */
 export function readModel(data) {
   const elements = new Map();
   for (const [id, el] of Object.entries(data.elements ?? {})) {
     elements.set(id, {
       title: el.title ?? id,
+      kind: el.kind ?? null,
       summary: elementSummary(el),
       link: el.links?.[0]?.url ?? null,
       public: Boolean(el.tags?.includes(PUBLIC_TAG)),
@@ -86,4 +89,18 @@ export function viewAltText(model, viewId) {
   const view = model.views.get(viewId);
   if (!view) return null;
   return view.description ? `${view.title}: ${view.description}` : view.title;
+}
+
+/**
+ * The site's refs.json for Trestle diagrams: what each node's name and role
+ * line link to, through the same resolver as `model:` links, so a card links
+ * only to what this emit publishes. Self-links are the browser's to drop: one
+ * file serves every page.
+ */
+export function trestleRefs(model, resolveModelLink, contextPath = TRESTLE_CONTEXT_JSON) {
+  return buildTrestleRefs({
+    context: readModelJson(contextPath),
+    element: (id) => model.elements.get(id) ?? null,
+    href: (id) => resolveModelLink(id)?.url ?? null,
+  });
 }

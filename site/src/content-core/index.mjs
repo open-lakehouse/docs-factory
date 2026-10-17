@@ -19,3 +19,4 @@ export * from "./identity.mjs";
 export * from "./nav.mjs";
 export * from "./normalize.mjs";
 export * from "./slug.mjs";
+export * from "./trestle-refs.mjs";

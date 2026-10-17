@@ -1,11 +1,8 @@
-import "@open-lakehouse/trestle-diagram/styles.css";
 import { useTheme } from "next-themes";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 // React Flow + ELK are ~2 MB; only pages with a diagram pay for them.
-const EnvironmentDiagram = lazy(() =>
-  import("@open-lakehouse/trestle-diagram").then((m) => ({ default: m.EnvironmentDiagram })),
-);
+const TrestleCanvas = lazy(() => import("./TrestleCanvas"));
 
 /**
  * Markdown-facing Trestle renderer. `remark-trestle-views` turns
@@ -41,7 +38,7 @@ export function TrestleDiagram({
     <figure className="trestle-frame" aria-label={alt || undefined}>
       {data && !failed ? (
         <Suspense fallback={fallback}>
-          <EnvironmentDiagram
+          <TrestleCanvas
             snapshot={data}
             label={alt || undefined}
             colorMode={resolvedTheme === "dark" ? "dark" : "light"}

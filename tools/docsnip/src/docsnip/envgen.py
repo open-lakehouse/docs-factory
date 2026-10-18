@@ -277,7 +277,7 @@ def services(plan: dict) -> list[dict[str, object]]:
 
 def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
     """The registry facts a plan settles: host ports, the host client env, the
-    services a reader runs, and the bundle's runtime files."""
+    services a reader runs, the bundle's runtime files, and the deployment steps."""
     ports = sorted(
         {
             int(listener["host_port"])
@@ -290,6 +290,7 @@ def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
         "client-env": dict(sorted((plan["client"].get("host") or {}).items())),
         "services": services(plan),
         "files": files or [],
+        "deploy": plan.get("deploy") or [],
     }
 
 

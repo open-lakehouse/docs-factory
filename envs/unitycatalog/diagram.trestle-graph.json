@@ -90,5 +90,27 @@
         "gated": false
       }
     ]
-  }
+  },
+  "files": [
+    "compose.yaml",
+    ".env",
+    ".gitignore",
+    "client/host.env",
+    "client/container.env",
+    "LAYOUT.md",
+    "README.md",
+    "modules/envoy/envoy.yaml",
+    "modules/envoy/compose.yaml",
+    "modules/unity-catalog/compose.yaml",
+    "modules/unity-catalog/secrets/server.properties"
+  ],
+  "deploy": [
+    {
+      "order": 1,
+      "phase": "start",
+      "id": "up",
+      "title": "Start the stack",
+      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nThe gateway then serves the stack at <http://localhost:8080>. [LAYOUT.md](LAYOUT.md) lists every route and address."
+    }
+  ]
 }

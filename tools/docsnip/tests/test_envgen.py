@@ -182,6 +182,7 @@ def test_fix_projects_nodes_edges_and_facts(tmp_path):
             },
         ],
         "files": [],
+        "deploy": [],
     }
     assert envgen.check(root) == []
     assert envgen.fix(root) == []  # idempotent
@@ -233,7 +234,7 @@ def test_a_generated_entry_cant_author_derived_facts(tmp_path):
     )
     root = _fixed(tmp_path, registry=registry)
     with pytest.raises(
-        ValueError, match="takes ports, client-env, services, and files"
+        ValueError, match="takes ports, client-env, services, files, and deploy"
     ):
         environments.load(root)
 

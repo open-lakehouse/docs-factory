@@ -1,0 +1,8 @@
+.data/
+.env
+secrets.env
+modules/*/.env/
+modules/*/secrets/
+# Rendered with hosted-resource secrets:
+modules/unity-catalog/compose.yaml
+modules/unity-catalog/bootstrap_storage.py

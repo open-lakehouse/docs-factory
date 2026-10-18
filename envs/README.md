@@ -10,10 +10,17 @@ files (`compose.yaml`, `modules/`, `client/`, `deploy/`, `LAYOUT.md`,
 | --- | --- | --- |
 | [`unitycatalog`](unitycatalog/env.toml) | UC behind an Envoy gateway on `:8080`, authorization off, metadata in the server's own H2 file (with the image's sample catalogs) | every page under `content/unitycatalog/` except the S3 and PostgreSQL ones |
 | [`uc-aws`](uc-aws/env.toml) | the same gateway, RustFS as S3 on `:9000`, metadata in PostgreSQL | the S3 and PostgreSQL pages |
+| [`uc-local`](uc-local/env.toml) | UC, PostgreSQL, and RustFS on one machine with no gateway: UC on `:8080`, S3 on `:9000` | the deployment patterns page |
+| [`uc-hybrid`](uc-hybrid/env.toml) | UC on `:8080` with no gateway, metadata in a Neon project, data in an S3-compatible bucket | the deployment patterns page; rendered and diagrammed, never run |
 
-Readers download both as described in
+`uc-hybrid` needs accounts, so `just env-render` renders it against the stand-in
+connection in [`uc-hybrid/placeholders.sh`](uc-hybrid/placeholders.sh), and its
+bundle ships `env.toml` and leaves out the files Trestle marks sensitive: a
+reader follows its `README.md`, then re-renders with their own secrets.
+
+Readers download the first two as described in
 [Run a local Unity Catalog server](../content/unitycatalog/how-to/011-run-local-server/index.md).
-Both mount `UC_DOCS_ROOT` (default `/tmp/uc-docs`) at the same path in the
+Those two mount `UC_DOCS_ROOT` (default `/tmp/uc-docs`) at the same path in the
 container, and both use the compose project `uc-docs` and the container name
 `unitycatalog`, so `docker exec unitycatalog bin/uc …` works from any folder and
 the two replace each other instead of running side by side.

@@ -1,0 +1,380 @@
+{
+  "format": "trestle-plan",
+  "version": 1,
+  "state": "planned",
+  "generator": {
+    "name": "trestle",
+    "version": "0.0.12",
+    "revision": "9d2478639b78bbc6208aac73db5c3170525fbe99"
+  },
+  "catalog": {
+    "baseline": "olai-stack-topology@0.0.8",
+    "manifests": [],
+    "digest": "sha256:0e9dec34fead2080124abc151621290e1ec9eb0b344317d7910670e9a01dcb3e"
+  },
+  "recipe": {
+    "digest": "sha256:930333853a1e7d94b1016f3c576fb2f38a76d4acce438cae56da4c2dbc57ea54"
+  },
+  "context": {
+    "env_name": "uc-hybrid",
+    "target": "compose",
+    "gateway_service": "envoy",
+    "gateway_internal_port": 10000,
+    "gateway_host_port": 9080,
+    "gateway_admin_port": 9901,
+    "dedicated_listener_ports": [],
+    "dedicated_listener_port_base": 9100,
+    "provider_preference": {},
+    "data_root": "./.data"
+  },
+  "graph": {
+    "nodes": [
+      {
+        "id": "@clients",
+        "model": null,
+        "kind": "clients",
+        "display_name": "Clients",
+        "summary": "Browsers, SDKs and CLIs on the host.",
+        "category": null,
+        "role": null,
+        "placement": null,
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      },
+      {
+        "id": "aws-s3",
+        "model": "amazonS3",
+        "kind": "external",
+        "display_name": "Amazon S3",
+        "summary": "Amazon S3 or an S3-compatible store; README.md sets up the buckets.",
+        "category": "storage",
+        "role": "object_store",
+        "placement": "external:https://your-account.r2.cloudflarestorage.com",
+        "cloud": "",
+        "surfaces": [],
+        "offers": [
+          "S3"
+        ],
+        "provisions": [
+          {
+            "resource": "object_store",
+            "name": "unity",
+            "consumers": [
+              "unity-catalog"
+            ]
+          }
+        ],
+        "resource_nouns": [
+          {
+            "kind": "object_store",
+            "singular": "bucket",
+            "plural": "buckets"
+          }
+        ]
+      },
+      {
+        "id": "hosted-postgres",
+        "model": "postgresql",
+        "kind": "external",
+        "display_name": "Hosted Postgres",
+        "summary": "A managed PostgreSQL server (Neon, RDS, Azure, …); README.md sets it up.",
+        "category": "metadata_db",
+        "role": "relational_db",
+        "placement": "external:tcp://ep-your-project.us-east-2.aws.neon.tech:5432",
+        "cloud": "neon",
+        "surfaces": [],
+        "offers": [
+          "PostgreSQL"
+        ],
+        "provisions": [
+          {
+            "resource": "relational_db",
+            "name": "unitycatalog",
+            "consumers": [
+              "unity-catalog"
+            ]
+          }
+        ],
+        "resource_nouns": [
+          {
+            "kind": "relational_db",
+            "singular": "database",
+            "plural": "databases"
+          }
+        ]
+      },
+      {
+        "id": "unity-catalog",
+        "model": "unityCatalogOSS",
+        "kind": "component",
+        "display_name": "Unity Catalog",
+        "summary": "Open-source Unity Catalog server; Databricks-shaped REST API.",
+        "category": "catalog",
+        "role": "data_catalog",
+        "placement": "container:unitycatalog",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      }
+    ],
+    "edges": [
+      {
+        "kind": "access",
+        "key": "access:@clients→unity-catalog:8080",
+        "from": "@clients",
+        "to": "unity-catalog",
+        "host_port": 8080
+      },
+      {
+        "kind": "uses",
+        "key": "uses:unity-catalog→hosted-postgres:relational_db",
+        "from": "unity-catalog",
+        "to": "hosted-postgres",
+        "role": "relational_db",
+        "protocol": "PostgreSQL",
+        "resources": [
+          "unitycatalog"
+        ]
+      },
+      {
+        "kind": "uses",
+        "key": "uses:unity-catalog→aws-s3:object_store",
+        "from": "unity-catalog",
+        "to": "aws-s3",
+        "role": "object_store",
+        "protocol": "S3",
+        "resources": [
+          "unity"
+        ]
+      }
+    ]
+  },
+  "containers": [
+    {
+      "name": "unitycatalog",
+      "component": "unity-catalog",
+      "kind": "service"
+    },
+    {
+      "name": "unitycatalog-storage",
+      "component": "unity-catalog",
+      "kind": "sidecar"
+    },
+    {
+      "name": "unitycatalog-mounts",
+      "component": "unity-catalog",
+      "kind": "init"
+    }
+  ],
+  "services": {
+    "aws-s3": [
+      {
+        "name": "s3",
+        "role": "object_store",
+        "placement": {
+          "kind": "external",
+          "origin": "https://your-account.r2.cloudflarestorage.com"
+        },
+        "endpoints": [
+          {
+            "id": "s3",
+            "scheme": "https",
+            "internal_port": 443,
+            "intent": {
+              "kind": "internal"
+            },
+            "rewrite": "inherit"
+          }
+        ],
+        "depends_on": []
+      }
+    ],
+    "hosted-postgres": [
+      {
+        "name": "db",
+        "role": "relational_db",
+        "placement": {
+          "kind": "external",
+          "origin": "tcp://ep-your-project.us-east-2.aws.neon.tech:5432"
+        },
+        "endpoints": [
+          {
+            "id": "sql",
+            "scheme": "tcp",
+            "internal_port": 5432,
+            "intent": {
+              "kind": "internal"
+            },
+            "rewrite": "inherit"
+          }
+        ],
+        "depends_on": []
+      }
+    ],
+    "unity-catalog": [
+      {
+        "name": "unitycatalog",
+        "role": "data_catalog",
+        "placement": {
+          "kind": "container",
+          "service": "unitycatalog"
+        },
+        "endpoints": [
+          {
+            "id": "rest",
+            "scheme": "http",
+            "internal_port": 8080,
+            "host_port": 8080,
+            "intent": {
+              "kind": "api"
+            },
+            "path": "/api/2.1/unity-catalog",
+            "mount_prefix": "/api/2.1/unity-catalog",
+            "rewrite": "inherit"
+          },
+          {
+            "id": "rest_alias",
+            "scheme": "http",
+            "internal_port": 8080,
+            "host_port": 8080,
+            "intent": {
+              "kind": "api"
+            },
+            "path": "/unity-catalog",
+            "mount_prefix": "/unity-catalog",
+            "rewrite": "inherit"
+          }
+        ],
+        "depends_on": []
+      }
+    ]
+  },
+  "gateway": {
+    "listeners": [],
+    "clusters": [],
+    "admin_port": 9901,
+    "auth": null,
+    "tls": null,
+    "policy": null
+  },
+  "client": {
+    "host": {
+      "AWS_REGION": "us-east-1",
+      "UNITY_CATALOG_URL": "http://localhost:8080/api/2.1/unity-catalog"
+    },
+    "container": {
+      "AWS_REGION": "us-east-1",
+      "UNITY_CATALOG_URL": "http://unitycatalog:8080/api/2.1/unity-catalog"
+    }
+  },
+  "files": [
+    {
+      "path": "compose.yaml",
+      "sensitive": false
+    },
+    {
+      "path": ".env",
+      "sensitive": true
+    },
+    {
+      "path": ".gitignore",
+      "sensitive": false
+    },
+    {
+      "path": "client/host.env",
+      "sensitive": false
+    },
+    {
+      "path": "client/container.env",
+      "sensitive": false
+    },
+    {
+      "path": "LAYOUT.md",
+      "sensitive": false
+    },
+    {
+      "path": "README.md",
+      "sensitive": false
+    },
+    {
+      "path": "modules/unity-catalog/compose.yaml",
+      "sensitive": true
+    },
+    {
+      "path": "modules/unity-catalog/secrets/server.properties",
+      "sensitive": true
+    },
+    {
+      "path": "modules/unity-catalog/secrets/hibernate.properties",
+      "sensitive": true
+    },
+    {
+      "path": "modules/unity-catalog/storage.txt",
+      "sensitive": false
+    },
+    {
+      "path": "modules/unity-catalog/bootstrap_storage.py",
+      "sensitive": true
+    },
+    {
+      "path": "deploy/aws-s3-buckets.sh",
+      "sensitive": false
+    },
+    {
+      "path": "deploy/hosted-postgres-server.sh",
+      "sensitive": false
+    },
+    {
+      "path": "deploy/hosted-postgres-databases.sh",
+      "sensitive": false
+    }
+  ],
+  "deploy": [
+    {
+      "order": 1,
+      "phase": "provision",
+      "module": "aws-s3",
+      "id": "buckets",
+      "title": "Create the buckets",
+      "instructions": "Create the buckets the stack uses: `unity`, through the S3-compatible API at `${AWS_ENDPOINT_URL}`.\nThe script needs the AWS CLI, signed in with credentials that may create buckets (a profile,\nSSO, or keys). Set `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to a\nkey that may read and write them.",
+      "script": "deploy/aws-s3-buckets.sh"
+    },
+    {
+      "order": 2,
+      "phase": "provision",
+      "module": "hosted-postgres",
+      "id": "server",
+      "title": "Create the Neon project",
+      "instructions": "Create a Neon project for the stack's databases. The script needs\n[`neonctl`](https://neon.tech/docs/reference/neon-cli), signed in (`neonctl auth`, or\n`NEON_API_KEY` set), and `jq`. It creates the project `trestle-uc-hybrid` unless it exists\n(in `NEON_REGION`, default `aws-us-east-2`), then saves its id as `NEON_PROJECT_ID` and its connection details as `PGHOST`, `PGUSER`, `PGPASSWORD` in `secrets.env`.",
+      "script": "deploy/hosted-postgres-server.sh"
+    },
+    {
+      "order": 3,
+      "phase": "provision",
+      "module": "hosted-postgres",
+      "id": "databases",
+      "title": "Create the databases",
+      "instructions": "Create the databases the stack uses: `unitycatalog`. The script adds each one missing to the Neon project\n`NEON_PROJECT_ID` with `neonctl`.",
+      "script": "deploy/hosted-postgres-databases.sh"
+    },
+    {
+      "order": 4,
+      "phase": "configure",
+      "id": "secrets",
+      "title": "Supply the hosted resources' secrets",
+      "instructions": "The hosted resources read `AWS_ACCESS_KEY_ID`, `AWS_ENDPOINT_URL`, `AWS_SECRET_ACCESS_KEY`, `PGHOST`, `PGPASSWORD`, `PGUSER`. Set them in `secrets.env` beside `env.toml` (git-ignored; the scripts above save what they create there) or export them, then render again so the stack picks them up:\n\n```bash\ntrestle env render .\n```"
+    },
+    {
+      "order": 5,
+      "phase": "start",
+      "id": "up",
+      "title": "Start the stack",
+      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nEach service is then published on its own host port. [LAYOUT.md](LAYOUT.md) lists every route and address."
+    }
+  ]
+}

@@ -119,7 +119,8 @@ async function render(page, html, snapshot) {
   await page.evaluate((s) => window.renderDiagram(s), snapshot);
   const nodes = snapshot.graph.nodes.length;
   await page.waitForFunction(
-    (n) => document.querySelectorAll(".react-flow__node").length === n,
+    // A hosted node's cloud frame is a React Flow node of its own.
+    (n) => document.querySelectorAll(".react-flow__node:not(.react-flow__node-cloud)").length === n,
     nodes,
     { timeout: 30_000 },
   );

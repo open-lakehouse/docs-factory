@@ -24,3 +24,11 @@ environments:
     title: Unity Catalog 0.7.0 with simulated S3 and PostgreSQL
     guide: how-to/run-local-server#start-the-server-with-simulated-s3
     generated: uc-aws
+
+  uc-local/compose.yaml:
+    title: Unity Catalog 0.7.0 with PostgreSQL and RustFS on one machine
+    generated: uc-local
+
+  uc-hybrid/compose.yaml:
+    title: Unity Catalog 0.7.0 with hosted PostgreSQL and S3-compatible storage
+    generated: uc-hybrid

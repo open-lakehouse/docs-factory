@@ -332,7 +332,13 @@ env-render name='': trestle-install
     set -euo pipefail
     if [ -n "{{ name }}" ]; then dirs=("envs/{{ name }}"); else dirs=(envs/*/env.toml); dirs=("${dirs[@]%/env.toml}"); fi
     for dir in "${dirs[@]}"; do
-        .tools/trestle/bin/trestle env render "$dir" >/dev/null
+        # A hosted environment renders against the stand-ins its placeholders.sh
+        # commits; readers re-render with their own.
+        if [ -f "$dir/placeholders.sh" ]; then
+            (set -a && . "$dir/placeholders.sh" && set +a && .tools/trestle/bin/trestle env render "$dir" >/dev/null)
+        else
+            .tools/trestle/bin/trestle env render "$dir" >/dev/null
+        fi
     done
     uv run docsnip envs --fix
     just trestle-diagrams "${dirs[@]}"

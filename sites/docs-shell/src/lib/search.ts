@@ -1,5 +1,7 @@
 // Full-text search over the emitter's public/search-index.json: one record
-// per page section, fetched and indexed the first time it's needed.
+// per page section, fetched and indexed the first time it's needed. The page
+// record also carries the page's model context (emit/docs/search.mjs
+// searchContext), weighted below its own prose except for what it explains.
 import MiniSearch from "minisearch";
 
 export interface SearchRecord {
@@ -11,6 +13,11 @@ export interface SearchRecord {
   heading: string | null;
   section: string[];
   text: string;
+  /** Page record only: frontmatter summary, the title of the concept the page
+   *  explains, and the concepts and journeys it references or proves. */
+  summary?: string | null;
+  explains?: string | null;
+  concepts?: string;
 }
 
 export interface SearchHit extends SearchRecord {
@@ -37,11 +44,11 @@ export function loadIndex(): Promise<Index> {
     })
     .then(({ records }) => {
       const search = new MiniSearch<SearchRecord>({
-        fields: ["page", "heading", "text"],
+        fields: ["page", "heading", "text", "summary", "explains", "concepts"],
         extractField: (doc, field) =>
           (doc as unknown as Record<string, string | null>)[field] ?? "",
         searchOptions: {
-          boost: { page: 3, heading: 2 },
+          boost: { page: 3, explains: 3, heading: 2, summary: 1.5, concepts: 0.5 },
           prefix: true,
           fuzzy: 0.2,
           combineWith: "AND",

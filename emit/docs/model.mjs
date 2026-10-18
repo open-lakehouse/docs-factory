@@ -47,6 +47,12 @@ export function loadModel(path = MODEL_JSON) {
   return readModel(readModelJson(path));
 }
 
+/** The project's committed compatibility.json, or null when it has none. */
+export function loadCompat(site, { repoRoot = REPO_ROOT } = {}) {
+  const path = join(repoRoot, "content", site.project, "compatibility.json");
+  return existsSync(path) ? JSON.parse(readFileSync(path, "utf8")) : null;
+}
+
 /**
  * The site's public projection (content-core projection.mjs) over the committed
  * model, the environment registry, and the project's compatibility.json.
@@ -54,14 +60,13 @@ export function loadModel(path = MODEL_JSON) {
  */
 export function loadProjection(site, pages, { repoRoot = REPO_ROOT } = {}) {
   const modelPath = join(repoRoot, "architecture", "dist", "model.json");
-  const compatPath = join(repoRoot, "content", site.project, "compatibility.json");
   return publicProjection({
     model: readModelJson(modelPath),
     pages,
     hrefFor: site.hrefFor,
     origin: site.origin,
     registry: loadRegistry(repoRoot),
-    compat: existsSync(compatPath) ? JSON.parse(readFileSync(compatPath, "utf8")) : null,
+    compat: loadCompat(site, { repoRoot }),
   });
 }
 

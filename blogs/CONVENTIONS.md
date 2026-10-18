@@ -560,38 +560,3 @@ findings. Human approval in the review app is what clears a post for
   visible bio/credentials and the machine-readable `Person`/`sameAs` markup (the
   rest of the E-E-A-T signal) are supplied by the publishing target at release, not
   duplicated per post — see the QUALITY.md publish-target section.
-
-## 11. Agent-driven drafting (Omnigent `author`)
-
-[`agents/author/`](../agents/author/) is an Omnigent multi-agent
-workflow that runs the same process from a different starting point: the
-author dumps thoughts, a rough structure, and references into the prompt, and
-the agent turns them into a review-ready draft. Run it with
-`omni run ./agents/author/`. The same agent also writes docs pages, and its
-README covers the phases and gates for both.
-
-How it differs from the skill-driven lifecycle (§1):
-
-- **One evolving document.** The planner writes the outline skeleton straight
-  into `index.md` at `status: draft`, and the writer grows it in place. The
-  plan (thesis, audience, stance, reader questions, sources) travels in the
-  session and opens the PR description as a `## Plan` section, and stands in
-  for `brief.md` wherever this doc or `QUALITY.md` names the brief. A later
-  review or revise session reads it back from that PR. `IDEAS.md` and `brief.md` remain
-  available but are optional under the agent.
-- **Reader questions.** The plan names 3–6 questions readers would ask a search
-  box or an AI assistant. The GEO phase optimizes the draft's answer passages
-  against them.
-- **Cross-model review.** §9's review runs as `blog-review` on Claude, plus an
-  independent pass over facets (a), (c), and (d) on a second vendor. The
-  orchestrator merges the two and marks where they agree.
-- **GEO phase.** After review, an answer-engine probe records how the reader
-  questions are answered and cited today. The GEO pass then applies facet (f)
-  moves to `index.md`, still bounded by (b), and writes
-  `blogs/<slug>/geo.md`: the question-to-passage map, moves applied and
-  skipped, gaps the post doesn't fill, and publish-target proposals (meta
-  description, FAQ/HowTo candidates). Only `index.md` is published, and
-  `geo.md` stays beside it like `brief.md`.
-
-Release is unchanged: approval in the review app, then `status: ready` in a PR
-(ADR-0002).

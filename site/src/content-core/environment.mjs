@@ -1,7 +1,10 @@
 // Page → environment: which `envs/environments.yml` stack a page's scripts run
 // against, and the commands that download and start it. Pure (the caller loads
-// the registry), so the docs emitter, the twins, and the bundle README derive
-// the same commands from one place.
+// the registry), so the docs emitter, the twins, and the env index derive the
+// same commands from one place.
+//
+// Each environment downloads on its own, as `<archiveBase>/<dir>.tar.gz`, which
+// extracts to `<bundle>/<dir>/`: several downloads share one `<bundle>` folder.
 
 /** `<dir>/compose.<variant>.yaml` → its folder and the `-f` flag to pass (none for `compose.yaml`). */
 export function composeParts(key) {
@@ -16,15 +19,20 @@ export function exportLines(clientEnv = {}) {
   return Object.entries(clientEnv).map(([k, v]) => `export ${k}=${v}`);
 }
 
+/** The absolute URL of the archive that holds `key`'s folder. */
+export function archiveUrl(key, archiveBase) {
+  return `${archiveBase}/${composeParts(key).dir}.tar.gz`;
+}
+
 /**
- * The reader's commands for one registry entry: download the bundle, start
- * the stack from its folder, export its client env. `bundle` is the
- * archive's root folder, `bundleUrl` its absolute URL.
+ * The reader's commands for one registry entry: download its archive, start
+ * the stack from its folder, export its client env. `bundle` is the folder the
+ * archive extracts into, `archiveBase` the absolute URL the archives sit under.
  */
-export function startCommands(key, env, { bundle, bundleUrl }) {
+export function startCommands(key, env, { bundle, archiveBase }) {
   const { dir, flag } = composeParts(key);
   return [
-    `curl -fsSL ${bundleUrl} | tar -xz`,
+    `curl -fsSL ${archiveUrl(key, archiveBase)} | tar -xz`,
     `cd ${bundle}/${dir} && docker compose ${flag}up -d --wait`,
     ...exportLines(env.clientEnv),
   ];
@@ -49,7 +57,7 @@ export function declaredEnvironment(body) {
  * `declared` (declaredEnvironment) is for a page with no scripts of its own
  * that still walks the reader through a stack; scripts must agree with it.
  */
-export function pageEnvironment(scripts, { registry, bundle, bundleUrl, declared = null }) {
+export function pageEnvironment(scripts, { registry, bundle, archiveBase, declared = null }) {
   const keys = [
     ...new Set([declared, ...scripts.map((s) => s.environment)].filter(Boolean)),
   ].sort();
@@ -58,14 +66,14 @@ export function pageEnvironment(scripts, { registry, bundle, bundleUrl, declared
     throw new Error(`scripts need more than one environment (${keys.join(", ")})`);
   }
   const [key] = keys;
-  return registryEnvironment(key, { registry, bundle, bundleUrl });
+  return registryEnvironment(key, { registry, bundle, archiveBase });
 }
 
 /**
  * One registry entry with its reader commands, independent of any page: what
  * a keyed `:::environment{key="…"}` marker renders. Throws on an unknown key.
  */
-export function registryEnvironment(key, { registry, bundle, bundleUrl }) {
+export function registryEnvironment(key, { registry, bundle, archiveBase }) {
   const env = registry[key];
   if (!env) throw new Error(`environment ${key} is not in envs/environments.yml`);
   return {
@@ -75,12 +83,49 @@ export function registryEnvironment(key, { registry, bundle, bundleUrl }) {
     clientEnv: env.clientEnv ?? {},
     guide: env.guide ?? null,
     services: env.services ?? [],
-    bundleUrl,
-    commands: startCommands(key, env, { bundle, bundleUrl }),
+    deploy: env.deploy ?? [],
+    deploySetup: env.deploySetup ?? null,
+    bundleUrl: archiveUrl(key, archiveBase),
+    commands: startCommands(key, env, { bundle, archiveBase }),
     stop: stopCommand(key),
     dir: `${bundle}/${composeParts(key).dir}`,
     runUrl: null,
   };
+}
+
+/**
+ * A registryEnvironment's deployment as `[{ title, markdown }]`: download its
+ * archive and open bash in its folder, load the helpers the steps' commands
+ * use (when any step has some), then Trestle's steps in order, each with the
+ * commands its script runs, the start step closing with the client env's
+ * exports. The commands are bash (`${!var}`), and run from that folder.
+ */
+export function deploymentSteps(env) {
+  const fence = (text) => ["```bash", text.replace(/\n+$/, ""), "```"].join("\n");
+  const [download] = env.commands;
+  const steps = [
+    {
+      title: "Download the environment",
+      markdown: `${fence(`${download}\ncd ${env.dir}\nbash`)}\n\nEvery later step runs in this bash shell, from this folder.`,
+    },
+  ];
+  if (env.deploySetup) {
+    steps.push({
+      title: "Load the deployment helpers",
+      markdown: `The steps below read the secrets they need from \`secrets.env\` and save the ones they create there:\n\n${fence(env.deploySetup)}`,
+    });
+  }
+  for (const step of env.deploy) {
+    // A step without `commands` (a plan from before they existed) still names its script.
+    const run = step.commands ?? (step.script && `bash ${step.script}`);
+    let markdown = run ? `${step.instructions}\n\n${fence(run)}` : step.instructions;
+    const exports = exportLines(env.clientEnv);
+    if (step.phase === "start" && exports.length) {
+      markdown += `\n\nThen point your clients at it:\n\n${fence(exports.join("\n"))}`;
+    }
+    steps.push({ title: step.title, markdown });
+  }
+  return steps;
 }
 
 /** "8080" / "8080 and 9000" / "8080, 9000, and 5432". */

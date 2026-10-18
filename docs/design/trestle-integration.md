@@ -311,7 +311,7 @@ knobs that make that work, all Trestle UC/RustFS/Postgres knobs:
 
 | Need | Knob |
 |---|---|
-| The docs image (`gcompat`, `run-as-owner`, `bin/uc`; see `envs/unitycatalog/README.md`) | `image` + `build = "image"` |
+| The docs image (`gcompat`, `run-as-owner`, `bin/uc`; see `envs/README.md`) | `image` + `build = "image"` |
 | A stable container name | `container_name` |
 | `UC_DOCS_ROOT` at the same path in the container, writable on Linux | `extra_mounts`, `writable_mounts` |
 | H2 instead of a relational and object store | `embedded_metadata` |
@@ -344,7 +344,7 @@ and hands the registry's `client-env` to the script, so the variables a reader
 exports are the ones the test uses. A hand-written stack falls back to the
 service-port lookup.
 
-**The reader bundle.** `/env/uc-docs-env.tar.gz` ships exactly each generated
+**The reader archives.** `/env/<name>.tar.gz` ships exactly the generated
 environment's `files` manifest and fails on an untracked entry, so readers get
 what CI runs.
 

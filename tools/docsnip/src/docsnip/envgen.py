@@ -231,9 +231,13 @@ def build_contexts(root: Path, name: str) -> list[str]:
 
 def runtime_files(root: Path, name: str, plan: dict) -> list[str]:
     """What a reader needs to start the environment, relative to ``envs/<name>/``:
-    the files the plan says it rendered, and every build context's files."""
+    the files the plan says it rendered, and every build context's files. A
+    sensitive file is git-ignored, so it never ships. An environment with hosted
+    resources also ships its recipe, since its README has the reader re-render
+    once they've created them."""
     where = ENVS / name
-    files = {str(f["path"]) for f in plan.get("files") or []}
+    files = {str(f["path"]) for f in plan.get("files") or [] if not f.get("sensitive")}
+    hosted = any(n.get("kind") == "external" for n in plan["graph"]["nodes"])
     for context in build_contexts(root, name):
         folder = root / where / context
         if not folder.is_dir():
@@ -243,12 +247,13 @@ def runtime_files(root: Path, name: str, plan: dict) -> list[str]:
             for p in folder.rglob("*")
             if p.is_file()
         }
-    return sorted(files - {RECIPE, PLAN})
+    return sorted((files - {RECIPE, PLAN}) | ({RECIPE} if hosted else set()))
 
 
 def services(plan: dict) -> list[dict[str, object]]:
-    """Each graph node a reader runs, with its model element and, when the
-    gateway routes to it, the host URL of its first route."""
+    """Each graph node a reader runs, with its model element and its host URL:
+    the gateway's first route to it, else, for a service clients reach directly,
+    its first endpoint on that port."""
     module_of = {
         str(svc["name"]): module
         for module, instances in (plan.get("services") or {}).items()
@@ -263,6 +268,22 @@ def services(plan: dict) -> list[dict[str, object]]:
             if module and module not in urls:
                 prefix = str(route.get("prefix") or "").rstrip("/")
                 urls[module] = f"http://localhost:{listener['host_port']}{prefix}"
+    gateways = {n["id"] for n in plan["graph"]["nodes"] if n.get("role") == "gateway"}
+    for edge in plan["graph"]["edges"]:
+        module = edge.get("to")
+        if edge.get("kind") != "access" or module in urls or module in gateways:
+            continue
+        reached = [
+            ep
+            for svc in (plan.get("services") or {}).get(module) or []
+            for ep in svc.get("endpoints") or []
+            if ep.get("host_port") == edge.get("host_port")
+        ]
+        if reached:
+            path = str(reached[0].get("path") or "").rstrip("/")
+            urls[module] = (
+                f"{reached[0]['scheme']}://localhost:{edge['host_port']}{path}"
+            )
     return [
         {
             "node": node["id"],
@@ -277,12 +298,14 @@ def services(plan: dict) -> list[dict[str, object]]:
 
 def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
     """The registry facts a plan settles: host ports, the host client env, the
-    services a reader runs, and the bundle's runtime files."""
+    services a reader runs, the bundle's runtime files, the deployment steps, and
+    the shell setup their commands need (null when no step has a script)."""
+    # Clients reach the stack only over access edges, gateway or not.
     ports = sorted(
         {
-            int(listener["host_port"])
-            for listener in plan["gateway"].get("listeners") or []
-            if "host_port" in listener
+            int(edge["host_port"])
+            for edge in plan["graph"]["edges"]
+            if edge.get("kind") == "access" and "host_port" in edge
         }
     )
     return {
@@ -290,6 +313,8 @@ def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
         "client-env": dict(sorted((plan["client"].get("host") or {}).items())),
         "services": services(plan),
         "files": files or [],
+        "deploy": plan.get("deploy") or [],
+        "deploy-setup": plan.get("deploy_setup"),
     }
 
 

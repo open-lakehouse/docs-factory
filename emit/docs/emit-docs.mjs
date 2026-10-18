@@ -74,7 +74,11 @@ import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget } from "../targets/docs-site.mjs";
-import mdTwin, { LIKEC4_ASSET_BASE, TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
+import mdTwin, {
+  LIKEC4_ASSET_BASE,
+  TRESTLE_ASSET_BASE,
+  trestleEnvImage,
+} from "../targets/md-twin.mjs";
 import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
   renderConcepts,
@@ -85,7 +89,7 @@ import {
   sitemapUrls,
   toEntry,
 } from "./discovery.mjs";
-import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
+import { buildEnvBundles, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
 import {
   loadCompat,
@@ -179,7 +183,7 @@ const SNAPSHOT_SUFFIX = ".trestle-graph.json";
  * site-wide, anything else under its page's `assetBase`. */
 function imageUrl(entry, assetBase) {
   if (entry.likec4) return `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`;
-  if (entry.trestle?.env) return `${TRESTLE_ASSET_BASE}/${entry.trestle.env}.png`;
+  if (entry.trestle?.env) return trestleEnvImage(entry.trestle.env);
   return `${assetBase}/${entry.filename}`;
 }
 
@@ -266,18 +270,17 @@ export async function emitDocs({ site, drafts = false }) {
       `${JSON.stringify({ format: COVERAGE_FORMAT, version: COVERAGE_VERSION, engines: coverage }, null, 2)}\n`,
     );
 
-    // The env bundle. Its guide link only resolves when this emit publishes the page.
+    // The env archives. Their guide link only resolves when this emit publishes the page.
     const registry = loadRegistry(REPO_ROOT);
     let envBundle = null;
     if (site.env) {
       const guideRoute = routeFor(site.env.guide.bucket, site.env.guide.slug);
-      envBundle = buildEnvBundle({
+      envBundle = buildEnvBundles({
         repoRoot: REPO_ROOT,
         bundle: site.env.bundle,
         dirs: site.env.dirs,
         registry,
         origin,
-        siteTitle: site.title,
         guideUrl: routes.has(guideRoute) ? `${origin}${guideRoute}` : null,
       });
       envBundle.guide = routes.has(guideRoute)
@@ -291,7 +294,8 @@ export async function emitDocs({ site, drafts = false }) {
         if (env.guide && !allRoutes.has(routeFor(bucket, slug)))
           throw new Error(`envs/environments.yml: ${key}: guide ${env.guide} is not a page`);
       }
-      files.set(`public/env/${site.env.bundle}.tar.gz`, envBundle.archive);
+      for (const [dir, archive] of envBundle.archives)
+        files.set(`public/env/${dir}.tar.gz`, archive);
       const index = { ...envBundle.index, concepts: `${origin}/concepts.json` };
       files.set("public/env/environments.json", `${JSON.stringify(index, null, 2)}\n`);
     }
@@ -339,7 +343,7 @@ export async function emitDocs({ site, drafts = false }) {
           pageEnvironment(owned, {
             registry,
             bundle: site.env.bundle,
-            bundleUrl: envBundle.bundleUrl,
+            archiveBase: envBundle.archiveBase,
             declared: declaredEnvironment(page.body),
           });
       } catch (err) {
@@ -364,7 +368,7 @@ export async function emitDocs({ site, drafts = false }) {
             return registryEnvironment(key, {
               registry,
               bundle: site.env.bundle,
-              bundleUrl: envBundle.bundleUrl,
+              archiveBase: envBundle.archiveBase,
             });
           } catch (err) {
             throw new Error(`${relative(REPO_ROOT, absPath)}: ${err.message}`);
@@ -396,10 +400,18 @@ export async function emitDocs({ site, drafts = false }) {
         files.set(`public${url}`, readFileSync(image.localPath));
         // remark-trestle-views fetches the snapshot from beside the PNG.
         if (image.trestle) {
-          files.set(
-            `public${url.replace(/\.png$/, SNAPSHOT_SUFFIX)}`,
-            readFileSync(image.localPath.replace(/\.png$/, SNAPSHOT_SUFFIX)),
-          );
+          const snapshot = readFileSync(image.localPath.replace(/\.png$/, SNAPSHOT_SUFFIX));
+          files.set(`public${url.replace(/\.png$/, SNAPSHOT_SUFFIX)}`, snapshot);
+          // A node's files open from beside the snapshot. Only the manifest ships,
+          // and docsnip leaves sensitive files out of it.
+          if (image.trestle.env) {
+            for (const path of JSON.parse(snapshot.toString("utf8")).files ?? []) {
+              files.set(
+                `public${dirname(url)}/${path}`,
+                readFileSync(join(dirname(image.localPath), path)),
+              );
+            }
+          }
         }
         hasLikeC4 ||= Boolean(image.likec4);
         hasTrestle ||= Boolean(image.trestle);
@@ -480,7 +492,7 @@ export async function emitDocs({ site, drafts = false }) {
         twin: `${route}.md`,
         environment: environment && {
           title: environment.title,
-          bundle: `/env/${site.env.bundle}.tar.gz`,
+          bundle: environment.bundleUrl.slice(origin.length),
           commands: environment.commands,
         },
         scripts: [
@@ -606,7 +618,7 @@ export async function emitDocs({ site, drafts = false }) {
         origin,
         apis,
         environments: envBundle && {
-          bundleUrl: envBundle.bundleUrl,
+          index: `${origin}/env/environments.json`,
           guide: envBundle.guide && `${origin}${envBundle.guide.route}.md`,
         },
         concepts: true,
@@ -617,15 +629,14 @@ export async function emitDocs({ site, drafts = false }) {
       renderConcepts(projection, {
         title: site.title,
         origin,
-        bundle: envBundle?.bundleUrl ?? null,
         environments: envBundle
-          ? envBundle.index.environments.map(({ key, title }) => {
+          ? envBundle.index.environments.map(({ key, title, archive }) => {
               const [bucket, slug] = (registry[key].guide ?? "").split("#")[0].split("/");
               const anchor = registry[key].guide?.split("#")[1];
               const guide = registry[key].guide
                 ? `${routeFor(bucket, slug)}${anchor ? `#${anchor}` : ""}`
                 : routeFor(site.env.guide.bucket, site.env.guide.slug);
-              return { key, title, guide };
+              return { key, title, archive, guide };
             })
           : [],
       }),

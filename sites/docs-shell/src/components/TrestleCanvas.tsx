@@ -60,10 +60,12 @@ export default function TrestleCanvas({
   snapshot,
   colorMode,
   label,
+  readFile,
 }: {
   snapshot: unknown;
   colorMode: "light" | "dark";
   label?: string;
+  readFile?: (path: string) => Promise<string>;
 }) {
   const [refs, setRefs] = useState<TrestleRefs | null>(null);
   useEffect(() => {
@@ -76,6 +78,12 @@ export default function TrestleCanvas({
   const slots = useMemo(() => (refs ? nodeSlots(refs) : undefined), [refs]);
 
   return (
-    <EnvironmentDiagram snapshot={snapshot} label={label} colorMode={colorMode} slots={slots} />
+    <EnvironmentDiagram
+      snapshot={snapshot}
+      label={label}
+      colorMode={colorMode}
+      slots={slots}
+      readFile={readFile}
+    />
   );
 }

@@ -43,6 +43,7 @@
         ".env",
         ".gitignore",
         "LAYOUT.md",
+        "README.md",
         "client/container.env",
         "client/host.env",
         "compose.yaml",
@@ -62,7 +63,171 @@
         "modules/unity-catalog/compose.yaml",
         "modules/unity-catalog/secrets/hibernate.properties",
         "modules/unity-catalog/secrets/server.properties"
-      ]
+      ],
+      "deploy": [
+        {
+          "order": 1,
+          "phase": "start",
+          "id": "up",
+          "title": "Start the stack",
+          "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nThe gateway then serves the stack at <http://localhost:8080>. [LAYOUT.md](LAYOUT.md) lists every route and address."
+        }
+      ],
+      "deploy-setup": null
+    },
+    "uc-hybrid": {
+      "ports": [
+        8080
+      ],
+      "client-env": {
+        "AWS_REGION": "us-east-1",
+        "UNITY_CATALOG_URL": "http://localhost:8080/api/2.1/unity-catalog"
+      },
+      "services": [
+        {
+          "node": "aws-s3",
+          "element": "amazonS3",
+          "role": "object_store",
+          "url": null
+        },
+        {
+          "node": "hosted-postgres",
+          "element": "postgresql",
+          "role": "relational_db",
+          "url": null
+        },
+        {
+          "node": "unity-catalog",
+          "element": "unityCatalogOSS",
+          "role": "data_catalog",
+          "url": "http://localhost:8080/api/2.1/unity-catalog"
+        }
+      ],
+      "files": [
+        ".gitignore",
+        "LAYOUT.md",
+        "README.md",
+        "client/container.env",
+        "client/host.env",
+        "compose.yaml",
+        "deploy/aws-s3-buckets.sh",
+        "deploy/hosted-postgres-databases.sh",
+        "deploy/hosted-postgres-server.sh",
+        "env.toml",
+        "modules/unity-catalog/storage.txt"
+      ],
+      "deploy": [
+        {
+          "order": 1,
+          "phase": "provision",
+          "module": "aws-s3",
+          "id": "buckets",
+          "title": "Create the buckets",
+          "instructions": "Create the buckets the stack uses: `unity`, through the S3-compatible API at `${AWS_ENDPOINT_URL}`.\nThe script needs the AWS CLI, signed in with credentials that may create buckets (a profile,\nSSO, or keys). Set `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to a\nkey that may read and write them.",
+          "script": "deploy/aws-s3-buckets.sh",
+          "commands": "region='us-east-1'\nendpoint=(--endpoint-url \"${AWS_ENDPOINT_URL}\")\nfor bucket in 'unity' ; do\n  if aws s3api head-bucket --bucket \"$bucket\" ${endpoint[@]+\"${endpoint[@]}\"} 2>/dev/null; then\n    echo \"bucket $bucket exists\"\n  elif [ \"$region\" = us-east-1 ]; then\n    aws s3api create-bucket --bucket \"$bucket\" --region \"$region\" \\\n      ${endpoint[@]+\"${endpoint[@]}\"} >/dev/null\n    echo \"created bucket $bucket\"\n  else\n    aws s3api create-bucket --bucket \"$bucket\" --region \"$region\" \\\n      --create-bucket-configuration \"LocationConstraint=$region\" \\\n      ${endpoint[@]+\"${endpoint[@]}\"} >/dev/null\n    echo \"created bucket $bucket\"\n  fi\ndone\n"
+        },
+        {
+          "order": 2,
+          "phase": "provision",
+          "module": "hosted-postgres",
+          "id": "server",
+          "title": "Create the Neon project",
+          "instructions": "Create a Neon project for the stack's databases. The script needs\n[`neonctl`](https://neon.tech/docs/reference/neon-cli), signed in (`neonctl auth`, or\n`NEON_API_KEY` set), and `jq`. It creates the project `trestle-uc-hybrid` unless it exists\n(in `NEON_REGION`, default `aws-us-east-2`), then saves its id as `NEON_PROJECT_ID` and its connection details as `PGHOST`, `PGUSER`, `PGPASSWORD` in `secrets.env`.",
+          "script": "deploy/hosted-postgres-server.sh",
+          "commands": "project_name='trestle-uc-hybrid'\nproject_id=\"${NEON_PROJECT_ID:-}\"\nif [ -z \"$project_id\" ]; then\n  project_id=\"$(neonctl projects list --output json \\\n    | jq -r --arg name \"$project_name\" '(.projects // .)[] | select(.name == $name) | .id' \\\n    | head -n 1)\"\nfi\nif [ -z \"$project_id\" ]; then\n  project_id=\"$(neonctl projects create --name \"$project_name\" \\\n    --region-id \"${NEON_REGION:-aws-us-east-2}\" --output json | jq -r '.project.id // .id')\"\n  echo \"created Neon project $project_name ($project_id)\"\nelse\n  echo \"Neon project $project_name exists ($project_id)\"\nfi\nsave_secret NEON_PROJECT_ID \"$project_id\"\n\n# The project's default role and its password, from its connection string.\nuri=\"$(neonctl connection-string --project-id \"$project_id\")\"\nrest=\"${uri#*://}\"\ncredentials=\"${rest%%@*}\"\nhost=\"${rest#*@}\"\nhost=\"${host%%/*}\"\nhost=\"${host%%:*}\"\nsave_secret 'PGHOST' \"$host\"\nsave_secret 'PGUSER' \"${credentials%%:*}\"\nsave_secret 'PGPASSWORD' \"${credentials#*:}\"\n"
+        },
+        {
+          "order": 3,
+          "phase": "provision",
+          "module": "hosted-postgres",
+          "id": "databases",
+          "title": "Create the databases",
+          "instructions": "Create the databases the stack uses: `unitycatalog`. The script adds each one missing to the Neon project\n`NEON_PROJECT_ID` with `neonctl`.",
+          "script": "deploy/hosted-postgres-databases.sh",
+          "commands": ": \"${NEON_PROJECT_ID:?set NEON_PROJECT_ID, or run the project step first}\"\nexisting=\"$(neonctl databases list --project-id \"$NEON_PROJECT_ID\" --output json \\\n  | jq -r '(.databases // .)[] | .name')\"\nfor db in 'unitycatalog' ; do\n  if printf '%s\\n' \"$existing\" | grep -qx \"$db\"; then\n    echo \"database $db exists\"\n  else\n    neonctl databases create --project-id \"$NEON_PROJECT_ID\" --name \"$db\" --output json >/dev/null\n    echo \"created database $db\"\n  fi\ndone\n"
+        },
+        {
+          "order": 4,
+          "phase": "configure",
+          "id": "secrets",
+          "title": "Supply the hosted resources' secrets",
+          "instructions": "The hosted resources read `AWS_ACCESS_KEY_ID`, `AWS_ENDPOINT_URL`, `AWS_SECRET_ACCESS_KEY`, `PGHOST`, `PGPASSWORD`, `PGUSER`. Set them in `secrets.env` beside `env.toml` (git-ignored; the scripts above save what they create there) or export them, then render again so the stack picks them up:\n\n```bash\ntrestle env render .\n```"
+        },
+        {
+          "order": 5,
+          "phase": "start",
+          "id": "up",
+          "title": "Start the stack",
+          "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nEach service is then published on its own host port. [LAYOUT.md](LAYOUT.md) lists every route and address."
+        }
+      ],
+      "deploy-setup": "# Secrets kept in secrets.env (git-ignored) are read like exported ones.\nif [ -f secrets.env ]; then\n  set -a\n  # shellcheck source=/dev/null\n  . ./secrets.env\n  set +a\nfi\n\n# save_secret NAME VALUE: record NAME in secrets.env (and this shell), unless secrets.env\n# already sets it.\nsave_secret() {\n  if [ -f secrets.env ] && grep -q \"^$1=\" secrets.env; then\n    echo \"secrets.env already sets $1; leaving it as is\"\n  else\n    (umask 077 && printf '%s=%s\\n' \"$1\" \"$2\" >> secrets.env)\n    echo \"saved $1 to secrets.env\"\n  fi\n  export \"$1=$2\"\n}\n"
+    },
+    "uc-local": {
+      "ports": [
+        8080,
+        9000
+      ],
+      "client-env": {
+        "AWS_ENDPOINT_URL_S3": "http://localhost:9000",
+        "AWS_REGION": "us-east-1",
+        "UNITY_CATALOG_URL": "http://localhost:8080/api/2.1/unity-catalog"
+      },
+      "services": [
+        {
+          "node": "postgres",
+          "element": "postgresql",
+          "role": "relational_db",
+          "url": null
+        },
+        {
+          "node": "rustfs",
+          "element": "rustfs",
+          "role": "object_store",
+          "url": "http://localhost:9000"
+        },
+        {
+          "node": "unity-catalog",
+          "element": "unityCatalogOSS",
+          "role": "data_catalog",
+          "url": "http://localhost:8080/api/2.1/unity-catalog"
+        }
+      ],
+      "files": [
+        ".env",
+        ".gitignore",
+        "LAYOUT.md",
+        "README.md",
+        "client/container.env",
+        "client/host.env",
+        "compose.yaml",
+        "modules/envoy/certs.sh",
+        "modules/envoy/compose.yaml",
+        "modules/envoy/envoy.yaml",
+        "modules/postgres/.env/db.env",
+        "modules/postgres/compose.yaml",
+        "modules/postgres/init-databases.sh",
+        "modules/postgres/secrets/postgres_password",
+        "modules/rustfs/.env/rustfs.env",
+        "modules/rustfs/compose.yaml",
+        "modules/rustfs/sts_shim.py",
+        "modules/unity-catalog/bootstrap_storage.py",
+        "modules/unity-catalog/compose.yaml",
+        "modules/unity-catalog/secrets/hibernate.properties",
+        "modules/unity-catalog/secrets/server.properties",
+        "modules/unity-catalog/storage.txt"
+      ],
+      "deploy": [
+        {
+          "order": 1,
+          "phase": "start",
+          "id": "up",
+          "title": "Start the stack",
+          "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nEach service is then published on its own host port. [LAYOUT.md](LAYOUT.md) lists every route and address."
+        }
+      ],
+      "deploy-setup": null
     },
     "unitycatalog": {
       "ports": [
@@ -89,6 +254,7 @@
         ".env",
         ".gitignore",
         "LAYOUT.md",
+        "README.md",
         "client/container.env",
         "client/host.env",
         "compose.yaml",
@@ -99,7 +265,17 @@
         "modules/envoy/envoy.yaml",
         "modules/unity-catalog/compose.yaml",
         "modules/unity-catalog/secrets/server.properties"
-      ]
+      ],
+      "deploy": [
+        {
+          "order": 1,
+          "phase": "start",
+          "id": "up",
+          "title": "Start the stack",
+          "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nThe gateway then serves the stack at <http://localhost:8080>. [LAYOUT.md](LAYOUT.md) lists every route and address."
+        }
+      ],
+      "deploy-setup": null
     }
   }
 }

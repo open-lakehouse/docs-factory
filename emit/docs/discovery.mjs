@@ -134,7 +134,7 @@ export function toEntry(
  * by Diátaxis quadrant (from their identity/meta); blogs go under a Blog section.
  * Each line links the canonical route and its `.md` twin. `apis` (api.mjs
  * apiEntries) link their OpenAPI spec instead of a twin. `environments`
- * (`{ bundleUrl, guide }`) adds the env bundle the runnable scripts need, and
+ * (`{ index, guide }`) adds the env index the runnable scripts need, and
  * `concepts` the site's concepts.json.
  */
 export function renderLlmsIndex(
@@ -181,7 +181,7 @@ export function renderLlmsIndex(
   if (environments) {
     const guide = environments.guide ? ` Setup guide: ${environments.guide}.` : "";
     lines.push(
-      `- [Local environment](${origin}/env/environments.json): the Docker Compose stacks the scripts run against, with exact start/stop commands. Download them with \`curl -fsSL ${environments.bundleUrl} | tar -xz\`.${guide}`,
+      `- [Local environment](${environments.index}): the Docker Compose stacks the scripts run against, each with its own archive and exact start/stop commands; download one with \`curl -fsSL <archive> | tar -xz\`.${guide}`,
     );
   }
   lines.push("");
@@ -194,12 +194,12 @@ export function renderLlmsIndex(
  * site's public concepts with their typed edges, the docs environments and
  * the public services each runs, and the journeys a ready page proves. An
  * edge is `verified` when a working proof on this site exercises it.
- * `environments` is `[{ key, title, guide }]` (guide a ready page's route, or
- * null); `bundle` the env bundle's URL.
+ * `environments` is `[{ key, title, archive, guide }]` (archive its download
+ * URL; guide a ready page's route, or null).
  */
-export function renderConcepts(projection, { title, origin, bundle = null, environments = [] }) {
+export function renderConcepts(projection, { title, origin, environments = [] }) {
   const body = {
-    version: 1,
+    version: 2,
     site: { title, origin },
     concepts: projection.elements().map(({ id, kind, title, summary, url, sameAs }) => ({
       id,
@@ -213,7 +213,7 @@ export function renderConcepts(projection, { title, origin, bundle = null, envir
     environments: environments.map((env) => ({
       key: env.key,
       title: env.title,
-      bundle,
+      archive: env.archive ?? null,
       guide:
         env.guide && projection.hasPage(env.guide.split("#")[0]) ? `${origin}${env.guide}` : null,
       services: projection

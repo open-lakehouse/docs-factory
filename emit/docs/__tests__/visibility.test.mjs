@@ -146,7 +146,7 @@ const ENV = {
   ...registryEnvironment("p/compose.yaml", {
     registry: REGISTRY,
     bundle: "p-env",
-    bundleUrl: `${ORIGIN}/env/p-env.tar.gz`,
+    archiveBase: `${ORIGIN}/env`,
   }),
 };
 
@@ -191,8 +191,14 @@ async function render(target, base) {
 const concepts = renderConcepts(projection, {
   title: SITE.title,
   origin: ORIGIN,
-  bundle: ENV.bundleUrl,
-  environments: [{ key: "p/compose.yaml", title: "P stack", guide: "/explanation/draft-charlie" }],
+  environments: [
+    {
+      key: "p/compose.yaml",
+      title: "P stack",
+      archive: ENV.bundleUrl,
+      guide: "/explanation/draft-charlie",
+    },
+  ],
 });
 
 async function payloads() {

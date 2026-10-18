@@ -10,7 +10,7 @@ status: ready
 
 Every example in these docs runs against a local
 [Unity Catalog](model:unityCatalogOSS) server that you start with Docker
-Compose. The docs ship it as one download with several environments. Each
+Compose. The docs ship several environments, each its own download. Each
 runs the same single-user server on `http://localhost:8080`, with
 authorization disabled so that no request needs a token, and adds what a
 group of pages needs: simulated S3 storage and a PostgreSQL metadata database.
@@ -38,7 +38,7 @@ Every page's prerequisites name the environment it runs against. Run one
 environment at a time: they share the compose project `uc-docs` and the
 container name `unitycatalog`, so starting one replaces the server of another.
 
-The commands below download the environment into `uc-docs-env/` in the current
+The commands below download each environment into `uc-docs-env/` in the current
 folder, and the server mounts its configuration from there. On Colima and
 other VMs that share only your home directory, run them from a folder under
 your home directory, or the server fails with a `not a directory` mount error.

@@ -2,10 +2,19 @@
 // what crawlers and no-JS readers get; once hydrated, the component fetches the
 // snapshot served beside it and swaps in the interactive canvas. React Flow and
 // ELK (~2 MB) load only on pages that have a diagram.
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { useDarkMode } from "../lib/theme";
 
 const TrestleCanvas = lazy(() => import("./TrestleCanvas"));
+
+// A snapshot's file paths are relative to the render it sits in.
+function filesBeside(snapshot: string) {
+  const base = snapshot.slice(0, snapshot.lastIndexOf("/") + 1);
+  return (path: string) =>
+    fetch(base + path).then((r) =>
+      r.ok ? r.text() : Promise.reject(new Error(`${path}: HTTP ${r.status}`)),
+    );
+}
 
 export function TrestleDiagram({
   image,
@@ -18,6 +27,7 @@ export function TrestleDiagram({
 }) {
   const dark = useDarkMode();
   const [data, setData] = useState<unknown>(null);
+  const readFile = useMemo(() => filesBeside(snapshot), [snapshot]);
 
   useEffect(() => {
     let live = true;
@@ -39,6 +49,7 @@ export function TrestleDiagram({
             snapshot={data}
             label={alt || undefined}
             colorMode={dark ? "dark" : "light"}
+            readFile={readFile}
           />
         </Suspense>
       ) : (

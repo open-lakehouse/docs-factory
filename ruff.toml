@@ -9,6 +9,8 @@ extend-exclude = [
     "research",
     "__pycache__",
     "*.egg-info",
+    # Trestle renders these (`just env-render`); never edited or formatted here.
+    "envs/*/modules",
 ]
 
 [lint]

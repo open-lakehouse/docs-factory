@@ -1,0 +1,191 @@
+{
+  "format": "trestle-graph",
+  "version": 1,
+  "generator": "docs-factory",
+  "title": "Unity Catalog 0.7.0 with hosted PostgreSQL and S3-compatible storage",
+  "graph": {
+    "nodes": [
+      {
+        "id": "@clients",
+        "model": null,
+        "kind": "clients",
+        "display_name": "Clients",
+        "summary": "Browsers, SDKs and CLIs on the host.",
+        "category": null,
+        "role": null,
+        "placement": null,
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      },
+      {
+        "id": "aws-s3",
+        "model": "amazonS3",
+        "kind": "external",
+        "display_name": "Amazon S3",
+        "summary": "Amazon S3 or an S3-compatible store; README.md sets up the buckets.",
+        "category": "storage",
+        "role": "object_store",
+        "placement": "external:https://your-account.r2.cloudflarestorage.com",
+        "cloud": "",
+        "surfaces": [],
+        "offers": [
+          "S3"
+        ],
+        "provisions": [
+          {
+            "resource": "object_store",
+            "name": "unity",
+            "consumers": [
+              "unity-catalog"
+            ]
+          }
+        ],
+        "resource_nouns": [
+          {
+            "kind": "object_store",
+            "singular": "bucket",
+            "plural": "buckets"
+          }
+        ]
+      },
+      {
+        "id": "hosted-postgres",
+        "model": "postgresql",
+        "kind": "external",
+        "display_name": "Hosted Postgres",
+        "summary": "A managed PostgreSQL server (Neon, RDS, Azure, …); README.md sets it up.",
+        "category": "metadata_db",
+        "role": "relational_db",
+        "placement": "external:tcp://ep-your-project.us-east-2.aws.neon.tech:5432",
+        "cloud": "neon",
+        "surfaces": [],
+        "offers": [
+          "PostgreSQL"
+        ],
+        "provisions": [
+          {
+            "resource": "relational_db",
+            "name": "unitycatalog",
+            "consumers": [
+              "unity-catalog"
+            ]
+          }
+        ],
+        "resource_nouns": [
+          {
+            "kind": "relational_db",
+            "singular": "database",
+            "plural": "databases"
+          }
+        ]
+      },
+      {
+        "id": "unity-catalog",
+        "model": "unityCatalogOSS",
+        "kind": "component",
+        "display_name": "Unity Catalog",
+        "summary": "Open-source Unity Catalog server; Databricks-shaped REST API.",
+        "category": "catalog",
+        "role": "data_catalog",
+        "placement": "container:unitycatalog",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      }
+    ],
+    "edges": [
+      {
+        "kind": "access",
+        "key": "access:@clients→unity-catalog:8080",
+        "from": "@clients",
+        "to": "unity-catalog",
+        "host_port": 8080
+      },
+      {
+        "kind": "uses",
+        "key": "uses:unity-catalog→hosted-postgres:relational_db",
+        "from": "unity-catalog",
+        "to": "hosted-postgres",
+        "role": "relational_db",
+        "protocol": "PostgreSQL",
+        "resources": [
+          "unitycatalog"
+        ]
+      },
+      {
+        "kind": "uses",
+        "key": "uses:unity-catalog→aws-s3:object_store",
+        "from": "unity-catalog",
+        "to": "aws-s3",
+        "role": "object_store",
+        "protocol": "S3",
+        "resources": [
+          "unity"
+        ]
+      }
+    ]
+  },
+  "files": [
+    "compose.yaml",
+    ".gitignore",
+    "client/host.env",
+    "client/container.env",
+    "LAYOUT.md",
+    "README.md",
+    "modules/unity-catalog/storage.txt",
+    "deploy/aws-s3-buckets.sh",
+    "deploy/hosted-postgres-server.sh",
+    "deploy/hosted-postgres-databases.sh"
+  ],
+  "deploy": [
+    {
+      "order": 1,
+      "phase": "provision",
+      "module": "aws-s3",
+      "id": "buckets",
+      "title": "Create the buckets",
+      "instructions": "Create the buckets the stack uses: `unity`, through the S3-compatible API at `${AWS_ENDPOINT_URL}`.\nThe script needs the AWS CLI, signed in with credentials that may create buckets (a profile,\nSSO, or keys). Set `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to a\nkey that may read and write them.",
+      "script": "deploy/aws-s3-buckets.sh",
+      "commands": "region='us-east-1'\nendpoint=(--endpoint-url \"${AWS_ENDPOINT_URL}\")\nfor bucket in 'unity' ; do\n  if aws s3api head-bucket --bucket \"$bucket\" ${endpoint[@]+\"${endpoint[@]}\"} 2>/dev/null; then\n    echo \"bucket $bucket exists\"\n  elif [ \"$region\" = us-east-1 ]; then\n    aws s3api create-bucket --bucket \"$bucket\" --region \"$region\" \\\n      ${endpoint[@]+\"${endpoint[@]}\"} >/dev/null\n    echo \"created bucket $bucket\"\n  else\n    aws s3api create-bucket --bucket \"$bucket\" --region \"$region\" \\\n      --create-bucket-configuration \"LocationConstraint=$region\" \\\n      ${endpoint[@]+\"${endpoint[@]}\"} >/dev/null\n    echo \"created bucket $bucket\"\n  fi\ndone\n"
+    },
+    {
+      "order": 2,
+      "phase": "provision",
+      "module": "hosted-postgres",
+      "id": "server",
+      "title": "Create the Neon project",
+      "instructions": "Create a Neon project for the stack's databases. The script needs\n[`neonctl`](https://neon.tech/docs/reference/neon-cli), signed in (`neonctl auth`, or\n`NEON_API_KEY` set), and `jq`. It creates the project `trestle-uc-hybrid` unless it exists\n(in `NEON_REGION`, default `aws-us-east-2`), then saves its id as `NEON_PROJECT_ID` and its connection details as `PGHOST`, `PGUSER`, `PGPASSWORD` in `secrets.env`.",
+      "script": "deploy/hosted-postgres-server.sh",
+      "commands": "project_name='trestle-uc-hybrid'\nproject_id=\"${NEON_PROJECT_ID:-}\"\nif [ -z \"$project_id\" ]; then\n  project_id=\"$(neonctl projects list --output json \\\n    | jq -r --arg name \"$project_name\" '(.projects // .)[] | select(.name == $name) | .id' \\\n    | head -n 1)\"\nfi\nif [ -z \"$project_id\" ]; then\n  project_id=\"$(neonctl projects create --name \"$project_name\" \\\n    --region-id \"${NEON_REGION:-aws-us-east-2}\" --output json | jq -r '.project.id // .id')\"\n  echo \"created Neon project $project_name ($project_id)\"\nelse\n  echo \"Neon project $project_name exists ($project_id)\"\nfi\nsave_secret NEON_PROJECT_ID \"$project_id\"\n\n# The project's default role and its password, from its connection string.\nuri=\"$(neonctl connection-string --project-id \"$project_id\")\"\nrest=\"${uri#*://}\"\ncredentials=\"${rest%%@*}\"\nhost=\"${rest#*@}\"\nhost=\"${host%%/*}\"\nhost=\"${host%%:*}\"\nsave_secret 'PGHOST' \"$host\"\nsave_secret 'PGUSER' \"${credentials%%:*}\"\nsave_secret 'PGPASSWORD' \"${credentials#*:}\"\n"
+    },
+    {
+      "order": 3,
+      "phase": "provision",
+      "module": "hosted-postgres",
+      "id": "databases",
+      "title": "Create the databases",
+      "instructions": "Create the databases the stack uses: `unitycatalog`. The script adds each one missing to the Neon project\n`NEON_PROJECT_ID` with `neonctl`.",
+      "script": "deploy/hosted-postgres-databases.sh",
+      "commands": ": \"${NEON_PROJECT_ID:?set NEON_PROJECT_ID, or run the project step first}\"\nexisting=\"$(neonctl databases list --project-id \"$NEON_PROJECT_ID\" --output json \\\n  | jq -r '(.databases // .)[] | .name')\"\nfor db in 'unitycatalog' ; do\n  if printf '%s\\n' \"$existing\" | grep -qx \"$db\"; then\n    echo \"database $db exists\"\n  else\n    neonctl databases create --project-id \"$NEON_PROJECT_ID\" --name \"$db\" --output json >/dev/null\n    echo \"created database $db\"\n  fi\ndone\n"
+    },
+    {
+      "order": 4,
+      "phase": "configure",
+      "id": "secrets",
+      "title": "Supply the hosted resources' secrets",
+      "instructions": "The hosted resources read `AWS_ACCESS_KEY_ID`, `AWS_ENDPOINT_URL`, `AWS_SECRET_ACCESS_KEY`, `PGHOST`, `PGPASSWORD`, `PGUSER`. Set them in `secrets.env` beside `env.toml` (git-ignored; the scripts above save what they create there) or export them, then render again so the stack picks them up:\n\n```bash\ntrestle env render .\n```"
+    },
+    {
+      "order": 5,
+      "phase": "start",
+      "id": "up",
+      "title": "Start the stack",
+      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nEach service is then published on its own host port. [LAYOUT.md](LAYOUT.md) lists every route and address."
+    }
+  ]
+}

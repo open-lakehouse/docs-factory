@@ -331,9 +331,7 @@ env-render name='': trestle-install
     #!/usr/bin/env bash
     set -euo pipefail
     if [ -n "{{ name }}" ]; then dirs=("envs/{{ name }}"); else dirs=(envs/*/env.toml); dirs=("${dirs[@]%/env.toml}"); fi
-    for dir in "${dirs[@]}"; do
-        .tools/trestle/bin/trestle env render "$dir" >/dev/null
-    done
+    scripts/env-render.sh "${dirs[@]}"
     uv run docsnip envs --fix
     just trestle-diagrams "${dirs[@]}"
 

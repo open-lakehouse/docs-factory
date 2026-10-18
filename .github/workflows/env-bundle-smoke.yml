@@ -1,6 +1,6 @@
 name: Env bundle smoke
 
-# Builds the Unity Catalog docs' env bundle, extracts it outside the repo the
+# Builds the Unity Catalog docs' uc-aws archive, extracts it outside the repo the
 # way a reader does, starts the generated S3 environment from it, and runs one
 # page's script against it with the exports the page shows. The service lane
 # runs every script from the repo checkout; this proves the archive alone works.
@@ -41,7 +41,7 @@ jobs:
       - run: cd emit && bun install --frozen-lockfile && cd ../site && bun install --frozen-lockfile
       - name: Build and extract the bundle outside the repo
         run: |
-          archive=$(bun emit/docs/build-env-bundle.mjs unitycatalog-docs "$RUNNER_TEMP/dist")
+          archive=$(bun emit/docs/build-env-bundle.mjs unitycatalog-docs uc-aws "$RUNNER_TEMP/dist")
           mkdir -p "$RUNNER_TEMP/reader"
           tar -xzf "$archive" -C "$RUNNER_TEMP/reader"
           cp content/unitycatalog/how-to/009-configure-aws-storage/snippets/aws_storage.py "$RUNNER_TEMP/reader/"

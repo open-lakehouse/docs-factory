@@ -4,13 +4,13 @@
   "state": "planned",
   "generator": {
     "name": "trestle",
-    "version": "0.0.9",
-    "revision": "605216846ced82fad886f22513f59a3c8ea88717"
+    "version": "0.0.12",
+    "revision": "9c535a5ddc2d8f29ad23acc124e7e8af09ebd0d8"
   },
   "catalog": {
-    "baseline": "olai-stack-topology@0.0.5",
+    "baseline": "olai-stack-topology@0.0.8",
     "manifests": [],
-    "digest": "sha256:708f93663486c75612ab9f7e8eb0bcf2fc46afd709f9db3f7f428e4ae2c5053b"
+    "digest": "sha256:0e9dec34fead2080124abc151621290e1ec9eb0b344317d7910670e9a01dcb3e"
   },
   "recipe": {
     "digest": "sha256:3dfc2128554d8dacfdc10ee7587eff74b8f20a411dbda9664969da2f65a10d1c"
@@ -255,6 +255,10 @@
       "sensitive": false
     },
     {
+      "path": "README.md",
+      "sensitive": false
+    },
+    {
       "path": "modules/envoy/envoy.yaml",
       "sensitive": false
     },
@@ -269,6 +273,15 @@
     {
       "path": "modules/unity-catalog/secrets/server.properties",
       "sensitive": false
+    }
+  ],
+  "deploy": [
+    {
+      "order": 1,
+      "phase": "start",
+      "id": "up",
+      "title": "Start the stack",
+      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nThe gateway then serves the stack at <http://localhost:8080>. [LAYOUT.md](LAYOUT.md) lists every route and address."
     }
   ]
 }

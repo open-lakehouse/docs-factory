@@ -1,0 +1,173 @@
+{
+  "format": "trestle-graph",
+  "version": 1,
+  "generator": "docs-factory",
+  "title": "Unity Catalog 0.7.0 with PostgreSQL and RustFS on one machine",
+  "graph": {
+    "nodes": [
+      {
+        "id": "@clients",
+        "model": null,
+        "kind": "clients",
+        "display_name": "Clients",
+        "summary": "Browsers, SDKs and CLIs on the host.",
+        "category": null,
+        "role": null,
+        "placement": null,
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      },
+      {
+        "id": "postgres",
+        "model": "postgresql",
+        "kind": "component",
+        "display_name": "Postgres",
+        "summary": "Postgres 16; auto-creates DBs other modules declare.",
+        "category": "metadata_db",
+        "role": "relational_db",
+        "placement": "container:db",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [
+          "PostgreSQL"
+        ],
+        "provisions": [
+          {
+            "resource": "relational_db",
+            "name": "unitycatalog",
+            "consumers": [
+              "unity-catalog"
+            ]
+          }
+        ],
+        "resource_nouns": [
+          {
+            "kind": "relational_db",
+            "singular": "database",
+            "plural": "databases"
+          }
+        ]
+      },
+      {
+        "id": "rustfs",
+        "model": "rustfs",
+        "kind": "component",
+        "display_name": "RustFS",
+        "summary": "Self-hosted S3-compatible object store with STS; answers the AWS S3/STS hostnames in-network.",
+        "category": "storage",
+        "role": "object_store",
+        "placement": "container:rustfs",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [
+          "S3 + STS"
+        ],
+        "provisions": [
+          {
+            "resource": "object_store",
+            "name": "unity",
+            "consumers": [
+              "unity-catalog"
+            ]
+          }
+        ],
+        "resource_nouns": [
+          {
+            "kind": "object_store",
+            "singular": "bucket",
+            "plural": "buckets"
+          }
+        ]
+      },
+      {
+        "id": "unity-catalog",
+        "model": "unityCatalogOSS",
+        "kind": "component",
+        "display_name": "Unity Catalog",
+        "summary": "Open-source Unity Catalog server; Databricks-shaped REST API.",
+        "category": "catalog",
+        "role": "data_catalog",
+        "placement": "container:unitycatalog",
+        "cloud": null,
+        "surfaces": [],
+        "offers": [],
+        "provisions": [],
+        "resource_nouns": []
+      }
+    ],
+    "edges": [
+      {
+        "kind": "access",
+        "key": "access:@clients→rustfs:9000",
+        "from": "@clients",
+        "to": "rustfs",
+        "host_port": 9000
+      },
+      {
+        "kind": "access",
+        "key": "access:@clients→unity-catalog:8080",
+        "from": "@clients",
+        "to": "unity-catalog",
+        "host_port": 8080
+      },
+      {
+        "kind": "uses",
+        "key": "uses:unity-catalog→postgres:relational_db",
+        "from": "unity-catalog",
+        "to": "postgres",
+        "role": "relational_db",
+        "protocol": "PostgreSQL",
+        "resources": [
+          "unitycatalog"
+        ]
+      },
+      {
+        "kind": "uses",
+        "key": "uses:unity-catalog→rustfs:object_store",
+        "from": "unity-catalog",
+        "to": "rustfs",
+        "role": "object_store",
+        "protocol": "S3",
+        "resources": [
+          "unity"
+        ]
+      }
+    ]
+  },
+  "files": [
+    "compose.yaml",
+    ".env",
+    ".gitignore",
+    "client/host.env",
+    "client/container.env",
+    "LAYOUT.md",
+    "README.md",
+    "modules/envoy/envoy.yaml",
+    "modules/envoy/compose.yaml",
+    "modules/envoy/certs.sh",
+    "modules/postgres/compose.yaml",
+    "modules/postgres/init-databases.sh",
+    "modules/postgres/.env/db.env",
+    "modules/postgres/secrets/postgres_password",
+    "modules/rustfs/compose.yaml",
+    "modules/rustfs/.env/rustfs.env",
+    "modules/rustfs/sts_shim.py",
+    "modules/unity-catalog/compose.yaml",
+    "modules/unity-catalog/secrets/server.properties",
+    "modules/unity-catalog/secrets/hibernate.properties",
+    "modules/unity-catalog/storage.txt",
+    "modules/unity-catalog/bootstrap_storage.py"
+  ],
+  "deploy": [
+    {
+      "order": 1,
+      "phase": "start",
+      "id": "up",
+      "title": "Start the stack",
+      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nEach service is then published on its own host port. [LAYOUT.md](LAYOUT.md) lists every route and address."
+    }
+  ]
+}

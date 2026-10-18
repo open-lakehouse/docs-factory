@@ -22,12 +22,20 @@
  * resolved for this target) with its one-line summary and host URL. A how-to
  * nests them under its pointer; any other page gets a bullet of its own.
  *
+ * `:::deployment{key="uc-hybrid/compose.yaml"}` is replaced by that stack's
+ * deployment (content-core deploymentSteps) as an ordered list: download the
+ * bundle, then each Trestle step's title and instructions. A link in them is
+ * relative to the environment's folder, so it becomes the file's name in code.
+ *
  * `environment` null (no script needs a stack) leaves the page as authored,
  * minus any bare `:::environment` marker. `guide` is `{ href, title }`, or null
  * when this emit doesn't publish it. `resolve(key)` is content-core's
  * registryEnvironment for this site (throws on an unknown key), or null, which
  * drops keyed markers too.
  */
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { deploymentSteps } from "../content-core/environment.mjs";
+
 const text = (value) => ({ type: "text", value });
 const code = (value) => ({ type: "inlineCode", value });
 const paragraph = (...children) => ({ type: "paragraph", children });
@@ -122,6 +130,49 @@ function replaceMarkers(node, nodesFor) {
   return found;
 }
 
+/** Instructions Markdown as blocks, its folder-relative links unwrapped to code. */
+function stepBlocks(markdown) {
+  const unlink = (node) => {
+    node.children = node.children?.map((child) => {
+      if (child.type === "link" && !/^([a-z]+:|\/|#)/i.test(child.url)) {
+        return code(child.children.map((c) => c.value ?? "").join(""));
+      }
+      unlink(child);
+      return child;
+    });
+  };
+  const root = fromMarkdown(markdown);
+  unlink(root);
+  return root.children;
+}
+
+function deploymentList(env) {
+  return {
+    type: "list",
+    ordered: true,
+    start: 1,
+    spread: true,
+    children: deploymentSteps(env).map(({ title, markdown }) => ({
+      type: "listItem",
+      spread: true,
+      children: [paragraph({ type: "strong", children: [text(title)] }), ...stepBlocks(markdown)],
+    })),
+  };
+}
+
+/** Replace each `:::deployment{key}` marker under `node`; drop them without `resolve`. */
+function replaceDeployments(node, resolve) {
+  if (!node.children) return;
+  node.children = node.children.flatMap((child) => {
+    if (!isDirective("deployment")(child)) {
+      replaceDeployments(child, resolve);
+      return [child];
+    }
+    const key = child.attributes?.key;
+    return key && resolve ? [deploymentList(resolve(key))] : [];
+  });
+}
+
 function findDirective(node, name) {
   for (const child of node.children ?? []) {
     if (isDirective(name)(child)) return child;
@@ -157,6 +208,7 @@ export default function remarkPrerequisitesEnv({
   services = [],
 }) {
   return (tree) => {
+    replaceDeployments(tree, resolve);
     const nodesFor = (key) => {
       if (key) return resolve ? [commandsBlock(resolve(key))] : [];
       return environment ? startNodes(environment) : [];

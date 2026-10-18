@@ -91,4 +91,20 @@ views {
       "
     }
   }
+
+  deployment view ucDeploymentPatterns_hosted {
+    title "Fully hosted Unity Catalog"
+    description "
+      Every service runs in the cloud; only the clients run on your machine.
+    "
+
+    include ucHosted.**
+    // Nodes take their kind's look otherwise: a cylinder for an implementation
+    // and the Rust icon our own services carry.
+    style ucHosted.workstation.clients, ucHosted.cloud.unityCatalog {
+      shape rectangle
+      icon none
+    }
+    autoLayout LeftRight
+  }
 }

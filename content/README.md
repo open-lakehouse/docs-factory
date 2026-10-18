@@ -198,11 +198,12 @@ comments) and a `*_cli.py` driver that opens the engine and runs one region at
 a time with `docsnip.sqlregions.run`, or pipes `sqlregions.text(...)` into the
 shell itself, with `verifies = "<name>.sql"`.
 Every Unity Catalog page runs against a shared, Trestle-generated environment:
-[`envs/unitycatalog/compose.yaml`](../envs/unitycatalog/README.md) for the
+[`envs/unitycatalog/compose.yaml`](../envs/README.md) for the
 server on its own, or `envs/uc-aws/compose.yaml` for the server with simulated
 S3 and a PostgreSQL metastore. Scripts point
-their `[tool.docs-factory] compose` at one of them. Readers get the same files
-as `/env/uc-docs-env.tar.gz` from the emitted site, and the variables a host
+their `[tool.docs-factory] compose` at one of them. Readers download each one on
+its own from the emitted site, as `/env/<folder>.tar.gz` (`/env/uc-aws.tar.gz`),
+which extracts to `uc-docs-env/<folder>/`, and the variables a host
 client needs for a stack come from its `client-env` in
 `envs/environments.yml`. The server bind-mounts
 `UC_DOCS_ROOT` (default `/tmp/uc-docs`) at the same path in the container, for
@@ -243,6 +244,14 @@ Diátaxis type wants them:
   that stack's download, start, and `export` commands. A page with no scripts
   that still walks through a stack declares it:
   `:::prerequisites{environment="uc-aws/compose.yaml"}`.
+- **A stack with setup beyond `docker compose up`** (hosted resources to
+  create, secrets to supply) gets `:::deployment{key="uc-hybrid/compose.yaml"}`,
+  an empty container that renders the whole deployment as a numbered list:
+  download the environment's archive and open bash in its folder, load the
+  helpers the steps use, then each of Trestle's steps from the environment's
+  `plan.json` with its instructions and the commands its script runs, so the
+  reader sees and can copy them, closing with the `export` lines. Its key must be a generated environment. Don't restate the steps in
+  prose; change the recipe and re-render instead.
 
 The `.md` twin also gives the commands under **Companion files**, so an agent
 reading a how-to's twin doesn't have to follow the link.

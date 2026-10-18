@@ -1,0 +1,19 @@
+# Top-level compose entrypoint. Every backing service is pulled in via `include:`.
+# The file list is owned by the planner, not edited by hand.
+name: uc-hybrid
+
+configs:
+  unitycatalog_bootstrap_storage:
+    file: ./modules/unity-catalog/bootstrap_storage.py
+  unitycatalog_storage:
+    file: ./modules/unity-catalog/storage.txt
+
+secrets:
+  unitycatalog_hibernate_properties:
+    file: ./modules/unity-catalog/secrets/hibernate.properties
+  unitycatalog_server_properties:
+    file: ./modules/unity-catalog/secrets/server.properties
+
+include:
+  - path: ./modules/unity-catalog/compose.yaml
+    project_directory: .

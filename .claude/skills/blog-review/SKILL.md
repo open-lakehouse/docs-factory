@@ -37,9 +37,8 @@ clears `status: ready`, and merging that to main is the release.
    Then read its brief, the yardstick for facets c and d (the draft is judged
    against what it set out to do). The brief is the first of these that
    exists:
-   - a plan passed in by the caller (the `author` agent);
    - `blogs/<slug>/brief.md`;
-   - the `## Plan` section of the post's agent PR:
+   - the `## Plan` section of the PR that drafted the post:
      `gh pr list --head blog/<slug> --state all --json url,body --limit 1`.
 
    If none exists, say so in the report and judge (c) and (d) against the post's

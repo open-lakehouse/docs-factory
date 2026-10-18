@@ -43,6 +43,14 @@ _PLAN: dict[str, Any] = {
                 "key": "access:@clients→envoy:8080",
                 "from": "@clients",
                 "to": "envoy",
+                "host_port": 8080,
+            },
+            {
+                "kind": "access",
+                "key": "access:@clients→envoy:9000",
+                "from": "@clients",
+                "to": "envoy",
+                "host_port": 9000,
             },
             {
                 "kind": "route",
@@ -182,6 +190,8 @@ def test_fix_projects_nodes_edges_and_facts(tmp_path):
             },
         ],
         "files": [],
+        "deploy": [],
+        "deploy-setup": None,
     }
     assert envgen.check(root) == []
     assert envgen.fix(root) == []  # idempotent
@@ -233,7 +243,7 @@ def test_a_generated_entry_cant_author_derived_facts(tmp_path):
     )
     root = _fixed(tmp_path, registry=registry)
     with pytest.raises(
-        ValueError, match="takes ports, client-env, services, and files"
+        ValueError, match="takes ports, client-env, services, files, and deploy"
     ):
         environments.load(root)
 
@@ -443,3 +453,36 @@ def test_several_candidates_are_reported_not_failed(tmp_path):
 def test_a_hand_written_environment_isnt_checked(tmp_path):
     root = _with_claims(_fixed(tmp_path), _ICEBERG, compose="unitycatalog/compose.yaml")
     assert envgen.fit(root).errors == []
+
+
+def test_without_a_gateway_a_service_clients_reach_has_its_own_url():
+    plan = copy.deepcopy(_PLAN)
+    plan["gateway"] = {"listeners": []}
+    plan["graph"]["edges"] = [
+        {"kind": "access", "from": "@clients", "to": "unity-catalog", "host_port": 8080}
+    ]
+    plan["services"]["unity-catalog"][0]["endpoints"] = [
+        {"scheme": "http", "host_port": 8080, "path": "/api/2.1/unity-catalog"}
+    ]
+    plan["services"]["postgres"][0]["endpoints"] = [
+        {"scheme": "tcp", "host_port": 5432}
+    ]
+    facts = envgen.facts(plan)
+    assert facts["ports"] == [8080]
+    urls = {s["node"]: s["url"] for s in envgen.services(plan)}
+    assert urls["unity-catalog"] == "http://localhost:8080/api/2.1/unity-catalog"
+    assert urls["postgres"] is None
+
+
+def test_a_hosted_environment_ships_its_recipe_but_no_sensitive_file(tmp_path):
+    plan = copy.deepcopy(_PLAN)
+    plan["graph"]["nodes"][2]["kind"] = "external"
+    plan["files"] = [
+        {"path": "compose.yaml", "sensitive": False},
+        {
+            "path": "modules/unity-catalog/secrets/hibernate.properties",
+            "sensitive": True,
+        },
+    ]
+    root = _repo(tmp_path, plan=plan)
+    assert envgen.runtime_files(root, "uc-aws", plan) == ["compose.yaml", "env.toml"]

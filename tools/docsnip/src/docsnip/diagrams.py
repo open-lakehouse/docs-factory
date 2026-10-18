@@ -46,7 +46,8 @@ def png_for(snapshot: Path) -> Path:
 
 
 def render_env_snapshot(plan: dict, title: str | None) -> str:
-    """The snapshot of a plan's graph, formatted as Trestle's ``stringifyGraphSnapshot``."""
+    """The snapshot of a plan's graph, its viewable files, and its deployment
+    steps, formatted as Trestle's ``stringifyGraphSnapshot``."""
     snapshot: dict[str, object] = {
         "format": SNAPSHOT_FORMAT,
         "version": SNAPSHOT_VERSIONS[-1],
@@ -55,6 +56,12 @@ def render_env_snapshot(plan: dict, title: str | None) -> str:
     if title:
         snapshot["title"] = title
     snapshot["graph"] = plan["graph"]
+    # The diagram opens only listed paths, so a sensitive file stays unlisted.
+    files = [str(f["path"]) for f in plan.get("files") or [] if not f.get("sensitive")]
+    if files:
+        snapshot["files"] = files
+    if plan.get("deploy"):
+        snapshot["deploy"] = plan["deploy"]
     return json.dumps(snapshot, indent=2, ensure_ascii=False) + "\n"
 
 

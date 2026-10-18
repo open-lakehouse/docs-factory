@@ -1,7 +1,7 @@
 # The Trestle revision that renders the docs environments and the committed
-# catalog snapshot (architecture/dist/trestle-catalog.json). A merge commit on
-# Trestle's main, not a release; `just trestle-catalog` installs it.
+# catalog snapshot (architecture/dist/trestle-catalog.json): the merge commit
+# of trestle#154 (deploy step commands); `just trestle-catalog` installs it.
 [trestle]
 git = "https://github.com/open-lakehouse/trestle"
-rev = "605216846ced82fad886f22513f59a3c8ea88717"
+rev = "9c535a5ddc2d8f29ad23acc124e7e8af09ebd0d8"
 package = "olai-trestle"

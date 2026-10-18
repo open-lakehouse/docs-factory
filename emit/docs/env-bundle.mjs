@@ -1,29 +1,29 @@
 /**
- * The downloadable environment bundle: the envs/ folders a site's examples run
- * against, as one deterministic `<bundle>.tar.gz` a reader pipes into `tar -xz`,
- * plus `environments.json`, its machine-readable index for agents.
+ * The downloadable environments: each envs/ folder a site's examples run
+ * against, as its own deterministic `<dir>.tar.gz` a reader pipes into
+ * `tar -xz`, plus `environments.json`, their machine-readable index for agents.
  *
- * The archive keeps the envs/ layout under one root folder, so relative
- * references between stacks still resolve. A generated environment ships only
- * its runtime-file manifest (`files` in envs/environments.generated.json), never
- * its recipe or plan. Byte-identical output for identical inputs keeps planSync
- * from rewriting it on every emit.
+ * Every archive extracts into the same root folder (`<bundle>/<dir>/`), so the
+ * paths pages name hold however many a reader downloads. A generated
+ * environment ships only its runtime-file manifest (`files` in
+ * envs/environments.generated.json). Byte-identical output for identical inputs
+ * keeps planSync from rewriting it on every emit.
  */
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gzipSync } from "node:zlib";
 import {
+  archiveUrl,
   composeParts,
-  exportLines,
-  portList,
   startCommands,
   stopCommand,
 } from "../../site/src/content-core/environment.mjs";
 
 export { loadRegistry } from "../../site/src/content-core/registry.mjs";
 
-// READMEs describe the repo's test setup.
+// A hand-written folder's README describes the repo's test setup. A generated
+// environment's README is Trestle's deployment guide, so its manifest ships it.
 const EXCLUDE = /(^|\/)README\.md$/;
 
 /**
@@ -99,60 +99,26 @@ export function tarGz(entries) {
   return gz;
 }
 
-/** The archive's top-level README: what each stack is and how to run it. */
-export function bundleReadme({ bundle, registry, keys, siteTitle, guideUrl }) {
-  const rows = keys.map((key) => {
-    const { dir, flag } = composeParts(key);
-    const env = registry[key];
-    return `| \`${dir}/\` | \`docker compose ${flag}up -d --wait\` | ${env.title} | ${portList(env.ports)} |`;
-  });
-  const exports = keys.flatMap((key) =>
-    Object.keys(registry[key].clientEnv).length
-      ? [
-          "",
-          `${registry[key].title} also needs, in each terminal you run examples from:`,
-          "",
-          "```bash",
-          ...exportLines(registry[key].clientEnv),
-          "```",
-        ]
-      : [],
-  );
-  return [
-    `# ${bundle}`,
-    "",
-    `Local stacks for the ${siteTitle} documentation. Each needs Docker with Compose v2.`,
-    "Run the command from the folder in the first column:",
-    "",
-    "| Folder | Start | Runs | Host ports |",
-    "| --- | --- | --- | --- |",
-    ...rows,
-    ...exports,
-    "",
-    "Stop a stack from the same folder with `docker compose down`, adding the same",
-    "`-f` option you started it with.",
-    ...(guideUrl ? ["", `More: ${guideUrl}`] : []),
-    "",
-  ].join("\n");
-}
-
 /**
- * The bundle for one site: `{ archive, index }`. `index` is environments.json,
- * the stacks it contains with their exact start and stop commands.
+ * The archives for one site: `{ archives, index, archiveBase }`. `archives`
+ * maps each dir to its `.tar.gz`; `index` is environments.json, each stack with
+ * its archive and exact start and stop commands.
  */
-export function buildEnvBundle({ repoRoot, bundle, dirs, registry, origin, siteTitle, guideUrl }) {
-  const paths = bundlePaths(repoRoot, dirs, registry);
+export function buildEnvBundles({ repoRoot, bundle, dirs, registry, origin, guideUrl }) {
+  const archiveBase = `${origin}/env`;
+  const archives = new Map(
+    dirs.map((dir) => [
+      dir,
+      tarGz(
+        bundlePaths(repoRoot, [dir], registry).map((p) => ({
+          name: `${bundle}/${p}`,
+          data: readFileSync(join(repoRoot, "envs", p)),
+        })),
+      ),
+    ]),
+  );
   // Registry order: the base stack first, then its variants.
-  const keys = Object.keys(registry).filter((k) => paths.includes(k));
-  const bundleUrl = `${origin}/env/${bundle}.tar.gz`;
-  const readme = bundleReadme({ bundle, registry, keys, siteTitle, guideUrl });
-  const archive = tarGz([
-    { name: `${bundle}/README.md`, data: readme },
-    ...paths.map((p) => ({
-      name: `${bundle}/${p}`,
-      data: readFileSync(join(repoRoot, "envs", p)),
-    })),
-  ]);
+  const keys = Object.keys(registry).filter((k) => dirs.includes(composeParts(k).dir));
   const environments = keys.map((key) => {
     const env = registry[key];
     return {
@@ -160,11 +126,12 @@ export function buildEnvBundle({ repoRoot, bundle, dirs, registry, origin, siteT
       title: env.title,
       ports: env.ports,
       env: env.clientEnv,
+      archive: archiveUrl(key, archiveBase),
       dir: `${bundle}/${composeParts(key).dir}`,
-      start: startCommands(key, env, { bundle, bundleUrl }),
+      start: startCommands(key, env, { bundle, archiveBase }),
       stop: stopCommand(key),
     };
   });
-  const index = { version: 1, bundle: bundleUrl, guide: guideUrl, environments };
-  return { archive, index, bundleUrl, keys };
+  const index = { version: 2, guide: guideUrl, environments };
+  return { archives, index, archiveBase, keys };
 }

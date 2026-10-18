@@ -2,8 +2,8 @@
   "format": "docs-factory-trestle-context",
   "version": 1,
   "catalog": {
-    "baseline": "olai-stack-topology@0.0.5",
-    "digest": "sha256:708f93663486c75612ab9f7e8eb0bcf2fc46afd709f9db3f7f428e4ae2c5053b"
+    "baseline": "olai-stack-topology@0.0.8",
+    "digest": "sha256:0e9dec34fead2080124abc151621290e1ec9eb0b344317d7910670e9a01dcb3e"
   },
   "modules": {
     "authelia": {

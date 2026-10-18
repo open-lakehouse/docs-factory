@@ -15,7 +15,7 @@
  * docs change rather than a JSX diff.
  */
 import remarkLikeC4Md from "../plugins/remark-likec4-md.mjs";
-import { LIKEC4_ASSET_BASE, TRESTLE_ASSET_BASE } from "./md-twin.mjs";
+import { LIKEC4_ASSET_BASE, trestleEnvImage } from "./md-twin.mjs";
 
 /** Keep only what the site renders; drafting fields (status, id, refs…) stay home. */
 function frontmatter(draft) {
@@ -56,7 +56,7 @@ export function docsSiteTarget({ assetBase, altText = (entry) => entry.altText }
         : {
             type: "image",
             url: entry.trestle?.env
-              ? `${TRESTLE_ASSET_BASE}/${entry.trestle.env}.png`
+              ? trestleEnvImage(entry.trestle.env)
               : `${assetBase}/${entry.filename}`,
             alt: altText(entry),
             title: entry.trestle ? entry.originalTitle : null,

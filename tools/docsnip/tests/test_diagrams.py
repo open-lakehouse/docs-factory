@@ -75,6 +75,27 @@ def test_env_snapshot_matches_trestle_format():
     assert "→" in text and text.endswith("}\n")  # JSON.stringify(_, null, 2) + "\n"
 
 
+def test_env_snapshot_lists_viewable_files_and_deploy_steps():
+    step = {
+        "order": 1,
+        "phase": "start",
+        "id": "up",
+        "title": "Start",
+        "instructions": "x",
+    }
+    plan = {
+        "graph": _GRAPH,
+        "files": [
+            {"path": "compose.yaml", "sensitive": False},
+            {"path": "modules/postgres/secrets/password", "sensitive": True},
+        ],
+        "deploy": [step],
+    }
+    data = json.loads(diagrams.render_env_snapshot(plan, None))
+    assert data["files"] == ["compose.yaml"]
+    assert data["deploy"] == [step]
+
+
 def test_png_digest_reads_the_text_chunk():
     assert diagrams.png_digest_bytes(_png("abc")) == "abc"
     assert diagrams.png_digest_bytes(_png(None)) is None

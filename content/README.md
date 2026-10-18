@@ -243,6 +243,13 @@ Diátaxis type wants them:
   that stack's download, start, and `export` commands. A page with no scripts
   that still walks through a stack declares it:
   `:::prerequisites{environment="uc-aws/compose.yaml"}`.
+- **A stack with setup beyond `docker compose up`** (hosted resources to
+  create, secrets to supply) gets `:::deployment{key="uc-hybrid/compose.yaml"}`,
+  an empty container that renders the whole deployment as a numbered list:
+  download the bundle, then each of Trestle's steps from the environment's
+  `plan.json`, with its instructions and script, closing with the `export`
+  lines. Its key must be a generated environment. Don't restate the steps in
+  prose; change the recipe and re-render instead.
 
 The `.md` twin also gives the commands under **Companion files**, so an agent
 reading a how-to's twin doesn't have to follow the link.

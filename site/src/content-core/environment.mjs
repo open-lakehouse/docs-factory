@@ -75,12 +75,38 @@ export function registryEnvironment(key, { registry, bundle, bundleUrl }) {
     clientEnv: env.clientEnv ?? {},
     guide: env.guide ?? null,
     services: env.services ?? [],
+    deploy: env.deploy ?? [],
     bundleUrl,
     commands: startCommands(key, env, { bundle, bundleUrl }),
     stop: stopCommand(key),
     dir: `${bundle}/${composeParts(key).dir}`,
     runUrl: null,
   };
+}
+
+/**
+ * A registryEnvironment's deployment as `[{ title, markdown }]`: download the
+ * bundle and enter its folder, then Trestle's steps in order (they run from
+ * that folder), the start step closing with the client env's exports.
+ */
+export function deploymentSteps(env) {
+  const fence = (lines) => ["```bash", ...lines, "```"].join("\n");
+  const [download] = env.commands;
+  const steps = [
+    {
+      title: "Download the environment",
+      markdown: `${fence([download, `cd ${env.dir}`])}\n\nEvery later step runs from this folder.`,
+    },
+  ];
+  for (const step of env.deploy) {
+    let markdown = step.instructions;
+    const exports = exportLines(env.clientEnv);
+    if (step.phase === "start" && exports.length) {
+      markdown += `\n\nThen point your clients at it:\n\n${fence(exports)}`;
+    }
+    steps.push({ title: step.title, markdown });
+  }
+  return steps;
 }
 
 /** "8080" / "8080 and 9000" / "8080, 9000, and 5432". */

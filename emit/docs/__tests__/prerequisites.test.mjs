@@ -237,3 +237,71 @@ test("no services, no service list", async () => {
   const out = await render(site(), TUTORIAL, { diataxis: "tutorial" });
   expect(out).not.toContain("which this page starts");
 });
+
+const DEPLOYED = `---
+title: Deployment patterns
+diataxis: explanation
+project: demo
+---
+
+## Hybrid
+
+:::deployment{key="uc/compose.hosted.yaml"}
+:::
+
+That's all.
+`;
+
+const HOSTED = {
+  ...BUNDLE,
+  registry: {
+    ...BUNDLE.registry,
+    "uc/compose.hosted.yaml": {
+      title: "UC with hosted state",
+      ports: [8080],
+      clientEnv: { UNITY_CATALOG_URL: "http://localhost:8080/api/2.1/unity-catalog" },
+      deploy: [
+        {
+          order: 1,
+          phase: "provision",
+          id: "buckets",
+          title: "Create the buckets",
+          instructions: "Create `unity`:\n\n```bash\nbash deploy/s3.sh\n```",
+        },
+        {
+          order: 2,
+          phase: "start",
+          id: "up",
+          title: "Start the stack",
+          instructions:
+            "```bash\ndocker compose up -d --wait\n```\n\n[LAYOUT.md](LAYOUT.md) lists every address.",
+        },
+      ],
+    },
+  },
+};
+
+test("a :::deployment renders the download, then each step, closing with the exports", async () => {
+  const resolve = (key) => registryEnvironment(key, HOSTED);
+  const out = await render(site(), DEPLOYED, {
+    environment: null,
+    diataxis: "explanation",
+    resolve,
+  });
+  expect(out).not.toContain(":::deployment");
+  const at = (s) => out.indexOf(s);
+  expect(at("1. **Download the environment**")).toBeGreaterThan(at("## Hybrid"));
+  expect(out).toContain("cd uc-docs-env/uc");
+  expect(at("2. **Create the buckets**")).toBeGreaterThan(at("1. **Download"));
+  expect(at("bash deploy/s3.sh")).toBeGreaterThan(at("2. **Create the buckets**"));
+  expect(at("3. **Start the stack**")).toBeGreaterThan(at("bash deploy/s3.sh"));
+  expect(out).toContain("`LAYOUT.md` lists every address.");
+  expect(at("export UNITY_CATALOG_URL=")).toBeGreaterThan(at("3. **Start the stack**"));
+  expect(at("export UNITY_CATALOG_URL=")).toBeLessThan(at("That's all."));
+});
+
+test("a :::deployment without a resolver is dropped", async () => {
+  const out = await render(site(), DEPLOYED, { environment: null, resolve: null });
+  expect(out).not.toContain(":::deployment");
+  expect(out).not.toContain("Download the environment");
+});

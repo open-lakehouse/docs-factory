@@ -24,6 +24,7 @@ _BOX_RE = re.compile(r"^:{3,}prerequisites\b(?:\{([^}\n]*)\})?", re.MULTILINE)
 _DECLARED_RE = re.compile(r'\benvironment="([^"]+)"')
 _MARKER_RE = re.compile(r"^:{3,}environment\s*$", re.MULTILINE)
 _KEYED_RE = re.compile(r'^:{3,}environment\{key="([^"]+)"\}\s*$', re.MULTILINE)
+_DEPLOYMENT_RE = re.compile(r'^:{3,}deployment(?:\{key="([^"]*)"\})?\s*$', re.MULTILINE)
 # The emitter checks that the page exists; see environmentGuide in environment.mjs.
 _GUIDE_RE = re.compile(r"[a-z-]+/[a-z0-9-]+(#[a-z0-9-]+)?")
 
@@ -136,7 +137,9 @@ def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
     one ``:::prerequisites`` (the emitter adds the Docker bullet there), a
     declared ``environment="…"`` must be a registry key, a ``:::environment``
     marker (where the emitter puts the start commands) needs a stack to start,
-    and a keyed ``:::environment{key="…"}`` must name a registry key."""
+    a keyed ``:::environment{key="…"}`` must name a registry key, and a
+    ``:::deployment{key="…"}`` must name a generated one (its steps come from
+    the plan)."""
     from .frontmatter import iter_content_files
 
     try:
@@ -172,6 +175,14 @@ def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
             for key in _KEYED_RE.findall(text)
             if key not in envs
         )
+        for key in _DEPLOYMENT_RE.findall(text):
+            if not key:
+                errors.append(f'{md}: :::deployment needs key="<compose file>"')
+            elif key not in envs or envs[key].generated is None:
+                errors.append(
+                    f"{md}: :::deployment key {key} is not a generated environment "
+                    f"in {REGISTRY}"
+                )
         markers = len(_MARKER_RE.findall(text))
         if markers > 1:
             errors.append(f"{md}: more than one :::environment")

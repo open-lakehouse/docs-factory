@@ -106,6 +106,16 @@ def test_keyed_environment_marker_must_be_registered(tmp_path) -> None:
     assert len(errors) == 1 and "key uc/nope.yaml has no entry" in errors[0]
 
 
+def test_deployment_marker_must_name_a_generated_environment(tmp_path) -> None:
+    root = _repo(tmp_path, "environments:\n  uc/compose.yaml: { title: UC }\n")
+    (root / "content" / "p" / "how-to" / "x").mkdir(parents=True)
+    _page(root, ':::deployment{key="uc/compose.yaml"}\n:::\n\n:::deployment\n:::\n')
+    errors = environments.check_pages(root, root / "content", [])
+    assert len(errors) == 2
+    assert "key uc/compose.yaml is not a generated environment" in errors[0]
+    assert 'needs key="<compose file>"' in errors[1]
+
+
 def test_guide_must_name_a_page(tmp_path) -> None:
     root = _repo(
         tmp_path, "environments:\n  uc/compose.yaml: { title: UC, guide: run }\n"

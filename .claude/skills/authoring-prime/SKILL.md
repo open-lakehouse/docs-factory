@@ -50,6 +50,7 @@ sites.
 | `:::tab[Label]` … `:::` | one tab per interface | Adjacent tabs form one label-synced group. Use `::::tab` when a tab wraps a `:::` directive. |
 | `:::prerequisites` … `:::` | how-to and tutorial opener | Holds tools to install (linked) and the state the page assumes, a line each. Never Docker, the server, ports, or pins (`content/README.md`). |
 | `:::environment` … `:::` | a page whose task *is* starting a stack | Must be a container: an empty pair, or keyed `:::environment{key="uc-aws/compose.yaml"}`. |
+| `:::deployment{key="uc-hybrid/compose.yaml"}` … `:::` | walking through a generated stack's whole deployment | Renders the download, then Trestle's steps (provision, configure, start) as a numbered list. The key must be a generated environment. |
 | `::::journey` … `::::` | tutorial or blog walkthrough | `###` headings inside become timeline steps. A tutorial's first step (start the environment) is added by the emitter. |
 | `:::note`, `:::tip`, `:::info`, `:::warning`, `:::danger`, `:::caution` | callouts | Use `:::warning` for surprising replacement or data loss and `:::danger` for irreversible cascades. Tutorial side information goes in `:::note`/`:::tip`. |
 | `:::tldr` … `:::` | blogs only | 3–5 fact-rich bullets near the top. |

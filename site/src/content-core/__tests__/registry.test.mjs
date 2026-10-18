@@ -29,10 +29,11 @@ test("an authored entry reads as written", () => {
     guide: null,
     services: [],
     files: null,
+    deploy: [],
   });
 });
 
-test("a generated entry takes ports, client env, services, and files from the derived facts", () => {
+test("a generated entry takes ports, client env, services, files, and deploy steps from the derived facts", () => {
   const root = repo(
     `${AUTHORED}  uc-aws/compose.yaml:
     title: UC with S3
@@ -46,6 +47,7 @@ test("a generated entry takes ports, client env, services, and files from the de
           "client-env": { AWS_REGION: "us-east-1" },
           services: [{ node: "rustfs", element: "rustfs", role: "object_store", url: null }],
           files: ["compose.yaml"],
+          deploy: [{ order: 1, phase: "start", id: "up", title: "Start", instructions: "x" }],
         },
       },
     },
@@ -57,6 +59,7 @@ test("a generated entry takes ports, client env, services, and files from the de
     guide: null,
     services: [{ node: "rustfs", element: "rustfs", role: "object_store", url: null }],
     files: ["compose.yaml"],
+    deploy: [{ order: 1, phase: "start", id: "up", title: "Start", instructions: "x" }],
   });
 });
 

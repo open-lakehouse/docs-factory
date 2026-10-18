@@ -74,7 +74,11 @@ import remarkScriptLinks from "../plugins/remark-script-links.mjs";
 import remarkStripSourceMeta from "../plugins/remark-strip-source-meta.mjs";
 import remarkUnwrapDeadLinks from "../plugins/remark-unwrap-dead-links.mjs";
 import { docsSiteTarget } from "../targets/docs-site.mjs";
-import mdTwin, { LIKEC4_ASSET_BASE, TRESTLE_ASSET_BASE } from "../targets/md-twin.mjs";
+import mdTwin, {
+  LIKEC4_ASSET_BASE,
+  TRESTLE_ASSET_BASE,
+  trestleEnvImage,
+} from "../targets/md-twin.mjs";
 import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
   renderConcepts,
@@ -179,7 +183,7 @@ const SNAPSHOT_SUFFIX = ".trestle-graph.json";
  * site-wide, anything else under its page's `assetBase`. */
 function imageUrl(entry, assetBase) {
   if (entry.likec4) return `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`;
-  if (entry.trestle?.env) return `${TRESTLE_ASSET_BASE}/${entry.trestle.env}.png`;
+  if (entry.trestle?.env) return trestleEnvImage(entry.trestle.env);
   return `${assetBase}/${entry.filename}`;
 }
 
@@ -396,10 +400,18 @@ export async function emitDocs({ site, drafts = false }) {
         files.set(`public${url}`, readFileSync(image.localPath));
         // remark-trestle-views fetches the snapshot from beside the PNG.
         if (image.trestle) {
-          files.set(
-            `public${url.replace(/\.png$/, SNAPSHOT_SUFFIX)}`,
-            readFileSync(image.localPath.replace(/\.png$/, SNAPSHOT_SUFFIX)),
-          );
+          const snapshot = readFileSync(image.localPath.replace(/\.png$/, SNAPSHOT_SUFFIX));
+          files.set(`public${url.replace(/\.png$/, SNAPSHOT_SUFFIX)}`, snapshot);
+          // A node's files open from beside the snapshot. Only the manifest ships,
+          // and docsnip leaves sensitive files out of it.
+          if (image.trestle.env) {
+            for (const path of JSON.parse(snapshot.toString("utf8")).files ?? []) {
+              files.set(
+                `public${dirname(url)}/${path}`,
+                readFileSync(join(dirname(image.localPath), path)),
+              );
+            }
+          }
         }
         hasLikeC4 ||= Boolean(image.likec4);
         hasTrestle ||= Boolean(image.trestle);

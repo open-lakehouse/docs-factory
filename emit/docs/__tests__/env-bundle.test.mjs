@@ -19,7 +19,7 @@ const OPTS = {
   guideUrl: "https://docs.example.io/how-to/run-local-server",
 };
 
-test("bundle paths skip READMEs and a generated environment's recipe and plan", () => {
+test("bundle paths ship a generated environment's deployment guide, not its recipe and plan", () => {
   const paths = bundlePaths(REPO_ROOT, OPTS.dirs, OPTS.registry);
   expect(paths).toContain("unitycatalog/compose.yaml");
   expect(paths).toContain("uc-aws/compose.yaml");
@@ -27,7 +27,7 @@ test("bundle paths skip READMEs and a generated environment's recipe and plan", 
   expect(paths).toContain("uc-aws/modules/rustfs/.env/rustfs.env");
   expect(paths).not.toContain("uc-aws/env.toml");
   expect(paths).not.toContain("uc-aws/plan.json");
-  expect(paths.some((p) => p.endsWith("README.md"))).toBe(false);
+  expect(paths).toContain("uc-aws/README.md");
 });
 
 test("a manifest entry git doesn't track fails", () => {

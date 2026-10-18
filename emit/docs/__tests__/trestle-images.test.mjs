@@ -42,7 +42,7 @@ async function render(target) {
 
 test("the docs site serves environment diagrams site-wide and keeps the title", async () => {
   const { output, manifest } = await render(docsSiteTarget({ assetBase: "/assets/how-to/run" }));
-  expect(output).toContain('![The demo stack](/assets/trestle/demo.png "trestle=demo")');
+  expect(output).toContain('![The demo stack](/assets/trestle/demo/diagram.png "trestle=demo")');
   expect(output).toContain(
     '![A sketch](/assets/how-to/run/sketch.png "trestle=./assets/sketch.trestle-graph.json")',
   );
@@ -51,6 +51,6 @@ test("the docs site serves environment diagrams site-wide and keeps the title", 
 
 test("the .md twin keeps a plain image", async () => {
   const { output } = await render(mdTwin);
-  expect(output).toContain("![The demo stack](/assets/trestle/demo.png)");
+  expect(output).toContain("![The demo stack](/assets/trestle/demo/diagram.png)");
   expect(output).toContain("![A sketch](sketch.png)");
 });

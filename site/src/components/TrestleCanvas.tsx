@@ -133,12 +133,20 @@ export default function TrestleCanvas({
   snapshot,
   colorMode,
   label,
+  readFile,
 }: {
   snapshot: unknown;
   colorMode: "light" | "dark";
   label?: string;
+  readFile?: (path: string) => Promise<string>;
 }) {
   return (
-    <EnvironmentDiagram snapshot={snapshot} label={label} colorMode={colorMode} slots={slots} />
+    <EnvironmentDiagram
+      snapshot={snapshot}
+      label={label}
+      colorMode={colorMode}
+      slots={slots}
+      readFile={readFile}
+    />
   );
 }

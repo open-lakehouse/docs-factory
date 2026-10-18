@@ -23,7 +23,8 @@ import {
 
 export { loadRegistry } from "../../site/src/content-core/registry.mjs";
 
-// READMEs describe the repo's test setup.
+// A hand-written folder's README describes the repo's test setup. A generated
+// environment's README is Trestle's deployment guide, so its manifest ships it.
 const EXCLUDE = /(^|\/)README\.md$/;
 
 /**

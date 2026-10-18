@@ -37,8 +37,15 @@ import remarkTldrMd from "../plugins/remark-tldr-md.mjs";
 /** Where the twin driver serves the regenerated LikeC4 PNGs from. Kept here so the
  * driver's PNG copy destination and this renderImage URL agree on one path. */
 export const LIKEC4_ASSET_BASE = "/assets/likec4";
-/** Where environment diagrams are served, one per environment, beside their snapshots. */
+/** Where environment diagrams are served, one folder per environment holding the
+ * PNG, its snapshot, and the render's viewable files at their envs/<name>/ paths. */
 export const TRESTLE_ASSET_BASE = "/assets/trestle";
+
+/** An environment diagram's site URL: the same layout as envs/<name>/, so the
+ * snapshot's file paths resolve beside it in the preview and on the site alike. */
+export function trestleEnvImage(env) {
+  return `${TRESTLE_ASSET_BASE}/${env}/diagram.png`;
+}
 
 /**
  * The mdast node left for a STANDALONE image: a likec4 view points at the
@@ -50,7 +57,7 @@ export function renderImage(entry) {
   const url = entry.likec4
     ? `${LIKEC4_ASSET_BASE}/${entry.likec4}.png`
     : entry.trestle?.env
-      ? `${TRESTLE_ASSET_BASE}/${entry.trestle.env}.png`
+      ? trestleEnvImage(entry.trestle.env)
       : entry.filename;
   return {
     type: "paragraph",

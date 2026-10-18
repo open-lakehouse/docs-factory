@@ -1,8 +1,17 @@
 import { useTheme } from "next-themes";
-import { lazy, Suspense, useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 
 // React Flow + ELK are ~2 MB; only pages with a diagram pay for them.
 const TrestleCanvas = lazy(() => import("./TrestleCanvas"));
+
+// A snapshot's file paths are relative to the render it sits in.
+function filesBeside(snapshot: string) {
+  const base = snapshot.slice(0, snapshot.lastIndexOf("/") + 1);
+  return (path: string) =>
+    fetch(base + path).then((r) =>
+      r.ok ? r.text() : Promise.reject(new Error(`${path}: HTTP ${r.status}`)),
+    );
+}
 
 /**
  * Markdown-facing Trestle renderer. `remark-trestle-views` turns
@@ -20,6 +29,7 @@ export function TrestleDiagram({
 }) {
   const { resolvedTheme } = useTheme();
   const [data, setData] = useState<unknown>(null);
+  const readFile = useMemo(() => filesBeside(snapshot), [snapshot]);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
@@ -42,6 +52,7 @@ export function TrestleDiagram({
             snapshot={data}
             label={alt || undefined}
             colorMode={resolvedTheme === "dark" ? "dark" : "light"}
+            readFile={readFile}
           />
         </Suspense>
       ) : (

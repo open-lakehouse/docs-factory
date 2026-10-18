@@ -99,7 +99,10 @@ export function deploymentSteps(env) {
     },
   ];
   for (const step of env.deploy) {
-    let markdown = step.instructions;
+    // A step's script is a path in the plan; Trestle's README adds the command too.
+    let markdown = step.script
+      ? `${step.instructions}\n\n${fence([`bash ${step.script}`])}`
+      : step.instructions;
     const exports = exportLines(env.clientEnv);
     if (step.phase === "start" && exports.length) {
       markdown += `\n\nThen point your clients at it:\n\n${fence(exports)}`;

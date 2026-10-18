@@ -266,7 +266,8 @@ const HOSTED = {
           phase: "provision",
           id: "buckets",
           title: "Create the buckets",
-          instructions: "Create `unity`:\n\n```bash\nbash deploy/s3.sh\n```",
+          instructions: "Create `unity`.",
+          script: "deploy/s3.sh",
         },
         {
           order: 2,

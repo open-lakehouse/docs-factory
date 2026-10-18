@@ -191,6 +191,9 @@ nav:
         id: E04
       - page: explanation/credential-vending
         id: E05
+      - page: explanation/deployment-patterns
+        id: E11
+        label: Deployment patterns
       - planned: E06
         title: Authentication and identity providers
       - planned: E07

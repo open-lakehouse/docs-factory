@@ -1,0 +1,40 @@
+// The fully hosted Unity Catalog deployment pattern, for the deployment patterns
+// page (content/unitycatalog/explanation/005-deployment-patterns). The local and
+// hybrid patterns are generated environments (generated/uc-local.likec4,
+// generated/uc-hybrid.likec4); no environment renders this one, so it is drawn
+// by hand.
+
+deployment {
+
+  environment ucHosted "Fully hosted Unity Catalog" {
+
+    workstation = environment "Your machine" {
+      clients = service "Clients" {
+        description "Engines, SDKs, and the CLI. They reach the catalog over its REST API and read and write data with the credentials it vends."
+        instanceOf lakehouse.queryEngine
+      }
+    }
+
+    cloud = environment "Cloud" {
+      unityCatalog = service "Unity Catalog" {
+        description "The catalog server, with authentication and authorization on. It keeps no state of its own."
+        instanceOf unityCatalogOSS
+      }
+
+      metastore = datastore "PostgreSQL" {
+        description "A managed PostgreSQL database: the catalog's metadata."
+        instanceOf postgresql
+      }
+
+      storage = datastore "Object storage" {
+        description "S3-compatible buckets: the tables' and volumes' files."
+        instanceOf lakehouse.objectStorage
+      }
+    }
+
+    ucHosted.workstation.clients -> ucHosted.cloud.unityCatalog "REST API over HTTPS"
+    ucHosted.workstation.clients -> ucHosted.cloud.storage "reads and writes files with vended credentials"
+    ucHosted.cloud.unityCatalog -[dependsOn]-> ucHosted.cloud.metastore "PostgreSQL"
+    ucHosted.cloud.unityCatalog -[consumes]-> ucHosted.cloud.storage "S3"
+  }
+}

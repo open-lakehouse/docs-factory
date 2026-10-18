@@ -7,9 +7,8 @@ description: |
   altitude, concrete procedures, structure through the model, style,
   citability) and report ranked Blocker / Should-fix / Suggestion findings
   with exact lines. Reports only, never edits. Use when asked to review docs
-  changes or a docs PR, check whether a page is ready for reviewers, or run
-  the docs review inside the author agent. `lite` runs the gate and facets
-  (a)–(c) only.
+  changes or a docs PR, or check whether a page is ready for reviewers.
+  `lite` runs the gate and facets (a)–(c) only.
 argument-hint: 'Optional: page or folder path, PR number, or nothing for git-changed content; optional lite'
 ---
 
@@ -52,8 +51,8 @@ otherwise, per step 4). Don't re-flag anything `docsnip prose` already
 reported.
 
 Find the page's plan, the yardstick for facets (b) and (d). Use the first of
-these that exists: the caller's placement plan; the `## Plan` section of its
-agent PR (`gh pr list --head docs/<project>-<slug> --state all --json body
+these that exists: the caller's placement plan; the `## Plan` section of the PR
+that drafted it (`gh pr list --head docs/<project>-<slug> --state all --json body
 --limit 1`); or its backlog row in `docs/design/<project>-documentation-plan.md`
 or its content request. Without any of them, judge the page against its
 bucket and say so.
@@ -134,6 +133,5 @@ End with: `Reviewed {N} page(s): {B} blockers, {S} should-fix, {U} suggestions.`
 Then add a line saying the review is advisory and that approval happens in the
 review app.
 
-When the caller is the author agent, return the list as-is. When a human
-asked about a PR, ask before posting findings as PR comments, and post only to
-lines the PR diff shows.
+When a human asked about a PR, ask before posting findings as PR comments, and
+post only to lines the PR diff shows.

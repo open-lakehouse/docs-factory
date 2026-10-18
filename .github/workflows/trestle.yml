@@ -13,6 +13,7 @@ on:
       - "architecture/model/deployment/generated/**"
       - "envs/**"
       - ".github/workflows/trestle.yml"
+      - "scripts/env-render.sh"
   pull_request:
     paths: *trestle-paths
   schedule:
@@ -66,9 +67,7 @@ jobs:
         run: uv run docsnip trestle
       - name: Re-render the generated environments
         run: |
-          for recipe in envs/*/env.toml; do
-            .tools/trestle/bin/trestle env render "$(dirname "$recipe")" >/dev/null
-          done
+          scripts/env-render.sh
           uv run docsnip envs --fix
       - name: Fail on a stale environment
         run: |

@@ -173,7 +173,7 @@ them end to end, with review gates.
    `content/conftest.py` runs the script in the default test lane.
 4. Unity Catalog pages don't ship a compose file. Point the script's
    `[tool.docs-factory] compose` at the shared, Trestle-generated
-   [`envs/unitycatalog`](envs/unitycatalog/README.md) server (`compose.yaml`),
+   [`envs/unitycatalog`](envs/README.md) server (`compose.yaml`),
    or `envs/uc-aws/compose.yaml` for S3 and PostgreSQL; every compose file needs
    an entry in [`envs/environments.yml`](envs/environments.yml). A generated
    environment is regenerated as a unit (`just env-render`), never hand-edited

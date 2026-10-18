@@ -198,7 +198,7 @@ comments) and a `*_cli.py` driver that opens the engine and runs one region at
 a time with `docsnip.sqlregions.run`, or pipes `sqlregions.text(...)` into the
 shell itself, with `verifies = "<name>.sql"`.
 Every Unity Catalog page runs against a shared, Trestle-generated environment:
-[`envs/unitycatalog/compose.yaml`](../envs/unitycatalog/README.md) for the
+[`envs/unitycatalog/compose.yaml`](../envs/README.md) for the
 server on its own, or `envs/uc-aws/compose.yaml` for the server with simulated
 S3 and a PostgreSQL metastore. Scripts point
 their `[tool.docs-factory] compose` at one of them. Readers get the same files

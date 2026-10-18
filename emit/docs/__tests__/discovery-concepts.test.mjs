@@ -83,16 +83,20 @@ const out = JSON.parse(
   renderConcepts(projection, {
     title: "Test",
     origin: ORIGIN,
-    bundle: `${ORIGIN}/env/b.tar.gz`,
     environments: [
-      { key: "uc/compose.yaml", title: "UC", guide: "/how-to/run-local-server#s3" },
+      {
+        key: "uc/compose.yaml",
+        title: "UC",
+        archive: `${ORIGIN}/env/uc.tar.gz`,
+        guide: "/how-to/run-local-server#s3",
+      },
       { key: "other/compose.yaml", title: "Other", guide: "/how-to/unpublished" },
     ],
   }),
 );
 
 test("concepts, edges, environments, and journeys", () => {
-  expect(out.version).toBe(1);
+  expect(out.version).toBe(2);
   expect(out.site).toEqual({ title: "Test", origin: ORIGIN });
   expect(out.concepts.map((c) => c.id)).toEqual([
     "lakehouse.table",
@@ -131,7 +135,7 @@ test("concepts, edges, environments, and journeys", () => {
   expect(out.environments[0]).toEqual({
     key: "uc/compose.yaml",
     title: "UC",
-    bundle: `${ORIGIN}/env/b.tar.gz`,
+    archive: `${ORIGIN}/env/uc.tar.gz`,
     guide: `${ORIGIN}/how-to/run-local-server#s3`,
     services: [
       { element: "unityCatalogOSS", role: "data_catalog", url: "http://localhost:8080" },

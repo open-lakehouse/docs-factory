@@ -344,7 +344,7 @@ and hands the registry's `client-env` to the script, so the variables a reader
 exports are the ones the test uses. A hand-written stack falls back to the
 service-port lookup.
 
-**The reader bundle.** `/env/uc-docs-env.tar.gz` ships exactly each generated
+**The reader archives.** `/env/<name>.tar.gz` ships exactly the generated
 environment's `files` manifest and fails on an untracked entry, so readers get
 what CI runs.
 

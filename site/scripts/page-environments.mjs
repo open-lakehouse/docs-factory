@@ -44,7 +44,7 @@ export function environmentResolver({
     .map((site) => ({
       site,
       scripts: entries.map((e) => scriptEntry(e, { hrefFor: site.hrefFor })),
-      bundleUrl: `${site.origin}/env/${site.env.bundle}.tar.gz`,
+      archiveBase: `${site.origin}/env`,
       projection: projectionFor(site),
       guidePage: (bucket, slug) => {
         const identity = { area: "docs", project: site.project, bucket, slug };
@@ -65,7 +65,7 @@ export function environmentResolver({
     if (!entry) return null;
     const route = entry.site.hrefFor(identity);
     const owned = entry.scripts.filter((s) => s.tutorialRoute === route);
-    const bundle = { registry, bundle: entry.site.env.bundle, bundleUrl: entry.bundleUrl };
+    const bundle = { registry, bundle: entry.site.env.bundle, archiveBase: entry.archiveBase };
     const environment = pageEnvironment(owned, {
       ...bundle,
       origin: entry.site.origin,

@@ -93,7 +93,7 @@ const BUNDLE = {
     },
   },
   bundle: "uc-docs-env",
-  bundleUrl: "https://d.io/env/uc-docs-env.tar.gz",
+  archiveBase: "https://d.io/env",
 };
 const ENV = pageEnvironment([{ kind: "python", environment: "uc/compose.aws.yaml" }], BUNDLE);
 const RESOLVE = (key) => registryEnvironment(key, BUNDLE);
@@ -101,7 +101,7 @@ const GUIDE = { href: "/how-to/run-local-server#with-s3", title: "Run a local se
 const DOCKER =
   "- [Docker](https://docs.docker.com/get-started/get-docker/) with Compose v2, for the local environment.";
 const COMMANDS = [
-  "curl -fsSL https://d.io/env/uc-docs-env.tar.gz | tar -xz",
+  "curl -fsSL https://d.io/env/uc.tar.gz | tar -xz",
   "cd uc-docs-env/uc && docker compose -f compose.aws.yaml up -d --wait",
   "export AWS_ALLOW_HTTP=true",
 ].join("\n");
@@ -260,6 +260,7 @@ const HOSTED = {
       title: "UC with hosted state",
       ports: [8080],
       clientEnv: { UNITY_CATALOG_URL: "http://localhost:8080/api/2.1/unity-catalog" },
+      deploySetup: "save_secret() { :; }\n",
       deploy: [
         {
           order: 1,
@@ -268,9 +269,18 @@ const HOSTED = {
           title: "Create the buckets",
           instructions: "Create `unity`.",
           script: "deploy/s3.sh",
+          commands: "aws s3api create-bucket --bucket unity\n",
         },
         {
           order: 2,
+          phase: "provision",
+          id: "legacy",
+          title: "Run a script from an older plan",
+          instructions: "No commands in the plan.",
+          script: "deploy/old.sh",
+        },
+        {
+          order: 3,
           phase: "start",
           id: "up",
           title: "Start the stack",
@@ -282,7 +292,7 @@ const HOSTED = {
   },
 };
 
-test("a :::deployment renders the download, then each step, closing with the exports", async () => {
+test("a :::deployment renders the download, the helpers, then each step's commands", async () => {
   const resolve = (key) => registryEnvironment(key, HOSTED);
   const out = await render(site(), DEPLOYED, {
     environment: null,
@@ -292,12 +302,18 @@ test("a :::deployment renders the download, then each step, closing with the exp
   expect(out).not.toContain(":::deployment");
   const at = (s) => out.indexOf(s);
   expect(at("1. **Download the environment**")).toBeGreaterThan(at("## Hybrid"));
-  expect(out).toContain("cd uc-docs-env/uc");
-  expect(at("2. **Create the buckets**")).toBeGreaterThan(at("1. **Download"));
-  expect(at("bash deploy/s3.sh")).toBeGreaterThan(at("2. **Create the buckets**"));
-  expect(at("3. **Start the stack**")).toBeGreaterThan(at("bash deploy/s3.sh"));
+  expect(out).toContain(
+    "curl -fsSL https://d.io/env/uc.tar.gz | tar -xz\n   cd uc-docs-env/uc\n   bash",
+  );
+  expect(at("2. **Load the deployment helpers**")).toBeGreaterThan(at("1. **Download"));
+  expect(at("save_secret() { :; }")).toBeGreaterThan(at("2. **Load"));
+  expect(at("3. **Create the buckets**")).toBeGreaterThan(at("save_secret() { :; }"));
+  expect(at("aws s3api create-bucket --bucket unity")).toBeGreaterThan(at("3. **Create"));
+  expect(out).not.toContain("bash deploy/s3.sh");
+  expect(at("bash deploy/old.sh")).toBeGreaterThan(at("4. **Run a script"));
+  expect(at("5. **Start the stack**")).toBeGreaterThan(at("bash deploy/old.sh"));
   expect(out).toContain("`LAYOUT.md` lists every address.");
-  expect(at("export UNITY_CATALOG_URL=")).toBeGreaterThan(at("3. **Start the stack**"));
+  expect(at("export UNITY_CATALOG_URL=")).toBeGreaterThan(at("5. **Start the stack**"));
   expect(at("export UNITY_CATALOG_URL=")).toBeLessThan(at("That's all."));
 });
 

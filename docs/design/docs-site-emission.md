@@ -25,7 +25,7 @@ from docs-factory, so it can move to another repo unchanged.
 | `src/generated/site.json` | Navigation tree, page list (route, title, section trail, headings, prev/next, the page's scripts), and the REST API references (`apis`). |
 | `src/generated/heads.json` | Per-route `<head>` from `content-core/head.mjs` `pageHead()`; content pages go through `emit/docs/heads.mjs` `docPageHead()`, which also builds the review app's Head tab. |
 | `src/vendor/plugins/` | Verbatim copies of the preview's directive plugins (`site/src/plugins/`). |
-| `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + scripts and their helpers, `env/` (the environment bundle and `environments.json`), images, LikeC4 PNGs and web component. |
+| `public/` | `.md` twins, `llms.txt`, `llms-full.txt`, `sitemap.xml`, `robots.txt`, `scripts.json` + scripts and their helpers, `env/` (one archive per environment and `environments.json`), images, LikeC4 PNGs and web component. |
 | `.docs-emit.json` | The emit manifest (below). |
 
 The shell owns everything else: layout, components, styles, and the prerender
@@ -80,15 +80,17 @@ Each page has companions an agent can use without the HTML:
   write those for the reader. A sibling module the script imports (`_seed.py`) is
   served beside it; such a script runs from a folder holding both, not by URL.
   `docsnip check` fails a served file that mentions repo paths or the harness.
-- **The environment bundle** at `/env/<bundle>.tar.gz`: the `envs/` folders the
-  site declares (`env.dirs` in `emit/docs/sites/<site>.mjs`), re-rooted under one
-  folder so relative references still resolve, minus the factory READMEs,
-  plus a README generated from `envs/environments.yml`. A generated environment
+- **The environment archives** at `/env/<dir>.tar.gz`, one per `envs/` folder
+  the site declares (`env.dirs` in `emit/docs/sites/<site>.mjs`). Each extracts
+  to `<bundle>/<dir>/`, so pages name one path however many a reader downloads.
+  A hand-written folder ships without its README; a generated environment
   contributes only its runtime-file manifest (`files` in
-  `envs/environments.generated.json`), never its recipe or `plan.json`. The archive is
-  byte-identical across runs and machines, so planSync rewrites it only when envs
-  change. `/env/environments.json` lists each stack with its start and stop
-  commands. A page gets the same commands for the stack its scripts need
+  `envs/environments.generated.json`), which includes Trestle's deployment
+  `README.md`, never `plan.json`, and its recipe only when it has hosted
+  resources to re-render against. Archives are byte-identical across runs and
+  machines, so planSync rewrites one only when its folder changes.
+  `/env/environments.json` (version 2) lists each stack with its archive and
+  its start and stop commands. A page gets the same commands for the stack its scripts need
   (`content-core/environment.mjs` `pageEnvironment`), placed by Diátaxis type
   (`remark-prerequisites-env.mjs`): in an authored `:::environment` marker, else
   as a tutorial's first step, else a how-to's `:::prerequisites` box gets one
@@ -96,7 +98,7 @@ Each page has companions an agent can use without the HTML:
   `envs/environments.yml`). The twin's Companion files section always carries
   the commands.
 - **`llms.txt`, `llms-full.txt`, `scripts.json`**, all with absolute URLs.
-  `llms.txt` links `environments.json` and the one-line bundle download.
+  `llms.txt` links `environments.json`, where each stack names its archive.
 
 The shell exposes these on the page itself. A **Copy page** split button next to
 the title copies the twin. Its menu also offers View as Markdown and Copy/Download

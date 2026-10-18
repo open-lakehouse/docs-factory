@@ -18,7 +18,7 @@ const REGISTRY = {
 const OPTS = {
   registry: REGISTRY,
   bundle: "uc-docs-env",
-  bundleUrl: "https://d.io/env/uc-docs-env.tar.gz",
+  archiveBase: "https://d.io/env",
 };
 const py = (environment) => ({ kind: "python", environment });
 
@@ -30,7 +30,7 @@ test("no environment when no script needs one", () => {
 test("the default compose starts without -f", () => {
   const env = pageEnvironment([py("unitycatalog/compose.yaml")], OPTS);
   expect(env.commands).toEqual([
-    "curl -fsSL https://d.io/env/uc-docs-env.tar.gz | tar -xz",
+    "curl -fsSL https://d.io/env/unitycatalog.tar.gz | tar -xz",
     "cd uc-docs-env/unitycatalog && docker compose up -d --wait",
   ]);
   expect(env.stop).toBe("docker compose down");

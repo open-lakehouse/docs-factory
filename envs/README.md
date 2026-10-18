@@ -4,7 +4,7 @@ Trestle generates each folder from its `env.toml` (`just env-render <name>`;
 [`trestle.toml`](trestle.toml) pins the revision). Never edit the rendered
 files (`compose.yaml`, `modules/`, `client/`, `deploy/`, `LAYOUT.md`,
 `README.md`, `plan.json`); change the recipe and re-render. Each folder's
-`README.md` is Trestle's deployment guide for readers and ships in the bundle.
+`README.md` is Trestle's deployment guide for readers and ships in its archive.
 
 | Folder | What runs | Used by |
 | --- | --- | --- |
@@ -46,9 +46,10 @@ has them. `uc-aws` builds the same image from its own copy, `uc-aws/image/`.
 
 ## The bundle
 
-The docs site serves the folders as one archive, `/env/uc-docs-env.tar.gz`,
-with each folder under `uc-docs-env/`. The archive holds only the runtime files
-each environment's manifest lists (`files` in
+The docs site serves each folder as its own archive, `/env/<folder>.tar.gz`,
+which extracts to `uc-docs-env/<folder>/`, so pages name the same path however
+many a reader downloads. An archive holds only the runtime files the
+environment's manifest lists (`files` in
 [`environments.generated.json`](environments.generated.json)), and
 [`environments.yml`](environments.yml) gives each one its title for readers.
 

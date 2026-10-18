@@ -82,7 +82,7 @@ const projection = publicProjection({
 const ENV = {
   key: "unitycatalog/compose.yaml",
   title: "Unity Catalog 0.7.0",
-  bundleUrl: `${uc.origin}/env/uc-docs-env.tar.gz`,
+  bundleUrl: `${uc.origin}/env/unitycatalog.tar.gz`,
 };
 const SET = `${uc.origin}/concepts.json`;
 
@@ -115,7 +115,7 @@ test("a how-to that runs an environment is a HowTo with its public tools", () =>
       url: "https://github.com/unitycatalog/unitycatalog",
     },
   ]);
-  expect(ld.dependencies).toBe(`Unity Catalog 0.7.0: ${uc.origin}/env/uc-docs-env.tar.gz`);
+  expect(ld.dependencies).toBe(`Unity Catalog 0.7.0: ${uc.origin}/env/unitycatalog.tar.gz`);
   expect(JSON.stringify(ld)).not.toContain("headwaters");
 });
 

@@ -89,7 +89,7 @@ import {
   sitemapUrls,
   toEntry,
 } from "./discovery.mjs";
-import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
+import { buildEnvBundles, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
 import {
   loadCompat,
@@ -270,18 +270,17 @@ export async function emitDocs({ site, drafts = false }) {
       `${JSON.stringify({ format: COVERAGE_FORMAT, version: COVERAGE_VERSION, engines: coverage }, null, 2)}\n`,
     );
 
-    // The env bundle. Its guide link only resolves when this emit publishes the page.
+    // The env archives. Their guide link only resolves when this emit publishes the page.
     const registry = loadRegistry(REPO_ROOT);
     let envBundle = null;
     if (site.env) {
       const guideRoute = routeFor(site.env.guide.bucket, site.env.guide.slug);
-      envBundle = buildEnvBundle({
+      envBundle = buildEnvBundles({
         repoRoot: REPO_ROOT,
         bundle: site.env.bundle,
         dirs: site.env.dirs,
         registry,
         origin,
-        siteTitle: site.title,
         guideUrl: routes.has(guideRoute) ? `${origin}${guideRoute}` : null,
       });
       envBundle.guide = routes.has(guideRoute)
@@ -295,7 +294,8 @@ export async function emitDocs({ site, drafts = false }) {
         if (env.guide && !allRoutes.has(routeFor(bucket, slug)))
           throw new Error(`envs/environments.yml: ${key}: guide ${env.guide} is not a page`);
       }
-      files.set(`public/env/${site.env.bundle}.tar.gz`, envBundle.archive);
+      for (const [dir, archive] of envBundle.archives)
+        files.set(`public/env/${dir}.tar.gz`, archive);
       const index = { ...envBundle.index, concepts: `${origin}/concepts.json` };
       files.set("public/env/environments.json", `${JSON.stringify(index, null, 2)}\n`);
     }
@@ -343,7 +343,7 @@ export async function emitDocs({ site, drafts = false }) {
           pageEnvironment(owned, {
             registry,
             bundle: site.env.bundle,
-            bundleUrl: envBundle.bundleUrl,
+            archiveBase: envBundle.archiveBase,
             declared: declaredEnvironment(page.body),
           });
       } catch (err) {
@@ -368,7 +368,7 @@ export async function emitDocs({ site, drafts = false }) {
             return registryEnvironment(key, {
               registry,
               bundle: site.env.bundle,
-              bundleUrl: envBundle.bundleUrl,
+              archiveBase: envBundle.archiveBase,
             });
           } catch (err) {
             throw new Error(`${relative(REPO_ROOT, absPath)}: ${err.message}`);
@@ -492,7 +492,7 @@ export async function emitDocs({ site, drafts = false }) {
         twin: `${route}.md`,
         environment: environment && {
           title: environment.title,
-          bundle: `/env/${site.env.bundle}.tar.gz`,
+          bundle: environment.bundleUrl.slice(origin.length),
           commands: environment.commands,
         },
         scripts: [
@@ -618,7 +618,7 @@ export async function emitDocs({ site, drafts = false }) {
         origin,
         apis,
         environments: envBundle && {
-          bundleUrl: envBundle.bundleUrl,
+          index: `${origin}/env/environments.json`,
           guide: envBundle.guide && `${origin}${envBundle.guide.route}.md`,
         },
         concepts: true,
@@ -629,15 +629,14 @@ export async function emitDocs({ site, drafts = false }) {
       renderConcepts(projection, {
         title: site.title,
         origin,
-        bundle: envBundle?.bundleUrl ?? null,
         environments: envBundle
-          ? envBundle.index.environments.map(({ key, title }) => {
+          ? envBundle.index.environments.map(({ key, title, archive }) => {
               const [bucket, slug] = (registry[key].guide ?? "").split("#")[0].split("/");
               const anchor = registry[key].guide?.split("#")[1];
               const guide = registry[key].guide
                 ? `${routeFor(bucket, slug)}${anchor ? `#${anchor}` : ""}`
                 : routeFor(site.env.guide.bucket, site.env.guide.slug);
-              return { key, title, guide };
+              return { key, title, archive, guide };
             })
           : [],
       }),

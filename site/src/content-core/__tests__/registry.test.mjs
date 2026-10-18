@@ -30,6 +30,7 @@ test("an authored entry reads as written", () => {
     services: [],
     files: null,
     deploy: [],
+    deploySetup: null,
   });
 });
 
@@ -60,6 +61,7 @@ test("a generated entry takes ports, client env, services, files, and deploy ste
     services: [{ node: "rustfs", element: "rustfs", role: "object_store", url: null }],
     files: ["compose.yaml"],
     deploy: [{ order: 1, phase: "start", id: "up", title: "Start", instructions: "x" }],
+    deploySetup: null,
   });
 });
 

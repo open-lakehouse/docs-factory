@@ -14,7 +14,8 @@ import yaml from "js-yaml";
  * `services` is `[{ node, element, role, url }]`, the plan's graph nodes (empty
  * for a hand-written entry); `files` (paths relative to the compose file's
  * folder) is null for a hand-written entry. `deploy` is the plan's ordered
- * deployment steps (`{ order, phase, module?, id, title, instructions, script? }`).
+ * deployment steps (`{ order, phase, module?, id, title, instructions, script?,
+ * commands? }`), and `deploySetup` what a shell runs once before their commands.
  */
 export function loadRegistry(repoRoot) {
   const raw = yaml.load(readFileSync(join(repoRoot, "envs", "environments.yml"), "utf8")) ?? {};
@@ -44,6 +45,7 @@ export function loadRegistry(repoRoot) {
           services: authored.generated ? (e.services ?? []) : [],
           files: authored.generated ? (e.files ?? []) : null,
           deploy: authored.generated ? (e.deploy ?? []) : [],
+          deploySetup: authored.generated ? (e["deploy-setup"] ?? null) : null,
         },
       ];
     }),

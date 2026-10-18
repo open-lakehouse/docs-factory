@@ -298,7 +298,8 @@ def services(plan: dict) -> list[dict[str, object]]:
 
 def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
     """The registry facts a plan settles: host ports, the host client env, the
-    services a reader runs, the bundle's runtime files, and the deployment steps."""
+    services a reader runs, the bundle's runtime files, the deployment steps, and
+    the shell setup their commands need (null when no step has a script)."""
     # Clients reach the stack only over access edges, gateway or not.
     ports = sorted(
         {
@@ -313,6 +314,7 @@ def facts(plan: dict, files: list[str] | None = None) -> dict[str, object]:
         "services": services(plan),
         "files": files or [],
         "deploy": plan.get("deploy") or [],
+        "deploy-setup": plan.get("deploy_setup"),
     }
 
 

@@ -191,6 +191,7 @@ def test_fix_projects_nodes_edges_and_facts(tmp_path):
         ],
         "files": [],
         "deploy": [],
+        "deploy-setup": None,
     }
     assert envgen.check(root) == []
     assert envgen.fix(root) == []  # idempotent

@@ -468,7 +468,7 @@ def test_without_a_gateway_a_service_clients_reach_has_its_own_url():
     ]
     facts = envgen.facts(plan)
     assert facts["ports"] == [8080]
-    urls = {s["node"]: s["url"] for s in facts["services"]}
+    urls = {s["node"]: s["url"] for s in envgen.services(plan)}
     assert urls["unity-catalog"] == "http://localhost:8080/api/2.1/unity-catalog"
     assert urls["postgres"] is None
 

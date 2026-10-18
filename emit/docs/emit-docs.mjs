@@ -88,6 +88,7 @@ import {
 import { buildEnvBundle, loadRegistry } from "./env-bundle.mjs";
 import { docPageHead } from "./heads.mjs";
 import {
+  loadCompat,
   loadModel,
   loadProjection,
   modelLinkResolver,
@@ -95,7 +96,7 @@ import {
   viewAltText,
 } from "./model.mjs";
 import { projectNav } from "./nav.mjs";
-import { searchRecords } from "./search.mjs";
+import { searchContext, searchRecords } from "./search.mjs";
 import { renderedSections } from "./sections.mjs";
 import {
   applySync,
@@ -298,6 +299,7 @@ export async function emitDocs({ site, drafts = false }) {
     // 3. Pages.
     const links = linkErrors();
     const model = loadModel();
+    const compat = loadCompat(site);
     const explainers = new Map(
       selected
         .filter((p) => typeof p.meta.explains === "string")
@@ -460,7 +462,13 @@ export async function emitDocs({ site, drafts = false }) {
         level,
       }));
       const title = page.meta.title ?? identity.slug;
-      search.push(...searchRecords({ route, title, section: page.section }, renderedBody));
+      search.push(
+        ...searchRecords(
+          { route, title, section: page.section },
+          renderedBody,
+          searchContext(page, { model, compat }),
+        ),
+      );
       pages.push({
         route,
         file,
@@ -584,7 +592,7 @@ export async function emitDocs({ site, drafts = false }) {
     if (apiIndex && defaultApi) heads[apiIndex] = heads[defaultApi.route];
     // public/, not src/generated/: the palette fetches it on first open instead
     // of every page bundling it.
-    files.set("public/search-index.json", `${JSON.stringify({ version: 1, records: search })}\n`);
+    files.set("public/search-index.json", `${JSON.stringify({ version: 2, records: search })}\n`);
     files.set("src/generated/heads.json", `${JSON.stringify(heads, null, 2)}\n`);
 
     const entries = ordered

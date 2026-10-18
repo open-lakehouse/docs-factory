@@ -2,7 +2,7 @@
 // enough to show as a result excerpt.
 import { expect, test } from "bun:test";
 import { extractHeadings } from "../../../site/src/content-core/slug.mjs";
-import { searchRecords } from "../search.mjs";
+import { searchContext, searchRecords } from "../search.mjs";
 
 const page = { route: "/how-to/demo", title: "Demo", section: ["Start here"] };
 const body = `Read the **intro** first.
@@ -62,4 +62,61 @@ test("a directive cut by a heading leaves no stray fence", () => {
   const records = searchRecords(page, body);
   expect(records.at(-2).text).toBe("Again.");
   expect(records.at(-1).text).toBe("Still tabbed.");
+});
+
+const model = {
+  elements: new Map([
+    ["lakehouse.table", { title: "Table", public: true }],
+    ["credentialVending", { title: "Credential vending", public: true }],
+    ["apacheSpark", { title: "Apache Spark", public: true }],
+    ["internalThing", { title: "Internal thing", public: false }],
+  ]),
+};
+const identity = { project: "unitycatalog", bucket: "how-to", slug: "demo" };
+const proof = (slug, works) => ({ page: { ...identity, slug }, works });
+const compat = {
+  interfaces: [
+    { key: "spark", label: "Spark", model: "apacheSpark" },
+    { key: "duckdb", label: "DuckDB", model: "duckdb" },
+  ],
+  journeys: [
+    { title: "List tables", cells: { spark: { proofs: [proof("demo", true)] } } },
+    { title: "Create a managed table", cells: { duckdb: { proofs: [proof("demo", false)] } } },
+    { title: "Read a view", cells: { duckdb: { proofs: [proof("other", true)] } } },
+  ],
+};
+
+test("context names public concepts and the journeys the page proves", () => {
+  const context = searchContext(
+    {
+      identity,
+      meta: {
+        summary: "Make a demo.",
+        explains: "credentialVending",
+        references: ["lakehouse.table", "internalThing", "missing"],
+      },
+      body: "See [the table](model:lakehouse.table) and [it](model:internalThing).",
+    },
+    { model, compat },
+  );
+  expect(context).toEqual({
+    summary: "Make a demo.",
+    explains: "Credential vending",
+    concepts: "Table List tables Spark Apache Spark",
+  });
+});
+
+test("an internal explained element and absent compat leave empty context", () => {
+  const context = searchContext(
+    { identity, meta: { explains: "internalThing" }, body: "" },
+    { model, compat: null },
+  );
+  expect(context).toEqual({ summary: null, explains: null, concepts: "" });
+});
+
+test("context lands on the page record only", () => {
+  const context = { summary: "S", explains: "Table", concepts: "Spark" };
+  const [first, ...rest] = searchRecords(page, body, context);
+  expect(first).toMatchObject(context);
+  for (const r of rest) expect(r).not.toHaveProperty("concepts");
 });

@@ -59,7 +59,8 @@ function hitGroups(results: PageHits[], go: (to: string) => void): Group[] {
       </>
     ),
     options: r.hits.map((hit) => {
-      const segments = excerpt(hit.text, hit.terms);
+      // A page record matched on its context alone may have no lede text.
+      const segments = excerpt(hit.text || hit.summary || "", hit.terms);
       return {
         key: hit.id,
         icon: hit.anchor ? Hash : FileText,

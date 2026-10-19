@@ -73,6 +73,14 @@ def test_page_with_env_scripts_needs_a_prerequisites_box(tmp_path) -> None:
     assert environments.check_pages(root, root / "content", [meta]) == []
 
 
+def test_explanation_scripts_need_no_prerequisites_box(tmp_path) -> None:
+    root = _repo(tmp_path, "environments:\n  uc/compose.yaml: { title: UC }\n")
+    meta = parse_script(_script(root, "../../../../../envs/uc/compose.yaml"))
+    page = _page(root, "## Why\n")
+    page.write_text("---\ntitle: X\ndiataxis: explanation\n---\n\n## Why\n")
+    assert environments.check_pages(root, root / "content", [meta]) == []
+
+
 def test_declared_environment_must_be_registered(tmp_path) -> None:
     root = _repo(tmp_path, "environments:\n  uc/compose.yaml: { title: UC }\n")
     (root / "content" / "p" / "how-to" / "x").mkdir(parents=True)

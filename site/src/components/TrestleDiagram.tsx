@@ -1,5 +1,5 @@
 import { useTheme } from "next-themes";
-import { lazy, Suspense, useEffect, useMemo, useState } from "react";
+import { Component, lazy, type ReactNode, Suspense, useEffect, useMemo, useState } from "react";
 
 // React Flow + ELK are ~2 MB; only pages with a diagram pay for them.
 const TrestleCanvas = lazy(() => import("./TrestleCanvas"));
@@ -11,6 +11,18 @@ function filesBeside(snapshot: string) {
     fetch(base + path).then((r) =>
       r.ok ? r.text() : Promise.reject(new Error(`${path}: HTTP ${r.status}`)),
     );
+}
+
+// A canvas chunk that fails to load (or a render error) leaves the PNG, not a
+// crashed page: React rethrows a rejected lazy() import to the nearest boundary.
+class CanvasBoundary extends Component<{ fallback: ReactNode; children: ReactNode }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
 }
 
 /**
@@ -47,14 +59,16 @@ export function TrestleDiagram({
   return (
     <figure className="trestle-frame" aria-label={alt || undefined}>
       {data && !failed ? (
-        <Suspense fallback={fallback}>
-          <TrestleCanvas
-            snapshot={data}
-            label={alt || undefined}
-            colorMode={resolvedTheme === "dark" ? "dark" : "light"}
-            readFile={readFile}
-          />
-        </Suspense>
+        <CanvasBoundary fallback={fallback}>
+          <Suspense fallback={fallback}>
+            <TrestleCanvas
+              snapshot={data}
+              label={alt || undefined}
+              colorMode={resolvedTheme === "dark" ? "dark" : "light"}
+              readFile={readFile}
+            />
+          </Suspense>
+        </CanvasBoundary>
       ) : (
         fallback
       )}

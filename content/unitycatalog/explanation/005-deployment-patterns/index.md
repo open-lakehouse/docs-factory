@@ -83,7 +83,7 @@ Because the catalog lives in the database, this is already a shared
 deployment. Each person runs the same environment with the same database and
 bucket credentials, and every server reads and writes the same catalog. A
 catalog one server creates is listed by the others, and both servers still
-list it after a restart; [a script](./snippets/shared_database.py) checks this
+list it after a restart. This page's script, `shared_database.py`, checks that
 with two servers on the local pattern's database. The full hybrid run against
 a Neon project and an R2 bucket isn't verified here: only the environment's
 rendered plan is checked.

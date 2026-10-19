@@ -18,6 +18,7 @@ import { docPageHead } from "../emit/docs/heads.mjs";
 import { loadProjection } from "../emit/docs/model.mjs";
 import { DOCS_SITES } from "../emit/docs/sites/index.mjs";
 import { loadEnvironmentResolver } from "./scripts/page-environments.mjs";
+import { repoAssets } from "./scripts/repo-assets.mjs";
 import { isEmitted, isPublic, splitFrontmatter } from "./src/content-core/frontmatter.mjs";
 import { docIdentity, hrefFromIdentity } from "./src/content-core/identity.mjs";
 import { walkContent } from "./src/content-core/walk.mjs";
@@ -118,6 +119,9 @@ function buildKnownHrefs(): Set<string> {
 }
 
 const knownHrefs = buildKnownHrefs();
+
+const repoRoot = path.resolve(__dirname, "..");
+const embeddedAssets = repoAssets({ repoRoot });
 
 const environmentFor = loadEnvironmentResolver(path.resolve(__dirname, ".."));
 
@@ -260,6 +264,9 @@ export default defineConfig({
     },
   },
   plugins: [
+    // Before devCompanionFiles, which would answer an env's README.md or certs.sh
+    // from a stale dist/.
+    embeddedAssets.plugin,
     devCompanionFiles(),
     pageHeads(),
     {
@@ -286,7 +293,7 @@ export default defineConfig({
           remarkTabs,
           remarkJourney,
           remarkFenceMeta,
-          remarkResolveImages,
+          [remarkResolveImages, { repoRoot, onAsset: embeddedAssets.onAsset }],
           remarkLikeC4Views,
           remarkTrestleViews,
           remarkEngineCoverage,

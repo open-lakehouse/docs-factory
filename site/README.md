@@ -70,7 +70,7 @@ All `.md` / `.mdx` files share one pipeline (`vite.config.ts`):
 | `remark-tabs` | adjacent `:::tab[Label]` containers → one label-synced tab group |
 | `remark-fence-meta` | Attach filename/lang metadata for code chrome |
 | `remark-likec4-views` | `likec4=<viewId>` images → interactive views |
-| `remark-resolve-images` | Relative `./assets/` paths → Vite `/@fs/` URLs |
+| `remark-resolve-images` | Relative image paths → `/repo-assets/<repo path>`, served in dev and emitted into the build (`scripts/repo-assets.mjs`) |
 | `@shikijs/rehype` | Build-time syntax highlighting |
 
 The same `remark-code-snippets` and `remark-directive-prose-guard` plugins are

@@ -275,7 +275,7 @@ verified `snippets/` (§5) over sketches; be honest about pre-release status (§
 - [x] **Iceberg REST: one catalog, both formats** — UC 0.7 opens native Iceberg
   writes over Iceberg REST; show four engines passing one table around next to a
   Delta table. → graduated to a brief: `blogs/uc-iceberg-rest/`.
-  `repos:` unitycatalog (v0.7.0) · docs: H21 `how-to/012-iceberg-rest`
+  `repos:` unitycatalog (v0.7.0) · docs: H47 `how-to/012-iceberg-rest`
 
 - [x] **The true Unity Catalog docs** — fight misinformation about what works
   with which catalog: every docs claim is a script CI runs, support tables

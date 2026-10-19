@@ -210,14 +210,14 @@ Personas are entry points, not mutually exclusive identities:
 | Journey | Starting question | Ordered reading path | Completion condition |
 | --- | --- | --- | --- |
 | J01 Evaluate | "What can OSS UC do, and can I try it?" | E01 -> R01 -> T01 -> T11 -> choose a data/AI journey | Local catalog works; reader can identify unsupported requirements before adopting it. |
-| J02 Operate | "How do I provide a persistent catalog to my team?" | E02/E10/E11 -> T10 -> H22/H24 -> H25 -> H37 -> T09 -> R06/R07 | Restart preserves metadata; authentication is on; ordinary users work without the bootstrap token. |
-| J03 Govern tabular data | "How do I register existing data or create managed Delta tables?" | E03/E04 -> T02 -> T03 -> H02/H03/H04 -> R02/R10 | Reader can distinguish registration from writing and complete a supported read/write lifecycle. |
-| J04 Govern files | "How do applications use unstructured files under UC?" | E03/E05 -> T04 -> H09/H10 -> R03/R04 | Application resolves a volume and accesses files with appropriately scoped credentials. |
+| J02 Operate | "How do I provide a persistent catalog to my team?" | E02/E10/E11 -> H25/T12 -> H22/H24 -> H37 -> T09 -> R06/R07 | Restart preserves metadata; authentication is on; ordinary users work without the bootstrap token. |
+| J03 Govern tabular data | "How do I register existing data or create managed Delta tables?" | E03/E04 -> H02/H17 -> T03 -> H03/H04 -> R02/R15 | Reader can distinguish registration from writing and complete a supported read/write lifecycle. |
+| J04 Govern files | "How do applications use unstructured files under UC?" | E03/E05 -> T04 -> H09/H10 -> API tab/R04 | Application resolves a volume and accesses files with appropriately scoped credentials. |
 | J05 Grant access | "How do I let a colleague or job read just the intended assets?" | E06 -> T09 -> H32/H34/H36 -> H35 -> H41 -> R05 | A permitted operation succeeds and a non-permitted operation is denied; principal mapping is understood. |
 | J06 Build AI tools | "How do I reuse governed functions in an application or agent?" | E07 -> T05 -> T06 -> H11-H14 -> R11/R12 | Registered function runs in the intended execution environment and exposes a bounded tool interface. |
-| J07 Manage models | "How do I register, version, and load a model using MLflow?" | E08 -> T07 -> H15 -> H10 -> R03/R11 | A model version is registered and reloaded; tracking, registry, and artifact locations are understood. |
-| J08 Publish semantics | "How do I define reusable SQL views and business metrics?" | E09 -> H06 -> T08 -> H07 -> R02/R13 | A supported view/metric definition yields a verified query result, with engine restrictions visible. |
-| J09 Use another engine | "Can my engine use this UC deployment and these tables?" | R10 -> E04/E05 -> H17-H20 -> H43 | Reader chooses the correct protocol and proves the intended operations with their engine. |
+| J07 Manage models | "How do I register, version, and load a model using MLflow?" | E08 -> T07 -> H15 -> H10 -> API tab/R11 | A model version is registered and reloaded; tracking, registry, and artifact locations are understood. |
+| J08 Publish semantics | "How do I define reusable SQL views and business metrics?" | E09 -> H06 -> T08 -> H07 -> R02/R15 | A supported view/metric definition yields a verified query result, with engine restrictions visible. |
+| J09 Use another engine | "Can my engine use this UC deployment and these tables?" | R15 -> E04/E05 -> H17-H20, H47 -> H43 | Reader chooses the correct protocol and proves the intended operations with their engine. |
 | J10 Build an integration | "How do I implement a correct client or connector?" | E02/E04 -> T11 -> H16 -> R08/R09 -> H44/H45/H46 | Client handles names, paging, auth, credential expiry, and supported commit/error semantics. |
 | J11 Upgrade/recover | "How do I upgrade or restore without losing access or metadata?" | R14 -> H38 -> H39 -> H29 -> H41/H42 -> E10 | Tested backup restores; migration changes are applied; post-upgrade data and access checks pass. |
 
@@ -228,48 +228,40 @@ be a prerequisite for someone connecting to an already provisioned catalog.
 ## 5. Proposed navigation and Diataxis mapping
 
 ```text
-Start here
-  What is Unity Catalog OSS?                 -> E01
-  Features, scope, and limitations           -> R01
-  Create your first catalog                  -> T01
-  Choose a client or engine                  -> R10
-
+Start here                                  -> E01, T01, local environment, R01, E12
 Use Unity Catalog
-  Tutorials                                 -> T02-T08, T11
-  How-to guides
-    Catalogs and schemas                     -> H01
-    Tables and views                         -> H02-H08
-    Files and volumes                        -> H09-H10
-    Functions and AI                         -> H11-H14
-    Models and MLflow                        -> H15
-    Clients and query engines                -> H17-H20
-
+  Tutorials                                 -> T11, T03-T06, T08, T07
+  Catalogs and schemas                      -> H01
+  Tables                                    -> H02, H08, H03-H05, TPC-H seed
+  Views and metric views                    -> H06, H07
+  Volumes and files                         -> H09, H10, H49
+  Functions and AI                          -> H11-H14
+  Models                                    -> H15
+Connect engines and clients                 -> R15, H17, H18, H20, H47, H19, H16, H43
 Operate Unity Catalog
-  Tutorials                                 -> T09-T10
-  How-to guides
-    Deploy and persist                       -> H22-H26
-    Configure storage                        -> H27-H31
-    Identity and access                      -> H32-H37
-    Back up, upgrade, and observe             -> H38-H40
-    Troubleshoot                             -> H41-H43
-
-Build integrations
-  Java and Python clients                    -> H16, T11
-  Delta API clients                          -> H44
-  Hadoop credential integration              -> H45
-  Integration testing and contributing       -> H46, upstream contributor docs
-
-Concepts                                    -> E01-E10
-Reference                                   -> R01-R14
-Release and migration notes                 -> R14, H39
-Ecosystem integrations                      -> H21
+  Tutorials                                 -> T09, T12
+  Plan and deploy                           -> E11, H48, H22, H24, H23, H25, H37
+  Storage                                   -> H27, H30, H31, H28, H29, H42
+  Authentication                            -> H32, H33, H35, H50
+  Access control                            -> H34, H36, H41
+  Back up and upgrade                       -> H38-H40
+Build integrations                          -> H44, H45, T11
+Concepts
+  Architecture                              -> E01, E02, E11, E10
+  Data and governance                       -> E03-E06, E13
+  AI and semantics                          -> E07-E09
+Reference                                   -> R01, R15, R12, R05, R06, R02, R04, R08, R09, R11, R07, R14
+Internal (private)                          -> R10
 ```
 
 "Start here" and the audience landing pages are navigation hubs, not a fifth
 Diataxis category. They should offer direct article links and a small number of
 ordered paths, not repeat feature explanations or introduce another quickstart.
 
-Within Use and Operate, retain visible Tutorials/How-to distinctions. Concepts
+Within Use and Operate, a Tutorials section comes first. The how-to sections
+after it are grouped by catalog object (Use) or operator task (Operate), with
+no separate "Guides" level, and each topic holds its own troubleshooting page.
+H21 (ecosystem directory, P2) stays in the backlog until it has an owner. Concepts
 and Reference are shared, with contextual links from tasks. Audience navigation
 must not hide the full four-part content index.
 
@@ -321,7 +313,7 @@ clearly labeled legacy pages until their replacement is ready.
 | ID | Proposed article | Priority / journeys | Scope and success check |
 | --- | --- | --- | --- |
 | T01 | Create your first catalog locally | P0 / J01 | Pinned container, isolated local exposure, empty fixture, catalog/schema creation and discovery, cleanup. No cloud or source build. |
-| T02 | Register and query an existing Delta table with Spark | P0 / J03 | One tested Spark/connector/Delta combination; deterministic data; external registration; query result. No cross-engine branching. |
+| T02 | Register and query an existing Delta table with Spark | Retired | Covered by H02 + H17 + T03. |
 | T03 | Create and update a catalog-managed Delta table | P0 / J03 | Same default engine, managed storage allocation, supported creation/write/read, commit coordination, safe cleanup. |
 | T04 | Read files from a governed volume in Python | P1 / J04 | Create a volume over deterministic files; discover metadata; obtain credentials where appropriate; list/read with a supported storage client. |
 | T05 | Register and execute your first Python function | P0 / J06 | OSS AI client, typed callable, registration, deterministic execution and cleanup. Explicit caller-side execution. |
@@ -329,8 +321,9 @@ clearly labeled legacy pages until their replacement is ready.
 | T07 | Register and reload a model with MLflow | P1 / J07 | Deterministic small model, separate tracking/registry configuration, signature, version registration and prediction assertion. |
 | T08 | Define and query your first metric view | P1 / J08 | Tested engine/YAML pair; small source dataset; dimensions, measures and `measure(...)`; assert results against a direct aggregation. |
 | T09 | Give two users different access to a catalog | P0 / J02, J05 | Controlled test IdP, ordinary user identities, grants and parent access, one permitted operation and one denied operation. No real IdP account required for CI. |
-| T10 | Keep catalog metadata across restarts with PostgreSQL | P0 / J02 | Pinned UC and database, empty start, create metadata, restart UC, assert persistence. Distinguish database state from data-file storage. |
+| T10 | Keep catalog metadata across restarts with PostgreSQL | Retired | Duplicated by H25's restart check; replaced by T12, which uses the `uc-hybrid` environment from E11. |
 | T11 | Create and inspect catalog resources with the Python client | P0 / J01, J10 | Async SDK lifecycle, configured base URL, catalog/schema/table metadata, missing-resource handling, cleanup. Rework the existing draft. |
+| T12 | Move your local catalog to hosted PostgreSQL and S3 | P1 / J02 | On the `uc-hybrid` environment: a local server with a hosted PostgreSQL metadata database and an S3-compatible bucket; move existing metadata and data, restart, assert both survive. |
 
 T01-T03 should use a small retail/orders dataset. T04 can use short document
 files; T05 a pure calculation; T07 an offline bundled dataset. The TPC-H draft
@@ -352,6 +345,8 @@ prerequisite for the first SQL or metric-view success.
 | E09 | SQL views and metric views as catalog objects | P1 / J08 | Stored definitions/dependencies versus engine execution; ordinary views versus measures/dimensions; semantic compatibility and permission boundaries. |
 | E10 | Persistence, failure, and recovery boundaries | P0 / J02, J11 | Metadata DB, policies, signing/bootstrap material, physical data, and managed commit state; which backups/restarts preserve which guarantees. |
 | E11 | Deployment patterns: local, hybrid, and hosted | P1 / J02 | Where the metadata database and object storage live and where the server runs: local (`uc-local`), hybrid (local server, hosted PostgreSQL and S3-compatible bucket, `uc-hybrid`), fully hosted (model view). Sits between E02 (the parts) and E10 (what each store preserves); H22 is the hosted deployment task. |
+| E12 | Coming from Databricks Unity Catalog | P1 / J01 | Maps Databricks concepts and doc areas to their OSS equivalent, or says there isn't one: Catalog Explorer → OSS UI; ABAC, row filters/column masks, lineage, system tables, Delta Sharing, Federation, and workspace binding → not in OSS. Builds on R01's "Not in Unity Catalog OSS" and E01's comparison. |
+| E13 | Organize catalogs and schemas for environments and teams | P2 / J02-J03 | The OSS-applicable parts of Databricks' best-practices guidance: catalog per environment or team, managed versus external choice, storage isolation per catalog. |
 
 These pages should use the existing architecture model where appropriate, with
 validated `explains`/`references`. If an explanation needs a missing model concept,
@@ -371,7 +366,7 @@ architecture to fit an article.
 | H07 | Create and maintain metric-view definitions | P1 / J08 | Supported YAML version/fields, dependencies, query syntax, definition changes supported by the baseline, permission checks. |
 | H08 | Register non-Delta external table formats | P1 / J03, J09 | Parquet/CSV/ORC and other actually supported formats; schema/options; which operations require an engine; no managed non-Delta promise. |
 | H09 | Create and manage external and managed volumes | P1 / J04 | Storage allocation versus supplied path, CRUD, path overlap rules, ownership, grants, verified metadata/data deletion semantics. |
-| H10 | Access volume files and model artifacts with vended credentials | P1 / J04, J07 | Resource-specific credential APIs, expiration and refresh, object-store client translation, read/write constraints, local-storage caveats. |
+| H10 | Request temporary credentials for tables, volumes, paths, and models | P1 / J04, J07 | Temporary table, volume, path, and model-version credential APIs, expiration and refresh, object-store client translation, read/write constraints, local-storage caveats. |
 | H11 | Register, replace, and remove Python functions | P1 / J06 | Types, docstrings, callable extraction, wrapped functions, replacement effects, metadata and permissions. |
 | H12 | Execute functions in applications and notebooks | P1 / J06 | Sync/async patterns, existing event loops, dependencies, execution modes, timeout/resource handling, deterministic errors. |
 | H13 | Use catalog functions as LangChain tools | P1 / J06 | Current toolkit API, explicit function selection, supported types, execute privilege, tested OSS client; no Databricks compute dependency. |
@@ -383,6 +378,8 @@ architecture to fit an article.
 | H19 | Read UniForm tables from Trino through Iceberg REST | P1 / J09 | Correct protocol, warehouse/catalog mapping, materialized Iceberg metadata, credential handling, endpoint privilege limits; read scope only unless separately proven. |
 | H20 | Query UC tables from Python DataFrame libraries (Polars, Daft, pandas) | P1 / J09 | Current provider APIs/dependencies, discovery, vended storage credentials, read and append results per library; managed tables and other per-library gaps stated with their errors. |
 | H21 | Find and evaluate ecosystem integrations | P2 / J09 | Directory of maintained provider docs for SpiceAI, CelerData, PuppyGraph, XTable and others; protocol, ownership, support label, last verification. No untested recipe collection. |
+| H47 | Use Iceberg REST clients with Unity Catalog | Written (`how-to/iceberg-rest`) / J09 | Spark, DuckDB, and PyIceberg against the Iceberg REST API with vended S3 credentials. Was listed in `nav.yml` as H21, which collides with the ecosystem directory above. |
+| H49 | Use volumes as marimo remote storage | P2 / J04, deferred | Follow-on to J04, deferred until a compatible storage client is verified; an estate-only bridge belongs in open-lakehouse scope. Replaces the removed `status: idea` stub. |
 
 SQL operations such as MERGE, time travel, streaming, vacuum, clustering, and
 schema evolution are primarily engine/Delta topics. UC docs should document the
@@ -410,11 +407,17 @@ documentation. Add a UC-specific how-to only when the catalog changes the task.
 | H36 | Grant and revoke least-privilege access | P0 / J05 | Parent and resource privileges, ownership/grant authority, read versus write, effective-permission inspection, negative tests and storage-side boundaries. |
 | H37 | Expose UC securely and protect bootstrap material | P0 / J02 | TLS termination, network restriction, proxy/host/UI routing, secret redaction, persistent signing material, bootstrap-token handling and verified rotation/restart procedure. |
 | H38 | Back up and restore a catalog deployment | P0 / J02, J11 | DB/policy/key/config backups, data-store coordination and managed commit state, restore rehearsal, RPO/RTO definition, integrity/access checks. |
-| H39 | Upgrade an existing deployment to 0.6 | P0 / J11 | Starting-version branches, backup, DB changes, issuer/audience requirement, exchanged-token expiry, connector coordinates/defaults, restart and rollback limits. |
+| H39 | Upgrade an existing deployment | P0 / J11 | Release-neutral procedure; per-version notes live in R14. Starting-version branches, backup, DB changes, issuer/audience requirement, exchanged-token expiry, connector coordinates/defaults, restart and rollback limits. |
 | H40 | Observe server health and diagnose operational failures | P1 / J02 | Existing logs and available instrumentation, safe diagnostics, DB/IdP/storage dependencies, probes and alerts. Do not invent metrics/audit APIs. |
 | H41 | Troubleshoot authentication and permission failures | P0 / J05, J11 | Identity registration/mapping, issuer/audience, expired tokens, missing parent grants, ownership and effective permissions; preserve redaction. |
 | H42 | Troubleshoot storage access and credential vending | P0 / J03-J04 | Role trust/KMS, cloud configuration, location matching/overlap, mount/path mismatch, expiry/cache, permissions; diagnose before recommending changes. |
 | H43 | Troubleshoot connector and managed-commit failures | P1 / J03, J09 | Artifact mismatch, unsupported table features/operations, auth versus data access, stale/failed commits, retry and escalation boundaries. |
+| H48 | Production readiness checklist | P0 / J02 | A hub that links H22, H25, H27, H32, H37, and H38 in order. |
+| H50 | Authenticate requests with an Envoy proxy | P2 / J02, deferred | Specialized recipe; follows H32/H37, and only if principal forwarding is validated. Replaces the removed `status: idea` stub. |
+
+In the navigation, H37 sits under "Plan and deploy", and the troubleshooting
+guides live in their topic sections: H41 under access control, H42 under
+storage, and H43 under engines and clients.
 
 The presence of an operator guide does not certify the deployment pattern.
 Especially for backups, multi-replica deployments, and key rotation, document
@@ -435,7 +438,7 @@ deployment with external persistence over an unsubstantiated HA walkthrough.
 | --- | --- | --- | --- |
 | R01 | Features, OSS scope, and limitations | P0 / J01 | Capability/operation matrix keyed by release; implemented, preview, provider-dependent, unsupported, and unverified labels are separate. [S03-S14] |
 | R02 | Resource model, identifiers, types, and table/view kinds | P0 / J03, J08, J10 | Names, IDs/full names, formats versus table types, schema encodings including VARIANT, optional fields, view dependencies; distinguish accepted enums from creatable resources. [S04, S07] |
-| R03 | Asset API reference: catalogs, schemas, tables, volumes, functions, models | P0 / all | Generate endpoint/model detail from pinned `api/all.yaml`; organize by resource; add short verified implementation-limit annotations, not duplicate CRUD prose. [S04] |
+| R03 | Asset API reference: catalogs, schemas, tables, volumes, functions, models | Retired | Covered by the docs site's API tab (Scalar OpenAPI pages, generated from the pinned spec). |
 | R04 | Storage and credential API reference | P0 / J04-J05, J10 | Credentials, external locations, temporary table/path/volume/model-version credentials; scopes, operations, expiration, cloud-specific response fields. [S04, S18] |
 | R05 | Users, ownership, and privileges | P0 / J05 | Actual securable/privilege matrix and parent/grant rules from API plus authorizer/service tests; SCIM subset, no fictional group support. [S05, S14] |
 | R06 | Server and storage configuration | P0 / J02, J11 | Every implemented key, default, type, precedence, required conditions, secret classification, restart behavior and deprecation. Include indexed cloud settings beyond `ServerProperties.Property`. [S08] |
@@ -445,13 +448,14 @@ deployment with external persistence over an unsubstantiated HA walkthrough.
 | R10 | Engine, client, cloud, and operation compatibility | P0 / J01, J03, J09 | Tested version tuples and protocol; external/managed read/write/DDL/view/metric support, credential renewal, platform and cloud coverage. Link each test and task. |
 | R11 | Python/Java client and AI package reference | P1 / J06-J07, J10 | Link/generated API for SDK lifecycle and callable interfaces, package-specific versions, supported Python types and client options. No server-version equality assumption. [S10, S11] |
 | R12 | CLI command reference | P0 / J01, J05 | Generate from or verify against released CLI help; common endpoint/token/output options; every implemented resource command; example data operations carry clear limits. |
-| R13 | SQL-view and metric-view compatibility reference | P1 / J08 | Engine-supported DDL/query operations and definition versions; stored/validated/interpreted fields; dependency and security constraints. Do not reproduce all Databricks YAML features. [S03, S07, S17] |
-| R14 | Release notes and migration index | P0 / J11 | Curated user-impacting changes with links to upstream releases; server, connector and AI version tracks; archived docs and security upgrade notices. [S01-S03, S10] |
+| R13 | SQL-view and metric-view compatibility reference | Retired | Folded into R15 (engine and client support). |
+| R14 | Release notes and migration index | P0 / J11 | Curated user-impacting changes with links to upstream releases, including the per-version upgrade notes H39 links; server, connector and AI version tracks; archived docs and security upgrade notices. [S01-S03, S10] |
+| R15 | Engine and client support | Draft (`reference/engine-support`) / J01, J09 | The public successor to R10 for readers: which engine or client runs each task, with the tested example. Absorbs R13. |
 
-Generated API detail can ship incrementally by resource, but R03/R04 should cover
-all implemented surfaces before declaring the rewrite complete. For APIs defined
-more broadly than the OSS implementation, explicitly distinguish the contract
-from server support.
+Generated API detail can ship incrementally by resource, but the API tab and R04
+should cover all implemented surfaces before declaring the rewrite complete. For
+APIs defined more broadly than the OSS implementation, explicitly distinguish
+the contract from server support.
 
 ## 7. Reuse, migration, and published-blog coverage
 
@@ -463,14 +467,14 @@ These are authoring inputs, not finished pages. Preserve in-progress user edits.
 | --- | --- | --- |
 | `tutorials/001-getting-started/` | Rework: currently pins 0.5.0, uses inline shell code, and mostly proves startup despite the summary promising resource creation. | T01; move runnable steps into tested colocated snippets. |
 | `tutorials/002-python-client/` | Retain the useful flow; rebaseline pins, auth assumptions, snippet location and test coverage. | T11; R08 supplies shared endpoint/auth details. |
-| `tutorials/003-write-and-read-delta/` | Split the multi-client intention into two single-engine tutorials and task-oriented engine guides. | T02/T03, H17-H20. |
+| `tutorials/003-write-and-read-delta/` | Split the multi-client intention into two single-engine tutorials and task-oriented engine guides. | H02/H17 (T02 retired), T03, H17-H20. |
 | `tutorials/004-table-storage-formats/` → `how-to/001-table-storage-formats/` | Reclassify the task/reference portions; only keep a tutorial if it has a clear learning outcome. | H08, R02/R10. |
-| `tutorials/004-manage-models-mlflow.md` | Expand into a tested lifecycle and separate ongoing tasks. | T07, H15, E08. |
-| `tutorials/005-configure-backend-db/` → `how-to/002-configure-backend-db/` | Split selection rationale from procedure and learning. | E10, T10, H25/H26, R07. |
+| `tutorials/004-manage-models-mlflow.md` | Expand into a tested lifecycle and separate ongoing tasks. | T07, H15, E08. Stub removed → planned T07. |
+| `tutorials/005-configure-backend-db/` → `how-to/002-configure-backend-db/` | Split selection rationale from procedure and learning. | E10, T12, H25/H26, R07. |
 | `tutorials/006-seed-tpch-data/` → `how-to/003-seed-tpch-data/` | Keep as an optional data-preparation how-to/advanced fixture, not core onboarding. | Supporting article for T08 and advanced examples; preserve the tested seeder. |
-| `tutorials/100-marimo-remote-storage/` | Defer until an upstream-compatible storage client is verified; an estate-only bridge belongs in open-lakehouse scope. | Optional follow-on to J04, not P0. |
+| `tutorials/100-marimo-remote-storage/` | Defer until an upstream-compatible storage client is verified; an estate-only bridge belongs in open-lakehouse scope. | Optional follow-on to J04, not P0. Stub removed → planned H49. |
 | `how-to/001-uc-basics/` → `explanation/003-uc-basics/` | Reclassify conceptual material. Recheck bucket-root assumptions rather than treating every external location as a whole bucket. | E03, R02/R05. |
-| `how-to/101-envoy-authentication/` | Defer the specialized Envoy recipe. First document supported UC auth and generic protected exposure. | H32/H37; optional later recipe if principal forwarding is validated. |
+| `how-to/101-envoy-authentication/` | Defer the specialized Envoy recipe. First document supported UC auth and generic protected exposure. | H32/H37; optional later recipe if principal forwarding is validated. Stub removed → planned H50. |
 | `explanation/001-what-is-unity-catalog.md` | Retain motivation; make OSS boundaries concrete and remove unsupported blanket claims. | E01. |
 | `explanation/002-credential-vending/` | Expand from the outline into a trust-boundary explanation. | E05. |
 
@@ -487,10 +491,10 @@ complete URL inventory and redirect manifest during the migration work.
 | --- | --- | --- |
 | `/`, `/quickstart/`, `/docker_compose/` | E01/T01, H22 | Separate orientation, learning, and deployment. Preserve entry URLs with redirects. |
 | `/usage/cli/`, `/usage/ui/` | R12, task-linked UI material | CLI reference replaces command catalog. UI gets a short verified browse/manage guide within the relevant task, not a duplicate workflow manual. |
-| `/usage/tables/deltalake/`, `/usage/tables/formats/`, `/usage/tables/uniform/` | E04, T02/T03, H02/H03/H08/H19, R10 | Split storage format, table lifecycle, and Iceberg interoperability. |
+| `/usage/tables/deltalake/`, `/usage/tables/formats/`, `/usage/tables/uniform/` | E04, T03, H02/H03/H08/H17/H19, R15 | Split storage format, table lifecycle, and Iceberg interoperability. |
 | `/usage/volumes/`, `/usage/functions/`, `/usage/models/` | T04/T05/T07; H09-H15; E07/E08 | Extract task/concept/reference material; regenerate examples and outputs. |
-| `/usage/metric-views/`, `/usage/api/delta/` | T08/H07/R13, H44/R09 | Make current feature pages reachable and version-specific. |
-| `/usage/api/*` and generated API pages | R03/R04/R08/R09 | Do not hand-copy endpoint prose; regenerate pinned contracts and annotate OSS limits. |
+| `/usage/metric-views/`, `/usage/api/delta/` | T08/H07/R15, H44/R09 | Make current feature pages reachable and version-specific. |
+| `/usage/api/*` and generated API pages | API tab, R04/R08/R09 | Do not hand-copy endpoint prose; regenerate pinned contracts and annotate OSS limits. |
 | `/server/configuration/`, `/server/deployment/`, `/server/aws/` | R06/R07, H22-H31 | Split exhaustive settings from deployment and cloud tasks. |
 | `/server/auth/`, `/server/users-privileges/`, `/server/google-auth/` | E06, T09, H32-H37/H41, R05/R08 | Preserve provider-specific detail as subordinate procedures, not the definition of all authentication. |
 | `/integrations/unity-catalog-spark/`, DuckDB, Trino, Daft | H17-H20, R10 | First-party guides only after version/operation tests. |
@@ -509,7 +513,7 @@ be updated to the canonical destination, not to a generic homepage.
 | --- | --- | --- |
 | Unity Catalog 101; data-catalog and metadata explainers | E01/E03 | Broad governance language is not an OSS feature matrix. |
 | 0.2 and 0.3.1 release posts [B01, B02] | R14, historical version boundaries | Announcement date versus release date; older connector/package instructions. |
-| Spark/Delta and open-API Spark integration posts [B11] | T02, H17 | Artifact coordinates, token handling, cloud setup and catalog naming. |
+| Spark/Delta and open-API Spark integration posts [B11] | H02, H17 | Artifact coordinates, token handling, cloud setup and catalog naming. |
 | Managed versus external tables; introducing managed tables [B03, B12] | E04, T03, H03/H05 | Storage ownership versus coordinated commits; deprecated settings; future capabilities versus shipped implementation. |
 | Introducing the UC Delta API [B04] | H44, R09 | Versioned API versus preview paths; actual lifecycle operations in the selected release. |
 | Fighting entropy with metric views [B05] | E09, T08, H07 | Engine/YAML version and richer definition features; stored metadata is not verified execution. |
@@ -543,15 +547,16 @@ handbook than to marketing pages or a long sequence of numbered feature demos.
 
 Before writing the majority of articles:
 
-1. Confirm `v0.6.0` as the initial documented server baseline. Recheck official
-   releases immediately before publishing.
+1. Document the latest released server only; `content/unitycatalog/release.yml`
+   holds the pin (see `docs-versioning.md`). Recheck official releases
+   immediately before publishing.
 2. Establish R01/R10 as living scope/compatibility records, with the exact source
-   commit, artifacts, test status and ownership.
-3. Select one tested Spark/Delta/connector tuple for T02/T03. The 0.6 release
-   notes suggest Spark 4.1 with the matching connector and Delta 4.4.0; treat that
-   as a candidate until artifact resolution and tests pass.
-4. Resolve the Spark 4.2/4.3, Delta artifact, and metric-YAML conflicts separately
-   for T08/H06/H07/R13. Catalog-only creation is not an acceptable substitute
+   commit, artifacts, test status and ownership; R15 is the reader-facing view.
+3. Select one tested Spark/Delta/connector tuple for T03 and H17, recorded in
+   `release.yml`. Treat a release-notes suggestion as a candidate until artifact
+   resolution and tests pass.
+4. Resolve the Spark, Delta artifact, and metric-YAML conflicts separately
+   for T08/H06/H07/R15. Catalog-only creation is not an acceptable substitute
    for a tutorial that promises query execution.
 5. Verify AI package versions and choose one maintained framework for T06.
    Prefer LangChain if its current OSS path passes; keep the base function
@@ -566,11 +571,11 @@ Before writing the majority of articles:
 
 Publish an end-to-end core, not isolated high-priority pages:
 
-- Orientation and foundations: E01-E07/E10, R01/R02/R05/R06/R08/R10/R12/R14.
-- Learning: T01-T03, T05, T09-T11.
+- Orientation and foundations: E01-E07/E10, R01/R02/R05/R06/R08/R12/R14/R15.
+- Learning: T01, T03, T05, T09, T11.
 - Practitioner tasks: H01-H03 and H17.
-- Operator/security tasks: H22/H25/H27/H28/H32/H34/H36-H39/H41/H42.
-- Asset/storage API reference: generated R03/R04, initially with baseline
+- Operator/security tasks: H22/H25/H27/H28/H32/H34/H36-H39/H41/H42/H48.
+- Asset/storage API reference: the API tab plus generated R04, initially with
   implementation-limit notes.
 
 Dependencies matter: do not publish the managed-table task before its storage
@@ -618,42 +623,37 @@ verification gates rather than reasons to postpone the entire rewrite:
 | Integration ownership | First-party guides only for tested paths; provider-owned directory otherwise. | Named reviewer for each engine/framework. |
 | Navigation metadata | Canonical Diataxis source; explicit small navigation projection. | Resolved 2026-10-03: per-project `nav.yml`. |
 
-### Status and next content after the 2026-10-04 review
+### Status and next content
 
-Written and CI-tested: E01, E03, E04; T01, T03, T04, T05, T11; H01, H02, H09,
-H17, H18, H20, H27, H28; R01, R10; the TPC-H seed how-to; and the shared local
-environment page (`how-to/run-local-server`, backed by `envs/unitycatalog/`).
-R03 is covered for now by the interactive OpenAPI pages on the docs site. The
-review consolidated per-page compose files into that shared environment,
-rewrote tutorials as task steps in an interactive session, and moved 0.6.0
-quirks into R01's "Known issues in 0.6.0".
+Written and CI-tested: E01, E03, E04, E05; T01, T03, T04, T05, T08, T11; H01,
+H02, H07, H08, H09, H17, H18, H20, H25, H27, H28, H47; R01; the TPC-H seed
+how-to; and the shared local environment page (`how-to/run-local-server`,
+backed by `envs/unitycatalog/`). Drafts in review: E11 (deployment patterns)
+and R15 (engine and client support). R10 is a `private` coverage record under
+"Internal": its compatibility tables are rendered from `compatibility.yml` and
+reviewed in the app, and reader pages link R15 and the task how-tos instead.
+The docs site's API tab covers the asset API (formerly R03). Release quirks
+live in R01's "Known issues".
 
-The learning path in `nav.yml` now runs E01 → T01 → local environment, then
-T11 → T03 → T04 → T05. R10 is a `private` coverage record under "Internal": its
-compatibility tables are rendered from `compatibility.yml` and reviewed in the
-app, and reader pages link the task how-tos instead. These gaps keep the initial version from being
-coherent, in priority order:
+`nav.yml` groups guides by catalog object (section 5). The learning path runs
+E01 → T01 → local environment → R01, then T11 → T03 → T04 → T05. These gaps
+keep the initial version from being coherent, in priority order:
 
-1. **E05 Credential vending.** About ten pages link it (T04, H02, H09, H17,
-   H20, H27, E01, E03, E04, R10), and the emitted site unwraps those links to
-   text until it exists. It is the trust boundary behind every storage page.
-2. **H32 + H36, or T09.** Every how-to lists required privileges, but no page
-   shows how to enable authorization, map an identity, or grant and revoke.
-   T09 (two users, one permitted and one denied operation) covers the learning
-   path; H32/H36 cover the tasks.
-3. **T10/H25 PostgreSQL persistence.** The "Operate" section has no written
-   page. The local server loses its metadata on restart, which the
-   environment page has to keep warning about; T10 is the natural next step
-   from it.
-4. **T02 Register and query an existing Delta table with Spark.** The gap
-   between T01 (CLI) and T03 (managed tables). Alternatively, retire T02 and
-   point the path at H02 + H17, which already cover the steps.
-5. **H22 Deploy a persistent server with containers.** Together with H25,
-   H32, and H37, the minimum safe-operation story.
+1. **Access control: T09 + H36 + R05.** Every how-to lists required
+   privileges, but no page shows how to grant and revoke, or demonstrates one
+   permitted and one denied operation. T09 covers the learning path, H36 the
+   task, and R05 the privilege matrix.
+2. **Safe operation: H22 + H48 + H37.** A persistent containerized server, the
+   readiness checklist that orders the operator pages, and protected exposure.
+   With H25 (written) and H32, the minimum safe-operation story.
+3. **E12 + R12.** Cheap, high-traffic pages: the Databricks-to-OSS map and the
+   CLI command reference.
+4. **H39 + R14.** A release-neutral upgrade procedure and the per-version notes
+   it links.
 
-Next tier: E02 (server, clients, and storage), T07/H15 MLflow (stub page in
-nav, status `idea`), H08 non-Delta formats (stub, linked from H02), H39
-upgrade to 0.6, H42 troubleshoot credential vending, and T08 metric views.
+Next tier: E02 (server, clients, and storage), T12 (local to hosted on
+`uc-hybrid`), T07/H15 MLflow, H32 authentication, and H42 troubleshoot
+credential vending.
 
 ## 10. Authoring and verification contract
 

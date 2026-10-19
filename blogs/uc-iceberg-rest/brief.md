@@ -55,7 +55,7 @@ from this Spark tuple).
    5. Spark joins Delta and Iceberg (join).
 5. Rough edges — DuckDB metadata-log setting; endpoint variables only for the
    simulated S3; UniForm not readable yet from this Spark tuple.
-6. What we learned + CTA — link to the H21 how-to.
+6. What we learned + CTA — link to the H47 how-to.
 
 ## 6. Source material
 
@@ -63,7 +63,7 @@ from this Spark tuple).
   - unitycatalog · `server/src/main/java/io/unitycatalog/server/service/IcebergRestCatalogService.java` · v0.7.0 — config (prefix = catalog), namespaces, tables, `loadCredentials`, drop semantics.
   - unitycatalog · `server/src/main/java/io/unitycatalog/server/utils/ServerProperties.java` · v0.7.0 — `server.iceberg-table.enabled` defaults to true (#1943).
   - unitycatalog · `connectors/spark/src/test/scala-shims/spark-4.0-4.1/io/unitycatalog/spark/DeltaIcebergCrossFormatJoinTest.java` · v0.7.0 — the mixed-catalog Spark session.
-  - docs-factory · `content/unitycatalog/how-to/012-iceberg-rest/` — H21, the tested how-to this post points to.
+  - docs-factory · `content/unitycatalog/how-to/012-iceberg-rest/` — H47, the tested how-to this post points to.
 - *Prior art:* `blogs/unity-catalog-delta-api/` (the Delta side of the same catalog);
   `blogs/uc-metric-views/` (shape and register). The upstream UniForm guide
   (`docs/usage/tables/uniform.md` at v0.7.0) covers read-only UniForm access; this
@@ -90,7 +90,7 @@ unitycatalog.io blog via `/blog-emit unitycatalog`. No `:::tab` (docs-only).
   delta-spark 4.3.1, hadoop-aws 3.4.2, duckdb 1.5.4, pyiceberg 0.12.0.
 - Outputs quoted in the post are copied from that run.
 - The aws-sim fixes the run depends on (bucket-region header, `localhost:9000`
-  server domain) land in the same PR as H21.
+  server domain) land in the same PR as H47.
 
 ## 10. Open questions / risks
 

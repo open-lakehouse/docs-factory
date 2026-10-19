@@ -10,14 +10,14 @@ deployment {
 
     workstation = environment "Your machine" {
       clients = service "Clients" {
-        description "Engines, SDKs, and the CLI. They reach the catalog over its REST API and read and write data with the credentials it vends."
+        description "Engines, SDKs, and the CLI. They reach the catalog over its REST API and read and write Amazon S3 with the credentials it vends."
         instanceOf lakehouse.queryEngine
       }
     }
 
     cloud = environment "Cloud" {
       unityCatalog = service "Unity Catalog" {
-        description "The catalog server, with authentication and authorization on. It keeps no state of its own."
+        description "The catalog server, with authentication and authorization on. It keeps no catalog state of its own; its replicas share the signing keys in etc/conf and refresh their authorization policy from the database."
         instanceOf unityCatalogOSS
       }
 
@@ -26,8 +26,8 @@ deployment {
         instanceOf postgresql
       }
 
-      storage = datastore "Object storage" {
-        description "S3-compatible buckets: the tables' and volumes' files."
+      storage = datastore "Amazon S3" {
+        description "Amazon S3 buckets with an IAM role the server assumes to vend credentials: the tables' and volumes' files."
         instanceOf lakehouse.objectStorage
       }
     }

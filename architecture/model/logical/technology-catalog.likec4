@@ -429,6 +429,8 @@ model {
     link https://www.postgresql.org
   }
 
+  postgresql -[realizes]-> lakehouse.metadataStore "realizes the catalog metadata store"
+
   rustfs = implementation "RustFS" {
     #infra #public
 

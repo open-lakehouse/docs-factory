@@ -65,9 +65,25 @@ export interface EngineReport {
   id: string;
   title: string;
   href: string | null;
-  interfaces: { key: string; label: string; version: string | null }[];
+  interfaces: Interface[];
   counts: Counts;
   groups: GroupReport[];
+}
+
+interface Interface {
+  key: string;
+  label: string;
+  version: string | null;
+  // The package the interface reaches tables through, such as `deltalake`.
+  via?: string | null;
+  viaVersion?: string | null;
+}
+
+/** "pandas 2.3.3 with deltalake 1.6.6": what the hub names each interface by. */
+function interfaceText(i: Interface): string {
+  const own = i.version ? `${i.label} ${i.version}` : i.label;
+  if (!i.via) return own;
+  return `${own} with ${i.via}${i.viaVersion ? ` ${i.viaVersion}` : ""}`;
 }
 
 // Bar and ring order, and the legend's wording.
@@ -368,6 +384,13 @@ export function EngineCoverageView({ report }: { report: EngineReport }) {
               <span key={i.key} className="cov-iface">
                 {i.label}
                 {i.version && <span className="cov-num"> {i.version}</span>}
+                {i.via && (
+                  <>
+                    {" with "}
+                    <code>{i.via}</code>
+                    {i.viaVersion && <span className="cov-num"> {i.viaVersion}</span>}
+                  </>
+                )}
               </span>
             ))}
           </p>
@@ -405,7 +428,7 @@ export function EngineSupportView({ reports }: { reports: EngineReport[] }) {
                 <th scope="row">
                   {r.href ? <a href={r.href}>{r.title}</a> : r.title}
                   <span className="cov-ifaces">
-                    {[...new Set(r.interfaces.map((i) => i.label))].join(", ")}
+                    {[...new Set(r.interfaces.map(interfaceText))].join(", ")}
                   </span>
                 </th>
                 <td className="cov-hub-overall">

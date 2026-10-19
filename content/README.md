@@ -253,6 +253,10 @@ Diátaxis type wants them:
   reader sees and can copy them, closing with the `export` lines. Its key must be a generated environment. Don't restate the steps in
   prose; change the recipe and re-render instead.
 
+- **An explanation** shows no steps, so it gets no box and no start
+  commands. A script beside it only verifies the page's claims, and the page
+  links it where it cites it.
+
 The `.md` twin also gives the commands under **Companion files**, so an agent
 reading a how-to's twin doesn't have to follow the link.
 

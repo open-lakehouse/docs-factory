@@ -26,6 +26,10 @@ model {
     interactiveDevelopment -[flows]-> queryEngine "runs session queries on"
     interactiveDevelopment -[dependsOn]-> volume "persists notebooks as files in"
 
+    // The catalog's own state: its metadata in a database, its files in
+    // object storage.
+    catalog -[dependsOn]-> metadataStore "keeps its metadata in"
+
     // Credential vending: the catalog mints scoped credentials through the
     // issuer, and object storage enforces the scope they carry.
     catalog -[dependsOn]-> credentialIssuer "mints scoped storage credentials through"

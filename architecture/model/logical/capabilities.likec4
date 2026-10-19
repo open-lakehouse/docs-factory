@@ -55,6 +55,22 @@ model {
       }
     }
 
+    metadataStore = capability "Catalog metadata store" {
+      #public
+      summary "The database a catalog keeps its metadata in, so the catalog server itself holds no catalog state."
+      description "
+        A catalog metadata store is the durable database behind a catalog:
+        every namespace, table registration, storage registration, and grant
+        is a row in it. The catalog server reads and writes it on each request
+        and keeps no catalog state of its own, so where the store lives decides
+        who shares the catalog and what survives replacing the server.
+
+        Files stay in object storage; the metadata store only records where
+        they are.
+      "
+      metadata { canonicalDoc "design/catalog-plane.md" }
+    }
+
     queryEngine = capability "Query engine" {
       #public
       summary "Parses, plans, and executes queries over open table formats."

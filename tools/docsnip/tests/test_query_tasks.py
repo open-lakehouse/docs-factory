@@ -56,6 +56,7 @@ def test_explain_its_components(idx):
     }
     assert {c["id"]: c["status"] for c in answer["concepts"]} == {
         "lakehouse.catalog": "full",
+        "lakehouse.metadataStore": "full",
         "lakehouse.objectStorage": "full",
         "lakehouse.governance": "partial",
         "lakehouse.governance.authentication": "partial",
@@ -95,6 +96,7 @@ def test_pages_affected_by_a_uc_release_change(idx):
         uc + p + "/index.md"
         for p in (
             "explanation/004-external-and-managed-tables",
+            "explanation/005-deployment-patterns",
             "how-to/001-table-storage-formats",
             "how-to/002-configure-backend-db",
             "how-to/003-seed-tpch-data",

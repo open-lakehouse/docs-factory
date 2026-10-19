@@ -667,16 +667,18 @@ def test_an_engine_report_lists_what_works_and_what_doesnt(tmp_path) -> None:
     compat.fix(root)
     assert _lines(ref / "003-spark/index.md") == [
         "Verified here: 1 of 2 journeys.",
-        "| Journeys | Verified | Works | Doesn't work | Upstream docs only |",
+        "| Journeys | Verified here | Doesn't work | Upstream docs only "
+        "| Not verified here |",
         "| --- | --- | --- | --- | --- |",
-        "| ops | 1 of 2 | [Read](../../how-to/engine/index.md#read-it) | — | — |",
+        "| ops (1 of 2) | [Read](../../how-to/engine/index.md#read-it) | — | — "
+        "| Write |",
     ]
     # DuckDB has no model element: its interface key is its engine id.
     assert _lines(ref / "004-hub/index.md") == [
-        "| Engine | Interfaces | Verified journeys |",
-        "| --- | --- | --- |",
-        "| [Spark](../spark/index.md) | Spark | 1 of 2 |",
-        "| DuckDB | DuckDB | 0 of 2 |",
+        "| Engine | Interfaces | Protocols | Verified journeys |",
+        "| --- | --- | --- | --- |",
+        "| [Spark](../spark/index.md) | Spark 4.1.0 | — | 1 of 2 |",
+        "| DuckDB | DuckDB | — | 0 of 2 |",
     ]
     assert compat.check(root)[0] == []
 
@@ -719,17 +721,65 @@ def test_the_artifact_records_each_engines_journeys_and_page(tmp_path) -> None:
     ]
 
 
+def test_an_engine_report_keeps_each_claims_qualifier(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims(
+            'claims.duckdb = [{ journey = "table.read", region = "read", note = "by path" }]'
+        ),
+    )
+    ref = root / "content/proj/reference"
+    (ref / "003-duckdb").mkdir()
+    (ref / "003-duckdb/index.md").write_text(
+        _EMBED.replace("compat:ops", "compat:engine:duckdb")
+    )
+    compat.fix(root)
+    assert (
+        "| ops (1 of 2) | [Read](../../how-to/engine/index.md#read-it) (by path) "
+        "| [Write](../../how-to/engine/index.md#read-it) | — | — |"
+    ) in _lines(ref / "003-duckdb/index.md")
+
+
+def test_an_interface_names_the_package_it_goes_through(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims('claims.duckdb = [{ journey = "table.read", region = "read" }]'),
+    )
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text().replace(
+            "duckdb: {label: DuckDB, package: duckdb}",
+            "duckdb: {label: DuckDB, package: duckdb, via: deltalake}",
+        )
+    )
+    script = root / "content/proj/how-to/001-engine/snippets/x.py"
+    script.write_text(
+        script.read_text().replace(
+            '["pyspark==4.1.0"]', '["duckdb==1.5.4", "deltalake==1.6.6"]'
+        )
+    )
+    _engine_pages(root)
+    data = _artifact(root)
+    duckdb = data["interfaces"][1]
+    assert (duckdb["via"], duckdb["viaVersion"]) == ("deltalake", "1.6.6")
+    assert "| DuckDB | DuckDB 1.5.4 with `deltalake` 1.6.6 | — | 1 of 2 |" in _lines(
+        root / "content/proj/reference/004-hub/index.md"
+    )
+
+
 def test_an_engine_draft_claim_shows_only_on_a_private_page(tmp_path) -> None:
     root = _repo(tmp_path, _SPARK_READS, status="draft")
     ref = _engine_pages(root)
     compat.fix(root)
-    assert "| ops | 0 of 2 | — | — | — |" in _lines(ref / "003-spark/index.md")
+    assert "| ops (0 of 2) | — | — | — | Read, Write |" in _lines(
+        ref / "003-spark/index.md"
+    )
     page = ref / "003-spark/index.md"
     page.write_text(page.read_text().replace("status: ready", "status: private"))
     compat.fix(root)
     assert (
-        "| ops | 0 of 2 | [Read (draft)](../../how-to/engine/index.md#read-it) | — | — |"
-        in _lines(page)
+        "| ops (0 of 2) | [Read (draft)](../../how-to/engine/index.md#read-it) | — "
+        "| — | Write |" in _lines(page)
     )
 
 
@@ -754,7 +804,9 @@ def test_a_hub_links_reports_on_its_own_page_by_heading(tmp_path) -> None:
         )
     )
     data = _artifact(root)
-    assert "| [Apache Spark](#apache-spark) | Spark | 1 of 2 |" in _table(root)
+    assert "| [Apache Spark](#apache-spark) | Spark 4.1.0 | — | 1 of 2 |" in _table(
+        root
+    )
     assert data["engines"][0]["anchor"] == "apache-spark"
     assert data["engines"][0]["heading"] == "Apache Spark"
     assert compat.check(root)[0] == []

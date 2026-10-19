@@ -19,6 +19,7 @@ REGISTRY = Path("envs") / "environments.yml"
 # Facts `docsnip envs --fix` derives from a generated environment's plan.json.
 GENERATED = Path("envs") / "environments.generated.json"
 
+_EXPLANATION_RE = re.compile(r"^diataxis:\s*[\"']?explanation\b", re.MULTILINE)
 # Mirrors DECLARED_RE in site/src/content-core/environment.mjs.
 _BOX_RE = re.compile(r"^:{3,}prerequisites\b(?:\{([^}\n]*)\})?", re.MULTILINE)
 _DECLARED_RE = re.compile(r'\benvironment="([^"]+)"')
@@ -142,7 +143,7 @@ def check(repo_root: Path, scripts) -> list[str]:
 
 def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
     """Prerequisites errors: a page whose scripts need a stack must hold exactly
-    one ``:::prerequisites`` (the emitter adds the Docker bullet there), a
+    one ``:::prerequisites`` unless it is an explanation (the emitter adds the Docker bullet there), a
     declared ``environment="…"`` must be a registry key, a ``:::environment``
     marker (where the emitter puts the start commands) needs a stack to start,
     a keyed ``:::environment{key="…"}`` must name a registry key, and a
@@ -158,9 +159,15 @@ def check_pages(repo_root: Path, content_root: Path, scripts) -> list[str]:
     for md in iter_content_files(content_root):
         text = md.read_text()
         boxes = list(_BOX_RE.finditer(text))
-        needs = md.name == "index.md" and any(
-            m.compose_path() is not None and md.parent in m.path.parents
-            for m in scripts
+        # An explanation shows no steps, so its scripts only verify its claims
+        # and the reader gets no environment to start.
+        needs = (
+            md.name == "index.md"
+            and not _EXPLANATION_RE.search(text.split("\n---", 1)[0])
+            and any(
+                m.compose_path() is not None and md.parent in m.path.parents
+                for m in scripts
+            )
         )
         if len(boxes) > 1:
             errors.append(f"{md}: more than one :::prerequisites")

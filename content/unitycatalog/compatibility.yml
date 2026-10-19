@@ -57,9 +57,11 @@ interfaces:
     label: Daft
     package: daft
     model: daft
+  # pandas reaches Unity Catalog tables through delta-rs's Python binding.
   pandas:
     label: pandas
     package: pandas
+    via: deltalake
     model: deltaRs
   pyiceberg:
     label: PyIceberg

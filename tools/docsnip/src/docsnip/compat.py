@@ -62,7 +62,7 @@ _MATRIX_KEYS = {
     "tables",
     "evidence",
 }
-_INTERFACE_KEYS = {"label", "pin", "package", "model"}
+_INTERFACE_KEYS = {"label", "pin", "package", "model", "via"}
 _JOURNEY_KEYS = {"title", "summary", "request", "family", "asset", "requires"}
 _FAMILY_KEYS = {"asset", "requires"}
 # A requirement edge → the element kinds it may name.
@@ -107,6 +107,7 @@ class Interface:
     pin: str | None = None  # a release.yml pin; the header shows its major.minor
     package: str | None = None  # every claiming script pins one version of it
     model: str | None = None  # an estate-model element id
+    via: str | None = None  # the package the interface reaches tables through
 
 
 # participant role → requirement edge → element ids, all of which must hold
@@ -189,6 +190,7 @@ class Proof:
     anchor: str | None
     ready: bool
     version: str | None  # the interface package the script pins
+    via_version: str | None = None  # the interface's `via` package the script pins
 
 
 @dataclasses.dataclass
@@ -385,6 +387,7 @@ def _load_matrix(path: Path, model: Model, errors: list[str]) -> Matrix | None:
             pin=entry.get("pin"),
             package=entry.get("package"),
             model=entry.get("model"),
+            via=entry.get("via"),
         )
 
     defaults = _load_family(raw.get("defaults") or {}, "defaults", where, model, errors)
@@ -652,6 +655,7 @@ def _resolve(
         return None
 
     package = matrix.interfaces[iface].package
+    via = matrix.interfaces[iface].via
     proof = Proof(
         script=rel,
         project=own,
@@ -660,6 +664,7 @@ def _resolve(
         anchor=anchor,
         ready=page_status(page) == "ready",
         version=_package_pins(meta).get(package.lower()) if package else None,
+        via_version=_package_pins(meta).get(via.lower()) if via else None,
     )
     return project, proof
 
@@ -938,23 +943,14 @@ def render_interfaces(
         "| --- | --- | --- | --- | --- |",
     ]
     for iface in matrix.interfaces.values():
-        version = matrix.pins.get(iface.pin or "") or _tested_version(
-            result, matrix, iface.key
-        )
-        label = iface.label + (f" {version}" if version else "")
+        label = _versioned_label(result, matrix, iface)
         model_id = iface.model
         implementation = (
             f"[{result.model.titles.get(model_id, model_id)}](model:{model_id})"
             if model_id
             else "—"
         )
-        contracts = sorted(
-            target
-            for kind, source, target in result.model.edges
-            if source == model_id
-            and kind in _SPEC_EDGES
-            and result.model.kinds.get(target) == "openSpecification"
-        )
+        contracts = _contracts(result, model_id)
         modeled_assets = sorted(
             target
             for kind, source, target in result.model.edges
@@ -1082,21 +1078,23 @@ def _verified_count(rows: list[tuple[Journey, Cell]]) -> str:
 def render_engine(
     result: Result, matrix: Matrix, engine: Engine, embed: Path, content_root: Path
 ) -> list[str]:
-    """The engine's journeys per table: what works here, what doesn't, and what
-    only upstream docs say. Unanswered journeys count but aren't listed."""
+    """The engine's journeys per table: what an example here verifies, what it
+    shows failing, what only upstream docs say, and what no example runs."""
     detailed = page_status(embed) == "private"
     groups = _engine_rows(result, matrix, engine, drafts=detailed)
     lines = [
         f"Verified here: {_verified_count([p for _, r in groups for p in r])} "
         "journeys.",
         "",
-        "| Journeys | Verified | Works | Doesn't work | Upstream docs only |",
+        "| Journeys | Verified here | Doesn't work | Upstream docs only "
+        "| Not verified here |",
         "| --- | --- | --- | --- | --- |",
     ]
     for group, rows in groups:
-        listed: dict[str, list[str]] = {"works": [], "no": [], "docs": []}
+        listed: dict[str, list[str]] = {"works": [], "no": [], "docs": [], "unknown": []}
         for journey, found in rows:
             if found.status == "unknown":
+                listed["unknown"].append(journey.title)
                 continue
             shown = found.shown
             href: str | None = None
@@ -1113,11 +1111,14 @@ def render_engine(
                     _evidence_link(found.evidence[0], matrix, embed, content_root)
                     or None
                 )
+            # The qualifier a claim or evidence carries ("on local storage").
+            note = shown.claim.note if shown is not None else found.evidence[0].note
             label = journey.title + (" (draft)" if found.draft else "")
+            linked = f"[{label}]({href})" if href else label
             bucket = {"tested": "works", "documented": "docs"}.get(found.status, "no")
-            listed[bucket].append(f"[{label}]({href})" if href else label)
+            listed[bucket].append(f"{linked} ({note})" if note else linked)
         lines.append(
-            f"| {group.title} | {_verified_count(rows)} | "
+            f"| {group.title} ({_verified_count(rows)}) | "
             + " | ".join(", ".join(items) or "—" for items in listed.values())
             + " |"
         )
@@ -1129,7 +1130,10 @@ def render_engines(
 ) -> list[str]:
     """One row per engine, linking the page that embeds its report."""
     pages = _engine_pages(content_root)
-    lines = ["| Engine | Interfaces | Verified journeys |", "| --- | --- | --- |"]
+    lines = [
+        "| Engine | Interfaces | Protocols | Verified journeys |",
+        "| --- | --- | --- | --- |",
+    ]
     for engine in engines(matrix, result.model):
         found = pages.get((matrix.project, engine.id))
         name = engine.title
@@ -1140,13 +1144,23 @@ def render_engines(
             href = f"#{anchor}" if same and anchor else None
             href = href or _link(page, anchor, embed, content_root)
             name = f"[{heading.text if heading else engine.title}]({href})"
-        labels = dict.fromkeys(matrix.interfaces[k].label for k in engine.interfaces)
+        labels = dict.fromkeys(
+            _versioned_label(result, matrix, matrix.interfaces[k])
+            for k in engine.interfaces
+        )
+        protocols = ", ".join(
+            f"[{result.model.titles.get(c, c)}](model:{c})"
+            for c in _contracts(result, engine.id)
+        )
         rows = [
             pair
             for _, group in _engine_rows(result, matrix, engine, drafts=False)
             for pair in group
         ]
-        lines.append(f"| {name} | {', '.join(labels)} | {_verified_count(rows)} |")
+        lines.append(
+            f"| {name} | {', '.join(labels)} | {protocols or '—'} "
+            f"| {_verified_count(rows)} |"
+        )
     return lines
 
 
@@ -1371,16 +1385,43 @@ def _proof_json(proof: Proof, content_root: Path) -> dict[str, object]:
     }
 
 
-def _tested_version(result: Result, matrix: Matrix, iface: str) -> str | None:
-    """The one version the project's own claiming scripts pin, if they agree."""
+def _tested_version(
+    result: Result, matrix: Matrix, iface: str, *, via: bool = False
+) -> str | None:
+    """The one version the project's own claiming scripts pin, if they agree:
+    of the interface's package, or with ``via`` of its `via` package."""
     seen = {
-        p.version
+        version
         for (project, key, _), cell in result.proofs.items()
         if project == matrix.project and key == iface
         for p in cell
-        if p.project == project and p.version
+        if p.project == project
+        and (version := p.via_version if via else p.version)
     }
     return seen.pop() if len(seen) == 1 else None
+
+
+def _versioned_label(result: Result, matrix: Matrix, iface: Interface) -> str:
+    """The interface with its tested version, and the package it goes through."""
+    version = matrix.pins.get(iface.pin or "") or _tested_version(
+        result, matrix, iface.key
+    )
+    label = iface.label + (f" {version}" if version else "")
+    if iface.via:
+        via = _tested_version(result, matrix, iface.key, via=True)
+        label += f" with `{iface.via}`" + (f" {via}" if via else "")
+    return label
+
+
+def _contracts(result: Result, model_id: str | None) -> list[str]:
+    """The open specifications the element consumes or implements."""
+    return sorted(
+        target
+        for kind, source, target in result.model.edges
+        if source == model_id
+        and kind in _SPEC_EDGES
+        and result.model.kinds.get(target) == "openSpecification"
+    )
 
 
 _SPEC_EDGES = {"consumes", "implements"}
@@ -1594,6 +1635,10 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                 or _tested_version(result, matrix, i.key),
                 "package": i.package,
                 "model": i.model,
+                "via": i.via,
+                "viaVersion": _tested_version(result, matrix, i.key, via=True)
+                if i.via
+                else None,
             }
             for i in matrix.interfaces.values()
         ],

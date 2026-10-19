@@ -150,6 +150,8 @@ export function engineReport(matrix, engine, { href, scriptUrl, drafts, pageTitl
       key,
       label: ifaces.get(key)?.label ?? key,
       version: ifaces.get(key)?.version ?? null,
+      via: ifaces.get(key)?.via ?? null,
+      viaVersion: ifaces.get(key)?.viaVersion ?? null,
     })),
     counts,
     groups,

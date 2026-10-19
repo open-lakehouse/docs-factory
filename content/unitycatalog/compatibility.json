@@ -9,70 +9,90 @@
       "label": "Spark",
       "version": "4.1.0",
       "package": "pyspark",
-      "model": "apacheSpark"
+      "model": "apacheSpark",
+      "via": null,
+      "viaVersion": null
     },
     {
       "key": "spark-4.2",
       "label": "Spark",
       "version": "4.2.0",
       "package": "pyspark",
-      "model": "apacheSpark"
+      "model": "apacheSpark",
+      "via": null,
+      "viaVersion": null
     },
     {
       "key": "duckdb",
       "label": "DuckDB",
       "version": "1.5.4",
       "package": "duckdb",
-      "model": "duckdb"
+      "model": "duckdb",
+      "via": null,
+      "viaVersion": null
     },
     {
       "key": "polars",
       "label": "Polars",
       "version": "1.44.2",
       "package": "polars",
-      "model": "polars"
+      "model": "polars",
+      "via": null,
+      "viaVersion": null
     },
     {
       "key": "daft",
       "label": "Daft",
       "version": "0.7.25",
       "package": "daft",
-      "model": "daft"
+      "model": "daft",
+      "via": null,
+      "viaVersion": null
     },
     {
       "key": "pandas",
       "label": "pandas",
       "version": "2.3.3",
       "package": "pandas",
-      "model": "deltaRs"
+      "model": "deltaRs",
+      "via": "deltalake",
+      "viaVersion": "1.6.6"
     },
     {
       "key": "pyiceberg",
       "label": "PyIceberg",
       "version": "0.12.0",
       "package": "pyiceberg",
-      "model": "pyIceberg"
+      "model": "pyIceberg",
+      "via": null,
+      "viaVersion": null
     },
     {
       "key": "cli",
       "label": "uc CLI",
       "version": "0.7.0",
       "package": null,
-      "model": "ucCli"
+      "model": "ucCli",
+      "via": null,
+      "viaVersion": null
     },
     {
       "key": "python-sdk",
       "label": "Python SDK",
       "version": "0.7.0",
       "package": "unitycatalog-client",
-      "model": "unityCatalogPythonSdk"
+      "model": "unityCatalogPythonSdk",
+      "via": null,
+      "viaVersion": null
     },
     {
       "key": "unitycatalog-ai",
       "label": "unitycatalog-ai",
       "version": "0.4.0",
       "package": "unitycatalog-ai",
-      "model": "unityCatalogAI"
+      "model": "unityCatalogAI",
+      "via": null,
+      "viaVersion": null
     }
   ],
   "tables": [

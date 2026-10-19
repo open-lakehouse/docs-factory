@@ -725,8 +725,8 @@
         "bucket": "reference",
         "slug": "engine-support"
       },
-      "anchor": "python-client",
-      "heading": "Python client",
+      "anchor": "python-sdk",
+      "heading": "Python SDK",
       "groups": [
         {
           "table": "catalog-objects",

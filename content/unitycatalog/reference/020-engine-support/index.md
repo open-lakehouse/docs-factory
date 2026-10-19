@@ -1,6 +1,6 @@
 ---
 title: Engine and client support
-summary: Which Unity Catalog journeys each engine and client runs in this site's tested examples, and the example behind each one.
+summary: "Apache Spark, DuckDB, Polars, Daft, pandas, PyIceberg, the uc CLI, the Python SDK, and unitycatalog-ai: the tasks each is verified to run, with the example."
 diataxis: reference
 project: unitycatalog
 references:
@@ -22,8 +22,10 @@ has verified with it: a journey is a task a reader sets out to do, such as
 appending rows to a table.
 
 A journey is **verified** when an example on this site runs it, in CI, against
-the release these docs cover. Select a journey to open that
-example and download its script.
+the release these docs cover. The examples run against local storage and a
+simulated Amazon S3; to set up real S3, see
+[Configure AWS storage credentials and external locations](../../how-to/configure-aws-storage/index.md).
+Select a journey to open that example and download its script.
 
 The other states don't say that a tool can't do something:
 
@@ -47,7 +49,7 @@ The other states don't say that a tool can't do something:
 | [pandas](#pandas) | pandas 2.3.3 with `deltalake` 1.6.6 | [Delta Lake](model:deltaSpec), [S3 API](model:s3Api), [Unity Catalog](model:ucSpec) | 3 of 12 |
 | [PyIceberg](#pyiceberg) | PyIceberg 0.12.0 | [Iceberg REST Catalog](model:icebergRestSpec) | 8 of 9 |
 | [uc CLI](#uc-cli) | uc CLI 0.7.0 | [Unity Catalog](model:ucSpec) | 28 of 37 |
-| [Python client](#python-client) | Python SDK 0.7.0 | [Unity Catalog](model:ucSpec) | 34 of 44 |
+| [Python SDK](#python-sdk) | Python SDK 0.7.0 | [Unity Catalog](model:ucSpec) | 34 of 44 |
 | [unitycatalog-ai](#unitycatalog-ai) | unitycatalog-ai 0.4.0 | [Unity Catalog](model:ucSpec) | 5 of 5 |
 <!-- /compat:engines -->
 
@@ -110,7 +112,8 @@ Verified here: 5 of 12 journeys.
 ## Daft
 
 Daft looks up Unity Catalog tables by name, then reads the Delta files
-directly in storage, using temporary credentials from the server.
+directly from their location. These docs test it on local storage only; see
+[Known issues](../features-and-limitations/index.md#clients-and-engines) for S3.
 
 To set it up:
 
@@ -126,8 +129,10 @@ Verified here: 2 of 12 journeys.
 
 ## pandas
 
-pandas works with Unity Catalog tables through the `deltalake` package, which
-opens a table by its `uc://` name.
+pandas works with Unity Catalog tables through the `deltalake` package
+(delta-rs), which opens a table on S3 by its `uc://` name. On local storage,
+open the table's `storage_location` path instead (see
+[Known issues](../features-and-limitations/index.md#clients-and-engines)).
 
 To set it up:
 
@@ -176,10 +181,10 @@ Verified here: 28 of 37 journeys.
 | Functions (0 of 5) | — | — | — | Register a Python function, View a function, Run a function by name, List functions, Delete a function |
 <!-- /compat:engine:ucCli -->
 
-## Python client
+## Python SDK
 
-The Python client (`unitycatalog-client`) manages catalog objects from Python
-code.
+The Unity Catalog Python SDK (`unitycatalog-client`) manages catalog objects
+from Python code.
 
 To set it up:
 
@@ -198,8 +203,8 @@ Verified here: 34 of 44 journeys.
 
 ## unitycatalog-ai
 
-`unitycatalog-ai` registers Python functions in Unity Catalog and runs them as
-tools.
+`unitycatalog-ai` registers Python functions in Unity Catalog and runs them by
+name.
 
 To set it up:
 
@@ -212,3 +217,8 @@ Verified here: 5 of 5 journeys.
 | --- | --- | --- | --- | --- |
 | Functions (5 of 5) | [Register a Python function](../../tutorials/first-python-function/index.md#register-the-function), [View a function](../../tutorials/first-python-function/index.md#see-what-the-catalog-stored), [Run a function by name](../../tutorials/first-python-function/index.md#run-the-function-by-name), [List functions](../../tutorials/first-python-function/index.md#list-and-clean-up), [Delete a function](../../tutorials/first-python-function/index.md#list-and-clean-up) | — | — | — |
 <!-- /compat:engine:unityCatalogAI -->
+
+## Related pages
+
+- [Features and limitations](../features-and-limitations/index.md)
+- [Credential vending](../../explanation/credential-vending/index.md)

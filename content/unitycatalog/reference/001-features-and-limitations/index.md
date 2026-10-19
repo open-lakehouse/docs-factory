@@ -113,6 +113,9 @@ Fixed in 0.7.0, for readers upgrading from 0.6.0:
 
 ### Clients and engines
 
+For what each engine and client is verified to do, see
+[Engine and client support](../engine-support/index.md).
+
 | Client | Issue | What you see |
 | --- | --- | --- |
 | Polars, Daft, pandas (`deltalake`) | Catalog-managed tables | `Max catalog version is required when loading a catalog-managed table`. Use Spark or DuckDB; see [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md). |
@@ -154,3 +157,4 @@ several of them, so guides written for Databricks don't apply here:
 ## Related pages
 
 - [Core concepts](../../explanation/uc-basics/index.md)
+- [Engine and client support](../engine-support/index.md)

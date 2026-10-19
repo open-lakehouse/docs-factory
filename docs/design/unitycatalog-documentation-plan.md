@@ -210,7 +210,7 @@ Personas are entry points, not mutually exclusive identities:
 | Journey | Starting question | Ordered reading path | Completion condition |
 | --- | --- | --- | --- |
 | J01 Evaluate | "What can OSS UC do, and can I try it?" | E01 -> R01 -> T01 -> T11 -> choose a data/AI journey | Local catalog works; reader can identify unsupported requirements before adopting it. |
-| J02 Operate | "How do I provide a persistent catalog to my team?" | E02/E10 -> T10 -> H22/H24 -> H25 -> H37 -> T09 -> R06/R07 | Restart preserves metadata; authentication is on; ordinary users work without the bootstrap token. |
+| J02 Operate | "How do I provide a persistent catalog to my team?" | E02/E10/E11 -> T10 -> H22/H24 -> H25 -> H37 -> T09 -> R06/R07 | Restart preserves metadata; authentication is on; ordinary users work without the bootstrap token. |
 | J03 Govern tabular data | "How do I register existing data or create managed Delta tables?" | E03/E04 -> T02 -> T03 -> H02/H03/H04 -> R02/R10 | Reader can distinguish registration from writing and complete a supported read/write lifecycle. |
 | J04 Govern files | "How do applications use unstructured files under UC?" | E03/E05 -> T04 -> H09/H10 -> R03/R04 | Application resolves a volume and accesses files with appropriately scoped credentials. |
 | J05 Grant access | "How do I let a colleague or job read just the intended assets?" | E06 -> T09 -> H32/H34/H36 -> H35 -> H41 -> R05 | A permitted operation succeeds and a non-permitted operation is denied; principal mapping is understood. |
@@ -351,6 +351,7 @@ prerequisite for the first SQL or metric-view success.
 | E08 | How Unity Catalog and MLflow divide responsibilities | P1 / J07 | Runs/experiments versus registered models/versions/artifacts; which service stores what; registry operations do not imply model serving. |
 | E09 | SQL views and metric views as catalog objects | P1 / J08 | Stored definitions/dependencies versus engine execution; ordinary views versus measures/dimensions; semantic compatibility and permission boundaries. |
 | E10 | Persistence, failure, and recovery boundaries | P0 / J02, J11 | Metadata DB, policies, signing/bootstrap material, physical data, and managed commit state; which backups/restarts preserve which guarantees. |
+| E11 | Deployment patterns: local, hybrid, and hosted | P1 / J02 | Where the metadata database and object storage live and where the server runs: local (`uc-local`), hybrid (local server, hosted PostgreSQL and S3-compatible bucket, `uc-hybrid`), fully hosted (model view). Sits between E02 (the parts) and E10 (what each store preserves); H22 is the hosted deployment task. |
 
 These pages should use the existing architecture model where appropriate, with
 validated `explains`/`references`. If an explanation needs a missing model concept,

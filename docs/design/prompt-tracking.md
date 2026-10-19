@@ -110,7 +110,7 @@ backlog item).
 | 46 | How do I add row-level security and column masking to an open-source lakehouse? | U | `blogs/cross-repo-abac/` | draft (brief) |
 | 47 | How does attribute-based access control work across a catalog and a query engine? | U | `blogs/cross-repo-abac/` | draft (brief) |
 | 48 | Can I use Cedar policies for data access control? | U | `blogs/cross-repo-abac/` | draft (brief) |
-| 49 | How do I put authentication in front of Unity Catalog OSS? | B | `uc/how-to/101-envoy-authentication/`, UC H32 | idea / plan H32 |
+| 49 | How do I put authentication in front of Unity Catalog OSS? | B | UC plan H50/H32 | plan |
 | 50 | How do I give a user read-only access to one schema? | U | `uc/explanation/003-uc-basics/`, UC T09/H36 | ready / plan T09 |
 | 51 | How do I find and delete PII across my lakehouse for right-to-erasure requests? | U | `blogs/trust-in-your-open-lakehouse/` | draft |
 
@@ -124,10 +124,10 @@ The cluster where we most want to lead.
 | 53 | What data architecture do AI agents need? | U | `blogs/agentic-lakehouse/` | idea |
 | 54 | How do I register Python functions in a catalog and use them as LLM tools? | U | `uc/tutorials/005-first-python-function/`, UC T06/H13/H14 | ready / plan T06 |
 | 55 | Where should I store unstructured files for RAG so they stay governed? | U | `uc/how-to/006-manage-volumes/`, `blogs/uc-volumes/` | ready |
-| 56 | How do I register and version ML models in an open-source registry with MLflow? | U | `uc/tutorials/004-manage-models-mlflow.md`, UC H15 | idea / plan H15 |
+| 56 | How do I register and version ML models in an open-source registry with MLflow? | U | UC plan T07/H15 | plan |
 | 57 | Is there an MCP server for a data catalog? | U | — | gap |
 | 58 | How should I design a CLI that AI agents can use for data tools? | U | `blogs/agentic-lakehouse/` | idea |
-| 59 | Can I use marimo notebooks with lakehouse storage? | U | `uc/tutorials/100-marimo-remote-storage/` | idea |
+| 59 | Can I use marimo notebooks with lakehouse storage? | U | UC plan H49 | plan |
 
 ## 8. Semantics, lineage, and observability
 

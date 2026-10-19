@@ -16,6 +16,12 @@ views {
     autoLayout LeftRight
   }
 
+  view explain_metadataStore of lakehouse.metadataStore {
+    title "Catalog metadata store — in context"
+    include *
+    autoLayout LeftRight
+  }
+
   view explain_queryEngine of lakehouse.queryEngine {
     title "Query engine — in context"
     include *

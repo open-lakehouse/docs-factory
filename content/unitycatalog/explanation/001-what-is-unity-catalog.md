@@ -121,7 +121,5 @@ in each release, see
   [Spark](../how-to/configure-spark/index.md),
   [DuckDB](../how-to/duckdb/index.md), or
   [Python DataFrame libraries](../how-to/python-dataframes/index.md).
-- [Engine and client support](../reference/engine-support/index.md) lists
-  what each engine and client is verified to do, with the example behind it.
 
 [lakehouse architecture]: https://www.databricks.com/blog/what-is-data-lakehouse

@@ -101,7 +101,6 @@ nav:
       # Primary home for R15; repeated under Reference.
       - page: reference/engine-support
         id: R15
-        label: Choose an engine or client
       - page: how-to/configure-spark
         id: H17
       - page: how-to/duckdb

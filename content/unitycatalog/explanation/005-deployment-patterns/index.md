@@ -13,13 +13,18 @@ status: draft
 ---
 
 A [Unity Catalog](model:unityCatalogOSS) deployment has three parts: the
-server, a [PostgreSQL](model:postgresql) database that holds the catalog's
-metadata, and [object storage](model:lakehouse.objectStorage) that holds the
-files of its tables and volumes. The server keeps no catalog state of its own:
-every catalog, schema, table, and grant is a row in the database, and every
-file is in storage. Deploying Unity Catalog therefore comes down to where those
-two stores live and where the server runs. Each pattern below moves one more
-part off your machine.
+server, a database that holds the catalog's metadata (its
+[metadata store](model:lakehouse.metadataStore)), and
+[object storage](model:lakehouse.objectStorage) that holds the files of its
+tables and volumes. By default the metadata store is an H2 file inside the
+server, so the catalog is lost with the server's container. Every pattern here uses
+[PostgreSQL](model:postgresql) instead (see
+[Configure PostgreSQL as the metadata database](../../how-to/configure-backend-db/index.md)),
+and then the server keeps no catalog state of its own: every catalog, schema,
+table, and grant is a row in the database, and every file is in storage.
+Deploying Unity Catalog therefore comes down to where those two stores live
+and where the server runs. Each pattern below moves one more part off your
+machine.
 
 | Pattern | Server | Metadata and data | Who shares the catalog |
 | --- | --- | --- | --- |
@@ -28,18 +33,18 @@ part off your machine.
 | [Fully hosted](#fully-hosted-only-clients-on-your-machine) | the cloud | the cloud | every client the server authenticates |
 
 The local and hybrid patterns are environments these docs generate with
-Trestle. Each diagram below is that environment's plan: select a node's file
-count to read the configuration it runs with.
+Trestle, and their diagrams below are the environments' plans: select a node's
+file count to read the configuration it runs with.
 
 ## Local: everything on one machine
 
 The server, PostgreSQL, and RustFS, an S3-compatible object store, run as
 containers on one machine under Docker Compose. There is no client-facing
 gateway: each service publishes its own port, Unity Catalog's REST API on
-`8080` and the S3 API on `9000`, and clients call them directly. An internal
-Envoy answers the hostnames of Amazon S3 and AWS Security Token Service (STS)
-so that the server's credential vending reaches RustFS. It publishes no port
-and isn't on the client path.
+`8080` and the S3 API on `9000`, and clients call them directly. Inside the
+stack, an Envoy proxy imitates AWS so that the server's credential vending
+works against RustFS. It's internal AWS emulation, not a client-facing
+gateway, and it publishes no port.
 
 ![Clients on the host reach Unity Catalog on port 8080 and RustFS on port 9000; Unity Catalog keeps its metadata in PostgreSQL and its files in RustFS](../../../../envs/uc-local/diagram.png "trestle=uc-local")
 
@@ -65,7 +70,7 @@ other machines on your network can reach them too. That makes it a
 single-user development setup. It depends on one machine, it doesn't isolate
 anyone who connects, and the stack starts with one command.
 
-Choose it for development, for learning, and for tests that need a fresh
+Choose it for development and learning, and for tests that need a fresh
 catalog each run. It stops fitting when a second person needs the same catalog
 with their own access, or when the catalog has to outlive your machine.
 
@@ -75,7 +80,7 @@ The hybrid pattern moves the two stores to hosted services and keeps the
 server on your machine. Compared with the local pattern, only the stores
 change: [PostgreSQL](model:postgresql) becomes a Neon project, and RustFS
 becomes a bucket on an S3-compatible service such as Cloudflare R2 or Tigris.
-Unity Catalog still runs in a container on `8080`.
+Unity Catalog still runs in a container on your machine.
 
 ![Clients on the host reach Unity Catalog on port 8080; Unity Catalog keeps its metadata in a hosted PostgreSQL database on Neon and its files in a bucket on an external S3-compatible store](../../../../envs/uc-hybrid/diagram.png "trestle=uc-hybrid")
 
@@ -84,13 +89,13 @@ deployment. Each person runs the same environment with the same database and
 bucket credentials, and every server reads and writes the same catalog. A
 catalog one server creates is listed by the others, and both servers still
 list it after a restart. This page's script, `shared_database.py`, checks that
-with two servers on the local pattern's database. The full hybrid run against
-a Neon project and an R2 bucket isn't verified here: only the environment's
-rendered plan is checked.
+with two servers on the local pattern's database. These docs haven't yet run
+the hybrid environment against a real Neon project and bucket.
 
-The stores have to exist before the stack starts, so the hybrid environment
-takes more than `docker compose up`: you create the bucket and the database,
-save their secrets, and render the stack again. The
+The stores have to exist before the stack starts, so one person provisions
+them: they create the Neon project and the bucket, and share the `secrets.env`
+that provisioning saves. Everyone else puts that file beside the environment,
+renders the stack again, and starts it. The
 [environment's archive](/env/uc-hybrid.tar.gz) holds those steps in its
 `README.md`.
 
@@ -101,12 +106,14 @@ participant holds the database password and the bucket key:
   authorization disabled, and anyone with the database password can change
   the catalog directly. Share the credentials only with people you would make
   administrators.
-- **Clients bring their own storage keys.** The server vends credentials only
-  for Amazon S3 with an IAM role it can assume. An S3-compatible bucket has
-  none, so the environment doesn't register it, and engines read and write
-  it with the key in `secrets.env`. Clients that rely on vended credentials
-  don't work, and neither does managed storage: credential requests for those
-  objects fail with `FAILED_PRECONDITION` (see
+- **Clients bring their own storage keys.** On S3, the server vends
+  credentials by assuming an IAM role for the bucket. The environment
+  registers a bucket only when that role exists, as on Amazon S3, so a bucket
+  on R2 or Tigris stays unregistered, and engines read and write it with the
+  key in `secrets.env`. (The local pattern's RustFS gets vended credentials
+  only because its stack imitates AWS.) Clients that rely on vended
+  credentials don't work, and neither does managed storage: credential
+  requests for those objects fail with `FAILED_PRECONDITION` (see
   [Known issues](../../reference/features-and-limitations/index.md#server)).
 - **Every machine holds the secrets.** Each participant's `secrets.env` holds
   the database host, user, and password and the bucket's endpoint and key.
@@ -124,13 +131,15 @@ clients: engines, SDKs, and the CLI, which reach the catalog over HTTPS.
 
 What changes is where the secrets live. The database password and the
 storage identity stay in the cloud with the server, and clients hold only
-their own token and the short-lived credentials the server vends. Vending
-needs storage the server can vend for: Amazon S3 with an IAM role it assumes.
-[Storage and credentials](../../reference/features-and-limitations/index.md#storage-and-credentials)
-lists what other stores support.
+their own token and the short-lived credentials the server vends. The example
+here uses Amazon S3, where the server vends by assuming an IAM role. The server
+also vends for Azure Data Lake Storage and Google Cloud Storage; see
+[How the server mints a credential](../credential-vending/index.md#how-the-server-mints-a-credential)
+and
+[Storage and credentials](../../reference/features-and-limitations/index.md#storage-and-credentials).
 Moving the hybrid pattern's server into the cloud doesn't by itself take the
-bucket keys off clients: an S3-compatible bucket still has no role to vend
-for.
+bucket keys off clients: the server still has no IAM role to assume for a
+bucket on R2 or Tigris.
 
 With clients on the other side of a network, the catalog sits at the trust
 boundary that [Credential vending](../credential-vending/index.md)
@@ -149,8 +158,12 @@ exist
 ([`SecurityConfiguration.java`](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/server/src/main/java/io/unitycatalog/server/security/SecurityConfiguration.java)),
 and writes `certs.json` and the service token `token.txt` there
 ([`SecurityContext.java`](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/server/src/main/java/io/unitycatalog/server/security/SecurityContext.java)).
-Persist that folder and share it across replicas, so that every replica
-signs and checks tokens with the same keys. Each replica also holds its authorization policy in
+Every replica has to sign and check tokens with the same keys, and sharing the
+folder isn't enough: a server checks for each key file without coordinating
+with other replicas and writes the three separately, so replicas that start
+together on an empty folder can create mismatched keys. Create one complete
+set of keys before any replica starts, persist it, and give every replica the
+same copy. Each replica also holds its authorization policy in
 memory and doesn't reload grants made on another replica unless
 `server.authorization.policy-refresh=true` is set
 ([Multiple server instances](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/docs/server/auth.md#multiple-server-instances)).
@@ -162,9 +175,8 @@ points a server at PostgreSQL, and
 [Configure AWS storage credentials and external locations](../../how-to/configure-aws-storage/index.md)
 sets up vending on S3.
 
-Choose it when the catalog serves people or jobs you don't sit next to:
-production pipelines, a shared platform, or anyone who shouldn't hold the
-storage keys.
+Choose it when the catalog serves people or jobs you don't sit next to, such
+as production pipelines, and when the storage keys should stay in the cloud.
 
 ## Next steps
 

@@ -94,7 +94,7 @@ that cover each task link here.
 
 | Issue | Affects | What you see | Workaround |
 | --- | --- | --- | --- |
-| Storage roots outside an external location, with authorization disabled | 0.6.0 | The server accepts the root, then fails credential requests for its objects with `FAILED_PRECONDITION` (`S3 bucket configuration not found.`). With authorization enabled, creating the catalog or schema is denied. | Check each root against `external_location list` first. |
+| Storage roots outside an external location, with authorization disabled | 0.6.0, 0.7.0 | The server accepts the root, then fails credential requests for its objects with `FAILED_PRECONDITION` (`S3 bucket configuration not found.`). With authorization enabled, creating the catalog or schema is denied. | Check each root against `external_location list` first. |
 | Force-deleting a storage credential that an external location uses | 0.6.0 | Every list of external locations fails with HTTP 500 `Credential not found`. | Force-delete the location by name: `uc external_location delete --name <name> --force true`. |
 | Changing an external location's URL | 0.6.0 | Tables, volumes, and storage roots under the old URL lose their credential; vending fails with `FAILED_PRECONDITION`. | Create the new location next to the old one and move the data first. |
 | Schema updates | 0.6.0 | Any principal with `USE CATALOG` and `USE SCHEMA` can update or rename a schema, not only its owner. | Grant those privileges with that in mind. |

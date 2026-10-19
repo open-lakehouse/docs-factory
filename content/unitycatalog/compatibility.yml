@@ -447,12 +447,6 @@ evidence:
     outcome: missing
     why: "`deltalake` resolves `uc://` names but has no call that lists a schema's tables."
     source: how-to/python-dataframes#list-tables
-  - interfaces: [polars, daft, pandas]
-    journeys: [managed.read, managed.append]
-    outcome: fails
-    why: "Max catalog version is required when loading a catalog-managed table"
-    source: reference/features-and-limitations#clients-and-engines
-    verified: {polars: 1.44.2, daft: 0.7.25, pandas: 2.3.3}
   - interfaces: [cli]
     journeys: [credentials.vend-path]
     outcome: missing

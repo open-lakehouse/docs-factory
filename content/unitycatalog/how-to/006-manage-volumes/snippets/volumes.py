@@ -7,7 +7,6 @@
 # services = ["unitycatalog"]
 # base-url-env = "UC_BASE_URL"
 # claims."python-sdk" = [
-#   { journey = "storage.managed-root", region = "managed-root", api = "SchemasApi.create_schema(storage_root=)" },
 #   { journey = "volume.create-external", region = "create-external", api = "VolumesApi.create_volume" },
 #   { journey = "volume.create-managed", region = "create-managed", api = "VolumesApi.create_volume" },
 #   { journey = "volume.view", region = "view", api = "VolumesApi.get_volume" },

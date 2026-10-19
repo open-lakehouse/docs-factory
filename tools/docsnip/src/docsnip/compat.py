@@ -1136,8 +1136,8 @@ def render_engines(
     """One row per engine, linking the page that embeds its report."""
     pages = _engine_pages(content_root)
     lines = [
-        "| Engine | Interfaces | Protocols | Verified journeys |",
-        "| --- | --- | --- | --- |",
+        "| Engine | Interfaces | Verified journeys |",
+        "| --- | --- | --- |",
     ]
     for engine in engines(matrix, result.model):
         found = pages.get((matrix.project, engine.id))
@@ -1153,19 +1153,12 @@ def render_engines(
             _versioned_label(result, matrix, matrix.interfaces[k])
             for k in engine.interfaces
         )
-        protocols = ", ".join(
-            f"[{result.model.titles.get(c, c)}](model:{c})"
-            for c in _contracts(result, engine.id)
-        )
         rows = [
             pair
             for _, group in _engine_rows(result, matrix, engine, drafts=False)
             for pair in group
         ]
-        lines.append(
-            f"| {name} | {', '.join(labels)} | {protocols or '—'} "
-            f"| {_verified_count(rows)} |"
-        )
+        lines.append(f"| {name} | {', '.join(labels)} | {_verified_count(rows)} |")
     return lines
 
 

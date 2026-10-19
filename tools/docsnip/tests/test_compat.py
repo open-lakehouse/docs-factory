@@ -804,7 +804,9 @@ def test_a_hub_links_reports_on_its_own_page_by_heading(tmp_path) -> None:
         )
     )
     data = _artifact(root)
-    assert "| [Apache Spark](#apache-spark) | Spark 4.1.0 | — | 1 of 2 |" in _table(root)
+    assert "| [Apache Spark](#apache-spark) | Spark 4.1.0 | — | 1 of 2 |" in _table(
+        root
+    )
     assert data["engines"][0]["anchor"] == "apache-spark"
     assert data["engines"][0]["heading"] == "Apache Spark"
     assert compat.check(root)[0] == []

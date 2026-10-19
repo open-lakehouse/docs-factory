@@ -97,16 +97,27 @@ if __name__ == "__main__":
     # The database outlives the stack, so a run cut short leaves its catalogs.
     drop_catalogs()
     docker(
-        "compose", "run", "-d", "--no-deps", "--name", SECOND_NAME,
-        "-p", "8081:8080", "unitycatalog",
+        "compose",
+        "run",
+        "-d",
+        "--no-deps",
+        "--name",
+        SECOND_NAME,
+        "-p",
+        "8081:8080",
+        "unitycatalog",
     )
     try:
         wait_for(SECOND)
 
-        call(FIRST, "POST", "catalogs", {"name": "from_a", "comment": "Created on 8080"})
+        call(
+            FIRST, "POST", "catalogs", {"name": "from_a", "comment": "Created on 8080"}
+        )
         assert catalogs(SECOND).get("from_a") == "Created on 8080", catalogs(SECOND)
 
-        call(SECOND, "POST", "catalogs", {"name": "from_b", "comment": "Created on 8081"})
+        call(
+            SECOND, "POST", "catalogs", {"name": "from_b", "comment": "Created on 8081"}
+        )
         assert catalogs(FIRST).get("from_b") == "Created on 8081", catalogs(FIRST)
 
         first = first_server()

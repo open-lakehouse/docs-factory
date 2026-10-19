@@ -1091,7 +1091,12 @@ def render_engine(
         "| --- | --- | --- | --- | --- |",
     ]
     for group, rows in groups:
-        listed: dict[str, list[str]] = {"works": [], "no": [], "docs": [], "unknown": []}
+        listed: dict[str, list[str]] = {
+            "works": [],
+            "no": [],
+            "docs": [],
+            "unknown": [],
+        }
         for journey, found in rows:
             if found.status == "unknown":
                 listed["unknown"].append(journey.title)
@@ -1395,8 +1400,7 @@ def _tested_version(
         for (project, key, _), cell in result.proofs.items()
         if project == matrix.project and key == iface
         for p in cell
-        if p.project == project
-        and (version := p.via_version if via else p.version)
+        if p.project == project and (version := p.via_version if via else p.version)
     }
     return seen.pop() if len(seen) == 1 else None
 

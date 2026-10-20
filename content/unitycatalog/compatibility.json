@@ -1421,62 +1421,68 @@
         "polars": {
           "status": "fails",
           "draft": false,
-          "proofs": [],
-          "evidence": [
+          "proofs": [
             {
-              "outcome": "fails",
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/managed_tables_fail.py",
               "page": {
                 "project": "unitycatalog",
-                "bucket": "reference",
-                "slug": "features-and-limitations"
+                "bucket": "how-to",
+                "slug": "python-dataframes"
               },
-              "why": "Max catalog version is required when loading a catalog-managed table",
-              "source": "reference/features-and-limitations#clients-and-engines",
+              "anchor": "other-table-operations",
+              "ready": true,
+              "works": false,
+              "fails": "Max catalog version is required",
+              "version": "1.44.2",
               "api": null,
-              "verified": "1.44.2",
               "note": null
             }
-          ]
+          ],
+          "evidence": []
         },
         "daft": {
           "status": "fails",
           "draft": false,
-          "proofs": [],
-          "evidence": [
+          "proofs": [
             {
-              "outcome": "fails",
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/managed_tables_fail.py",
               "page": {
                 "project": "unitycatalog",
-                "bucket": "reference",
-                "slug": "features-and-limitations"
+                "bucket": "how-to",
+                "slug": "python-dataframes"
               },
-              "why": "Max catalog version is required when loading a catalog-managed table",
-              "source": "reference/features-and-limitations#clients-and-engines",
+              "anchor": "other-table-operations",
+              "ready": true,
+              "works": false,
+              "fails": "Max catalog version is required",
+              "version": "0.7.25",
               "api": null,
-              "verified": "0.7.25",
               "note": null
             }
-          ]
+          ],
+          "evidence": []
         },
         "pandas": {
           "status": "fails",
           "draft": false,
-          "proofs": [],
-          "evidence": [
+          "proofs": [
             {
-              "outcome": "fails",
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/managed_tables_fail.py",
               "page": {
                 "project": "unitycatalog",
-                "bucket": "reference",
-                "slug": "features-and-limitations"
+                "bucket": "how-to",
+                "slug": "python-dataframes"
               },
-              "why": "Max catalog version is required when loading a catalog-managed table",
-              "source": "reference/features-and-limitations#clients-and-engines",
+              "anchor": "other-table-operations",
+              "ready": true,
+              "works": false,
+              "fails": "Max catalog version is required",
+              "version": "2.3.3",
               "api": null,
-              "verified": "2.3.3",
               "note": null
             }
-          ]
+          ],
+          "evidence": []
         }
       }
     },
@@ -1547,62 +1553,68 @@
         "polars": {
           "status": "fails",
           "draft": false,
-          "proofs": [],
-          "evidence": [
+          "proofs": [
             {
-              "outcome": "fails",
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/managed_tables_fail.py",
               "page": {
                 "project": "unitycatalog",
-                "bucket": "reference",
-                "slug": "features-and-limitations"
+                "bucket": "how-to",
+                "slug": "python-dataframes"
               },
-              "why": "Max catalog version is required when loading a catalog-managed table",
-              "source": "reference/features-and-limitations#clients-and-engines",
+              "anchor": "other-table-operations",
+              "ready": true,
+              "works": false,
+              "fails": "Max catalog version is required",
+              "version": "1.44.2",
               "api": null,
-              "verified": "1.44.2",
               "note": null
             }
-          ]
+          ],
+          "evidence": []
         },
         "daft": {
           "status": "fails",
           "draft": false,
-          "proofs": [],
-          "evidence": [
+          "proofs": [
             {
-              "outcome": "fails",
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/managed_tables_fail.py",
               "page": {
                 "project": "unitycatalog",
-                "bucket": "reference",
-                "slug": "features-and-limitations"
+                "bucket": "how-to",
+                "slug": "python-dataframes"
               },
-              "why": "Max catalog version is required when loading a catalog-managed table",
-              "source": "reference/features-and-limitations#clients-and-engines",
+              "anchor": "other-table-operations",
+              "ready": true,
+              "works": false,
+              "fails": "io_config was not provided",
+              "version": "0.7.25",
               "api": null,
-              "verified": "0.7.25",
-              "note": null
+              "note": "on local storage"
             }
-          ]
+          ],
+          "evidence": []
         },
         "pandas": {
           "status": "fails",
           "draft": false,
-          "proofs": [],
-          "evidence": [
+          "proofs": [
             {
-              "outcome": "fails",
+              "script": "content/unitycatalog/how-to/009-python-dataframes/snippets/managed_tables_fail.py",
               "page": {
                 "project": "unitycatalog",
-                "bucket": "reference",
-                "slug": "features-and-limitations"
+                "bucket": "how-to",
+                "slug": "python-dataframes"
               },
-              "why": "Max catalog version is required when loading a catalog-managed table",
-              "source": "reference/features-and-limitations#clients-and-engines",
+              "anchor": "other-table-operations",
+              "ready": true,
+              "works": false,
+              "fails": "Max catalog version is required",
+              "version": "2.3.3",
               "api": null,
-              "verified": "2.3.3",
               "note": null
             }
-          ]
+          ],
+          "evidence": []
         }
       }
     },
@@ -5060,21 +5072,6 @@
           "draft": false,
           "proofs": [
             {
-              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes_cli.py",
-              "page": {
-                "project": "unitycatalog",
-                "bucket": "how-to",
-                "slug": "manage-volumes"
-              },
-              "anchor": "set-up-the-client",
-              "ready": true,
-              "works": true,
-              "fails": null,
-              "version": null,
-              "api": "uc schema create --storage_root",
-              "note": null
-            },
-            {
               "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage_cli.py",
               "page": {
                 "project": "unitycatalog",
@@ -5096,21 +5093,6 @@
           "status": "tested",
           "draft": false,
           "proofs": [
-            {
-              "script": "content/unitycatalog/how-to/006-manage-volumes/snippets/volumes.py",
-              "page": {
-                "project": "unitycatalog",
-                "bucket": "how-to",
-                "slug": "manage-volumes"
-              },
-              "anchor": "set-up-the-client",
-              "ready": true,
-              "works": true,
-              "fails": null,
-              "version": "0.7.0",
-              "api": "SchemasApi.create_schema(storage_root=)",
-              "note": null
-            },
             {
               "script": "content/unitycatalog/how-to/010-managed-storage-s3/snippets/managed_storage.py",
               "page": {

@@ -675,10 +675,10 @@ def test_an_engine_report_lists_what_works_and_what_doesnt(tmp_path) -> None:
     ]
     # DuckDB has no model element: its interface key is its engine id.
     assert _lines(ref / "004-hub/index.md") == [
-        "| Engine | Interfaces | Protocols | Verified journeys |",
-        "| --- | --- | --- | --- |",
-        "| [Spark](../spark/index.md) | Spark 4.1.0 | — | 1 of 2 |",
-        "| DuckDB | DuckDB | — | 0 of 2 |",
+        "| Engine | Interfaces | Verified journeys |",
+        "| --- | --- | --- |",
+        "| [Spark](../spark/index.md) | Spark 4.1.0 | 1 of 2 |",
+        "| DuckDB | DuckDB | 0 of 2 |",
     ]
     assert compat.check(root)[0] == []
 
@@ -762,7 +762,7 @@ def test_an_interface_names_the_package_it_goes_through(tmp_path) -> None:
     data = _artifact(root)
     duckdb = data["interfaces"][1]
     assert (duckdb["via"], duckdb["viaVersion"]) == ("deltalake", "1.6.6")
-    assert "| DuckDB | DuckDB 1.5.4 with `deltalake` 1.6.6 | — | 1 of 2 |" in _lines(
+    assert "| DuckDB | DuckDB 1.5.4 with `deltalake` 1.6.6 | 1 of 2 |" in _lines(
         root / "content/proj/reference/004-hub/index.md"
     )
 
@@ -804,9 +804,7 @@ def test_a_hub_links_reports_on_its_own_page_by_heading(tmp_path) -> None:
         )
     )
     data = _artifact(root)
-    assert "| [Apache Spark](#apache-spark) | Spark 4.1.0 | — | 1 of 2 |" in _table(
-        root
-    )
+    assert "| [Apache Spark](#apache-spark) | Spark 4.1.0 | 1 of 2 |" in _table(root)
     assert data["engines"][0]["anchor"] == "apache-spark"
     assert data["engines"][0]["heading"] == "Apache Spark"
     assert compat.check(root)[0] == []

@@ -74,3 +74,21 @@ def test_parse_body_matches_js_splitter(tmp_path, raw: str) -> None:
         "docsnip body diverges from the JS splitter for this input — "
         "the two frontmatter parsers have drifted"
     )
+
+
+@pytest.mark.parametrize(
+    ("features", "ok"),
+    [("[deletionVectors, time-travel]", True), ("[deletion-vectors]", False)],
+)
+def test_delta_features_take_protocol_names_or_topics(
+    tmp_path, features: str, ok: bool
+) -> None:
+    from docsnip.frontmatter import validate
+
+    page = tmp_path / "p.md"
+    page.write_text(
+        "---\ntitle: T\ndiataxis: how-to\nproject: delta\n"
+        f"delta_features: {features}\n---\n\nBody.\n"
+    )
+    errors = validate(parse(page)).errors
+    assert (errors == []) is ok, errors

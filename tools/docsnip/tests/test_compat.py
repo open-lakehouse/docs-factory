@@ -458,6 +458,43 @@ def test_bad_journey_references_are_errors(
     assert any(message in e for e in errors), errors
 
 
+def test_a_journey_names_the_spec_feature_it_exercises(tmp_path) -> None:
+    root = _modeled(
+        _repo(tmp_path, _SPARK_READS),
+        "  table.read:\n"
+        "    {title: Read, summary: Read rows, family: table,\n"
+        "     feature: {spec: icebergRestSpec, name: loadTable, since: v1}}",
+    )
+    read, write = _artifact(root)["journeys"]
+    assert read["feature"] == {
+        "spec": "icebergRestSpec",
+        "name": "loadTable",
+        "since": "v1",
+    }
+    assert write["feature"] is None
+
+
+@pytest.mark.parametrize(
+    ("feature", "message"),
+    [
+        ("{spec: icebergRestSpec, name: nope}", "is not a icebergRestSpec feature"),
+        ("{spec: apacheSpark, name: loadTable}", "expected openSpecification"),
+        ("{spec: ucSpec, name: loadTable}", "has no specFeatures"),
+        (
+            "{spec: icebergRestSpec, name: loadTable, version: 3}",
+            "unknown key 'version'",
+        ),
+    ],
+)
+def test_bad_journey_features_are_errors(tmp_path, feature: str, message: str) -> None:
+    root = _modeled(
+        _repo(tmp_path, ""),
+        f"  table.read: {{title: R, summary: S, family: table, feature: {feature}}}",
+    )
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors
+
+
 def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
     data = _artifact(_modeled(_repo(tmp_path, _SPARK_READS)))
     assert data["verifiedEdges"] == [
@@ -643,6 +680,34 @@ def test_an_asset_rollup_renders_its_journeys(tmp_path) -> None:
     )
     errors, _ = compat.check(root)
     assert any("acts on lakehouse.volume" in e for e in errors), errors
+
+
+def test_an_asset_rollup_drops_journeys_nothing_answers(tmp_path) -> None:
+    root = _modeled(_repo(tmp_path, _SPARK_READS))
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text()
+        .replace("summary: Append rows}", "summary: Append rows, family: table}")
+        .replace(
+            "  table.write:",
+            "  table.tried: {title: Untried, summary: Nobody yet, family: table}\n"
+            "  table.write:",
+        )
+        .replace(
+            "rows: [table.read, table.write]",
+            "rows: [table.read, table.tried, table.write]",
+        )
+    )
+    embed = root / "content/proj/reference/002-matrix/index.md"
+    embed.write_text(
+        embed.read_text().replace(
+            "<!-- compat:ops -->\n<!-- /compat:ops -->",
+            "<!-- compat:asset:lakehouse.table -->\n"
+            "<!-- /compat:asset:lakehouse.table -->",
+        )
+    )
+    compat.fix(root)
+    assert [line.split(" |")[0] for line in _table(root)[2:]] == ["| Read", "| Write"]
 
 
 def _engine_pages(root: Path) -> Path:

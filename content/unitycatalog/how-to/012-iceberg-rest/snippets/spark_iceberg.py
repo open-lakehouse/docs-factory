@@ -7,6 +7,9 @@
 # services = ["unitycatalog"]
 # claims.spark = [
 #   { journey = "iceberg.schema-create", region = "schema", api = "CREATE NAMESPACE" },
+#   { journey = "iceberg.namespace-list", region = "schema", api = "SHOW NAMESPACES" },
+#   { journey = "iceberg.namespace-drop", region = "drop", api = "DROP NAMESPACE" },
+#   { journey = "iceberg.merge", region = "change", api = "MERGE INTO" },
 #   { journey = "iceberg.create", region = "create", api = "CREATE TABLE" },
 #   { journey = "iceberg.append", region = "write", api = "INSERT INTO" },
 #   { journey = "iceberg.read", region = "read" },

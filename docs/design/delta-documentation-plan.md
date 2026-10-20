@@ -29,6 +29,8 @@ unless this document says otherwise. Navigation lives in
 what each engine supports, and how each claim is verified, is the private
 coverage page
 [`content/delta/reference/090-coverage/`](../../content/delta/reference/090-coverage/index.md).
+Table-feature tracking, and its Iceberg counterpart through Unity Catalog, is
+planned in [`format-compatibility-plan.md`](./format-compatibility-plan.md).
 
 > **What changed from the 2026-10-04 draft.** Four interfaces are first-class,
 > and **Spark SQL leads**: it opens every tab group and the default tutorial
@@ -706,8 +708,9 @@ updates the cells that script proves.
    this needs a validator change first; the first pages don't use it.
 3. **`delta_features:` is the R01 join key.** Constrain its values to protocol
    feature names, with a short list of non-feature topics (`time-travel`). The
-   existing values `time-travel` and `table-features` need that list. This
-   needs a vocab entry and a docsnip check before use.
+   existing values `time-travel` and `table-features` need that list. Done:
+   `content/vocab.json` `specFeatures.deltaSpec` and `deltaTopics`, checked by
+   `docsnip check`.
 4. **The coverage page is the support record.** Markdown tables for now, no
    generator. A later lint could check that every `tested` cell links a page
    whose scripts run in a lane.

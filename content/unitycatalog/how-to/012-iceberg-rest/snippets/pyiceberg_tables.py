@@ -7,6 +7,8 @@
 # services = ["unitycatalog"]
 # claims.pyiceberg = [
 #   { journey = "iceberg.schema-create", region = "schema", api = "create_namespace" },
+#   { journey = "iceberg.namespace-list", region = "schema", api = "list_namespaces" },
+#   { journey = "iceberg.namespace-drop", region = "drop", api = "drop_namespace" },
 #   { journey = "iceberg.create", region = "create", api = "create_table" },
 #   { journey = "iceberg.append", region = "write", api = "Table.append" },
 #   { journey = "iceberg.read", region = "read", api = "Table.scan" },

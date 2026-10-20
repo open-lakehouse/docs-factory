@@ -1,0 +1,35 @@
+# Curated reader navigation for the open-lakehouse scope: concepts that span
+# table formats and catalogs, rather than one project. Contract:
+# content/README.md § "Curated navigation".
+#
+# `id:` / `planned:` values are backlog ids from
+# docs/design/format-compatibility-plan.md §4. Planned slots render for
+# reviewers only.
+nav:
+  - section: Concepts
+    items:
+      - page: explanation/catalog
+        id: E01
+      - page: explanation/unity-catalog
+        id: E02
+      # Grows into Delta protocol versions and table features next to Iceberg
+      # format versions 1–3, citing both compatibility matrices.
+      - page: explanation/open-table-format
+        id: E03
+      - planned: E05
+        title: The Iceberg REST catalog protocol
+      - planned: E06
+        title: Interoperating between table formats
+      - page: explanation/reference-architecture
+        id: E04
+  - section: Guides
+    items:
+      - page: how-to/composable-compose
+        id: H01
+      - planned: H02
+        title: Choose a catalog for Delta and Iceberg tables
+  - section: Reference
+    items:
+      - page: reference/format-crosswalk
+        id: R01
+        label: Delta and Iceberg feature crosswalk

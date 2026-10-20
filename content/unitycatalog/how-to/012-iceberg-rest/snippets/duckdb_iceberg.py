@@ -7,6 +7,8 @@
 # services = ["unitycatalog"]
 # claims.duckdb = [
 #   { journey = "iceberg.schema-create", region = "schema", api = "CREATE SCHEMA" },
+#   { journey = "iceberg.namespace-list", region = "schema", api = "duckdb_schemas()" },
+#   { journey = "iceberg.namespace-drop", region = "drop", api = "DROP SCHEMA" },
 #   { journey = "iceberg.create", region = "create", api = "CREATE TABLE" },
 #   { journey = "iceberg.append", region = "write", api = "INSERT INTO" },
 #   { journey = "iceberg.read", region = "read" },

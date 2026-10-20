@@ -46,6 +46,15 @@ export interface CompatCell {
 /** Participant role → requirement edge (consumes / implements / realizes) → model ids. */
 export type CompatRequirements = Record<string, Record<string, string[]>>;
 
+export interface CompatFeature {
+  /** An openSpecification model id. */
+  spec: string;
+  /** From content/vocab.json `specFeatures[spec]`. */
+  name: string;
+  /** The spec version that added it, e.g. "v3" or "reader 3 · writer 7". */
+  since: string | null;
+}
+
 export interface CompatJourney {
   id: string;
   title: string;
@@ -55,6 +64,8 @@ export interface CompatJourney {
   /** The model asset kind it acts on, resolved by docsnip from family and defaults. */
   asset: string | null;
   requires: CompatRequirements;
+  /** The spec feature it exercises; absent in artifacts written before the field. */
+  feature?: CompatFeature | null;
   /** Keyed by interface; an interface nothing says anything about is absent. */
   cells: Record<string, CompatCell>;
 }

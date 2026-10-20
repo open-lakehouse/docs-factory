@@ -13,6 +13,10 @@ Server baseline: `v0.6.0`, published 2026-08-20, commit
 AI baseline: Latest official AI release tag found was `ai-v0.4.0`, published
 2026-04-24. AI packages have an independent release cycle.
 
+Unity Catalog as an Iceberg REST catalog (what the server implements, and
+which engines handle which Iceberg features through it) is tracked in
+[`format-compatibility-plan.md`](./format-compatibility-plan.md).
+
 > **Update 2026-10-03: the docs experience is built in the factory site.**
 > We now build the section 5 navigation inside this repository's site, and
 > emission to the upstream MkDocs site is deferred (section 11 still describes

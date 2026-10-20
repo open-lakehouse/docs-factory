@@ -25,5 +25,29 @@
     "openlakehouse": "lakehouse",
     "data-lineage": "governance",
     "devrel": null
-  }
+  },
+  "$specFeaturesComment": "Feature names a compatibility journey's `feature:` may cite, keyed by the open specification's model id. deltaSpec: PROTOCOL.md's feature names, then the features its RFCs specify. icebergSpec: format features in kebab-case, after the spec's sections. icebergRestSpec: the REST catalog OpenAPI operationIds. `delta_features:` frontmatter takes a deltaSpec name or a `deltaTopics` entry.",
+  "specFeatures": {
+    "deltaSpec": [
+      "appendOnly", "invariants", "checkConstraints", "generatedColumns", "allowColumnDefaults",
+      "changeDataFeed", "columnMapping", "identityColumns", "deletionVectors", "rowTracking",
+      "timestampNtz", "domainMetadata", "v2Checkpoint", "catalogManaged", "icebergCompatV1",
+      "icebergCompatV2", "clustering", "vacuumProtocolCheck", "inCommitTimestamp",
+      "typeWidening", "variantType", "variantShredding", "collations"
+    ],
+    "icebergSpec": [
+      "schema-evolution", "type-promotion", "hidden-partitioning", "partition-evolution",
+      "sort-order", "snapshots", "branching-tagging", "position-deletes", "equality-deletes",
+      "statistics", "format-version-3", "deletion-vectors", "row-lineage", "default-values",
+      "variant", "geometry", "timestamp-ns", "multi-arg-transforms"
+    ],
+    "icebergRestSpec": [
+      "getConfig", "listNamespaces", "createNamespace", "namespaceExists", "loadNamespaceMetadata",
+      "updateProperties", "dropNamespace", "listTables", "createTable", "tableExists", "loadTable",
+      "updateTable", "dropTable", "renameTable", "registerTable", "loadCredentials",
+      "reportMetrics", "commitTransaction", "planTableScan", "fetchScanTasks", "signRequest",
+      "listViews", "loadView", "createView", "getToken"
+    ]
+  },
+  "deltaTopics": ["time-travel", "table-features"]
 }

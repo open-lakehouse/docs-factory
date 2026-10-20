@@ -48,3 +48,12 @@ def statuses() -> set[str]:
 
 def page_worthy_kinds() -> set[str]:
     return set(_load()["pageWorthyKinds"])
+
+
+def spec_features() -> dict[str, set[str]]:
+    """Open-specification model id → the feature names a journey may cite."""
+    return {spec: set(names) for spec, names in _load()["specFeatures"].items()}
+
+
+def delta_topics() -> set[str]:
+    return set(_load()["deltaTopics"])

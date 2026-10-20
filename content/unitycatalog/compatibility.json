@@ -136,18 +136,97 @@
       "columns": [
         "spark",
         "duckdb",
-        "pyiceberg"
+        "pyiceberg",
+        "polars",
+        "daft"
       ],
       "rows": [
+        "iceberg.namespace-list",
         "iceberg.schema-create",
+        "iceberg.namespace-properties",
+        "iceberg.namespace-drop",
+        "iceberg.list",
         "iceberg.create",
         "iceberg.append",
+        "iceberg.overwrite",
         "iceberg.read",
         "iceberg.update",
         "iceberg.delete",
+        "iceberg.merge",
         "iceberg.rename",
+        "iceberg.rename-namespace",
         "iceberg.drop",
-        "iceberg.join-delta"
+        "iceberg.join-delta",
+        "iceberg.read-uniform"
+      ]
+    },
+    {
+      "id": "iceberg-evolution",
+      "title": "Evolve and maintain Iceberg tables",
+      "columns": [
+        "spark",
+        "duckdb",
+        "pyiceberg",
+        "polars",
+        "daft"
+      ],
+      "rows": [
+        "iceberg.schema-evolve",
+        "iceberg.type-promotion",
+        "iceberg.hidden-partitioning",
+        "iceberg.partition-evolve",
+        "iceberg.sort-order",
+        "iceberg.time-travel",
+        "iceberg.branch-tag",
+        "iceberg.metadata-tables",
+        "iceberg.merge-on-read",
+        "iceberg.copy-on-write",
+        "iceberg.equality-deletes",
+        "iceberg.statistics",
+        "iceberg.maintain"
+      ]
+    },
+    {
+      "id": "iceberg-v3",
+      "title": "Iceberg format version 3",
+      "columns": [
+        "spark",
+        "duckdb",
+        "pyiceberg",
+        "polars",
+        "daft"
+      ],
+      "rows": [
+        "iceberg.v3-create",
+        "iceberg.v3-deletion-vectors",
+        "iceberg.v3-row-lineage",
+        "iceberg.v3-default-values",
+        "iceberg.v3-variant",
+        "iceberg.v3-geo",
+        "iceberg.v3-timestamp-ns",
+        "iceberg.v3-multi-arg-transforms"
+      ]
+    },
+    {
+      "id": "iceberg-catalog",
+      "title": "Iceberg REST catalog capabilities",
+      "columns": [
+        "spark",
+        "duckdb",
+        "pyiceberg",
+        "polars",
+        "daft"
+      ],
+      "rows": [
+        "iceberg.auth-token",
+        "iceberg.vended-credentials",
+        "iceberg.etag-load",
+        "iceberg.metrics",
+        "iceberg.register",
+        "iceberg.transactions",
+        "iceberg.views",
+        "iceberg.scan-planning",
+        "iceberg.remote-signing"
       ]
     },
     {
@@ -280,6 +359,40 @@
         "iceberg.rename",
         "iceberg.drop",
         "iceberg.join-delta",
+        "iceberg.list",
+        "iceberg.overwrite",
+        "iceberg.merge",
+        "iceberg.rename-namespace",
+        "iceberg.read-uniform",
+        "iceberg.schema-evolve",
+        "iceberg.type-promotion",
+        "iceberg.hidden-partitioning",
+        "iceberg.partition-evolve",
+        "iceberg.sort-order",
+        "iceberg.time-travel",
+        "iceberg.branch-tag",
+        "iceberg.metadata-tables",
+        "iceberg.maintain",
+        "iceberg.merge-on-read",
+        "iceberg.copy-on-write",
+        "iceberg.equality-deletes",
+        "iceberg.statistics",
+        "iceberg.v3-create",
+        "iceberg.v3-deletion-vectors",
+        "iceberg.v3-row-lineage",
+        "iceberg.v3-default-values",
+        "iceberg.v3-variant",
+        "iceberg.v3-geo",
+        "iceberg.v3-timestamp-ns",
+        "iceberg.v3-multi-arg-transforms",
+        "iceberg.etag-load",
+        "iceberg.metrics",
+        "iceberg.auth-token",
+        "iceberg.register",
+        "iceberg.transactions",
+        "iceberg.views",
+        "iceberg.scan-planning",
+        "iceberg.remote-signing",
         "table.register-external",
         "table.register-format",
         "table.describe",
@@ -294,12 +407,17 @@
       "columns": [
         "spark",
         "duckdb",
+        "polars",
+        "daft",
         "pyiceberg",
         "cli",
         "python-sdk"
       ],
       "rows": [
         "iceberg.schema-create",
+        "iceberg.namespace-list",
+        "iceberg.namespace-properties",
+        "iceberg.namespace-drop",
         "catalog.create",
         "catalog.list",
         "catalog.update",
@@ -309,6 +427,26 @@
         "schema.update",
         "schema.delete",
         "storage.managed-root"
+      ]
+    },
+    {
+      "id": "lakehouse.credential",
+      "title": "Credential",
+      "columns": [
+        "spark",
+        "duckdb",
+        "polars",
+        "daft",
+        "pyiceberg",
+        "cli",
+        "python-sdk"
+      ],
+      "rows": [
+        "iceberg.vended-credentials",
+        "credential.create",
+        "credential.update",
+        "credentials.vend-path",
+        "credentials.vend-volume"
       ]
     },
     {
@@ -344,20 +482,6 @@
         "volume.delete",
         "volume.read-files",
         "volume.write-files"
-      ]
-    },
-    {
-      "id": "lakehouse.credential",
-      "title": "Credential",
-      "columns": [
-        "cli",
-        "python-sdk"
-      ],
-      "rows": [
-        "credential.create",
-        "credential.update",
-        "credentials.vend-path",
-        "credentials.vend-volume"
       ]
     },
     {
@@ -442,15 +566,77 @@
             "spark"
           ],
           "rows": [
+            "iceberg.namespace-list",
             "iceberg.schema-create",
+            "iceberg.namespace-properties",
+            "iceberg.namespace-drop",
+            "iceberg.list",
             "iceberg.create",
             "iceberg.append",
+            "iceberg.overwrite",
             "iceberg.read",
             "iceberg.update",
             "iceberg.delete",
+            "iceberg.merge",
             "iceberg.rename",
+            "iceberg.rename-namespace",
             "iceberg.drop",
-            "iceberg.join-delta"
+            "iceberg.join-delta",
+            "iceberg.read-uniform"
+          ]
+        },
+        {
+          "table": "iceberg-evolution",
+          "columns": [
+            "spark"
+          ],
+          "rows": [
+            "iceberg.schema-evolve",
+            "iceberg.type-promotion",
+            "iceberg.hidden-partitioning",
+            "iceberg.partition-evolve",
+            "iceberg.sort-order",
+            "iceberg.time-travel",
+            "iceberg.branch-tag",
+            "iceberg.metadata-tables",
+            "iceberg.merge-on-read",
+            "iceberg.copy-on-write",
+            "iceberg.equality-deletes",
+            "iceberg.statistics",
+            "iceberg.maintain"
+          ]
+        },
+        {
+          "table": "iceberg-v3",
+          "columns": [
+            "spark"
+          ],
+          "rows": [
+            "iceberg.v3-create",
+            "iceberg.v3-deletion-vectors",
+            "iceberg.v3-row-lineage",
+            "iceberg.v3-default-values",
+            "iceberg.v3-variant",
+            "iceberg.v3-geo",
+            "iceberg.v3-timestamp-ns",
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        },
+        {
+          "table": "iceberg-catalog",
+          "columns": [
+            "spark"
+          ],
+          "rows": [
+            "iceberg.auth-token",
+            "iceberg.vended-credentials",
+            "iceberg.etag-load",
+            "iceberg.metrics",
+            "iceberg.register",
+            "iceberg.transactions",
+            "iceberg.views",
+            "iceberg.scan-planning",
+            "iceberg.remote-signing"
           ]
         },
         {
@@ -519,15 +705,77 @@
             "duckdb"
           ],
           "rows": [
+            "iceberg.namespace-list",
             "iceberg.schema-create",
+            "iceberg.namespace-properties",
+            "iceberg.namespace-drop",
+            "iceberg.list",
             "iceberg.create",
             "iceberg.append",
+            "iceberg.overwrite",
             "iceberg.read",
             "iceberg.update",
             "iceberg.delete",
+            "iceberg.merge",
             "iceberg.rename",
+            "iceberg.rename-namespace",
             "iceberg.drop",
-            "iceberg.join-delta"
+            "iceberg.join-delta",
+            "iceberg.read-uniform"
+          ]
+        },
+        {
+          "table": "iceberg-evolution",
+          "columns": [
+            "duckdb"
+          ],
+          "rows": [
+            "iceberg.schema-evolve",
+            "iceberg.type-promotion",
+            "iceberg.hidden-partitioning",
+            "iceberg.partition-evolve",
+            "iceberg.sort-order",
+            "iceberg.time-travel",
+            "iceberg.branch-tag",
+            "iceberg.metadata-tables",
+            "iceberg.merge-on-read",
+            "iceberg.copy-on-write",
+            "iceberg.equality-deletes",
+            "iceberg.statistics",
+            "iceberg.maintain"
+          ]
+        },
+        {
+          "table": "iceberg-v3",
+          "columns": [
+            "duckdb"
+          ],
+          "rows": [
+            "iceberg.v3-create",
+            "iceberg.v3-deletion-vectors",
+            "iceberg.v3-row-lineage",
+            "iceberg.v3-default-values",
+            "iceberg.v3-variant",
+            "iceberg.v3-geo",
+            "iceberg.v3-timestamp-ns",
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        },
+        {
+          "table": "iceberg-catalog",
+          "columns": [
+            "duckdb"
+          ],
+          "rows": [
+            "iceberg.auth-token",
+            "iceberg.vended-credentials",
+            "iceberg.etag-load",
+            "iceberg.metrics",
+            "iceberg.register",
+            "iceberg.transactions",
+            "iceberg.views",
+            "iceberg.scan-planning",
+            "iceberg.remote-signing"
           ]
         }
       ]
@@ -574,6 +822,85 @@
             "managed.path-write",
             "external.read-format"
           ]
+        },
+        {
+          "table": "iceberg-rest",
+          "columns": [
+            "polars"
+          ],
+          "rows": [
+            "iceberg.namespace-list",
+            "iceberg.schema-create",
+            "iceberg.namespace-properties",
+            "iceberg.namespace-drop",
+            "iceberg.list",
+            "iceberg.create",
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.read",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge",
+            "iceberg.rename",
+            "iceberg.rename-namespace",
+            "iceberg.drop",
+            "iceberg.join-delta",
+            "iceberg.read-uniform"
+          ]
+        },
+        {
+          "table": "iceberg-evolution",
+          "columns": [
+            "polars"
+          ],
+          "rows": [
+            "iceberg.schema-evolve",
+            "iceberg.type-promotion",
+            "iceberg.hidden-partitioning",
+            "iceberg.partition-evolve",
+            "iceberg.sort-order",
+            "iceberg.time-travel",
+            "iceberg.branch-tag",
+            "iceberg.metadata-tables",
+            "iceberg.merge-on-read",
+            "iceberg.copy-on-write",
+            "iceberg.equality-deletes",
+            "iceberg.statistics",
+            "iceberg.maintain"
+          ]
+        },
+        {
+          "table": "iceberg-v3",
+          "columns": [
+            "polars"
+          ],
+          "rows": [
+            "iceberg.v3-create",
+            "iceberg.v3-deletion-vectors",
+            "iceberg.v3-row-lineage",
+            "iceberg.v3-default-values",
+            "iceberg.v3-variant",
+            "iceberg.v3-geo",
+            "iceberg.v3-timestamp-ns",
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        },
+        {
+          "table": "iceberg-catalog",
+          "columns": [
+            "polars"
+          ],
+          "rows": [
+            "iceberg.auth-token",
+            "iceberg.vended-credentials",
+            "iceberg.etag-load",
+            "iceberg.metrics",
+            "iceberg.register",
+            "iceberg.transactions",
+            "iceberg.views",
+            "iceberg.scan-planning",
+            "iceberg.remote-signing"
+          ]
         }
       ]
     },
@@ -618,6 +945,85 @@
             "managed.time-travel",
             "managed.path-write",
             "external.read-format"
+          ]
+        },
+        {
+          "table": "iceberg-rest",
+          "columns": [
+            "daft"
+          ],
+          "rows": [
+            "iceberg.namespace-list",
+            "iceberg.schema-create",
+            "iceberg.namespace-properties",
+            "iceberg.namespace-drop",
+            "iceberg.list",
+            "iceberg.create",
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.read",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge",
+            "iceberg.rename",
+            "iceberg.rename-namespace",
+            "iceberg.drop",
+            "iceberg.join-delta",
+            "iceberg.read-uniform"
+          ]
+        },
+        {
+          "table": "iceberg-evolution",
+          "columns": [
+            "daft"
+          ],
+          "rows": [
+            "iceberg.schema-evolve",
+            "iceberg.type-promotion",
+            "iceberg.hidden-partitioning",
+            "iceberg.partition-evolve",
+            "iceberg.sort-order",
+            "iceberg.time-travel",
+            "iceberg.branch-tag",
+            "iceberg.metadata-tables",
+            "iceberg.merge-on-read",
+            "iceberg.copy-on-write",
+            "iceberg.equality-deletes",
+            "iceberg.statistics",
+            "iceberg.maintain"
+          ]
+        },
+        {
+          "table": "iceberg-v3",
+          "columns": [
+            "daft"
+          ],
+          "rows": [
+            "iceberg.v3-create",
+            "iceberg.v3-deletion-vectors",
+            "iceberg.v3-row-lineage",
+            "iceberg.v3-default-values",
+            "iceberg.v3-variant",
+            "iceberg.v3-geo",
+            "iceberg.v3-timestamp-ns",
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        },
+        {
+          "table": "iceberg-catalog",
+          "columns": [
+            "daft"
+          ],
+          "rows": [
+            "iceberg.auth-token",
+            "iceberg.vended-credentials",
+            "iceberg.etag-load",
+            "iceberg.metrics",
+            "iceberg.register",
+            "iceberg.transactions",
+            "iceberg.views",
+            "iceberg.scan-planning",
+            "iceberg.remote-signing"
           ]
         }
       ]
@@ -687,15 +1093,77 @@
             "pyiceberg"
           ],
           "rows": [
+            "iceberg.namespace-list",
             "iceberg.schema-create",
+            "iceberg.namespace-properties",
+            "iceberg.namespace-drop",
+            "iceberg.list",
             "iceberg.create",
             "iceberg.append",
+            "iceberg.overwrite",
             "iceberg.read",
             "iceberg.update",
             "iceberg.delete",
+            "iceberg.merge",
             "iceberg.rename",
+            "iceberg.rename-namespace",
             "iceberg.drop",
-            "iceberg.join-delta"
+            "iceberg.join-delta",
+            "iceberg.read-uniform"
+          ]
+        },
+        {
+          "table": "iceberg-evolution",
+          "columns": [
+            "pyiceberg"
+          ],
+          "rows": [
+            "iceberg.schema-evolve",
+            "iceberg.type-promotion",
+            "iceberg.hidden-partitioning",
+            "iceberg.partition-evolve",
+            "iceberg.sort-order",
+            "iceberg.time-travel",
+            "iceberg.branch-tag",
+            "iceberg.metadata-tables",
+            "iceberg.merge-on-read",
+            "iceberg.copy-on-write",
+            "iceberg.equality-deletes",
+            "iceberg.statistics",
+            "iceberg.maintain"
+          ]
+        },
+        {
+          "table": "iceberg-v3",
+          "columns": [
+            "pyiceberg"
+          ],
+          "rows": [
+            "iceberg.v3-create",
+            "iceberg.v3-deletion-vectors",
+            "iceberg.v3-row-lineage",
+            "iceberg.v3-default-values",
+            "iceberg.v3-variant",
+            "iceberg.v3-geo",
+            "iceberg.v3-timestamp-ns",
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        },
+        {
+          "table": "iceberg-catalog",
+          "columns": [
+            "pyiceberg"
+          ],
+          "rows": [
+            "iceberg.auth-token",
+            "iceberg.vended-credentials",
+            "iceberg.etag-load",
+            "iceberg.metrics",
+            "iceberg.register",
+            "iceberg.transactions",
+            "iceberg.views",
+            "iceberg.scan-planning",
+            "iceberg.remote-signing"
           ]
         }
       ]
@@ -907,6 +1375,7 @@
       "request": null,
       "family": "table",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1059,6 +1528,7 @@
       "request": null,
       "family": "external",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1199,6 +1669,7 @@
       "request": null,
       "family": "external",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1270,6 +1741,7 @@
       "request": null,
       "family": "external",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1358,6 +1830,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1454,6 +1927,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1616,6 +2090,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1778,6 +2253,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1859,6 +2335,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -1940,6 +2417,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2021,6 +2499,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2080,6 +2559,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2184,6 +2664,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2350,6 +2831,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2494,6 +2976,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2538,6 +3021,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2602,6 +3086,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2646,6 +3131,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2690,6 +3176,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2734,6 +3221,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2778,6 +3266,7 @@
       "request": null,
       "family": "external",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2844,6 +3333,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2932,6 +3422,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3020,6 +3511,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3108,6 +3600,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3196,6 +3689,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3284,6 +3778,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3372,6 +3867,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3460,6 +3956,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3548,6 +4045,7 @@
       "request": null,
       "family": "iceberg",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3588,12 +4086,1801 @@
       }
     },
     {
+      "id": "iceberg.namespace-list",
+      "title": "List schemas through Iceberg REST",
+      "summary": "List the schemas of the catalog the client names as its warehouse, as Iceberg namespaces.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.namespace",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "listNamespaces",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SHOW NAMESPACES",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "duckdb_schemas()",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "list_namespaces",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.namespace-properties",
+      "title": "Set schema properties through Iceberg REST",
+      "summary": "Set or remove properties on a schema through Iceberg REST.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.namespace",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "updateProperties",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.namespace-drop",
+      "title": "Drop a schema through Iceberg REST",
+      "summary": "Drop an empty schema through Iceberg REST.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.namespace",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "dropNamespace",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DROP NAMESPACE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/duckdb_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": "DROP SCHEMA",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "pyiceberg": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/pyiceberg_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.12.0",
+              "api": "drop_namespace",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.list",
+      "title": "List Iceberg tables",
+      "summary": "List the tables in a schema through Iceberg REST.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "listTables",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.overwrite",
+      "title": "Overwrite an Iceberg table",
+      "summary": "Replace all of an Iceberg table's rows in one commit.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.merge",
+      "title": "Merge into an Iceberg table",
+      "summary": "Upsert rows into an Iceberg table with MERGE, committed through the catalog.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "MERGE INTO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "iceberg.rename-namespace",
+      "title": "Move an Iceberg table to another schema",
+      "summary": "Rename an Iceberg table into a different schema of the same catalog.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "renameTable",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Renaming a table into another namespace is not supported",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Renaming a table into another namespace is not supported",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "polars": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Renaming a table into another namespace is not supported",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Renaming a table into another namespace is not supported",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyiceberg": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Renaming a table into another namespace is not supported",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "iceberg.read-uniform",
+      "title": "Read a Delta table as Iceberg",
+      "summary": "Read a Delta table with Iceberg metadata (UniForm) through Iceberg REST.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "loadTable",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "A managed UniForm table can't be created and an external one isn't served through Iceberg REST.",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "4.1.0",
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "A managed UniForm table can't be created and an external one isn't served through Iceberg REST.",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyiceberg": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "A managed UniForm table can't be created and an external one isn't served through Iceberg REST.",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "iceberg.schema-evolve",
+      "title": "Evolve an Iceberg table's schema",
+      "summary": "Add, rename, reorder, or drop columns without rewriting data files.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "schema-evolution",
+        "since": "v1"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.type-promotion",
+      "title": "Widen an Iceberg column type",
+      "summary": "Promote a column's type, such as int to long, without rewriting data files.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "type-promotion",
+        "since": "v1"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.hidden-partitioning",
+      "title": "Partition an Iceberg table by a transform",
+      "summary": "Create a table partitioned by a transform such as day or bucket, which queries prune without naming it.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "hidden-partitioning",
+        "since": "v1"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.partition-evolve",
+      "title": "Change an Iceberg table's partitioning",
+      "summary": "Change the partition spec of a table that has data, without rewriting it.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "partition-evolution",
+        "since": "v1"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.sort-order",
+      "title": "Set an Iceberg table's sort order",
+      "summary": "Set the sort order writers apply to new data files.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "sort-order",
+        "since": "v1"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.time-travel",
+      "title": "Read an earlier Iceberg snapshot",
+      "summary": "Query an Iceberg table as of a snapshot id or a timestamp.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "snapshots",
+        "since": "v1"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.branch-tag",
+      "title": "Branch and tag an Iceberg table",
+      "summary": "Create a branch or a tag on an Iceberg table, write to the branch, and read either.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "branching-tagging",
+        "since": "v2"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.metadata-tables",
+      "title": "Query an Iceberg table's metadata",
+      "summary": "Read a table's snapshots, history, files, or manifests as tables.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.maintain",
+      "title": "Maintain an Iceberg table",
+      "summary": "Expire snapshots, compact data files, and remove orphan files.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.merge-on-read",
+      "title": "Change rows with delete files",
+      "summary": "Update or delete rows by writing position delete files, merged at read time.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "position-deletes",
+        "since": "v2"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.copy-on-write",
+      "title": "Change rows by rewriting files",
+      "summary": "Update or delete rows by rewriting the data files that hold them.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.equality-deletes",
+      "title": "Write equality deletes",
+      "summary": "Delete rows by the values of key columns, recorded in equality delete files.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "equality-deletes",
+        "since": "v2"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.statistics",
+      "title": "Use Iceberg column statistics",
+      "summary": "Write and read column statistics or Puffin statistics files that prune scans.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "statistics",
+        "since": "v1"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.v3-create",
+      "title": "Create a v3 Iceberg table",
+      "summary": "Create an Iceberg table with format version 3 through the catalog.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "format-version-3",
+        "since": "v3"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.v3-deletion-vectors",
+      "title": "Use deletion vectors on Iceberg",
+      "summary": "Delete rows in a v3 table with deletion vectors, and read them back.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "deletion-vectors",
+        "since": "v3"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.v3-row-lineage",
+      "title": "Read Iceberg row lineage",
+      "summary": "Read each row's id and last-updated sequence number from a v3 table.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "row-lineage",
+        "since": "v3"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.v3-default-values",
+      "title": "Use Iceberg column default values",
+      "summary": "Add a column with a default, and read it for rows written before the column existed.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "default-values",
+        "since": "v3"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.v3-variant",
+      "title": "Use Iceberg VARIANT columns",
+      "summary": "Write and read semi-structured values in a VARIANT column.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "variant",
+        "since": "v3"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.v3-geo",
+      "title": "Use Iceberg geometry columns",
+      "summary": "Write and read geometry or geography values.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "geometry",
+        "since": "v3"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.v3-timestamp-ns",
+      "title": "Use nanosecond timestamps",
+      "summary": "Write and read timestamps with nanosecond precision.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "timestamp-ns",
+        "since": "v3"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.v3-multi-arg-transforms",
+      "title": "Partition by a multi-argument transform",
+      "summary": "Partition a v3 table by a transform over more than one column.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergSpec",
+        "name": "multi-arg-transforms",
+        "since": "v3"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.vended-credentials",
+      "title": "Refresh vended credentials",
+      "summary": "Get new storage credentials for a table from the catalog when the first ones expire.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.credential",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "loadCredentials",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.etag-load",
+      "title": "Reload a table only when it changed",
+      "summary": "Reload table metadata conditionally, getting `304 Not Modified` when nothing changed.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "loadTable",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.metrics",
+      "title": "Report scan metrics",
+      "summary": "Report scan and commit metrics to the catalog.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "reportMetrics",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.auth-token",
+      "title": "Authenticate with a token",
+      "summary": "Connect to the Iceberg REST API with a bearer token.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "iceberg.register",
+      "title": "Register an existing Iceberg table",
+      "summary": "Register a table from its metadata file, without copying data.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "registerTable",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `registerTable` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `registerTable` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "polars": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `registerTable` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `registerTable` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyiceberg": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `registerTable` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "iceberg.transactions",
+      "title": "Commit to several tables at once",
+      "summary": "Commit changes to more than one table atomically.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "commitTransaction",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `commitTransaction` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `commitTransaction` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "polars": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `commitTransaction` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `commitTransaction` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyiceberg": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `commitTransaction` endpoint.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "iceberg.views",
+      "title": "Create and query Iceberg views",
+      "summary": "Create a view through Iceberg REST and query it.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "createView",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "polars": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyiceberg": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "iceberg.scan-planning",
+      "title": "Plan scans on the server",
+      "summary": "Let the catalog plan a scan and hand back the files to read.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "planTableScan",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "polars": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyiceberg": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "iceberg.remote-signing",
+      "title": "Sign storage requests through the catalog",
+      "summary": "Have the catalog sign each storage request instead of vending credentials.",
+      "request": null,
+      "family": "iceberg",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "signRequest",
+        "since": null
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "polars": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "pyiceberg": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+              "source": "reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "metricview.create",
       "title": "Create a metric view",
       "summary": "Define dimensions and measures in YAML over a table or a query, and store the definition in the catalog.",
       "request": null,
       "family": "metricview",
       "asset": "lakehouse.metricView",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3675,6 +5962,7 @@
       "request": null,
       "family": "metricview",
       "asset": "lakehouse.metricView",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3741,6 +6029,7 @@
       "request": null,
       "family": "metricview",
       "asset": "lakehouse.metricView",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3822,6 +6111,7 @@
       "request": null,
       "family": "metricview",
       "asset": "lakehouse.metricView",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3901,6 +6191,7 @@
       "request": null,
       "family": "metricview",
       "asset": "lakehouse.metricView",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -3963,6 +6254,7 @@
       "request": null,
       "family": "metricview",
       "asset": "lakehouse.metricView",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4025,6 +6317,7 @@
       "request": null,
       "family": "metricview",
       "asset": "lakehouse.metricView",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4106,6 +6399,7 @@
       "request": null,
       "family": "catalog",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4172,6 +6466,7 @@
       "request": null,
       "family": "catalog",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4238,6 +6533,7 @@
       "request": null,
       "family": "catalog",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4304,6 +6600,7 @@
       "request": null,
       "family": "catalog",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4370,6 +6667,7 @@
       "request": null,
       "family": "schema",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4436,6 +6734,7 @@
       "request": null,
       "family": "schema",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4502,6 +6801,7 @@
       "request": null,
       "family": "schema",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4568,6 +6868,7 @@
       "request": null,
       "family": "schema",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4634,6 +6935,7 @@
       "request": null,
       "family": "table",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4730,6 +7032,7 @@
       "request": null,
       "family": "table",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4796,6 +7099,7 @@
       "request": null,
       "family": "table",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4907,6 +7211,7 @@
       "request": null,
       "family": "table",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -4988,6 +7293,7 @@
       "request": null,
       "family": "table",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5032,6 +7338,7 @@
       "request": null,
       "family": "table",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5143,6 +7450,7 @@
       "request": null,
       "family": "volume",
       "asset": "lakehouse.volume",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5224,6 +7532,7 @@
       "request": null,
       "family": "volume",
       "asset": "lakehouse.volume",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5320,6 +7629,7 @@
       "request": null,
       "family": "volume",
       "asset": "lakehouse.volume",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5401,6 +7711,7 @@
       "request": null,
       "family": "volume",
       "asset": "lakehouse.volume",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5467,6 +7778,7 @@
       "request": null,
       "family": "volume",
       "asset": "lakehouse.volume",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5533,6 +7845,7 @@
       "request": null,
       "family": "volume",
       "asset": "lakehouse.volume",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5599,6 +7912,7 @@
       "request": null,
       "family": "credential",
       "asset": "lakehouse.credential",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5665,6 +7979,7 @@
       "request": null,
       "family": "location",
       "asset": "lakehouse.externalLocation",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5731,6 +8046,7 @@
       "request": null,
       "family": "location",
       "asset": "lakehouse.externalLocation",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5797,6 +8113,7 @@
       "request": null,
       "family": "credential",
       "asset": "lakehouse.credential",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5863,6 +8180,7 @@
       "request": null,
       "family": "location",
       "asset": "lakehouse.externalLocation",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5929,6 +8247,7 @@
       "request": null,
       "family": "location",
       "asset": "lakehouse.externalLocation",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -5995,6 +8314,7 @@
       "request": null,
       "family": "schema",
       "asset": "lakehouse.namespace",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6061,6 +8381,7 @@
       "request": null,
       "family": "credential",
       "asset": "lakehouse.credential",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6125,6 +8446,7 @@
       "request": null,
       "family": "credential",
       "asset": "lakehouse.credential",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6184,6 +8506,7 @@
       "request": null,
       "family": "volume",
       "asset": "lakehouse.volume",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6228,6 +8551,7 @@
       "request": null,
       "family": "volume",
       "asset": "lakehouse.volume",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6272,6 +8596,7 @@
       "request": null,
       "family": "function",
       "asset": "lakehouse.registeredFunction",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6316,6 +8641,7 @@
       "request": null,
       "family": "function",
       "asset": "lakehouse.registeredFunction",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6360,6 +8686,7 @@
       "request": null,
       "family": "function",
       "asset": "lakehouse.registeredFunction",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6404,6 +8731,7 @@
       "request": null,
       "family": "function",
       "asset": "lakehouse.registeredFunction",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6448,6 +8776,7 @@
       "request": null,
       "family": "function",
       "asset": "lakehouse.registeredFunction",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -6500,6 +8829,9 @@
         "iceberg.delete",
         "iceberg.drop",
         "iceberg.join-delta",
+        "iceberg.merge",
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
         "iceberg.read",
         "iceberg.rename",
         "iceberg.schema-create",
@@ -6554,6 +8886,8 @@
         "spark"
       ],
       "journeys": [
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
         "iceberg.schema-create"
       ]
     },
@@ -6570,6 +8904,7 @@
         "iceberg.delete",
         "iceberg.drop",
         "iceberg.join-delta",
+        "iceberg.merge",
         "iceberg.read",
         "iceberg.rename",
         "iceberg.update",
@@ -6645,6 +8980,8 @@
         "iceberg.create",
         "iceberg.delete",
         "iceberg.drop",
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
         "iceberg.read",
         "iceberg.rename",
         "iceberg.schema-create",
@@ -6674,6 +9011,8 @@
         "duckdb"
       ],
       "journeys": [
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
         "iceberg.schema-create"
       ]
     },
@@ -6741,6 +9080,8 @@
         "iceberg.create",
         "iceberg.delete",
         "iceberg.drop",
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
         "iceberg.read",
         "iceberg.rename",
         "iceberg.schema-create",
@@ -6755,6 +9096,8 @@
         "pyiceberg"
       ],
       "journeys": [
+        "iceberg.namespace-drop",
+        "iceberg.namespace-list",
         "iceberg.schema-create"
       ]
     },

@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import type { CompatCell, CompatMatrix } from "../../compat";
-import { answeredShare, columnCounts, matrixCounts } from "./compat-stats";
+import { answeredShare, columnCounts, featureGroups, matrixCounts } from "./compat-stats";
 
 const cell = (status: CompatCell["status"], draft = false): CompatCell => ({
   status,
@@ -30,6 +30,7 @@ const matrix: CompatMatrix = {
       title: "J2",
       summary: "S",
       request: null,
+      feature: { spec: "icebergSpec", name: "variant", since: "v3" },
       cells: { a: cell("tested", true), b: cell("documented") },
     },
   ],
@@ -45,4 +46,12 @@ test("matrix totals count a journey once per table it appears in", () => {
   const total = matrixCounts(matrix);
   expect(total).toEqual({ proven: 2, draft: 1, documented: 1, no: 1, unknown: 0 });
   expect(answeredShare(total)).toBeCloseTo(3 / 5);
+});
+
+test("feature groups count their journeys' cells per spec version", () => {
+  const [v3] = featureGroups(matrix);
+  expect(featureGroups(matrix)).toHaveLength(1);
+  expect(v3.key).toBe("icebergSpec:v3");
+  expect([...v3.journeys]).toEqual(["j2"]);
+  expect(v3.counts).toEqual({ proven: 0, draft: 1, documented: 1, no: 0, unknown: 0 });
 });

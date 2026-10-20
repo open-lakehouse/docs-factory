@@ -22,7 +22,15 @@ import { PROJECT_LABELS } from "../../doc-nav";
 import { ContentRequestKind } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
 import { docRef, refHref } from "../../lib/content-ref";
-import { answeredShare, columnCounts, matrixCounts, totalCells } from "../../lib/plan/compat-stats";
+import {
+  answeredShare,
+  columnCounts,
+  type FeatureGroup,
+  featureGroups,
+  featureKey,
+  matrixCounts,
+  totalCells,
+} from "../../lib/plan/compat-stats";
 import { ModelRef } from "../ModelRef";
 import {
   requestStatusLabel,
@@ -64,6 +72,8 @@ export default function CompatibilityMatrix() {
   const gapsOnly = params.get("gaps") === "1";
   const byAsset = params.get("group") === "asset";
   const selected = parseCell(params.get("cell"));
+  const groups = matrix ? featureGroups(matrix) : [];
+  const since = groups.find((g) => g.key === params.get("since")) ?? null;
   const set = (patch: Record<string, string | null>) =>
     setParams(
       (prev) => {
@@ -89,7 +99,7 @@ export default function CompatibilityMatrix() {
               type="button"
               aria-pressed={m.project === matrix?.project}
               className={cn("plan-chip", m.project === matrix?.project && "is-active")}
-              onClick={() => set({ project: m.project, cell: null })}
+              onClick={() => set({ project: m.project, cell: null, since: null })}
             >
               {PROJECT_LABELS[m.project] ?? m.project}
             </button>
@@ -119,6 +129,24 @@ export default function CompatibilityMatrix() {
           unknown
         </p>
       )}
+      {groups.length > 0 && (
+        <fieldset className="plan-chips">
+          <legend className="sr-only">Spec version</legend>
+          {groups.map((g) => (
+            <button
+              key={g.key}
+              type="button"
+              aria-pressed={g.key === since?.key}
+              className={cn("plan-chip", g.key === since?.key && "is-active")}
+              title={`${g.journeys.size} journeys; ${Math.round(answeredShare(g.counts) * 100)}% of their cells answered by a ready page`}
+              onClick={() => set({ since: g.key === since?.key ? null : g.key, cell: null })}
+            >
+              {sinceLabel(g)}{" "}
+              <span className="muted">{Math.round(answeredShare(g.counts) * 100)}%</span>
+            </button>
+          ))}
+        </fieldset>
+      )}
       <ul className="compat-legend" aria-label="Legend">
         {(Object.keys(SYMBOL) as CellStatus[])
           .filter((s) => s !== "missing")
@@ -142,6 +170,7 @@ export default function CompatibilityMatrix() {
           matrix={matrix}
           byAsset={byAsset}
           gapsOnly={gapsOnly}
+          since={since}
           selected={selected}
           onSelect={(s) => set({ cell: s ? `${s.journey}:${s.iface}` : null })}
         />
@@ -152,16 +181,28 @@ export default function CompatibilityMatrix() {
   );
 }
 
+const SPEC_LABEL: Record<string, string> = {
+  deltaSpec: "Delta",
+  icebergSpec: "Iceberg",
+  icebergRestSpec: "Iceberg REST",
+};
+
+function sinceLabel(g: Pick<FeatureGroup, "spec" | "since">): string {
+  return [SPEC_LABEL[g.spec] ?? g.spec, g.since].filter(Boolean).join(" ");
+}
+
 function MatrixTables({
   matrix,
   byAsset,
   gapsOnly,
+  since,
   selected,
   onSelect,
 }: {
   matrix: CompatMatrix;
   byAsset: boolean;
   gapsOnly: boolean;
+  since: FeatureGroup | null;
   selected: Selected | null;
   onSelect: (s: Selected | null) => void;
 }) {
@@ -177,9 +218,14 @@ function MatrixTables({
       {(byAsset ? matrix.assets : matrix.tables).map((table) => {
         const rows = table.rows
           .map((id) => journeys.get(id))
-          .filter((j): j is CompatJourney => !!j && (!gapsOnly || isGap(j, table.columns)));
+          .filter(
+            (j): j is CompatJourney =>
+              !!j &&
+              (!gapsOnly || isGap(j, table.columns)) &&
+              (!since || featureKey(j) === since.key),
+          );
         // Journey requests are placed on a table, so asset groups show none.
-        const asked = byAsset ? [] : requested.filter((r) => r.placement === table.id);
+        const asked = byAsset || since ? [] : requested.filter((r) => r.placement === table.id);
         const columnStats = columnCounts(matrix, table);
         if (rows.length === 0 && asked.length === 0) return null;
         return (
@@ -277,6 +323,12 @@ function JourneyRows({
       <tr>
         <th scope="row">
           {journey.title} <code className="muted">{journey.id}</code>
+          {journey.feature && (
+            <span className="compat-version" title={`${journey.feature.spec} feature`}>
+              {journey.feature.name}
+              {journey.feature.since && ` · ${sinceLabel(journey.feature)}`}
+            </span>
+          )}
           <p className="muted">{journey.summary}</p>
         </th>
         {columns.map((iface) => {

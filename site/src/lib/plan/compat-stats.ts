@@ -48,3 +48,43 @@ export function matrixCounts(matrix: CompatMatrix): CellCounts {
   }
   return total;
 }
+
+export interface FeatureGroup {
+  /** `<spec>:<since>`, the `?since=` value. */
+  key: string;
+  spec: string;
+  since: string | null;
+  journeys: Set<string>;
+  counts: CellCounts;
+}
+
+export function featureKey(journey: CompatJourney): string | null {
+  return journey.feature ? `${journey.feature.spec}:${journey.feature.since ?? ""}` : null;
+}
+
+/** Journeys grouped by the spec version their feature arrived in, counted over every table. */
+export function featureGroups(matrix: CompatMatrix): FeatureGroup[] {
+  const groups = new Map<string, FeatureGroup>();
+  const byId = new Map(matrix.journeys.map((j) => [j.id, j]));
+  for (const table of matrix.tables) {
+    for (const id of table.rows) {
+      const journey = byId.get(id);
+      const key = journey && featureKey(journey);
+      if (!journey?.feature || !key) continue;
+      let group = groups.get(key);
+      if (!group) {
+        group = {
+          key,
+          spec: journey.feature.spec,
+          since: journey.feature.since,
+          journeys: new Set(),
+          counts: emptyCellCounts(),
+        };
+        groups.set(key, group);
+      }
+      group.journeys.add(id);
+      for (const col of table.columns) group.counts[bucketOf(journey.cells[col])]++;
+    }
+  }
+  return [...groups.values()].sort((a, b) => a.key.localeCompare(b.key));
+}

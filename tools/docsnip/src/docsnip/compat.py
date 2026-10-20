@@ -1247,8 +1247,9 @@ def asset_groups(matrix: Matrix, model: Model) -> list[Table]:
 def _rollup(
     result: Result, matrix: Matrix, asset: str, embed: Path, content_root: Path
 ) -> Table | None:
-    """The rollup for ``asset`` on ``embed``, without columns that say nothing
-    there (unless every column would go)."""
+    """The rollup for ``asset`` on ``embed``, without the columns or rows that say
+    nothing there (unless every one would go). A matrix tracks journeys nobody
+    has tried yet; a rollup reports only what something answers."""
     group = next(
         (t for t in asset_groups(matrix, result.model) if t.id == _ROLLUP + asset),
         None,
@@ -1256,24 +1257,25 @@ def _rollup(
     if group is None:
         return None
     detailed = page_status(embed) == "private"
-    speaking = tuple(
-        col
-        for col in group.columns
-        if any(
-            _render_cell(
-                cell(result, matrix, col, row, drafts=detailed),
-                col,
-                matrix,
-                group,
-                embed,
-                content_root,
-                detailed,
-            )
-            != "—"
-            for row in group.rows
+
+    def says(col: str, row: str) -> bool:
+        rendered = _render_cell(
+            cell(result, matrix, col, row, drafts=detailed),
+            col,
+            matrix,
+            group,
+            embed,
+            content_root,
+            detailed,
         )
+        return rendered != "—"
+
+    speaking = tuple(
+        col for col in group.columns if any(says(col, row) for row in group.rows)
     )
-    return dataclasses.replace(group, columns=speaking) if speaking else group
+    columns = speaking or group.columns
+    rows = tuple(row for row in group.rows if any(says(col, row) for col in columns))
+    return dataclasses.replace(group, columns=columns, rows=rows or group.rows)
 
 
 # --- embedding: check and fix -------------------------------------------------

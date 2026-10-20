@@ -21,43 +21,6 @@
         "resource_nouns": []
       },
       {
-        "id": "envoy",
-        "model": "envoy",
-        "kind": "gateway",
-        "display_name": "Envoy",
-        "summary": "Single-port gateway, Databricks-shaped URL rewrites.",
-        "category": "gateway",
-        "role": "gateway",
-        "placement": "container:envoy",
-        "cloud": null,
-        "surfaces": [
-          {
-            "host_port": 8080,
-            "kind": "platform",
-            "protocols": [],
-            "exposes": [
-              {
-                "module": "unity-catalog",
-                "endpoint": "rest",
-                "kind": "api",
-                "prefix": "/api/2.1/unity-catalog",
-                "gated": false
-              },
-              {
-                "module": "unity-catalog",
-                "endpoint": "rest_alias",
-                "kind": "api",
-                "prefix": "/unity-catalog",
-                "gated": false
-              }
-            ]
-          }
-        ],
-        "offers": [],
-        "provisions": [],
-        "resource_nouns": []
-      },
-      {
         "id": "unity-catalog",
         "model": "unityCatalogOSS",
         "kind": "component",
@@ -76,18 +39,10 @@
     "edges": [
       {
         "kind": "access",
-        "key": "access:@clients→envoy:8080",
+        "key": "access:@clients→unity-catalog:8080",
         "from": "@clients",
-        "to": "envoy",
-        "host_port": 8080
-      },
-      {
-        "kind": "route",
-        "key": "route:envoy→unity-catalog:8080",
-        "from": "envoy",
         "to": "unity-catalog",
-        "host_port": 8080,
-        "gated": false
+        "host_port": 8080
       }
     ]
   },
@@ -99,8 +54,6 @@
     "client/container.env",
     "LAYOUT.md",
     "README.md",
-    "modules/envoy/envoy.yaml",
-    "modules/envoy/compose.yaml",
     "modules/unity-catalog/compose.yaml",
     "modules/unity-catalog/secrets/server.properties"
   ],
@@ -110,7 +63,7 @@
       "phase": "start",
       "id": "up",
       "title": "Start the stack",
-      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nThe gateway then serves the stack at <http://localhost:8080>. [LAYOUT.md](LAYOUT.md) lists every route and address."
+      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nEach service is then published on its own host port. [LAYOUT.md](LAYOUT.md) lists every route and address."
     }
   ]
 }

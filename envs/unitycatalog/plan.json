@@ -13,14 +13,14 @@
     "digest": "sha256:0e9dec34fead2080124abc151621290e1ec9eb0b344317d7910670e9a01dcb3e"
   },
   "recipe": {
-    "digest": "sha256:3dfc2128554d8dacfdc10ee7587eff74b8f20a411dbda9664969da2f65a10d1c"
+    "digest": "sha256:17e49380efcdfea543a4136c6c76ea6012bb49955fdefa0bb7df16f7bc65313f"
   },
   "context": {
     "env_name": "uc-docs",
     "target": "compose",
     "gateway_service": "envoy",
     "gateway_internal_port": 10000,
-    "gateway_host_port": 8080,
+    "gateway_host_port": 9080,
     "gateway_admin_port": 9901,
     "dedicated_listener_ports": [],
     "dedicated_listener_port_base": 9100,
@@ -46,43 +46,6 @@
         "resource_nouns": []
       },
       {
-        "id": "envoy",
-        "model": "envoy",
-        "kind": "gateway",
-        "display_name": "Envoy",
-        "summary": "Single-port gateway, Databricks-shaped URL rewrites.",
-        "category": "gateway",
-        "role": "gateway",
-        "placement": "container:envoy",
-        "cloud": null,
-        "surfaces": [
-          {
-            "host_port": 8080,
-            "kind": "platform",
-            "protocols": [],
-            "exposes": [
-              {
-                "module": "unity-catalog",
-                "endpoint": "rest",
-                "kind": "api",
-                "prefix": "/api/2.1/unity-catalog",
-                "gated": false
-              },
-              {
-                "module": "unity-catalog",
-                "endpoint": "rest_alias",
-                "kind": "api",
-                "prefix": "/unity-catalog",
-                "gated": false
-              }
-            ]
-          }
-        ],
-        "offers": [],
-        "provisions": [],
-        "resource_nouns": []
-      },
-      {
         "id": "unity-catalog",
         "model": "unityCatalogOSS",
         "kind": "component",
@@ -101,32 +64,14 @@
     "edges": [
       {
         "kind": "access",
-        "key": "access:@clients→envoy:8080",
+        "key": "access:@clients→unity-catalog:8080",
         "from": "@clients",
-        "to": "envoy",
-        "host_port": 8080
-      },
-      {
-        "kind": "route",
-        "key": "route:envoy→unity-catalog:8080",
-        "from": "envoy",
         "to": "unity-catalog",
-        "host_port": 8080,
-        "gated": false
+        "host_port": 8080
       }
     ]
   },
   "containers": [
-    {
-      "name": "envoy",
-      "component": "envoy",
-      "kind": "service"
-    },
-    {
-      "name": "gateway-certs",
-      "component": "envoy",
-      "kind": "init"
-    },
     {
       "name": "unitycatalog",
       "component": "unity-catalog",
@@ -134,29 +79,6 @@
     }
   ],
   "services": {
-    "envoy": [
-      {
-        "name": "envoy",
-        "role": "gateway",
-        "placement": {
-          "kind": "container",
-          "service": "envoy"
-        },
-        "endpoints": [
-          {
-            "id": "http",
-            "scheme": "http",
-            "internal_port": 10000,
-            "host_port": 9080,
-            "intent": {
-              "kind": "internal"
-            },
-            "rewrite": "inherit"
-          }
-        ],
-        "depends_on": []
-      }
-    ],
     "unity-catalog": [
       {
         "name": "unitycatalog",
@@ -170,9 +92,11 @@
             "id": "rest",
             "scheme": "http",
             "internal_port": 8080,
+            "host_port": 8080,
             "intent": {
               "kind": "api"
             },
+            "path": "/api/2.1/unity-catalog",
             "mount_prefix": "/api/2.1/unity-catalog",
             "rewrite": "inherit"
           },
@@ -180,9 +104,11 @@
             "id": "rest_alias",
             "scheme": "http",
             "internal_port": 8080,
+            "host_port": 8080,
             "intent": {
               "kind": "api"
             },
+            "path": "/unity-catalog",
             "mount_prefix": "/unity-catalog",
             "rewrite": "inherit"
           }
@@ -192,30 +118,8 @@
     ]
   },
   "gateway": {
-    "listeners": [
-      {
-        "host_port": 8080,
-        "routes": [
-          {
-            "prefix": "/api/2.1/unity-catalog",
-            "cluster": "unitycatalog",
-            "rewrite": null
-          },
-          {
-            "prefix": "/unity-catalog",
-            "cluster": "unitycatalog",
-            "rewrite": null
-          }
-        ]
-      }
-    ],
-    "clusters": [
-      {
-        "name": "unitycatalog",
-        "host": "unitycatalog",
-        "port": 8080
-      }
-    ],
+    "listeners": [],
+    "clusters": [],
     "admin_port": 9901,
     "auth": null,
     "tls": null,
@@ -226,7 +130,7 @@
       "UNITY_CATALOG_URL": "http://localhost:8080/api/2.1/unity-catalog"
     },
     "container": {
-      "UNITY_CATALOG_URL": "http://envoy:10000/api/2.1/unity-catalog"
+      "UNITY_CATALOG_URL": "http://unitycatalog:8080/api/2.1/unity-catalog"
     }
   },
   "files": [
@@ -259,14 +163,6 @@
       "sensitive": false
     },
     {
-      "path": "modules/envoy/envoy.yaml",
-      "sensitive": false
-    },
-    {
-      "path": "modules/envoy/compose.yaml",
-      "sensitive": false
-    },
-    {
       "path": "modules/unity-catalog/compose.yaml",
       "sensitive": false
     },
@@ -281,7 +177,7 @@
       "phase": "start",
       "id": "up",
       "title": "Start the stack",
-      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nThe gateway then serves the stack at <http://localhost:8080>. [LAYOUT.md](LAYOUT.md) lists every route and address."
+      "instructions": "Start every service and wait until each one is healthy:\n\n```bash\ndocker compose up -d --wait\n```\n\nEach service is then published on its own host port. [LAYOUT.md](LAYOUT.md) lists every route and address."
     }
   ]
 }

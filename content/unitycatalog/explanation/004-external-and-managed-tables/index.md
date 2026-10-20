@@ -158,12 +158,7 @@ What each client can do with a table, as tested in CI:
 | Write to a managed table by path | — | — | ✗ | ✗ | ✗ | — | — | — |
 | Change a managed table's columns | — | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
 | Set a managed table's properties | — | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
-| Rename a managed table or column | — | — | — | — | — | — | — | — |
 | Create a managed table from a query | — | ✗ | — | — | — | — | — | — |
-| Replace a managed table | — | — | — | — | — | — | — | — |
-| Overwrite a managed table | — | — | — | — | — | — | — | — |
-| Replace rows that match a condition | — | — | — | — | — | — | — | — |
-| Overwrite partitions of a managed table | — | — | — | — | — | — | — | — |
 | Read a Parquet, CSV, or JSON table | — | [✓](../../how-to/table-storage-formats/index.md#read-the-data) by path from the table's location | [✓](../../how-to/table-storage-formats/index.md#read-the-data) by path from the table's location | — | — | — | — | — |
 | Create a managed Iceberg table | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | — | — |
 | Append to an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — |
@@ -173,6 +168,14 @@ What each client can do with a table, as tested in CI:
 | Rename an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — |
 | Drop an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — |
 | Join Delta and Iceberg tables | [✓](../../how-to/iceberg-rest/index.md#join-delta-and-iceberg-tables-in-spark) UC connector and Iceberg REST catalogs in one session | — | — | — | — | — | — | — |
+| Merge into an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | — | — | — | — | — | — | — |
+| Move an Iceberg table to another schema | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
+| Read a Delta table as Iceberg | ✗ | ✗ | — | — | — | ✗ | — | — |
+| Register an existing Iceberg table | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
+| Commit to several tables at once | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
+| Create and query Iceberg views | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
+| Plan scans on the server | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
+| Sign storage requests through the catalog | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
 | Register an external Delta table | — | — | — | — | — | — | [✓](../../how-to/register-external-table/index.md#register-the-table) | [✓](../../how-to/register-external-table/index.md#register-the-table) |
 | Register a Parquet, CSV, or JSON table | — | — | — | — | — | — | [✓](../../how-to/table-storage-formats/index.md#register-the-tables) | [✓](../../how-to/table-storage-formats/index.md#register-the-tables) |
 | View a table | — | — | — | — | — | — | [✓](../../how-to/register-external-table/index.md#view-the-table) | [✓](../../how-to/table-storage-formats/index.md#read-the-data) |

@@ -7035,17 +7035,7 @@
               "note": "through Unity Catalog"
             }
           ],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark supports column mapping by name and id.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
+          "evidence": []
         },
         "delta-rs-python": {
           "status": "documented",
@@ -7105,17 +7095,7 @@
               "note": "through Unity Catalog"
             }
           ],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark supports column mapping by name and id.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
+          "evidence": []
         },
         "delta-rs-python": {
           "status": "documented",
@@ -7327,17 +7307,7 @@
               "note": "through Unity Catalog"
             }
           ],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark assigns row ids and commit versions.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-row-tracking.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
+          "evidence": []
         }
       }
     },
@@ -7916,17 +7886,7 @@
               "note": "through Unity Catalog"
             }
           ],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark supports the feature and can drop it.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
+          "evidence": []
         }
       }
     },

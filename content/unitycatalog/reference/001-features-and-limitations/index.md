@@ -153,6 +153,9 @@ several of them, so guides written for Databricks don't apply here:
 - Connections to external databases
 - Audit logs
 - A Delta Sharing server
+- In the Iceberg REST API: registering a table from a metadata file,
+  multi-table transactions, views, server-side scan planning, remote request
+  signing, and renaming a table into another namespace
 
 ## Related pages
 

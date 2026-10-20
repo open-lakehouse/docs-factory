@@ -458,6 +458,43 @@ def test_bad_journey_references_are_errors(
     assert any(message in e for e in errors), errors
 
 
+def test_a_journey_names_the_spec_feature_it_exercises(tmp_path) -> None:
+    root = _modeled(
+        _repo(tmp_path, _SPARK_READS),
+        "  table.read:\n"
+        "    {title: Read, summary: Read rows, family: table,\n"
+        "     feature: {spec: icebergRestSpec, name: loadTable, since: v1}}",
+    )
+    read, write = _artifact(root)["journeys"]
+    assert read["feature"] == {
+        "spec": "icebergRestSpec",
+        "name": "loadTable",
+        "since": "v1",
+    }
+    assert write["feature"] is None
+
+
+@pytest.mark.parametrize(
+    ("feature", "message"),
+    [
+        ("{spec: icebergRestSpec, name: nope}", "is not a icebergRestSpec feature"),
+        ("{spec: apacheSpark, name: loadTable}", "expected openSpecification"),
+        ("{spec: ucSpec, name: loadTable}", "has no specFeatures"),
+        (
+            "{spec: icebergRestSpec, name: loadTable, version: 3}",
+            "unknown key 'version'",
+        ),
+    ],
+)
+def test_bad_journey_features_are_errors(tmp_path, feature: str, message: str) -> None:
+    root = _modeled(
+        _repo(tmp_path, ""),
+        f"  table.read: {{title: R, summary: S, family: table, feature: {feature}}}",
+    )
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors
+
+
 def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:
     data = _artifact(_modeled(_repo(tmp_path, _SPARK_READS)))
     assert data["verifiedEdges"] == [

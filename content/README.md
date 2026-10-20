@@ -493,6 +493,22 @@ journeys:
     summary: Read an Iceberg table by its catalog name, with credentials the catalog vends.
 ```
 
+A journey that exercises one feature of a spec says so in `feature`: the spec
+(a model id), the feature's `name` from that spec's list in
+`content/vocab.json` `specFeatures` (Delta protocol feature names, Iceberg
+format features, Iceberg REST operationIds), and optionally the spec version
+that added it in `since`. The review app groups the compatibility plan by it,
+so "which Iceberg v3 features does DuckDB handle" is one filter:
+
+```yaml
+journeys:
+  deletion-vectors.read:
+    family: feature
+    title: Read a table with deletion vectors
+    summary: Read a table whose deletes are recorded in deletion vectors.
+    feature: { spec: deltaSpec, name: deletionVectors, since: "reader 3 · writer 7" }
+```
+
 Claims bind an interface and a script; the script's environment supplies the
 configured participants. Express replaceable participants through the
 contracts they require, and keep implementation and version detail on the

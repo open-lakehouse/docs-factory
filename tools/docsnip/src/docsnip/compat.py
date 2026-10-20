@@ -35,7 +35,7 @@ from typing import Any
 
 import yaml
 
-from . import shellregions, sqlregions, tabs
+from . import shellregions, sqlregions, tabs, vocab
 from .anchors import Heading, headings
 from .frontmatter import iter_content_files, page_status
 from .frontmatter import parse as parse_page
@@ -63,7 +63,16 @@ _MATRIX_KEYS = {
     "evidence",
 }
 _INTERFACE_KEYS = {"label", "pin", "package", "model", "via"}
-_JOURNEY_KEYS = {"title", "summary", "request", "family", "asset", "requires"}
+_JOURNEY_KEYS = {
+    "title",
+    "summary",
+    "request",
+    "family",
+    "asset",
+    "requires",
+    "feature",
+}
+_FEATURE_KEYS = {"spec", "name", "since"}
 _FAMILY_KEYS = {"asset", "requires"}
 # A requirement edge → the element kinds it may name.
 _REQUIRE_EDGES = {
@@ -115,6 +124,17 @@ Requirements = dict[str, dict[str, tuple[str, ...]]]
 
 
 @dataclasses.dataclass(frozen=True)
+class Feature:
+    """The spec feature a journey exercises, so tables can group by spec version."""
+
+    spec: str  # an openSpecification model id
+    name: str  # in content/vocab.json `specFeatures[spec]`
+    since: str | None = (
+        None  # the spec version that added it: "v3", "reader 3 · writer 7"
+    )
+
+
+@dataclasses.dataclass(frozen=True)
 class Journey:
     id: str
     title: str  # the row label: what the reader sets out to do
@@ -123,6 +143,7 @@ class Journey:
     family: str | None = None
     asset: str | None = None  # resolved: journey, else family, else defaults
     requires: Requirements = dataclasses.field(default_factory=dict)  # resolved
+    feature: Feature | None = None
 
 
 @dataclasses.dataclass(frozen=True)
@@ -297,6 +318,34 @@ def _load_family(
     return Family(asset=asset if isinstance(asset, str) else None, requires=requires)
 
 
+def _load_feature(
+    value: object, at: str, where: str, model: Model, errors: list[str]
+) -> Feature | None:
+    if not isinstance(value, dict):
+        errors.append(f"{where}: {at} maps spec, name, and since")
+        return None
+    for extra in sorted(set(value) - _FEATURE_KEYS):
+        errors.append(f"{where}: {at}: unknown key '{extra}'")
+    spec, name, since = value.get("spec"), value.get("name"), value.get("since")
+    if not _check_element(
+        model, spec, {"openSpecification"}, f"{at}.spec", where, errors
+    ):
+        return None
+    known = vocab.spec_features().get(str(spec))
+    if known is None:
+        errors.append(f"{where}: {at}.spec '{spec}' has no specFeatures in vocab.json")
+        return None
+    if name not in known:
+        errors.append(
+            f"{where}: {at}.name '{name}' is not a {spec} feature in vocab.json"
+        )
+        return None
+    if since is not None and not isinstance(since, str):
+        errors.append(f"{where}: {at}.since must be a string")
+        return None
+    return Feature(spec=str(spec), name=str(name), since=since)
+
+
 def _load_journeys(
     raw: dict,
     where: str,
@@ -333,6 +382,11 @@ def _load_journeys(
             requires = (
                 family.requires if family.requires is not None else defaults.requires
             )
+        feature = (
+            _load_feature(entry["feature"], f"{at}.feature", where, model, errors)
+            if "feature" in entry
+            else None
+        )
         journeys[str(key)] = Journey(
             id=str(key),
             title=entry["title"],
@@ -341,6 +395,7 @@ def _load_journeys(
             family=str(family_key) if family_key is not None else None,
             asset=own.asset or family.asset or defaults.asset,
             requires=requires or {},
+            feature=feature,
         )
     return journeys
 
@@ -1611,6 +1666,9 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                 "request": journey.request,
                 "family": journey.family,
                 "asset": journey.asset,
+                "feature": dataclasses.asdict(journey.feature)
+                if journey.feature
+                else None,
                 "requires": {
                     role: {edge: list(ids) for edge, ids in edges.items()}
                     for role, edges in journey.requires.items()

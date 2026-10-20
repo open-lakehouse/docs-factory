@@ -337,6 +337,16 @@ def validate(page: Page, model_ids: set[str] | None = None) -> PageValidation:
             "use references: for secondary correlations"
         )
 
+    # ``delta_features:`` joins a page to R01's rows, so it takes protocol feature
+    # names (the journeys' `feature:` vocabulary) or a non-feature topic.
+    allowed = vocab.spec_features()["deltaSpec"] | vocab.delta_topics()
+    for name in _as_str_list(m.get("delta_features")):
+        if name not in allowed:
+            errors.append(
+                f"delta_features '{name}' is not a Delta protocol feature or topic "
+                "in content/vocab.json"
+            )
+
     if model_ids:
         for ref in _as_str_list(m.get("references")):
             if ref not in model_ids:

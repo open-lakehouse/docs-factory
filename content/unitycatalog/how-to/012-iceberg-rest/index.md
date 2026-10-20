@@ -87,8 +87,7 @@ Then create a secret that holds the token and attach the catalog:
 server vends for each table.
 
 Turning off `iceberg_use_metadata_log` avoids an intermittent commit failure
-on a session's second write to a table; see
-[Known issues](../../reference/features-and-limitations/index.md#known-issues).
+on a session's second write to a table.
 
 :::note
 DuckDB doesn't read `AWS_ENDPOINT_URL`. Against the local environment's

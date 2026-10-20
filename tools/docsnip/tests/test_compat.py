@@ -270,6 +270,29 @@ def test_documented_evidence_shows_only_where_the_table_asks(tmp_path) -> None:
     assert _table(root)[2] == "| Read | [docs](https://example.com/read) | — |"
 
 
+def test_only_a_private_page_links_private_evidence(tmp_path) -> None:
+    root = _repo(tmp_path, "", status="private")
+    matrix = root / "content/proj/compatibility.yml"
+    matrix.write_text(
+        matrix.read_text().replace("rows: [", "documented: true\n    rows: [")
+        + (
+            "  - interfaces: [spark]\n"
+            "    journeys: [table.read]\n"
+            "    outcome: works\n"
+            "    why: The docs say so\n"
+            "    source: how-to/engine#read-it\n"
+        )
+    )
+    compat.fix(root)
+    assert _table(root)[2] == "| Read | docs | — |"
+    embed = root / "content/proj/reference/002-matrix/index.md"
+    embed.write_text(embed.read_text().replace("status: ready", "status: private"))
+    compat.fix(root)
+    assert _table(root)[2].startswith(
+        "| Read (`table.read`) | [docs](../../how-to/engine/index.md#read-it)"
+    )
+
+
 def test_a_private_page_shows_draft_claims_and_apis(tmp_path) -> None:
     root = _repo(
         tmp_path,

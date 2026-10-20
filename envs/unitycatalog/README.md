@@ -14,4 +14,4 @@ Start every service and wait until each one is healthy:
 docker compose up -d --wait
 ```
 
-The gateway then serves the stack at <http://localhost:8080>. [LAYOUT.md](LAYOUT.md) lists every route and address.
+Each service is then published on its own host port. [LAYOUT.md](LAYOUT.md) lists every route and address.

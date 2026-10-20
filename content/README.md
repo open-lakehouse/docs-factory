@@ -175,10 +175,12 @@ is the reference example.
    authorization source.
 5. **Callouts for consequences:** `:::warning` for surprising replacement or data
    loss, `:::danger` for irreversible cascades. Lead with what works: a verified
-   quirk or upstream bug goes in the "Known issues" table of
-   `unitycatalog/reference/001-features-and-limitations`, with its error string,
-   and the page links there. Keep the assert that pins it, so CI flags the
-   entry when it's fixed.
+   quirk or upstream bug is recorded in the "Known issues" table of
+   `unitycatalog/reference/001-features-and-limitations`, with its error string.
+   That page is `private`, so no published page links it: a page states the
+   quirk itself, as the condition and the action, only when it blocks the
+   page's task. Keep the assert that pins it, so CI flags the entry when it's
+   fixed.
 6. **Next steps:** two or three links to the next task or concept.
 
 Keep Databricks-only concepts (workspaces, Catalog Explorer, SQL warehouses,
@@ -244,6 +246,11 @@ Diátaxis type wants them:
   that stack's download, start, and `export` commands. A page with no scripts
   that still walks through a stack declares it:
   `:::prerequisites{environment="uc-aws/compose.yaml"}`.
+- **Below the start commands**, wherever they land, the emitter places the
+  stack's committed diagram (`envs/<name>/diagram.png`, upgraded to the
+  interactive canvas). Don't embed it by hand next to a start step or marker.
+  The box itself lists no services: what the stack runs belongs in the
+  diagram, not in the prerequisites.
 - **A stack with setup beyond `docker compose up`** (hosted resources to
   create, secrets to supply) gets `:::deployment{key="uc-hybrid/compose.yaml"}`,
   an empty container that renders the whole deployment as a numbered list:
@@ -274,9 +281,9 @@ how-to's prerequisite). So:
 - Commands pin exactly: `uv run --with unitycatalog-client==0.6.0`.
 - Version-specific facts go in R01's known issues (with **Affects**), R02's
   matrix, version tables, and upstream links pinned to `blob/vX`.
-- Absences are release-sensitive ("the server has no groups"). List them in
-  R01's *Not in Unity Catalog OSS* or known issues and link there, and skip
-  "yet" and "currently". If a page has to state one itself, add it to the
+- Absences are release-sensitive ("the server has no groups"). Record them in
+  the private R01's *Not in Unity Catalog OSS* or known issues, never link
+  there, and skip "yet" and "currently". If a page has to state one itself, add it to the
   [release-sensitive pages](../docs/design/docs-versioning.md#release-sensitive-pages).
 
 `docsnip check` fails on a pin that disagrees with the manifest and warns on

@@ -237,8 +237,7 @@ volume.
 
 The CLI's `credential` and `external_location` commands take the flags
 `--name`, `--aws_iam_role_arn`, `--url`, `--credential_name`, `--comment`,
-`--new_name`, and `--force`. Their `--help` pages crash; see
-[Known issues](../../reference/features-and-limitations/index.md#known-issues).
+`--new_name`, and `--force`. Their `--help` pages crash.
 
 **Required privileges:** ownership of the metastore, or ownership of (or
 `CREATE EXTERNAL LOCATION` on) the credential. For an external location:
@@ -312,8 +311,9 @@ in S3 and the IAM roles stay.
 
 :::danger
 Always delete the location before its credential. Force-deleting a credential
-that a location still uses breaks every list of external locations; see
-[Known issues](../../reference/features-and-limitations/index.md#known-issues) to recover.
+that a location still uses breaks every list of external locations. To
+recover, force-delete the location by name:
+`uc external_location delete --name <name> --force true`.
 :::
 
 **Required privileges:** ownership of the object or of the metastore.

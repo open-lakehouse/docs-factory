@@ -406,8 +406,8 @@ def _start_services(meta: ScriptMeta) -> str | None:
     compose.start()
     _PULLED.add(key)
     _ACTIVE[key] = compose
-    # A generated environment fronts the server with its gateway, and its plan
-    # says where a host client reaches it.
+    # A generated environment's plan says where a host client reaches the
+    # server, through a gateway or not.
     plan = compose_path.parent / "plan.json"
     if plan.is_file():
         return json.loads(plan.read_text())["client"]["host"]["UNITY_CATALOG_URL"]

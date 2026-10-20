@@ -77,22 +77,15 @@ test("a keyed marker resolves any registry stack, even on a page without one", (
   expect(() => keyed("uc/nope.yaml")).toThrow("uc/nope.yaml is not in envs/environments.yml");
 });
 
-test("the service list links the published site", () => {
-  const calls = [];
-  const withServices = environmentResolver({
+test("the diagrams' folder reaches the plugin", () => {
+  const withDiagrams = environmentResolver({
     entries: [entry("content/uc/how-to/005-s3/snippets/s3.py")],
     registry: { "uc/compose.yaml": { title: "UC", ports: [8080], clientEnv: {} } },
     sites: [SITE],
     readPage: () => "---\ntitle: Run a local server\n---\n",
-    projectionFor: () => ({
-      serviceLinks: (key, options) => {
-        calls.push([key, options]);
-        return [{ id: "rustfs", title: "RustFS", href: null, summary: null, url: null }];
-      },
-    }),
+    envsDir: "/repo/envs",
   });
-  const { services } = withServices(...page("uc/how-to/005-s3"));
-  expect(services.map((s) => s.id)).toEqual(["rustfs"]);
-  expect(calls).toEqual([["uc/compose.yaml", { base: "https://d.io", route: "/how-to/s3" }]]);
-  expect(resolve(...page("uc/how-to/005-s3")).services).toEqual([]);
+  expect(withDiagrams(...page("uc/how-to/005-s3")).envsDir).toBe("/repo/envs");
+  expect(withDiagrams(...page("uc/how-to/007-plain")).envsDir).toBe("/repo/envs");
+  expect(resolve(...page("uc/how-to/005-s3")).envsDir).toBeNull();
 });

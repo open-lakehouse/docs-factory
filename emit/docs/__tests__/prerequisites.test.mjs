@@ -2,7 +2,7 @@
 // bullet; the start commands land in an authored `:::environment`, else as a
 // tutorial's first step, else a how-to's box gets a bullet linking the guide.
 import { expect, test } from "bun:test";
-import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -106,32 +106,28 @@ const COMMANDS = [
   "export AWS_ALLOW_HTTP=true",
 ].join("\n");
 
-const SERVICES = [
-  {
-    title: "Unity Catalog (OSS)",
-    href: "/explanation/what-is-unity-catalog",
-    summary: "The open catalog.",
-    url: "http://localhost:8080/api/2.1/unity-catalog",
-  },
-  { title: "RustFS", href: "https://rustfs.com", summary: "S3-compatible storage.", url: null },
-  { title: "Envoy", href: null, summary: null, url: null },
-];
-
 async function render(
   target,
   page,
-  { environment = ENV, diataxis = "how-to", resolve = RESOLVE, services = [] } = {},
+  { environment = ENV, diataxis = "how-to", resolve = RESOLVE, diagram = false } = {},
 ) {
   const dir = mkdtempSync(join(tmpdir(), "prereqs-"));
   try {
-    const inputPath = join(dir, "index.md");
+    const pageDir = join(dir, "content", "how-to", "page");
+    mkdirSync(pageDir, { recursive: true });
+    const inputPath = join(pageDir, "index.md");
     writeFileSync(inputPath, page);
+    const envsDir = join(dir, "envs");
+    if (diagram) {
+      mkdirSync(join(envsDir, "uc"), { recursive: true });
+      writeFileSync(join(envsDir, "uc", "diagram.png"), "");
+    }
     const { output } = await emitOne({
       inputPath,
       target,
       likec4OutDir: join(dir, "likec4"),
       plugins: [
-        [remarkPrerequisitesEnv, { environment, guide: GUIDE, diataxis, resolve, services }],
+        [remarkPrerequisitesEnv, { environment, guide: GUIDE, diataxis, resolve, envsDir }],
       ],
     });
     return output;
@@ -206,34 +202,33 @@ test("a keyed :::environment naming no registry stack fails the emit", async () 
   await expect(render(site(), page)).rejects.toThrow("uc/nope.yaml is not in");
 });
 
-const SERVICE_LINES = [
-  "  - [Unity Catalog (OSS)](/explanation/what-is-unity-catalog), at `http://localhost:8080/api/2.1/unity-catalog`: The open catalog.",
-  "  - [RustFS](https://rustfs.com): S3-compatible storage.",
-  "  - Envoy",
-].join("\n");
+// The emitter's image pass would ship a real PNG; the plugin only places it.
+const raw = { ...mdTwin, constructs: { ...mdTwin.constructs, likec4: undefined } };
+const DIAGRAM =
+  '![The services UC with S3 runs and how clients reach them](../../../envs/uc/diagram.png "trestle=uc")';
 
-test("how-to: the environment's services nest under the pointer", async () => {
-  const out = await render(site(), HOWTO, { services: SERVICES });
-  expect(out).toContain(
-    `- UC with S3, running: [Run a local server](/how-to/run-local-server#with-s3).\n${SERVICE_LINES}\n- Python 3.11 or later.`,
-  );
+test("tutorial: the stack's diagram sits right below its start commands", async () => {
+  const out = await render(raw, TUTORIAL, { diataxis: "tutorial", diagram: true });
+  const commands = out.indexOf(COMMANDS);
+  expect(commands).toBeGreaterThan(-1);
+  expect(out.indexOf(DIAGRAM)).toBeGreaterThan(commands);
+  expect(out.indexOf(DIAGRAM)).toBeLessThan(out.indexOf("Stop it later"));
 });
 
-test("tutorial: the services get a bullet of their own", async () => {
-  const out = await render(site(), TUTORIAL, { diataxis: "tutorial", services: SERVICES });
-  expect(out).toContain(
-    `${DOCKER}\n- UC with S3, which this page starts:\n${SERVICE_LINES}\n- Python 3.11 or later.`,
-  );
+test("a keyed :::environment gets its stack's diagram too", async () => {
+  const minimal = registryEnvironment("uc/compose.yaml", BUNDLE);
+  const out = await render(raw, KEYED, { environment: minimal, diagram: true });
+  expect(out).toContain(DIAGRAM.replace("UC with S3", "UC"));
+  expect(out).toContain(DIAGRAM);
 });
 
-test("md-twin: the twin carries the same service list", async () => {
-  const out = await render(mdTwin, HOWTO, { services: SERVICES });
-  expect(out).toContain("[Unity Catalog (OSS)](/explanation/what-is-unity-catalog)");
-  expect(out).toContain("`http://localhost:8080/api/2.1/unity-catalog`: The open catalog.");
-  expect(out).toContain("[RustFS](https://rustfs.com): S3-compatible storage.");
+test("no diagram on disk, just the commands", async () => {
+  const out = await render(raw, TUTORIAL, { diataxis: "tutorial" });
+  expect(out).toContain(COMMANDS);
+  expect(out).not.toContain("diagram.png");
 });
 
-test("no services, no service list", async () => {
+test("the box lists no services, only Docker and the authored bullets", async () => {
   const out = await render(site(), TUTORIAL, { diataxis: "tutorial" });
   expect(out).not.toContain("which this page starts");
 });

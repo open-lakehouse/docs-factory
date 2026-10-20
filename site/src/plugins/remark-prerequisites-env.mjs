@@ -17,10 +17,11 @@
  * The commands are plain Markdown, so the site, the review app, and the .md
  * twin render them alike. Both emit targets and the review app run this.
  *
- * Under the environment's bullet the box lists what the stack runs: each
- * public service (`services`, `[{ title, href, summary, url }]`, hrefs already
- * resolved for this target) with its one-line summary and host URL. A how-to
- * nests them under its pointer; any other page gets a bullet of its own.
+ * Below the commands goes the stack's committed topology,
+ * `<envsDir>/<folder>/diagram.png` titled `trestle=<folder>`, as an image
+ * relative to the page, so the image plugins that run later ship the PNG and
+ * upgrade it to the interactive diagram. Without `envsDir`, or a folder with no
+ * diagram, the commands stand alone.
  *
  * `:::deployment{key="uc-hybrid/compose.yaml"}` is replaced by that stack's
  * deployment (content-core deploymentSteps) as an ordered list: download the
@@ -33,8 +34,10 @@
  * registryEnvironment for this site (throws on an unknown key), or null, which
  * drops keyed markers too.
  */
+import { existsSync } from "node:fs";
+import { dirname, join, relative, sep } from "node:path";
 import { fromMarkdown } from "mdast-util-from-markdown";
-import { deploymentSteps } from "../content-core/environment.mjs";
+import { composeParts, deploymentSteps } from "../content-core/environment.mjs";
 
 const text = (value) => ({ type: "text", value });
 const code = (value) => ({ type: "inlineCode", value });
@@ -66,32 +69,29 @@ function pointerItem(env, guide) {
     : listItem(text(`${env.title}, running locally.`));
 }
 
-function serviceItem({ title, href, summary, url }) {
-  return listItem(
-    href ? link(href, title) : text(title),
-    ...(url ? [text(", at "), code(url)] : []),
-    ...(summary ? [text(`: ${summary}`)] : []),
-  );
+/** The stack's diagram as an image relative to `pagePath`, or none. */
+function diagramNodes(env, { envsDir, pagePath }) {
+  if (!envsDir || !pagePath) return [];
+  const { dir } = composeParts(env.key);
+  const png = join(envsDir, dir, "diagram.png");
+  if (!existsSync(png)) return [];
+  const url = relative(dirname(pagePath), png).split(sep).join("/");
+  const image = {
+    type: "image",
+    url,
+    alt: `The services ${env.title} runs and how clients reach them`,
+    title: `trestle=${dir}`,
+  };
+  return [paragraph(image)];
 }
 
-/** `item` with the services nested under it, as a tight sub-list. */
-function withServices(item, services) {
-  if (!services.length) return item;
-  item.children.push({
-    type: "list",
-    ordered: false,
-    spread: false,
-    children: services.map(serviceItem),
-  });
-  return item;
-}
-
-function startNodes(env) {
+function startNodes(env, where) {
   return [
     paragraph(
       text(`Download the docs' environment and start ${env.title}. Already running it? Skip this.`),
     ),
     commandsBlock(env),
+    ...diagramNodes(env, where),
     paragraph(
       text("Stop it later with "),
       code(env.stop),
@@ -182,51 +182,54 @@ function findDirective(node, name) {
   return null;
 }
 
-function insertTutorialStep(tree, env) {
+function insertTutorialStep(tree, env, where) {
   const journey = findDirective(tree, "journey");
   if (journey) {
     const heading = { type: "heading", depth: 3, children: [text(STEP_TITLE)] };
-    journey.children.unshift(heading, ...startNodes(env));
+    journey.children.unshift(heading, ...startNodes(env, where));
     return;
   }
   const heading = { type: "heading", depth: 2, children: [text(STEP_TITLE)] };
   const first = tree.children.findIndex((n) => n.type === "heading" && n.depth === 2);
-  tree.children.splice(first === -1 ? tree.children.length : first, 0, heading, ...startNodes(env));
+  tree.children.splice(
+    first === -1 ? tree.children.length : first,
+    0,
+    heading,
+    ...startNodes(env, where),
+  );
 }
 
 /**
  * @param {{ environment: object | null, guide?: { href: string, title: string } | null,
  *   diataxis?: string | null, resolve?: ((key: string) => object) | null,
- *   services?: { title: string, href: string | null, summary: string | null,
- *     url: string | null }[] }} options
+ *   envsDir?: string | null }} options
  */
 export default function remarkPrerequisitesEnv({
   environment,
   guide = null,
   diataxis = null,
   resolve = null,
-  services = [],
+  envsDir = null,
 }) {
-  return (tree) => {
+  return (tree, file) => {
+    const where = { envsDir, pagePath: file?.history?.[0] ?? file?.path ?? null };
     replaceDeployments(tree, resolve);
     const nodesFor = (key) => {
-      if (key) return resolve ? [commandsBlock(resolve(key))] : [];
-      return environment ? startNodes(environment) : [];
+      if (key) {
+        if (!resolve) return [];
+        const env = resolve(key);
+        return [commandsBlock(env), ...diagramNodes(env, where)];
+      }
+      return environment ? startNodes(environment, where) : [];
     };
     const placed = replaceMarkers(tree, nodesFor);
     if (!environment) return;
-    if (!placed && diataxis === "tutorial") insertTutorialStep(tree, environment);
+    if (!placed && diataxis === "tutorial") insertTutorialStep(tree, environment, where);
 
     const box = tree.children.find(isDirective("prerequisites"));
     if (!box) return;
     const items = [dockerItem()];
-    if (!placed && diataxis !== "tutorial") {
-      items.push(withServices(pointerItem(environment, guide), services));
-    } else if (services.length) {
-      items.push(
-        withServices(listItem(text(`${environment.title}, which this page starts:`)), services),
-      );
-    }
+    if (!placed && diataxis !== "tutorial") items.push(pointerItem(environment, guide));
     const list = box.children.find((n) => n.type === "list" && !n.ordered);
     if (list) list.children.unshift(...items);
     else box.children.push({ type: "list", ordered: false, spread: false, children: items });

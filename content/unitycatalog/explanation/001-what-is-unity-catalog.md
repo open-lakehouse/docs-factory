@@ -35,17 +35,14 @@ those questions has long been the job of the [catalog](model:lakehouse.catalog).
 In a traditional database the catalog is built in and you rarely notice it. The
 [lakehouse architecture] took that monolith apart: storage and compute became
 separate systems, and open table formats such as Delta Lake and Apache Iceberg (TM)
-took over responsibilities like schema enforcement and ACID transactions. In early
-lakehouses, which were mostly large analytical pipelines, the catalog almost
-disappeared. Looking up a table often meant passing a file path.
+took over responsibilities like schema enforcement and ACID transactions.
 
-That worked while one team owned both the pipelines and the files. As
-lakehouses spread, many engines, teams, and AI applications came to share the
-same storage, and file paths stopped being enough. Readers need to *find* data
+As lakehouses spread, many engines, teams, and AI applications came to share the
+same storage, and passing file paths around stopped being enough. Readers need to *find* data
 by name. Administrators need to decide who may read or change it without
 handing out storage keys. And the assets worth governing are no longer only
 tables, but also raw files, functions, and machine-learning models. Unity Catalog
-brings the catalog back as a shared, open service that does these jobs for all
+provides the catalog as a shared, open service that does these jobs for all
 of them.
 
 ## What Unity Catalog OSS manages
@@ -107,9 +104,7 @@ part of a secure deployment.
 Databricks created Unity Catalog and open sourced it in 2024. Databricks Unity
 Catalog is a managed service with the same API heritage and a larger feature
 set, so a Databricks guide is not automatically a guide for the open source
-server. These docs describe only the open source server; for its exact scope
-in each release, see
-[Features, scope, and limitations](../reference/features-and-limitations/index.md).
+server. These docs describe only the open source server.
 
 ## Next steps
 

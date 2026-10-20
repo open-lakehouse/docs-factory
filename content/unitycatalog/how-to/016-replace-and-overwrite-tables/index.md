@@ -212,9 +212,7 @@ with `TBLPROPERTIES ('delta.enableDeletionVectors' = 'false')` commits, and
 the table has deletion vectors off.
 
 These statements are verified with Spark. DuckDB can't create a table from a
-query, and the `deltalake`-based clients can't open catalog-managed tables; see
-[Clients and engines](../../reference/features-and-limitations/index.md#clients-and-engines)
-for their errors.
+query, and the `deltalake`-based clients can't open catalog-managed tables.
 
 ## Required privileges
 

@@ -150,7 +150,7 @@ const ENV = {
   }),
 };
 
-async function render(target, base) {
+async function render(target) {
   const dir = mkdtempSync(join(tmpdir(), "visibility-"));
   try {
     const inputPath = join(dir, "index.md");
@@ -169,17 +169,7 @@ async function render(target, base) {
       likec4OutDir: join(dir, "likec4"),
       plugins: [
         [remarkModelLinks, { resolve: (id) => resolve(id, { route: "/how-to/use-alpha" }) }],
-        [
-          remarkPrerequisitesEnv,
-          {
-            environment: ENV,
-            diataxis: "how-to",
-            services: projection.serviceLinks("p/compose.yaml", {
-              base,
-              route: "/how-to/use-alpha",
-            }),
-          },
-        ],
+        [remarkPrerequisitesEnv, { environment: ENV, diataxis: "how-to" }],
       ],
     });
     return output;
@@ -216,8 +206,8 @@ async function payloads() {
     { title: "Example", summary: "Docs.", origin: ORIGIN, concepts: true },
   );
   return {
-    site: await render(docsSiteTarget({ assetBase: "/a" }), ""),
-    twin: await render(mdTwin, ORIGIN),
+    site: await render(docsSiteTarget({ assetBase: "/a" })),
+    twin: await render(mdTwin),
     twinFrontmatter: environmentFrontmatter(
       ENV,
       `${ORIGIN}/env/environments.json`,

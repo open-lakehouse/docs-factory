@@ -76,8 +76,9 @@ Also read:
   and their `requires`.
 - `content/<project>/release.yml`, for the pins. Never type a version by hand.
 - `envs/environments.yml`, for the stack's registry key, title, and `guide`.
-- R01 (`content/unitycatalog/reference/001-features-and-limitations`), for
-  known issues and absences the page should link rather than restate.
+- R01 (`content/unitycatalog/reference/001-features-and-limitations`), the
+  private record of known issues and absences: which ones block this page's
+  task and must be stated inline. Never link it.
 - The neighbors in `nav.yml` and the pages that `explain`'s `citedBy` lists.
 
 The query answers are internal: they can name drafts and non-public elements.

@@ -12,7 +12,7 @@ tracked journeys (`content/<project>/compatibility.yml`) share one vocabulary:
 - Journeys name the asset they act on and the contracts their participants
   need, so model edges carry CI evidence.
 - The joined graph reaches readers and agents as static, grounded context:
-  environment service lists, JSON-LD, `concepts.json`, and `docsnip query`.
+  environment diagrams, JSON-LD, `concepts.json`, and `docsnip query`.
 
 It builds on [ADR-0001](../decisions/ADR-0001-model-driven-information-system.md),
 [`model-leverage.md`](./model-leverage.md), and architecture ADRs
@@ -373,9 +373,11 @@ raw `model.json` stays internal.
   rebuilds every record from allow-listed fields, since the inputs carry
   internal metadata and script paths. A `model:` link to a non-public element
   unwraps to its label.
-- **"What's in this environment."** `:::prerequisites` lists the environment's
-  public services: a `model:` link, a one-line role, and its URL. The `.md` twin
-  carries the same list.
+- **"What's in this environment."** The environment's diagram sits right below
+  its start commands (remark-prerequisites-env places
+  `envs/<name>/diagram.png`), so the reader sees what the stack runs where they
+  start it. The `:::prerequisites` box names no services. The `.md` twin's
+  frontmatter keeps the public service ids.
 - **JSON-LD** (`docPageHead`, `site/src/content-core/head.mjs`): terms are
   `DefinedTerm`s (`SoftwareApplication` for implementations) with `@id`
   `<origin>/concepts.json#<id>`. A how-to or tutorial that runs an environment
@@ -386,7 +388,7 @@ raw `model.json` stays internal.
   journeys. An edge is `verified` only through a working proof on a ready page of
   that site.
 - A `--drafts` preview keeps linking draft explainers, but every public payload
-  (service lists, JSON-LD, `concepts.json`), and the review app's Head tab, uses
+  (twin service ids, JSON-LD, `concepts.json`), and the review app's Head tab, uses
   the ready-only projection.
 - **Environment diagrams.** A page embeds an environment's topology as
   `![alt](…/envs/<name>/diagram.png "trestle=<name>")`, or a snapshot exported

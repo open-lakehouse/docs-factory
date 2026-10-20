@@ -25,8 +25,10 @@ things by eye.
   backing it is a Should-fix. Something contradicting it is a Blocker.
 - A tab whose interface has no claim for the journey the section shows: the
   compat matrix won't know this page proves it.
-- A version-sensitive fact (an absence, a quirk, an error string) stated on the
-  page that R01 also owns, or should own: suggest linking R01 instead.
+- A version-sensitive fact (an absence, a quirk, an error string) stated on a
+  page whose task it doesn't block: suggest recording it in R01 and cutting
+  it. A link to R01 from a page that isn't private is a Blocker: R01 is
+  private and never ships.
 - A code block that isn't a `file=` fence, other than the pinned
   session command.
 - Example data: emails outside `example.com`, real-looking account ids or ARNs

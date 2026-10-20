@@ -902,10 +902,13 @@ def _header(iface: Interface, matrix: Matrix) -> str:
 
 def _evidence_link(
     ev: Evidence, matrix: Matrix, embed: Path, content_root: Path
-) -> str:
+) -> str | None:
     page, _ = _source_page(ev.source, content_root / matrix.project)
     if page is None:
         return ev.source
+    # A private page never ships, so only another private page may link it.
+    if page_status(page) == "private" and page_status(embed) != "private":
+        return None
     return _link(page, ev.source.partition("#")[2] or None, embed, content_root)
 
 

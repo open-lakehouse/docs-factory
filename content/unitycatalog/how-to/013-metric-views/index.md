@@ -62,7 +62,7 @@ customers:
 
 Each dimension and measure takes only `name` and `expr`. Spark rejects
 `comment`, `display_name`, `format`, and `synonyms`, as well as `joins` and
-any `version` but `"0.1"`; see [Known issues](../../reference/features-and-limitations/index.md#clients-and-engines).
+any `version` but `"0.1"`.
 To join tables, write the join in the `source` query, as shown in
 [Compute over a query](#compute-over-a-query).
 
@@ -206,4 +206,3 @@ Dropping a metric view leaves its source tables in place:
 
 - [Define and query your first metric view](../../tutorials/first-metric-view/index.md)
 - [Configure Spark to use Unity Catalog](../configure-spark/index.md)
-- [Features and limitations](../../reference/features-and-limitations/index.md)

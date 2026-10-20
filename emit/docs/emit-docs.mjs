@@ -112,6 +112,7 @@ import {
 } from "./sync.mjs";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const ENVS_DIR = join(REPO_ROOT, "envs");
 const PLUGIN_DIR = join(REPO_ROOT, "site", "src", "plugins");
 
 // The site page's engine reports become directives the shell renders; the twin
@@ -385,7 +386,7 @@ export async function emitDocs({ site, drafts = false }) {
           [remarkStripSourceMeta],
           [
             remarkPrerequisitesEnv,
-            { environment, guide: guideAt(""), diataxis, resolve, services: servicesAt("") },
+            { environment, guide: guideAt(""), diataxis, resolve, envsDir: ENVS_DIR },
           ],
         ],
       });
@@ -445,7 +446,7 @@ export async function emitDocs({ site, drafts = false }) {
               guide: guideAt(origin),
               diataxis,
               resolve,
-              services: servicesAt(origin),
+              envsDir: ENVS_DIR,
             },
           ],
         ],

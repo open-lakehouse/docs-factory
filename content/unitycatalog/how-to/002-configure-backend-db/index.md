@@ -153,5 +153,3 @@ to elsewhere stay where they are, but the server no longer knows about them.
   other variants of the local environment.
 - [Manage catalogs and schemas](../manage-catalogs-and-schemas/index.md)
   to fill the new metastore.
-- [Features and limitations](../../reference/features-and-limitations/index.md)
-  lists the server's deployment options.

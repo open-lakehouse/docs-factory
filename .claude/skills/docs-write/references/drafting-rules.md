@@ -28,8 +28,8 @@ mechanical subset is enforced by `uv run docsnip prose`.
   number marks a boundary only ("requires 0.4.0 or later"). Never write "In
   0.7.0…", "currently", or "not yet".
 - Lead with what works. A limitation goes inline only when it blocks this
-  page's task, stated as the condition then the action. Everything else goes in
-  R01's known issues, and the page links there.
+  page's task, stated as the condition then the action. Everything else is
+  recorded in R01's known issues, a private page the draft never links.
 - Name things as the model does. When a name is overloaded (the Unity Catalog
   specification versus the OSS server), say which one.
 

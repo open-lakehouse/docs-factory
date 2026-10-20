@@ -2091,6 +2091,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2195,6 +2196,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2361,6 +2363,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2505,6 +2508,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2549,6 +2553,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2613,6 +2618,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2657,6 +2663,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2701,6 +2708,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [
@@ -2745,6 +2753,7 @@
       "request": null,
       "family": "managed",
       "asset": "lakehouse.table",
+      "feature": null,
       "requires": {
         "client": {
           "consumes": [

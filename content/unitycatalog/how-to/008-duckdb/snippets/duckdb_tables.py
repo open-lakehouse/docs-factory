@@ -18,6 +18,9 @@
 #   { journey = "write.append", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
 #   { journey = "read.scan", region = "query", note = "through Unity Catalog" },
 #   { journey = "catalog.unity", region = "attach", api = "ATTACH … (TYPE unity_catalog)", note = "nightly `unity_catalog`" },
+#   { journey = "catalog-managed.read", region = "query", note = "through Unity Catalog" },
+#   { journey = "catalog-managed.write", region = "append", api = "INSERT INTO", note = "through Unity Catalog, column mapping off" },
+#   { journey = "column-mapping.write", fails = "DuckDB appends to column-mapped tables now", anchor = "append-rows", note = "rows read back as NULL" },
 # ]
 # ///
 """Read and append to a Unity Catalog managed Delta table from DuckDB.

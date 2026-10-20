@@ -25,6 +25,12 @@
 #   { journey = "history.list", region = "change-rows", api = "DESCRIBE HISTORY", note = "through Unity Catalog" },
 #   { journey = "read.version", region = "time-travel", api = "VERSION AS OF", note = "through Unity Catalog" },
 #   { journey = "catalog.unity", region = "create-table", note = "catalog-managed" },
+#   { journey = "catalog-managed.read", region = "write-rows", note = "through Unity Catalog" },
+#   { journey = "catalog-managed.write", region = "write-rows", note = "through Unity Catalog" },
+#   { journey = "row-tracking.write", region = "write-rows", note = "through Unity Catalog" },
+#   { journey = "in-commit-timestamp.write", region = "write-rows", note = "through Unity Catalog" },
+#   { journey = "column-mapping.read", region = "write-rows", note = "through Unity Catalog" },
+#   { journey = "column-mapping.write", region = "write-rows", note = "through Unity Catalog" },
 # ]
 # claims."delta:spark-python" = [
 #   { journey = "catalog.unity", region = "session", note = "session config" },
@@ -146,7 +152,19 @@ assert detail.location.startswith(f"file:{DOCS_ROOT}/managed/__unitystorage/"), 
     detail.location
 )
 props = dict(spark.sql("SHOW TBLPROPERTIES sales.orders").collect())
-assert props["delta.feature.catalogManaged"] == "supported", props
+# A managed table turns these on at create, so every later step writes to them.
+for feature in (
+    "catalogManaged",
+    "deletionVectors",
+    "rowTracking",
+    "inCommitTimestamp",
+    "v2Checkpoint",
+    "columnMapping",
+):
+    assert props.get(f"delta.feature.{feature}") == "supported", (feature, props)
+assert props["delta.columnMapping.mode"] == "name", props
+row_ids = spark.sql("SELECT _metadata.row_id FROM sales.orders").collect()
+assert sorted(r.row_id for r in row_ids) == [0, 1, 2], row_ids
 assert props.get("io.unitycatalog.tableId"), props
 
 # --8<-- [start:change-rows]

@@ -73,8 +73,8 @@ Baseline at this commit (cells, per table):
 
 | Table | ✓ | ✗ | docs | — |
 | --- | --- | --- | --- | --- |
-| Delta features-read | 4 | 1 | 8 | 27 |
-| Delta features-write | 5 | 3 | 21 | 63 |
+| Delta features-read | 3 | 1 | 8 | 28 |
+| Delta features-write | 5 | 4 | 21 | 62 |
 | UC iceberg-rest | 32 | 8 | — | 45 |
 | UC iceberg-evolution | — | — | — | 65 |
 | UC iceberg-v3 | — | — | — | 40 |
@@ -82,9 +82,12 @@ Baseline at this commit (cells, per table):
 
 The first Delta ✓ cells come from the UC managed-table tutorial, which now
 asserts the six features a managed table enables, the `name` mapping mode,
-and row ids. They also come from the DuckDB how-to, which reads and appends
-to that table. Deletion vectors and v2 checkpoints are enabled there but not
-exercised: the tutorial's DELETE drops a whole file, and four commits never
+and row ids. The DuckDB how-to adds DuckDB's catalog-managed read and append,
+on a table with column mapping off. Its negative case makes DuckDB's
+column-mapping write a ✗: the commit succeeds, but the rows read back as NULL.
+Whether DuckDB reads a column-mapped table that Spark wrote is open (backlog
+item 1). Deletion vectors and v2 checkpoints are enabled on the tutorial's
+table but not exercised: its DELETE drops a whole file, and four commits never
 checkpoint.
 
 ## 3. icebergmatrix → our journeys

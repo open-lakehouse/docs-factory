@@ -4914,7 +4914,7 @@
       "feature": {
         "spec": "icebergSpec",
         "name": "statistics",
-        "since": null
+        "since": "v1"
       },
       "requires": {
         "client": {

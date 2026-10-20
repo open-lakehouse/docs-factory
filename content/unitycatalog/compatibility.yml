@@ -315,7 +315,7 @@ journeys:
     family: iceberg
     title: Use Iceberg column statistics
     summary: Write and read column statistics or Puffin statistics files that prune scans.
-    feature: { spec: icebergSpec, name: statistics }
+    feature: { spec: icebergSpec, name: statistics, since: v1 }
   iceberg.v3-create:
     family: iceberg
     title: Create a v3 Iceberg table

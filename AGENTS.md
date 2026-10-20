@@ -196,9 +196,11 @@ environment registry.
    pages gate CI, so only their claims render. See `content/README.md`
    "Compatibility claims".
 7. Lead with what works. A page states one limitation inline only when it
-   blocks that page's task. Version quirks and their error strings go in R01's
-   "Known issues" section (`reference/features-and-limitations`), and pages
-   link there. Pages don't restate the release: it lives in
+   blocks that page's task. Version quirks and their error strings are
+   recorded in R01's "Known issues" section
+   (`reference/features-and-limitations`), a `private` page: the internal
+   record a release review reads, which no published page links. Pages don't
+   restate the release: it lives in
    `content/unitycatalog/release.yml` and the environment title, and
    `just bump-uc` moves every pin (see `content/README.md` "Versions").
    A bump isn't done until the

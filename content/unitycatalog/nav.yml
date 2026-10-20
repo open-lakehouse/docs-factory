@@ -20,8 +20,6 @@ nav:
         id: T01
         label: Create your first catalog
       - page: how-to/run-local-server
-      - page: reference/features-and-limitations
-        id: R01
       - planned: E12
         title: Coming from Databricks Unity Catalog
 
@@ -239,6 +237,7 @@ nav:
   - section: Reference
     items:
       - page: reference/features-and-limitations
+        id: R01
       - page: reference/engine-support
       - planned: R12
         title: CLI command reference

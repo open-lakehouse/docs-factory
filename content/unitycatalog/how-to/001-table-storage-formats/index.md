@@ -122,8 +122,7 @@ These readers infer column types from the files. The catalog's columns are what
 other users see, so keep the files consistent with them.
 
 Polars `Catalog.scan_table`, the DuckDB `unity_catalog` extension, and
-`uc table read` can't read these tables by name. See
-[Known issues](../../reference/features-and-limitations/index.md#known-issues).
+`uc table read` can't read these tables by name.
 On cloud storage, readers also need credentials; see
 [Credential vending](../../explanation/credential-vending/index.md).
 

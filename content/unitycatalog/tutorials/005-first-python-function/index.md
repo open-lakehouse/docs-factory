@@ -169,6 +169,3 @@ governed, and the caller runs them.
 - The upstream [AI quickstart](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/docs/ai/quickstart.md)
   covers the framework integrations that turn catalog functions into agent
   tools, such as `unitycatalog-langchain` and `unitycatalog-openai`.
-- [Features, scope, and limitations](../../reference/features-and-limitations/index.md)
-  covers what the server supports for functions, such as delete-and-recreate
-  instead of update.

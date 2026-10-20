@@ -40,8 +40,7 @@ reads and appends:
 | DuckDB with the `unity_catalog` extension | Append and read. It can't create, change, or drop tables. |
 | Polars, Daft, pandas (`deltalake`) | Nothing: they can't load the table. |
 
-[Known issues](../../reference/features-and-limitations/index.md#known-issues)
-lists the errors the others return. The tested matrix for every client is in
+The tested matrix for every client is in
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md#what-clients-must-support).
 
 ## Set up the client
@@ -160,9 +159,7 @@ Update and delete rows in Spark:
 ```python file=./snippets/managed_tables.py start=start:change-rows end=end:change-rows
 ```
 
-DuckDB can't update or delete rows; see
-[Known issues](../../reference/features-and-limitations/index.md#known-issues)
-for its errors.
+DuckDB can't update or delete rows.
 
 The server accepts one commit for each version, so when two writers race for
 the same version, one of them fails. See
@@ -250,8 +247,7 @@ default. Keep a copy of any data you need before you drop the table.
 :::
 
 The server deletes the files only if it can write to them. With the upstream
-image on Linux and a bind-mounted folder, it can't; see the
-[Server known issues](../../reference/features-and-limitations/index.md#server).
+image on Linux and a bind-mounted folder, it can't.
 
 ## Required privileges
 

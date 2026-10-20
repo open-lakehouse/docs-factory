@@ -119,7 +119,7 @@ file, Blockers first:
 
 ### Blockers
 - Line 88 [a facts]: "the server deletes managed files immediately", but
-  volumes.py asserts they survive the cleanup delay. State the delay, link R01.
+  volumes.py asserts they survive the cleanup delay. State the delay.
 
 ### Should-fix
 - Line 41 [c procedure]: "configure the bucket" is not a step; name the policy

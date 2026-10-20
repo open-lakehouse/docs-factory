@@ -74,7 +74,8 @@ sites.
 - Set `status: ready` without an approval in the review app, or on a
   `private` page.
 - Name the release in prose ("In 0.7.0 the server…") or write "currently" or
-  "not yet". Absences and quirks go in R01, and the page links there.
+  "not yet". Absences and quirks are recorded in R01, which is private: never
+  link it from a page that isn't.
 - Put seeding, `main()`, or asserts inside a region. Only the `seed_dataset(...)`
   line may sit inside, for pages that read pre-existing data.
 - Invent a flag, default, limit, error string, or console step. Leave an open

@@ -113,8 +113,7 @@ participant holds the database password and the bucket key:
   key in `secrets.env`. (The local pattern's RustFS gets vended credentials
   only because its stack imitates AWS.) Clients that rely on vended
   credentials don't work, and neither does managed storage: credential
-  requests for those objects fail with `FAILED_PRECONDITION` (see
-  [Known issues](../../reference/features-and-limitations/index.md#server)).
+  requests for those objects fail with `FAILED_PRECONDITION`.
 - **Every machine holds the secrets.** Each participant's `secrets.env` holds
   the database host, user, and password and the bucket's endpoint and key.
 
@@ -134,9 +133,7 @@ storage identity stay in the cloud with the server, and clients hold only
 their own token and the short-lived credentials the server vends. The example
 here uses Amazon S3, where the server vends by assuming an IAM role. The server
 also vends for Azure Data Lake Storage and Google Cloud Storage; see
-[How the server mints a credential](../credential-vending/index.md#how-the-server-mints-a-credential)
-and
-[Storage and credentials](../../reference/features-and-limitations/index.md#storage-and-credentials).
+[How the server mints a credential](../credential-vending/index.md#how-the-server-mints-a-credential).
 Moving the hybrid pattern's server into the cloud doesn't by itself take the
 bucket keys off clients: the server still has no IAM role to assume for a
 bucket on R2 or Tigris.
@@ -148,8 +145,7 @@ before anyone else reaches it: see
 [Ownership and privileges](../uc-basics/index.md#ownership-and-privileges),
 the bootstrap administrator in
 [Principals and users](../uc-basics/index.md#principals-and-users), and the
-`server.allowed-issuers` and `server.audiences` settings in
-[Identity and access](../../reference/features-and-limitations/index.md#identity-and-access).
+server's `server.allowed-issuers` and `server.audiences` settings.
 
 The server still keeps no catalog state of its own, but it does keep files
 that every replica needs. On start it creates its token-signing keys

@@ -162,8 +162,7 @@ The example script checks this rejection in `_check_reserved_prefix`.
 Check each root against `external_location list` before you use it. With
 authorization enabled, the server rejects a root outside every external
 location. With authorization disabled, as on the local server, it accepts the
-root, and credential requests for its objects fail later; see
-[Known issues](../../reference/features-and-limitations/index.md#known-issues).
+root, and credential requests for its objects fail later.
 :::
 
 ## Delete a catalog with managed storage

@@ -22,7 +22,7 @@ release-sensitive pages. Read it first. This skill sequences it and doesn't
 restate it.
 
 Aim for fewer release-dependent sentences, not just correct ones. When a claim
-has to change, check whether it belongs in R01 and the page should link there.
+has to change, check whether it belongs only in R01 and the page can drop it.
 
 ## 1. Bump
 
@@ -90,7 +90,8 @@ evidence doesn't settle it. Leave it for a reviewer, and don't guess.
 ## 5. Fix
 
 - Edit claims that changed. Where a page restated an absence that R01 already
-  lists, replace the restatement with a link to R01.
+  lists and the page's task doesn't need it, cut the restatement. R01 is
+  private, so never link it.
 - Update R01's known issues as the design doc describes (*Fixed in* note,
   **Affects** column).
 - `uv run docsnip compat --fix` if a script's claims changed.

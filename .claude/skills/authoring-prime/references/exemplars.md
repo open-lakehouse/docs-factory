@@ -47,9 +47,9 @@ scripts gate CI and its claims render.
 ### Reference
 
 - `content/unitycatalog/reference/001-features-and-limitations/index.md`
-  (R01): the single home for known issues (with **Affects** and the error
-  string), absences, and scope. Other pages link here instead of restating
-  limitations.
+  (R01, `private`): the internal record of known issues (with **Affects** and
+  the error string), absences, and scope. Published pages never link it; they
+  state a limitation inline only when it blocks their task.
 
 ### Landing / overview
 

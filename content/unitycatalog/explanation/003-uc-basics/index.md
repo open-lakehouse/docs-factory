@@ -227,6 +227,4 @@ them access.
 This page describes the open source server's behavior, based on its API
 definitions and authorization source. Databricks Unity Catalog adds securables
 and governance features beyond it, so a Databricks guide may not apply here.
-For what the open source server doesn't include, see
-[Not in Unity Catalog OSS](../../reference/features-and-limitations/index.md#not-in-unity-catalog-oss).
 :::

@@ -33,9 +33,9 @@ clients can't:
 | Client | Changes a managed table |
 | --- | --- |
 | Spark with the Unity Catalog connector | Yes. Each statement is one Delta commit that the catalog accepts. |
-| DuckDB, `unity_catalog` extension | No. `ALTER TABLE` and `COMMENT ON TABLE` fail; see [Clients and engines](../../reference/features-and-limitations/index.md#clients-and-engines) for the errors. |
-| `uc` CLI, Python SDK | No. They wrap the tables API (`/tables`), which has no update; see [Namespace and assets](../../reference/features-and-limitations/index.md#namespace-and-assets). Use them to check what the catalog records. |
-| Polars, Daft, pandas | No. They can't open managed tables; see [Clients and engines](../../reference/features-and-limitations/index.md#clients-and-engines). |
+| DuckDB, `unity_catalog` extension | No. `ALTER TABLE` and `COMMENT ON TABLE` fail. |
+| `uc` CLI, Python SDK | No. They wrap the tables API (`/tables`), which has no update. Use them to check what the catalog records. |
+| Polars, Daft, pandas | No. They can't open managed tables. |
 
 ## Set up the client
 
@@ -193,9 +193,7 @@ orders-team
 ## Rename a table or column
 
 The Unity Catalog connector for Spark rejects `ALTER TABLE … RENAME COLUMN` and
-`ALTER TABLE … RENAME TO`; see
-[Clients and engines](../../reference/features-and-limitations/index.md#clients-and-engines)
-for the errors.
+`ALTER TABLE … RENAME TO`.
 
 To rename a table, create a table under the new name from the old one, then
 drop the old one:
@@ -295,5 +293,3 @@ See [Ownership and privileges](../../explanation/uc-basics/index.md#ownership-an
   session settings and storage credentials.
 - [Learn how managed and external tables differ](../../explanation/external-and-managed-tables/index.md)
   and why the catalog accepts each commit.
-- [Check what each client supports](../../reference/features-and-limitations/index.md)
-  in Features, scope, and limitations.

@@ -26,9 +26,9 @@ These decide ties between facets:
   understands about the task. Internal mechanics they never act on are cut, not
   trimmed.
 - **Lead with what works.** A page states a limitation inline only when it
-  blocks that page's task. Quirks, version-specific behavior, and absences go in
-  R01 (`unitycatalog/reference/001-features-and-limitations`) and pages link
-  there.
+  blocks that page's task. Quirks, version-specific behavior, and absences are
+  recorded in R01 (`unitycatalog/reference/001-features-and-limitations`), a
+  private page that no published page links.
 - **The page states the current release only.** No release numbers in prose
   except as a boundary ("requires 0.4.0 or later"); see [Versions](../../content/README.md#versions).
 

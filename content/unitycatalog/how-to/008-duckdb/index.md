@@ -105,8 +105,6 @@ DuckDB writes rows correctly only to a table without column mapping, and Spark
 turns column mapping on (`name`) for new managed tables. So create the table in
 Spark with `TBLPROPERTIES ('delta.columnMapping.mode' = 'none')`. On a table
 with column mapping, DuckDB's commit succeeds but the new rows read as `NULL`.
-See
-[Known issues](../../reference/features-and-limitations/index.md#clients-and-engines).
 
 `INSERT` adds rows to the table:
 
@@ -123,8 +121,6 @@ DuckDB reads tables and appends rows. Create tables with Spark, with column
 mapping off if DuckDB will append. Update, delete from, and drop them with
 Spark too, as in
 [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md).
-[Known issues](../../reference/features-and-limitations/index.md#known-issues)
-lists the errors DuckDB returns for the others.
 
 ## Required privileges
 

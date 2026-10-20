@@ -104,9 +104,7 @@ part of a secure deployment.
 Databricks created Unity Catalog and open sourced it in 2024. Databricks Unity
 Catalog is a managed service with the same API heritage and a larger feature
 set, so a Databricks guide is not automatically a guide for the open source
-server. These docs describe only the open source server; for its exact scope
-in each release, see
-[Features, scope, and limitations](../reference/features-and-limitations/index.md).
+server. These docs describe only the open source server.
 
 ## Next steps
 

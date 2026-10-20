@@ -133,6 +133,42 @@ journeys:
     family: managed
     title: Read an earlier version of a managed table
     summary: Query a catalog-managed table as it was at an earlier version.
+  managed.path-write:
+    family: managed
+    title: Write to a managed table by path
+    summary: Write to a catalog-managed table's storage location directly, bypassing the catalog.
+  managed.alter-schema:
+    family: managed
+    title: Change a managed table's columns
+    summary: Add, comment, drop, or widen columns of a catalog-managed table, with the catalog accepting the commit.
+  managed.set-properties:
+    family: managed
+    title: Set a managed table's properties
+    summary: Set and remove table properties on a catalog-managed table, with the catalog accepting the commit.
+  managed.rename:
+    family: managed
+    title: Rename a managed table or column
+    summary: Rename a catalog-managed table or one of its columns.
+  managed.create-as-select:
+    family: managed
+    title: Create a managed table from a query
+    summary: Create a catalog-managed Delta table from the result of a query, in one commit.
+  managed.replace:
+    family: managed
+    title: Replace a managed table
+    summary: Replace a catalog-managed table's definition and rows in one commit, keeping its identity and history.
+  managed.overwrite:
+    family: managed
+    title: Overwrite a managed table
+    summary: Replace all rows of a catalog-managed table and keep its schema.
+  managed.replace-where:
+    family: managed
+    title: Replace rows that match a condition
+    summary: Replace only the rows of a catalog-managed table that match a predicate.
+  managed.overwrite-partitions:
+    family: managed
+    title: Overwrite partitions of a managed table
+    summary: Overwrite only the partitions of a catalog-managed table that the new rows write to.
   external.read-format:
     family: external
     title: Read a Parquet, CSV, or JSON table
@@ -360,12 +396,21 @@ tables:
       - external.read-vended
       - external.append
       - managed.create
+      - managed.create-as-select
       - managed.read
       - managed.append
       - managed.update
       - managed.delete
+      - managed.alter-schema
+      - managed.set-properties
+      - managed.rename
+      - managed.replace
+      - managed.overwrite
+      - managed.replace-where
+      - managed.overwrite-partitions
       - managed.drop
       - managed.time-travel
+      - managed.path-write
       - external.read-format
   iceberg-rest:
     title: Iceberg tables through Iceberg REST
@@ -447,6 +492,12 @@ evidence:
     outcome: missing
     why: "`deltalake` resolves `uc://` names but has no call that lists a schema's tables."
     source: how-to/python-dataframes#list-tables
+  - interfaces: [polars, daft, pandas]
+    journeys: [managed.path-write, managed.alter-schema, managed.set-properties]
+    outcome: fails
+    why: "Max catalog version is required when loading a catalog-managed table"
+    source: reference/features-and-limitations#clients-and-engines
+    verified: {polars: 1.44.2, daft: 0.7.25, pandas: 2.3.3}
   - interfaces: [cli]
     journeys: [credentials.vend-path]
     outcome: missing
@@ -474,3 +525,14 @@ evidence:
     outcome: missing
     why: The UC REST API has no table update; delete the metric view and create it again.
     source: reference/features-and-limitations#namespace-and-assets
+  - interfaces: [cli, python-sdk]
+    journeys: [managed.alter-schema, managed.set-properties]
+    outcome: missing
+    why: The UC REST API has no table update.
+    source: reference/features-and-limitations#namespace-and-assets
+  - interfaces: [duckdb]
+    journeys: [managed.create-as-select]
+    outcome: fails
+    why: "`CREATE TABLE … AS SELECT` fails with `Not implemented Error`."
+    source: reference/features-and-limitations#clients-and-engines
+    verified: {duckdb: 1.5.4}

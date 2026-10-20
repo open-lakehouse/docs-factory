@@ -8,7 +8,7 @@
 # claims.duckdb = [
 #   { journey = "table.list", region = "list" },
 #   { journey = "managed.read", region = "query" },
-#   { journey = "managed.append", region = "append" },
+#   { journey = "managed.append", region = "append", note = "tables with column mapping off" },
 #   { journey = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
 #   { journey = "managed.update", fails = true, anchor = "create-change-and-drop-tables" },
 #   { journey = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
@@ -75,8 +75,12 @@ async def _reset_catalog() -> None:
         )
 
 
-def _seed_with_spark() -> None:
-    """Create retail.sales.orders as a managed table, as the T03 tutorial does."""
+def _seed_with_spark() -> SparkSession:
+    """Create retail.sales.orders as a managed table with T03's rows.
+
+    Unlike T03, column mapping is off so that DuckDB's appended rows read back
+    correctly.
+    """
     spark = (
         SparkSession.builder.appName("duckdb-seed")
         .config(
@@ -99,13 +103,14 @@ def _seed_with_spark() -> None:
     spark.sql("CREATE SCHEMA retail.sales")
     spark.sql(
         "CREATE TABLE retail.sales.orders "
-        "(order_id BIGINT, customer STRING, amount DECIMAL(10, 2)) USING DELTA"
+        "(order_id BIGINT, customer STRING, amount DECIMAL(10, 2)) USING DELTA "
+        "TBLPROPERTIES ('delta.columnMapping.mode' = 'none')"
     )
     spark.sql(
         "INSERT INTO retail.sales.orders VALUES "
         "(1, 'ada', 9.50), (2, 'grace', 20.00), (3, 'linus', 3.25)"
     )
-    spark.stop()
+    return spark
 
 
 def _latest_version() -> int:
@@ -115,8 +120,14 @@ def _latest_version() -> int:
 
 
 asyncio.run(_reset_catalog())
-_seed_with_spark()
+spark = _seed_with_spark()
 assert _latest_version() == 1  # CREATE TABLE, then INSERT
+assert (
+    spark.sql("SHOW TBLPROPERTIES retail.sales.orders ('delta.columnMapping.mode')")
+    .first()
+    .value
+    == "none"
+)
 
 # --8<-- [start:attach]
 con.execute("""
@@ -155,6 +166,22 @@ con.execute("INSERT INTO retail.sales.orders VALUES (4, 'barbara', 12.00)")
 # --8<-- [end:append]
 assert _latest_version() == 2, "DuckDB's append should be a catalog-accepted commit"
 assert con.sql("SELECT count(*) FROM retail.sales.orders").fetchone() == (4,)
+# Real values, not NULLs: DuckDB writes logical column names, which only a table
+# with column mapping off reads back (R01, Clients and engines).
+appended = [(4, "barbara", 12.0)]
+duck_seen = con.sql(
+    "SELECT order_id, customer, amount FROM retail.sales.orders WHERE order_id = 4"
+).fetchall()
+assert [(r[0], r[1], float(r[2])) for r in duck_seen] == appended, duck_seen
+spark_seen = spark.sql(
+    "SELECT order_id, customer, amount FROM retail.sales.orders ORDER BY order_id"
+).collect()
+assert [(r[0], r[1], float(r[2])) for r in spark_seen] == [
+    (1, "ada", 9.5),
+    (2, "grace", 20.0),
+    (3, "linus", 3.25),
+    *appended,
+], spark_seen
 
 # DuckDB 1.5.4 with unity_catalog 3ab8508: appends only, no row changes or DDL.
 for unsupported in [
@@ -169,3 +196,29 @@ for unsupported in [
         continue
     raise AssertionError(f"now supported, update the page: {unsupported}")
 assert _latest_version() == 2
+
+# Negative case: on a table left at Spark's default column mapping (`name`), the
+# commit succeeds but DuckDB's rows read as NULL in DuckDB and in Spark (R01).
+spark.sql(
+    "CREATE TABLE retail.sales.mapped (order_id BIGINT, customer STRING) USING DELTA"
+)
+assert (
+    spark.sql("SHOW TBLPROPERTIES retail.sales.mapped ('delta.columnMapping.mode')")
+    .first()
+    .value
+    == "name"
+)
+# DuckDB caches the attached catalog's tables, so re-attach to see `mapped`.
+con.execute("DETACH retail")
+con.execute("ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')")
+con.execute("INSERT INTO retail.sales.mapped VALUES (1, 'ada')")
+duck_mapped = con.sql("SELECT order_id, customer FROM retail.sales.mapped").fetchall()
+spark_mapped = [
+    tuple(r) for r in spark.sql("SELECT * FROM retail.sales.mapped").collect()
+]
+spark.sql("DROP TABLE retail.sales.mapped")
+assert duck_mapped == [(None, None)], (
+    f"DuckDB appends to column-mapped tables now: update the page and R01: {duck_mapped}"
+)
+assert spark_mapped == [(None, None)], spark_mapped
+spark.stop()

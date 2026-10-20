@@ -65,15 +65,6 @@ export function canSignIn(): boolean {
   return authUrl() !== undefined;
 }
 
-// Cache only a RESOLVED (non-null) JWT so the transport isn't a getJWTToken()
-// call per RPC. We deliberately do NOT cache a null: on a fresh load the Better
-// Auth session store hydrates asynchronously, so an early read legitimately
-// returns no token — caching that null would make every later RPC go out
-// token-less forever (the "signed in but GetViewer is anonymous" bug). Leaving
-// null uncached lets the next call re-read once the store has hydrated. Cleared
-// explicitly on sign-out.
-let cachedToken: string | undefined;
-
 /** The Better Auth session store (a nanostores atom), or undefined if unconfigured. */
 function sessionStore() {
   return authClient()?.useSession;
@@ -101,21 +92,17 @@ export function sessionResolved(): boolean {
   return store.get()?.isPending === false;
 }
 
-/** The current Neon Auth JWT, or null when signed out / unconfigured. */
+/**
+ * The current Neon Auth JWT, or null when signed out / unconfigured. Not cached
+ * here: the SDK caches the session until the JWT's `exp` and then re-reads it
+ * from the auth-origin session cookie, minting a fresh JWT. A cache of our own
+ * would outlive the JWT and send an expired bearer (resolved as anonymous).
+ */
 export async function sessionToken(): Promise<string | null> {
-  if (cachedToken !== undefined) return cachedToken;
-  return refreshSessionToken();
-}
-
-/** Re-read the JWT from the SDK (after sign-in or a redirect). */
-export async function refreshSessionToken(): Promise<string | null> {
   const instance = neonAuthInstance();
   if (!instance) return null;
-  // Any error / no session → null (request goes out anonymous); the null stays
-  // uncached (see cachedToken) so a later call re-reads once the session exists.
-  const token = (await instance.getJWTToken().catch(() => null)) ?? null;
-  if (token) cachedToken = token;
-  return token;
+  // Any error / no session → null: the request goes out anonymous.
+  return (await instance.getJWTToken().catch(() => null)) ?? null;
 }
 
 /**
@@ -143,6 +130,5 @@ export async function signOut(): Promise<void> {
   }
   const c = authClient();
   if (c) await c.signOut();
-  cachedToken = undefined;
   window.location.reload();
 }

@@ -131,7 +131,9 @@ def _assert_refused(
         assert error in str(e), f"{what}: {type(e).__name__}: {e}"
         print(f"{what}: refused ({type(e).__name__})")
         return
-    raise AssertionError(f"{what} now works on a catalog-managed table: update the docs")
+    raise AssertionError(
+        f"{what} now works on a catalog-managed table: update the docs"
+    )
 
 
 def main() -> None:

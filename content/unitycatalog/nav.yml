@@ -55,12 +55,14 @@ nav:
             id: H02
           - page: how-to/table-storage-formats
             id: H08
-          - planned: H03
-            title: Read and write catalog-managed Delta tables
-          - planned: H04
-            title: Change table schemas and properties safely
-          - planned: H05
-            title: Replace a table or overwrite partitions
+          - page: how-to/managed-delta-tables
+            id: H03
+          - page: how-to/change-table-schema
+            id: H04
+            label: Change schemas and properties
+          - page: how-to/replace-and-overwrite-tables
+            id: H05
+            label: Replace or overwrite tables
           - page: how-to/seed-tpch-data
 
       - section: Views and metric views

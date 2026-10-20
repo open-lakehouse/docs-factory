@@ -757,6 +757,21 @@
               "note": null
             },
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "create-a-managed-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE",
+              "note": "through Unity Catalog"
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -868,9 +883,25 @@
       },
       "cells": {
         "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "create-a-table-from-a-query",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE … AS SELECT",
+              "note": "through Unity Catalog"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -1064,6 +1095,21 @@
               "note": null
             },
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT INTO",
+              "note": "through Unity Catalog"
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -1228,6 +1274,21 @@
               "version": "4.2.0",
               "api": "INSERT OVERWRITE",
               "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "overwrite-all-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT OVERWRITE",
+              "note": "through Unity Catalog"
             }
           ],
           "evidence": []
@@ -1332,9 +1393,25 @@
       },
       "cells": {
         "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "replace-the-rows-that-match-a-condition",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT INTO … REPLACE WHERE",
+              "note": "through Unity Catalog"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -1429,9 +1506,25 @@
       },
       "cells": {
         "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "overwrite-the-partitions-the-new-rows-write-to",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "partitionOverwriteMode=dynamic",
+              "note": "through Unity Catalog"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -1753,6 +1846,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "UPDATE",
+              "note": "through Unity Catalog"
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -1861,6 +1969,21 @@
           "status": "tested",
           "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DELETE FROM",
+              "note": "through Unity Catalog"
+            },
             {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
@@ -2665,6 +2788,21 @@
               "note": null
             },
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "read-an-earlier-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "VERSION AS OF",
+              "note": "through Unity Catalog"
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -3366,9 +3504,25 @@
       },
       "cells": {
         "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "check-a-replacement-and-undo-it",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "RESTORE TABLE",
+              "note": "through Unity Catalog"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -3657,9 +3811,25 @@
       },
       "cells": {
         "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "replace-a-tables-definition-and-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE OR REPLACE TABLE … AS SELECT",
+              "note": "through Unity Catalog"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -3754,9 +3924,25 @@
       },
       "cells": {
         "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "add-columns-and-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE ADD COLUMNS",
+              "note": "through Unity Catalog"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -3851,9 +4037,25 @@
       },
       "cells": {
         "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "drop-or-widen-a-column",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DROP COLUMN",
+              "note": "through Unity Catalog; RENAME COLUMN is rejected"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -3948,9 +4150,25 @@
       },
       "cells": {
         "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "drop-or-widen-a-column",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER COLUMN … TYPE",
+              "note": "through Unity Catalog"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -5748,6 +5966,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "set-and-remove-table-properties",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SET TBLPROPERTIES",
+              "note": "through Unity Catalog"
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -6032,6 +6265,21 @@
           "status": "tested",
           "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "create-a-managed-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": "through Unity Catalog"
+            },
             {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {

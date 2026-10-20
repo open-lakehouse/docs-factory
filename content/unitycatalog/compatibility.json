@@ -112,12 +112,21 @@
         "external.read-vended",
         "external.append",
         "managed.create",
+        "managed.create-as-select",
         "managed.read",
         "managed.append",
         "managed.update",
         "managed.delete",
+        "managed.alter-schema",
+        "managed.set-properties",
+        "managed.rename",
+        "managed.replace",
+        "managed.overwrite",
+        "managed.replace-where",
+        "managed.overwrite-partitions",
         "managed.drop",
         "managed.time-travel",
+        "managed.path-write",
         "external.read-format"
       ]
     },
@@ -253,6 +262,15 @@
         "managed.delete",
         "managed.drop",
         "managed.time-travel",
+        "managed.path-write",
+        "managed.alter-schema",
+        "managed.set-properties",
+        "managed.rename",
+        "managed.create-as-select",
+        "managed.replace",
+        "managed.overwrite",
+        "managed.replace-where",
+        "managed.overwrite-partitions",
         "external.read-format",
         "iceberg.create",
         "iceberg.append",
@@ -400,12 +418,21 @@
             "external.read-vended",
             "external.append",
             "managed.create",
+            "managed.create-as-select",
             "managed.read",
             "managed.append",
             "managed.update",
             "managed.delete",
+            "managed.alter-schema",
+            "managed.set-properties",
+            "managed.rename",
+            "managed.replace",
+            "managed.overwrite",
+            "managed.replace-where",
+            "managed.overwrite-partitions",
             "managed.drop",
             "managed.time-travel",
+            "managed.path-write",
             "external.read-format"
           ]
         },
@@ -468,12 +495,21 @@
             "external.read-vended",
             "external.append",
             "managed.create",
+            "managed.create-as-select",
             "managed.read",
             "managed.append",
             "managed.update",
             "managed.delete",
+            "managed.alter-schema",
+            "managed.set-properties",
+            "managed.rename",
+            "managed.replace",
+            "managed.overwrite",
+            "managed.replace-where",
+            "managed.overwrite-partitions",
             "managed.drop",
             "managed.time-travel",
+            "managed.path-write",
             "external.read-format"
           ]
         },
@@ -521,12 +557,21 @@
             "external.read-vended",
             "external.append",
             "managed.create",
+            "managed.create-as-select",
             "managed.read",
             "managed.append",
             "managed.update",
             "managed.delete",
+            "managed.alter-schema",
+            "managed.set-properties",
+            "managed.rename",
+            "managed.replace",
+            "managed.overwrite",
+            "managed.replace-where",
+            "managed.overwrite-partitions",
             "managed.drop",
             "managed.time-travel",
+            "managed.path-write",
             "external.read-format"
           ]
         }
@@ -557,12 +602,21 @@
             "external.read-vended",
             "external.append",
             "managed.create",
+            "managed.create-as-select",
             "managed.read",
             "managed.append",
             "managed.update",
             "managed.delete",
+            "managed.alter-schema",
+            "managed.set-properties",
+            "managed.rename",
+            "managed.replace",
+            "managed.overwrite",
+            "managed.replace-where",
+            "managed.overwrite-partitions",
             "managed.drop",
             "managed.time-travel",
+            "managed.path-write",
             "external.read-format"
           ]
         }
@@ -593,12 +647,21 @@
             "external.read-vended",
             "external.append",
             "managed.create",
+            "managed.create-as-select",
             "managed.read",
             "managed.append",
             "managed.update",
             "managed.delete",
+            "managed.alter-schema",
+            "managed.set-properties",
+            "managed.rename",
+            "managed.replace",
+            "managed.overwrite",
+            "managed.replace-where",
+            "managed.overwrite-partitions",
             "managed.drop",
             "managed.time-travel",
+            "managed.path-write",
             "external.read-format"
           ]
         }
@@ -1313,6 +1376,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "create-a-managed-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -1343,6 +1421,21 @@
               },
               "anchor": "create-change-and-drop-tables",
               "ready": true,
+              "works": false,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "choose-an-engine",
+              "ready": false,
               "works": false,
               "fails": null,
               "version": "1.5.4",
@@ -1379,6 +1472,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "read-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -1409,6 +1517,21 @@
               },
               "anchor": "query-a-table",
               "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "read-the-table",
+              "ready": false,
               "works": true,
               "fails": null,
               "version": "1.5.4",
@@ -1511,6 +1634,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -1545,7 +1683,22 @@
               "fails": null,
               "version": "1.5.4",
               "api": null,
-              "note": null
+              "note": "tables with column mapping off"
+            },
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.5.4",
+              "api": null,
+              "note": "tables with column mapping off"
             }
           ],
           "evidence": []
@@ -1643,6 +1796,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -1708,6 +1876,21 @@
           "status": "tested",
           "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
             {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
@@ -1775,6 +1958,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "drop-a-managed-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -1841,6 +2039,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "read-an-earlier-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "VERSION AS OF",
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
                 "project": "unitycatalog",
@@ -1853,6 +2066,704 @@
               "fails": null,
               "version": "4.1.0",
               "api": "VERSION AS OF",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.path-write",
+      "title": "Write to a managed table by path",
+      "summary": "Write to a catalog-managed table's storage location directly, bypassing the catalog.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "dont-write-to-the-tables-path",
+              "ready": false,
+              "works": false,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "polars": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "1.44.2",
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "0.7.25",
+              "note": null
+            }
+          ]
+        },
+        "pandas": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "2.3.3",
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "managed.alter-schema",
+      "title": "Change a managed table's columns",
+      "summary": "Add, comment, drop, or widen columns of a catalog-managed table, with the catalog accepting the commit.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "add-columns-and-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "choose-a-client",
+              "ready": false,
+              "works": false,
+              "fails": "UCTableSet::AlterTable",
+              "version": "1.5.4",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "polars": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "1.44.2",
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "0.7.25",
+              "note": null
+            }
+          ]
+        },
+        "pandas": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "2.3.3",
+              "note": null
+            }
+          ]
+        },
+        "cli": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The UC REST API has no table update.",
+              "source": "reference/features-and-limitations#namespace-and-assets",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "python-sdk": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The UC REST API has no table update.",
+              "source": "reference/features-and-limitations#namespace-and-assets",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "managed.set-properties",
+      "title": "Set a managed table's properties",
+      "summary": "Set and remove table properties on a catalog-managed table, with the catalog accepting the commit.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "set-and-remove-table-properties",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SET TBLPROPERTIES",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "polars": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "1.44.2",
+              "note": null
+            }
+          ]
+        },
+        "daft": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "0.7.25",
+              "note": null
+            }
+          ]
+        },
+        "pandas": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "2.3.3",
+              "note": null
+            }
+          ]
+        },
+        "cli": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The UC REST API has no table update.",
+              "source": "reference/features-and-limitations#namespace-and-assets",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "python-sdk": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The UC REST API has no table update.",
+              "source": "reference/features-and-limitations#namespace-and-assets",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "managed.rename",
+      "title": "Rename a managed table or column",
+      "summary": "Rename a catalog-managed table or one of its columns.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "rename-a-table-or-column",
+              "ready": false,
+              "works": false,
+              "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.create-as-select",
+      "title": "Create a managed table from a query",
+      "summary": "Create a catalog-managed Delta table from the result of a query, in one commit.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "create-a-table-from-a-query",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE … AS SELECT",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`CREATE TABLE … AS SELECT` fails with `Not implemented Error`.",
+              "source": "reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": "1.5.4",
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "managed.replace",
+      "title": "Replace a managed table",
+      "summary": "Replace a catalog-managed table's definition and rows in one commit, keeping its identity and history.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "replace-a-tables-definition-and-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE OR REPLACE TABLE … AS SELECT",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.overwrite",
+      "title": "Overwrite a managed table",
+      "summary": "Replace all rows of a catalog-managed table and keep its schema.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "overwrite-all-rows",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT OVERWRITE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.replace-where",
+      "title": "Replace rows that match a condition",
+      "summary": "Replace only the rows of a catalog-managed table that match a predicate.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "replace-the-rows-that-match-a-condition",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT INTO … REPLACE WHERE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "managed.overwrite-partitions",
+      "title": "Overwrite partitions of a managed table",
+      "summary": "Overwrite only the partitions of a catalog-managed table that the new rows write to.",
+      "request": null,
+      "family": "managed",
+      "asset": "lakehouse.table",
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "overwrite-the-partitions-the-new-rows-write-to",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "partitionOverwriteMode=dynamic",
               "note": null
             }
           ],
@@ -3916,6 +4827,21 @@
               "version": null,
               "api": "uc table get",
               "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "check-what-the-catalog-records",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "uc table get",
+              "note": null
             }
           ],
           "evidence": []
@@ -3948,6 +4874,21 @@
               },
               "anchor": "view-the-table",
               "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "TablesApi.get_table",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "check-what-the-catalog-records",
+              "ready": false,
               "works": true,
               "fails": null,
               "version": "0.7.0",

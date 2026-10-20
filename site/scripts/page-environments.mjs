@@ -1,14 +1,12 @@
 // Page → derived environment for the review app, so a reviewer sees the same
 // Docker bullet and start commands (or pointer) the docs emitter adds
 // (emit/docs/emit-docs.mjs). The commands name the published docs site's env
-// bundle, and the service list links the published site: they're what a reader
-// will see, not something the app serves.
+// bundle: they're what a reader will see, not something the app serves.
 //
 // Runs once at vite config load. Without a script index (no uv, or docsnip
 // fails) boxes render as authored, the same as scripts.json degrades.
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { loadProjection } from "../../emit/docs/model.mjs";
 import delta from "../../emit/docs/sites/delta-docs.mjs";
 import unitycatalog from "../../emit/docs/sites/unitycatalog-docs.mjs";
 import {
@@ -30,14 +28,14 @@ const SITES = [delta, unitycatalog];
  * entries. Scripts are keyed by the docs site's routes, so a page's `runUrl`
  * is the published one; the guide link is the in-app route, for the reviewer.
  * `readPage` returns a page's source (the guide's title comes from it);
- * `projectionFor(site)` is the site's public projection, or null for no service list.
+ * `envsDir` is where the environments' diagrams sit, or null for none.
  */
 export function environmentResolver({
   entries,
   registry,
   sites = SITES,
   readPage,
-  projectionFor = () => null,
+  envsDir = null,
 }) {
   const bySite = sites
     .filter((site) => site.env)
@@ -45,7 +43,6 @@ export function environmentResolver({
       site,
       scripts: entries.map((e) => scriptEntry(e, { hrefFor: site.hrefFor })),
       archiveBase: `${site.origin}/env`,
-      projection: projectionFor(site),
       guidePage: (bucket, slug) => {
         const identity = { area: "docs", project: site.project, bucket, slug };
         const source = readPage(identity);
@@ -72,15 +69,13 @@ export function environmentResolver({
       declared: declaredEnvironment(body),
     });
     const resolve = (key) => registryEnvironment(key, bundle);
-    if (!environment) return { environment: null, resolve };
+    if (!environment) return { environment: null, resolve, envsDir };
     const guide = environmentGuide(environment, {
       siteGuide: entry.site.env.guide,
       resolve: entry.guidePage,
       self: hrefFromIdentity(identity),
     });
-    const services =
-      entry.projection?.serviceLinks(environment.key, { base: entry.site.origin, route }) ?? [];
-    return { environment, guide, diataxis: meta.diataxis ?? identity.bucket, resolve, services };
+    return { environment, guide, diataxis: meta.diataxis ?? identity.bucket, resolve, envsDir };
   };
 }
 
@@ -99,15 +94,7 @@ export function loadEnvironmentResolver(repoRoot) {
   return environmentResolver({
     entries: payload.scripts,
     registry: loadRegistry(repoRoot),
-    projectionFor: (site) =>
-      loadProjection(
-        site,
-        walkContent(join(repoRoot, "content", site.project)).map((path) => {
-          const { meta, body } = splitFrontmatter(readFileSync(path, "utf8"));
-          return { identity: docIdentity(path, meta), meta, body };
-        }),
-        { repoRoot },
-      ),
+    envsDir: join(repoRoot, "envs"),
     readPage: (identity) => {
       const path = walkContent(join(repoRoot, "content", identity.project)).find(
         (p) => hrefFromIdentity(docIdentity(p)) === hrefFromIdentity(identity),

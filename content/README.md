@@ -244,6 +244,11 @@ Diátaxis type wants them:
   that stack's download, start, and `export` commands. A page with no scripts
   that still walks through a stack declares it:
   `:::prerequisites{environment="uc-aws/compose.yaml"}`.
+- **Below the start commands**, wherever they land, the emitter places the
+  stack's committed diagram (`envs/<name>/diagram.png`, upgraded to the
+  interactive canvas). Don't embed it by hand next to a start step or marker.
+  The box itself lists no services: what the stack runs belongs in the
+  diagram, not in the prerequisites.
 - **A stack with setup beyond `docker compose up`** (hosted resources to
   create, secrets to supply) gets `:::deployment{key="uc-hybrid/compose.yaml"}`,
   an empty container that renders the whole deployment as a numbered list:

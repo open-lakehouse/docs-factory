@@ -144,7 +144,7 @@ From the live model plus content frontmatter the app derives:
 The **emitted** docs sites do **not** read the live plugin. They load the
 committed [`architecture/dist/model.json`](../../architecture/dist/model.json)
 and project only `#public` elements into `concepts.json`, JSON-LD, resolved
-`model:` links, and environment service lists
+`model:` links, and the twins' environment service ids
 ([`emit/docs/model.mjs`](../../emit/docs/model.mjs),
 [`projection.mjs`](../../site/src/content-core/projection.mjs)).
 

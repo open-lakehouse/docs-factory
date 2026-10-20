@@ -4,7 +4,7 @@
 `:::tldr`, site llms.txt, sitemap/robots, RSS, `.md` content negotiation, 308s),
 and **Phase 3** (runnable-script linking) have **shipped**. Phase 2 (C4 model
 integration) shipped in a narrower form: a public `concepts.json`, JSON-LD
-`about`/`mentions`/`tool`, and per-environment service lists (see
+`about`/`mentions`/`tool`, and per-environment service ids (see
 [`trestle-integration.md`](./trestle-integration.md) §8). Phase 4 (hosted MCP)
 is not built; its local precursor is `docsnip query` (same doc, §9).
 

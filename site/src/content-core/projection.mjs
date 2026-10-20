@@ -1,6 +1,6 @@
 /**
  * One site's public projection of the estate model: the only view of it that
- * concepts.json, JSON-LD, and the environment service lists are built from.
+ * concepts.json, JSON-LD, and the twins' environment service ids are built from.
  *
  * The selection is positive. An element is public only when the model tags it
  * `#public`; a page counts only when it is `ready`; an edge only when both its
@@ -150,7 +150,7 @@ export function publicProjection({ model, pages, hrefFor, origin, registry = {},
       .map((s) => ({ ...elements.get(s.element), role: s.role ?? null, endpoint: s.url ?? null }));
 
   /**
-   * An environment's public services as remark-prerequisites-env lists them:
+   * An environment's public services, linked for the site:
    * `{ id, title, href, summary, url }`, `href` the element's page under `base`
    * (none on that page itself), else its external link.
    */

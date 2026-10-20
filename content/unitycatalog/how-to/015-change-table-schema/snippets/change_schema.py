@@ -86,7 +86,7 @@ def _table() -> dict:
 asyncio.run(_reset_catalog(create=True))
 
 # --8<-- [start:session]
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession  # noqa: E402
 
 spark = (
     SparkSession.builder.appName("change-schema")
@@ -158,7 +158,9 @@ spark.sql("SHOW TBLPROPERTIES sales.orders ('delta.columnMapping.mode')").show(
 )
 # --8<-- [end:check-column-mapping]
 assert (
-    spark.sql("SHOW TBLPROPERTIES sales.orders ('delta.columnMapping.mode')").first().value
+    spark.sql("SHOW TBLPROPERTIES sales.orders ('delta.columnMapping.mode')")
+    .first()
+    .value
     == "name"
 )
 
@@ -185,7 +187,9 @@ _rejects(
 )
 
 # --8<-- [start:widen-type]
-spark.sql("ALTER TABLE sales.orders SET TBLPROPERTIES ('delta.enableTypeWidening' = 'true')")
+spark.sql(
+    "ALTER TABLE sales.orders SET TBLPROPERTIES ('delta.enableTypeWidening' = 'true')"
+)
 spark.sql("ALTER TABLE sales.orders ALTER COLUMN quantity TYPE BIGINT")
 # --8<-- [end:widen-type]
 assert {c["name"]: c["type_text"] for c in _table()["columns"]}["quantity"] == "bigint"
@@ -226,9 +230,9 @@ assert history == [
 assert _table()["properties"]["delta.lastUpdateVersion"] == "9"
 
 # --8<-- [start:verify-sdk]
-import asyncio
+import asyncio  # noqa: E402
 
-from unitycatalog.client import ApiClient, Configuration, TablesApi
+from unitycatalog.client import ApiClient, Configuration, TablesApi  # noqa: E402
 
 
 async def show_table() -> None:
@@ -294,7 +298,9 @@ changed = {
     "delta.checkpoint.writeStatsAsJson": "false",
 }
 for key, value in changed.items():
-    spark.sql(f"ALTER TABLE sales.scratch_props SET TBLPROPERTIES ('{key}' = '{value}')")
+    spark.sql(
+        f"ALTER TABLE sales.scratch_props SET TBLPROPERTIES ('{key}' = '{value}')"
+    )
 with urllib.request.urlopen(f"{UC_API}/tables/warehouse.sales.scratch_props") as resp:
     scratch = json.load(resp)
 for key, value in changed.items():
@@ -310,7 +316,9 @@ con.execute("LOAD unity_catalog")
 con.execute(
     "CREATE SECRET (TYPE unity_catalog, TOKEN 'not-used', ENDPOINT 'http://localhost:8080')"
 )
-con.execute("ATTACH 'warehouse' AS warehouse (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')")
+con.execute(
+    "ATTACH 'warehouse' AS warehouse (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')"
+)
 for statement, error, message in [
     (
         "ALTER TABLE warehouse.sales.orders ADD COLUMN note VARCHAR",
@@ -333,7 +341,9 @@ con.close()
 
 rows_before = sorted(spark.table("sales.orders").collect())
 # --8<-- [start:rename-table]
-spark.sql("CREATE TABLE sales.customer_orders USING DELTA AS SELECT * FROM sales.orders")
+spark.sql(
+    "CREATE TABLE sales.customer_orders USING DELTA AS SELECT * FROM sales.orders"
+)
 spark.sql("DROP TABLE sales.orders")
 # --8<-- [end:rename-table]
 assert not spark.catalog.tableExists("warehouse.sales.orders")

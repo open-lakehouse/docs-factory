@@ -200,9 +200,13 @@ expect_error(
 )
 # A replacement takes partitioning only from its own PARTITIONED BY.
 spark.sql("CREATE TABLE sales.parts (a INT, p INT) USING DELTA PARTITIONED BY (p)")
-spark.sql("CREATE OR REPLACE TABLE sales.parts USING DELTA AS SELECT * FROM sales.parts")
+spark.sql(
+    "CREATE OR REPLACE TABLE sales.parts USING DELTA AS SELECT * FROM sales.parts"
+)
 assert spark.sql("DESCRIBE DETAIL sales.parts").first().partitionColumns == []
-spark.sql("CREATE OR REPLACE TABLE sales.parts (a INT, p INT) USING DELTA PARTITIONED BY (p)")
+spark.sql(
+    "CREATE OR REPLACE TABLE sales.parts (a INT, p INT) USING DELTA PARTITIONED BY (p)"
+)
 spark.sql("REPLACE TABLE sales.parts (a INT, p INT) USING DELTA")
 assert spark.sql("DESCRIBE DETAIL sales.parts").first().partitionColumns == []
 spark.sql("DROP TABLE sales.parts")

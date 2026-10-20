@@ -199,7 +199,9 @@ assert _latest_version() == 2
 
 # Negative case: on a table left at Spark's default column mapping (`name`), the
 # commit succeeds but DuckDB's rows read as NULL in DuckDB and in Spark (R01).
-spark.sql("CREATE TABLE retail.sales.mapped (order_id BIGINT, customer STRING) USING DELTA")
+spark.sql(
+    "CREATE TABLE retail.sales.mapped (order_id BIGINT, customer STRING) USING DELTA"
+)
 assert (
     spark.sql("SHOW TBLPROPERTIES retail.sales.mapped ('delta.columnMapping.mode')")
     .first()
@@ -211,7 +213,9 @@ con.execute("DETACH retail")
 con.execute("ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')")
 con.execute("INSERT INTO retail.sales.mapped VALUES (1, 'ada')")
 duck_mapped = con.sql("SELECT order_id, customer FROM retail.sales.mapped").fetchall()
-spark_mapped = [tuple(r) for r in spark.sql("SELECT * FROM retail.sales.mapped").collect()]
+spark_mapped = [
+    tuple(r) for r in spark.sql("SELECT * FROM retail.sales.mapped").collect()
+]
 spark.sql("DROP TABLE retail.sales.mapped")
 assert duck_mapped == [(None, None)], (
     f"DuckDB appends to column-mapped tables now: update the page and R01: {duck_mapped}"

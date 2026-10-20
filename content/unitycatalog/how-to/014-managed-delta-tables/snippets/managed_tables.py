@@ -108,7 +108,7 @@ def _spark_error(sql: str) -> str:
 _reset_catalogs()
 
 # --8<-- [start:session]
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession  # noqa: E402
 
 spark = (
     SparkSession.builder.appName("managed-delta-tables")
@@ -139,7 +139,7 @@ spark.conf.set("spark.sql.catalog.inventory_no_root.auth.type", "static")
 spark.conf.set("spark.sql.catalog.inventory_no_root.auth.token", "not-used")
 
 # --8<-- [start:duckdb-connect]
-import duckdb
+import duckdb  # noqa: E402
 
 con = duckdb.connect()
 con.execute("INSTALL delta")
@@ -393,9 +393,7 @@ con.execute("DETACH inventory")
 con.execute(
     "ATTACH 'inventory' AS inventory (TYPE unity_catalog, DEFAULT_SCHEMA 'stock')"
 )
-seen = sorted(
-    con.sql("SELECT sku, qty FROM inventory.stock.items").fetchall(), key=str
-)
+seen = sorted(con.sql("SELECT sku, qty FROM inventory.stock.items").fetchall(), key=str)
 assert seen == [("apple", 10), ("pear", 9), (None, None)], seen
 con.close()
 

@@ -67,7 +67,9 @@ def _request(method: str, path: str, body: dict | None = None) -> dict:
 
 
 def _catalog_columns(name: str) -> list[str]:
-    return [c["name"] for c in _request("GET", f"tables/warehouse.sales.{name}")["columns"]]
+    return [
+        c["name"] for c in _request("GET", f"tables/warehouse.sales.{name}")["columns"]
+    ]
 
 
 asyncio.run(_reset_catalog(create=True))
@@ -96,9 +98,9 @@ spark.sql("CREATE SCHEMA sales")
 spark.sql("CREATE TABLE sales.orders (order_id BIGINT, customer STRING) USING DELTA")
 
 # An external table registered with its columns, as on the register page.
-spark.createDataFrame([(1, "created"), (2, "shipped")], "order_id BIGINT, status STRING").write.format(
-    "delta"
-).save(f"file://{EVENTS}")
+spark.createDataFrame(
+    [(1, "created"), (2, "shipped")], "order_id BIGINT, status STRING"
+).write.format("delta").save(f"file://{EVENTS}")
 _request(
     "POST",
     "tables",
@@ -140,9 +142,9 @@ assert _catalog_columns("order_events") == ["order_id", "status"], _catalog_colu
 )
 
 # --8<-- [start:delta-api]
-import json
-import urllib.error
-import urllib.request
+import json  # noqa: E402
+import urllib.error  # noqa: E402
+import urllib.request  # noqa: E402
 
 TABLES = (
     "http://localhost:8080/api/2.1/unity-catalog"
@@ -165,7 +167,8 @@ def update_table(name: str, requirements: list, updates: list) -> dict:
     )
     with urllib.request.urlopen(request) as resp:
         return json.load(resp)["metadata"]
-# --8<-- [end:delta-api]
+    # --8<-- [end:delta-api]
+
 
 # --8<-- [start:sync-columns]
 metadata = load_table("order_events")
@@ -233,7 +236,10 @@ try:
     )
 except urllib.error.HTTPError as error:
     assert error.code == 400, error.code
-    assert "assert-table-uuid requirement is required" in json.load(error)["error"]["message"]
+    assert (
+        "assert-table-uuid requirement is required"
+        in json.load(error)["error"]["message"]
+    )
 else:
     raise AssertionError("an update without assert-table-uuid was accepted")
 
@@ -278,7 +284,9 @@ code, message = _rejected(
     ]
 )
 assert code == 400, code
-assert "set-properties and remove-properties overlap on keys: [sales.a]" in message, message
+assert "set-properties and remove-properties overlap on keys: [sales.a]" in message, (
+    message
+)
 recorded = _recorded()
 assert recorded.get("comment") is None, recorded.get("comment")
 assert not {"sales.a", "sales.b"} & set(recorded.get("properties") or {}), recorded
@@ -287,9 +295,9 @@ assert load_table("order_events")["etag"] == etag_before
 # Known gap: the server accepts a properties-only update to a managed table
 # with no Delta commit, so the catalog's record and the Delta log disagree.
 # The page tells client authors not to rely on this; the assert flags the fix.
-version_before = _request("GET", "delta/v1/catalogs/warehouse/schemas/sales/tables/orders")[
-    "latest-table-version"
-]
+version_before = _request(
+    "GET", "delta/v1/catalogs/warehouse/schemas/sales/tables/orders"
+)["latest-table-version"]
 current = load_table("orders")
 update_table(
     "orders",
@@ -298,7 +306,10 @@ update_table(
         {"type": "assert-etag", "etag": current["etag"]},
     ],
     updates=[
-        {"action": "set-properties", "updates": {"delta.enableDeletionVectors": "false"}}
+        {
+            "action": "set-properties",
+            "updates": {"delta.enableDeletionVectors": "false"},
+        }
     ],
 )
 loaded = _request("GET", "delta/v1/catalogs/warehouse/schemas/sales/tables/orders")

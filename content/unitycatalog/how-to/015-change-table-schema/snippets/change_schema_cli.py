@@ -83,7 +83,9 @@ if __name__ == "__main__":
         "ADD COLUMNS (channel STRING COMMENT 'Where the order was placed')"
     )
     spark.sql("COMMENT ON TABLE sales.orders IS 'One row per customer order'")
-    spark.sql("ALTER TABLE sales.orders SET TBLPROPERTIES ('sales.owner' = 'orders-team')")
+    spark.sql(
+        "ALTER TABLE sales.orders SET TBLPROPERTIES ('sales.owner' = 'orders-team')"
+    )
     spark.stop()
 
     out = run(SCRIPT, "get")

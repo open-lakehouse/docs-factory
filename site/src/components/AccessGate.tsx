@@ -10,9 +10,10 @@
 //
 // Renders its own minimal chrome — NOT Shell, which assumes an admitted viewer
 // and pulls in the topnav/StatusMenu.
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { canSignIn, signIn, signOut } from "../lib/auth-actions";
+import { canSignIn, SESSION_VERIFIER_PARAM, signIn, signOut } from "../lib/auth-actions";
 import { useAuth } from "../lib/auth-context";
 import { SIGN_IN_PERSONAS, useDevPersona } from "../lib/dev-persona";
 
@@ -56,6 +57,22 @@ export default function AccessGate({ children }: { children: ReactNode }) {
   // only to the shared content (server-enforced per item); drafts/dashboard/admin
   // stay gated on isAllowlisted, so admission here grants no site-wide access.
   const admitted = isAllowlisted || hasScopedGrants;
+
+  // Drop the spent OAuth verifier through the router (see SESSION_VERIFIER_PARAM).
+  // Waiting for !isLoading keeps it in the URL until the SDK has exchanged it.
+  const [params, setParams] = useSearchParams();
+  const hasVerifier = params.has(SESSION_VERIFIER_PARAM);
+  useEffect(() => {
+    if (isLoading || !hasVerifier) return;
+    setParams(
+      (prev) => {
+        const p = new URLSearchParams(prev);
+        p.delete(SESSION_VERIFIER_PARAM);
+        return p;
+      },
+      { replace: true },
+    );
+  }, [isLoading, hasVerifier, setParams]);
 
   // Neutral splash while the viewer resolves, so an already-authenticated
   // reviewer never sees the sign-in wall flash.

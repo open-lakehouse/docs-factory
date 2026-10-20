@@ -65,6 +65,15 @@ export function canSignIn(): boolean {
   return authUrl() !== undefined;
 }
 
+/**
+ * The one-time query param Neon Auth appends to the OAuth callback URL. While it
+ * is in `window.location`, the SDK bypasses its session cache and re-sends the
+ * spent verifier on every getSession, so it must leave the URL once the session
+ * resolves. The SDK strips it with history.replaceState, which React Router
+ * doesn't observe, so the next setSearchParams writes it straight back.
+ */
+export const SESSION_VERIFIER_PARAM = "neon_auth_session_verifier";
+
 /** The Better Auth session store (a nanostores atom), or undefined if unconfigured. */
 function sessionStore() {
   return authClient()?.useSession;
@@ -113,7 +122,9 @@ export async function sessionToken(): Promise<string | null> {
 export async function signIn(): Promise<void> {
   const c = authClient();
   if (!c) return;
-  await c.signIn.social({ provider: "github", callbackURL: window.location.href });
+  const callback = new URL(window.location.href);
+  callback.searchParams.delete(SESSION_VERIFIER_PARAM);
+  await c.signIn.social({ provider: "github", callbackURL: callback.href });
 }
 
 /**

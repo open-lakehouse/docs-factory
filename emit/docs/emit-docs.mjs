@@ -81,6 +81,7 @@ import mdTwin, {
 } from "../targets/md-twin.mjs";
 import { apiEntries, apiIndexRoute } from "./api.mjs";
 import {
+  conceptEnvironments,
   renderConcepts,
   renderLlmsFull,
   renderLlmsIndex,
@@ -630,16 +631,7 @@ export async function emitDocs({ site, drafts = false }) {
       renderConcepts(projection, {
         title: site.title,
         origin,
-        environments: envBundle
-          ? envBundle.index.environments.map(({ key, title, archive }) => {
-              const [bucket, slug] = (registry[key].guide ?? "").split("#")[0].split("/");
-              const anchor = registry[key].guide?.split("#")[1];
-              const guide = registry[key].guide
-                ? `${routeFor(bucket, slug)}${anchor ? `#${anchor}` : ""}`
-                : routeFor(site.env.guide.bucket, site.env.guide.slug);
-              return { key, title, archive, guide };
-            })
-          : [],
+        environments: envBundle ? conceptEnvironments(site, registry) : [],
       }),
     );
     files.set(

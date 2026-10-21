@@ -203,6 +203,9 @@ export default function SelectionLayer({
     // edge, so an article-only mouseup never fires even though the selection
     // inside the article is valid.
     function onMouseUp(e: MouseEvent) {
+      // macOS fires contextmenu on the right-button mousedown, so its mouseup
+      // would re-show the float and close the menu that just opened.
+      if (e.button !== 0) return;
       const t = e.target;
       if (t instanceof Element && t.closest(UI_SELECTOR)) return;
       setTimeout(() => {

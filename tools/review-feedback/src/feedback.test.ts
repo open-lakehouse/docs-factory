@@ -8,6 +8,7 @@ import { agentState, listFeedback, matchesState } from "./feedback.js";
 import {
   CommentSchema,
   CommentScope,
+  ContentArea,
   type ContentRef,
   ThreadSchema,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
@@ -60,6 +61,7 @@ test("listFeedback surfaces threads on a checkout's planned slots", async () => 
   );
   const client = {
     listDrafts: async () => ({ drafts: [] }),
+    listRecentComments: async () => ({ comments: [] }),
     listComments: async ({ ref }: { ref: ContentRef }) => ({
       threads:
         ref.slug === "planned/uc/T06"
@@ -83,4 +85,40 @@ test("listFeedback surfaces threads on a checkout's planned slots", async () => 
   expect(t.title).toBe("T06 · Agent tool");
   expect(t.location).toMatchObject({ path: "content/uc/nav.yml", startLine: 4 });
   expect(await listFeedback(client, { repoRoot: repo, area: "blogs" })).toEqual([]);
+});
+
+test("listFeedback surfaces threads on the estate model at their declaration", async () => {
+  const repo = mkdtempSync(join(tmpdir(), "rf-model-"));
+  mkdirSync(join(repo, "architecture/model"), { recursive: true });
+  writeFileSync(
+    join(repo, "architecture/model/assets.likec4"),
+    'model {\n  extend lakehouse {\n    table = asset "Table"\n  }\n}\n',
+  );
+  const modelRef = { area: ContentArea.MODEL, slug: "element/lakehouse.table" };
+  const client = {
+    listDrafts: async () => ({ drafts: [] }),
+    listRecentComments: async () => ({ comments: [{ ref: modelRef }] }),
+    listComments: async ({ ref }: { ref: ContentRef }) => ({
+      threads:
+        ref.slug === modelRef.slug
+          ? [
+              create(ThreadSchema, {
+                root: create(CommentSchema, {
+                  id: "m1",
+                  bodyMd: "Tag this #public",
+                  scope: CommentScope.DOCUMENT,
+                }),
+              }),
+            ]
+          : [],
+      orphanedThreads: [],
+    }),
+  } as unknown as ReviewClient;
+
+  const [t, ...rest] = await listFeedback(client, { repoRoot: repo, area: "model" });
+  expect(rest).toEqual([]);
+  expect(t.page).toBe("model/element/lakehouse.table");
+  expect(t.model).toEqual({ kind: "element", id: "lakehouse.table" });
+  expect(t.location).toMatchObject({ path: "architecture/model/assets.likec4", startLine: 3 });
+  expect(await listFeedback(client, { repoRoot: repo, area: "docs" })).toEqual([]);
 });

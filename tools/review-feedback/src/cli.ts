@@ -34,7 +34,7 @@ const USAGE = `review-feedback: read and answer docs-factory review threads
 Usage:
   review-feedback login [--url <site>] [--api-url <api>] [--token <dfr_…|->]
   review-feedback whoami
-  review-feedback list [--area docs|blogs] [--project p] [--slug s]
+  review-feedback list [--area docs|blogs|model] [--project p] [--slug s]
                        [--state open|awaiting|unresolved|all] [--excerpt] [--json]
   review-feedback show <thread-id> [--json]
   review-feedback pull [--out .review] [list filters]
@@ -84,8 +84,8 @@ function connection() {
 
 function listOpts() {
   const area = flags.area as ListOptions["area"];
-  if (area !== undefined && area !== "docs" && area !== "blogs") {
-    throw new ConfigError("--area must be docs or blogs");
+  if (area !== undefined && area !== "docs" && area !== "blogs" && area !== "model") {
+    throw new ConfigError("--area must be docs, blogs, or model");
   }
   const state = (flags.state ?? "open") as StateFilter;
   if (!["open", "awaiting", "unresolved", "all"].includes(state)) {
@@ -230,6 +230,7 @@ async function main() {
         );
       }
       const { area, project, slug } = listOpts();
+      if (area === "model") throw new ConfigError("the model has no release status");
       const pages = await listStatus(connection(), {
         area,
         project,

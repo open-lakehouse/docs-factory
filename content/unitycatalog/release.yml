@@ -19,5 +19,7 @@ pins:
   # build.sbt `icebergVersion` at the release tag; the Iceberg REST spec page
   # renders from this ref.
   iceberg: 1.11.0
+  # The deltalake (delta-rs) release the external-table examples run on.
+  deltalake: 1.6.6
   # The DuckDB release the Unity Catalog pages' DuckDB examples run on.
   duckdb: 1.5.6

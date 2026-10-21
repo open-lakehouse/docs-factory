@@ -10,17 +10,16 @@
 #   { journey = "managed.set-properties", region = "properties", api = "SET TBLPROPERTIES" },
 #   { journey = "managed.rename", fails = "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet", anchor = "rename-a-table-or-column" },
 # ]
+# claims.spark-python = [
+#   { journey = "managed.alter-schema", region = "add-columns", api = "ALTER TABLE … ADD COLUMNS" },
+#   { journey = "managed.set-properties", region = "properties", api = "SET TBLPROPERTIES" },
+#   { journey = "managed.rename", fails = "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet", anchor = "rename-a-table-or-column" },
+# ]
 # claims.duckdb = [
 #   { journey = "managed.alter-schema", fails = "UCTableSet::AlterTable", anchor = "choose-a-client" },
 # ]
 # claims."python-sdk" = [
 #   { journey = "table.describe", region = "verify-sdk", api = "TablesApi.get_table" },
-# ]
-# claims."delta:spark-sql" = [
-#   { journey = "schema.add-column", region = "add-columns", api = "ALTER TABLE ADD COLUMNS", note = "through Unity Catalog" },
-#   { journey = "schema.rename-drop", region = "drop-column", api = "DROP COLUMN", note = "through Unity Catalog; RENAME COLUMN is rejected" },
-#   { journey = "schema.type-widening", region = "widen-type", api = "ALTER COLUMN … TYPE", note = "through Unity Catalog" },
-#   { journey = "feature.properties", region = "properties", api = "SET TBLPROPERTIES", note = "through Unity Catalog" },
 # ]
 # ///
 """Change a managed Delta table's columns and properties with Spark, and check

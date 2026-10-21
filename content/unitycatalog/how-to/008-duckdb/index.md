@@ -87,7 +87,8 @@ Use three-part names, or just the table name for tables in the default schema:
 
 DuckDB asks the server for the table's location and for temporary credentials,
 then reads the Delta files directly from storage. For a catalog-managed table it
-reads the latest version the server has accepted.
+reads the latest version the server has accepted. DuckDB reads tables with
+column mapping through Unity Catalog, too.
 
 ## Append rows
 

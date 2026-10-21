@@ -115,8 +115,6 @@ Append rows with `INSERT INTO`:
 :::
 
 :::tab[DuckDB]
-Append rows:
-
 ```python file=./snippets/managed_tables.py start=start:duckdb-append end=end:duckdb-append
 ```
 

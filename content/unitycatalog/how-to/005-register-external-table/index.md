@@ -46,7 +46,7 @@ Start Python with the SDK:
 ```bash
 uv run --with unitycatalog-client==0.7.0 --with deltalake==1.6.6 \
   --with polars==1.44.2 --with "daft[unity]==0.7.25" --with tenacity \
-  --with duckdb==1.5.4 python -m asyncio
+  --with duckdb==1.5.6 python -m asyncio
 ```
 
 ```python file=./snippets/external_table.py start=start:connect end=end:connect

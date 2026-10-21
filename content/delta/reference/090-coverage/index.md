@@ -56,7 +56,7 @@ DuckDB 1.5.6. A `tested` cell ran with them unless it says otherwise.
 | Spark · Python | `pip install delta-spark`, then `configure_spark_with_delta_pip` | Same as Spark SQL. |
 | delta-rs · Python | `pip install deltalake` | `tested`: the Delta pages. `documented`: 1.6.6 source ([table.py][dr-table], [feature table][dr-features]). |
 | delta-rs · Rust | `cargo add deltalake --features datafusion` | `tested`: the Delta pages. `documented`: the 1.1.1 crate source ([operations][dr-rust-ops]). |
-| DuckDB · SQL | `INSTALL delta; LOAD delta;` | `tested`: the Delta pages, core `delta` extension, path-based tables. Also `tested` through UC: DuckDB 1.5.4 with `unity_catalog` from `core_nightly`. `documented`: the [`delta` extension page][duck]. |
+| DuckDB · SQL | `INSTALL delta; LOAD delta;` | `tested`: the Delta pages, core `delta` extension, path-based tables. Also `tested` through UC: DuckDB 1.5.6 with `unity_catalog` from `core_nightly`. `documented`: the [`delta` extension page][duck]. |
 
 Not tracked yet: Polars, pandas, Daft, DataFusion on its own, Delta Kernel (Rust and Java), Trino, Flink, Iceberg readers through UniForm.
 

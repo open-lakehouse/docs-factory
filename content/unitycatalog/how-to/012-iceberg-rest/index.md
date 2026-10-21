@@ -71,7 +71,7 @@ it the default catalog lets later statements name tables as `sales.orders`.
 Open a Python session with DuckDB:
 
 ```bash
-uv run --with duckdb==1.5.4 python
+uv run --with duckdb==1.5.6 python
 ```
 
 Install and load the `iceberg` extension:

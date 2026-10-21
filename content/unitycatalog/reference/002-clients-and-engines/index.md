@@ -123,9 +123,8 @@ Trino; they stay outside this matrix until a journey claim or recorded
 evidence needs a column.
 
 The upstream DuckDB guide still installs an older `uc_catalog`
-extension. DuckDB's current extension is `unity_catalog`. Its stable build for
-DuckDB 1.5.4 can't read `DECIMAL` columns, so
-[the DuckDB how-to](../../how-to/duckdb/index.md) installs the nightly build.
+extension. DuckDB's current extension is `unity_catalog`;
+[the DuckDB how-to](../../how-to/duckdb/index.md) installs its nightly build.
 
 A managed table accepts only clients that go through the catalog. Path-based
 Delta libraries such as [delta-rs](model:deltaRs) refuse to load one, and so do

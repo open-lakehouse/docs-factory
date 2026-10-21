@@ -774,7 +774,7 @@ evidence:
     outcome: fails
     why: "`CREATE TABLE … AS SELECT` fails with `Not implemented Error`."
     source: reference/features-and-limitations#clients-and-engines
-    verified: {duckdb: 1.5.4}
+    verified: {duckdb: 1.5.6}
   # The server side of Iceberg REST, as of `IcebergRestCatalogService.java` at
   # the release tag: no client can do these, whatever it supports.
   - interfaces: [spark, duckdb, pyiceberg, polars, daft]

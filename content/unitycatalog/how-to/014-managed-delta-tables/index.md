@@ -52,7 +52,7 @@ setting and the connector versions.
 Open a Python session with DuckDB:
 
 ```bash
-uv run --with duckdb==1.5.4 python
+uv run --with duckdb==1.5.6 python
 ```
 
 Install the `delta` and `unity_catalog` extensions, then attach the catalog:
@@ -115,21 +115,13 @@ Append rows with `INSERT INTO`:
 :::
 
 :::tab[DuckDB]
-DuckDB writes rows correctly only to a table without column mapping, and Spark
-turns column mapping on by default. On such a table, DuckDB's rows read as
-`NULL` in Spark and in DuckDB. So create the table in Spark with column mapping
-off:
-
-```python file=./snippets/managed_tables.py start=start:create-for-duckdb end=end:create-for-duckdb
-```
-
-Then append:
+Append rows:
 
 ```python file=./snippets/managed_tables.py start=start:duckdb-append end=end:duckdb-append
 ```
 
-DuckDB keeps the version of the table it last read or wrote. After another
-engine writes to the table, DuckDB's queries don't show the new rows, and its
+After DuckDB has read the table, it keeps that version. When another engine
+then writes to the table, DuckDB's queries don't show the new rows, and its
 next append fails with `Failed to commit: … (HTTP 409): Conflict` and leaves the
 table unchanged. The same append fails again until you detach and attach the
 catalog:

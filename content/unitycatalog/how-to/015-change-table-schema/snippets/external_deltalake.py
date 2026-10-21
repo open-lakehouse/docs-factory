@@ -44,38 +44,53 @@ Java 17 and Maven access on first run. Behind a Maven mirror, export
 PYSPARK_SUBMIT_ARGS="--repositories <mirror-url> pyspark-shell" first.
 """
 
+import ast
 import asyncio
+import inspect
 import json
 import os
+import re
 import shutil
 import sys
+import textwrap
 import urllib.error
 import urllib.request
+from pathlib import Path
 
 import duckdb
-import pyarrow as pa
-from deltalake import write_deltalake
+from deltalake import DeltaTable as _DeltaTable
+from deltalake.table import TableAlterer
 from unitycatalog.client import (
     ApiClient,
     CatalogsApi,
     Configuration,
     CreateCatalog,
     CreateSchema,
-    CreateTable,
     SchemasApi,
     TablesApi,
 )
 from unitycatalog.client.exceptions import NotFoundException
-from unitycatalog.client.models import (
-    ColumnInfo,
-    ColumnTypeName,
-    DataSourceFormat,
-    TableType,
-)
 
+HERE = Path(__file__).parent
 UC_API = "http://localhost:8080/api/2.1/unity-catalog"
-DOCS_ROOT = os.environ.get("UC_DOCS_ROOT", "/tmp/uc-docs")
+# The `register-events` region names this path for the reader; it's the
+# environment's default UC_DOCS_ROOT.
+DOCS_ROOT = "/tmp/uc-docs"
 EVENTS = f"{DOCS_ROOT}/order_events"
+REGION_RE = re.compile(r"# --8<-- \[start:([\w-]+)\]\n(.*?)# --8<-- \[end:\1\]", re.S)
+# deltalake 1.6.6's whole TableAlterer: no method drops, renames, or retypes a
+# column in place.
+ALTERER_METHODS = {
+    "add_columns",
+    "add_constraint",
+    "add_feature",
+    "drop_column_not_null",
+    "drop_constraint",
+    "set_column_metadata",
+    "set_table_description",
+    "set_table_name",
+    "set_table_properties",
+}
 TABLES = f"{UC_API}/delta/v1/catalogs/warehouse/schemas/sales/tables"
 
 
@@ -97,47 +112,32 @@ async def _reset_catalog(create: bool) -> None:
             )
 
 
-async def _register_events() -> None:
-    """Register the external table with its columns, as on the register page."""
-    write_deltalake(
-        f"file://{EVENTS}",
-        pa.table(
-            {
-                "order_id": pa.array([1, 2], pa.int64()),
-                "status": ["created", "shipped"],
-            }
-        ),
-    )
-    columns = [
-        ColumnInfo(
-            name=name,
-            type_name=type_name,
-            type_text=type_text,
-            type_json=json.dumps(
-                {"name": name, "type": delta_type, "nullable": True, "metadata": {}}
-            ),
-            position=position,
-            nullable=True,
+def _regions(path: Path) -> dict[str, str]:
+    return {n: textwrap.dedent(b) for n, b in REGION_RE.findall(path.read_text())}
+
+
+async def _paste(namespace: dict, source: str) -> None:
+    """Run a region as `python -m asyncio` runs a pasted block: statement by
+    statement, top-level await allowed, in one shared namespace."""
+    for statement in ast.parse(source).body:
+        code = compile(
+            ast.Module([statement], []),
+            "<paste>",
+            "exec",
+            flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
         )
-        for position, (name, type_name, type_text, delta_type) in enumerate(
-            [
-                ("order_id", ColumnTypeName.LONG, "bigint", "long"),
-                ("status", ColumnTypeName.STRING, "string", "string"),
-            ]
-        )
-    ]
+        result = eval(code, namespace)  # noqa: S307 - the page's own regions
+        if inspect.iscoroutine(result):
+            await result
+
+
+async def _delete_events() -> None:
     async with ApiClient(Configuration(host=UC_API)) as api:
-        await TablesApi(api).create_table(
-            CreateTable(
-                name="order_events",
-                catalog_name="warehouse",
-                schema_name="sales",
-                table_type=TableType.EXTERNAL,
-                data_source_format=DataSourceFormat.DELTA,
-                storage_location=f"file://{EVENTS}",
-                columns=columns,
-            )
-        )
+        try:
+            await TablesApi(api).delete_table(full_name="warehouse.sales.order_events")
+        except NotFoundException:
+            pass
+    shutil.rmtree(EVENTS, ignore_errors=True)
 
 
 def _record(name: str = "order_events") -> dict:
@@ -201,8 +201,64 @@ def _create_managed_table() -> str:
 async def main() -> None:
     await _reset_catalog(create=True)
     shutil.rmtree(EVENTS, ignore_errors=True)
-    await _register_events()
+
+    # --8<-- [start:register-events]
+    import pyarrow as pa
+    from deltalake import write_deltalake
+    from unitycatalog.client import ApiClient, Configuration, CreateTable, TablesApi
+    from unitycatalog.client.models import (
+        ColumnInfo,
+        ColumnTypeName,
+        DataSourceFormat,
+        TableType,
+    )
+
+    location = "file:///tmp/uc-docs/order_events"
+    events = pa.table(
+        {
+            "order_id": pa.array([1, 2], pa.int64()),
+            "status": ["created", "shipped"],
+        }
+    )
+    write_deltalake(location, events)
+
+    config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
+    api = ApiClient(config)
+    await TablesApi(api).create_table(
+        CreateTable(
+            name="order_events",
+            catalog_name="warehouse",
+            schema_name="sales",
+            table_type=TableType.EXTERNAL,
+            data_source_format=DataSourceFormat.DELTA,
+            storage_location=location,
+            columns=[
+                ColumnInfo(
+                    name="order_id",
+                    type_name=ColumnTypeName.LONG,
+                    type_text="bigint",
+                    type_json='{"name": "order_id", "type": "long", "nullable": true, "metadata": {}}',
+                    position=0,
+                    nullable=True,
+                ),
+                ColumnInfo(
+                    name="status",
+                    type_name=ColumnTypeName.STRING,
+                    type_text="string",
+                    type_json='{"name": "status", "type": "string", "nullable": true, "metadata": {}}',
+                    position=1,
+                    nullable=True,
+                ),
+            ],
+        )
+    )
+    # --8<-- [end:register-events]
+    await api.close()
     registered = _record()
+    assert [(c["name"], c["type_text"]) for c in registered["columns"]] == [
+        ("order_id", "bigint"),
+        ("status", "string"),
+    ], registered["columns"]
     etag_registered = load_table("order_events")["etag"]
 
     # --8<-- [start:open-external]
@@ -210,10 +266,11 @@ async def main() -> None:
     from unitycatalog.client import ApiClient, Configuration, TablesApi
 
     config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
-    async with ApiClient(config) as api:
-        table = await TablesApi(api).get_table(full_name="warehouse.sales.order_events")
+    api = ApiClient(config)
+    table = await TablesApi(api).get_table(full_name="warehouse.sales.order_events")
     dt = DeltaTable(table.storage_location)
     # --8<-- [end:open-external]
+    await api.close()
     assert table.table_type == TableType.EXTERNAL, table.table_type
     version_before = dt.version()
 
@@ -245,6 +302,53 @@ async def main() -> None:
     assert fields["status"]["metadata"] == {"comment": "Latest order status"}, fields
     assert log.metadata().description == "One row per order event"
     assert log.metadata().configuration["sales.owner"] == "orders-team"
+
+    # Nothing else in deltalake changes a column in place: TableAlterer has no
+    # drop, rename, or type change (drop_column_not_null only relaxes NOT NULL),
+    # and neither has DeltaTable.
+    assert set(m for m in dir(TableAlterer) if not m.startswith("_")) == (
+        ALTERER_METHODS
+    ), "TableAlterer changed: update the page's deltalake limits"
+    for name in dir(_DeltaTable):
+        assert not re.search(r"drop_col|rename|column_type|change_col", name), (
+            f"DeltaTable.{name}: update the page's deltalake limits"
+        )
+
+    # A full overwrite with schema_mode="overwrite" can drop, rename, and retype
+    # columns: one WRITE commit that rewrites every row. Pinned on a scratch path.
+    scratch = f"file://{DOCS_ROOT}/schema_overwrite"
+    shutil.rmtree(scratch.removeprefix("file://"), ignore_errors=True)
+    write_deltalake(
+        scratch,
+        pa.table(
+            {
+                "order_id": pa.array([1], pa.int64()),
+                "status": ["created"],
+                "legacy_code": ["A"],
+                "quantity": pa.array([1], pa.int32()),
+            }
+        ),
+    )
+    write_deltalake(
+        scratch,
+        pa.table(
+            {
+                "order_id": pa.array([1], pa.int64()),
+                "state": ["created"],
+                "quantity": pa.array([1], pa.int64()),
+            }
+        ),
+        mode="overwrite",
+        schema_mode="overwrite",
+    )
+    rewritten = _DeltaTable(scratch)
+    assert rewritten.version() == 1, rewritten.version()
+    assert [
+        (f["name"], f["type"])
+        for f in json.loads(rewritten.schema().to_json())["fields"]
+    ] == [("order_id", "long"), ("state", "string"), ("quantity", "long")]
+    assert rewritten.history(1)[0]["operation"] == "WRITE", rewritten.history(1)
+    shutil.rmtree(scratch.removeprefix("file://"), ignore_errors=True)
 
     # The catalog's record kept all of it as registered: columns, column
     # comments, table comment, and properties.
@@ -333,6 +437,11 @@ async def main() -> None:
             "UCTableSet::AlterTable",
         ),
         (
+            "ALTER TABLE warehouse.sales.order_events SET ('sales.owner' = 'orders-team')",
+            duckdb.NotImplementedException,
+            "UCTableSet::AlterTable",
+        ),
+        (
             "COMMENT ON TABLE warehouse.sales.order_events IS 'x'",
             duckdb.BinderException,
             "Only altering tables is supported for now",
@@ -346,6 +455,24 @@ async def main() -> None:
             continue
         raise AssertionError(f"now supported, update the page: {statement}")
     con.close()
+
+    # The reader's route in `python -m asyncio`: paste the page's regions in page
+    # order on a freshly registered table, then check the record is in step.
+    await _delete_events()
+    regions = _regions(Path(__file__))
+    helpers = _regions(HERE / "delta_api.py")["delta-api"]
+    namespace: dict = {"__name__": "__main__"}
+    await _paste(namespace, regions["register-events"])
+    await _paste(namespace, regions["open-external"])
+    await _paste(namespace, regions["alter-deltalake"])
+    await _paste(namespace, helpers)
+    await _paste(namespace, regions["sync-deltalake"])
+    await namespace["api"].close()
+    pasted = _record()
+    assert [c["name"] for c in pasted["columns"]] == ["order_id", "status", "carrier"]
+    assert pasted["columns"][1]["comment"] == "Latest order status", pasted["columns"]
+    assert pasted["comment"] == "One row per order event", pasted.get("comment")
+    assert pasted["properties"]["sales.owner"] == "orders-team", pasted["properties"]
 
     await _reset_catalog(create=False)
     shutil.rmtree(EVENTS, ignore_errors=True)

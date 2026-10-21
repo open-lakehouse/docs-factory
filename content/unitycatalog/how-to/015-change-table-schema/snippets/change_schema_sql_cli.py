@@ -40,17 +40,20 @@ Needs Java 17 and Maven access on first run; behind a Maven mirror, set
 DOCS_FACTORY_MAVEN_MIRROR (the harness points Spark at it).
 """
 
+import ast
 import asyncio
+import inspect
 import json
 import os
+import re
 import shutil
 import tempfile
+import textwrap
 import urllib.error
 import urllib.request
 from pathlib import Path
 
-import pyarrow as pa
-from deltalake import DeltaTable, write_deltalake
+from deltalake import DeltaTable
 from docsnip import shellregions, sqlregions
 from unitycatalog.client import ApiClient, CatalogsApi, Configuration, CreateCatalog
 from unitycatalog.client.exceptions import NotFoundException
@@ -59,10 +62,12 @@ HERE = Path(__file__).parent
 SQL = HERE / "change_schema.sql"
 SHELL = HERE / "spark_sql.sh"
 UC_API = os.environ.get("UC_BASE_URL", "http://localhost:8080/api/2.1/unity-catalog")
-DOCS_ROOT = os.environ.get("UC_DOCS_ROOT", "/tmp/uc-docs")
+# external_deltalake.py's `register-events` region names this path for the reader.
+DOCS_ROOT = "/tmp/uc-docs"
 EVENTS = f"{DOCS_ROOT}/order_events"
 TABLES = f"{UC_API}/delta/v1/catalogs/warehouse/schemas/sales/tables"
 ERROR_MARKERS = ("SQLSTATE", "Exception", "Error in query")
+REGION_RE = re.compile(r"# --8<-- \[start:([\w-]+)\]\n(.*?)# --8<-- \[end:\1\]", re.S)
 
 
 async def _reset_catalog(create: bool) -> None:
@@ -122,56 +127,30 @@ def _errors(out: str) -> list[str]:
     ]
 
 
-def _register_events() -> None:
-    """An external table registered with its columns, as on the register page."""
-    write_deltalake(
-        f"file://{EVENTS}",
-        pa.table(
-            {"order_id": pa.array([1, 2], pa.int64()), "status": ["created", "shipped"]}
-        ),
-    )
-    _request(
-        "POST",
-        "tables",
-        {
-            "name": "order_events",
-            "catalog_name": "warehouse",
-            "schema_name": "sales",
-            "table_type": "EXTERNAL",
-            "data_source_format": "DELTA",
-            "storage_location": f"file://{EVENTS}",
-            "columns": [
-                {
-                    "name": name,
-                    "type_name": type_name,
-                    "type_text": type_text,
-                    "type_json": json.dumps(
-                        {"name": name, "type": delta, "nullable": True, "metadata": {}}
-                    ),
-                    "position": position,
-                    "nullable": True,
-                }
-                for position, (name, type_name, type_text, delta) in enumerate(
-                    [
-                        ("order_id", "LONG", "bigint", "long"),
-                        ("status", "STRING", "string", "string"),
-                    ]
-                )
-            ],
-        },
-    )
+def _regions(path: Path) -> dict[str, str]:
+    return {n: textwrap.dedent(b) for n, b in REGION_RE.findall(path.read_text())}
 
 
-def _post(name: str, requirements: list, updates: list) -> dict:
-    body = json.dumps({"requirements": requirements, "updates": updates}).encode()
-    req = urllib.request.Request(
-        f"{TABLES}/{name}",
-        data=body,
-        method="POST",
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req) as resp:
-        return json.load(resp)["metadata"]
+async def _paste(namespace: dict, *sources: str) -> None:
+    """Run regions as `python -m asyncio` runs a pasted block: statement by
+    statement, top-level await allowed, in one shared namespace."""
+    for source in sources:
+        for statement in ast.parse(source).body:
+            code = compile(
+                ast.Module([statement], []),
+                "<paste>",
+                "exec",
+                flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+            )
+            result = eval(code, namespace)  # noqa: S307 - the page's own regions
+            if inspect.iscoroutine(result):
+                await result
+    if "api" in namespace:
+        await namespace["api"].close()
+
+
+DELTA_RS = _regions(HERE / "external_deltalake.py")
+HELPERS = _regions(HERE / "delta_api.py")["delta-api"]
 
 
 if __name__ == "__main__":
@@ -209,7 +188,11 @@ if __name__ == "__main__":
         (9, "UNSET TBLPROPERTIES"),
     ], history
 
+    # create-table ran in the shell as the reader enters it: the schema and a
+    # managed table with its two rows (history 0 and 1 above).
+    assert _request("GET", "schemas/warehouse.sales") is not None
     orders = _table("orders")
+    assert orders["table_type"] == "MANAGED", orders["table_type"]
     assert orders["comment"] == "One row per customer order", orders.get("comment")
     columns = {c["name"]: c for c in orders["columns"]}
     assert list(columns) == ["order_id", "customer", "amount", "quantity", "channel"]
@@ -223,7 +206,8 @@ if __name__ == "__main__":
 
     # Part 2: the connector rejects renames; the copy-and-drop works. Then an
     # external table's Delta log changes and the catalog's record doesn't.
-    _register_events()
+    # The table the page assumes, registered with the delta-rs tab's region.
+    asyncio.run(_paste({"__name__": "__main__"}, DELTA_RS["register-events"]))
     registered = _table("order_events")
     out = _spark_sql(
         "rename-table",
@@ -272,25 +256,28 @@ if __name__ == "__main__":
     assert stale.get("comment") is None, stale.get("comment")
     assert stale.get("properties") == registered.get("properties"), stale
 
-    # The Delta API sync from the page's Python section brings it in step.
-    metadata = json.load(urllib.request.urlopen(f"{TABLES}/order_events"))["metadata"]
-    _post(
-        "order_events",
-        requirements=[
-            {"type": "assert-table-uuid", "uuid": metadata["table-uuid"]},
-            {"type": "assert-etag", "etag": metadata["etag"]},
-        ],
-        updates=[
-            {"action": "set-columns", "columns": json.loads(log.schema().to_json())},
-            {"action": "set-table-comment", "comment": log.metadata().description},
-            {"action": "set-properties", "updates": log.metadata().configuration},
-        ],
+    # A Spark · SQL reader syncs through the delta-rs tab: the helpers, then
+    # open-external and sync-deltalake, pasted as `python -m asyncio` runs them.
+    stale_etag = json.load(urllib.request.urlopen(f"{TABLES}/order_events"))[
+        "metadata"
+    ]["etag"]
+    asyncio.run(
+        _paste(
+            {"__name__": "__main__"},
+            HELPERS,
+            DELTA_RS["open-external"],
+            DELTA_RS["sync-deltalake"],
+        )
     )
     synced = _table("order_events")
     assert [c["name"] for c in synced["columns"]] == ["order_id", "status", "carrier"]
     assert synced["columns"][1]["comment"] == "Latest order status", synced["columns"]
     assert synced["comment"] == "One row per order event", synced.get("comment")
     assert synced["properties"]["sales.owner"] == "orders-team", synced["properties"]
+    etag = json.load(urllib.request.urlopen(f"{TABLES}/order_events"))["metadata"][
+        "etag"
+    ]
+    assert etag != stale_etag, etag
 
     asyncio.run(_reset_catalog(create=False))
     shutil.rmtree(EVENTS, ignore_errors=True)

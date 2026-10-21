@@ -3037,7 +3037,7 @@
       "cells": {
         "spark": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -3047,7 +3047,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "create-a-table-from-a-query",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -3102,7 +3102,7 @@
       "cells": {
         "spark": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -3112,7 +3112,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "replace-a-tables-definition-and-rows",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -3147,7 +3147,7 @@
       "cells": {
         "spark": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -3157,7 +3157,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "overwrite-all-rows",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -3192,7 +3192,7 @@
       "cells": {
         "spark": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -3202,7 +3202,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "replace-the-rows-that-match-a-condition",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -3237,7 +3237,7 @@
       "cells": {
         "spark": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -3247,7 +3247,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "overwrite-the-partitions-the-new-rows-write-to",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -8850,9 +8850,14 @@
         "iceberg.join-delta",
         "managed.append",
         "managed.create",
+        "managed.create-as-select",
         "managed.delete",
         "managed.drop",
+        "managed.overwrite",
+        "managed.overwrite-partitions",
         "managed.read",
+        "managed.replace",
+        "managed.replace-where",
         "managed.time-travel",
         "managed.update",
         "metricview.create",
@@ -8910,9 +8915,14 @@
         "iceberg.update",
         "managed.append",
         "managed.create",
+        "managed.create-as-select",
         "managed.delete",
         "managed.drop",
+        "managed.overwrite",
+        "managed.overwrite-partitions",
         "managed.read",
+        "managed.replace",
+        "managed.replace-where",
         "managed.time-travel",
         "managed.update",
         "table.list"

@@ -261,20 +261,27 @@ assert con.sql("SELECT sku, qty FROM inventory.stock.restock").fetchall() == [
     ("fig", 7)
 ]
 
-# Stale session: DuckDB has read the table, then Spark commits. DuckDB's next
-# append raises (409 or 500 depending on the nightly extension), and the table
-# doesn't change. No status code or message is pinned.
+# Stale session (R01, known issues): DuckDB has read the table, then Spark
+# commits. DuckDB keeps the snapshot it read: its reads miss Spark's row, and
+# its next append fails with HTTP 409 and leaves the table unchanged. Retrying
+# in the same attachment fails the same way.
 spark.sql("INSERT INTO inventory.stock.restock VALUES ('kiwi', 2)")
 restock_version = _latest_version("restock")
 restock_rows = sorted(_rows("SELECT sku, qty FROM inventory.stock.restock"))
-try:
-    con.execute("INSERT INTO inventory.stock.restock VALUES ('lime', 3)")
-except duckdb.Error as err:
-    print(f"stale DuckDB append failed as documented: {type(err).__name__}: {err}")
-else:
-    raise AssertionError("DuckDB rebases stale appends now: update the page")
-assert _latest_version("restock") == restock_version
-assert sorted(_rows("SELECT sku, qty FROM inventory.stock.restock")) == restock_rows
+seen = con.sql("SELECT sku, qty FROM inventory.stock.restock").fetchall()
+assert seen == [("fig", 7)], f"DuckDB sees other engines' commits now: {seen}"
+for attempt in (1, 2):
+    try:
+        con.execute("INSERT INTO inventory.stock.restock VALUES ('lime', 3)")
+    except duckdb.TransactionException as err:
+        message = str(err)
+        assert "Failed to commit: Request to" in message, message
+        assert "/delta/v1/catalogs/inventory/schemas/stock/tables/restock" in message
+        assert "failed (HTTP 409): Conflict" in message, message
+    else:
+        raise AssertionError(f"DuckDB stale append #{attempt} commits now: update the page")
+    assert _latest_version("restock") == restock_version
+    assert sorted(_rows("SELECT sku, qty FROM inventory.stock.restock")) == restock_rows
 
 # --8<-- [start:duckdb-reattach]
 con.execute("DETACH inventory")

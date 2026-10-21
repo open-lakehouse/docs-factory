@@ -31,14 +31,11 @@ Open a Python session with DuckDB:
 uv run --with duckdb==1.5.6 python
 ```
 
-Install and load `delta` and `unity_catalog`:
+Install and load `delta`, then `unity_catalog` from DuckDB's `core_nightly`
+channel:
 
 ```python file=./snippets/duckdb_tables.py start=start:install end=end:install
 ```
-
-:::note
-This page installs `unity_catalog` from DuckDB's `core_nightly` channel.
-:::
 
 ## Attach a catalog
 
@@ -102,6 +99,10 @@ reads the latest version the server has accepted.
 On a catalog-managed table, DuckDB writes the new data and commit file, then
 asks the server to accept the commit as the table's next version. From then on,
 Spark and every other client see the new rows.
+
+DuckDB can't append to a partitioned table that uses column mapping. The
+insert fails with `Not implemented Error: Inserting into a partitioned Delta table that uses column mapping is not supported`,
+and the table doesn't change.
 
 ## Create, change, and drop tables
 

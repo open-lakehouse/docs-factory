@@ -212,5 +212,5 @@ As an aside, the process of writing the metric view definitions themselves can b
 for internal alignment on what your actual KPIs should be.
 
 And you can get started today with Unity Catalog 0.7 and Apache Spark 4.2:
-[Define and query your first metric view](../../content/unitycatalog/tutorials/008-first-metric-view/index.md) walks through a first one, and
+[Working with metric views](../../content/unitycatalog/tutorials/008-first-metric-view/index.md) walks through a first one, and
 [Manage metric views](../../content/unitycatalog/how-to/013-metric-views/index.md) covers the rest.

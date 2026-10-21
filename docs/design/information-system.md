@@ -139,7 +139,10 @@ From the live model plus content frontmatter the app derives:
   `governs` / `dependsOn` / …);
 - focused diagrams from `element.defaultView` (the `explain_*` views);
 - inline `model:` links as `ModelRef` (label + neighborhood modal);
-- the explanation backlog at `/plan/coverage`.
+- the review app's Model section (`/model`): every view, an inspector for what
+  the pipeline derives from each element (from `model-index.json`, built by
+  `site/scripts/model-index.mjs`), each site's `concepts.json`, and the
+  explanation backlog at `/model/coverage`.
 
 The **emitted** docs sites do **not** read the live plugin. They load the
 committed [`architecture/dist/model.json`](../../architecture/dist/model.json)
@@ -165,8 +168,8 @@ element ids **fail CI**. Coverage that lags the model **warns**.
   specs/implementations, Trestle concern gaps, unmodeled compat interfaces.
 
 The live, human-facing equivalent of the explanation ratchet is
-[`CoverageGaps.tsx`](../../site/src/components/plan/CoverageGaps.tsx) at
-`/plan/coverage`. There is no on-disk coverage record.
+[`CoverageGaps.tsx`](../../site/src/components/model/CoverageGaps.tsx) at
+`/model/coverage`. There is no on-disk coverage record.
 
 Renames still fail until content is updated (the alias map in §4 is unbuilt).
 Partial explanation coverage is expected and tracked, never fatal.

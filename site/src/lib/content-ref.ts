@@ -38,12 +38,46 @@ export function plannedOf(ref: ContentRef): { project: string; id: string } | nu
   return ref.area === ContentArea.DOCS ? parsePlannedSlug(ref.slug) : null;
 }
 
+/** What a MODEL ref's threads are about: one element, one view, or the whole model. */
+export type ModelTarget =
+  | { kind: "element"; id: string }
+  | { kind: "view"; id: string }
+  | { kind: "estate" };
+
+/** A MODEL ref's slug: `element/<id>`, `view/<id>`, or `estate`. */
+export function modelSlug(target: ModelTarget): string {
+  return target.kind === "estate" ? "estate" : `${target.kind}/${target.id}`;
+}
+
+/** The ref a model element's, view's, or the whole model's threads hang off. */
+export function modelRef(target: ModelTarget | string): ContentRef {
+  const slug = typeof target === "string" ? target : modelSlug(target);
+  return create(ContentRefSchema, { area: ContentArea.MODEL, slug });
+}
+
+/** The model target of a MODEL ref, else null. */
+export function modelOf(ref: ContentRef): ModelTarget | null {
+  if (ref.area !== ContentArea.MODEL) return null;
+  if (ref.slug === "estate") return { kind: "estate" };
+  const m = /^(element|view)\/([\w.-]+)$/.exec(ref.slug);
+  return m ? { kind: m[1] as "element" | "view", id: m[2] } : null;
+}
+
+/** The Model explorer's route for a target: `/model?el=<id>`, `/model?view=<id>`, or `/model`. */
+export function modelHref(target: ModelTarget): string {
+  if (target.kind === "element") return `/model?el=${encodeURIComponent(target.id)}`;
+  if (target.kind === "view") return `/model?view=${encodeURIComponent(target.id)}`;
+  return "/model";
+}
+
 /**
  * The in-app route for a ContentRef, matching App.tsx: `/blog/<slug>` for blogs
  * and `/docs/<project>/<bucket>/<slug>` for docs. Pass `anchorSlug` to deep-link
  * to a section (the reviewer dashboard links comments back to their heading).
  */
 export function refHref(ref: ContentRef, anchorSlug?: string): string {
+  const model = modelOf(ref);
+  if (model) return modelHref(model);
   const base =
     ref.area === ContentArea.BLOGS
       ? `/blog/${ref.slug}`
@@ -53,13 +87,14 @@ export function refHref(ref: ContentRef, anchorSlug?: string): string {
 
 /**
  * URL-safe serialization of a ContentRef for the review workspace's tab list
- * (`?tabs=docs:slug:project:bucket,blogs:slug::`). Deliberately distinct from
+ * (`?tabs=docs:slug:project:bucket,blogs:slug::,model:element/<id>::`). Deliberately distinct from
  * refKey() in review-queries.ts, which uses a `\0` separator for cache-key
  * identity and is NOT URL-safe. The four fields never contain `:` or `,`
  * (they're path segments / enum names), so a positional colon join round-trips.
  */
 export function refToParam(ref: ContentRef): string {
-  const area = ref.area === ContentArea.BLOGS ? "blogs" : "docs";
+  const area =
+    ref.area === ContentArea.BLOGS ? "blogs" : ref.area === ContentArea.MODEL ? "model" : "docs";
   return [area, ref.slug, ref.project ?? "", ref.bucket ?? ""].join(":");
 }
 
@@ -68,6 +103,10 @@ export function refFromParam(token: string): ContentRef | null {
   const [area, slug, project, bucket] = token.split(":");
   if (!slug) return null;
   if (area === "blogs") return blogRef(slug);
+  if (area === "model") {
+    const target = modelOf(create(ContentRefSchema, { area: ContentArea.MODEL, slug }));
+    return target && modelRef(target);
+  }
   if (area === "docs") {
     if (!project || !bucket) return null;
     return docRef(project, bucket, slug);

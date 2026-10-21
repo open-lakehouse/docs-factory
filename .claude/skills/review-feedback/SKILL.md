@@ -7,7 +7,7 @@ description: |
   nav slots or tracked compatibility journeys, open a PR, and reply on each thread. Use when the user asks to
   process, address, or work through review comments, feedback, approvals, or
   content requests, for one page, a project, or everything.
-argument-hint: 'Optional scope: a page slug, a project (unitycatalog, delta), docs, or blogs'
+argument-hint: 'Optional scope: a page slug, a project (unitycatalog, delta), docs, blogs, or model'
 ---
 
 # Process review feedback
@@ -53,6 +53,13 @@ For each thread, `get_thread` gives the conversation plus a location:
 - `file changed since comment`: line numbers may be stale. Read around them.
 - anchor `the whole page`: a page-level thread about the page as a whole (its
   scope, structure, or angle). It maps to the file; read the page end to end.
+- anchor `model element <id>` / `model view <id>` / `model the model as a
+  whole`: a thread on the estate model from the review app's Model section. It
+  maps to the element's or view's declaration in `architecture/model/`. Make the
+  change with the `update-architecture` skill (it proposes the `.likec4` patch
+  for approval) and regenerate with `just arch-model`. A declaration under
+  `deployment/generated/` comes from Trestle: change the environment's
+  `env.toml` and run `just env-render` instead.
 
 A thread may carry a **suggestion**: the reviewer's exact wording for the
 anchored passage, shown as a `diff` block (`-` original, `+` replacement; no `+`

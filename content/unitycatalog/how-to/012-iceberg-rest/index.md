@@ -33,7 +33,7 @@ Every client is configured with the same three values:
 
 | Iceberg REST setting | Value |
 | --- | --- |
-| Catalog URI | `http://localhost:8080/api/2.1/unity-catalog/iceberg`: the server's base URL with `/api/2.1/unity-catalog/iceberg` appended. |
+| Catalog URI | `http://localhost:8080/api/2.1/unity-catalog/iceberg` |
 | Warehouse | The name of one Unity Catalog catalog, here `retail`. A client works with one catalog at a time; configure a second client catalog for another. |
 | Token | A Unity Catalog access token, sent as a bearer token. The local server has authorization disabled and accepts any value. |
 
@@ -62,8 +62,9 @@ uv run --with pyspark==4.1.0 python
 This is Iceberg's own Spark catalog, not the Unity Catalog connector. The
 Iceberg runtime is built per Spark minor version, and the AWS bundle adds the
 S3 file system that reads and writes table files with the credentials the
-server vends. Naming the Spark catalog after the Unity Catalog catalog keeps
-three-part names the same in both.
+server vends. The `warehouse` setting picks the Unity Catalog catalog. The
+`retail` in `spark.sql.catalog.retail` is only Spark's name for it, and making
+it the default catalog lets later statements name tables as `sales.orders`.
 :::
 
 ::::tab[DuckDB]

@@ -8,6 +8,7 @@
 // requested pages (UserCheck indicators).
 import { ChevronLeft, ChevronRight, PanelRightClose, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ContentArea } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { useCommentFeed } from "../../../lib/review-inbox";
 import { sameRef } from "../../../lib/review-queries";
 import ContentEventTimeline from "../ContentEventTimeline";
@@ -146,7 +147,8 @@ export default function RightPane({
         className={cn("workspace-section-divider empty:hidden", showFeed && "hidden")}
       />
 
-      {activeRef && !showFeed && (
+      {/* The model has threads but no versions or lifecycle to show. */}
+      {activeRef && !showFeed && activeRef.area !== ContentArea.MODEL && (
         <section className="workspace-activity">
           <ContentEventTimeline contentRef={activeRef} heading="Activity" />
         </section>

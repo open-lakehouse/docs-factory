@@ -10,8 +10,15 @@ blocks and interactive LikeC4 diagrams, inside the review workspace:
 - **`/review/dashboard`**: pending work, latest comments, review requests.
 - **`/plan`**: planning, reviewer-only. A summary of every project, then the
   docs roadmap (`nav.yml` slots by stage), the compatibility matrix, the blog
-  pipeline, content-request triage, coverage gaps, and product changes. Filters
-  live in the query string, so a view can be shared.
+  pipeline, content-request triage, and product changes. Filters live in the
+  query string, so a view can be shared.
+- **`/model`**: the estate LikeC4 model, reviewer-only. The explorer renders
+  every view; selecting an element shows what the docs derive from it (the
+  pages that explain, reference, or `model:`-link it, its journeys and
+  environments, whether each site publishes it) and its review threads. Also
+  each site's `concepts.json`, and the coverage gaps (concepts with no
+  explanation page). Threads on elements, views, and the whole model appear in
+  the Inbox and comment feed beside page threads.
 - **`/admin`**: allowlist and user roster (site admins only).
 
 It reads `content/` (Diátaxis docs), `blogs/` (narrative drafts), and the
@@ -102,6 +109,13 @@ Blog-specific diagrams live as dedicated views in
 `../architecture/model/blog-views.likec4`. This keeps the heavy LikeC4 runtime
 loaded once, avoids generated React modules, and still allows a post to have a
 purpose-built view with protocol-level participants.
+
+The Model section reads two build artifacts from
+[`scripts/model-index.mjs`](scripts/model-index.mjs), served fresh under
+`vite dev` and emitted into `dist/` by `vite build`: `/model-index.json`
+(per element and view: linked pages at any status, journeys, verified edges,
+environments, per-site publication) and `/concepts/<site>.json`, rendered by
+the same calls `just emit-docs` makes.
 
 ## Adding a content area
 

@@ -1,5 +1,5 @@
 ---
-title: Define and query your first metric view
+title: Working with metric views
 summary: Use Spark to define order KPIs once as a metric view in Unity Catalog, then query them by month, by status, and in total.
 diataxis: tutorial
 project: unitycatalog

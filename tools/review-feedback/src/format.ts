@@ -24,6 +24,11 @@ function anchorLine(t: FeedbackThread): string {
     const region = code.region ? ` region \`${code.region}\`` : "";
     return `- anchor: code \`${code.path}\` lines ${code.line}-${code.endLine}${region}`;
   }
+  if (t.model) {
+    const what =
+      t.model.kind === "estate" ? "the model as a whole" : `${t.model.kind} ${t.model.id}`;
+    return `- anchor: model ${what} (fix it in architecture/model, then \`just arch-model\`)`;
+  }
   if (t.planned) {
     return `- anchor: planned slot ${t.planned.id} (no page yet: an instruction for writing it)`;
   }

@@ -42,7 +42,7 @@ The other states don't say that a tool can't do something:
 | Engine | Interfaces | Verified journeys |
 | --- | --- | --- |
 | [Apache Spark](#apache-spark) | Spark 4.1.0, Spark 4.2.0 | 30 of 75 |
-| [DuckDB](#duckdb) | DuckDB 1.5.4 | 15 of 68 |
+| [DuckDB](#duckdb) | DuckDB 1.5.6 | 15 of 68 |
 | [Polars](#polars) | Polars 1.44.2 | 5 of 68 |
 | [Daft](#daft) | Daft 0.7.25 | 2 of 68 |
 | [pandas](#pandas) | pandas 2.3.3 with `deltalake` 1.6.6 | 3 of 21 |

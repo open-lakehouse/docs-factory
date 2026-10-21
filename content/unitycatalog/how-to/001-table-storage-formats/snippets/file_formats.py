@@ -4,7 +4,7 @@
 #   "unitycatalog-client==0.7.0",
 #   "pyarrow>=18",
 #   "polars==1.44.2",
-#   "duckdb==1.5.4",
+#   "duckdb==1.5.6",
 # ]
 #
 # [tool.docs-factory]

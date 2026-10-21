@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.4", "pyspark==4.1.0", "unitycatalog-client==0.7.0"]
+# dependencies = ["duckdb==1.5.6", "pyspark==4.1.0", "unitycatalog-client==0.7.0"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"

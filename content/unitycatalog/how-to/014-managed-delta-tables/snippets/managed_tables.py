@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.4", "pyspark==4.1.0", "deltalake==1.6.6", "pyarrow"]
+# dependencies = ["duckdb==1.5.6", "pyspark==4.1.0", "deltalake==1.6.6", "pyarrow"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -17,7 +17,7 @@
 # ]
 # claims.duckdb = [
 #   { journey = "managed.read", region = "duckdb-read" },
-#   { journey = "managed.append", region = "duckdb-append", note = "tables with column mapping off" },
+#   { journey = "managed.append", region = "duckdb-append" },
 #   { journey = "managed.create", fails = true, anchor = "create-a-managed-table" },
 # ]
 # claims."delta:spark-sql" = [
@@ -244,19 +244,23 @@ assert _latest_version() == 1
 expected_v1 = [("apple", 10), ("pear", 4), ("plum", 0)]
 assert _rows("SELECT sku, qty FROM inventory.stock.items ORDER BY sku") == expected_v1
 
-# --8<-- [start:create-for-duckdb]
-spark.sql("""
-    CREATE TABLE inventory.stock.restock (sku STRING, qty INT)
-    USING DELTA
-    TBLPROPERTIES ('delta.columnMapping.mode' = 'none')
-""")
-# --8<-- [end:create-for-duckdb]
+# A second table for DuckDB's writes, with Spark's defaults: column mapping on.
+spark.sql("CREATE TABLE inventory.stock.restock (sku STRING, qty INT) USING DELTA")
+assert (
+    spark.sql("SHOW TBLPROPERTIES inventory.stock.restock ('delta.columnMapping.mode')")
+    .first()
+    .value
+    == "name"
+)
 
 # --8<-- [start:duckdb-append]
 con.execute("INSERT INTO inventory.stock.restock VALUES ('fig', 7)")
 # --8<-- [end:duckdb-append]
-# DuckDB attached before Spark created `restock`, and still writes to it.
-assert _rows("SELECT sku, qty FROM inventory.stock.restock") == [("fig", 7)]
+# DuckDB attached before Spark created `restock`, and still writes to it. Its
+# rows read back by name in both engines, column mapping notwithstanding.
+assert _rows("SELECT sku, qty FROM inventory.stock.restock") == [("fig", 7)], (
+    "DuckDB's column-mapped append reads wrong in Spark: update the page and R01"
+)
 assert con.sql("SELECT sku, qty FROM inventory.stock.restock").fetchall() == [
     ("fig", 7)
 ]
@@ -294,6 +298,9 @@ assert _latest_version("restock") == restock_version + 1
 assert sorted(_rows("SELECT sku, qty FROM inventory.stock.restock")) == sorted(
     restock_rows + [("lime", 3)]
 )
+# The new attachment reads every engine's rows, column-mapped, by name.
+seen = sorted(con.sql("SELECT sku, qty FROM inventory.stock.restock").fetchall())
+assert seen == [("fig", 7), ("kiwi", 2), ("lime", 3)], seen
 
 # --8<-- [start:change-rows]
 spark.sql("UPDATE inventory.stock.items SET qty = qty + 5 WHERE sku = 'pear'")
@@ -381,27 +388,6 @@ else:
 assert _latest_version() == 3
 assert _rows("SELECT count(*) FROM inventory.stock.items") == [(2,)]
 
-# DuckDB's `delta` extension writes logical column names, so on a table with
-# column mapping (Spark's default here) its rows read as NULL in Spark and in
-# DuckDB. DuckDB last read `items` at version 3, the latest, so this append commits.
-assert (
-    spark.sql("SHOW TBLPROPERTIES inventory.stock.items ('delta.columnMapping.mode')")
-    .first()
-    .value
-    == "name"
-)
-con.execute("INSERT INTO inventory.stock.items VALUES ('fig', 7)")
-assert _latest_version() == 4
-seen = _rows("SELECT sku, qty FROM inventory.stock.items ORDER BY sku")
-assert seen == [(None, None), ("apple", 10), ("pear", 9)], (
-    f"DuckDB appends to column-mapped tables now: update the page and R01: {seen}"
-)
-con.execute("DETACH inventory")
-con.execute(
-    "ATTACH 'inventory' AS inventory (TYPE unity_catalog, DEFAULT_SCHEMA 'stock')"
-)
-seen = sorted(con.sql("SELECT sku, qty FROM inventory.stock.items").fetchall(), key=str)
-assert seen == [("apple", 10), ("pear", 9), (None, None)], seen
 con.close()
 
 # --8<-- [start:drop]

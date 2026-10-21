@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.4"]
+# dependencies = ["duckdb==1.5.6"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/uc-aws/compose.yaml"

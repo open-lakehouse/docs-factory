@@ -1475,7 +1475,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.4",
+              "version": "1.5.6",
               "api": "INSERT INTO",
               "note": "through Unity Catalog"
             }
@@ -2842,7 +2842,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.4",
+              "version": "1.5.6",
               "api": null,
               "note": "through Unity Catalog"
             }
@@ -6646,7 +6646,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.4",
+              "version": "1.5.6",
               "api": "ATTACH … (TYPE unity_catalog)",
               "note": "nightly `unity_catalog`"
             }
@@ -7128,7 +7128,7 @@
               "ready": true,
               "works": false,
               "fails": "DuckDB appends to column-mapped tables now",
-              "version": "1.5.4",
+              "version": "1.5.6",
               "api": null,
               "note": "rows read back as NULL"
             }
@@ -7561,7 +7561,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.4",
+              "version": "1.5.6",
               "api": null,
               "note": "through Unity Catalog"
             }
@@ -7647,7 +7647,7 @@
               "ready": true,
               "works": true,
               "fails": null,
-              "version": "1.5.4",
+              "version": "1.5.6",
               "api": "INSERT INTO",
               "note": "through Unity Catalog, column mapping off"
             }

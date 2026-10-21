@@ -1,22 +1,32 @@
 // SelectionLayer — the fine-grained comment capture surface. Mounts over the
 // rendered article for allowlisted viewers. On a text selection it shows a
-// floating "Comment" button and a right-click context menu; picking either
-// captures a selector (a prose text-quote, or a code source anchor when the
+// floating action bar (Comment, plus Suggest edit / Suggest deletion when the
+// passage can take a suggestion; keys C, E, Delete) and a right-click context
+// menu; picking an action captures a selector (a prose text-quote, or a code source anchor when the
 // selection is inside a `file=` snippet block) and hands it to the shared
 // selection state, which the CommentSidebar turns into a composer.
 
-import { Link2, MessageSquare } from "lucide-react";
+import { Eraser, Link2, MessageSquare, PencilLine } from "lucide-react";
 import { type RefObject, useEffect, useRef, useState } from "react";
 import { useAuth } from "../../lib/auth-context";
 import { copyToClipboard } from "../../lib/clipboard";
 import { captureSelector, hashLine } from "../../lib/content-ref";
-import { type PendingAnchor, useSelectionState } from "./selection-context";
+import { type PendingAnchor, type SelectionIntent, useSelectionState } from "./selection-context";
 
 interface FloatUI {
   x: number;
   y: number;
   build: () => Promise<PendingAnchor | null>;
+  /** Whether the anchor will carry an `original`, known before `build` resolves. */
+  suggestable: boolean;
 }
+
+interface Built {
+  build: () => Promise<PendingAnchor | null>;
+  suggestable: boolean;
+}
+
+const UI_SELECTOR = ".sel-bar, .sel-menu";
 
 /** Nearest preceding heading (h1–h4) with an id → the section anchor. */
 function enclosingHeading(el: Node, article: HTMLElement): { slug: string; text: string } {
@@ -53,7 +63,7 @@ function blockOf(node: Node): Element | null {
 }
 
 /**
- * Geometry for the floating Comment button.
+ * Geometry for the floating action bar.
  *
  * Prefer Range.getClientRects() over getBoundingClientRect(). Chromium (and
  * sometimes Safari) often returns a 0×0 bounding rect for reverse mouse
@@ -98,6 +108,8 @@ export default function SelectionLayer({
   const [menu, setMenu] = useState<FloatUI | null>(null);
   const floatRef = useRef<FloatUI | null>(null);
   floatRef.current = float;
+  // The keydown listener lives in the mount effect; it reaches commit via a ref.
+  const commitRef = useRef<(ui: FloatUI, intent: SelectionIntent) => Promise<void>>(async () => {});
 
   useEffect(() => {
     if (!isActive || !canComment) return;
@@ -105,7 +117,7 @@ export default function SelectionLayer({
     if (!article) return;
     const art = article;
 
-    function buildFromSelection(): (() => Promise<PendingAnchor | null>) | null {
+    function buildFromSelection(): Built | null {
       const sel = window.getSelection();
       if (!sel || sel.isCollapsed || sel.rangeCount === 0) return null;
       const range = sel.getRangeAt(0);
@@ -116,7 +128,7 @@ export default function SelectionLayer({
       const codeBlock = enclosingCodeBlock(range.commonAncestorContainer);
       if (codeBlock) {
         const heading = enclosingHeading(codeBlock, art);
-        return async (): Promise<PendingAnchor | null> => {
+        const build = async (): Promise<PendingAnchor | null> => {
           const path = codeBlock.dataset.srcPath ?? "";
           const region = codeBlock.dataset.srcRegion ?? "";
           const startLine = Number(codeBlock.dataset.srcStart ?? "1");
@@ -154,6 +166,7 @@ export default function SelectionLayer({
             original: wholeLines.join("\n"),
           };
         };
+        return { build, suggestable: true };
       }
 
       const heading = enclosingHeading(range.startContainer, art);
@@ -161,7 +174,7 @@ export default function SelectionLayer({
       // passage can't be rewritten as one run of text.
       const block = blockOf(range.startContainer);
       const suggestable = block !== null && block === blockOf(range.endContainer);
-      return async (): Promise<PendingAnchor | null> => {
+      const build = async (): Promise<PendingAnchor | null> => {
         const selector = captureSelector(range, art);
         if (!selector) return null;
         return {
@@ -172,15 +185,16 @@ export default function SelectionLayer({
           original: suggestable ? text.trim() : undefined,
         };
       };
+      return { build, suggestable };
     }
 
-    function showFloat(build: () => Promise<PendingAnchor | null>) {
+    function showFloat(built: Built) {
       const rect = selectionRect();
       if (!rect) {
         setFloat(null);
         return;
       }
-      setFloat({ x: rect.left + rect.width / 2, y: rect.top - 10, build });
+      setFloat({ x: rect.left + rect.width / 2, y: rect.top - 10, ...built });
       setMenu(null);
     }
 
@@ -190,31 +204,62 @@ export default function SelectionLayer({
     // inside the article is valid.
     function onMouseUp(e: MouseEvent) {
       const t = e.target;
-      if (t instanceof Element && (t.closest(".sel-float") || t.closest(".sel-menu"))) {
-        return;
-      }
+      if (t instanceof Element && t.closest(UI_SELECTOR)) return;
       setTimeout(() => {
-        const build = buildFromSelection();
-        if (!build) {
+        const built = buildFromSelection();
+        if (!built) {
           setFloat(null);
           return;
         }
-        showFloat(build);
+        showFloat(built);
       }, 0);
     }
 
     function onContextMenu(e: MouseEvent) {
-      const build = buildFromSelection();
-      if (!build) return;
+      const built = buildFromSelection();
+      if (!built) return;
       e.preventDefault();
-      setMenu({ x: e.clientX, y: e.clientY, build });
+      setMenu({ x: e.clientX, y: e.clientY, ...built });
       setFloat(null);
     }
 
     function onDocMouseDown(e: MouseEvent) {
       const t = e.target as HTMLElement;
-      if (t.closest(".sel-float") || t.closest(".sel-menu")) return;
+      if (t.closest(UI_SELECTOR)) return;
       setMenu(null);
+    }
+
+    // Bare keys are safe while the bar is up: the selection sits in read-only
+    // prose. Modified keys (Cmd+C) and keys typed into a field pass through.
+    function onKeyDown(e: KeyboardEvent) {
+      const ui = floatRef.current;
+      if (!ui || e.metaKey || e.ctrlKey || e.altKey) return;
+      const t = e.target;
+      if (
+        t instanceof HTMLElement &&
+        (t.isContentEditable || t.closest("input, textarea, select"))
+      ) {
+        return;
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setFloat(null);
+        return;
+      }
+      const key = e.key.toLowerCase();
+      const intent: SelectionIntent | null =
+        key === "c"
+          ? "comment"
+          : !ui.suggestable
+            ? null
+            : key === "e"
+              ? "edit"
+              : key === "delete" || key === "backspace"
+                ? "delete"
+                : null;
+      if (!intent) return;
+      e.preventDefault();
+      void commitRef.current(ui, intent);
     }
 
     function reposition() {
@@ -230,12 +275,14 @@ export default function SelectionLayer({
     document.addEventListener("mouseup", onMouseUp);
     article.addEventListener("contextmenu", onContextMenu);
     document.addEventListener("mousedown", onDocMouseDown);
+    document.addEventListener("keydown", onKeyDown);
     window.addEventListener("scroll", reposition, true);
     window.addEventListener("resize", reposition);
     return () => {
       document.removeEventListener("mouseup", onMouseUp);
       article.removeEventListener("contextmenu", onContextMenu);
       document.removeEventListener("mousedown", onDocMouseDown);
+      document.removeEventListener("keydown", onKeyDown);
       window.removeEventListener("scroll", reposition, true);
       window.removeEventListener("resize", reposition);
     };
@@ -243,13 +290,14 @@ export default function SelectionLayer({
 
   if (!isActive || !canComment) return null;
 
-  async function commit(ui: FloatUI) {
+  async function commit(ui: FloatUI, intent: SelectionIntent) {
     const anchor = await ui.build();
-    if (anchor) setPending(anchor);
+    if (anchor) setPending(anchor.kind === "section" ? anchor : { ...anchor, intent });
     setFloat(null);
     setMenu(null);
     window.getSelection()?.removeAllRanges();
   }
+  commitRef.current = commit;
 
   async function copyLink(ui: FloatUI) {
     const anchor = await ui.build();
@@ -270,20 +318,44 @@ export default function SelectionLayer({
   return (
     <>
       {float && (
-        <button
-          type="button"
-          className="sel-float"
+        <div
+          className="sel-bar"
+          role="toolbar"
+          aria-label="Selection actions"
           style={{
             position: "fixed",
             left: float.x,
             top: float.y,
             transform: "translate(-50%, -100%)",
           }}
-          onClick={() => void commit(float)}
         >
-          <MessageSquare size={14} aria-hidden />
-          Comment
-        </button>
+          <button type="button" title="Comment (C)" onClick={() => void commit(float, "comment")}>
+            <MessageSquare size={14} aria-hidden />
+            Comment
+          </button>
+          {float.suggestable && (
+            <>
+              <button
+                type="button"
+                className="icon"
+                title="Suggest edit (E)"
+                aria-label="Suggest edit"
+                onClick={() => void commit(float, "edit")}
+              >
+                <PencilLine size={14} aria-hidden />
+              </button>
+              <button
+                type="button"
+                className="icon"
+                title="Suggest deletion (Delete)"
+                aria-label="Suggest deletion"
+                onClick={() => void commit(float, "delete")}
+              >
+                <Eraser size={14} aria-hidden />
+              </button>
+            </>
+          )}
+        </div>
       )}
       {menu && (
         <div
@@ -291,10 +363,22 @@ export default function SelectionLayer({
           style={{ position: "fixed", left: menu.x, top: menu.y }}
           role="menu"
         >
-          <button type="button" role="menuitem" onClick={() => void commit(menu)}>
+          <button type="button" role="menuitem" onClick={() => void commit(menu, "comment")}>
             <MessageSquare size={14} aria-hidden />
             Comment on selection
           </button>
+          {menu.suggestable && (
+            <>
+              <button type="button" role="menuitem" onClick={() => void commit(menu, "edit")}>
+                <PencilLine size={14} aria-hidden />
+                Suggest edit
+              </button>
+              <button type="button" role="menuitem" onClick={() => void commit(menu, "delete")}>
+                <Eraser size={14} aria-hidden />
+                Suggest deletion
+              </button>
+            </>
+          )}
           <button type="button" role="menuitem" onClick={() => void copyLink(menu)}>
             <Link2 size={14} aria-hidden />
             Copy link to selection

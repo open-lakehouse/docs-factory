@@ -1,7 +1,6 @@
 // Thin Plan pages that frame a panel from components/plan with its heading.
 import BlogPipeline from "../../components/plan/BlogPipeline";
 import CompatibilityMatrix from "../../components/plan/CompatibilityMatrix";
-import CoverageGaps from "../../components/plan/CoverageGaps";
 import ProductRollup from "../../components/plan/ProductRollup";
 import { PlanPage } from "./PlanLayout";
 
@@ -35,17 +34,6 @@ export function PipelinePage() {
       }
     >
       <BlogPipeline />
-    </PlanPage>
-  );
-}
-
-export function CoveragePage() {
-  return (
-    <PlanPage
-      title="Coverage gaps"
-      intro="Concepts in the Open Lakehouse reference model with no explanation page yet."
-    >
-      <CoverageGaps />
     </PlanPage>
   );
 }

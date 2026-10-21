@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { CommentScope, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
-import { plannedOf } from "../../lib/content-ref";
+import { modelOf, plannedOf } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { useShowResolved } from "../../lib/review-show-resolved";
 import { sortThreadsByDocumentOrder } from "../../lib/thread-document-order";
@@ -54,9 +54,11 @@ interface Heading {
 
 function PageCommentComposer({
   contentRef,
+  subject,
   onDone,
 }: {
   contentRef: ContentRef;
+  subject: string;
   onDone: () => void;
 }) {
   const { invalidateComments } = useReviewInvalidation();
@@ -82,7 +84,7 @@ function PageCommentComposer({
       onChange={setDraft}
       onSubmit={() => void post()}
       onCancel={onDone}
-      placeholder="Comment on the whole page…"
+      placeholder={`Comment on the whole ${subject}…`}
       submitting={create.isPending}
       autoFocus
       compact
@@ -153,7 +155,10 @@ export default function CommentSidebar({
     [visible, headings, articleRef],
   );
 
-  if (!canComment || !contentRef || displayMode !== "rail") return null;
+  // A model target has no inline surface, so its rail ignores the display mode.
+  const model = contentRef ? modelOf(contentRef) : null;
+  if (!canComment || !contentRef || (displayMode !== "rail" && !model)) return null;
+  const subject = model ? (model.kind === "estate" ? "model" : model.kind) : "page";
 
   const headingText = new Map(headings.map((h) => [h.id, h.text]));
   const sectionLabelFor = (slug?: string) => (slug && headingText.get(slug)) || "";
@@ -164,7 +169,9 @@ export default function CommentSidebar({
       thread={t}
       articleRef={articleRef}
       sectionLabel={
-        t.root?.scope === CommentScope.DOCUMENT ? "Whole page" : sectionLabelFor(t.root?.anchorSlug)
+        t.root?.scope === CommentScope.DOCUMENT
+          ? `Whole ${subject}`
+          : sectionLabelFor(t.root?.anchorSlug)
       }
       active={activeThreadId === t.root?.id}
       selected={selectedThreadId === t.root?.id}
@@ -184,7 +191,7 @@ export default function CommentSidebar({
         <p className="review-comments-title">Review comments</p>
         {!composingPage && (
           <Button variant="ghost" size="xs" onClick={() => setComposingPage(true)}>
-            Comment on page
+            Comment on {subject}
           </Button>
         )}
       </div>
@@ -212,16 +219,22 @@ export default function CommentSidebar({
         />
       )}
       {composingPage && (
-        <PageCommentComposer contentRef={contentRef} onDone={() => setComposingPage(false)} />
+        <PageCommentComposer
+          contentRef={contentRef}
+          subject={subject}
+          onDone={() => setComposingPage(false)}
+        />
       )}
       {pageThreads.length > 0 && (
         <div className="review-thread-list">{pageThreads.map(renderCard)}</div>
       )}
       {!hasAny && resolvedCount === 0 && !pending && !composingPage && (
         <p className="review-empty">
-          {plannedOf(contentRef)
-            ? "No instructions yet. Comment on the page to tell the author what it should cover."
-            : "No comments yet. Comment on the page, hover a section heading, or select text or code to start a thread."}
+          {model
+            ? `No comments yet. Comment on the ${subject} to start a thread.`
+            : plannedOf(contentRef)
+              ? "No instructions yet. Comment on the page to tell the author what it should cover."
+              : "No comments yet. Comment on the page, hover a section heading, or select text or code to start a thread."}
         </p>
       )}
       <div className="review-thread-list">{orderedThreads.map(renderCard)}</div>

@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import type { RecentComment } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { feedQueue } from "../../../lib/comment-feed";
-import { plannedOf } from "../../../lib/content-ref";
+import { modelOf, plannedOf } from "../../../lib/content-ref";
 import { initials } from "../../../lib/initials";
 import { relativeTime } from "../../../lib/relative-time";
 import { useCommentFeed, useReviewInbox } from "../../../lib/review-inbox";
@@ -59,6 +59,7 @@ export default function CommentFeed({ compact = false }: { compact?: boolean }) 
             <h3 className="comment-feed-page">
               <span className="truncate">{group.title}</span>
               {plannedOf(group.ref) && <span className="comment-feed-tag">planned</span>}
+              {modelOf(group.ref) && <span className="comment-feed-tag">model</span>}
               {requestedRefs.has(group.key) && (
                 <span className="comment-feed-requested" title="Review requested from you">
                   <UserCheck className="size-3" aria-label="Review requested from you" />

@@ -14,6 +14,7 @@ import {
 import { ContentRequestStatus } from "../../gen/docs_factory/review/v1/messages_pb";
 import { listReviewRequests } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
+import { useModelThreadStats } from "../../lib/model-threads";
 import { useOpenContentRequests } from "../review/ContentRequests";
 import StatusMenu from "./StatusMenu";
 
@@ -49,6 +50,20 @@ function PlanNavItem() {
     <NavLink to="/plan" className={({ isActive }) => (isActive ? "active" : undefined)}>
       Plan
       {isMaintainer && untriaged > 0 && <span className="topnav-badge">{untriaged}</span>}
+    </NavLink>
+  );
+}
+
+// Reviewer-only entry for the estate model (/model/*). Badges the open review
+// threads on model elements, views, and the model as a whole.
+function ModelNavItem() {
+  const { reviewActive } = useAuth();
+  const { open } = useModelThreadStats();
+  if (!reviewActive) return null;
+  return (
+    <NavLink to="/model" className={({ isActive }) => (isActive ? "active" : undefined)}>
+      Model
+      {open > 0 && <span className="topnav-badge">{open}</span>}
     </NavLink>
   );
 }
@@ -134,6 +149,7 @@ export default function Shell({ children }: { children: ReactNode }) {
         </nav>
         <nav className="topnav">
           <ReviewNavItem />
+          <ModelNavItem />
           <PlanNavItem />
           <AdminNavItem />
         </nav>

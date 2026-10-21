@@ -306,6 +306,8 @@ To add a column, comment on a column and on the table, and set a property, run:
 deltalake opens the table by its storage location, which the Python SDK
 returns:
 
+<!-- Opens by path, not uc://, until #273 is fixed (file:// decode error, S3 stall). Move this tab to uc:// then. -->
+
 ```python file=./snippets/external_deltalake.py start=start:open-external end=end:open-external
 ```
 
@@ -349,6 +351,8 @@ guarded by `assert-table-uuid` and `assert-etag`. If the table changed since
 you loaded it, the server returns HTTP 409
 `UpdateRequirementConflictException` and applies none of the updates. Load the
 table again and retry.
+
+<!-- Link E14 (The Unity Catalog Delta API) here once it has a page. Its model element is pending #272. -->
 
 You can also drop the table from the catalog and register it again, as in
 [Register external Delta table](../register-external-table/index.md#change-a-registered-table).

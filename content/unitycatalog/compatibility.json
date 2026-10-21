@@ -23,6 +23,33 @@
       "viaVersion": null
     },
     {
+      "key": "spark-sql",
+      "label": "Spark · SQL",
+      "version": "4.1.0",
+      "package": "pyspark",
+      "model": "apacheSpark",
+      "via": null,
+      "viaVersion": null
+    },
+    {
+      "key": "spark-python",
+      "label": "Spark · Python",
+      "version": "4.1.0",
+      "package": "pyspark",
+      "model": "apacheSpark",
+      "via": null,
+      "viaVersion": null
+    },
+    {
+      "key": "delta-rs-python",
+      "label": "delta-rs · Python",
+      "version": "1.6.6",
+      "package": "deltalake",
+      "model": "deltaRs",
+      "via": null,
+      "viaVersion": null
+    },
+    {
       "key": "duckdb",
       "label": "DuckDB",
       "version": "1.5.6",
@@ -120,6 +147,8 @@
         "managed.alter-schema",
         "managed.set-properties",
         "managed.rename",
+        "external.alter-schema",
+        "external.set-properties",
         "managed.replace",
         "managed.overwrite",
         "managed.replace-where",
@@ -345,6 +374,8 @@
         "managed.alter-schema",
         "managed.set-properties",
         "managed.rename",
+        "external.alter-schema",
+        "external.set-properties",
         "managed.create-as-select",
         "managed.replace",
         "managed.overwrite",
@@ -521,7 +552,9 @@
       "title": "Apache Spark",
       "interfaces": [
         "spark",
-        "spark-4.2"
+        "spark-4.2",
+        "spark-sql",
+        "spark-python"
       ],
       "page": {
         "project": "unitycatalog",
@@ -550,6 +583,8 @@
             "managed.alter-schema",
             "managed.set-properties",
             "managed.rename",
+            "external.alter-schema",
+            "external.set-properties",
             "managed.replace",
             "managed.overwrite",
             "managed.replace-where",
@@ -657,6 +692,54 @@
       ]
     },
     {
+      "id": "deltaRs",
+      "title": "delta-rs",
+      "interfaces": [
+        "delta-rs-python",
+        "pandas"
+      ],
+      "page": {
+        "project": "unitycatalog",
+        "bucket": "reference",
+        "slug": "engine-support"
+      },
+      "anchor": "pandas",
+      "heading": "pandas",
+      "groups": [
+        {
+          "table": "table-operations",
+          "columns": [
+            "pandas"
+          ],
+          "rows": [
+            "table.list",
+            "external.read",
+            "external.read-vended",
+            "external.append",
+            "managed.create",
+            "managed.create-as-select",
+            "managed.read",
+            "managed.append",
+            "managed.update",
+            "managed.delete",
+            "managed.alter-schema",
+            "managed.set-properties",
+            "managed.rename",
+            "external.alter-schema",
+            "external.set-properties",
+            "managed.replace",
+            "managed.overwrite",
+            "managed.replace-where",
+            "managed.overwrite-partitions",
+            "managed.drop",
+            "managed.time-travel",
+            "managed.path-write",
+            "external.read-format"
+          ]
+        }
+      ]
+    },
+    {
       "id": "duckdb",
       "title": "DuckDB",
       "interfaces": [
@@ -689,6 +772,8 @@
             "managed.alter-schema",
             "managed.set-properties",
             "managed.rename",
+            "external.alter-schema",
+            "external.set-properties",
             "managed.replace",
             "managed.overwrite",
             "managed.replace-where",
@@ -813,6 +898,8 @@
             "managed.alter-schema",
             "managed.set-properties",
             "managed.rename",
+            "external.alter-schema",
+            "external.set-properties",
             "managed.replace",
             "managed.overwrite",
             "managed.replace-where",
@@ -937,6 +1024,8 @@
             "managed.alter-schema",
             "managed.set-properties",
             "managed.rename",
+            "external.alter-schema",
+            "external.set-properties",
             "managed.replace",
             "managed.overwrite",
             "managed.replace-where",
@@ -1024,51 +1113,6 @@
             "iceberg.views",
             "iceberg.scan-planning",
             "iceberg.remote-signing"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "deltaRs",
-      "title": "delta-rs",
-      "interfaces": [
-        "pandas"
-      ],
-      "page": {
-        "project": "unitycatalog",
-        "bucket": "reference",
-        "slug": "engine-support"
-      },
-      "anchor": "pandas",
-      "heading": "pandas",
-      "groups": [
-        {
-          "table": "table-operations",
-          "columns": [
-            "pandas"
-          ],
-          "rows": [
-            "table.list",
-            "external.read",
-            "external.read-vended",
-            "external.append",
-            "managed.create",
-            "managed.create-as-select",
-            "managed.read",
-            "managed.append",
-            "managed.update",
-            "managed.delete",
-            "managed.alter-schema",
-            "managed.set-properties",
-            "managed.rename",
-            "managed.replace",
-            "managed.overwrite",
-            "managed.replace-where",
-            "managed.overwrite-partitions",
-            "managed.drop",
-            "managed.time-travel",
-            "managed.path-write",
-            "external.read-format"
           ]
         }
       ]
@@ -2700,6 +2744,72 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "add-columns-and-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "add-columns-and-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "delta-rs-python": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "choose-a-client",
+              "ready": false,
+              "works": false,
+              "fails": "Max catalog version is required when loading a catalog-managed table",
+              "version": "1.6.6",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "duckdb": {
           "status": "fails",
           "draft": true,
@@ -2867,6 +2977,72 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "set-and-remove-table-properties",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "SET TBLPROPERTIES",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "set-and-remove-table-properties",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SET TBLPROPERTIES",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "delta-rs-python": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "choose-a-client",
+              "ready": false,
+              "works": false,
+              "fails": "Max catalog version is required when loading a catalog-managed table",
+              "version": "1.6.6",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "polars": {
           "status": "fails",
           "draft": false,
@@ -3006,6 +3182,338 @@
               "works": false,
               "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
               "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "rename-a-table-or-column",
+              "ready": false,
+              "works": false,
+              "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
+              "version": null,
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "rename-a-table-or-column",
+              "ready": false,
+              "works": false,
+              "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "delta-rs-python": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "choose-a-client",
+              "ready": false,
+              "works": false,
+              "fails": "Max catalog version is required when loading a catalog-managed table",
+              "version": "1.6.6",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "external.alter-schema",
+      "title": "Change an external table's columns",
+      "summary": "Change an external table's columns in its Delta log, then bring the catalog's record in step.",
+      "request": null,
+      "family": "external",
+      "asset": "lakehouse.table",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": "sync through the Delta API"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": "sync through the Delta API"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": "sync through the Delta API"
+            }
+          ],
+          "evidence": []
+        },
+        "delta-rs-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "TableAlterer.add_columns",
+              "note": "sync through the Delta API"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "choose-a-client",
+              "ready": false,
+              "works": false,
+              "fails": "UCTableSet::AlterTable",
+              "version": "1.5.6",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "external.set-properties",
+      "title": "Set an external table's properties",
+      "summary": "Change an external table's properties and comments in its Delta log, then bring the catalog's record in step.",
+      "request": null,
+      "family": "external",
+      "asset": "lakehouse.table",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SET TBLPROPERTIES, COMMENT ON TABLE",
+              "note": "sync through the Delta API"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "SET TBLPROPERTIES, COMMENT ON TABLE",
+              "note": "sync through the Delta API"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SET TBLPROPERTIES, COMMENT ON TABLE",
+              "note": "sync through the Delta API"
+            }
+          ],
+          "evidence": []
+        },
+        "delta-rs-python": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "TableAlterer.set_table_properties, set_table_description",
+              "note": "sync through the Delta API"
+            }
+          ],
+          "evidence": []
+        },
+        "duckdb": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "choose-a-client",
+              "ready": false,
+              "works": false,
+              "fails": "Only altering tables is supported for now",
+              "version": "1.5.6",
               "api": null,
               "note": null
             }

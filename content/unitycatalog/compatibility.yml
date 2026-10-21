@@ -45,6 +45,21 @@ interfaces:
     pin: pyspark-4.2
     package: pyspark
     model: apacheSpark
+  spark-sql:
+    label: Spark · SQL
+    pin: pyspark
+    package: pyspark
+    model: apacheSpark
+  spark-python:
+    label: Spark · Python
+    pin: pyspark
+    package: pyspark
+    model: apacheSpark
+  delta-rs-python:
+    label: delta-rs · Python
+    pin: deltalake
+    package: deltalake
+    model: deltaRs
   duckdb:
     label: DuckDB
     package: duckdb
@@ -149,6 +164,14 @@ journeys:
     family: managed
     title: Rename a managed table or column
     summary: Rename a catalog-managed table or one of its columns.
+  external.alter-schema:
+    family: external
+    title: Change an external table's columns
+    summary: Change an external table's columns in its Delta log, then bring the catalog's record in step.
+  external.set-properties:
+    family: external
+    title: Set an external table's properties
+    summary: Change an external table's properties and comments in its Delta log, then bring the catalog's record in step.
   managed.create-as-select:
     family: managed
     title: Create a managed table from a query
@@ -592,6 +615,8 @@ tables:
       - managed.alter-schema
       - managed.set-properties
       - managed.rename
+      - external.alter-schema
+      - external.set-properties
       - managed.replace
       - managed.overwrite
       - managed.replace-where

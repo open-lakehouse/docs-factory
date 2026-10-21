@@ -4194,7 +4194,7 @@
           "draft": true,
           "proofs": [
             {
-              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
               "page": {
                 "project": "unitycatalog",
                 "bucket": "how-to",
@@ -4204,7 +4204,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "4.1.0",
+              "version": null,
               "api": "ALTER TABLE ADD COLUMNS",
               "note": "through Unity Catalog"
             }
@@ -4238,9 +4238,25 @@
           ]
         },
         "delta-rs-python": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "TableAlterer.add_columns",
+              "note": "on an external Unity Catalog table"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",
@@ -4308,7 +4324,7 @@
           "draft": true,
           "proofs": [
             {
-              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
               "page": {
                 "project": "unitycatalog",
                 "bucket": "how-to",
@@ -4318,7 +4334,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "4.1.0",
+              "version": null,
               "api": "DROP COLUMN",
               "note": "through Unity Catalog; RENAME COLUMN is rejected"
             }
@@ -4422,7 +4438,7 @@
           "draft": true,
           "proofs": [
             {
-              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
               "page": {
                 "project": "unitycatalog",
                 "bucket": "how-to",
@@ -4432,7 +4448,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "4.1.0",
+              "version": null,
               "api": "ALTER COLUMN … TYPE",
               "note": "through Unity Catalog"
             }
@@ -6254,7 +6270,7 @@
           "draft": false,
           "proofs": [
             {
-              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
               "page": {
                 "project": "unitycatalog",
                 "bucket": "how-to",
@@ -6264,7 +6280,7 @@
               "ready": false,
               "works": true,
               "fails": null,
-              "version": "4.1.0",
+              "version": null,
               "api": "SET TBLPROPERTIES",
               "note": "through Unity Catalog"
             },
@@ -6307,9 +6323,25 @@
           ]
         },
         "delta-rs-python": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/external_deltalake.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "1.6.6",
+              "api": "TableAlterer.set_table_properties",
+              "note": "on an external Unity Catalog table"
+            }
+          ],
           "evidence": [
             {
               "outcome": "works",

@@ -128,9 +128,11 @@ Then append:
 ```python file=./snippets/managed_tables.py start=start:duckdb-append end=end:duckdb-append
 ```
 
-If another engine writes to the table after DuckDB reads it, DuckDB's next
-append to it fails, and the table doesn't change. To retry, detach and attach
-the catalog, then append again:
+DuckDB keeps the version of the table it last read or wrote. After another
+engine writes to the table, DuckDB's queries don't show the new rows, and its
+next append fails with `Failed to commit: … (HTTP 409): Conflict` and leaves the
+table unchanged. The same append fails again until you detach and attach the
+catalog:
 
 ```python file=./snippets/managed_tables.py start=start:duckdb-reattach end=end:duckdb-reattach
 ```

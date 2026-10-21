@@ -3315,23 +3315,42 @@ a.review-author:hover span {
 }
 
 /* Fine-grained review: floating button + context menu */
-.sel-float {
+.sel-bar {
   z-index: 60;
   display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.7rem;
-  font-size: 0.78rem;
-  font-weight: 500;
+  align-items: stretch;
+  padding: 0.15rem;
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--foreground);
   color: var(--background);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+}
+.sel-bar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
   cursor: pointer;
 }
-.sel-float:hover {
-  filter: brightness(1.08);
+.sel-bar button.icon {
+  width: 1.75rem;
+  padding: 0;
+}
+.sel-bar button + button {
+  box-shadow: -1px 0 0 color-mix(in oklab, var(--background) 22%, transparent);
+}
+.sel-bar button:hover,
+.sel-bar button:focus-visible {
+  background: color-mix(in oklab, var(--background) 16%, transparent);
+  outline: none;
 }
 
 /* Heading hover affordance: section comment in review mode, permalink otherwise.

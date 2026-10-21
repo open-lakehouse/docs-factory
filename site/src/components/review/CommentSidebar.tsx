@@ -79,7 +79,7 @@ export default function CommentSidebar({
     selectThread,
     displayMode,
   } = useReview();
-  const { pending, setPending } = useSelectionState();
+  const { pending, pendingSeq, setPending } = useSelectionState();
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [composingPage, setComposingPage] = useState(false);
 
@@ -155,6 +155,7 @@ export default function CommentSidebar({
       )}
       {pending && (
         <PendingComposer
+          key={pendingSeq}
           contentRef={contentRef}
           pending={pending}
           onDone={() => {

@@ -7114,7 +7114,7 @@
           ]
         },
         "duckdb-sql": {
-          "status": "fails",
+          "status": "tested",
           "draft": false,
           "proofs": [
             {
@@ -7126,11 +7126,11 @@
               },
               "anchor": "append-rows",
               "ready": true,
-              "works": false,
-              "fails": "DuckDB appends to column-mapped tables now",
+              "works": true,
+              "fails": null,
               "version": "1.5.6",
-              "api": null,
-              "note": "rows read back as NULL"
+              "api": "INSERT INTO",
+              "note": "through Unity Catalog"
             }
           ],
           "evidence": []
@@ -7649,7 +7649,7 @@
               "fails": null,
               "version": "1.5.6",
               "api": "INSERT INTO",
-              "note": "through Unity Catalog, column mapping off"
+              "note": "through Unity Catalog"
             }
           ],
           "evidence": []
@@ -8188,6 +8188,7 @@
         "catalog-managed.read",
         "catalog-managed.write",
         "catalog.unity",
+        "column-mapping.write",
         "read.scan",
         "write.append"
       ]
@@ -8203,6 +8204,7 @@
         "catalog-managed.read",
         "catalog-managed.write",
         "catalog.unity",
+        "column-mapping.write",
         "read.scan",
         "write.append"
       ]

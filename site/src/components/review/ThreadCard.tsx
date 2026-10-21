@@ -21,7 +21,6 @@ interface ThreadCardProps {
   onLeave: () => void;
   onSelect: () => void;
   onDeselect: () => void;
-  onChange: () => void;
 }
 
 export default function ThreadCard({
@@ -35,7 +34,6 @@ export default function ThreadCard({
   onLeave,
   onSelect,
   onDeselect,
-  onChange,
 }: ThreadCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const scrollContainer = useScrollContainer();
@@ -65,7 +63,6 @@ export default function ThreadCard({
     const id = thread.root?.id;
     if (!id) return;
     await unresolve.mutateAsync({ threadRootId: id });
-    onChange();
   }
 
   const sel = thread.root?.selector;
@@ -145,7 +142,6 @@ export default function ThreadCard({
         <ThreadConversation
           thread={thread}
           sectionLabel={label}
-          onChange={onChange}
           onClose={onDeselect}
           onCollapse={onDeselect}
         />

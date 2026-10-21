@@ -26,7 +26,6 @@ const SUGGESTION_STATE_LABEL: Partial<Record<SuggestionState, string>> = {
 interface ThreadConversationProps {
   thread: Thread;
   sectionLabel?: string;
-  onChange: () => void;
   onClose?: () => void;
   /** Called after a successful resolve so the rail card can collapse. */
   onCollapse?: () => void;
@@ -49,7 +48,6 @@ function threadDeepLink(thread: Thread): string | null {
 export default function ThreadConversation({
   thread,
   sectionLabel,
-  onChange,
   onClose,
   onCollapse,
   compact = false,
@@ -89,7 +87,6 @@ export default function ThreadConversation({
     });
     setText("");
     setReplyingToId(null);
-    onChange();
   }
 
   function renderReplyComposer(parentId: string, depth: number) {
@@ -123,7 +120,6 @@ export default function ThreadConversation({
     const id = thread.root?.id;
     if (!id) return;
     await resolve.mutateAsync({ threadRootId: id });
-    onChange();
     onCollapse?.();
   }
 
@@ -132,14 +128,12 @@ export default function ThreadConversation({
     const id = thread.root?.id;
     if (!id) return;
     await unresolve.mutateAsync({ threadRootId: id });
-    onChange();
   }
 
   async function moveSuggestion(state: SuggestionState) {
     const id = thread.root?.id;
     if (!id) return;
     await setSuggestion.mutateAsync({ commentId: id, state });
-    onChange();
   }
 
   async function copyThreadLink(e: React.MouseEvent) {

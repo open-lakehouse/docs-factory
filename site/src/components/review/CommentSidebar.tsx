@@ -101,7 +101,6 @@ export default function CommentSidebar({
     threads,
     orphanedThreads: orphaned,
     openCount,
-    refetch,
     activeThreadId,
     selectedThreadId,
     selectNonce,
@@ -174,7 +173,6 @@ export default function CommentSidebar({
       onLeave={() => hoverThread(null)}
       onSelect={() => selectThread(t.root?.id ?? null)}
       onDeselect={() => selectThread(null)}
-      onChange={refetch}
     />
   );
 
@@ -209,21 +207,12 @@ export default function CommentSidebar({
           key={pendingSeq}
           contentRef={contentRef}
           pending={pending}
-          onDone={() => {
-            setPending(null);
-            refetch();
-          }}
+          onDone={() => setPending(null)}
           onCancel={() => setPending(null)}
         />
       )}
       {composingPage && (
-        <PageCommentComposer
-          contentRef={contentRef}
-          onDone={() => {
-            setComposingPage(false);
-            refetch();
-          }}
-        />
+        <PageCommentComposer contentRef={contentRef} onDone={() => setComposingPage(false)} />
       )}
       {pageThreads.length > 0 && (
         <div className="review-thread-list">{pageThreads.map(renderCard)}</div>

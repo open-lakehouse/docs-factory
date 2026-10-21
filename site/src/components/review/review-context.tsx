@@ -45,7 +45,6 @@ interface ReviewContextValue {
   threads: Thread[];
   orphanedThreads: Thread[];
   openCount: number;
-  refetch: () => void;
   activeThreadId: string | null;
   selectedThreadId: string | null;
   selectNonce: number;
@@ -65,7 +64,6 @@ const ReviewContext = createContext<ReviewContextValue>({
   threads: [],
   orphanedThreads: [],
   openCount: 0,
-  refetch: noop,
   activeThreadId: null,
   selectedThreadId: null,
   selectNonce: 0,
@@ -143,7 +141,9 @@ export function ReviewProvider({
   // RPC fails, and invalidate on settle so the next fetch confirms. Owning the
   // optimistic update in the mutation lifecycle (rather than the click handler)
   // gives us the onError rollback a bare mutate() would skip.
-  const seen = useMutation(markThreadSeen, {
+  // `mutate` is stable across renders; the mutation result object is not, so
+  // depending on it would give selectThread a new identity on every state change.
+  const { mutate: markSeen } = useMutation(markThreadSeen, {
     onMutate: async ({ threadRootId }) => {
       await queryClient.cancelQueries({ queryKey: listKey });
       const previous = queryClient.getQueryData<typeof data>(listKey);
@@ -217,20 +217,11 @@ export function ReviewProvider({
       // markThreadSeen is allowlist-gated server-side; skip it for an external
       // contributor to avoid a denied RPC.
       if (id === null || !reviewActive) return;
-      seen.mutate({ threadRootId: id });
+      markSeen({ threadRootId: id });
     },
-    [reviewActive, seen],
+    [reviewActive, markSeen],
   );
   const hoverThread = useCallback((id: string | null) => setHoveredThreadId(id), []);
-  // Invalidate the shared listComments cache entry so every mounted consumer
-  // (rail, inline, code boxes) refreshes after a local mutation — not just this
-  // provider's own query instance. invalidateQueries already refetches the
-  // active query, so we do NOT also call the local refetch() (double fetch).
-  const refetchCb = useCallback(
-    () => void invalidateComments(contentRef),
-    [invalidateComments, contentRef],
-  );
-
   const setDisplayMode = useCallback((mode: ReviewDisplayMode) => {
     setDisplayModeState(mode);
     setReviewDisplayMode(mode);
@@ -274,7 +265,6 @@ export function ReviewProvider({
       threads,
       orphanedThreads,
       openCount,
-      refetch: refetchCb,
       activeThreadId,
       selectedThreadId,
       selectNonce,
@@ -290,7 +280,6 @@ export function ReviewProvider({
       threads,
       orphanedThreads,
       openCount,
-      refetchCb,
       activeThreadId,
       selectedThreadId,
       selectNonce,

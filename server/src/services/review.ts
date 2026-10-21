@@ -770,7 +770,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       async listRecentComments(req: ListRecentCommentsRequest, ctx) {
         // A cross-content reviewer artifact: allowlist-only.
-        requireAllowlisted(ctx);
+        const viewer = requireAllowlisted(ctx);
+        const viewerId = viewer.userId ?? viewer.login ?? null;
         const sql = db();
         const areaFilter = req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
         const limit = Math.min(
@@ -781,7 +782,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // Most-recent comments (roots AND replies) across all content, each with
         // the context needed to deep-link back: the latest version's title +
         // project/bucket (so the client can build the right route), the heading
-        // text for the comment's anchor, and the thread-root resolution. The
+        // text for the comment's anchor, the thread-root resolution, and whether
+        // the comment is past the viewer's read watermark on that root. The
         // section join is against the LATEST version's sections (a comment on a
         // since-removed heading simply gets an empty label). Tombstoned authors
         // are skipped. UUIDv7 ids order-match created_at, giving a stable tiebreak.
@@ -815,7 +817,9 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.authored_version_id, cv.git_sha as authored_git_sha,
                  l.title as content_title,
                  sec.heading_text as heading_text,
-                 coalesce(cr.resolved, false) as resolved
+                 coalesce(cr.resolved, false) as resolved,
+                 (${viewerId}::text is not null
+                   and (cs.seen_at is null or c.created_at > cs.seen_at)) as unread
           from comment c
           left join roots r on r.id = c.id
           left join latest l on l.area = c.area and l.slug = c.slug
@@ -824,6 +828,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             on sec.version_id = l.id and sec.anchor_slug = c.anchor_slug
           left join comment_resolution cr
             on cr.thread_root_id = r.root_id
+          left join comment_seen cs
+            on cs.thread_root_id = r.root_id and cs.viewer_id = ${viewerId}
           where c.author_login <> ${TOMBSTONE_LOGIN}
             and (${areaFilter}::text is null or c.area = ${areaFilter})
           order by c.created_at desc, c.id desc

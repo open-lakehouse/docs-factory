@@ -51,6 +51,7 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
   let savedEnv: Record<string, string | undefined>;
   const slug = `flow-test-${randomUUID()}`;
   const ref = { area: ContentArea.BLOGS, slug };
+  const plannedSlug = `planned/flow-${randomUUID()}/T99`;
 
   const register = (frontmatterStatus: string, contentHash = "body-v1", withSection = true) =>
     reviewer.registerVersion(
@@ -104,6 +105,7 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
       await sql`delete from ${sql(t)} where area = 'blogs' and slug = ${slug}`;
     }
     await sql`delete from content_version where area = 'blogs' and slug = ${slug}`;
+    await sql`delete from comment where area = 'docs' and slug = ${plannedSlug}`;
     await sql`delete from content_request where requested_by_user_id = 'flow-reviewer'`;
     await closeDb();
     for (const [key, value] of Object.entries(savedEnv)) {
@@ -174,6 +176,32 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
     const { threads, orphanedThreads } = await reviewer.listComments({ ref });
     expect(threads.map((t) => t.root?.id)).toContain(comment?.id);
     expect(orphanedThreads.map((t) => t.root?.id)).not.toContain(comment?.id);
+  });
+
+  test("a planned slot takes threads with no version, unread for others until seen", async () => {
+    const plannedRef = {
+      area: ContentArea.DOCS,
+      project: "flow",
+      bucket: "planned",
+      slug: plannedSlug,
+    };
+    const { comment } = await reviewer.createComment({
+      ref: plannedRef,
+      anchorSlug: "",
+      anchorFingerprint: "",
+      bodyMd: "Use the minimal environment.",
+      scope: CommentScope.DOCUMENT,
+    });
+    const { threads } = await maintainer.listComments({ ref: plannedRef });
+    expect(threads.map((t) => t.root?.id)).toEqual([comment?.id ?? ""]);
+
+    const recentFor = async (client: typeof reviewer) =>
+      (await client.listRecentComments({ limit: 100 })).comments.find(
+        (rc) => rc.comment?.id === comment?.id,
+      );
+    expect((await recentFor(maintainer))?.unread).toBe(true);
+    await maintainer.markThreadSeen({ threadRootId: comment?.id ?? "" });
+    expect((await recentFor(maintainer))?.unread).toBe(false);
   });
 
   test("content requests: reviewers file, maintainers triage, done needs a slot", async () => {

@@ -18,7 +18,7 @@
 # claims.duckdb = [
 #   { journey = "managed.read", region = "duckdb-read" },
 #   { journey = "managed.append", region = "duckdb-append", note = "tables with column mapping off" },
-#   { journey = "managed.create", fails = true, anchor = "choose-an-engine" },
+#   { journey = "managed.create", fails = true, anchor = "create-a-managed-table" },
 # ]
 # claims."delta:spark-sql" = [
 #   { journey = "catalog.unity", region = "create-table", note = "through Unity Catalog" },

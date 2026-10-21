@@ -1,6 +1,6 @@
 ---
 title: Read and write catalog-managed Delta tables
-summary: Create catalog-managed Delta tables in Unity Catalog without a location, and read and write them through Spark or DuckDB by name, not by path.
+summary: Create catalog-managed Delta tables in Unity Catalog, and read and write them through Spark or DuckDB.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -28,20 +28,6 @@ for why.
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
 - [Java 17](https://adoptium.net/temurin/releases/?version=17), for Spark.
 :::
-
-## Choose an engine
-
-Spark with the Unity Catalog connector does every task on this page. DuckDB
-reads and appends:
-
-| Engine | What it can do with a managed table |
-| --- | --- |
-| Spark with the Unity Catalog connector | Create, append, update, delete, read, read earlier versions, and drop. |
-| DuckDB with the `unity_catalog` extension | Append and read. It can't create, change, or drop tables. |
-| Polars, Daft, pandas (`deltalake`) | Nothing: they can't load the table. |
-
-The tested matrix for every client is in
-[External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md#what-clients-must-support).
 
 ## Set up the client
 
@@ -73,9 +59,6 @@ Install the `delta` and `unity_catalog` extensions, then attach the catalog:
 
 ```python file=./snippets/managed_tables.py start=start:duckdb-connect end=end:duckdb-connect
 ```
-
-[Use DuckDB with Unity Catalog](../duckdb/index.md#install-the-extensions)
-explains why `unity_catalog` comes from `core_nightly`.
 :::
 
 When an engine reads or writes the table, it asks the server for credentials
@@ -86,7 +69,7 @@ for what they protect.
 
 ## Create a managed table
 
-Create the table in Spark without a location:
+Create the table in Spark:
 
 ```python file=./snippets/managed_tables.py start=start:create-table end=end:create-table
 ```
@@ -94,22 +77,21 @@ Create the table in Spark without a location:
 The connector creates it as a catalog-managed table and sets
 `delta.feature.catalogManaged` for you. You don't choose where it lives: the
 server allocates a path under the nearest storage root, the schema's, else the
-catalog's, else the metastore's. If none of them has a root, the create fails
-with
-`None of catalog, schema or storage-root.tables server property has managed location configured.`
-See [Managed storage roots](../../explanation/uc-basics/index.md#managed-storage-roots)
-for how the path is built.
+catalog's, else the metastore's.
+
+DuckDB can't create tables.
 
 Creating a table from a query (`CREATE TABLE … AS SELECT`) is covered in the
 guide *Replace or overwrite a managed Delta table*.
 
 ### Required table features
 
-To create a managed table, the server requires reader version 3 and writer
-version 7, with the `catalogManaged`, `deletionVectors`, `v2Checkpoint`,
-`vacuumProtocolCheck`, and `inCommitTimestamp` table features. Spark also turns
-on the features the server suggests, including column mapping. To list a
-table's protocol versions and features, run:
+The server tells the client which table features a managed table needs, and
+the client has to support them: `catalogManaged`, `deletionVectors`,
+`v2Checkpoint`, `vacuumProtocolCheck`, and `inCommitTimestamp`, which put the
+table at reader version 3 and writer version 7. Spark turns them on when it
+creates the table, along with the features the server suggests, including
+column mapping. To list a table's protocol versions and features, run:
 
 ```python file=./snippets/managed_tables.py start=start:inspect end=end:inspect
 ```

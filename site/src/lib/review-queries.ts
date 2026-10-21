@@ -15,6 +15,7 @@ import {
   listContentRequests,
   listDrafts,
   listRatings,
+  listRecentComments,
   listRegisteredUsers,
   listReviewRequests,
 } from "../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
@@ -56,9 +57,21 @@ export function useReviewInvalidation() {
     [transport],
   );
 
+  // The cross-page feed carries the same threads (and read state), so it
+  // refreshes with any page's comments.
   const invalidateComments = useCallback(
-    (ref: ContentRef) => queryClient.invalidateQueries({ queryKey: commentsKey(ref) }),
-    [queryClient, commentsKey],
+    (ref: ContentRef) =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: commentsKey(ref) }),
+        queryClient.invalidateQueries({
+          queryKey: createConnectQueryKey({
+            schema: listRecentComments,
+            transport,
+            cardinality: "finite",
+          }),
+        }),
+      ]),
+    [queryClient, commentsKey, transport],
   );
 
   const invalidateDrafts = useCallback(

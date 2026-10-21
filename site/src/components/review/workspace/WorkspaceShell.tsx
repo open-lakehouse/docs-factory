@@ -14,6 +14,7 @@ import {
   readReviewDisplayMode,
 } from "../../../lib/review-display-mode";
 import { useSidebarWidth } from "../../../lib/useSidebarWidth";
+import { CommentQueueProvider } from "./comment-queue-context";
 import { ExpansionProvider } from "./expansion-context";
 import InboxTab from "./InboxTab";
 import ReviewTab from "./ReviewTab";
@@ -262,7 +263,9 @@ export default function WorkspaceShell() {
   return (
     <ExpansionProvider>
       <WorkspaceTabsProvider>
-        <WorkspaceLayout />
+        <CommentQueueProvider>
+          <WorkspaceLayout />
+        </CommentQueueProvider>
       </WorkspaceTabsProvider>
     </ExpansionProvider>
   );

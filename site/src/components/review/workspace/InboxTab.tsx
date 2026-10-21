@@ -1,10 +1,11 @@
 // The Inbox panel in the workspace middle pane. Mirrors ReviewTab's tabpanel
 // shell (ARIA ids, keep-mounted / hide-when-inactive) but hosts the review
-// requests addressed to the viewer and the latest comments instead of a page.
+// requests addressed to the viewer and the latest comments (grouped by page)
+// instead of a page.
 import { cn } from "@/lib/utils";
 import { useReviewInbox } from "../../../lib/review-inbox";
 import { ReviewRequestBadge } from "../../../lib/review-status";
-import LatestComments from "./LatestComments";
+import CommentFeed from "./CommentFeed";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
 import { tabLabel } from "./tab-label";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
@@ -57,7 +58,7 @@ export default function InboxTab({ token, isActive }: { token: string; isActive:
         </section>
         <section aria-label="Latest comments" className="mt-8">
           <h2 className="blog-aside-title">Latest comments</h2>
-          <LatestComments />
+          <CommentFeed />
         </section>
       </div>
     </div>

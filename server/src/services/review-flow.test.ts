@@ -199,7 +199,12 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
       (await client.listRecentComments({ limit: 100 })).comments.find(
         (rc) => rc.comment?.id === comment?.id,
       );
-    expect((await recentFor(maintainer))?.unread).toBe(true);
+    const recent = await recentFor(maintainer);
+    expect(recent?.unread).toBe(true);
+    // No version to read them from, so they come from the slug.
+    expect(recent?.ref?.project).toBe(plannedSlug.split("/")[1]);
+    expect(recent?.ref?.bucket).toBe("planned");
+    expect((await recentFor(reviewer))?.unread).toBe(false);
     await maintainer.markThreadSeen({ threadRootId: comment?.id ?? "" });
     expect((await recentFor(maintainer))?.unread).toBe(false);
   });

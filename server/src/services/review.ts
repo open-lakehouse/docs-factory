@@ -806,7 +806,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             from comment c join roots r on c.parent_id = r.id
           )
           select c.id, c.area, c.slug,
-                 l.project, l.bucket,
+                 coalesce(l.project, ps.project) as project,
+                 coalesce(l.bucket, ps.bucket) as bucket,
                  c.anchor_slug, c.anchor_fingerprint, c.parent_id,
                  c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
                  c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
@@ -819,10 +820,17 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  sec.heading_text as heading_text,
                  coalesce(cr.resolved, false) as resolved,
                  (${viewerId}::text is not null
+                   and c.author_user_id is distinct from ${viewerId}
                    and (cs.seen_at is null or c.created_at > cs.seen_at)) as unread
           from comment c
           left join roots r on r.id = c.id
           left join latest l on l.area = c.area and l.slug = c.slug
+          -- A nav.yml planned slot has no version to take project/bucket from;
+          -- its slug carries them (content-core plannedSlug: planned/<project>/<id>).
+          left join lateral (
+            select split_part(c.slug, '/', 2) as project, 'planned' as bucket
+            where c.area = 'docs' and c.slug ~ '^planned/[^/]+/[^/]+$'
+          ) ps on true
           left join content_version cv on cv.id = c.authored_version_id
           left join content_section sec
             on sec.version_id = l.id and sec.anchor_slug = c.anchor_slug

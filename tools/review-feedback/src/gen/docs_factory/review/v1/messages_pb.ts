@@ -1102,8 +1102,9 @@ export type RecentComment = Message<"docs_factory.review.v1.RecentComment"> & {
   contentTitle: string;
 
   /**
-   * This comment is newer than the viewer's read watermark on its thread (or the
-   * viewer never opened the thread): the same rule as Thread.has_unread.
+   * Someone else's comment newer than the viewer's read watermark on its thread
+   * (or the viewer never opened the thread). Thread.has_unread's rule, minus the
+   * viewer's own comments, so posting doesn't badge the feed.
    *
    * @generated from field: bool unread = 7;
    */

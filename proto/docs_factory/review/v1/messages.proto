@@ -451,8 +451,9 @@ message RecentComment {
   // The content title (from the latest version), for a friendlier row label than
   // the slug. Falls back to the slug on the client when empty.
   string content_title = 6;
-  // This comment is newer than the viewer's read watermark on its thread (or the
-  // viewer never opened the thread): the same rule as Thread.has_unread.
+  // Someone else's comment newer than the viewer's read watermark on its thread
+  // (or the viewer never opened the thread). Thread.has_unread's rule, minus the
+  // viewer's own comments, so posting doesn't badge the feed.
   bool unread = 7;
 }
 

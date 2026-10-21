@@ -45,7 +45,10 @@ requirement.
 - **A page path:** read the whole page and its `snippets/`.
 - **A planned slot** (`planned: T02` in `content/<project>/nav.yml`): the
   backlog entry in `docs/design/<project>-documentation-plan.md` (§6 for
-  Unity Catalog) is the brief. Read its row and any linked request.
+  Unity Catalog) is the brief. Read its row and any linked request. Reviewers
+  leave instructions on the slot itself: `list_feedback` with
+  `slug: planned/<project>/<id>` (or `just feedback list --slug …`) returns
+  them, and each open thread is a requirement that overrides the backlog row.
 - **A content request:** `list_content_requests` (review-feedback MCP, or
   `just feedback requests --json`) gives its title, placement trail, and
   description. If it isn't accepted yet, stop and say so.
@@ -169,3 +172,6 @@ Return this contract to the caller:
   changes. Or an empty list.
 - **Requests:** the content-request id this page completes, so the caller can
   run `complete_content_request` after the PR exists.
+- **Slot threads:** the planned-slot thread ids the page answers, so the caller
+  can `reply_to_thread` on each with what the page does and the PR link once it
+  exists. The reviewer resolves them.

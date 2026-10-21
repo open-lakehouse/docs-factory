@@ -24,6 +24,9 @@ function anchorLine(t: FeedbackThread): string {
     const region = code.region ? ` region \`${code.region}\`` : "";
     return `- anchor: code \`${code.path}\` lines ${code.line}-${code.endLine}${region}`;
   }
+  if (t.planned) {
+    return `- anchor: planned slot ${t.planned.id} (no page yet: an instruction for writing it)`;
+  }
   if (t.anchor.scope === "document") return "- anchor: the whole page";
   const quote = t.anchor.quote ? ` › “${t.anchor.quote}”` : "";
   const section = isPreambleAnchor(t.anchor.heading)

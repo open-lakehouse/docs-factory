@@ -129,7 +129,7 @@ server.registerTool(
   ({ thread_id, body, suggestion_applied }) =>
     run(async () => {
       const c = client();
-      const t = await getThread(c, thread_id, { page: pageOf.get(thread_id) });
+      const t = await getThread(c, thread_id, { repoRoot: root, page: pageOf.get(thread_id) });
       if (!t) return `No thread ${thread_id} (or no access to it).`;
       if (suggestion_applied && !t.suggestion) {
         return `Thread ${t.id} has no suggestion to mark applied; nothing posted.`;

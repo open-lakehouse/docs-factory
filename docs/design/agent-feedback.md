@@ -130,6 +130,15 @@ and `request: <id>` under that section of `content/<project>/nav.yml` (blogs:
 an entry in `blogs/IDEAS.md`), opens a PR, and calls `complete_content_request`
 (CLI `complete-request`) with the backlog id and PR link.
 
+A planned slot opens in the workspace as its own tab, so reviewers can comment
+on it before the page exists. Its threads hang off a synthetic docs ref
+(bucket `planned`, slug `planned/<project>/<id>`; content-core `plannedSlug`),
+which the comment table accepts because it keys on `(area, slug)` and never
+requires a registered version. The API can't enumerate slots, so
+`list_feedback` scans the checkout's `nav.yml` files for them and points each
+thread at the slot's line. `docs-write` reads them as requirements when it
+fills the slot and replies on each one with the PR.
+
 ## Suggested edits
 
 A thread root with a prose or code selector can carry a `Suggestion`. It is the

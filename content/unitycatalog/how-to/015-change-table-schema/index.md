@@ -1,6 +1,6 @@
 ---
 title: Manage table schemas and properties
-summary: Managed tables change through Spark, which commits through the catalog. External tables change with Spark or deltalake, then sync the catalog's record.
+summary: Change a Unity Catalog managed table's columns and properties through Spark; change an external table with Spark or deltalake, then sync the catalog's record.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -16,10 +16,10 @@ Unity Catalog keeps two records of a Delta table: the Delta log in storage,
 and its own record of the table's columns, comment, and properties. A safe
 change leaves the two in agreement.
 
-- **Managed tables** change through Spark, which commits each change through
-  the catalog, so both records move together.
-- **External tables** change with Spark or deltalake, which write only the
-  Delta log. You then sync the catalog's record yourself.
+- **Managed tables:** Spark commits each change through the catalog, so both
+  records move together.
+- **External tables:** Spark and deltalake (delta-rs) write only the Delta
+  log, so you sync the catalog's record afterwards.
 
 :::prerequisites
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
@@ -27,8 +27,11 @@ change leaves the two in agreement.
 - A catalog with managed storage, as in
   [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md#give-a-catalog-managed-storage).
   The examples call it `warehouse`.
-- For the external-table steps, an external Delta table registered as
-  `warehouse.sales.order_events`, as in
+- For the external-table steps, the external Delta table
+  `warehouse.sales.order_events` at `file:///tmp/uc-docs/order_events`, with
+  the columns `order_id` (`bigint`) and `status` (`string`). The delta-rs ·
+  Python setup below writes and registers it. For more on registering external
+  tables, see
   [Register external Delta table](../register-external-table/index.md#register-the-table).
 :::
 
@@ -40,9 +43,9 @@ kinds of table. deltalake changes external tables only:
 | Client | Managed table | External table |
 | --- | --- | --- |
 | Spark with the Unity Catalog connector, SQL or Python | Yes. Each statement is one Delta commit that the catalog accepts. | Yes, in the Delta log. Then sync the catalog's record. |
-| deltalake (delta-rs) | No. Opening the table fails with `Max catalog version is required when loading a catalog-managed table`. | Adds columns, sets comments, and sets properties in the Delta log. It can't drop, rename, or change the type of a column. Then sync the catalog's record. |
-| DuckDB, `unity_catalog` extension | No. `ALTER TABLE` fails with `UCTableSet::AlterTable`, and `COMMENT ON TABLE` fails with `Only altering tables is supported for now`. | No. Same errors. |
-| `uc` CLI, Python SDK | No. They read the catalog's record only. | No. They read the catalog's record only. |
+| deltalake (delta-rs) | No. Opening the table fails with `Max catalog version is required when loading a catalog-managed table`. | Yes, in the Delta log. It changes columns in place only by adding them, setting their metadata, or relaxing `NOT NULL`. Dropping, renaming, or changing the type of a column means overwriting the table with `schema_mode="overwrite"`, which rewrites every row. Then sync the catalog's record. |
+| DuckDB, `unity_catalog` extension | No. `ALTER TABLE` fails with `UCTableSet::AlterTable`, and `COMMENT ON TABLE` fails with `Only altering tables is supported for now`. | No. Same errors, and `ALTER TABLE … SET (key = value)` fails with `UCTableSet::AlterTable`. |
+| `uc` CLI, Python SDK | No. The tables API has no update. Use them to check the record. | No. The tables API has no update. Use them to check the record, or to drop and register the table again. |
 
 ## Set up the client
 
@@ -71,7 +74,13 @@ deltalake changes external tables only. Start Python with it and the Unity
 Catalog client:
 
 ```bash
-uv run --with deltalake==1.6.6 --with unitycatalog-client==0.7.0 python
+uv run --with deltalake==1.6.6 --with unitycatalog-client==0.7.0 python -m asyncio
+```
+
+The external-table examples change `warehouse.sales.order_events`. To follow
+along, write a two-row Delta table and register it:
+
+```python file=./snippets/external_deltalake.py start=start:register-events end=end:register-events
 ```
 :::
 
@@ -79,8 +88,15 @@ uv run --with deltalake==1.6.6 --with unitycatalog-client==0.7.0 python
 Spark setting. The managed-table examples change the following table. To follow
 along, create it with Spark:
 
+:::tab[Spark · SQL]
+```sql file=./snippets/change_schema.sql start=start:create-table end=end:create-table
+```
+:::
+
+:::tab[Spark · Python]
 ```python file=./snippets/change_schema.py start=start:create-table end=end:create-table
 ```
+:::
 
 ## Add columns and comments
 
@@ -328,8 +344,13 @@ registered.
 ### Sync the catalog's record
 
 Send the table's columns, comment, and properties from the Delta log to the
-catalog in one request to the Unity Catalog Delta API. The sync is an HTTP
-request, so it runs from Python. These two helpers load a table and update it:
+catalog in one request to the Unity Catalog Delta API. You send it from
+Python. If you changed the table in the Spark SQL shell, use the delta-rs ·
+Python tab, which reads the same Delta log: start its session as in
+[Set up the client](#set-up-the-client), and open the table as in
+[Change the Delta log](#change-the-delta-log).
+
+These two helpers load a table and update it:
 
 ```python file=./snippets/delta_api.py start=start:delta-api end=end:delta-api
 ```
@@ -346,11 +367,9 @@ Then send what your engine reads from the Delta log:
 ```
 :::
 
-The request carries `set-columns`, `set-table-comment`, and `set-properties`,
-guarded by `assert-table-uuid` and `assert-etag`. If the table changed since
-you loaded it, the server returns HTTP 409
-`UpdateRequirementConflictException` and applies none of the updates. Load the
-table again and retry.
+Load the table again and retry if the server returns HTTP 409
+`UpdateRequirementConflictException`. It means the table changed after you
+loaded it, and the server applied none of the updates.
 
 <!-- Link E14 (The Unity Catalog Delta API) here once it has a page. Its model element is pending #272. -->
 
@@ -366,6 +385,7 @@ of them.
 | --- | --- |
 | Change a table's columns, comment, or properties | Owner of the table, or of its schema or catalog |
 | Rename a table by copying it | `USE CATALOG` on the catalog, `USE SCHEMA` and `CREATE TABLE` on the schema, `SELECT` on the old table, and ownership of the old table, its schema, or its catalog to drop it |
+| Sync an external table's record through the Delta API | Not checked: the examples run without authorization |
 
 See [Ownership and privileges](../../explanation/uc-basics/index.md#ownership-and-privileges).
 

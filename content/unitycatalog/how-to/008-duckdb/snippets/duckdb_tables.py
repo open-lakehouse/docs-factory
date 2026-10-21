@@ -113,8 +113,8 @@ def _seed_with_spark() -> SparkSession:
     return spark
 
 
-def _latest_version() -> int:
-    url = f"{UC_URL}/api/2.1/unity-catalog/delta/v1/catalogs/retail/schemas/sales/tables/orders"
+def _latest_version(table: str = "orders") -> int:
+    url = f"{UC_URL}/api/2.1/unity-catalog/delta/v1/catalogs/retail/schemas/sales/tables/{table}"
     with urllib.request.urlopen(url) as resp:
         return json.load(resp)["latest-table-version"]
 
@@ -206,7 +206,7 @@ assert [(r[0], r[1], float(r[2])) for r in spark_seen] == [
     *appended,
 ], spark_seen
 
-# DuckDB 1.5.4 with unity_catalog 3ab8508: appends only, no row changes or DDL.
+# DuckDB with the `core_nightly` unity_catalog: appends only, no row changes or DDL.
 for unsupported in [
     "UPDATE retail.sales.orders SET amount = 1 WHERE order_id = 4",
     "DELETE FROM retail.sales.orders WHERE order_id = 4",
@@ -244,4 +244,37 @@ assert duck_mapped == [(1, "ada")], (
     f"DuckDB's column-mapped append reads wrong: update the page and R01: {duck_mapped}"
 )
 assert spark_mapped == [(1, "ada")], spark_mapped
+
+# A partitioned table with column mapping: DuckDB's append fails before it
+# commits, and the table keeps Spark's rows and version (R01).
+spark.sql(
+    "CREATE TABLE retail.sales.by_region (order_id BIGINT, region STRING) "
+    "USING DELTA PARTITIONED BY (region)"
+)
+spark.sql("INSERT INTO retail.sales.by_region VALUES (1, 'emea')")
+assert (
+    spark.sql("SHOW TBLPROPERTIES retail.sales.by_region ('delta.columnMapping.mode')")
+    .first()
+    .value
+    == "name"
+)
+partitioned_version = _latest_version("by_region")
+con.execute("DETACH retail")  # see the new table
+con.execute("ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')")
+try:
+    con.execute("INSERT INTO retail.sales.by_region VALUES (2, 'apac')")
+except duckdb.NotImplementedException as err:
+    assert str(err) == (
+        "Not implemented Error: Inserting into a partitioned Delta table that uses "
+        "column mapping is not supported"
+    ), err
+else:
+    raise AssertionError("DuckDB appends to partitioned column-mapped tables now")
+assert _latest_version("by_region") == partitioned_version
+assert [
+    tuple(r) for r in spark.sql("SELECT * FROM retail.sales.by_region").collect()
+] == [(1, "emea")]
+spark.sql("DROP TABLE retail.sales.by_region")
+# No DETACH after the rejected insert: it raises a spurious Binder Error.
+con.close()
 spark.stop()

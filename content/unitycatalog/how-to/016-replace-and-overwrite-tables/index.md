@@ -1,21 +1,20 @@
 ---
 title: Replace or overwrite a managed Delta table
-summary: In Unity Catalog, CREATE OR REPLACE, INSERT OVERWRITE, and REPLACE WHERE each commit one new version of a managed table; its name, ID, and history stay.
+summary: Replace a managed Delta table's definition and rows, all of its rows, or some of them with CREATE OR REPLACE, INSERT OVERWRITE, and REPLACE WHERE in Spark SQL.
 diataxis: how-to
 project: unitycatalog
 references:
   - unityCatalogOSS
   - deltaSpec
   - deltaSpark
-status: draft
+status: ready
 ---
 
-To replace data in a catalog-managed [Delta](model:deltaSpec) table, pick the
-Spark SQL statement by what should change: the table's definition and rows, all
-of its rows, or only the rows that match a condition or land in a partition.
-Every statement on this page keeps the table's
-[Unity Catalog](model:unityCatalogOSS) identity, and an earlier version stays
-readable until its files are vacuumed.
+To replace data in a catalog-managed [Delta](model:deltaSpec) table in
+[Unity Catalog](model:unityCatalogOSS), use `CREATE OR REPLACE TABLE` to change
+its columns and rows, `INSERT OVERWRITE` to swap all rows, and
+`INSERT INTO … REPLACE WHERE` or dynamic partition overwrite to swap some of
+them.
 
 :::prerequisites
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).

@@ -156,7 +156,11 @@ What each client can do with a table, as tested in CI:
 | Write to a managed table by path | — | — | ✗ | ✗ | ✗ | — | — | — |
 | Change a managed table's columns | — | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
 | Set a managed table's properties | — | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
-| Create a managed table from a query | — | ✗ | — | — | — | — | — | — |
+| Create a managed table from a query | [✓](../../how-to/replace-and-overwrite-tables/index.md#create-a-table-from-a-query) | ✗ | — | — | — | — | — | — |
+| Replace a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#replace-a-tables-definition-and-rows) | — | — | — | — | — | — | — |
+| Overwrite a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#overwrite-all-rows) | — | — | — | — | — | — | — |
+| Replace rows that match a condition | [✓](../../how-to/replace-and-overwrite-tables/index.md#replace-the-rows-that-match-a-condition) | — | — | — | — | — | — | — |
+| Overwrite partitions of a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#overwrite-the-partitions-the-new-rows-write-to) | — | — | — | — | — | — | — |
 | Read a Parquet, CSV, or JSON table | — | [✓](../../how-to/table-storage-formats/index.md#read-the-data) by path from the table's location | [✓](../../how-to/table-storage-formats/index.md#read-the-data) by path from the table's location | — | — | — | — | — |
 | Create a managed Iceberg table | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | — | — |
 | Append to an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — |

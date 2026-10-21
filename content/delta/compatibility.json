@@ -1125,7 +1125,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -1135,7 +1135,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "create-a-table-from-a-query",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -1502,7 +1502,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/delta/how-to/003-append-and-overwrite-data/snippets/write_spark_cli.py",
@@ -1527,7 +1527,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "overwrite-all-rows",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -1639,7 +1639,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -1649,7 +1649,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "replace-the-rows-that-match-a-condition",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -1753,7 +1753,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -1763,7 +1763,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "overwrite-the-partitions-the-new-rows-write-to",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -3767,7 +3767,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -3777,7 +3777,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "check-a-replacement-and-undo-it",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -4077,7 +4077,7 @@
       "cells": {
         "spark-sql": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
@@ -4087,7 +4087,7 @@
                 "slug": "replace-and-overwrite-tables"
               },
               "anchor": "replace-a-tables-definition-and-rows",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "4.1.0",
@@ -8125,17 +8125,23 @@
         "catalog.unity",
         "column-mapping.read",
         "column-mapping.write",
+        "create.ctas",
         "create.table",
         "dml.delete",
         "dml.update",
         "feature.properties",
         "history.detail",
         "history.list",
+        "history.restore",
         "in-commit-timestamp.write",
         "read.scan",
         "read.version",
         "row-tracking.write",
-        "write.append"
+        "schema.overwrite",
+        "write.append",
+        "write.dynamic-partitions",
+        "write.overwrite",
+        "write.replace-where"
       ]
     },
     {
@@ -8152,17 +8158,23 @@
         "catalog.unity",
         "column-mapping.read",
         "column-mapping.write",
+        "create.ctas",
         "create.table",
         "dml.delete",
         "dml.update",
         "feature.properties",
         "history.detail",
         "history.list",
+        "history.restore",
         "in-commit-timestamp.write",
         "read.scan",
         "read.version",
         "row-tracking.write",
-        "write.append"
+        "schema.overwrite",
+        "write.append",
+        "write.dynamic-partitions",
+        "write.overwrite",
+        "write.replace-where"
       ]
     },
     {

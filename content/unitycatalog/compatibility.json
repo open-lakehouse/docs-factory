@@ -1907,7 +1907,7 @@
                 "bucket": "how-to",
                 "slug": "managed-delta-tables"
               },
-              "anchor": "choose-an-engine",
+              "anchor": "create-a-managed-table",
               "ready": false,
               "works": false,
               "fails": null,

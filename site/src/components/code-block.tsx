@@ -155,10 +155,7 @@ export function Pre({
         <PendingComposer
           contentRef={review.contentRef}
           pending={pending}
-          onDone={() => {
-            setPending(null);
-            review.refetch();
-          }}
+          onDone={() => setPending(null)}
           onCancel={() => setPending(null)}
           compact
         />
@@ -175,7 +172,6 @@ export function Pre({
           <ThreadConversation
             thread={thread}
             sectionLabel={sectionEl?.textContent ?? ""}
-            onChange={review.refetch}
             onClose={() => review.selectThread(null)}
             compact
           />

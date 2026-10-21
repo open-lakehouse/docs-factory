@@ -50,7 +50,6 @@ export default function InlineReviewSurface({
     selectThread,
     threadById,
     displayMode,
-    refetch,
   } = useReview();
   const { pending, pendingSeq, setPending } = useSelectionState();
   const [placement, setPlacement] = useState<{
@@ -166,10 +165,7 @@ export default function InlineReviewSurface({
             key={pendingSeq}
             contentRef={contentRef}
             pending={pending}
-            onDone={() => {
-              setPending(null);
-              refetch();
-            }}
+            onDone={() => setPending(null)}
             onCancel={() => setPending(null)}
             compact
           />
@@ -178,7 +174,6 @@ export default function InlineReviewSurface({
           <ThreadConversation
             thread={selected}
             sectionLabel={headings.get(selected.root?.anchorSlug ?? "")}
-            onChange={refetch}
             onClose={() => selectThread(null)}
             onCollapse={() => selectThread(null)}
             compact

@@ -18,6 +18,7 @@ import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 import { type ContentPage, findBlog, findDoc } from "../../../content";
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
+import { plannedOf } from "../../../lib/content-ref";
 import { useScriptsIndex } from "../../../lib/scripts-index";
 import MdxProvider from "../../../MdxProvider";
 import RelatedContent from "../../RelatedContent";
@@ -29,6 +30,7 @@ import { ScrollContainerProvider } from "../scroll-container-context";
 import { SelectionProvider } from "../selection-context";
 import MarkdownTwinView from "./MarkdownTwinView";
 import PageHeadView from "./PageHeadView";
+import PlannedSlotView from "./PlannedSlotView";
 import { useRightPaneSlot } from "./right-pane-slot";
 import ScriptView from "./ScriptView";
 import { tabDomId, tabPanelDomId } from "./tab-ids";
@@ -198,6 +200,7 @@ function ReviewTabBody({
 }) {
   const slot = useRightPaneSlot();
   useDeepLinkTarget({ isActive, articleRef, container: scrollPane });
+  const planned = page ? null : plannedOf(contentRef);
 
   return (
     <>
@@ -230,6 +233,10 @@ function ReviewTabBody({
                 <page.Component />
               </MdxProvider>
               <RelatedContent page={page} />
+            </article>
+          ) : planned ? (
+            <article className="prose mx-auto max-w-3xl px-6 py-8" ref={articleRef}>
+              <PlannedSlotView project={planned.project} id={planned.id} />
             </article>
           ) : (
             <p className="p-6 text-muted-foreground">Content not found: {contentRef.slug}</p>

@@ -54,5 +54,28 @@ test("planned slots map through and secondary placements are kept", () => {
     () => undefined,
   );
   expect(tree.map((n) => n.kind)).toEqual(["leaf", "planned", "leaf"]);
-  expect(tree[1]).toEqual({ kind: "planned", id: "T02", title: "Register a table" });
+  expect(tree[1]).toEqual({
+    kind: "planned",
+    id: "T02",
+    title: "Register a table",
+    project: "uc",
+    trail: [],
+  });
+});
+
+test("a planned slot carries its section trail and request", () => {
+  const request = "0190a4b2-0000-7000-8000-000000000000";
+  const [outer] = navBranches(
+    "uc",
+    [
+      {
+        kind: "section",
+        label: "Use",
+        children: [{ kind: "planned", id: "T06", title: "Agent tool", request }],
+      },
+    ],
+    () => undefined,
+  );
+  if (outer.kind !== "branch") throw new Error("expected branch");
+  expect(outer.children[0]).toMatchObject({ trail: ["Use"], request, project: "uc" });
 });

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { CommentScope, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
+import { plannedOf } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
 import { useShowResolved } from "../../lib/review-show-resolved";
 import { sortThreadsByDocumentOrder } from "../../lib/thread-document-order";
@@ -228,8 +229,9 @@ export default function CommentSidebar({
       )}
       {!hasAny && resolvedCount === 0 && !pending && !composingPage && (
         <p className="review-empty">
-          No comments yet. Comment on the page, hover a section heading, or select text or code to
-          start a thread.
+          {plannedOf(contentRef)
+            ? "No instructions yet. Comment on the page to tell the author what it should cover."
+            : "No comments yet. Comment on the page, hover a section heading, or select text or code to start a thread."}
         </p>
       )}
       <div className="review-thread-list">{orderedThreads.map(renderCard)}</div>

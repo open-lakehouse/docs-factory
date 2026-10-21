@@ -26,11 +26,12 @@ import { projectNav } from "../../../doc-nav";
 import type { ContentRequest } from "../../../gen/docs_factory/review/v1/messages_pb";
 import { ReviewState } from "../../../gen/docs_factory/review/v1/messages_pb";
 import {
+  listComments,
   listDrafts,
   listReviewRequests,
 } from "../../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../../lib/auth-context";
-import { refToParam } from "../../../lib/content-ref";
+import { plannedRef, refToParam } from "../../../lib/content-ref";
 import {
   effectiveStatus,
   effectiveStatusIconClass,
@@ -52,7 +53,7 @@ import {
 import { useExpansion } from "./expansion-context";
 import { INBOX_TOKEN } from "./inbox-token";
 import { TreeRow } from "./TreeRow";
-import { type TreeMode, type TreeNode, useReviewTree } from "./tree-model";
+import { type TreeMode, type TreeNode, type TreePlanned, useReviewTree } from "./tree-model";
 import { refTokenOf } from "./view-token";
 import { useWorkspaceTabs } from "./workspace-tabs-context";
 
@@ -194,6 +195,35 @@ function nodeKey(node: TreeNode): string {
   return node.kind === "planned" ? `planned:${node.id}` : node.id;
 }
 
+/** A planned slot opens a tab whose threads are instructions for the page's author. */
+function PlannedRow({ node, depth }: { node: TreePlanned; depth: number }) {
+  const { openTab, activeToken } = useWorkspaceTabs();
+  const ref = useMemo(() => plannedRef(node.project, node.id), [node.project, node.id]);
+  const { data } = useQuery(listComments, { ref });
+  const open = data?.threads.filter((t) => !t.resolved).length ?? 0;
+  const token = refToParam(ref);
+  return (
+    <TreeRow
+      depth={depth}
+      icon={<CircleDashed className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
+      label={`${node.id} · ${node.title}`}
+      muted
+      trailing={
+        open > 0 ? (
+          <span
+            className="review-count small"
+            title={`${open} open ${open === 1 ? "instruction" : "instructions"}`}
+          >
+            {open}
+          </span>
+        ) : undefined
+      }
+      selected={activeToken !== null && refTokenOf(activeToken) === token}
+      onSelect={() => openTab(ref)}
+    />
+  );
+}
+
 /** Siblings paired with unique keys: nav.yml may list a page twice in one section. */
 function keyed(nodes: TreeNode[]): [string, TreeNode][] {
   const seen = new Map<string, number>();
@@ -222,16 +252,7 @@ function Node({
   const { openTab, activeToken } = useWorkspaceTabs();
   const { isAllowlisted } = useAuth();
 
-  if (node.kind === "planned") {
-    return (
-      <TreeRow
-        depth={depth}
-        icon={<CircleDashed className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />}
-        label={`${node.id} · ${node.title}`}
-        muted
-      />
-    );
-  }
+  if (node.kind === "planned") return <PlannedRow node={node} depth={depth} />;
 
   if (node.kind === "leaf") {
     const token = refToParam(node.ref);

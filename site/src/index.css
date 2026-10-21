@@ -3017,6 +3017,42 @@ a.version-diff-label:hover {
   font-size: 0.72rem;
   color: var(--muted-foreground);
 }
+.review-planned-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.review-planned-note {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--muted-foreground);
+}
+.review-planned-note p { margin: 0; }
+.review-planned-request {
+  margin: 1.5rem 0;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+}
+.review-planned-request-title { margin: 0.25rem 0; font-weight: 600; }
+.review-planned-request-body { margin: 0.25rem 0; white-space: pre-wrap; line-height: 1.55; }
+.review-planned-request-meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
 .review-resolved-toggle {
   display: inline-flex;
   align-items: center;

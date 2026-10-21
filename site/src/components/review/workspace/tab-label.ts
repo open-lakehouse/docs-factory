@@ -3,10 +3,18 @@
 // the TabBar and any deep-link chrome share one definition.
 
 import { findBlog, findDoc } from "../../../content";
+import { projectNav } from "../../../doc-nav";
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
+import { plannedOf } from "../../../lib/content-ref";
+import { findPlannedSlot } from "./planned-slot";
 import type { TabView } from "./view-token";
 
 export function tabLabel(ref: ContentRef): string {
+  const planned = plannedOf(ref);
+  if (planned) {
+    const slot = findPlannedSlot(projectNav[planned.project] ?? [], planned.id);
+    return `${planned.id} · ${slot?.title ?? "planned"}`;
+  }
   const page =
     ref.area === ContentArea.BLOGS
       ? findBlog(ref.slug)

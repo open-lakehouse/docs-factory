@@ -5,7 +5,13 @@
 // the manifest used to register slug="index" for these pages, so their DB refs
 // could never match the site's docRef.
 import { expect, test } from "bun:test";
-import { docIdentity, hrefFromIdentity, parseDocPath } from "../identity.mjs";
+import {
+  docIdentity,
+  hrefFromIdentity,
+  parseDocPath,
+  parsePlannedSlug,
+  plannedSlug,
+} from "../identity.mjs";
 
 test("folder-mode index.md resolves to the folder slug, order-prefix stripped", () => {
   const id = docIdentity("content/unitycatalog/tutorials/001-getting-started/index.md", {});
@@ -57,4 +63,15 @@ test("hrefFromIdentity returns null for an incomplete identity", () => {
   expect(hrefFromIdentity(null)).toBeNull();
   expect(hrefFromIdentity({ area: "blogs" })).toBeNull();
   expect(hrefFromIdentity({ area: "docs", project: "delta", slug: "x" })).toBeNull();
+});
+
+test("a planned-slot slug round-trips and never parses from a page slug", () => {
+  expect(plannedSlug("unitycatalog", "T06")).toBe("planned/unitycatalog/T06");
+  expect(parsePlannedSlug("planned/unitycatalog/T06")).toEqual({
+    project: "unitycatalog",
+    id: "T06",
+  });
+  expect(parsePlannedSlug("getting-started")).toBeNull();
+  expect(parsePlannedSlug("planned")).toBeNull();
+  expect(parsePlannedSlug(undefined)).toBeNull();
 });

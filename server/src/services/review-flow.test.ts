@@ -52,6 +52,7 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
   const slug = `flow-test-${randomUUID()}`;
   const ref = { area: ContentArea.BLOGS, slug };
   const plannedSlug = `planned/flow-${randomUUID()}/T99`;
+  const modelSlug = `element/flow.test-${randomUUID()}`;
 
   const register = (frontmatterStatus: string, contentHash = "body-v1", withSection = true) =>
     reviewer.registerVersion(
@@ -106,6 +107,7 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
     }
     await sql`delete from content_version where area = 'blogs' and slug = ${slug}`;
     await sql`delete from comment where area = 'docs' and slug = ${plannedSlug}`;
+    await sql`delete from comment where area = 'model' and slug = ${modelSlug}`;
     await sql`delete from content_request where requested_by_user_id = 'flow-reviewer'`;
     await closeDb();
     for (const [key, value] of Object.entries(savedEnv)) {
@@ -207,6 +209,49 @@ describe.skipIf(!testUrl)("review flow (Postgres)", () => {
     expect((await recentFor(reviewer))?.unread).toBe(false);
     await maintainer.markThreadSeen({ threadRootId: comment?.id ?? "" });
     expect((await recentFor(maintainer))?.unread).toBe(false);
+  });
+
+  test("a model element takes document threads only, and nothing else", async () => {
+    const modelRef = { area: ContentArea.MODEL, slug: modelSlug };
+    const { comment } = await reviewer.createComment({
+      ref: modelRef,
+      anchorSlug: "",
+      anchorFingerprint: "",
+      bodyMd: "This element should be #public.",
+      scope: CommentScope.DOCUMENT,
+    });
+    const { threads } = await maintainer.listComments({ ref: modelRef });
+    expect(threads.map((t) => t.root?.id)).toEqual([comment?.id ?? ""]);
+    expect(threads[0]?.root?.ref?.area).toBe(ContentArea.MODEL);
+
+    const recent = (
+      await maintainer.listRecentComments({ area: ContentArea.MODEL, limit: 100 })
+    ).comments.find((rc) => rc.comment?.id === comment?.id);
+    expect(recent?.ref).toMatchObject({ area: ContentArea.MODEL, slug: modelSlug });
+
+    const resolved = await maintainer.resolveThread({ threadRootId: comment?.id ?? "" });
+    expect(resolved.thread?.resolved).toBe(true);
+
+    const sectionRoot = reviewer.createComment({
+      ref: modelRef,
+      anchorSlug: "intro",
+      anchorFingerprint: "intro",
+      bodyMd: "x",
+      scope: CommentScope.SECTION,
+    });
+    expect(await code(sectionRoot)).toBe(Code.InvalidArgument);
+    const badSlug = reviewer.createComment({
+      ref: { area: ContentArea.MODEL, slug: "elements/x" },
+      anchorSlug: "",
+      anchorFingerprint: "",
+      bodyMd: "x",
+      scope: CommentScope.DOCUMENT,
+    });
+    expect(await code(badSlug)).toBe(Code.InvalidArgument);
+    expect(await code(reviewer.recordApproval({ ref: modelRef }))).toBe(Code.InvalidArgument);
+    expect(
+      await code(reviewer.requestReview({ ref: modelRef, reviewers: [], requirement: 0 })),
+    ).toBe(Code.InvalidArgument);
   });
 
   test("content requests: reviewers file, maintainers triage, done needs a slot", async () => {

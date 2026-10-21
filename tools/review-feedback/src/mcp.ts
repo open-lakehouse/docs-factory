@@ -60,9 +60,14 @@ server.registerTool(
       "List review threads from the docs-factory review site, grouped by page, each mapped " +
       "to a file and line range in this checkout. By default returns only `open` threads " +
       "(a reviewer is waiting); `awaiting` returns threads where an agent already replied " +
-      "and the reviewer hasn't responded yet.",
+      "and the reviewer hasn't responded yet. Threads on the estate model (area `model`) " +
+      "point at the element's or view's declaration in architecture/model; fix those " +
+      "with the update-architecture skill.",
     inputSchema: {
-      area: z.enum(["docs", "blogs"]).optional().describe("Restrict to docs or blog posts."),
+      area: z
+        .enum(["docs", "blogs", "model"])
+        .optional()
+        .describe("Restrict to docs, blog posts, or the estate model."),
       project: z.string().optional().describe("Docs project, e.g. `unitycatalog` or `delta`."),
       slug: z.string().optional().describe("One page's slug."),
       state: z

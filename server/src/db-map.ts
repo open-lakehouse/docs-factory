@@ -3,6 +3,7 @@
 import { create } from "@bufbuild/protobuf";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
+import { Code, ConnectError } from "@connectrpc/connect";
 import {
   ContentArea,
   type ContentRef,
@@ -19,12 +20,26 @@ export function areaToDb(area: ContentArea): "blogs" | "docs" {
     case ContentArea.DOCS:
       return "docs";
     default:
-      throw new Error(`unsupported content area: ${area}`);
+      // MODEL refs carry comment threads only (threadAreaToDb); every other
+      // table is content-versioned and checks area in ('blogs', 'docs').
+      throw new ConnectError(`unsupported content area: ${area}`, Code.InvalidArgument);
   }
 }
 
+/** The db-form area of a comment thread's ref, which may also be the model. */
+export function threadAreaToDb(area: ContentArea): "blogs" | "docs" | "model" {
+  return area === ContentArea.MODEL ? "model" : areaToDb(area);
+}
+
 export function areaFromDb(area: string): ContentArea {
-  return area === "docs" ? ContentArea.DOCS : ContentArea.BLOGS;
+  switch (area) {
+    case "docs":
+      return ContentArea.DOCS;
+    case "model":
+      return ContentArea.MODEL;
+    default:
+      return ContentArea.BLOGS;
+  }
 }
 
 /** A DB content_version row shape (snake_case columns). */

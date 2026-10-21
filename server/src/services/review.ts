@@ -36,6 +36,7 @@ import {
   type CommentRow,
   commentFromRow,
   documentCommentError,
+  modelCommentError,
   type RecentCommentRow,
   type ResolutionRow,
   recentCommentFromRow,
@@ -51,6 +52,7 @@ import {
   dateOnlyToUtcTimestamp,
   type MerkleNodeJson,
   merkleNodeToJson,
+  threadAreaToDb,
 } from "../db-map.js";
 import {
   AllowlistEntryDetailSchema,
@@ -191,6 +193,20 @@ export function removesLastMaintainer(
   demotesTarget: boolean,
 ): boolean {
   return targetIsMaintainer && demotesTarget && maintainerCount <= 1;
+}
+
+/**
+ * Access to a ref's comment threads. The model is internal and nobody holds a
+ * scoped grant on it, so its threads are for allowlisted reviewers only.
+ */
+async function requireThreadAccess(
+  ctx: Parameters<typeof requireAllowlisted>[0],
+  sql: Queryable,
+  area: string,
+  slug: string,
+) {
+  if (area === "model") return requireAllowlisted(ctx);
+  return requireContentAccess(ctx, sql, area, slug);
 }
 
 /** Current count of `maintainer` rows in the allowlist. */
@@ -726,8 +742,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // external contributor on the content shared with them (scoped grant).
         if (!req.ref) throw new ConnectError("ref is required", Code.InvalidArgument);
         const sql = db();
-        const area = areaToDb(req.ref.area);
-        const viewer = await requireContentAccess(ctx, sql, area, req.ref.slug);
+        const area = threadAreaToDb(req.ref.area);
+        const viewer = await requireThreadAccess(ctx, sql, area, req.ref.slug);
         const viewerId = viewer.userId ?? viewer.login;
         const rows = await sql<CommentRow[]>`
           select c.id, c.area, c.slug, c.anchor_slug, c.anchor_fingerprint, c.parent_id,
@@ -773,7 +789,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const viewer = requireAllowlisted(ctx);
         const viewerId = viewer.userId ?? viewer.login ?? null;
         const sql = db();
-        const areaFilter = req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
+        const areaFilter =
+          req.area !== undefined && req.area !== 0 ? threadAreaToDb(req.area) : null;
         const limit = Math.min(
           Math.max(req.limit && req.limit > 0 ? req.limit : RECENT_COMMENTS_DEFAULT, 1),
           RECENT_COMMENTS_MAX,
@@ -854,13 +871,14 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         if (!req.bodyMd.trim() && !req.suggestion) {
           throw new ConnectError("body_md is required", Code.InvalidArgument);
         }
-        const badRequest = documentCommentError(req) ?? suggestionError(req);
+        const badRequest =
+          documentCommentError(req) ?? modelCommentError(req) ?? suggestionError(req);
         if (badRequest) throw new ConnectError(badRequest, Code.InvalidArgument);
         const sql = db();
-        const area = areaToDb(req.ref.area);
+        const area = threadAreaToDb(req.ref.area);
         // An external contributor may comment on the content shared with them;
         // allowlisted reviewers on any content. Authorship keys on viewer.userId.
-        const viewer = await requireContentAccess(ctx, sql, area, req.ref.slug);
+        const viewer = await requireThreadAccess(ctx, sql, area, req.ref.slug);
 
         // Nesting is capped so the reply tree stays legible and indentation
         // bounded. A root is depth 0; a reply is parent.depth + 1. Rejecting at
@@ -959,7 +977,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const thread = await setResolved(req.threadRootId, true, actorId(viewer));
         if (thread.root?.ref) {
           await notifyCommentsChanged(db(), {
-            area: areaToDb(thread.root.ref.area),
+            area: threadAreaToDb(thread.root.ref.area),
             slug: thread.root.ref.slug,
           });
         }
@@ -971,7 +989,7 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         const thread = await setResolved(req.threadRootId, false, null);
         if (thread.root?.ref) {
           await notifyCommentsChanged(db(), {
-            area: areaToDb(thread.root.ref.area),
+            area: threadAreaToDb(thread.root.ref.area),
             slug: thread.root.ref.slug,
           });
         }

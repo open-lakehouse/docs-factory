@@ -139,6 +139,24 @@ requires a registered version. The API can't enumerate slots, so
 thread at the slot's line. `docs-write` reads them as requirements when it
 fills the slot and replies on each one with the PR.
 
+## Model threads
+
+Reviewers also comment on the estate model from the app's Model section: one
+element, one view, or the model as a whole. These threads use their own area,
+`CONTENT_AREA_MODEL`, with slug `element/<fqn>`, `view/<id>`, or `estate`. The
+model isn't content: it has no versions, sections, approvals, review requests,
+ratings, or release, so the server accepts a MODEL ref only on the comment
+RPCs. It rejects one on every other RPC with `InvalidArgument`. A model thread
+is document-scoped and open to allowlisted reviewers only, since no scoped
+grant exists on the model.
+
+The API can't list model targets, so `list_feedback` finds them through the
+MODEL recent-comments window. It points each thread at the `.likec4` line that
+declares the element or view (a line scan in `tools/review-feedback/src/model.ts`).
+The agent changes the model through `update-architecture` and regenerates with
+`just arch-model`, or through `just env-render` for a Trestle-generated
+declaration.
+
 ## Suggested edits
 
 A thread root with a prose or code selector can carry a `Suggestion`. It is the

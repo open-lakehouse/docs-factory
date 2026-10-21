@@ -1,4 +1,5 @@
 import { ReactLikeC4 } from "likec4:react";
+import type { OnCanvasClick, OnNodeClick } from "likec4/react";
 import { useNavigate } from "react-router-dom";
 import { likec4model } from "../explain";
 import { explanationHref } from "../explain-bindings";
@@ -7,6 +8,8 @@ interface ModelDiagramProps {
   viewId: string;
   dynamicViewVariant?: "sequence" | "diagram";
   onNavigateTo?: (to: string) => void;
+  onNodeClick?: OnNodeClick;
+  onCanvasClick?: OnCanvasClick;
 }
 
 /**
@@ -25,6 +28,8 @@ export default function ModelDiagram({
   viewId,
   dynamicViewVariant,
   onNavigateTo,
+  onNodeClick,
+  onCanvasClick,
 }: ModelDiagramProps) {
   const navigate = useNavigate();
 
@@ -46,6 +51,8 @@ export default function ModelDiagram({
       enableSearch
       fitViewPadding="48px"
       onNavigateTo={handleNavigateTo}
+      onNodeClick={onNodeClick}
+      onCanvasClick={onCanvasClick}
       style={{ height: "100%", width: "100%" }}
     />
   );

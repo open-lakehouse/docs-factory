@@ -218,7 +218,7 @@ Personas are entry points, not mutually exclusive identities:
 | J03 Govern tabular data | "How do I register existing data or create managed Delta tables?" | E03/E04 -> H02/H17 -> T03 -> H03/H04 -> R02/R15 | Reader can distinguish registration from writing and complete a supported read/write lifecycle. |
 | J04 Govern files | "How do applications use unstructured files under UC?" | E03/E05 -> T04 -> H09/H10 -> API tab/R04 | Application resolves a volume and accesses files with appropriately scoped credentials. |
 | J05 Grant access | "How do I let a colleague or job read just the intended assets?" | E06 -> T09 -> H32/H34/H36 -> H35 -> H41 -> R05 | A permitted operation succeeds and a non-permitted operation is denied; principal mapping is understood. |
-| J06 Build AI tools | "How do I reuse governed functions in an application or agent?" | E07 -> T05 -> T06 -> H11-H14 -> R11/R12 | Registered function runs in the intended execution environment and exposes a bounded tool interface. |
+| J06 Build AI tools | "How do I reuse governed functions in an application or agent?" | E07 -> T05 -> T06 -> H11-H14, H51, H52 -> R11/R12 | Registered function runs in the intended execution environment and exposes a bounded tool interface. |
 | J07 Manage models | "How do I register, version, and load a model using MLflow?" | E08 -> T07 -> H15 -> H10 -> API tab/R11 | A model version is registered and reloaded; tracking, registry, and artifact locations are understood. |
 | J08 Publish semantics | "How do I define reusable SQL views and business metrics?" | E09 -> H06 -> T08 -> H07 -> R02/R15 | A supported view/metric definition yields a verified query result, with engine restrictions visible. |
 | J09 Use another engine | "Can my engine use this UC deployment and these tables?" | R15 -> E04/E05 -> H17-H20, H47 -> H43 | Reader chooses the correct protocol and proves the intended operations with their engine. |
@@ -239,7 +239,7 @@ Use Unity Catalog
   Tables                                    -> H02, H08, H03-H05, TPC-H seed
   Views and metric views                    -> H06, H07
   Volumes and files                         -> H09, H10, H49
-  Functions and AI                          -> H11-H14
+  Functions and AI                          -> H11-H14, H51, H52
   Models                                    -> H15
 Connect engines and clients                 -> R15, H17, H18, H20, H47, H19, H16, H43
 Operate Unity Catalog
@@ -323,7 +323,7 @@ clearly labeled legacy pages until their replacement is ready.
 | T05 | Register and execute your first Python function | P0 / J06 | OSS AI client, typed callable, registration, deterministic execution and cleanup. Explicit caller-side execution. |
 | T06 | Build an agent tool from a catalog function | P1 / J06 | One maintained framework, explicit function allowlist, tool invocation test; deterministic mock model for CI and an optional real-model step. |
 | T07 | Register and reload a model with MLflow | P1 / J07 | Deterministic small model, separate tracking/registry configuration, signature, version registration and prediction assertion. |
-| T08 | Define and query your first metric view | P1 / J08 | Tested engine/YAML pair; small source dataset; dimensions, measures and `measure(...)`; assert results against a direct aggregation. |
+| T08 | Working with metric views | P1 / J08 | Tested engine/YAML pair; small source dataset; dimensions, measures and `measure(...)`; assert results against a direct aggregation. |
 | T09 | Give two users different access to a catalog | P0 / J02, J05 | Controlled test IdP, ordinary user identities, grants and parent access, one permitted operation and one denied operation. No real IdP account required for CI. |
 | T10 | Keep catalog metadata across restarts with PostgreSQL | Retired | Duplicated by H25's restart check; replaced by T12, which uses the `uc-hybrid` environment from E11. |
 | T11 | Create and inspect catalog resources with the Python client | P0 / J01, J10 | Async SDK lifecycle, configured base URL, catalog/schema/table metadata, missing-resource handling, cleanup. Rework the existing draft. |
@@ -343,7 +343,7 @@ prerequisite for the first SQL or metric-view success.
 | E03 | Core concepts: the catalog and the assets it governs | P0 / J03-J05 | Three-level names; catalog administration (metastore, catalogs, schemas, credentials, external locations, storage roots); data and AI assets; a resource versus its physical path; the privilege model (ownership, parent access, inheritance); users and the SCIM API. |
 | E04 | External tables and catalog-managed Delta tables | P0 / J03, J09-J10 | Storage ownership versus catalog-managed commits; staging, ratification, publication/backfill, supported clients, why path access is not interchangeable. |
 | E05 | Credential vending and the data-access trust boundary | P0 / J04-J05, J09 | Who gets credentials, read/write scope, expiration/renewal, server identity, storage IAM, and what catalog grants cannot protect when direct storage access exists. |
-| E06 | Authentication and identity providers | P0 / J05 | IdP identity versus local UC user; authentication versus authorization; token exchange, issuer/audience validation, and expiry; bootstrap versus exchanged tokens. The privilege model lives in E03. |
+| E06 | Authentication and identity providers | P0 / J05 | IdP identity versus local UC user; authentication versus authorization; token exchange, issuer/audience validation, and expiry; bootstrap versus exchanged tokens. The privilege model lives in E03. Also covers the built-in providers, meaning what the server and the UI each support. Checked against v0.7.0: the server has a single generic OIDC exchange (`POST /auth/tokens`) that accepts any issuer listed in `server.allowed-issuers`/`server.audiences` (the config examples are Google and Entra ID). There is no provider plugin interface. The authorizer is not pluggable either: it is JCasbin when authorization is on and allow-all when it is off. The UI is per-provider. Google is gated by `REACT_APP_GOOGLE_AUTH_ENABLED`, Okta has a wired sign-in widget, and the Keycloak button is a commented-out stub. The server also has no trusted-header option: `AuthDecorator` reads only a `Bearer` header or the `UC_TOKEN` cookie, and that token must come from the internal issuer. The trusted-header/Envoy pattern is out of scope until a release ships it, gated on [unitycatalog/unitycatalog#1585](https://github.com/unitycatalog/unitycatalog/pull/1585). Until then E06 doesn't describe an Envoy token-forwarding workaround. Forward-looking note for the page, not a claim: external policy engines are coming as part of the authorization revamp. |
 | E07 | Where catalog functions execute | P0 / J06 | Metadata registration, caller-side execution modes, dependency environment, tool selection, subprocess restrictions versus a strong isolation boundary. |
 | E08 | How Unity Catalog and MLflow divide responsibilities | P1 / J07 | Runs/experiments versus registered models/versions/artifacts; which service stores what; registry operations do not imply model serving. |
 | E09 | SQL views and metric views as catalog objects | P1 / J08 | Stored definitions/dependencies versus engine execution; ordinary views versus measures/dimensions; semantic compatibility and permission boundaries. |
@@ -374,7 +374,9 @@ architecture to fit an article.
 | H11 | Register, replace, and remove Python functions | P1 / J06 | Types, docstrings, callable extraction, wrapped functions, replacement effects, metadata and permissions. |
 | H12 | Execute functions in applications and notebooks | P1 / J06 | Sync/async patterns, existing event loops, dependencies, execution modes, timeout/resource handling, deterministic errors. |
 | H13 | Use catalog functions as LangChain tools | P1 / J06 | Current toolkit API, explicit function selection, supported types, execute privilege, tested OSS client; no Databricks compute dependency. |
-| H14 | Use catalog functions with OpenAI-compatible tool calling | P1 / J06 | Toolkit/function schema, caller-side execution, bounded invocation flow, deterministic tool tests. LlamaIndex and other frameworks are additional candidates, not tabs promising universal parity. |
+| H14 | Use catalog functions with OpenAI-compatible tool calling | P1 / J06 | Toolkit/function schema, caller-side execution, bounded invocation flow, deterministic tool tests. Anthropic and LiteLLM have their own pages (H51, H52), not tabs promising universal parity. The other upstream integrations (AutoGen, CrewAI, DSPy, Gemini, LlamaIndex) are not planned: as of 2026-10 none has had a release or a code change of its own since 2025-11, CrewAI's OSS test is disabled upstream, and AutoGen and the `google-generativeai` SDK that Gemini depends on are archived. |
+| H51 | Use catalog functions with Anthropic tools | P2 / J06 | `unitycatalog-anthropic` toolkit, tool definitions for the Messages API, caller-side execution of `tool_use` blocks, multi-round tool history, deterministic tool tests against the OSS client. |
+| H52 | Use catalog functions with LiteLLM tools | P2 / J06 | `unitycatalog-litellm` toolkit, provider-neutral tool definitions, caller-side execution of returned tool calls, multi-round tool history, deterministic tool tests against the OSS client. |
 | H15 | Manage model versions and load a model with MLflow | P1 / J07 | Registry URI, version lifecycle, metadata, credentials/artifacts, permissions, unsupported aliases/stages if applicable, deletion effects. |
 | H16 | Use the Java client in an application | P1 / J10 | Artifact pinning, API base path, resource lookup, paging, auth and error handling; do not recreate generated endpoint documentation. |
 | H17 | Configure Spark to use Unity Catalog | P0 / J03, J09 | Spark/Scala/connector/Delta coordinates, catalog naming, filesystem dependencies, token/OAuth options, renewal/scoped-cache defaults. |
@@ -504,7 +506,7 @@ complete URL inventory and redirect manifest during the migration work.
 | `/integrations/unity-catalog-spark/`, DuckDB, Trino, Daft | H17-H20, R10 | First-party guides only after version/operation tests. |
 | Other `/integrations/*` | H21/provider docs | Keep a working legacy page until a verified replacement or a clearly labeled provider-owned link exists. |
 | `/ai/quickstart/`, `/ai/usage/`, `/ai/client/` | T05/T06, H11-H14, R11 | Default to OSS; explicitly route Databricks client readers to the managed-product documentation. |
-| `/ai/integrations/*` | H13/H14 plus maintained provider recipes | LlamaIndex, Anthropic, CrewAI, AutoGen, LiteLLM, Gemini, and DSPy need individual validation/owners. Consolidate shared setup, not framework semantics. |
+| `/ai/integrations/*` | H13/H14, H51 (Anthropic), H52 (LiteLLM) | AutoGen, CrewAI, DSPy, Gemini, and LlamaIndex are not planned; see H14. Consolidate shared setup, not framework semantics. |
 
 There should be no silent deletion of a user journey. For every old URL record:
 retain, replace/redirect, split with a primary destination, or archive with a

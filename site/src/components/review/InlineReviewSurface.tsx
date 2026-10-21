@@ -52,7 +52,7 @@ export default function InlineReviewSurface({
     displayMode,
     refetch,
   } = useReview();
-  const { pending, setPending } = useSelectionState();
+  const { pending, pendingSeq, setPending } = useSelectionState();
   const [placement, setPlacement] = useState<{
     top: number;
     left: number;
@@ -163,6 +163,7 @@ export default function InlineReviewSurface({
       >
         {showInlinePending && pending && (
           <PendingComposer
+            key={pendingSeq}
             contentRef={contentRef}
             pending={pending}
             onDone={() => {

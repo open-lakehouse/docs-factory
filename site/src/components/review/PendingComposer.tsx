@@ -32,8 +32,11 @@ export default function PendingComposer({
   });
   const [draft, setDraft] = useState("");
   // The replacement text while suggesting an edit; null when not suggesting.
-  const [replacement, setReplacement] = useState<string | null>(null);
   const original = pending.kind === "section" ? undefined : pending.original;
+  const intent = pending.kind === "section" ? undefined : pending.intent;
+  const [replacement, setReplacement] = useState<string | null>(() =>
+    original === undefined ? null : intent === "edit" ? original : intent === "delete" ? "" : null,
+  );
   const suggesting = original !== undefined && replacement !== null;
   const changed = suggesting && replacement !== original;
   const suggestion = changed ? { original, replacement } : undefined;
@@ -158,7 +161,7 @@ export default function PendingComposer({
         placeholder={placeholder}
         rows={compact ? 3 : 4}
         submitting={create.isPending}
-        autoFocus={!suggesting}
+        autoFocus={!suggesting || replacement === ""}
         compact={compact}
         allowEmpty={changed}
       />

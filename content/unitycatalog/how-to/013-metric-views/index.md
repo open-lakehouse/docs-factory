@@ -14,7 +14,7 @@ catalog keeps the definition, and the engine computes measures from it when
 you query. This guide uses Spark 4.2, the engine that runs metric views
 against Unity Catalog, over the TPC-H sample tables in `samples.tpch`. For a
 first walk-through on a small table, see
-[Define and query your first metric view](../../tutorials/first-metric-view/index.md).
+[Working with metric views](../../tutorials/first-metric-view/index.md).
 
 :::prerequisites
 - The TPC-H sample in `samples.tpch`:
@@ -204,5 +204,5 @@ Dropping a metric view leaves its source tables in place:
 
 ## Related
 
-- [Define and query your first metric view](../../tutorials/first-metric-view/index.md)
+- [Working with metric views](../../tutorials/first-metric-view/index.md)
 - [Configure Spark to use Unity Catalog](../configure-spark/index.md)

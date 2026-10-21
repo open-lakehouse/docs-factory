@@ -2,12 +2,16 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import AdminDashboard from "./pages/AdminDashboard";
 import AgentTokens from "./pages/AgentTokens";
 import CliAuth from "./pages/CliAuth";
+import ConceptsPage from "./pages/model/ConceptsPage";
+import CoveragePage from "./pages/model/CoveragePage";
+import ModelExplorer from "./pages/model/ModelExplorer";
+import ModelLayout from "./pages/model/ModelLayout";
 import OpenInWorkspace from "./pages/OpenInWorkspace";
 import PlanLayout from "./pages/plan/PlanLayout";
 import PlanSummary from "./pages/plan/PlanSummary";
 import Requests from "./pages/plan/Requests";
 import Roadmap from "./pages/plan/Roadmap";
-import { ChangesPage, CompatPage, CoveragePage, PipelinePage } from "./pages/plan/SectionPages";
+import { ChangesPage, CompatPage, PipelinePage } from "./pages/plan/SectionPages";
 import ReviewDashboard from "./pages/ReviewDashboard";
 import ReviewWorkspace from "./pages/ReviewWorkspace";
 
@@ -28,9 +32,19 @@ export default function App() {
         <Route path="compat" element={<CompatPage />} />
         <Route path="pipeline" element={<PipelinePage />} />
         <Route path="requests" element={<Requests />} />
-        <Route path="coverage" element={<CoveragePage />} />
+        <Route path="coverage" element={<Navigate replace to="/model/coverage" />} />
         <Route path="changes" element={<ChangesPage />} />
         <Route path="*" element={<Navigate replace to="/plan" />} />
+      </Route>
+
+      {/* The estate model: LikeC4 explorer with what the docs derive from each
+            element, the published concepts, the explanation backlog, and review
+            threads on elements and views. Reviewer-only; ModelLayout guards it. */}
+      <Route path="/model" element={<ModelLayout />}>
+        <Route index element={<ModelExplorer />} />
+        <Route path="concepts" element={<ConceptsPage />} />
+        <Route path="coverage" element={<CoveragePage />} />
+        <Route path="*" element={<Navigate replace to="/model" />} />
       </Route>
 
       {/* Maintainer-only admin roster: allowlist management + registered-user

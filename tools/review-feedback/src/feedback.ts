@@ -15,6 +15,7 @@ import {
   type Thread,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
 import { type Location, locate, matchSuggestion, type SuggestionMatch } from "./locate.js";
+import { locateModel, type ModelTarget, modelRef, modelTarget } from "./model.js";
 import { type PlannedSlot, plannedSlotRef, plannedSlots } from "./planned.js";
 
 /**
@@ -78,9 +79,12 @@ export interface FeedbackThread {
   suggestion?: FeedbackSuggestion;
   /** Set on a thread left on a nav.yml planned slot: instructions for writing the page. */
   planned?: { project: string; id: string };
+  /** Set on a thread on the estate model: fix it in architecture/model. */
+  model?: ModelTarget;
 }
 
 export function pageKey(ref: ContentRef): string {
+  if (ref.area === ContentArea.MODEL) return `model/${ref.slug}`;
   return ref.area === ContentArea.BLOGS
     ? `blogs/${ref.slug}`
     : `docs/${ref.project ?? ""}/${ref.bucket ?? ""}/${ref.slug}`;
@@ -145,11 +149,14 @@ function toFeedback(
   const code = root.codeSelector;
   // A remembered page (MCP get/reply) carries no slot; recover it from the checkout.
   const slot = draft.slot ?? (repoRoot ? slotFor(repoRoot, draft.ref) : undefined);
+  const model = modelTarget(draft.ref);
   const location = slot
     ? slotLocation(slot)
-    : repoRoot
-      ? locate(repoRoot, { ...root, ref: draft.ref })
-      : undefined;
+    : !repoRoot
+      ? undefined
+      : model
+        ? locateModel(repoRoot, model)
+        : locate(repoRoot, { ...root, ref: draft.ref });
   return {
     id: root.id,
     ref: draft.ref,
@@ -182,6 +189,7 @@ function toFeedback(
       match: suggestionMatch(repoRoot, location, root.suggestion.original, Boolean(code?.path)),
     },
     planned: slot && { project: slot.project, id: slot.id },
+    model,
   };
 }
 
@@ -198,7 +206,7 @@ function suggestionMatch(
 }
 
 export interface ListOptions {
-  area?: "docs" | "blogs";
+  area?: "docs" | "blogs" | "model";
   project?: string;
   slug?: string;
   state?: StateFilter;
@@ -232,7 +240,7 @@ export async function listFeedback(
   const filter = opts.state ?? "open";
   const area =
     opts.area === "docs" ? ContentArea.DOCS : opts.area === "blogs" ? ContentArea.BLOGS : undefined;
-  const { drafts } = await client.listDrafts({ area });
+  const drafts = opts.area === "model" ? [] : (await client.listDrafts({ area })).drafts;
   // A page with no open comments can only hold resolved threads.
   const pages = drafts
     .filter((d) => draftMatches(d, opts))
@@ -240,13 +248,29 @@ export async function listFeedback(
   const perPage = await Promise.all([
     ...pages.map((d) => threadsForPage(client, { ref: d.ref, title: d.title }, opts.repoRoot)),
     ...plannedPages(opts).map((p) => threadsForPage(client, p, opts.repoRoot)),
+    ...(await modelPages(client, opts)).map((p) => threadsForPage(client, p, opts.repoRoot)),
   ]);
   return perPage.flat().filter((t) => matchesState(t.state, filter));
 }
 
+/**
+ * The model targets that have threads, from the recent MODEL comments. The
+ * model has no draft list to enumerate, and a thread with no recent activity
+ * past the server's window is the rare one an agent would miss.
+ */
+async function modelPages(client: ReviewClient, opts: ListOptions): Promise<Page[]> {
+  if (opts.area !== undefined && opts.area !== "model") return [];
+  if (opts.project) return [];
+  const { comments } = await client.listRecentComments({ area: ContentArea.MODEL, limit: 100 });
+  const slugs = [...new Set(comments.flatMap((c) => (c.ref?.slug ? [c.ref.slug] : [])))];
+  return slugs
+    .filter((slug) => !opts.slug || slug === opts.slug)
+    .map((slug) => ({ ref: modelRef(slug), title: `model ${slug}` }));
+}
+
 /** Planned slots as pages, when listing docs from a checkout. */
 function plannedPages(opts: ListOptions): Page[] {
-  if (!opts.repoRoot || opts.area === "blogs") return [];
+  if (!opts.repoRoot || opts.area === "blogs" || opts.area === "model") return [];
   return plannedSlots(opts.repoRoot)
     .filter((slot) => !opts.project || slot.project === opts.project)
     .map((slot) => ({ ref: plannedSlotRef(slot), title: `${slot.id} · ${slot.title}`, slot }))
@@ -272,6 +296,7 @@ export async function getThread(
   const pages: Page[] = [
     ...drafts.flatMap((d) => (d.ref ? [{ ref: d.ref, title: d.title }] : [])),
     ...plannedPages({ repoRoot: opts.repoRoot }),
+    ...(await modelPages(client, {})),
   ];
   for (const page of pages) {
     // Scan without locating (it reads files), then locate only the match.

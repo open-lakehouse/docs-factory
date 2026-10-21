@@ -7,8 +7,10 @@
 //   - Meta: title, description, canonical, twin, OpenGraph and Twitter tags.
 
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import type { ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
+import { modelHref } from "../../../lib/content-ref";
 import { type PageHeadEntry, pageHeadKey, usePageHeads } from "../../../lib/page-heads";
 import CodeCopyButton from "../../CodeCopyButton";
 
@@ -77,8 +79,33 @@ export default function PageHeadView({ contentRef }: { contentRef: ContentRef })
   );
 }
 
+// A term's `@id` is `<origin>/concepts.json#<element id>` (content-core head.mjs).
+const CONCEPT_ID_RE = /"@id": "[^"]*\/concepts\.json#([\w.-]+)"/g;
+
 function JsonLd({ entry }: { entry: PageHeadEntry }) {
   const json = JSON.stringify(entry.head.jsonLd, null, 2);
+  const concepts = [...new Set([...json.matchAll(CONCEPT_ID_RE)].map((m) => m[1]))];
+  return (
+    <>
+      {concepts.length > 0 && (
+        <p className="text-sm">
+          Concepts:{" "}
+          {concepts.map((id, i) => (
+            <span key={id}>
+              {i > 0 && ", "}
+              <Link to={modelHref({ kind: "element", id })}>
+                <code>{id}</code>
+              </Link>
+            </span>
+          ))}
+        </p>
+      )}
+      <JsonLdBlock json={json} />
+    </>
+  );
+}
+
+function JsonLdBlock({ json }: { json: string }) {
   return (
     <div className="cb" data-has-filename="true">
       <div className="cb-head">

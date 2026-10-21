@@ -10,6 +10,7 @@ import { execFileSync } from "node:child_process";
 import { statSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { archiveUrl, composeParts } from "../../site/src/content-core/environment.mjs";
 import { isPublic } from "../../site/src/content-core/frontmatter.mjs";
 import {
   canonicalUrl,
@@ -223,6 +224,28 @@ export function renderConcepts(projection, { title, origin, environments = [] })
     journeys: projection.journeys(),
   };
   return `${JSON.stringify(body, null, 2)}\n`;
+}
+
+/**
+ * The `environments` renderConcepts takes for `site`: each registry stack in
+ * the site's env dirs, with its archive URL and its guide's route (the
+ * registry's own guide, else the site's environment guide).
+ */
+export function conceptEnvironments(site, registry) {
+  if (!site.env) return [];
+  const routeFor = (bucket, slug) =>
+    site.hrefFor({ area: "docs", project: site.project, bucket, slug });
+  return Object.keys(registry)
+    .filter((key) => site.env.dirs.includes(composeParts(key).dir))
+    .map((key) => {
+      const env = registry[key];
+      const [path, anchor] = (env.guide ?? "").split("#");
+      const [bucket, slug] = path.split("/");
+      const guide = env.guide
+        ? `${routeFor(bucket, slug)}${anchor ? `#${anchor}` : ""}`
+        : routeFor(site.env.guide.bucket, site.env.guide.slug);
+      return { key, title: env.title, archive: archiveUrl(key, `${site.origin}/env`), guide };
+    });
 }
 
 /** Render /llms-full.txt (pure over entries + a body resolver, for testing). */

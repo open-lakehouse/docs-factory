@@ -9,6 +9,7 @@ import {
   type Comment,
   CommentSchema,
   CommentScope,
+  ContentArea,
   type ContentRef,
   ContentRefSchema,
   type RecentComment,
@@ -114,6 +115,23 @@ export function documentCommentError(req: {
   if (req.anchorSlug || req.anchorFingerprint) return "a page-level comment has no anchor";
   if (req.selector || req.codeSelector) return "a page-level comment has no selector";
   if (req.suggestion) return "a page-level comment can't suggest an edit";
+  return undefined;
+}
+
+// LikeC4 ids are dotted FQNs of word characters and dashes.
+const MODEL_SLUG_RE = /^(?:(?:element|view)\/[\w.-]+|estate)$/;
+
+/** Why a model thread root is malformed: the model has no sections or prose to select. */
+export function modelCommentError(req: {
+  ref?: { area: ContentArea; slug: string };
+  scope: CommentScope;
+  parentId?: string;
+}): string | undefined {
+  if (req.ref?.area !== ContentArea.MODEL) return undefined;
+  if (!MODEL_SLUG_RE.test(req.ref.slug)) return "a model ref is element/<id>, view/<id>, or estate";
+  if (!req.parentId && req.scope !== CommentScope.DOCUMENT) {
+    return "a model comment is document-scoped";
+  }
   return undefined;
 }
 

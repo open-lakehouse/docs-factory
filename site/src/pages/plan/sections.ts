@@ -1,6 +1,5 @@
 // The Plan section's pages, in sub-nav order. `path` is relative to /plan.
 import {
-  BookOpen,
   GitCompareArrows,
   Grid3x3,
   LayoutDashboard,
@@ -24,6 +23,5 @@ export const PLAN_SECTIONS: readonly PlanSection[] = [
   { path: "compat", label: "Compatibility", icon: Grid3x3 },
   { path: "pipeline", label: "Blog pipeline", icon: Newspaper },
   { path: "requests", label: "Content requests", icon: MessageSquarePlus },
-  { path: "coverage", label: "Coverage gaps", icon: BookOpen },
   { path: "changes", label: "Product changes", icon: GitCompareArrows },
 ];

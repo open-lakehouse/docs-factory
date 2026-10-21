@@ -181,7 +181,7 @@ function BacklogTile() {
           label="accepted, not planned"
           value={accepted}
         />
-        <Stat href={planHref("coverage")} label="concepts unexplained" value={gaps} />
+        <Stat href="/model/coverage" label="concepts unexplained" value={gaps} />
       </div>
     </Tile>
   );

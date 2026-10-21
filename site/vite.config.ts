@@ -17,6 +17,7 @@ import { defineConfig, type Plugin } from "vite";
 import { docPageHead } from "../emit/docs/heads.mjs";
 import { loadProjection } from "../emit/docs/model.mjs";
 import { DOCS_SITES } from "../emit/docs/sites/index.mjs";
+import { buildConcepts, buildModelIndex } from "./scripts/model-index.mjs";
 import { loadEnvironmentResolver } from "./scripts/page-environments.mjs";
 import { repoAssets } from "./scripts/repo-assets.mjs";
 import { isEmitted, isPublic, splitFrontmatter } from "./src/content-core/frontmatter.mjs";
@@ -254,6 +255,51 @@ function pageHeads(): Plugin {
   };
 }
 
+// The Model section's artifacts (src/lib/model-index.ts): what the pipeline
+// derives from each model element, and each docs site's concepts.json as its
+// emit writes it. Served fresh under `vite dev`, like page-heads.json.
+function modelArtifacts(): Plugin {
+  const repoRoot = path.resolve(__dirname, "..");
+  const watched = [
+    path.join(repoRoot, "content") + path.sep,
+    path.join(repoRoot, "blogs") + path.sep,
+    path.join(repoRoot, "envs") + path.sep,
+    path.join(repoRoot, "architecture", "dist") + path.sep,
+  ];
+  const files = (): Record<string, unknown> => ({
+    "model-index.json": buildModelIndex({ repoRoot }),
+    ...Object.fromEntries(
+      Object.entries(buildConcepts({ repoRoot })).map(([site, json]) => [
+        `concepts/${site}.json`,
+        json,
+      ]),
+    ),
+  });
+  return {
+    name: "docs-factory:model-artifacts",
+    configureServer(server) {
+      server.middlewares.use((req, res, next) => {
+        const url = (req.url ?? "").split("?")[0];
+        if (url !== "/model-index.json" && !url.startsWith("/concepts/")) return next();
+        const body = files()[url.slice(1)];
+        if (body === undefined) return next();
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.end(JSON.stringify(body));
+      });
+      server.watcher.on("change", (file) => {
+        if (watched.some((dir) => file.startsWith(dir))) {
+          server.ws.send({ type: "custom", event: "docs-factory:model-artifacts" });
+        }
+      });
+    },
+    generateBundle() {
+      for (const [fileName, body] of Object.entries(files())) {
+        this.emitFile({ type: "asset", fileName, source: `${JSON.stringify(body)}\n` });
+      }
+    },
+  };
+}
+
 export default defineConfig({
   server: {
     host: "::",
@@ -269,6 +315,7 @@ export default defineConfig({
     embeddedAssets.plugin,
     devCompanionFiles(),
     pageHeads(),
+    modelArtifacts(),
     {
       enforce: "pre",
       ...mdx({

@@ -4,12 +4,22 @@
 
 import { findBlog, findDoc } from "../../../content";
 import { projectNav } from "../../../doc-nav";
+import { likec4model } from "../../../explain";
 import { ContentArea, type ContentRef } from "../../../gen/docs_factory/review/v1/messages_pb";
-import { plannedOf } from "../../../lib/content-ref";
+import { modelOf, plannedOf } from "../../../lib/content-ref";
 import { findPlannedSlot } from "./planned-slot";
 import type { TabView } from "./view-token";
 
 export function tabLabel(ref: ContentRef): string {
+  const model = modelOf(ref);
+  if (model) {
+    if (model.kind === "estate") return "Model";
+    const title =
+      model.kind === "element"
+        ? likec4model.findElement(model.id)?.title
+        : likec4model.findView(model.id)?.titleOrId;
+    return `${title ?? model.id} · ${model.kind}`;
+  }
   const planned = plannedOf(ref);
   if (planned) {
     const slot = findPlannedSlot(projectNav[planned.project] ?? [], planned.id);

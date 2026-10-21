@@ -283,7 +283,9 @@ for attempt in (1, 2):
         assert "/delta/v1/catalogs/inventory/schemas/stock/tables/restock" in message
         assert "failed (HTTP 409): Conflict" in message, message
     else:
-        raise AssertionError(f"DuckDB stale append #{attempt} commits now: update the page")
+        raise AssertionError(
+            f"DuckDB stale append #{attempt} commits now: update the page"
+        )
     assert _latest_version("restock") == restock_version
     assert sorted(_rows("SELECT sku, qty FROM inventory.stock.restock")) == restock_rows
 

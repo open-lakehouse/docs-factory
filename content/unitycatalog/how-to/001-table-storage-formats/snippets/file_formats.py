@@ -214,7 +214,9 @@ def _assert_duckdb_by_name_fails() -> None:
     con.execute(
         f"CREATE SECRET (TYPE unity_catalog, TOKEN 'not-used', ENDPOINT '{endpoint}')"
     )
-    con.execute("ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')")
+    con.execute(
+        "ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')"
+    )
     for fmt in FORMATS:
         try:
             con.sql(f"SELECT * FROM retail.sales.orders_{fmt}").fetchall()

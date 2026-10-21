@@ -21,6 +21,7 @@
 #   { journey = "catalog-managed.read", region = "query", note = "through Unity Catalog" },
 #   { journey = "catalog-managed.write", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
 #   { journey = "column-mapping.write", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
+#   { journey = "column-mapping.read", region = "query", note = "through Unity Catalog" },
 # ]
 # ///
 """Read and append to a Unity Catalog managed Delta table from DuckDB.
@@ -207,15 +208,38 @@ assert [(r[0], r[1], float(r[2])) for r in spark_seen] == [
 ], spark_seen
 
 # DuckDB with the `core_nightly` unity_catalog: appends only, no row changes or DDL.
-for unsupported in [
-    "UPDATE retail.sales.orders SET amount = 1 WHERE order_id = 4",
-    "DELETE FROM retail.sales.orders WHERE order_id = 4",
-    "CREATE TABLE retail.sales.returns (order_id BIGINT)",
-    "DROP TABLE retail.sales.orders",
+for unsupported, error, prefix in [
+    (
+        "UPDATE retail.sales.orders SET amount = 1 WHERE order_id = 4",
+        duckdb.BinderException,
+        "Binder Error: Can only update base table",
+    ),
+    (
+        "DELETE FROM retail.sales.orders WHERE order_id = 4",
+        duckdb.BinderException,
+        "Binder Error: Can only delete from base table",
+    ),
+    (
+        "CREATE TABLE retail.sales.returns (order_id BIGINT)",
+        duckdb.NotImplementedException,
+        "Not implemented Error: UCTableSet::CreateTable",
+    ),
+    (
+        "CREATE TABLE retail.sales.returns AS SELECT * FROM retail.sales.orders",
+        duckdb.NotImplementedException,
+        "Not implemented Error: UnityCatalog PlanCreateTableAs",
+    ),
+    (
+        "DROP TABLE retail.sales.orders",
+        duckdb.NotImplementedException,
+        "Not implemented Error: UCTableSet::DropEntry",
+    ),
 ]:
     try:
         con.execute(unsupported)
-    except (duckdb.BinderException, duckdb.NotImplementedException):
+    except duckdb.Error as err:
+        assert type(err) is error, (unsupported, type(err), str(err))
+        assert str(err).startswith(prefix), (unsupported, str(err))
         continue
     raise AssertionError(f"now supported, update the page: {unsupported}")
 assert _latest_version() == 2

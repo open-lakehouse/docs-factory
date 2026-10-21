@@ -1,6 +1,6 @@
 ---
 title: Use DuckDB with Unity Catalog
-summary: Attach a Unity Catalog catalog in DuckDB, query its Delta tables with SQL, and append rows to tables created with column mapping off.
+summary: Attach a Unity Catalog catalog in DuckDB, query its Delta tables with SQL, and append rows.
 diataxis: how-to
 project: unitycatalog
 references:
@@ -10,8 +10,7 @@ status: ready
 ---
 
 DuckDB queries [Unity Catalog](model:unityCatalogOSS) tables with SQL and
-appends rows to tables created with column mapping off, including
-catalog-managed Delta tables. DuckDB's
+appends rows to them, including catalog-managed Delta tables. DuckDB's
 `unity_catalog` extension attaches a catalog as a DuckDB database, and its
 `delta` extension reads and writes the [Delta](model:deltaSpec) files. Appends
 to a catalog-managed table go through the server, like a Spark write.
@@ -19,9 +18,6 @@ to a catalog-managed table go through the server, like a Spark write.
 :::prerequisites
 - A Delta table in Unity Catalog, such as `retail.sales.orders` from
   [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md).
-  That table has column mapping on, so DuckDB can read it but not append to
-  it. To append, create the table with column mapping off, as in
-  [Append rows](#append-rows).
 - Table files that DuckDB can reach, such as the local server's
   [shared folder](../run-local-server/index.md#share-a-folder-with-the-server).
 - [uv](https://docs.astral.sh/uv/getting-started/installation/).
@@ -32,20 +28,14 @@ to a catalog-managed table go through the server, like a Spark write.
 Open a Python session with DuckDB:
 
 ```bash
-uv run --with duckdb==1.5.4 python
+uv run --with duckdb==1.5.6 python
 ```
 
-Install and load `delta` and `unity_catalog`:
+Install and load `delta`, then `unity_catalog` from DuckDB's `core_nightly`
+channel:
 
 ```python file=./snippets/duckdb_tables.py start=start:install end=end:install
 ```
-
-:::note
-This page installs `unity_catalog` from DuckDB's `core_nightly` channel. The
-stable build for DuckDB 1.5.4 can't read tables with `DECIMAL` columns and fails
-with `Invalid field found while parsing field: type_precision`. Switch to a plain
-`INSTALL unity_catalog` once a stable release reads your tables.
-:::
 
 ## Attach a catalog
 
@@ -97,14 +87,10 @@ Use three-part names, or just the table name for tables in the default schema:
 
 DuckDB asks the server for the table's location and for temporary credentials,
 then reads the Delta files directly from storage. For a catalog-managed table it
-reads the latest version the server has accepted.
+reads the latest version the server has accepted. DuckDB reads tables with
+column mapping through Unity Catalog, too.
 
 ## Append rows
-
-DuckDB writes rows correctly only to a table without column mapping, and Spark
-turns column mapping on (`name`) for new managed tables. So create the table in
-Spark with `TBLPROPERTIES ('delta.columnMapping.mode' = 'none')`. On a table
-with column mapping, DuckDB's commit succeeds but the new rows read as `NULL`.
 
 `INSERT` adds rows to the table:
 
@@ -115,11 +101,14 @@ On a catalog-managed table, DuckDB writes the new data and commit file, then
 asks the server to accept the commit as the table's next version. From then on,
 Spark and every other client see the new rows.
 
+DuckDB can't append to a partitioned table that uses column mapping. The
+insert fails with `Not implemented Error: Inserting into a partitioned Delta table that uses column mapping is not supported`,
+and the table doesn't change.
+
 ## Create, change, and drop tables
 
-DuckDB reads tables and appends rows. Create tables with Spark, with column
-mapping off if DuckDB will append. Update, delete from, and drop them with
-Spark too, as in
+DuckDB reads tables and appends rows. Create tables with Spark. Update, delete
+from, and drop them with Spark too, as in
 [Create and update a catalog-managed Delta table](../../tutorials/managed-delta-table/index.md).
 
 ## Required privileges

@@ -51,7 +51,7 @@ in CI. Modeled breadth alone is not a support claim.
 | --- | --- | --- | --- | --- |
 | Spark 4.1.0 | [Apache Spark](model:apacheSpark) | [Iceberg REST Catalog](model:icebergRestSpec), [Spark Connect](model:sparkConnectSpec), [Unity Catalog](model:ucSpec) | [Metric view](model:lakehouse.metricView), [Namespace](model:lakehouse.namespace), [Table](model:lakehouse.table) | [Namespace: 3 journeys](../../how-to/iceberg-rest/index.md#create-a-schema), [Table: 22 journeys](../../how-to/configure-spark/index.md#check-the-connection) |
 | Spark 4.2.0 | [Apache Spark](model:apacheSpark) | [Iceberg REST Catalog](model:icebergRestSpec), [Spark Connect](model:sparkConnectSpec), [Unity Catalog](model:ucSpec) | [Metric view](model:lakehouse.metricView), [Namespace](model:lakehouse.namespace), [Table](model:lakehouse.table) | [Metric view: 5 journeys](../../how-to/metric-views/index.md#create-the-metric-view) |
-| DuckDB 1.5.4 | [DuckDB](model:duckdb) | [Delta Lake](model:deltaSpec), [Iceberg REST Catalog](model:icebergRestSpec), [Unity Catalog](model:ucSpec) | [Namespace](model:lakehouse.namespace), [Table](model:lakehouse.table) | [Namespace: 3 journeys](../../how-to/iceberg-rest/index.md#create-a-schema), [Table: 12 journeys](../../how-to/duckdb/index.md#list-tables) |
+| DuckDB 1.5.6 | [DuckDB](model:duckdb) | [Delta Lake](model:deltaSpec), [Iceberg REST Catalog](model:icebergRestSpec), [Unity Catalog](model:ucSpec) | [Namespace](model:lakehouse.namespace), [Table](model:lakehouse.table) | [Namespace: 3 journeys](../../how-to/iceberg-rest/index.md#create-a-schema), [Table: 12 journeys](../../how-to/duckdb/index.md#list-tables) |
 | Polars 1.44.2 | [Polars](model:polars) | [Unity Catalog](model:ucSpec) | [Table](model:lakehouse.table) | [Table: 5 journeys](../../how-to/python-dataframes/index.md#list-tables) |
 | Daft 0.7.25 | [Daft](model:daft) | [Unity Catalog](model:ucSpec) | [Table](model:lakehouse.table) | [Table: 2 journeys](../../how-to/python-dataframes/index.md#list-tables) |
 | pandas 2.3.3 with `deltalake` 1.6.6 | [delta-rs](model:deltaRs) | [Delta Lake](model:deltaSpec), [S3 API](model:s3Api), [Unity Catalog](model:ucSpec) | [Table](model:lakehouse.table) | [Table: 3 journeys](../../how-to/python-dataframes/index.md#read-a-table) |
@@ -123,9 +123,8 @@ Trino; they stay outside this matrix until a journey claim or recorded
 evidence needs a column.
 
 The upstream DuckDB guide still installs an older `uc_catalog`
-extension. DuckDB's current extension is `unity_catalog`. Its stable build for
-DuckDB 1.5.4 can't read `DECIMAL` columns, so
-[the DuckDB how-to](../../how-to/duckdb/index.md) installs the nightly build.
+extension. DuckDB's current extension is `unity_catalog`;
+[the DuckDB how-to](../../how-to/duckdb/index.md) installs its nightly build.
 
 A managed table accepts only clients that go through the catalog. Path-based
 Delta libraries such as [delta-rs](model:deltaRs) refuse to load one, and so do
@@ -149,7 +148,7 @@ a missing API. "—" means these docs don't test it.
 | Create a managed table (`managed.create`) | [✓](../../tutorials/managed-delta-table/index.md#create-the-table) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — |
 | Create a managed table from a query (`managed.create-as-select`) | [✓](../../how-to/replace-and-overwrite-tables/index.md#create-a-table-from-a-query) `CREATE TABLE … AS SELECT` | [✗](../features-and-limitations/index.md#clients-and-engines) | — | — | — |
 | Read a managed table (`managed.read`) | [✓](../../tutorials/managed-delta-table/index.md#write-some-rows) | [✓](../../how-to/duckdb/index.md#query-a-table) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) |
-| Append to a managed table (`managed.append`) | [✓](../../tutorials/managed-delta-table/index.md#write-some-rows) | [✓](../../how-to/duckdb/index.md#append-rows) tables with column mapping off | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) on local storage | [✗](../../how-to/python-dataframes/index.md#other-table-operations) |
+| Append to a managed table (`managed.append`) | [✓](../../tutorials/managed-delta-table/index.md#write-some-rows) | [✓](../../how-to/duckdb/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) on local storage | [✗](../../how-to/python-dataframes/index.md#other-table-operations) |
 | Update rows in a managed table (`managed.update`) | [✓](../../tutorials/managed-delta-table/index.md#change-rows) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — |
 | Delete rows from a managed table (`managed.delete`) | [✓](../../tutorials/managed-delta-table/index.md#change-rows) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — |
 | Change a managed table's columns (`managed.alter-schema`) | [✓](../../how-to/change-table-schema/index.md#add-columns-and-comments) `ALTER TABLE … ADD COLUMNS` (draft) | [✗](../../how-to/change-table-schema/index.md#choose-a-client) (draft) | [✗](../features-and-limitations/index.md#clients-and-engines) | [✗](../features-and-limitations/index.md#clients-and-engines) | [✗](../features-and-limitations/index.md#clients-and-engines) |

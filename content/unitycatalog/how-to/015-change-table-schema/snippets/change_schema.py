@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["pyspark==4.1.0", "unitycatalog-client==0.7.0", "duckdb==1.5.4"]
+# dependencies = ["pyspark==4.1.0", "unitycatalog-client==0.7.0", "duckdb==1.5.6"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -169,7 +169,7 @@ spark.sql("ALTER TABLE sales.orders DROP COLUMN legacy_code")
 # --8<-- [end:drop-column]
 assert "legacy_code" not in [c["name"] for c in _table()["columns"]]
 
-# A table created with column mapping off (for DuckDB appends) can't drop columns.
+# A table created with column mapping off can't drop columns.
 spark.sql("""
     CREATE TABLE sales.no_mapping (id BIGINT, note STRING) USING DELTA
     TBLPROPERTIES ('delta.columnMapping.mode' = 'none')

@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["duckdb==1.5.4", "pyspark==4.1.0", "unitycatalog-client==0.7.0"]
+# dependencies = ["duckdb==1.5.6", "pyspark==4.1.0", "unitycatalog-client==0.7.0"]
 #
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
@@ -8,7 +8,7 @@
 # claims.duckdb = [
 #   { journey = "table.list", region = "list" },
 #   { journey = "managed.read", region = "query" },
-#   { journey = "managed.append", region = "append", note = "tables with column mapping off" },
+#   { journey = "managed.append", region = "append" },
 #   { journey = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
 #   { journey = "managed.update", fails = true, anchor = "create-change-and-drop-tables" },
 #   { journey = "managed.delete", fails = true, anchor = "create-change-and-drop-tables" },
@@ -19,8 +19,9 @@
 #   { journey = "read.scan", region = "query", note = "through Unity Catalog" },
 #   { journey = "catalog.unity", region = "attach", api = "ATTACH … (TYPE unity_catalog)", note = "nightly `unity_catalog`" },
 #   { journey = "catalog-managed.read", region = "query", note = "through Unity Catalog" },
-#   { journey = "catalog-managed.write", region = "append", api = "INSERT INTO", note = "through Unity Catalog, column mapping off" },
-#   { journey = "column-mapping.write", fails = "DuckDB appends to column-mapped tables now", anchor = "append-rows", note = "rows read back as NULL" },
+#   { journey = "catalog-managed.write", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
+#   { journey = "column-mapping.write", region = "append", api = "INSERT INTO", note = "through Unity Catalog" },
+#   { journey = "column-mapping.read", region = "query", note = "through Unity Catalog" },
 # ]
 # ///
 """Read and append to a Unity Catalog managed Delta table from DuckDB.
@@ -51,6 +52,8 @@ con.execute("LOAD unity_catalog")
 import asyncio  # noqa: E402
 import json  # noqa: E402
 import os  # noqa: E402
+import subprocess  # noqa: E402
+import sys  # noqa: E402
 import urllib.request  # noqa: E402
 
 from pyspark.sql import SparkSession  # noqa: E402
@@ -79,11 +82,7 @@ async def _reset_catalog() -> None:
 
 
 def _seed_with_spark() -> SparkSession:
-    """Create retail.sales.orders as a managed table with T03's rows.
-
-    Unlike T03, column mapping is off so that DuckDB's appended rows read back
-    correctly.
-    """
+    """Create retail.sales.orders as a managed table with T03's rows."""
     spark = (
         SparkSession.builder.appName("duckdb-seed")
         .config(
@@ -106,8 +105,7 @@ def _seed_with_spark() -> SparkSession:
     spark.sql("CREATE SCHEMA retail.sales")
     spark.sql(
         "CREATE TABLE retail.sales.orders "
-        "(order_id BIGINT, customer STRING, amount DECIMAL(10, 2)) USING DELTA "
-        "TBLPROPERTIES ('delta.columnMapping.mode' = 'none')"
+        "(order_id BIGINT, customer STRING, amount DECIMAL(10, 2)) USING DELTA"
     )
     spark.sql(
         "INSERT INTO retail.sales.orders VALUES "
@@ -116,8 +114,8 @@ def _seed_with_spark() -> SparkSession:
     return spark
 
 
-def _latest_version() -> int:
-    url = f"{UC_URL}/api/2.1/unity-catalog/delta/v1/catalogs/retail/schemas/sales/tables/orders"
+def _latest_version(table: str = "orders") -> int:
+    url = f"{UC_URL}/api/2.1/unity-catalog/delta/v1/catalogs/retail/schemas/sales/tables/{table}"
     with urllib.request.urlopen(url) as resp:
         return json.load(resp)["latest-table-version"]
 
@@ -129,8 +127,32 @@ assert (
     spark.sql("SHOW TBLPROPERTIES retail.sales.orders ('delta.columnMapping.mode')")
     .first()
     .value
-    == "none"
+    == "name"
+)  # Spark's default for new managed tables: DuckDB appends to it below.
+
+# The stable `unity_catalog` build (from `core`) reads the table's DECIMAL column
+# too: DuckDB 1.5.4's stable build failed on it (`type_precision`). A separate
+# process and extension directory, so the nightly install above stays loaded.
+_STABLE_PROBE = r"""
+import tempfile, duckdb
+con = duckdb.connect(config={"extension_directory": tempfile.mkdtemp()})
+for s in ["INSTALL delta", "LOAD delta", "INSTALL unity_catalog", "LOAD unity_catalog",
+          "CREATE SECRET (TYPE unity_catalog, TOKEN 'not-used', ENDPOINT 'http://localhost:8080')",
+          "ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')"]:
+    con.execute(s)
+print(con.sql(
+    "SELECT installed_from FROM duckdb_extensions() WHERE extension_name = 'unity_catalog'"
+).fetchone()[0])
+print(sorted(float(r[0]) for r in con.sql("SELECT amount FROM retail.sales.orders").fetchall()))
+"""
+_stable = subprocess.run(
+    [sys.executable, "-c", _STABLE_PROBE], capture_output=True, text=True, timeout=300
 )
+assert _stable.returncode == 0, (
+    "stable unity_catalog can't read DECIMAL again: update the page and R01: "
+    f"out={_stable.stdout!r} err={_stable.stderr[-800:]!r}"
+)
+assert _stable.stdout.split() == ["core", "[3.25,", "9.5,", "20.0]"], _stable.stdout
 
 # --8<-- [start:attach]
 con.execute("""
@@ -169,8 +191,7 @@ con.execute("INSERT INTO retail.sales.orders VALUES (4, 'barbara', 12.00)")
 # --8<-- [end:append]
 assert _latest_version() == 2, "DuckDB's append should be a catalog-accepted commit"
 assert con.sql("SELECT count(*) FROM retail.sales.orders").fetchone() == (4,)
-# Real values, not NULLs: DuckDB writes logical column names, which only a table
-# with column mapping off reads back (R01, Clients and engines).
+# Real values, not NULLs, on a table with column mapping.
 appended = [(4, "barbara", 12.0)]
 duck_seen = con.sql(
     "SELECT order_id, customer, amount FROM retail.sales.orders WHERE order_id = 4"
@@ -186,22 +207,45 @@ assert [(r[0], r[1], float(r[2])) for r in spark_seen] == [
     *appended,
 ], spark_seen
 
-# DuckDB 1.5.4 with unity_catalog 3ab8508: appends only, no row changes or DDL.
-for unsupported in [
-    "UPDATE retail.sales.orders SET amount = 1 WHERE order_id = 4",
-    "DELETE FROM retail.sales.orders WHERE order_id = 4",
-    "CREATE TABLE retail.sales.returns (order_id BIGINT)",
-    "DROP TABLE retail.sales.orders",
+# DuckDB with the `core_nightly` unity_catalog: appends only, no row changes or DDL.
+for unsupported, error, prefix in [
+    (
+        "UPDATE retail.sales.orders SET amount = 1 WHERE order_id = 4",
+        duckdb.BinderException,
+        "Binder Error: Can only update base table",
+    ),
+    (
+        "DELETE FROM retail.sales.orders WHERE order_id = 4",
+        duckdb.BinderException,
+        "Binder Error: Can only delete from base table",
+    ),
+    (
+        "CREATE TABLE retail.sales.returns (order_id BIGINT)",
+        duckdb.NotImplementedException,
+        "Not implemented Error: UCTableSet::CreateTable",
+    ),
+    (
+        "CREATE TABLE retail.sales.returns AS SELECT * FROM retail.sales.orders",
+        duckdb.NotImplementedException,
+        "Not implemented Error: UnityCatalog PlanCreateTableAs",
+    ),
+    (
+        "DROP TABLE retail.sales.orders",
+        duckdb.NotImplementedException,
+        "Not implemented Error: UCTableSet::DropEntry",
+    ),
 ]:
     try:
         con.execute(unsupported)
-    except (duckdb.BinderException, duckdb.NotImplementedException):
+    except duckdb.Error as err:
+        assert type(err) is error, (unsupported, type(err), str(err))
+        assert str(err).startswith(prefix), (unsupported, str(err))
         continue
     raise AssertionError(f"now supported, update the page: {unsupported}")
 assert _latest_version() == 2
 
-# Negative case: on a table left at Spark's default column mapping (`name`), the
-# commit succeeds but DuckDB's rows read as NULL in DuckDB and in Spark (R01).
+# A second column-mapped table that Spark creates after DuckDB attached: DuckDB's
+# rows read back by name in DuckDB and in Spark.
 spark.sql(
     "CREATE TABLE retail.sales.mapped (order_id BIGINT, customer STRING) USING DELTA"
 )
@@ -220,8 +264,41 @@ spark_mapped = [
     tuple(r) for r in spark.sql("SELECT * FROM retail.sales.mapped").collect()
 ]
 spark.sql("DROP TABLE retail.sales.mapped")
-assert duck_mapped == [(None, None)], (
-    f"DuckDB appends to column-mapped tables now: update the page and R01: {duck_mapped}"
+assert duck_mapped == [(1, "ada")], (
+    f"DuckDB's column-mapped append reads wrong: update the page and R01: {duck_mapped}"
 )
-assert spark_mapped == [(None, None)], spark_mapped
+assert spark_mapped == [(1, "ada")], spark_mapped
+
+# A partitioned table with column mapping: DuckDB's append fails before it
+# commits, and the table keeps Spark's rows and version (R01).
+spark.sql(
+    "CREATE TABLE retail.sales.by_region (order_id BIGINT, region STRING) "
+    "USING DELTA PARTITIONED BY (region)"
+)
+spark.sql("INSERT INTO retail.sales.by_region VALUES (1, 'emea')")
+assert (
+    spark.sql("SHOW TBLPROPERTIES retail.sales.by_region ('delta.columnMapping.mode')")
+    .first()
+    .value
+    == "name"
+)
+partitioned_version = _latest_version("by_region")
+con.execute("DETACH retail")  # see the new table
+con.execute("ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')")
+try:
+    con.execute("INSERT INTO retail.sales.by_region VALUES (2, 'apac')")
+except duckdb.NotImplementedException as err:
+    assert str(err) == (
+        "Not implemented Error: Inserting into a partitioned Delta table that uses "
+        "column mapping is not supported"
+    ), err
+else:
+    raise AssertionError("DuckDB appends to partitioned column-mapped tables now")
+assert _latest_version("by_region") == partitioned_version
+assert [
+    tuple(r) for r in spark.sql("SELECT * FROM retail.sales.by_region").collect()
+] == [(1, "emea")]
+spark.sql("DROP TABLE retail.sales.by_region")
+# No DETACH after the rejected insert: it raises a spurious Binder Error.
+con.close()
 spark.stop()

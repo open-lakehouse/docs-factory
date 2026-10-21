@@ -4,7 +4,7 @@
 #   "unitycatalog-client==0.7.0",
 #   "pyarrow>=18",
 #   "polars==1.44.2",
-#   "duckdb==1.5.4",
+#   "duckdb==1.5.6",
 # ]
 #
 # [tool.docs-factory]
@@ -158,6 +158,10 @@ async def main() -> None:
                 rows = read(fmt, path)
                 assert rows == 3, (read.__name__, fmt, rows)
 
+        # DuckDB's unity_catalog reads only Delta tables by name (R01): each
+        # format fails, which is why the page reads the location instead.
+        _assert_duckdb_by_name_fails()
+
         # --8<-- [start:drop]
         for fmt in ["parquet", "csv", "json"]:
             await tables.delete_table(full_name=f"retail.sales.orders_{fmt}")
@@ -196,6 +200,33 @@ def read_duckdb(fmt: str, path: str) -> int:
     data.show()
     # --8<-- [end:duckdb]
     return len(data.fetchall())
+
+
+def _assert_duckdb_by_name_fails() -> None:
+    import duckdb
+
+    con = duckdb.connect()
+    con.execute("INSTALL delta")
+    con.execute("LOAD delta")
+    con.execute("FORCE INSTALL unity_catalog FROM core_nightly")
+    con.execute("LOAD unity_catalog")
+    endpoint = config.host.removesuffix("/api/2.1/unity-catalog")
+    con.execute(
+        f"CREATE SECRET (TYPE unity_catalog, TOKEN 'not-used', ENDPOINT '{endpoint}')"
+    )
+    con.execute(
+        "ATTACH 'retail' AS retail (TYPE unity_catalog, DEFAULT_SCHEMA 'sales')"
+    )
+    for fmt in FORMATS:
+        try:
+            con.sql(f"SELECT * FROM retail.sales.orders_{fmt}").fetchall()
+        except duckdb.Error as err:
+            message = str(err)
+            assert f"is of unsupported format '{fmt.upper()}'" in message, message
+            assert f"orders_{fmt}" in message, message
+        else:
+            raise AssertionError(f"DuckDB reads {fmt} tables by name now: update R01")
+    con.close()
 
 
 async def _ensure_schema(api: ApiClient) -> None:

@@ -7,7 +7,7 @@
 #   "polars==1.44.2",
 #   "daft[unity]==0.7.25",
 #   "tenacity",
-#   "duckdb==1.5.4",
+#   "duckdb==1.5.6",
 # ]
 #
 # [tool.docs-factory]

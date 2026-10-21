@@ -87,9 +87,8 @@ Then drop the column:
 ```python file=./snippets/change_schema.py start=start:drop-column end=end:drop-column
 ```
 
-A table created with column mapping off (`none`), such as one that DuckDB
-appends to, can't drop columns this way: Spark fails with
-`DELTA_UNSUPPORTED_DROP_COLUMN`.
+A table created with column mapping off (`none`) can't drop columns this way:
+Spark fails with `DELTA_UNSUPPORTED_DROP_COLUMN`.
 
 To change a column to a wider type, such as `INT` to `BIGINT`, turn on type
 widening first. Without it, Delta rejects the change with

@@ -2,7 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #   "unitycatalog-client>=0.5",
-#   "duckdb>=1.5.4",
+#   "duckdb>=1.5.6",
 #   "deltalake>=0.20",
 #   "pyarrow>=14",
 # ]

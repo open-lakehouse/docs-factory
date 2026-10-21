@@ -90,6 +90,10 @@ nav:
             title: Use catalog functions as LangChain tools
           - planned: H14
             title: Use catalog functions with OpenAI-compatible tool calling
+          - planned: H51
+            title: Use catalog functions with Anthropic tools
+          - planned: H52
+            title: Use catalog functions with LiteLLM tools
 
       - section: Models
         items:

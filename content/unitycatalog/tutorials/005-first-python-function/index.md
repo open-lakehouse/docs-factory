@@ -166,6 +166,6 @@ governed, and the caller runs them.
 
 ## Next steps
 
-- The upstream [AI quickstart](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/docs/ai/quickstart.md)
-  covers the framework integrations that turn catalog functions into agent
-  tools, such as `unitycatalog-langchain` and `unitycatalog-openai`.
+- [Core concepts](../../explanation/uc-basics/index.md) explains where
+  functions sit among the other catalog objects, and the `EXECUTE` privilege
+  that controls who can call them.

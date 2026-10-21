@@ -323,7 +323,7 @@ clearly labeled legacy pages until their replacement is ready.
 | T05 | Register and execute your first Python function | P0 / J06 | OSS AI client, typed callable, registration, deterministic execution and cleanup. Explicit caller-side execution. |
 | T06 | Build an agent tool from a catalog function | P1 / J06 | One maintained framework, explicit function allowlist, tool invocation test; deterministic mock model for CI and an optional real-model step. |
 | T07 | Register and reload a model with MLflow | P1 / J07 | Deterministic small model, separate tracking/registry configuration, signature, version registration and prediction assertion. |
-| T08 | Define and query your first metric view | P1 / J08 | Tested engine/YAML pair; small source dataset; dimensions, measures and `measure(...)`; assert results against a direct aggregation. |
+| T08 | Working with metric views | P1 / J08 | Tested engine/YAML pair; small source dataset; dimensions, measures and `measure(...)`; assert results against a direct aggregation. |
 | T09 | Give two users different access to a catalog | P0 / J02, J05 | Controlled test IdP, ordinary user identities, grants and parent access, one permitted operation and one denied operation. No real IdP account required for CI. |
 | T10 | Keep catalog metadata across restarts with PostgreSQL | Retired | Duplicated by H25's restart check; replaced by T12, which uses the `uc-hybrid` environment from E11. |
 | T11 | Create and inspect catalog resources with the Python client | P0 / J01, J10 | Async SDK lifecycle, configured base URL, catalog/schema/table metadata, missing-resource handling, cleanup. Rework the existing draft. |

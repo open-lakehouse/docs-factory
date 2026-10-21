@@ -30,7 +30,7 @@ Spark version, and it needs a Delta Spark build for the same Spark version:
 | --- | --- | --- |
 | 4.1 (tested here: PySpark 4.1.0) | `io.unitycatalog:unitycatalog-spark_4.1_2.13:0.7.0` | `io.delta:delta-spark_4.1_2.13:4.3.1` |
 | 4.0 | `io.unitycatalog:unitycatalog-spark_4.0_2.13:0.7.0` | `io.delta:delta-spark_4.0_2.13:4.3.1` |
-| 4.2 (tested here: PySpark 4.2.0, in [Define and query your first metric view](../../tutorials/first-metric-view/index.md)) | `io.unitycatalog:unitycatalog-spark_4.2_2.13:0.7.0` | `io.delta:delta-spark_4.2_2.13:4.4.1` |
+| 4.2 (tested here: PySpark 4.2.0, in [Working with metric views](../../tutorials/first-metric-view/index.md)) | `io.unitycatalog:unitycatalog-spark_4.2_2.13:0.7.0` | `io.delta:delta-spark_4.2_2.13:4.4.1` |
 
 With a Delta Spark release older than 4.3.0, the connector quietly skips the
 Delta API, and catalog-managed tables don't work.

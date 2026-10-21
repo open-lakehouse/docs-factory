@@ -207,6 +207,7 @@ export interface RecentCommentRow extends CommentRow {
   content_title: string | null;
   heading_text: string | null;
   resolved: boolean;
+  unread: boolean;
 }
 
 /** The SQL that produces the row lives in the listRecentComments handler; this
@@ -225,6 +226,7 @@ export function recentCommentFromRow(row: RecentCommentRow): RecentComment {
     headingText: row.heading_text ?? "",
     resolved: row.resolved,
     contentTitle: row.content_title ?? "",
+    unread: row.unread,
   });
 }
 

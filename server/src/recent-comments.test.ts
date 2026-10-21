@@ -39,6 +39,7 @@ function row(extra: Partial<RecentCommentRow> = {}): RecentCommentRow {
     content_title: "Getting started",
     heading_text: "Install",
     resolved: false,
+    unread: false,
     ...extra,
   };
 }
@@ -79,5 +80,10 @@ describe("recentCommentFromRow", () => {
   test("carries the resolved flag through", () => {
     expect(recentCommentFromRow(row({ resolved: true })).resolved).toBe(true);
     expect(recentCommentFromRow(row({ resolved: false })).resolved).toBe(false);
+  });
+
+  test("carries the viewer's unread flag through", () => {
+    expect(recentCommentFromRow(row({ unread: true })).unread).toBe(true);
+    expect(recentCommentFromRow(row()).unread).toBe(false);
   });
 });

@@ -74,6 +74,8 @@ Diátaxis grouping above as the full content index.
   `page:` (optional `id:` backlog id and `label:` override), or `planned:` +
   `title:` (optional `request:`). A planned entry is a backlog slot with no page
   yet. Only reviewers see it, and it is never a placeholder `.md` file.
+  Reviewers can open a slot in the review workspace and comment on it. The
+  threads are instructions that `docs-write` reads before it drafts the page.
 - **`private` pages are listed too.** They show in the review workspace like any
   page, and the emitter drops them along with drafts.
 - **Content requests become planned slots.** Reviewers request missing content

@@ -4,18 +4,48 @@
 // Section comments start from the heading gutter icon (or text/code selection);
 // page-level threads sit above them and start from "Comment on page".
 import { useMutation } from "@connectrpc/connect-query";
+import { Eye, EyeOff } from "lucide-react";
 import { type RefObject, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CommentScope, type ContentRef } from "../../gen/docs_factory/review/v1/messages_pb";
 import { createComment } from "../../gen/docs_factory/review/v1/review_service-ReviewService_connectquery";
 import { useAuth } from "../../lib/auth-context";
+import { plannedOf } from "../../lib/content-ref";
 import { useReviewInvalidation } from "../../lib/review-queries";
+import { useShowResolved } from "../../lib/review-show-resolved";
 import { sortThreadsByDocumentOrder } from "../../lib/thread-document-order";
 import PendingComposer from "./PendingComposer";
 import ReviewComposer from "./ReviewComposer";
 import { useReview } from "./review-context";
 import { useSelectionState } from "./selection-context";
 import ThreadCard from "./ThreadCard";
+
+/** Pill toggle that reveals resolved threads; the count is how many are hidden or shown. */
+export function ShowResolvedToggle({
+  count,
+  show,
+  onChange,
+}: {
+  count: number;
+  show: boolean;
+  onChange: (show: boolean) => void;
+}) {
+  if (count === 0) return null;
+  const Icon = show ? Eye : EyeOff;
+  return (
+    <button
+      type="button"
+      className="review-resolved-toggle"
+      aria-pressed={show}
+      title={show ? "Hide resolved threads" : "Show resolved threads"}
+      onClick={() => onChange(!show)}
+    >
+      <Icon className="size-3.5" aria-hidden />
+      <span>Show resolved</span>
+      <span className="review-count small">{count}</span>
+    </button>
+  );
+}
 
 interface Heading {
   id: string;
@@ -82,6 +112,7 @@ export default function CommentSidebar({
   const { pending, pendingSeq, setPending } = useSelectionState();
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [composingPage, setComposingPage] = useState(false);
+  const [showResolved, setShowResolved] = useShowResolved();
 
   useEffect(() => {
     const article = articleRef.current;
@@ -93,23 +124,34 @@ export default function CommentSidebar({
     setHeadings(found);
   }, [articleRef, canComment]);
 
+  const resolvedCount = useMemo(
+    () => [...threads, ...orphaned].filter((t) => t.resolved).length,
+    [threads, orphaned],
+  );
+  // A selected resolved thread stays visible so a deep link into it still lands.
+  const visible = useMemo(() => {
+    const keep = (t: (typeof threads)[number]) =>
+      showResolved || !t.resolved || t.root?.id === selectedThreadId;
+    return { threads: threads.filter(keep), orphaned: orphaned.filter(keep) };
+  }, [threads, orphaned, showResolved, selectedThreadId]);
+
   // `headings` doubles as a readiness signal that the article DOM is mounted
   // and queryable — without it, articleRef.current alone wouldn't re-sort.
   const pageThreads = useMemo(
-    () => threads.filter((t) => t.root?.scope === CommentScope.DOCUMENT),
-    [threads],
+    () => visible.threads.filter((t) => t.root?.scope === CommentScope.DOCUMENT),
+    [visible],
   );
   const orderedThreads = useMemo(
     () =>
       sortThreadsByDocumentOrder(
-        threads.filter((t) => t.root?.scope !== CommentScope.DOCUMENT),
+        visible.threads.filter((t) => t.root?.scope !== CommentScope.DOCUMENT),
         articleRef.current,
       ),
-    [threads, headings, articleRef],
+    [visible, headings, articleRef],
   );
   const orderedOrphaned = useMemo(
-    () => sortThreadsByDocumentOrder(orphaned, articleRef.current),
-    [orphaned, headings, articleRef],
+    () => sortThreadsByDocumentOrder(visible.orphaned, articleRef.current),
+    [visible, headings, articleRef],
   );
 
   if (!canComment || !contentRef || displayMode !== "rail") return null;
@@ -148,10 +190,19 @@ export default function CommentSidebar({
           </Button>
         )}
       </div>
-      {openCount > 0 && (
-        <p className="review-comments-summary">
-          {openCount} open {openCount === 1 ? "thread" : "threads"}
-        </p>
+      {(openCount > 0 || resolvedCount > 0) && (
+        <div className="review-comments-summary">
+          <span>
+            {openCount === 0
+              ? "No open threads"
+              : `${openCount} open ${openCount === 1 ? "thread" : "threads"}`}
+          </span>
+          <ShowResolvedToggle
+            count={resolvedCount}
+            show={showResolved}
+            onChange={setShowResolved}
+          />
+        </div>
       )}
       {pending && (
         <PendingComposer
@@ -177,10 +228,11 @@ export default function CommentSidebar({
       {pageThreads.length > 0 && (
         <div className="review-thread-list">{pageThreads.map(renderCard)}</div>
       )}
-      {!hasAny && !pending && !composingPage && (
+      {!hasAny && resolvedCount === 0 && !pending && !composingPage && (
         <p className="review-empty">
-          No comments yet. Comment on the page, hover a section heading, or select text or code to
-          start a thread.
+          {plannedOf(contentRef)
+            ? "No instructions yet. Comment on the page to tell the author what it should cover."
+            : "No comments yet. Comment on the page, hover a section heading, or select text or code to start a thread."}
         </p>
       )}
       <div className="review-thread-list">{orderedThreads.map(renderCard)}</div>

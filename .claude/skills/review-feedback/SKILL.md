@@ -90,6 +90,9 @@ Follow `AGENTS.md`:
   a fresh backlog id from the project's documentation plan numbering, the
   request's title, and `request: <request id>`. Blog requests become an entry in
   `blogs/IDEAS.md` with `request: <id>`. Don't write the page itself.
+- A thread on a planned slot (its anchor says `planned slot <id>`) is an
+  instruction for writing that page, not an edit to make now. Leave it open
+  and unanswered for `docs-write`, which reads it when the slot is filled.
 - A `journey` request asks to track one more thing readers do, across the
   project's engines and clients. Add it to `journeys:` in
   `content/<project>/compatibility.yml` with a `family.task` id, the request's

@@ -37,7 +37,7 @@ export function TreeRow({
   expandable?: boolean;
   open?: boolean;
   selected?: boolean;
-  /** Placeholder row: dimmed, nothing to open. */
+  /** Placeholder row: dimmed; inert unless it also has onSelect. */
   muted?: boolean;
   onToggle?: () => void;
   /** When provided, clicking the row body selects the node (opens its tab). */
@@ -51,7 +51,7 @@ export function TreeRow({
     <div
       className={cn(
         "group flex items-center rounded pr-1",
-        !muted && "hover:bg-accent",
+        (!muted || onSelect) && "hover:bg-accent",
         selected && "bg-accent text-accent-foreground ring-1 ring-inset ring-primary/30",
       )}
     >
@@ -78,10 +78,11 @@ export function TreeRow({
         <button
           type="button"
           onClick={onBodyClick}
-          disabled={muted}
+          disabled={muted && !onBodyClick}
           className={cn(
             "flex min-w-0 flex-1 items-center gap-1.5 px-1 py-1.5 text-left text-sm",
-            muted && "cursor-default italic text-muted-foreground",
+            muted && "italic text-muted-foreground",
+            muted && !onBodyClick && "cursor-default",
           )}
         >
           {icon}

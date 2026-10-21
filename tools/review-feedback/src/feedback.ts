@@ -3,6 +3,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
+import { parsePlannedSlug } from "../../../site/src/content-core/identity.mjs";
 import type { ReviewClient } from "./client.js";
 import {
   type Comment,
@@ -14,6 +15,7 @@ import {
   type Thread,
 } from "./gen/docs_factory/review/v1/messages_pb.js";
 import { type Location, locate, matchSuggestion, type SuggestionMatch } from "./locate.js";
+import { type PlannedSlot, plannedSlotRef, plannedSlots } from "./planned.js";
 
 /**
  * Where a thread stands from the agent's point of view.
@@ -74,6 +76,8 @@ export interface FeedbackThread {
   location?: Location;
   /** The reviewer's proposed wording for the anchored passage. */
   suggestion?: FeedbackSuggestion;
+  /** Set on a thread left on a nav.yml planned slot: instructions for writing the page. */
+  planned?: { project: string; id: string };
 }
 
 export function pageKey(ref: ContentRef): string {
@@ -106,16 +110,46 @@ export function matchesState(state: AgentState, filter: StateFilter): boolean {
   }
 }
 
+interface Page {
+  ref: ContentRef;
+  title: string;
+  /** A planned slot has no page file; its threads point at the nav.yml entry. */
+  slot?: PlannedSlot;
+}
+
+function slotFor(repoRoot: string, ref: ContentRef): PlannedSlot | undefined {
+  const planned = parsePlannedSlug(ref.slug);
+  if (ref.area !== ContentArea.DOCS || !planned) return undefined;
+  return plannedSlots(repoRoot).find((s) => s.project === planned.project && s.id === planned.id);
+}
+
+function slotLocation(slot: PlannedSlot): Location {
+  return {
+    path: slot.path,
+    startLine: slot.line,
+    endLine: slot.line,
+    precision: "section",
+    drifted: false,
+    note: "planned slot: no page yet; these are instructions for writing it",
+  };
+}
+
 function toFeedback(
   thread: Thread,
-  draft: { ref: ContentRef; title: string },
+  draft: Page,
   orphaned: boolean,
   repoRoot: string | undefined,
 ): FeedbackThread | undefined {
   const root = thread.root;
   if (!root) return undefined;
   const code = root.codeSelector;
-  const location = repoRoot ? locate(repoRoot, { ...root, ref: draft.ref }) : undefined;
+  // A remembered page (MCP get/reply) carries no slot; recover it from the checkout.
+  const slot = draft.slot ?? (repoRoot ? slotFor(repoRoot, draft.ref) : undefined);
+  const location = slot
+    ? slotLocation(slot)
+    : repoRoot
+      ? locate(repoRoot, { ...root, ref: draft.ref })
+      : undefined;
   return {
     id: root.id,
     ref: draft.ref,
@@ -147,6 +181,7 @@ function toFeedback(
       state: SUGGESTION_STATE[root.suggestion.state] ?? "open",
       match: suggestionMatch(repoRoot, location, root.suggestion.original, Boolean(code?.path)),
     },
+    planned: slot && { project: slot.project, id: slot.id },
   };
 }
 
@@ -180,7 +215,7 @@ function draftMatches(d: DraftSummary, opts: ListOptions): d is DraftSummary & {
 
 async function threadsForPage(
   client: ReviewClient,
-  page: { ref: ContentRef; title: string },
+  page: Page,
   repoRoot: string | undefined,
 ): Promise<FeedbackThread[]> {
   const res = await client.listComments({ ref: page.ref });
@@ -202,10 +237,20 @@ export async function listFeedback(
   const pages = drafts
     .filter((d) => draftMatches(d, opts))
     .filter((d) => filter === "all" || d.openCommentCount > 0);
-  const perPage = await Promise.all(
-    pages.map((d) => threadsForPage(client, { ref: d.ref, title: d.title }, opts.repoRoot)),
-  );
+  const perPage = await Promise.all([
+    ...pages.map((d) => threadsForPage(client, { ref: d.ref, title: d.title }, opts.repoRoot)),
+    ...plannedPages(opts).map((p) => threadsForPage(client, p, opts.repoRoot)),
+  ]);
   return perPage.flat().filter((t) => matchesState(t.state, filter));
+}
+
+/** Planned slots as pages, when listing docs from a checkout. */
+function plannedPages(opts: ListOptions): Page[] {
+  if (!opts.repoRoot || opts.area === "blogs") return [];
+  return plannedSlots(opts.repoRoot)
+    .filter((slot) => !opts.project || slot.project === opts.project)
+    .map((slot) => ({ ref: plannedSlotRef(slot), title: `${slot.id} · ${slot.title}`, slot }))
+    .filter((p) => !opts.slug || p.ref.slug === opts.slug);
 }
 
 /**
@@ -216,7 +261,7 @@ export async function listFeedback(
 export async function getThread(
   client: ReviewClient,
   id: string,
-  opts: { repoRoot?: string; page?: { ref: ContentRef; title: string } } = {},
+  opts: { repoRoot?: string; page?: Page } = {},
 ): Promise<FeedbackThread | undefined> {
   const has = (t: FeedbackThread) => t.id === id || t.comments.some((c) => c.id === id);
   if (opts.page) {
@@ -224,9 +269,11 @@ export async function getThread(
     if (hit) return hit;
   }
   const { drafts } = await client.listDrafts({});
-  for (const d of drafts) {
-    if (!d.ref) continue;
-    const page = { ref: d.ref, title: d.title };
+  const pages: Page[] = [
+    ...drafts.flatMap((d) => (d.ref ? [{ ref: d.ref, title: d.title }] : [])),
+    ...plannedPages({ repoRoot: opts.repoRoot }),
+  ];
+  for (const page of pages) {
     // Scan without locating (it reads files), then locate only the match.
     if ((await threadsForPage(client, page, undefined)).some(has)) {
       return (await threadsForPage(client, page, opts.repoRoot)).find(has);

@@ -105,3 +105,21 @@ export function hrefFromIdentity(identity) {
   if (!project || !bucket || !slug) return null;
   return `/docs/${project}/${bucket}/${slug}`;
 }
+
+/**
+ * Review threads on a nav.yml `planned:` slot hang off a synthetic docs
+ * identity `{bucket: "planned", slug: "planned/<project>/<id>"}`. The comment
+ * table keys on (area, slug) alone, and a real doc slug is a single path
+ * segment, so the `/` keeps these from ever colliding with a page.
+ */
+export const PLANNED_BUCKET = "planned";
+
+export function plannedSlug(project, id) {
+  return `planned/${project}/${id}`;
+}
+
+/** `{project, id}` for a planned-slot slug, or null for any other slug. */
+export function parsePlannedSlug(slug) {
+  const m = /^planned\/([^/]+)\/([^/]+)$/.exec(slug ?? "");
+  return m ? { project: m[1], id: m[2] } : null;
+}

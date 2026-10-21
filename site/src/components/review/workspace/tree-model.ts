@@ -37,11 +37,16 @@ export interface TreeBranch {
   children: TreeNode[];
 }
 
-/** A nav.yml backlog slot with no page yet: shown, never opened. */
+/** A nav.yml backlog slot with no page yet; opens a tab for instruction threads. */
 export interface TreePlanned {
   kind: "planned";
   id: string;
   title: string;
+  project: string;
+  /** The nav section labels above the slot. */
+  trail: string[];
+  /** The content request the slot was promoted from. */
+  request?: string;
 }
 
 export type TreeNode = TreeBranch | TreeLeaf | TreePlanned;

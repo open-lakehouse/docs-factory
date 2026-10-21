@@ -30,7 +30,16 @@ export function navBranches(
         children: navBranches(project, node.children, statusOf, path),
       };
     }
-    if (node.kind === "planned") return { kind: "planned", id: node.id, title: node.title };
+    if (node.kind === "planned") {
+      return {
+        kind: "planned",
+        id: node.id,
+        title: node.title,
+        project,
+        trail,
+        ...(node.request ? { request: node.request } : {}),
+      };
+    }
     return {
       kind: "leaf",
       label: node.label,

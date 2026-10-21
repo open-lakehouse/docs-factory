@@ -212,7 +212,7 @@ async function main() {
         (flags.file === "-" ? readStdin() : flags.file ? readFileSync(flags.file, "utf8") : "");
       if (!body.trim()) throw new ConfigError("reply needs --body or --file");
       const c = connection();
-      const t = await getThread(c, arg);
+      const t = await getThread(c, arg, { repoRoot: repoRoot() });
       if (!t) throw new ConfigError(`no thread ${arg} (or no access to it)`);
       if (flags.applied && !t.suggestion) {
         throw new ConfigError(`thread ${t.id} has no suggestion to mark applied`);

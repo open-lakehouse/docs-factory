@@ -7,6 +7,7 @@ import { create } from "@bufbuild/protobuf";
 // normalizeText/fingerprint are canonical in content-core (shared with the
 // version manifest and server/src/anchor.ts). Import locally for use below AND
 // re-export so the browser comment client uses the exact same normalization.
+import { PLANNED_BUCKET, parsePlannedSlug, plannedSlug } from "../content-core/identity.mjs";
 import { fingerprint, normalizeText } from "../content-core/normalize.mjs";
 import {
   ContentArea,
@@ -25,6 +26,16 @@ export function docRef(project: string, bucket: string, slug: string): ContentRe
     project,
     bucket,
   });
+}
+
+/** The synthetic ref review threads on a nav.yml `planned:` slot hang off. */
+export function plannedRef(project: string, id: string): ContentRef {
+  return docRef(project, PLANNED_BUCKET, plannedSlug(project, id));
+}
+
+/** `{project, id}` when `ref` is a planned slot's synthetic ref, else null. */
+export function plannedOf(ref: ContentRef): { project: string; id: string } | null {
+  return ref.area === ContentArea.DOCS ? parsePlannedSlug(ref.slug) : null;
 }
 
 /**

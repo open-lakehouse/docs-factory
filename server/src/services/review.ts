@@ -770,7 +770,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
 
       async listRecentComments(req: ListRecentCommentsRequest, ctx) {
         // A cross-content reviewer artifact: allowlist-only.
-        requireAllowlisted(ctx);
+        const viewer = requireAllowlisted(ctx);
+        const viewerId = viewer.userId ?? viewer.login ?? null;
         const sql = db();
         const areaFilter = req.area !== undefined && req.area !== 0 ? areaToDb(req.area) : null;
         const limit = Math.min(
@@ -781,7 +782,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
         // Most-recent comments (roots AND replies) across all content, each with
         // the context needed to deep-link back: the latest version's title +
         // project/bucket (so the client can build the right route), the heading
-        // text for the comment's anchor, and the thread-root resolution. The
+        // text for the comment's anchor, the thread-root resolution, and whether
+        // the comment is past the viewer's read watermark on that root. The
         // section join is against the LATEST version's sections (a comment on a
         // since-removed heading simply gets an empty label). Tombstoned authors
         // are skipped. UUIDv7 ids order-match created_at, giving a stable tiebreak.
@@ -804,7 +806,8 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
             from comment c join roots r on c.parent_id = r.id
           )
           select c.id, c.area, c.slug,
-                 l.project, l.bucket,
+                 coalesce(l.project, ps.project) as project,
+                 coalesce(l.bucket, ps.bucket) as bucket,
                  c.anchor_slug, c.anchor_fingerprint, c.parent_id,
                  c.author_login, c.author_name, c.body_md, c.created_at, c.edited_at, c.orphaned,
                  c.selector_quote, c.selector_prefix, c.selector_suffix, c.selector_start,
@@ -815,15 +818,26 @@ export function registerReviewService(router: ConnectRouter, auth: AuthProvider)
                  c.authored_version_id, cv.git_sha as authored_git_sha,
                  l.title as content_title,
                  sec.heading_text as heading_text,
-                 coalesce(cr.resolved, false) as resolved
+                 coalesce(cr.resolved, false) as resolved,
+                 (${viewerId}::text is not null
+                   and c.author_user_id is distinct from ${viewerId}
+                   and (cs.seen_at is null or c.created_at > cs.seen_at)) as unread
           from comment c
           left join roots r on r.id = c.id
           left join latest l on l.area = c.area and l.slug = c.slug
+          -- A nav.yml planned slot has no version to take project/bucket from;
+          -- its slug carries them (content-core plannedSlug: planned/<project>/<id>).
+          left join lateral (
+            select split_part(c.slug, '/', 2) as project, 'planned' as bucket
+            where c.area = 'docs' and c.slug ~ '^planned/[^/]+/[^/]+$'
+          ) ps on true
           left join content_version cv on cv.id = c.authored_version_id
           left join content_section sec
             on sec.version_id = l.id and sec.anchor_slug = c.anchor_slug
           left join comment_resolution cr
             on cr.thread_root_id = r.root_id
+          left join comment_seen cs
+            on cs.thread_root_id = r.root_id and cs.viewer_id = ${viewerId}
           where c.author_login <> ${TOMBSTONE_LOGIN}
             and (${areaFilter}::text is null or c.area = ${areaFilter})
           order by c.created_at desc, c.id desc

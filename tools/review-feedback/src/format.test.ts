@@ -54,3 +54,10 @@ test("a page-level thread names the whole page as its anchor", () => {
   const out = formatThread({ ...t, anchor: { scope: "document", heading: "", fingerprint: "" } });
   expect(out).toContain("- anchor: the whole page");
 });
+
+test("a planned-slot thread reads as an instruction for an unwritten page", () => {
+  const t = { ...thread(undefined), planned: { project: "unitycatalog", id: "T06" } };
+  expect(formatThread(t)).toContain(
+    "- anchor: planned slot T06 (no page yet: an instruction for writing it)",
+  );
+});

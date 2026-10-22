@@ -44,7 +44,7 @@ change leaves the two in agreement.
 | DuckDB, `unity_catalog` extension | No. `ALTER TABLE` fails with `UCTableSet::AlterTable`, and `COMMENT ON TABLE` fails with `Only altering tables is supported for now`. | No. Same errors, and `ALTER TABLE … SET (key = value)` fails with `UCTableSet::AlterTable`. |
 | `uc` CLI, Python SDK | No. The tables API has no update. Use them to check the record. | No. The tables API has no update. Use them to check the record, or to drop and register the table again. |
 
-<!-- TODO(open question): delta-rs main reads catalog-managed tables (delta-io/delta-rs#4809, merged 2026-10-14) and has managed-commit writes in draft (#4886), but no deltalake Python release carries them (latest python-v1.6.6). Rerun the deltalake managed-table check on the first release that does, and update the deltalake row. -->
+<!-- TODO(deferred): state on 2026-10-22: delta-rs main reads catalog-managed tables (delta-io/delta-rs#4809, merged 2026-10-14); managed-commit writes are still a draft (delta-io/delta-rs#4886); the latest deltalake Python release, python-v1.6.6 (2026-09-24), has neither. Author's call: wait for a release, non-blocking. Action: rerun the deltalake check for this row on the first deltalake release that includes both, and update the deltalake row from that script. The row depends on the deltalake pin in content/unitycatalog/release.yml. -->
 
 ## Set up the client
 

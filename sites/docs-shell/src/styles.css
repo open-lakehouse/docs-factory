@@ -496,6 +496,7 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
 .statusbar-item { display: inline-flex; align-items: center; gap: 0.45rem; }
 .statusbar-dot { width: 0.45rem; height: 0.45rem; border-radius: 999px; background: var(--accent-fill); }
 .statusbar-links { display: flex; gap: 0.9rem; }
+.statusbar-legal { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .statusbar a { color: inherit; text-decoration: none; }
 .statusbar a:hover { color: var(--foreground); }
 
@@ -1308,7 +1309,7 @@ button.nav-section-label:focus-visible { outline: 2px solid var(--accent-fill); 
   .section-tabs { display: none; }
   .crumb-menu .brand-path { display: inline-flex; }
   .search-trigger { width: 1.85rem; justify-content: center; padding: 0; border-color: transparent; background: transparent; }
-  .search-trigger-label, .search-trigger kbd, .cmdk-footer { display: none; }
+  .search-trigger-label, .search-trigger kbd, .cmdk-footer, .statusbar-legal { display: none; }
   .cmdk { padding-top: 0.75rem; }
   .page-head { flex-wrap: wrap; }
 }

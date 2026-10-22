@@ -1,0 +1,13 @@
+# --8<-- [start:gateway-config]
+endpoints:
+  - name: chat
+    endpoint_type: llm/v1/chat
+    model:
+      provider: openai
+      name: gpt-4o-mini
+      config:
+        # The gateway reads the key from this environment variable.
+        openai_api_key: $OPENAI_API_KEY
+        # Any OpenAI-compatible server works here, including a local one.
+        openai_api_base: https://api.openai.com/v1
+# --8<-- [end:gateway-config]

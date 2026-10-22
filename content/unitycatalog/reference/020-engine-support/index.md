@@ -50,6 +50,7 @@ The other states don't say that a tool can't do something:
 | [uc CLI](#uc-cli) | uc CLI 0.7.0 | 28 of 37 |
 | [Python SDK](#python-sdk) | Python SDK 0.7.0 | 34 of 44 |
 | [unitycatalog-ai](#unitycatalog-ai) | unitycatalog-ai 0.4.0 | 5 of 5 |
+| unitycatalog-langchain | unitycatalog-langchain 0.4.0 | 0 of 2 |
 <!-- /compat:engines -->
 
 ## Apache Spark

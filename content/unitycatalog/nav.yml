@@ -86,8 +86,8 @@ nav:
             title: Register, replace, and remove Python functions
           - planned: H12
             title: Execute functions in applications and notebooks
-          - planned: H13
-            title: Use catalog functions as LangChain tools
+          - page: how-to/langchain-tools
+            id: H13
           - planned: H14
             title: Use catalog functions with OpenAI-compatible tool calling
           - planned: H51

@@ -98,6 +98,11 @@ interfaces:
     pin: unitycatalog-ai
     package: unitycatalog-ai
     model: unityCatalogAI
+  unitycatalog-langchain:
+    label: unitycatalog-langchain
+    pin: unitycatalog-langchain
+    package: unitycatalog-langchain
+    model: unityCatalogLangChain
 
 journeys:
   table.list:
@@ -596,6 +601,14 @@ journeys:
     family: function
     title: Delete a function
     summary: Remove a function from the catalog.
+  function.tool:
+    family: function
+    title: Turn a function into an agent tool
+    summary: Build an agent framework's tool from a registered function, with its description and typed arguments.
+  function.tool-call:
+    family: function
+    title: Let an agent call a function
+    summary: Give the tools to an agent, which calls the functions by name and gets their results back.
 
 tables:
   table-operations:
@@ -738,6 +751,12 @@ tables:
       - function.execute
       - function.list
       - function.delete
+  agent-tools:
+    title: Agent tools
+    columns: [unitycatalog-langchain]
+    rows:
+      - function.tool
+      - function.tool-call
   metric-views:
     title: Metric views
     columns: [spark-4.2, python-sdk]

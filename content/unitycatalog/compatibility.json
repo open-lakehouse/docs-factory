@@ -329,9 +329,12 @@
       ],
       "rows": [
         "function.create",
+        "function.create-wrapped",
         "function.describe",
         "function.execute",
         "function.list",
+        "function.get-source",
+        "function.replace",
         "function.delete"
       ]
     },
@@ -560,9 +563,12 @@
       ],
       "rows": [
         "function.create",
+        "function.create-wrapped",
         "function.describe",
         "function.execute",
         "function.list",
+        "function.get-source",
+        "function.replace",
         "function.delete",
         "function.tool",
         "function.tool-call"
@@ -1304,9 +1310,12 @@
           ],
           "rows": [
             "function.create",
+            "function.create-wrapped",
             "function.describe",
             "function.execute",
             "function.list",
+            "function.get-source",
+            "function.replace",
             "function.delete"
           ]
         }
@@ -1381,9 +1390,12 @@
           ],
           "rows": [
             "function.create",
+            "function.create-wrapped",
             "function.describe",
             "function.execute",
             "function.list",
+            "function.get-source",
+            "function.replace",
             "function.delete"
           ]
         },
@@ -1425,9 +1437,12 @@
           ],
           "rows": [
             "function.create",
+            "function.create-wrapped",
             "function.describe",
             "function.execute",
             "function.list",
+            "function.get-source",
+            "function.replace",
             "function.delete"
           ]
         }
@@ -9168,6 +9183,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-python-functions"
+              },
+              "anchor": "register-a-function",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "create_python_function_async",
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
               "page": {
                 "project": "unitycatalog",
@@ -9180,6 +9210,51 @@
               "fails": null,
               "version": "0.4.0",
               "api": "create_python_function_async",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.create-wrapped",
+      "title": "Register a function with its helpers",
+      "summary": "Register a Python function together with the helper functions its body calls.",
+      "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "unitycatalog-ai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-python-functions"
+              },
+              "anchor": "register-a-function-that-calls-helpers",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "create_wrapped_function_async",
               "note": null
             }
           ],
@@ -9212,6 +9287,21 @@
           "status": "tested",
           "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-python-functions"
+              },
+              "anchor": "view-a-function-and-get-its-source-back",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "get_function_async",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
               "page": {
@@ -9303,6 +9393,21 @@
           "draft": false,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-python-functions"
+              },
+              "anchor": "view-a-function-and-get-its-source-back",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "list_functions_async",
+              "note": null
+            },
+            {
               "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
               "page": {
                 "project": "unitycatalog",
@@ -9315,6 +9420,96 @@
               "fails": null,
               "version": "0.4.0",
               "api": "list_functions_async",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.get-source",
+      "title": "Get a function's source back",
+      "summary": "Rebuild a registered function as Python source or as a callable from its stored record.",
+      "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "unitycatalog-ai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-python-functions"
+              },
+              "anchor": "view-a-function-and-get-its-source-back",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "get_function_source",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.replace",
+      "title": "Replace a function",
+      "summary": "Replace a function's body or comments under the same name.",
+      "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "unitycatalog-ai": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-python-functions"
+              },
+              "anchor": "replace-a-function",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "create_python_function_async(replace=True)",
               "note": null
             }
           ],
@@ -9347,6 +9542,21 @@
           "status": "tested",
           "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/018-manage-python-functions/snippets/functions.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "manage-python-functions"
+              },
+              "anchor": "delete-a-function",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "delete_function_async",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/tutorials/005-first-python-function/snippets/first_function.py",
               "page": {

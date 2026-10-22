@@ -82,8 +82,8 @@ nav:
 
       - section: Functions and AI
         items:
-          - planned: H11
-            title: Register, replace, and remove Python functions
+          - page: how-to/manage-python-functions
+            id: H11
           - planned: H12
             title: Execute functions in applications and notebooks
           - page: how-to/langchain-tools

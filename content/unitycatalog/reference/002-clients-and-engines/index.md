@@ -288,9 +288,12 @@ upstream-only until this matrix gains journeys for them.
 | Operation | [uc CLI 0.7](model:ucCli) | [Python SDK 0.7](model:unityCatalogPythonSdk) | [unitycatalog-ai 0.4](model:unityCatalogAI) |
 | --- | --- | --- | --- |
 | Register a Python function (`function.create`) | — | — | [✓](../../tutorials/first-python-function/index.md#register-the-function) `create_python_function_async` |
+| Register a function with its helpers (`function.create-wrapped`) | — | — | [✓](../../how-to/manage-python-functions/index.md#register-a-function-that-calls-helpers) `create_wrapped_function_async` (draft) |
 | View a function (`function.describe`) | — | — | [✓](../../tutorials/first-python-function/index.md#see-what-the-catalog-stored) `get_function_async` |
 | Run a function by name (`function.execute`) | — | — | [✓](../../tutorials/first-python-function/index.md#run-the-function-by-name) `execute_function_async` |
 | List functions (`function.list`) | — | — | [✓](../../tutorials/first-python-function/index.md#list-and-clean-up) `list_functions_async` |
+| Get a function's source back (`function.get-source`) | — | — | [✓](../../how-to/manage-python-functions/index.md#view-a-function-and-get-its-source-back) `get_function_source` (draft) |
+| Replace a function (`function.replace`) | — | — | [✓](../../how-to/manage-python-functions/index.md#replace-a-function) `create_python_function_async(replace=True)` (draft) |
 | Delete a function (`function.delete`) | — | — | [✓](../../tutorials/first-python-function/index.md#list-and-clean-up) `delete_function_async` |
 <!-- /compat:functions -->
 

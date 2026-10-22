@@ -350,6 +350,23 @@
       ]
     },
     {
+      "id": "views",
+      "title": "SQL views",
+      "columns": [
+        "spark-4.2",
+        "python-sdk"
+      ],
+      "rows": [
+        "view.create",
+        "view.list",
+        "view.describe",
+        "view.query",
+        "view.replace",
+        "view.rename",
+        "view.drop"
+      ]
+    },
+    {
       "id": "metric-views",
       "title": "Metric views",
       "columns": [
@@ -501,6 +518,23 @@
         "credential.update",
         "credentials.vend-path",
         "credentials.vend-volume"
+      ]
+    },
+    {
+      "id": "lakehouse.sqlView",
+      "title": "View",
+      "columns": [
+        "spark-4.2",
+        "python-sdk"
+      ],
+      "rows": [
+        "view.create",
+        "view.list",
+        "view.describe",
+        "view.query",
+        "view.replace",
+        "view.rename",
+        "view.drop"
       ]
     },
     {
@@ -701,6 +735,21 @@
             "iceberg.views",
             "iceberg.scan-planning",
             "iceberg.remote-signing"
+          ]
+        },
+        {
+          "table": "views",
+          "columns": [
+            "spark-4.2"
+          ],
+          "rows": [
+            "view.create",
+            "view.list",
+            "view.describe",
+            "view.query",
+            "view.replace",
+            "view.rename",
+            "view.drop"
           ]
         },
         {
@@ -1397,6 +1446,21 @@
             "function.get-source",
             "function.replace",
             "function.delete"
+          ]
+        },
+        {
+          "table": "views",
+          "columns": [
+            "python-sdk"
+          ],
+          "rows": [
+            "view.create",
+            "view.list",
+            "view.describe",
+            "view.query",
+            "view.replace",
+            "view.rename",
+            "view.drop"
           ]
         },
         {
@@ -6440,6 +6504,160 @@
           ]
         }
       }
+    },
+    {
+      "id": "view.create",
+      "title": "Create a view",
+      "summary": "Define a view as a query over tables, and store the definition in the catalog.",
+      "request": null,
+      "family": "view",
+      "asset": "lakehouse.sqlView",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "view.list",
+      "title": "List views",
+      "summary": "Find a schema's views by name.",
+      "request": null,
+      "family": "view",
+      "asset": "lakehouse.sqlView",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "view.describe",
+      "title": "Inspect a view",
+      "summary": "Read a view's columns and stored definition.",
+      "request": null,
+      "family": "view",
+      "asset": "lakehouse.sqlView",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "view.query",
+      "title": "Query a view",
+      "summary": "Select from a view like a table; the engine expands its definition at query time.",
+      "request": null,
+      "family": "view",
+      "asset": "lakehouse.sqlView",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "view.replace",
+      "title": "Change a view's definition",
+      "summary": "Replace a view's definition in place, keeping its name.",
+      "request": null,
+      "family": "view",
+      "asset": "lakehouse.sqlView",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "view.rename",
+      "title": "Rename a view",
+      "summary": "Give a view a new name in its schema.",
+      "request": null,
+      "family": "view",
+      "asset": "lakehouse.sqlView",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "view.drop",
+      "title": "Drop a view",
+      "summary": "Remove a view; its source tables stay.",
+      "request": null,
+      "family": "view",
+      "asset": "lakehouse.sqlView",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {}
     },
     {
       "id": "metricview.create",

@@ -14,6 +14,7 @@
  * imported directly by leaf path. Do NOT add a Node-only re-export here.
  */
 
+export * from "./compat-dataset.mjs";
 export * from "./coverage.mjs";
 export * from "./fences.mjs";
 export * from "./identity.mjs";

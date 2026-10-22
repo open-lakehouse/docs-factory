@@ -96,8 +96,9 @@ reaches the function like this:
 | `ARRAY`, `MAP` | The value on the first call. Every later call on the same client returns `TypeError: unhashable type: 'list'` (or `'dict'`) as the tool's error. |
 
 A `BOOLEAN` parameter with a default registers the default as text, `"False"`
-or `"True"`, so a call that leaves the argument out fails. Give `BOOLEAN`
-parameters no default.
+or `"True"`, so a tool call that leaves the argument out fails: the tool
+passes the text default to the client's type check. Give `BOOLEAN` parameters
+no default.
 
 Return values of type `ARRAY`, `MAP`, `STRUCT`, `BOOLEAN`, and `DOUBLE` work.
 For a `DATE`, `TIMESTAMP`, `DECIMAL`, or `BINARY` return value, the tool call

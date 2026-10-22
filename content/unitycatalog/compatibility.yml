@@ -585,6 +585,10 @@ journeys:
     family: function
     title: Register a Python function
     summary: Register a Python function in a schema, with its signature and source code.
+  function.create-wrapped:
+    family: function
+    title: Register a function with its helpers
+    summary: Register a Python function together with the helper functions its body calls.
   function.describe:
     family: function
     title: View a function
@@ -597,6 +601,14 @@ journeys:
     family: function
     title: List functions
     summary: List the functions in a schema.
+  function.get-source:
+    family: function
+    title: Get a function's source back
+    summary: Rebuild a registered function as Python source or as a callable from its stored record.
+  function.replace:
+    family: function
+    title: Replace a function
+    summary: Replace a function's body or comments under the same name.
   function.delete:
     family: function
     title: Delete a function
@@ -747,9 +759,12 @@ tables:
     columns: [cli, python-sdk, unitycatalog-ai]
     rows:
       - function.create
+      - function.create-wrapped
       - function.describe
       - function.execute
       - function.list
+      - function.get-source
+      - function.replace
       - function.delete
   agent-tools:
     title: Agent tools

@@ -97,6 +97,7 @@ def test_pages_affected_by_a_uc_release_change(idx):
         for p in (
             "explanation/004-external-and-managed-tables",
             "explanation/005-deployment-patterns",
+            "explanation/006-delta-api",
             "how-to/001-table-storage-formats",
             "how-to/002-configure-backend-db",
             "how-to/003-seed-tpch-data",

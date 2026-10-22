@@ -7,6 +7,10 @@ export const brand: Brand = {
   wordmark: "unity catalog",
   statusLabel: "unity catalog oss",
   github,
+  foundation: {
+    label: "Unity Catalog, an LF AI & Data project",
+    href: "https://lfaidata.foundation/",
+  },
   social: [
     { label: "GitHub", href: github, Icon: GitHubIcon },
     { label: "Slack", href: "https://go.unitycatalog.io/slack", Icon: SlackIcon },

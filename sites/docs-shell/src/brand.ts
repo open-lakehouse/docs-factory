@@ -16,6 +16,8 @@ export interface Brand {
   statusLabel: string;
   /** The project repository, linked from the status bar. */
   github: string;
+  /** The foundation claim in the status bar, linked to the foundation. */
+  foundation: { label: string; href: string };
   /** Topbar icons and the home page's community chips, in order. */
   social: SocialLink[];
 }

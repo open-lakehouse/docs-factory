@@ -310,6 +310,9 @@ export default function Shell({
             <span className="statusbar-dot" aria-hidden="true" />
             {brand.statusLabel}
           </span>
+          <a className="statusbar-legal" href={brand.foundation.href}>
+            © {new Date().getFullYear()} {brand.foundation.label}
+          </a>
           <span className="statusbar-links">
             <a href={brand.github}>github</a>
           </span>

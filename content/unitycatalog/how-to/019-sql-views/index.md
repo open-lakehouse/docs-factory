@@ -90,8 +90,6 @@ Going by the server's source, reading through a view also needs access to its
 source tables. See
 [permissions on views](../../explanation/views-and-metric-views/index.md#permissions).
 
-<!-- TODO(open question): verify reading through a view needs source-table access once an authorization-enabled environment exists -->
-
 ## List and inspect views
 
 `SHOW VIEWS` lists only a schema's views. `SHOW TABLES` lists them with the

@@ -17,6 +17,8 @@ def shipping_cost(weight_kg: float, express: bool = False) -> float:
 
     rate = 9.0 if express else 4.5
     return 2.0 + rate * math.ceil(weight_kg)
+
+
 # --8<-- [end:shipping-cost]
 
 

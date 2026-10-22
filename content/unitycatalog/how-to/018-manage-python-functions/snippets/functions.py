@@ -96,7 +96,9 @@ async def main() -> None:
         assert params[0].comment == (
             "Parcel weight in kilograms, billed per started kilogram."
         )
-        result = await client.execute_function_async(NAME, parameters={"weight_kg": 2.5})
+        result = await client.execute_function_async(
+            NAME, parameters={"weight_kg": 2.5}
+        )
         assert result.value == 13.5, result
 
         # A helper the body calls isn't stored with a plain registration.
@@ -215,7 +217,7 @@ async def main() -> None:
             )
         except ValueError as exc:
             print(exc)  # Function tools.pricing.shipping_cost already exists. ...
-        # --8<-- [end:name-conflict]
+            # --8<-- [end:name-conflict]
             assert str(exc) == (
                 "Function tools.pricing.shipping_cost already exists. "
                 "Set replace=True to overwrite it."
@@ -244,7 +246,9 @@ async def main() -> None:
         # Delete, then create: the function is a new object with a new id.
         assert info.function_id != first_id, (info.function_id, first_id)
         # The replacing client cleared its own cache, so it runs the new body.
-        result = await client.execute_function_async(NAME, parameters={"weight_kg": 2.5})
+        result = await client.execute_function_async(
+            NAME, parameters={"weight_kg": 2.5}
+        )
         assert result.value == 15.5, result
 
         # A comment change has no update call of its own: the SDK has no
@@ -322,7 +326,9 @@ async def _seed(api) -> None:
     except NotFoundException:
         pass
     await catalogs.create_catalog(CreateCatalog(name="tools"))
-    await SchemasApi(api).create_schema(CreateSchema(name="pricing", catalog_name="tools"))
+    await SchemasApi(api).create_schema(
+        CreateSchema(name="pricing", catalog_name="tools")
+    )
 
 
 if __name__ == "__main__":

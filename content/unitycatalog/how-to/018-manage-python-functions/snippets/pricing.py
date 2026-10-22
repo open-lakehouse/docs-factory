@@ -16,6 +16,8 @@ def shipping_cost(weight_kg: float, express: bool = False) -> float:
 
     rate = 9.0 if express else 4.5
     return rate * math.ceil(weight_kg)
+
+
 # --8<-- [end:shipping-cost]
 
 
@@ -33,4 +35,6 @@ def order_total(quantity: int, unit_price: float, discount_pct: float = 0.0) -> 
         discount_pct: Discount in percent, from 0 to 100.
     """
     return round(apply_discount(quantity * unit_price, discount_pct), 2)
+
+
 # --8<-- [end:order-total]

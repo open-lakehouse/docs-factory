@@ -8,6 +8,8 @@
 # base-url-env = "UC_BASE_URL"
 # env = { EXECUTOR_MAX_MEMORY_LIMIT = "4096" }
 # ///
+# The old typing forms (Optional, Union, List) are under test; keep them.
+# ruff: noqa: UP006, UP007, UP035, UP045
 """Which Python signatures and docstrings the catalog can store.
 
 Evidence for the page's type-hint table and docstring rules: no regions, every
@@ -79,7 +81,9 @@ def every_type(
 
 
 def optional_defaults(
-    no_default: Optional[int], none_default: Optional[int] = None, seven: Optional[int] = 7
+    no_default: Optional[int],
+    none_default: Optional[int] = None,
+    seven: Optional[int] = 7,
 ) -> int:
     """Optional parameters with no default, a None default, and a value default.
 
@@ -251,7 +255,8 @@ async def main() -> None:
         await register(every_type)
         fn = await client.get_function_async(f"{CATALOG}.{SCHEMA}.every_type")
         stored = [
-            (p.name, p.type_text, p.parameter_default) for p in fn.input_params.parameters
+            (p.name, p.type_text, p.parameter_default)
+            for p in fn.input_params.parameters
         ]
         assert stored == [
             ("a", "LONG", None),
@@ -280,7 +285,8 @@ async def main() -> None:
         await register(optional_defaults)
         fn = await client.get_function_async(f"{CATALOG}.{SCHEMA}.optional_defaults")
         stored = [
-            (p.name, p.type_text, p.parameter_default) for p in fn.input_params.parameters
+            (p.name, p.type_text, p.parameter_default)
+            for p in fn.input_params.parameters
         ]
         assert stored == [
             ("no_default", "LONG", None),

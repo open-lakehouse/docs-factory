@@ -113,6 +113,7 @@ def test_pages_affected_by_a_uc_release_change(idx):
             "how-to/014-managed-delta-tables",
             "how-to/015-change-table-schema",
             "how-to/016-replace-and-overwrite-tables",
+            "how-to/017-langchain-tools",
             "reference/001-features-and-limitations",
             "reference/002-clients-and-engines",
             "tutorials/001-getting-started",

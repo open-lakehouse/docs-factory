@@ -35,8 +35,9 @@ MLflow chat model for LangChain:
 EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --python 3.12 --with unitycatalog-langchain==0.4.0 --with langgraph-prebuilt==1.0.8 --with mlflow==3.10.0 --with langchain-community==0.4.1 python -m asyncio
 ```
 
-Use Python 3.12. On 3.13, a function that raises loses its traceback: the tool
-returns the generic "no output was produced" notice under `error` instead.
+Use Python 3.12, or 3.13.3 or later. On 3.13.0 to 3.13.2, a function that
+raises loses its traceback: the tool returns the generic "no output was
+produced" notice under `error` instead.
 
 The function sandbox caps each call's virtual memory at
 `EXECUTOR_MAX_MEMORY_LIMIT` megabytes (100 by default), a limit that applies

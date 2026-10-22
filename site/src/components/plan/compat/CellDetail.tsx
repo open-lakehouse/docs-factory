@@ -230,3 +230,14 @@ function EvidenceItem({ evidence }: { evidence: CompatEvidence }) {
     </li>
   );
 }
+
+/** A cell's symbol, tinted by status, with the draft mark. */
+export function CellMark({ cell }: { cell: CompatCell | null }) {
+  const status = cell?.status ?? "unknown";
+  return (
+    <>
+      <span className={`compat-${status}`}>{SYMBOL[status]}</span>
+      {cell?.draft && <span className="compat-draft">draft</span>}
+    </>
+  );
+}

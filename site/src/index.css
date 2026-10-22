@@ -1216,6 +1216,45 @@ a.roadmap-slot-title:hover { color: var(--accent); }
 .compat-model-context p { margin: 0; }
 .compat-requirements { margin: 0.35rem 0 0; padding-left: 1.1rem; }
 
+/* Compatibility explorer: TanStack Table is headless, so these are the whole look. */
+.compat-explorer-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
+.compat-search { width: 16rem; height: 2rem; }
+.compat-bucket-chips { margin-top: 0.75rem; }
+.compat-filter-values { max-height: 20rem; overflow-y: auto; }
+.compat-filter-values .plan-chip-count { margin-left: auto; padding-left: 0.75rem; }
+.compat-active-filters { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.5rem 0 0; padding: 0; list-style: none; font-size: 0.8rem; }
+.compat-active-filters li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.1rem 0.25rem 0.1rem 0.55rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+.compat-active-filters button { display: inline-flex; padding: 0.15rem; border-radius: 999px; color: var(--muted-foreground); }
+.compat-active-filters button:hover { color: var(--foreground); background: var(--surface); }
+.compat-sort {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.25rem;
+  font: inherit;
+  text-align: left;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
+.compat-sort > svg { flex: none; margin-top: 0.15rem; color: var(--accent); }
+.compat-sort:hover { color: var(--foreground); }
+.compat-cells td { font-size: 0.85rem; vertical-align: middle; }
+.compat-cells tr.is-selected > td { background: color-mix(in srgb, var(--surface) 55%, transparent); }
+.compat-group-row > td { background: var(--surface); padding-top: 0.4rem; padding-bottom: 0.4rem; }
+.compat-group-toggle { display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600; font-size: 0.85rem; }
+.compat-group-counts { margin-left: 0.75rem; font-size: 0.78rem; }
+.compat-scorecard td { font-family: var(--font-mono); font-size: 0.8rem; }
+.compat-scorecard td:first-child { font-family: inherit; font-size: 0.85rem; }
+.compat-score-bar { width: 5rem; }
+.compat-score-bar > span.is-no { background: #c2410c; border-radius: 0; }
+
 .content { max-width: 60rem; margin: 0 auto; padding: 2.5rem 2rem 6rem; }
 .muted { color: var(--muted-foreground); }
 

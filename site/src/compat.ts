@@ -1,6 +1,8 @@
 // compat.ts — the resolved compatibility matrices `docsnip compat --fix` writes
 // to content/<project>/compatibility.json (shape: tools/docsnip compat.artifact).
 // Committed, so the bare Vercel build needs no uv.
+import { compatDataset, type CompatRow as DatasetRow } from "./content-core/compat-dataset.mjs";
+import type { CellBucket } from "./content-core/coverage.mjs";
 
 export type CellStatus = "tested" | "fails" | "missing" | "documented" | "unknown";
 
@@ -160,3 +162,18 @@ export function isGap(journey: CompatJourney, columns: string[]): boolean {
     return cell.status === "unknown" || cell.status === "documented" || cell.draft;
   });
 }
+
+/** One project × journey × interface in scope; see content-core/compat-dataset.mjs. */
+export type CompatRow = Omit<DatasetRow, "bucket" | "status" | "source"> & {
+  status: CellStatus;
+  bucket: CellBucket;
+  source: {
+    matrix: CompatMatrix;
+    journey: CompatJourney;
+    iface: CompatInterface;
+    /** Null where nothing claims the cell. */
+    cell: CompatCell | null;
+  };
+};
+
+export const compatRows = compatDataset(matrices) as CompatRow[];

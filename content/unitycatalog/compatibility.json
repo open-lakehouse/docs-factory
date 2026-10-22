@@ -9600,7 +9600,7 @@
       "cells": {
         "unitycatalog-langchain": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/017-langchain-tools/snippets/tools.py",
@@ -9610,7 +9610,7 @@
                 "slug": "langchain-tools"
               },
               "anchor": "choose-which-functions-become-tools",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -9645,7 +9645,7 @@
       "cells": {
         "unitycatalog-langchain": {
           "status": "tested",
-          "draft": true,
+          "draft": false,
           "proofs": [
             {
               "script": "content/unitycatalog/how-to/017-langchain-tools/snippets/tools.py",
@@ -9655,7 +9655,7 @@
                 "slug": "langchain-tools"
               },
               "anchor": "run-the-agent",
-              "ready": false,
+              "ready": true,
               "works": true,
               "fails": null,
               "version": "0.4.0",
@@ -10128,6 +10128,30 @@
       ]
     },
     {
+      "source": "unityCatalogLangChain",
+      "kind": "consumes",
+      "target": "ucSpec",
+      "interfaces": [
+        "unitycatalog-langchain"
+      ],
+      "journeys": [
+        "function.tool",
+        "function.tool-call"
+      ]
+    },
+    {
+      "source": "unityCatalogLangChain",
+      "kind": "operatesOn",
+      "target": "lakehouse.registeredFunction",
+      "interfaces": [
+        "unitycatalog-langchain"
+      ],
+      "journeys": [
+        "function.tool",
+        "function.tool-call"
+      ]
+    },
+    {
       "source": "unityCatalogPythonSdk",
       "kind": "consumes",
       "target": "ucSpec",
@@ -10278,11 +10302,6 @@
     {
       "kind": "unverified-asset",
       "asset": "lakehouse.sqlView"
-    },
-    {
-      "kind": "unverified-asset-edge",
-      "source": "unityCatalogLangChain",
-      "asset": "lakehouse.registeredFunction"
     }
   ]
 }

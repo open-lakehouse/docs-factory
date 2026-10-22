@@ -8,7 +8,7 @@ references:
   - unityCatalogAI
   - unityCatalogLangChain
   - lakehouse.registeredFunction
-status: draft
+status: ready
 ---
 
 Register Python functions in [Unity Catalog](model:unityCatalogOSS), build

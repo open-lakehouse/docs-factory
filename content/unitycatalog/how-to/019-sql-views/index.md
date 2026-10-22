@@ -86,8 +86,11 @@ registers both catalogs. This view lives in `unity.default` and reads
 +--------+
 ```
 
-Reading through a view also needs access to its source tables. See
+Going by the server's source, reading through a view also needs access to its
+source tables. See
 [permissions on views](../../explanation/views-and-metric-views/index.md#permissions).
+
+<!-- TODO(open question): verify reading through a view needs source-table access once an authorization-enabled environment exists -->
 
 ## List and inspect views
 

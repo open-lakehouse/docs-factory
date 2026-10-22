@@ -9,6 +9,15 @@ pins:
   # The AI packages version independently; 0.4.0 is the one in the release's
   # source tree.
   unitycatalog-ai: 0.4.0
+  # From the same source tree as unitycatalog-ai.
+  unitycatalog-langchain: 0.4.0
+  # 1.0.9–1.0.13 break `import langchain.agents` under unitycatalog-langchain's
+  # `langchain<=1.2.10` cap (ImportError: ExecutionInfo).
+  langgraph-prebuilt: 1.0.8
+  # Tracing and the AI Gateway on the LangChain tools page.
+  mlflow: 3.10.0
+  # `ChatMlflow`, the chat model that talks to the MLflow AI Gateway.
+  langchain-community: 0.4.1
   # The newest delta-spark the release's Spark connector is tested with.
   delta-spark: 4.3.1
   pyspark: 4.1.0

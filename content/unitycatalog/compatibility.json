@@ -120,6 +120,15 @@
       "model": "unityCatalogAI",
       "via": null,
       "viaVersion": null
+    },
+    {
+      "key": "unitycatalog-langchain",
+      "label": "unitycatalog-langchain",
+      "version": "0.4.0",
+      "package": "unitycatalog-langchain",
+      "model": "unityCatalogLangChain",
+      "via": null,
+      "viaVersion": null
     }
   ],
   "tables": [
@@ -324,6 +333,17 @@
         "function.execute",
         "function.list",
         "function.delete"
+      ]
+    },
+    {
+      "id": "agent-tools",
+      "title": "Agent tools",
+      "columns": [
+        "unitycatalog-langchain"
+      ],
+      "rows": [
+        "function.tool",
+        "function.tool-call"
       ]
     },
     {
@@ -535,14 +555,17 @@
       "columns": [
         "cli",
         "python-sdk",
-        "unitycatalog-ai"
+        "unitycatalog-ai",
+        "unitycatalog-langchain"
       ],
       "rows": [
         "function.create",
         "function.describe",
         "function.execute",
         "function.list",
-        "function.delete"
+        "function.delete",
+        "function.tool",
+        "function.tool-call"
       ]
     }
   ],
@@ -1406,6 +1429,28 @@
             "function.execute",
             "function.list",
             "function.delete"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "unityCatalogLangChain",
+      "title": "unitycatalog-langchain",
+      "interfaces": [
+        "unitycatalog-langchain"
+      ],
+      "page": null,
+      "anchor": null,
+      "heading": null,
+      "groups": [
+        {
+          "table": "agent-tools",
+          "columns": [
+            "unitycatalog-langchain"
+          ],
+          "rows": [
+            "function.tool",
+            "function.tool-call"
           ]
         }
       ]
@@ -9321,6 +9366,96 @@
           "evidence": []
         }
       }
+    },
+    {
+      "id": "function.tool",
+      "title": "Turn a function into an agent tool",
+      "summary": "Build an agent framework's tool from a registered function, with its description and typed arguments.",
+      "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "unitycatalog-langchain": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/017-langchain-tools/snippets/tools.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "langchain-tools"
+              },
+              "anchor": "choose-which-functions-become-tools",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "UCFunctionToolkit",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "function.tool-call",
+      "title": "Let an agent call a function",
+      "summary": "Give the tools to an agent, which calls the functions by name and gets their results back.",
+      "request": null,
+      "family": "function",
+      "asset": "lakehouse.registeredFunction",
+      "feature": null,
+      "requires": {
+        "client": {
+          "consumes": [
+            "ucSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "ucSpec"
+          ]
+        }
+      },
+      "cells": {
+        "unitycatalog-langchain": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/017-langchain-tools/snippets/tools.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "langchain-tools"
+              },
+              "anchor": "run-the-agent",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.4.0",
+              "api": "create_agent",
+              "note": "through an async adapter; `toolkit.tools` as-is fails in LangGraph's tool threads"
+            }
+          ],
+          "evidence": []
+        }
+      }
     }
   ],
   "verifiedEdges": [
@@ -9933,6 +10068,11 @@
     {
       "kind": "unverified-asset",
       "asset": "lakehouse.sqlView"
+    },
+    {
+      "kind": "unverified-asset-edge",
+      "source": "unityCatalogLangChain",
+      "asset": "lakehouse.registeredFunction"
     }
   ]
 }

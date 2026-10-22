@@ -262,6 +262,14 @@ model {
   unityCatalogAI -[consumes]-> ucSpec "calls"
   unityCatalogAI -[operatesOn]-> lakehouse.registeredFunction "registers and executes"
 
+  unityCatalogLangChain = implementation "unitycatalog-langchain" {
+    #library #public
+    description "LangChain integration that turns Unity Catalog functions into tools an agent can call."
+    link https://pypi.org/project/unitycatalog-langchain/
+  }
+  unityCatalogLangChain -[consumes]-> ucSpec "calls"
+  unityCatalogLangChain -[operatesOn]-> lakehouse.registeredFunction "exposes as agent tools"
+
   // Catalog implementations --------------------------------------------------
   lakekeeper = implementation "Lakekeeper" {
     #service

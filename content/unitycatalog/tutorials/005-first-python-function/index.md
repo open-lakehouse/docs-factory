@@ -28,7 +28,7 @@ catalog functions:
 
 ```bash
 mkdir first-function && cd first-function
-uv run --with unitycatalog-ai==0.4.0 python -m asyncio
+EXECUTOR_MAX_MEMORY_LIMIT=4096 uv run --with unitycatalog-ai==0.4.0 python -m asyncio
 ```
 
 Enter each of the following snippets in it, in order.
@@ -36,6 +36,13 @@ Enter each of the following snippets in it, in order.
 :::note
 `python -m asyncio` is a Python shell that accepts `await` at the top level,
 which the asynchronous client needs.
+:::
+
+:::note
+The function sandbox caps each call's virtual memory at
+`EXECUTOR_MAX_MEMORY_LIMIT` megabytes (100 by default), a limit that applies
+only on Linux. The command above sets it to 4096, the value this tutorial's
+script runs with.
 :::
 
 ### Connect to the server

@@ -803,7 +803,7 @@ tables:
       - function.tool-call
   views:
     title: SQL views
-    columns: [spark-4.2, python-sdk]
+    columns: [spark-4.2, spark, python-sdk]
     rows:
       - view.create
       - view.list
@@ -862,6 +862,16 @@ evidence:
     journeys: [metricview.replace, metricview.rename]
     outcome: missing
     why: The UC REST API has no table update; delete the metric view and create it again.
+    source: reference/features-and-limitations#namespace-and-assets
+  - interfaces: [python-sdk]
+    journeys: [view.query]
+    outcome: missing
+    why: The SDK stores and returns the definition; running it needs an engine.
+    source: how-to/sql-views#register-a-view-through-the-rest-api
+  - interfaces: [python-sdk]
+    journeys: [view.replace, view.rename]
+    outcome: missing
+    why: The UC REST API has no table update; delete the view and create it again.
     source: reference/features-and-limitations#namespace-and-assets
   - interfaces: [cli, python-sdk]
     journeys: [managed.alter-schema, managed.set-properties]

@@ -354,6 +354,7 @@
       "title": "SQL views",
       "columns": [
         "spark-4.2",
+        "spark",
         "python-sdk"
       ],
       "rows": [
@@ -524,6 +525,7 @@
       "id": "lakehouse.sqlView",
       "title": "View",
       "columns": [
+        "spark",
         "spark-4.2",
         "python-sdk"
       ],
@@ -740,7 +742,8 @@
         {
           "table": "views",
           "columns": [
-            "spark-4.2"
+            "spark-4.2",
+            "spark"
           ],
           "rows": [
             "view.create",
@@ -6525,7 +6528,74 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": false,
+              "fails": "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views.",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "create-a-view",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "CREATE VIEW",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/register_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "register-a-view-through-the-rest-api",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "create_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "view.list",
@@ -6547,7 +6617,74 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SHOW TABLES",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "list-and-inspect-views",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "SHOW VIEWS",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/register_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "register-a-view-through-the-rest-api",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "list_tables",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "view.describe",
@@ -6569,7 +6706,52 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "list-and-inspect-views",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DESCRIBE EXTENDED",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/register_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "register-a-view-through-the-rest-api",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "get_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "view.query",
@@ -6591,7 +6773,72 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "spark": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SELECT",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "query-it",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "SELECT",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "why": "The SDK stores and returns the definition; running it needs an engine.",
+              "source": "how-to/sql-views#register-a-view-through-the-rest-api",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
     },
     {
       "id": "view.replace",
@@ -6613,7 +6860,72 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": false,
+              "fails": "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views.",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "change-or-rename-a-view",
+              "ready": false,
+              "works": false,
+              "fails": "Replacing a view is not supported yet",
+              "version": "4.2.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The UC REST API has no table update; delete the view and create it again.",
+              "source": "reference/features-and-limitations#namespace-and-assets",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
     },
     {
       "id": "view.rename",
@@ -6635,7 +6947,72 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": false,
+              "fails": "Cannot rename a table with ALTER VIEW. Please use ALTER TABLE instead.",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "change-or-rename-a-view",
+              "ready": false,
+              "works": false,
+              "fails": "Renaming a view is not supported yet",
+              "version": "4.2.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The UC REST API has no table update; delete the view and create it again.",
+              "source": "reference/features-and-limitations#namespace-and-assets",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
     },
     {
       "id": "view.drop",
@@ -6657,7 +7034,74 @@
           ]
         }
       },
-      "cells": {}
+      "cells": {
+        "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": false,
+              "fails": "[UNSUPPORTED_FEATURE.CATALOG_OPERATION] The feature is not supported: Catalog `samples` does not support views.",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-4.2": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "drop-a-view",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.2.0",
+              "api": "DROP VIEW",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "python-sdk": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/register_view.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "drop-a-view",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "0.7.0",
+              "api": "delete_table",
+              "note": null
+            }
+          ],
+          "evidence": []
+        }
+      }
     },
     {
       "id": "metricview.create",

@@ -65,8 +65,8 @@ nav:
 
       - section: Views and metric views
         items:
-          - planned: H06
-            title: Create and query SQL views
+          - page: how-to/sql-views
+            id: H06
           - page: how-to/metric-views
             id: H07
 

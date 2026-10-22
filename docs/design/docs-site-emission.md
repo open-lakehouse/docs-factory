@@ -229,6 +229,9 @@ bun alone, because uv, Chromium, and `envs/` are needed only to emit, and
 
 ## Deferred
 
+[`site-consolidation.md`](./site-consolidation.md) proposes merging this site
+with unitycatalog.io; it covers search, redirects, and blog delivery below.
+
 - **Delta delivery:** a sync workflow and upstream repo for `sites/delta-docs/`,
   likely by turning `uc-docs-sync.yml` into a per-site matrix. A publish emit of
   Delta fails today, and that is intended: its two `ready` pages link to draft

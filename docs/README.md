@@ -36,6 +36,7 @@ docs/
     multi-domain-single-deployment.md one deployment, three doc domains
     prompt-tracking.md               assistant prompts we track, each mapped to the page it should cite
     release-bump-agent.md            the Omnigent agent a bump could become (not built)
+    site-consolidation.md            one React site for unitycatalog.io: marketing, blog, docs (proposal)
     trestle-integration.md           generated environments ↔ estate model ↔ journeys, as built
   deploy/       operational runbooks
     runbook.md                       go-live provisioning (Neon / Vercel / GitHub)

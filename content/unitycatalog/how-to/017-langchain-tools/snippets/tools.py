@@ -1,7 +1,8 @@
 # /// script
-# # 3.12: on 3.13 the function sandbox can't format a traceback (it blocks the
-# # `import sys` that 3.13's `traceback` does lazily), so every error a function
-# # raises comes back as the generic no-output notice.
+# # 3.12, matching the page's session command. On 3.13.0-3.13.2 the function
+# # sandbox can't format a traceback (it blocks the `import sys` linecache does
+# # lazily), so every error a function raises comes back as the generic
+# # no-output notice; see error_py313.py. 3.13.3 and later keep the traceback.
 # requires-python = "==3.12.*"
 # dependencies = [
 #   "unitycatalog-ai==0.4.0",

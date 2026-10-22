@@ -37,15 +37,14 @@ change leaves the two in agreement.
 
 ## Choose a client
 
-Spark with the Unity Catalog connector is the only client that changes both
-kinds of table. deltalake changes external tables only:
-
 | Client | Managed table | External table |
 | --- | --- | --- |
 | Spark with the Unity Catalog connector, SQL or Python | Yes. Each statement is one Delta commit that the catalog accepts. | Yes, in the Delta log. Then sync the catalog's record. |
 | deltalake (delta-rs) | No. Opening the table fails with `Max catalog version is required when loading a catalog-managed table`. | Yes, in the Delta log. It changes columns in place only by adding them, setting their metadata, or relaxing `NOT NULL`. Dropping, renaming, or changing the type of a column means overwriting the table with `schema_mode="overwrite"`, which rewrites every row. Then sync the catalog's record. |
 | DuckDB, `unity_catalog` extension | No. `ALTER TABLE` fails with `UCTableSet::AlterTable`, and `COMMENT ON TABLE` fails with `Only altering tables is supported for now`. | No. Same errors, and `ALTER TABLE … SET (key = value)` fails with `UCTableSet::AlterTable`. |
 | `uc` CLI, Python SDK | No. The tables API has no update. Use them to check the record. | No. The tables API has no update. Use them to check the record, or to drop and register the table again. |
+
+<!-- TODO(open question): delta-rs main reads catalog-managed tables (delta-io/delta-rs#4809, merged 2026-10-14) and has managed-commit writes in draft (#4886), but no deltalake Python release carries them (latest python-v1.6.6). Rerun the deltalake managed-table check on the first release that does, and update the deltalake row. -->
 
 ## Set up the client
 

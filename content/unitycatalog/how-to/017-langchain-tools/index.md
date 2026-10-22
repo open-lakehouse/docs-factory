@@ -48,6 +48,7 @@ Create the function client:
 ```python file=./snippets/tools.py start=start:connect end=end:connect
 ```
 
+:::tip
 Always pass this client to the toolkit as `client=`. Without it, the toolkit
 uses the default client set with `set_uc_function_client`. If none is set, it
 [tries a Databricks client](https://github.com/unitycatalog/unitycatalog/blob/v0.7.0/ai/core/src/unitycatalog/ai/core/base.py)
@@ -55,6 +56,7 @@ when Databricks Connect with serverless support is installed. Otherwise it
 raises `ValueError: No client provided, either set the client when creating a
 toolkit or set the default client using
 unitycatalog.ai.core.client.set_uc_function_client(client).`
+:::
 
 ## Register the functions the agent may call
 

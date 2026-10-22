@@ -1,9 +1,14 @@
 # /// script
-# # Evidence for a known issue, not for a page step: on 3.13 the function
-# # sandbox blocks the `import sys` that `traceback.format_exc()` does lazily,
-# # so a function's error comes back as the no-output notice. tools.py and
-# # tool_types.py pin 3.12, where the traceback survives.
-# requires-python = "==3.13.*"
+# # Evidence for a known issue, not for a page step. On 3.13.0 through 3.13.2,
+# # `linecache.updatecache` imports `sys` inside the function, and the sandbox's
+# # `__import__` hook (EXECUTOR_DISALLOWED_MODULES includes `sys`) rejects it.
+# # `traceback.format_exc()` then raises in the forked child, nothing reaches
+# # the queue, and the client falls back to its no-output notice. CPython
+# # 3.13.3 (commit 0980e2e370, gh-117174) wraps that import in
+# # `try/except ImportError`, so from 3.13.3 on the traceback survives, as it
+# # does on 3.12, where linecache imports `sys` at module level. Platform-
+# # independent: it's stdlib code, not the RLIMIT path.
+# requires-python = ">=3.13,<3.13.3"
 # dependencies = [
 #   "unitycatalog-ai==0.4.0",
 #   "unitycatalog-langchain==0.4.0",
@@ -16,7 +21,7 @@
 # base-url-env = "UC_BASE_URL"
 # env = { EXECUTOR_MAX_MEMORY_LIMIT = "4096" }
 # ///
-"""On Python 3.13, an error a catalog function raises is lost through the tool.
+"""On Python 3.13.0-3.13.2, an error a catalog function raises is lost through the tool.
 
 No regions: the page states the known issue, it doesn't show this code.
 """
@@ -49,7 +54,7 @@ async def main() -> None:
     from unitycatalog.ai.langchain.toolkit import UCFunctionToolkit
     from unitycatalog.client import ApiClient, CatalogsApi, Configuration
 
-    assert sys.version_info[:2] == (3, 13), sys.version
+    assert (3, 13) <= sys.version_info[:3] < (3, 13, 3), sys.version
     config = Configuration(host="http://localhost:8080/api/2.1/unity-catalog")
     if url := os.environ.get("UC_BASE_URL"):
         config.host = url
@@ -71,9 +76,10 @@ async def main() -> None:
 
         output = json.loads(tool.invoke({"x": 1}))
         print(output)
-        # On 3.12 this is {"error": "Traceback ... ValueError: no good: 1"}. On
-        # 3.13 the key is the same but the traceback is gone: the sandboxed
-        # child dies formatting it, and the client falls back to its notice.
+        # On 3.12 and 3.13.3+ this is {"error": "Traceback ... ValueError: no
+        # good: 1"}. On 3.13.0-3.13.2 the key is the same but the traceback is
+        # gone: the sandboxed child raises formatting it, and the client falls
+        # back to its notice.
         assert set(output) == {"error"}, output
         assert output["error"].startswith(NO_OUTPUT), output
         assert "ValueError" not in output["error"], output

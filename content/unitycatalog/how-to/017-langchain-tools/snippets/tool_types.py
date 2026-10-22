@@ -1,5 +1,5 @@
 # /// script
-# # 3.12: see tools.py; on 3.13 a function's error loses its traceback.
+# # 3.12: see tools.py; on 3.13.0-3.13.2 a function's error loses its traceback.
 # requires-python = "==3.12.*"
 # dependencies = [
 #   "unitycatalog-ai==0.4.0",

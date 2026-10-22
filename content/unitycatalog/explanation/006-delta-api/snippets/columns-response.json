@@ -1,0 +1,18 @@
+{
+  "metadata": {
+    "columns": {
+      "type": "struct",
+      "fields": [
+        {
+          "name": "order_id",
+          "type": "long",
+          "nullable": true,
+          "metadata": {
+            "delta.columnMapping.id": 1,
+            "delta.columnMapping.physicalName": "<physical-name>"
+          }
+        }
+      ]
+    }
+  }
+}

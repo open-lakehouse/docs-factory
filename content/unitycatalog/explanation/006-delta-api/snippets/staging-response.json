@@ -1,0 +1,25 @@
+{
+  "table-id": "<table-id>",
+  "location": "<location>",
+  "storage-credentials": [
+    { "prefix": "<location>", "operation": "READ_WRITE" }
+  ],
+  "required-protocol": {
+    "min-reader-version": 3,
+    "min-writer-version": 7,
+    "reader-features": ["catalogManaged", "v2Checkpoint", "vacuumProtocolCheck", "deletionVectors"],
+    "writer-features": ["catalogManaged", "v2Checkpoint", "vacuumProtocolCheck", "deletionVectors", "inCommitTimestamp"]
+  },
+  "suggested-protocol": {
+    "reader-features": ["columnMapping"],
+    "writer-features": ["columnMapping", "domainMetadata", "rowTracking"]
+  },
+  "required-properties": {
+    "delta.enableInCommitTimestamps": "true",
+    "io.unitycatalog.tableId": "<table-id>"
+  },
+  "suggested-properties": {
+    "delta.columnMapping.mode": "name",
+    "delta.columnMapping.maxColumnId": null
+  }
+}

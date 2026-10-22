@@ -140,7 +140,15 @@ cargo build                            # compile the Rust seed helper and the sn
 just arch-dev                          # LikeC4 architecture model at :5173
 just trestle-catalog                   # snapshot the pinned Trestle's modules + check the model join
 just env-render [name]                 # re-render a generated environment (envs/<name>/env.toml) + its model fragment
+just test-snippet <script|page dir>... # run those scripts in their lanes, starting their environment
+just env-up <name> / env-down          # an environment to work against by hand; env-status shows what's up
 ```
+
+Environments share host ports (`:8080`, `:9000`), so only one can be up on a
+machine at a time. The script harness and `just env-up` take one lock for it
+(`docsnip stack`): a run that waits is waiting for another checkout, not
+hanging. Start and stop an environment with these recipes, never with
+`docker compose` directly, which would replace another checkout's stack.
 
 ## Writing or reviewing a docs page
 
@@ -168,7 +176,8 @@ environment registry.
    `content/README.md`.
 3. Reference it from `index.md` with a fence
    (`file=./snippets/<name>.py start=... end=...`), then `uv run docsnip check`.
-   `content/conftest.py` runs the script in the default test lane.
+   `content/conftest.py` runs the script in the default test lane, and
+   `just test-snippet <page dir>` runs a page's scripts in their own lanes.
 4. Unity Catalog pages don't ship a compose file. Point the script's
    `[tool.docs-factory] compose` at the shared, Trestle-generated
    [`envs/unitycatalog`](envs/README.md) server (`compose.yaml`),

@@ -52,6 +52,7 @@ if TYPE_CHECKING:
 
 # tools/docsnip is a workspace package; its scriptmeta reader is the single
 # source of truth for discovering + parsing a script's inline metadata.
+from docsnip import stacks
 from docsnip.environments import client_env
 from docsnip.frontmatter import page_status
 from docsnip.scriptmeta import ScriptMeta, parse_script, runner_for
@@ -88,16 +89,23 @@ def pytest_collect_file(parent, file_path):
 
 
 def pytest_collection_modifyitems(config, items):
-    """Keep only the scripts ``DOCS_FACTORY_SELECT`` lists, when it is set."""
+    """Keep only the scripts ``DOCS_FACTORY_SELECT`` lists, when it is set.
+
+    An entry is a script path or a folder (``just test-snippet <page dir>``),
+    repo-relative, which selects every script under it.
+    """
     selected = os.environ.get("DOCS_FACTORY_SELECT")
     if selected is None:
         return
-    wanted = set(json.loads(selected))
+    wanted = {Path(w).as_posix().rstrip("/") for w in json.loads(selected)}
     keep, drop = [], []
     for item in items:
         if isinstance(item, TutorialScriptItem):
-            path = item.script_meta.path.resolve().relative_to(_REPO_ROOT).as_posix()
-            (keep if path in wanted else drop).append(item)
+            path = item.script_meta.path.resolve().relative_to(_REPO_ROOT)
+            hit = not wanted.isdisjoint(
+                {path.as_posix(), *map(Path.as_posix, path.parents)}
+            )
+            (keep if hit else drop).append(item)
         else:
             keep.append(item)
     if drop:
@@ -217,6 +225,10 @@ class TutorialScriptItem(pytest.Item):
 
     def _run_once(self, env: dict[str, str]) -> None:
         """One run of the script on a fresh stack."""
+        with _services_lock(self.script_meta):
+            self._run_on_stack(env)
+
+    def _run_on_stack(self, env: dict[str, str]) -> None:
         python = self.script_meta.runner == "python"
         base_url = _start_services(self.script_meta)
         try:
@@ -276,6 +288,24 @@ def _maven_mirror_env() -> dict[str, str]:
     conf_dir.mkdir(exist_ok=True)
     (conf_dir / "spark-defaults.conf").write_text(f"spark.jars.repositories {mirror}\n")
     return {"SPARK_CONF_DIR": str(conf_dir), "COURSIER_REPOSITORIES": mirror}
+
+
+@contextmanager
+def _services_lock(meta: ScriptMeta):
+    """Hold the machine-wide environment lock from compose start to stop.
+
+    Every environment publishes the same host ports, so a second checkout's
+    run would replace this stack mid-script. Under the lock, any docs
+    environment still up was started by hand (``just env-up``) or left over
+    from a killed run, and replacing it would be silent, so fail and name it.
+    """
+    if meta.compose_path() is None:
+        yield
+        return
+    with stacks.lock():
+        if running := stacks.running():
+            pytest.fail(stacks.busy_message(running), pytrace=False)
+        yield
 
 
 @contextmanager

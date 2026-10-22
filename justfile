@@ -192,6 +192,14 @@ test:
 test-services:
     uv run --group test-services pytest -m "needs_docker or needs_uc_server"
 
+# A service-backed script waits while another checkout's run holds the docs
+# environment, and fails if one was left up by hand (`just env-down`). A Rust
+# example needs `cargo build --locked --package docs-factory-snippets --examples`.
+# Run the named scripts, or every script under a page folder, whatever their lane.
+test-snippet +paths:
+    DOCS_FACTORY_SELECT="$(python3 -c 'import json, sys; print(json.dumps(sys.argv[1:]))' {{ paths }})" \
+        uv run --group test-services pytest content -m ""
+
 # Run the Spark tests (opt-in): scripts with `lane = "spark"`. Needs Java 17 and
 # Maven; behind a proxy, set DOCS_FACTORY_MAVEN_MIRROR to a Maven mirror URL.
 test-spark:
@@ -324,6 +332,20 @@ trestle-install:
 trestle-catalog: trestle-install
     .tools/trestle/bin/trestle env list-modules --json > architecture/dist/trestle-catalog.json
     uv run docsnip trestle --fix
+
+# Every environment shares host ports, so this refuses while another one is up,
+# from any checkout. Stop it with `just env-down` before running scripts.
+# Start a generated environment (envs/<name>) to work against by hand.
+env-up name:
+    uv run docsnip stack up {{ name }}
+
+# Stop the docs environment that is up, from whichever checkout started it.
+env-down:
+    uv run docsnip stack down
+
+# Which docs environment is up, and whether a script run holds it.
+env-status:
+    uv run docsnip stack status
 
 # Re-render a generated environment (envs/<name>/env.toml), or all of them, with
 # the pinned Trestle, then refresh the model fragments, registry facts, and diagram.

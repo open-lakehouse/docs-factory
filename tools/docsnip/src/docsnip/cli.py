@@ -14,6 +14,7 @@ Subcommands:
   check         — validate + snippetcheck + versions + compat + prose (CI entry)
   plan          — which tutorial scripts a CI run executes, per lane and shard
   durations     — fold CI-recorded script durations into the shard plan's input
+  stack         — start, stop, or show the one docs environment up on this machine
 
 llms.txt generation lives in the docs-site emitter (emit/docs), which re-uses
 content-core for content discovery, identity, and URL derivation instead of
@@ -39,6 +40,7 @@ from . import (
     prose,
     published,
     query,
+    stacks,
     trestle,
     versions,
 )
@@ -572,6 +574,11 @@ def main(argv: list[str] | None = None) -> int:
     sp_durations.add_argument(
         "recorded", nargs="+", type=Path, help="duration JSON files or dirs of them"
     )
+    sp_stack = sub.add_parser("stack")
+    sp_stack.add_argument("action", choices=("up", "down", "status"))
+    sp_stack.add_argument(
+        "env", nargs="?", default=None, help="an envs/ folder, e.g. unitycatalog (up)"
+    )
     sp_bump = sub.add_parser("bump-uc")
     sp_bump.add_argument("release", help="the new Unity Catalog release, X.Y.Z")
     sp_bump_delta = sub.add_parser("bump-delta")
@@ -600,6 +607,12 @@ def main(argv: list[str] | None = None) -> int:
         return cmd_plan(p, args.changed_from, args.github_output)
     if args.cmd == "durations":
         return cmd_durations(p, args.recorded)
+    if args.cmd == "stack":
+        if args.action == "up":
+            if args.env is None:
+                parser.error("stack up needs an environment, e.g. unitycatalog")
+            return stacks.up(p["root"], args.env)
+        return stacks.down() if args.action == "down" else stacks.status()
     if args.cmd == "bump-uc":
         return cmd_bump(p, args.release, versions.UNITYCATALOG)
     if args.cmd == "bump-delta":

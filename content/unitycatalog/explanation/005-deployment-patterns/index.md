@@ -118,7 +118,16 @@ participant holds the database password and the bucket key:
   the database host, user, and password and the bucket's endpoint and key.
 
 Choose it for a small team that trusts each other: a shared sandbox, a
-workshop, or a demo that has to survive a laptop restart.
+workshop, or a demo that has to survive a laptop restart. It lets you start
+growing a lakehouse alongside the business with people you'd hand the keys to
+anyway, because that's what it does: it hands them the keys. A catalog governs
+access only while it holds the store credentials and clients have to ask it
+for theirs. Here each participant's `secrets.env` holds the database login and
+a bucket key that reads and writes every file, so anyone can go around the
+catalog to the metadata and the data. When the catalog has to decide who may
+read or change what, move to the
+[fully hosted](#fully-hosted-only-clients-on-your-machine) pattern, where the
+server keeps those credentials.
 
 ## Fully hosted: only clients on your machine
 

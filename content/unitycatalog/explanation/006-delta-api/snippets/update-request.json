@@ -1,0 +1,10 @@
+{
+  "requirements": [
+    { "type": "assert-table-uuid", "uuid": "<table-uuid>" },
+    { "type": "assert-etag", "etag": "<etag>" }
+  ],
+  "updates": [
+    { "action": "set-table-comment", "comment": "One row per order" },
+    { "action": "set-properties", "updates": { "sales.owner": "orders-team" } }
+  ]
+}

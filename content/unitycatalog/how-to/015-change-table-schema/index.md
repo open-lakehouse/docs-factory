@@ -370,7 +370,8 @@ Load the table again and retry if the server returns HTTP 409
 `UpdateRequirementConflictException`. It means the table changed after you
 loaded it, and the server applied none of the updates.
 
-<!-- Link E14 (The Unity Catalog Delta API) here once it has a page. Its model element is pending #272. -->
+[The Unity Catalog Delta API](../../explanation/delta-api/index.md) explains
+why the server checks requirements and applies updates all or nothing.
 
 You can also drop the table from the catalog and register it again, as in
 [Register external Delta table](../register-external-table/index.md#change-a-registered-table).

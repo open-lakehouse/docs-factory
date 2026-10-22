@@ -111,6 +111,15 @@ Fixed in 0.7.0, for readers upgrading from 0.6.0:
 - Vended S3 credentials include the KMS actions that SSE-KMS buckets need
   ([#1774](https://github.com/unitycatalog/unitycatalog/pull/1774)).
 
+### Delta API
+
+| Issue | Affects | What you see | Workaround |
+| --- | --- | --- | --- |
+| A log-represented `set-properties` on a managed table with no `add-commit` | 0.7.0 | The server accepts it without a new version, and the Delta log keeps the old value: setting `delta.enableDeletionVectors` to `false` leaves it `true` in the log. The specification calls such a request a client error. The catalog and the log diverge. | Send changes the Delta log represents only with the `add-commit` that writes them. See [The Unity Catalog Delta API](../../explanation/delta-api/index.md#metadata-changes-travel-with-add-commit). |
+| `GET /delta/v1/config` ignores `protocol-versions` | 0.7.0 | The server answers protocol version `1.0` whatever the client offers, even `protocol-versions=2.0`, where the specification has it select the highest version both sides support. | Check that the returned `protocol-version` is one you offered. Treat any other answer as an unsupported server. |
+
+<!-- Evidence for both Delta API rows: explanation/006-delta-api/snippets/delta_api_semantics.py (config block; last block). -->
+
 ### Clients and engines
 
 | Client | Issue | What you see |

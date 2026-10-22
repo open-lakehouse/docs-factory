@@ -1,0 +1,9 @@
+{
+  "endpoints": [
+    "POST /v1/catalogs/warehouse/schemas/{schema}/staging-tables",
+    "GET /v1/catalogs/warehouse/schemas/{schema}/tables/{table}",
+    "POST /v1/catalogs/warehouse/schemas/{schema}/tables/{table}",
+    "GET /v1/staging-tables/{table_id}/credentials"
+  ],
+  "protocol-version": "1.0"
+}

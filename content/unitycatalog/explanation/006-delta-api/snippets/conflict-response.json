@@ -1,0 +1,7 @@
+{
+  "error": {
+    "type": "UpdateRequirementConflictException",
+    "code": 409,
+    "message": "<assert-etag failed: expected … but table has …>"
+  }
+}

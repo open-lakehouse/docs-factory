@@ -211,8 +211,8 @@ nav:
             label: What is Unity Catalog OSS?
           - planned: E02
             title: How the server, clients, and storage work together
-          - planned: E14
-            title: The Unity Catalog Delta API
+          - page: explanation/delta-api
+            id: E14
           - page: explanation/deployment-patterns
             label: Deployment patterns
           - planned: E10

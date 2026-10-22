@@ -1,0 +1,12 @@
+{
+  "commits": [
+    {
+      "version": 1,
+      "timestamp": "<commit-timestamp>",
+      "file-name": "<file-name>",
+      "file-size": "<file-size>",
+      "file-modification-timestamp": "<file-timestamp>"
+    }
+  ],
+  "latest-table-version": 1
+}

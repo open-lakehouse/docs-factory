@@ -198,8 +198,43 @@ required = {
     "inCommitTimestamp",
 }
 assert required <= set(detail.tableFeatures), detail.tableFeatures
-# Spark also takes the server's suggested column mapping (`name`).
-assert "columnMapping" in detail.tableFeatures, detail.tableFeatures
+# Spark also takes the server's suggested features: column mapping (`name`),
+# row tracking, and domain metadata.
+assert {"columnMapping", "rowTracking", "domainMetadata"} <= set(
+    detail.tableFeatures
+), detail.tableFeatures
+
+# The server's staging response is where the client learns these: the required
+# protocol and properties, then the suggested ones (UC Delta API).
+staged = _call(
+    "POST",
+    "/delta/v1/catalogs/inventory/schemas/stock/staging-tables",
+    {"name": "staged_only"},
+)
+assert staged["required-protocol"]["min-reader-version"] == 3, staged
+assert staged["required-protocol"]["min-writer-version"] == 7, staged
+assert set(staged["required-protocol"]["writer-features"]) == required, staged
+assert set(staged["required-protocol"]["reader-features"]) == required - {
+    "inCommitTimestamp"
+}, staged
+assert staged["required-properties"]["delta.enableDeletionVectors"] == "true", staged
+assert set(staged["suggested-protocol"]["writer-features"]) == {
+    "columnMapping",
+    "rowTracking",
+    "domainMetadata",
+}, staged
+assert staged["suggested-properties"]["delta.columnMapping.mode"] == "name", staged
+
+# A suggestion yields to the caller's own value; a requirement doesn't (below).
+spark.sql(
+    "CREATE TABLE inventory.stock.unmapped (sku STRING, qty INT) USING DELTA "
+    "TBLPROPERTIES ('delta.columnMapping.mode' = 'none')"
+)
+mode = spark.sql(
+    "SHOW TBLPROPERTIES inventory.stock.unmapped ('delta.columnMapping.mode')"
+).first()
+assert mode.value == "none", mode
+spark.sql("DROP TABLE inventory.stock.unmapped")
 
 # --8<-- [start:conflicting-property]
 try:

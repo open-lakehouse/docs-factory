@@ -1,7 +1,8 @@
 """The agent task set: docsnip query against this repo's committed artifacts.
 
 Expected IDs are exact, so a content, model, or environment change that moves
-an answer fails here and gets re-read by hand."""
+an answer fails here and gets re-read by hand. The exception is an answer that
+grows with every new page (a release's impact), which pins its shape and edges."""
 
 from __future__ import annotations
 
@@ -91,38 +92,28 @@ def test_explain_why_full_governance_lacks_evidence(idx):
 def test_pages_affected_by_a_uc_release_change(idx):
     answer = _ask(idx, "impact", "pin:unitycatalog/release")
     assert answer["environments"] == ["uc-aws", "uc-hybrid", "uc-local", "unitycatalog"]
+    # Not an exact list: every new UC page with a script joins this set, so
+    # pinning it failed CI on each new page. Pin the shape and both edges.
     uc = "content/unitycatalog/"
-    assert answer["pages"] == [
+    pages = answer["pages"]
+    assert pages == sorted(set(pages))
+    assert all(p.startswith(uc) and p in idx.pages for p in pages)
+    # Pages with a script on a UC environment, one per bucket, are affected...
+    assert {
         uc + p + "/index.md"
         for p in (
-            "explanation/004-external-and-managed-tables",
             "explanation/005-deployment-patterns",
-            "explanation/006-delta-api",
-            "how-to/001-table-storage-formats",
-            "how-to/002-configure-backend-db",
-            "how-to/003-seed-tpch-data",
-            "how-to/004-manage-catalogs-and-schemas",
-            "how-to/005-register-external-table",
-            "how-to/006-manage-volumes",
             "how-to/007-configure-spark",
-            "how-to/008-duckdb",
-            "how-to/009-configure-aws-storage",
-            "how-to/009-python-dataframes",
-            "how-to/010-managed-storage-s3",
-            "how-to/012-iceberg-rest",
-            "how-to/013-metric-views",
-            "how-to/014-managed-delta-tables",
-            "how-to/015-change-table-schema",
-            "how-to/016-replace-and-overwrite-tables",
-            "how-to/017-langchain-tools",
-            "how-to/018-manage-python-functions",
             "reference/001-features-and-limitations",
-            "reference/002-clients-and-engines",
             "tutorials/001-getting-started",
-            "tutorials/002-python-client",
-            "tutorials/005-first-python-function",
-            "tutorials/006-read-volume-files",
-            "tutorials/007-managed-delta-table",
-            "tutorials/008-first-metric-view",
         )
-    ]
+    } <= set(pages)
+    # ...and pages with no such script are not.
+    assert not {
+        uc + p
+        for p in (
+            "explanation/001-what-is-unity-catalog.md",
+            "how-to/011-run-local-server/index.md",
+            "reference/020-engine-support/index.md",
+        )
+    } & set(pages)

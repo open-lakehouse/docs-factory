@@ -586,7 +586,9 @@ A table lists its `rows`, or `select`s them from the catalog by `asset` and
 journey on that asset instead, on the page that `explains:` it, dropping
 columns that say nothing there. `<!-- compat:interfaces -->` renders a summary
 of each interface's model binding, contracts, modeled asset breadth, and ready
-journey counts. `uv run docsnip compat --fix` renders these blocks; don't edit
+journey counts. `<!-- compat:crosswalk -->` renders the equivalences between
+table formats (`architecture/journeys/equivalences.yml`) on any project's page,
+with the journeys that cover each side. `uv run docsnip compat --fix` renders these blocks; don't edit
 them by hand. `docsnip check` fails when one is stale (for example after a page
 is promoted) or when a claim doesn't hold up. The emitter strips the markers.
 

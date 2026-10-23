@@ -1,0 +1,117 @@
+# Equivalences: what one table format does that another does too, as the
+# obligations each spec names for it. A side's `obligations` are names in
+# obligations/<spec>.yml, and the journeys that cover them are listed with them;
+# `journeys` adds ones that cover no obligation (a Delta version read is core
+# protocol, not a table feature). `text` replaces the obligation names in the
+# crosswalk where the spec's own words say more, or says what a spec has
+# instead ("None"). `differ` is how the two sides differ, when they do.
+# `<!-- compat:crosswalk -->` renders this file.
+
+deletes-without-rewrite:
+  title: Delete rows without rewriting files
+  sides:
+    deltaSpec: { obligations: [deletionVectors] }
+    icebergSpec:
+      obligations: [position-deletes, deletion-vectors]
+      text: v2 position deletes; v3 deletion vectors
+  differ: >-
+    v3 writers must use deletion vectors instead of position delete files.
+    Iceberg also has equality deletes (`iceberg.equality-deletes`), which Delta
+    has no counterpart for.
+
+column-identity:
+  title: Keep a column's identity across renames and drops
+  sides:
+    deltaSpec: { obligations: [columnMapping] }
+    icebergSpec: { text: "Field ids, in every format version", journeys: [iceberg.schema-evolve] }
+  differ: Delta opts in per table, by name or id; Iceberg always resolves columns by field id.
+
+row-ids:
+  title: Give each row a stable id
+  sides:
+    deltaSpec: { obligations: [rowTracking] }
+    icebergSpec: { obligations: [row-lineage], text: "v3 row lineage" }
+
+type-change:
+  title: Change a column's type without rewriting
+  sides:
+    deltaSpec: { obligations: [typeWidening] }
+    icebergSpec: { obligations: [type-promotion], text: "Type promotion" }
+
+semi-structured:
+  title: Store semi-structured values
+  sides:
+    deltaSpec: { obligations: [variantType, variantShredding] }
+    icebergSpec: { obligations: [variant], text: "v3 `variant`" }
+
+timestamps:
+  title: Store timestamps without a time zone
+  sides:
+    deltaSpec: { obligations: [timestampNtz] }
+    icebergSpec: { obligations: [timestamp-ns], text: "`timestamp` (every version); v3 `timestamp_ns`" }
+  differ: Delta timestamps are microsecond only.
+
+defaults:
+  title: Fill omitted columns with a default
+  sides:
+    deltaSpec: { obligations: [allowColumnDefaults] }
+    icebergSpec: { obligations: [default-values], text: "v3 default values" }
+  differ: Iceberg also fills a default for rows written before the column existed.
+
+layout:
+  title: Lay data out for pruning
+  sides:
+    deltaSpec: { obligations: [clustering], text: "`clustering`, partition columns" }
+    icebergSpec:
+      obligations: [hidden-partitioning, partition-evolution, sort-order]
+      text: Hidden partitioning, partition evolution, sort order
+  differ: Delta partitions by column value; Iceberg partitions by a transform and can change it later.
+
+catalog-commits:
+  title: Commit through the catalog
+  sides:
+    deltaSpec: { obligations: [catalogManaged] }
+    icebergSpec: { text: "Every commit through an Iceberg REST catalog", journeys: [iceberg.append] }
+
+row-changes:
+  title: Read row changes
+  sides:
+    deltaSpec: { obligations: [changeDataFeed], journeys: [cdf.read] }
+    icebergSpec: { text: "No change files in the spec; engines derive changes from snapshots" }
+
+constraints:
+  title: Reject invalid rows
+  sides:
+    deltaSpec: { obligations: [checkConstraints, invariants] }
+    icebergSpec: { text: "Required fields only" }
+
+generated-values:
+  title: Generate values
+  sides:
+    deltaSpec: { obligations: [generatedColumns, identityColumns] }
+    icebergSpec: { text: "None" }
+
+earlier-state:
+  title: Read an earlier state
+  sides:
+    deltaSpec: { text: "Versions and timestamps", journeys: [read.version, read.timestamp] }
+    icebergSpec: { obligations: [snapshots, branching-tagging], text: "Snapshots, branches and tags" }
+  differ: Delta has no branches; a shallow clone is the nearest equivalent.
+
+commit-time:
+  title: Record commit time
+  sides:
+    deltaSpec: { obligations: [inCommitTimestamp] }
+    icebergSpec: { text: "Each snapshot's `timestamp-ms`" }
+
+geospatial:
+  title: Store geospatial values
+  sides:
+    deltaSpec: { text: "None" }
+    icebergSpec: { obligations: [geometry], text: "v3 geometry and geography" }
+
+cross-format:
+  title: Read one format as the other
+  sides:
+    deltaSpec: { obligations: [icebergCompatV1, icebergCompatV2], text: "UniForm: `icebergCompatV1`, `icebergCompatV2`" }
+    icebergSpec: { text: "Delta tables read through Iceberg REST", journeys: [iceberg.read-uniform] }

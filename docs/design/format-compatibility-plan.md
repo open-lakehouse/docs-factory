@@ -150,7 +150,7 @@ restating them:
 | E05 | *The Iceberg REST catalog protocol*: endpoint groups, vended credentials, what a catalog must implement | `iceberg-catalog` |
 | E06 | *Interoperating between table formats*: UniForm, IcebergCompatV2, what converts and what doesn't | `iceberg-compat-v2.write`, `iceberg.read-uniform` |
 | H02 | *Choose a catalog for Delta and Iceberg tables* | both matrices, the env registry |
-| R01 | *Delta and Iceberg feature crosswalk* (`private`, the working record) | each row names the Delta and Iceberg journeys |
+| R01 | *Delta and Iceberg feature crosswalk* (`private`, the working record) | rendered from `architecture/journeys/equivalences.yml`; each row names the Delta and Iceberg journeys |
 
 The project has no `compatibility.yml` and no emitted site yet. Its pages
 link the Delta and UC matrices.

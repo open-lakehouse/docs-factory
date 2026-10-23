@@ -17,6 +17,7 @@ interfaces.yml    one engine or client through one language binding (the columns
                   and engine-level rollups of them
 journeys/*.yml    the journeys, one file per area; an id is unique across files
 evidence.yml      cells no script here proves, and facts about one server
+equivalences.yml  what table formats do alike, rendered as the format crosswalk
 aliases.yml       renamed journey ids → current ids
 ```
 

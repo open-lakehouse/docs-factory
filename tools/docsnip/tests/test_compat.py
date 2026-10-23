@@ -1481,3 +1481,95 @@ def test_a_table_lists_or_selects_its_rows_not_both(tmp_path) -> None:
     )
     errors, _ = compat.check(root)
     assert any("lists rows or selects them, not both" in e for e in errors), errors
+
+
+# --- equivalences and the crosswalk ------------------------------------------------
+
+_EQUIVALENCES = """\
+listing:
+  title: List tables
+  sides:
+    unityCatalogSpec: { obligations: [listTables] }
+    icebergRestSpec: { obligations: [loadTable], text: "Load, then list", journeys: [table.write] }
+  differ: >-
+    Iceberg REST lists
+    through the namespace.
+nothing:
+  title: Something only one has
+  sides:
+    unityCatalogSpec: { obligations: [getTable] }
+    icebergRestSpec: { text: "None" }
+"""
+
+
+def _crosswalk(tmp_path: Path, equivalences: str = _EQUIVALENCES) -> Path:
+    root = _obligations(
+        _obligations(
+            _modeled(_repo(tmp_path, "")), _UC_OBLIGATIONS, spec="unityCatalogSpec"
+        )
+    )
+    _edit(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        _read(),
+        _read("covers: [unityCatalogSpec:listTables, icebergRestSpec:loadTable]"),
+    )
+    (root / _CATALOG / "equivalences.yml").write_text(equivalences)
+    page = root / "content/proj/reference/003-crosswalk"
+    page.mkdir(parents=True)
+    (page / "index.md").write_text(_EMBED.replace("compat:ops", "compat:crosswalk"))
+    return root
+
+
+def test_the_crosswalk_renders_equivalences_with_their_journeys(tmp_path) -> None:
+    root = _crosswalk(tmp_path)
+    compat.fix(root)
+    assert compat.check(root)[0] == []
+    page = root / "content/proj/reference/003-crosswalk/index.md"
+    lines = [line for line in page.read_text().splitlines() if line.startswith("|")]
+    assert lines == [
+        "| What it does | Unity Catalog (journeys) | Iceberg REST (journeys) | How they differ |",
+        "| --- | --- | --- | --- |",
+        "| List tables | `listTables` (`table.read`) | Load, then list (`table.read`, "
+        "`table.write`) | Iceberg REST lists through the namespace. |",
+        "| Something only one has | `getTable` | None | |",
+    ]
+    assert "from ../../../../architecture/journeys/equivalences.yml" in page.read_text()
+    _edit(
+        root, f"{_CATALOG}/equivalences.yml", "title: List tables", "title: List them"
+    )
+    errors, _ = compat.check(root)
+    assert any(
+        "003-crosswalk/index.md: compatibility table is stale" in e for e in errors
+    )
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "message"),
+    [
+        ("[listTables]", "[nope]", "'nope' is not a unityCatalogSpec obligation"),
+        (
+            "journeys: [table.write]",
+            "journeys: [table.nope]",
+            "'table.nope' is not a journey",
+        ),
+        (
+            '    icebergRestSpec: { text: "None" }\n',
+            "",
+            "needs a side for at least two specs",
+        ),
+        ('{ text: "None" }', "{ }", "needs obligations or a text"),
+        (
+            "unityCatalogSpec: { obligations: [getTable] }",
+            "deltaSpec: { text: x }",
+            "'deltaSpec' has no obligations file",
+        ),
+        ("  title: Something only one has\n", "", "nothing needs a title"),
+    ],
+)
+def test_bad_equivalences_are_errors(
+    tmp_path, old: str, new: str, message: str
+) -> None:
+    root = _crosswalk(tmp_path, _EQUIVALENCES.replace(old, new, 1))
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors

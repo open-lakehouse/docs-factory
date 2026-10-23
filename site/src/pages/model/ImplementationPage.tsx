@@ -6,7 +6,6 @@ import {
   ImplementationIdentity,
   specRoleLabel,
 } from "../../components/model/graph/ImplementationCard";
-import JourneyGrid from "../../components/model/graph/JourneyGrid";
 import {
   BucketBar,
   CoverageRing,
@@ -17,6 +16,7 @@ import {
   PathRef,
   specHref,
 } from "../../components/model/graph/primitives";
+import CompatTable from "../../components/plan/CompatTable";
 import { catalog } from "../../estate";
 import { elementSummary, likec4model } from "../../explain";
 import { blogRef, docRef, refHref } from "../../lib/content-ref";
@@ -282,7 +282,7 @@ export default function ImplementationPage() {
 
       {profile.cells.length > 0 && (
         <GraphSection title="Journeys" count={new Set(profile.cells.map((c) => c.journey)).size}>
-          <JourneyGrid profile={profile} />
+          <CompatTable scope={{ model: id }} defaults={{ group: "path" }} />
         </GraphSection>
       )}
 

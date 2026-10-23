@@ -37,7 +37,10 @@ export default function JourneyPage() {
       title={journey.title}
       intro={journey.summary}
       actions={
-        <Link to={`/plan/compat?cell=${encodeURIComponent(resolved)}`} className="plan-chip">
+        <Link
+          to={`/plan/compat?${new URLSearchParams({ project: journey.projects[0] ?? "", group: "none", q: resolved })}`}
+          className="plan-chip"
+        >
           Open in the matrix
         </Link>
       }

@@ -4,7 +4,7 @@
 // objectStorage. The governance, lineage, and observability concerns attach
 // at resolution / planning time; their edges live in concerns.likec4.
 // Specifications specify the capabilities and implementations realize them
-// (co-located in technology-catalog.likec4).
+// (co-located with each element in specifications.likec4 and implementations/).
 
 model {
   extend lakehouse {
@@ -35,11 +35,6 @@ model {
     catalog -[dependsOn]-> credentialIssuer "mints scoped storage credentials through"
     objectStorage -[dependsOn]-> credentialIssuer "honors credentials minted by"
   }
-
-  // --- Specifications & implementations ------------------------------------
-  // `specifies` / `implements` / `realizes` edges are co-located with each
-  // specification / implementation element in technology-catalog.likec4, so
-  // nothing lives here.
 
   // --- People --------------------------------------------------------------
 

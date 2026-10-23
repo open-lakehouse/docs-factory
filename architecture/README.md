@@ -69,17 +69,20 @@ architecture/
     specification.likec4        # SHARED: element/deploymentNode/relationship kinds, tags
     globals.likec4              # SHARED: predicate groups reused across views
     logical/
-      capabilities.likec4       # abstract reference: people + capabilities + concerns
-      concerns.likec4           # what each concern appliesTo
-      technology-catalog.likec4 # concrete tech: specs + implementations (still logical)
-      assets.likec4             # governed asset kinds (securables) + dependsOn/governs
-      relationships.likec4      # capability chain + specifies/implements/realizes/vends/reads
+      capabilities.likec4       # abstract reference: people + capabilities
+      concerns.likec4           # cross-cutting concerns + what each appliesTo
+      assets.likec4             # governed asset kinds (securables) + registeredIn/locatedAt/derivedFrom
+      relationships.likec4      # capability chain + people's `uses`
+      specifications.likec4     # concrete tech: open specs + specifies/governs (still logical)
+      implementations/          # concrete tech: implementations by area (engines + integrations, catalogs, …)
     deployment/
-      deployments.likec4        # trustedCompute: services instanceOf implementations/capabilities
+      deployments.likec4        # trustedCompute: services instanceOf implementations
+      deployment-patterns.likec4 # the hand-drawn fully hosted UC pattern
       generated/                # one fragment per Trestle-rendered docs environment (`docsnip envs --fix`)
     views/
       logical-views.likec4      # logical views
       deployment-views.likec4   # one view per deployment environment
+      docs-views.likec4         # views docs pages embed (sequences, deployment patterns)
       blog-views.likec4         # blog-specific preview views (not the reference model)
   design/                       # architecture-focused prose (designDoc targets)
   adr/                          # architecture decision records
@@ -106,10 +109,12 @@ just trestle-catalog  # snapshot the pinned Trestle's modules, refresh the conte
 ## Update process
 
 1. Decide which **layer** the change touches, then edit the owning file (logical
-   capability or concern → `logical/capabilities`; concern `appliesTo` edge → `logical/concerns`; spec/implementation → `logical/technology-catalog`;
-   asset kind → `logical/assets`; cross-capability edge → `logical/relationships`;
-   service/environment → `deployment/deployments`; kinds/tags → `specification`; views →
-   `views/logical-views`/`views/deployment-views`/`views/flows`).
+   capability → `logical/capabilities`; concern or its `appliesTo` edge →
+   `logical/concerns`; spec → `logical/specifications`; implementation →
+   `logical/implementations/<area>`; asset kind → `logical/assets`;
+   cross-capability edge → `logical/relationships`; service/environment →
+   `deployment/deployments`; kinds/tags → `specification`; views →
+   `views/logical-views` / `views/deployment-views` / `views/docs-views`).
 2. Make the minimal change. Never add a service/repo/technology name to a logical
    file. Stay ref-free. Tag designed-but-not-built work `#designed`/`#prototype`
    when you have source-repo evidence; do not bulk-tag. Use `#partial` on

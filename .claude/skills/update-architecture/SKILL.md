@@ -97,10 +97,12 @@ discovers `**/*.likec4` recursively, so location is organization only.)
 
 | Change | Owning file |
 |---|---|
-| New/changed abstract **capability** or **concern** | `model/logical/capabilities.likec4` |
+| New/changed abstract **capability** | `model/logical/capabilities.likec4` |
+| New/changed **concern** | `model/logical/concerns.likec4` |
 | What a concern spans (`appliesTo` edge) | `model/logical/concerns.likec4` |
-| New/changed **specification** or **implementation** (OSS tech) | `model/logical/technology-catalog.likec4` |
-| New/changed **asset kind** (securable), its registeredIn / locatedAt / derivedFrom edges, or a governs edge | `model/logical/assets.likec4` |
+| New/changed **specification** (and its specifies / governs edges) | `model/logical/specifications.likec4` |
+| New/changed **implementation** (OSS tech) | `model/logical/implementations/<area>.likec4` (engines and their integrations, table-formats, catalogs, clients, governance-lineage-observability, platform, infrastructure) |
+| New/changed **asset kind** (securable), its registeredIn / locatedAt / derivedFrom edges | `model/logical/assets.likec4` |
 | Capability-chain edge, or a person's `uses` | `model/logical/relationships.likec4` |
 | New/changed **service, datastore, environment**, or `instanceOf` | `model/deployment/deployments.likec4` |
 | New element / deploymentNode / relationship kind, or tag | `model/specification.likec4` |

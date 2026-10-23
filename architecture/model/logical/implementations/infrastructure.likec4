@@ -1,0 +1,82 @@
+// LOGICAL LAYER (concrete technology) — Infrastructure the docs environments
+// run on (#infra).
+
+model {
+
+  envoy = implementation "Envoy" {
+    #infra #public
+
+    description "Open source edge and service proxy; the gateway that routes requests to each service."
+    link https://www.envoyproxy.io
+
+    metadata {
+      sourceRepo "envoyproxy/envoy"
+      license "Apache-2.0"
+      language "C++"
+    }
+  }
+
+  postgresql = implementation "PostgreSQL" {
+    #infra #public
+
+    description "Open source relational database; the metadata store behind catalog and tracking services."
+    link https://www.postgresql.org
+
+    metadata {
+      sourceRepo "postgres/postgres"
+      license "PostgreSQL"
+      language "C"
+    }
+  }
+
+  postgresql -[realizes]-> lakehouse.metadataStore
+
+  rustfs = implementation "RustFS" {
+    #infra #public
+
+    description "S3-compatible object storage server written in Rust."
+    link https://rustfs.com
+
+    metadata {
+      sourceRepo "rustfs/rustfs"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  rustfs -[implements]-> s3Spec
+  rustfs -[realizes]-> lakehouse.objectStorage
+
+  amazonS3 = implementation "Amazon S3" {
+    #infra
+
+    description "AWS's managed object storage service; the origin of the S3 API."
+    link https://aws.amazon.com/s3/
+  }
+  amazonS3 -[implements]-> s3Spec
+  amazonS3 -[realizes]-> lakehouse.objectStorage
+
+  azurite = implementation "Azurite" {
+    #infra
+
+    description "Local emulator for Azure Storage, including the Blob service."
+    link https://github.com/Azure/Azurite
+
+    metadata {
+      sourceRepo "Azure/Azurite"
+      license "MIT"
+      language "TypeScript"
+    }
+  }
+  azurite -[implements]-> azureBlobSpec "emulates"
+  azurite -[realizes]-> lakehouse.objectStorage
+
+  azureBlobStorage = implementation "Azure Blob Storage" {
+    #infra
+
+    description "Azure's managed object storage service."
+    link https://azure.microsoft.com/products/storage/blobs
+  }
+  azureBlobStorage -[implements]-> azureBlobSpec
+  azureBlobStorage -[realizes]-> lakehouse.objectStorage
+
+}

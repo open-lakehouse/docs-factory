@@ -1,0 +1,72 @@
+// LOGICAL LAYER (concrete technology) — Catalog servers.
+
+model {
+
+  lakekeeper = implementation "Lakekeeper" {
+    #service
+
+    description "Apache-licensed, Rust-native catalog server implementing the Iceberg REST Catalog specification."
+
+    link https://lakekeeper.io
+    style {
+      icon https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg
+    }
+
+    metadata {
+      sourceRepo "lakekeeper/lakekeeper"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  lakekeeper -[implements]-> icebergRestSpec
+  lakekeeper -[realizes]-> lakehouse.catalog
+  lakekeeper -[realizes]-> lakehouse.governance.authorization "table-level permissions via OpenFGA"
+  lakekeeper -[realizes]-> lakehouse.governance.authentication "validates OIDC tokens" {
+    #partial
+  }
+
+  unityCatalogServer = implementation "Unity Catalog (OSS)" {
+    #service #public
+    description "The open-source reference server implementing the Unity Catalog specification."
+
+    link https://github.com/unitycatalog/unitycatalog
+    link https://unitycatalog.io
+
+    style {
+      icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
+    }
+
+    metadata {
+      sourceRepo "unitycatalog/unitycatalog"
+      license "Apache-2.0"
+      language "Java"
+    }
+  }
+  unityCatalogServer -[implements]-> unityCatalogSpec
+  unityCatalogServer -[implements]-> icebergRestSpec "serves Iceberg tables through"
+  unityCatalogServer -[realizes]-> lakehouse.catalog
+  unityCatalogServer -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
+  unityCatalogServer -[realizes]-> lakehouse.governance.authentication "validates access tokens" {
+    #partial
+  }
+
+  // First-party catalog. trustedCompute's mangrove is an instance of this.
+  // It implements the UC specification; it is not the storage credential
+  // issuer (that capability is the cloud identity plane — STS/SAS — which
+  // the catalog dependsOn).
+  mangrove = implementation "mangrove" {
+    #service
+
+    description "Pluggable framework for Unity Catalog APIs: governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
+    link https://github.com/open-lakehouse/mangrove
+
+    metadata {
+      sourceRepo "open-lakehouse/mangrove"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  mangrove -[implements]-> unityCatalogSpec
+  mangrove -[realizes]-> lakehouse.catalog
+
+}

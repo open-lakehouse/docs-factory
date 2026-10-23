@@ -1,0 +1,43 @@
+// LOGICAL LAYER (concrete technology) — Libraries that implement a table
+// format.
+
+model {
+
+  deltaRs = implementation "delta-rs" {
+    #library #public
+
+    description "Native Rust implementation of the Delta protocol with Python bindings."
+
+    link https://delta-io.github.io/delta-rs/
+
+    metadata {
+      sourceRepo "delta-io/delta-rs"
+      license "Apache-2.0"
+      language "Rust"
+    }
+  }
+  deltaRs -[implements]-> deltaSpec
+  deltaRs -[realizes]-> lakehouse.tableFormat
+  deltaRs -[consumes]-> unityCatalogSpec "resolves tables via"
+  deltaRs -[consumes]-> s3Spec "reads/writes data files via"
+  deltaRs -[operatesOn]-> lakehouse.table "reads and changes"
+
+  pyIceberg = implementation "PyIceberg" {
+    #library #public
+
+    description "Python implementation of Apache Iceberg with REST catalog and table APIs."
+    link https://py.iceberg.apache.org
+
+    metadata {
+      sourceRepo "apache/iceberg-python"
+      license "Apache-2.0"
+      language "Python"
+    }
+  }
+  pyIceberg -[implements]-> icebergSpec
+  pyIceberg -[realizes]-> lakehouse.tableFormat
+  pyIceberg -[consumes]-> icebergRestSpec "uses the REST catalog"
+  pyIceberg -[operatesOn]-> lakehouse.namespace "creates and lists"
+  pyIceberg -[operatesOn]-> lakehouse.table "creates and changes"
+
+}

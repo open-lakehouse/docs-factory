@@ -1,10 +1,81 @@
-// LOGICAL LAYER — what each cross-cutting concern applies to (ADR-0007).
-//
-// The concerns are declared with the capabilities in capabilities.likec4; this
-// file holds only their `appliesTo` edges and the flows that end at one.
+// LOGICAL LAYER — the cross-cutting concerns (ADR-0007), what each applies to,
+// and the flows that end at one.
 
 model {
   extend lakehouse {
+
+    lineage = concern "Lineage" {
+      summary "Records where data came from and where it flows, down to the column."
+      description "
+        Data lineage traces the origin and movement of data through the system —
+        which inputs produced which outputs, dataset- and column-level.
+
+        Here it is captured at query planning time, so provenance is derived from
+        the plan the engine is about to run rather than reconstructed after.
+      "
+      metadata { designDoc "design/lineage-plane.md" }
+    }
+
+    // The zero-trust points (PAP / PDP / PEP / PIP / PA) are prose in
+    // design/governance.md, not elements.
+    governance = concern "Governance" {
+      #public
+      summary "Decides who may access what, and enforces it (row filters, column masks)."
+      description "
+        Governance answers 'can this principal do this here?' and, when allowed,
+        governs what they see — enforcing row filters and column masks.
+
+        It spans the lakehouse: a policy engine decides, and a trusted engine or
+        gateway enforces the decision where the data flows.
+      "
+      metadata { designDoc "design/governance.md" }
+
+      // Facets (ADR-0007): no single component meets governance, so each
+      // facet is realized, often #partial, by the components that contribute.
+      authentication = concern "Authentication" {
+        summary "Establishes who the principal behind a request is."
+        description "
+          Authentication verifies a principal's identity, whether a user, a
+          service, or an agent, and passes it on as a token every later
+          decision can trust.
+        "
+        metadata { designDoc "design/governance.md" }
+      }
+
+      authorization = concern "Authorization" {
+        summary "Decides whether a principal may act on an asset: grants, privileges, and policy."
+        description "
+          Authorization answers 'may this principal do this to that asset?'
+          from grants, privileges, and policies, and returns allow or deny.
+        "
+        metadata { designDoc "design/governance.md" }
+      }
+
+      fineGrainedAccess = concern "Fine-grained access" {
+        summary "Row filters and column masks: governs what an allowed principal sees."
+        description "
+          Fine-grained access control narrows what an allowed query returns,
+          filtering rows and masking columns per principal.
+
+          A catalog can describe the policy, but only the engine that runs the
+          query can apply it, so it needs a trusted engine. A client that reads
+          storage directly with a vended credential bypasses it.
+        "
+        metadata { designDoc "design/governance.md" }
+      }
+    }
+
+    observability = concern "Observability" {
+      summary "Traces, metrics, and logs — how operators see what the lakehouse is doing."
+      description "
+        Observability is the concern that makes the running platform legible: distributed traces, metrics, and logs emitted by the
+        query engine and services, so operators can reason about latency,
+        failures, and cost.
+
+        Like governance and lineage it attaches across the stack rather than
+        sitting in the query path.
+      "
+    }
 
     lineage -[appliesTo]-> table "tracks lineage of"
     lineage -[appliesTo]-> volume "tracks lineage of"

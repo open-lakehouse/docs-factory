@@ -33,7 +33,7 @@ model {
     // Credential vending: the catalog mints scoped credentials through the
     // issuer, and object storage enforces the scope they carry.
     catalog -[dependsOn]-> credentialIssuer "mints scoped storage credentials through"
-    credentialIssuer -[flows]-> objectStorage "issues credentials honored by"
+    objectStorage -[dependsOn]-> credentialIssuer "honors credentials minted by"
   }
 
   // --- Specifications & implementations ------------------------------------
@@ -43,9 +43,11 @@ model {
 
   // --- People --------------------------------------------------------------
 
-  practitioner -[flows]-> lakehouse.queryEngine "queries + governs data"
-  practitioner -[flows]-> lakehouse.interactiveDevelopment "explores data + builds logic in"
+  practitioner -[uses]-> lakehouse.queryEngine "queries and governs data through"
+  practitioner -[uses]-> lakehouse.interactiveDevelopment "explores data and builds logic in"
+  agent -[uses]-> lakehouse.queryEngine "queries data through"
+  agent -[uses]-> lakehouse.catalog "discovers assets and reads their metadata in"
   // person -> the estate BOUNDARY. `lakehouse` is the C4 SoftwareSystem /
   // Backstage System-Domain analog for the whole estate (ADR-0006).
-  platformEngineer -[flows]-> lakehouse "builds + operates"
+  platformEngineer -[uses]-> lakehouse "builds and operates"
 }

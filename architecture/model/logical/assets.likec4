@@ -12,7 +12,7 @@ model {
 
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-    namespace -[dependsOn]-> catalog "tracked via"
+    namespace -[registeredIn]-> catalog
 
     table = asset "Table" {
       #public
@@ -22,9 +22,9 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-    table -[dependsOn]-> tableFormat "data layout on disk"
-    table -[dependsOn]-> objectStorage "data stored at rest"
-    table -[dependsOn]-> catalog "commit coordination"
+    table -[registeredIn]-> catalog "registered in, and commits coordinated by"
+    table -[dependsOn]-> tableFormat "laid out in"
+    table -[locatedAt]-> objectStorage
 
     sqlView = asset "View" {
       #public
@@ -32,11 +32,13 @@ model {
       description "
         A view is a stored query: it has a schema like a table but no data of
         its own. The catalog records its definition, and the query engine
-        expands it against the tables it reads at query time.
+        expands it at query time against the tables and other views it
+        selects from.
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-    sqlView -[dependsOn]-> table "selects from"
+    sqlView -[registeredIn]-> catalog
+    sqlView -[derivedFrom]-> table "selects from"
     sqlView -[dependsOn]-> queryEngine "expanded and run by"
 
     metricView = asset "Metric view" {
@@ -49,21 +51,28 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-    metricView -[dependsOn]-> sqlView "defined over"
+    metricView -[registeredIn]-> catalog
+    metricView -[derivedFrom]-> table "defines measures over"
+    metricView -[derivedFrom]-> sqlView "defines measures over"
     metricView -[dependsOn]-> queryEngine "computed by"
 
     volume = asset "Volume" {
       #public
-      summary "A governed storage location with usually non-tabular files."
+      summary "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
 
       description "
-        A governed location of arbitrary files (images, PDFs, checkpoints) in object storage,
-        catalogued and access-controlled.
+        A volume names a directory of arbitrary files (images, PDFs,
+        checkpoints) in object storage so the catalog can govern access to it.
+        It is metadata only: the volume stores nothing itself, and its files
+        stay at the path it names.
       "
-      metadata { canonicalDoc "design/asset-kinds.md" }
+      metadata {
+        canonicalDoc "design/asset-kinds.md"
+        aliases "directory"
+      }
     }
-    volume -[dependsOn]-> objectStorage "materialized as files in"
-    volume -[dependsOn]-> catalog "registered in"
+    volume -[registeredIn]-> catalog
+    volume -[locatedAt]-> objectStorage
 
     registeredFunction = asset "Function" {
       #public
@@ -74,8 +83,8 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
+    registeredFunction -[registeredIn]-> catalog
     registeredFunction -[dependsOn]-> queryEngine "resolved and run by"
-    registeredFunction -[dependsOn]-> catalog "registered in"
 
     mlModel = asset "Model" {
       #public
@@ -86,9 +95,9 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-    mlModel -[dependsOn]-> objectStorage "data stored at rest"
+    mlModel -[registeredIn]-> catalog
+    mlModel -[locatedAt]-> objectStorage
     mlModel -[dependsOn]-> modelTracking "versioned and promoted through"
-    mlModel -[dependsOn]-> catalog "registered in"
 
     agentSkill = asset "Agent skill" {
       summary "A packaged, governed set of instructions and files an AI agent can discover and use."
@@ -102,9 +111,9 @@ model {
 
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-    agentSkill -[dependsOn]-> volume "files stored at rest"
+    agentSkill -[registeredIn]-> catalog
+    agentSkill -[locatedAt]-> volume "keeps its files in"
     agentSkill -[dependsOn]-> sharing "distributed through"
-    agentSkill -[dependsOn]-> catalog "registered in"
 
     credential = asset "Credential" {
       #public
@@ -116,6 +125,7 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
+    credential -[registeredIn]-> catalog
     credential -[dependsOn]-> credentialIssuer "exchanged for scoped credentials through"
 
     externalLocation = asset "External location" {
@@ -128,7 +138,8 @@ model {
       "
       metadata { canonicalDoc "design/asset-kinds.md" }
     }
-    externalLocation -[dependsOn]-> objectStorage "a path in"
+    externalLocation -[registeredIn]-> catalog
+    externalLocation -[locatedAt]-> objectStorage
     externalLocation -[dependsOn]-> credential "reached with"
   }
 

@@ -339,7 +339,7 @@
     "lakehouse.sqlView": {
       "kind": "asset",
       "title": "View",
-      "description": "A view is a stored query: it has a schema like a table but no data of\nits own. The catalog records its definition, and the query engine\nexpands it against the tables it reads at query time."
+      "description": "A view is a stored query: it has a schema like a table but no data of\nits own. The catalog records its definition, and the query engine\nexpands it at query time against the tables and other views it\nselects from."
     },
     "lakehouse.table": {
       "kind": "asset",
@@ -349,7 +349,7 @@
     "lakehouse.volume": {
       "kind": "asset",
       "title": "Volume",
-      "description": "A governed location of arbitrary files (images, PDFs, checkpoints) in object storage,\ncatalogued and access-controlled."
+      "description": "A volume names a directory of arbitrary files (images, PDFs,\ncheckpoints) in object storage so the catalog can govern access to it.\nIt is metadata only: the volume stores nothing itself, and its files\nstay at the path it names."
     },
     "marimo": {
       "kind": "implementation",

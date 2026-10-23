@@ -64,32 +64,35 @@
   source: unitycatalog:reference/features-and-limitations#clients-and-engines
   verified: {duckdb: 1.5.6}
 # The server side of Iceberg REST, as of `IcebergRestCatalogService.java` at
-# the release tag: no client can do these, whatever it supports.
-- interfaces: [spark, duckdb, pyiceberg, polars, daft]
-  journeys: [iceberg.register]
+# the release tag. Each is a fact about the server, so it blocks the journeys
+# that cover these operations for every client that reaches Iceberg REST, in
+# each project whose `providers` binds the server.
+- implementation: unityCatalogServer
+  obligations: [icebergRestSpec:registerTable]
   outcome: missing
   why: The server has no `registerTable` endpoint.
   source: unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss
-- interfaces: [spark, duckdb, pyiceberg, polars, daft]
-  journeys: [iceberg.transactions]
+- implementation: unityCatalogServer
+  obligations: [icebergRestSpec:commitTransaction]
   outcome: missing
   why: The server has no `commitTransaction` endpoint.
   source: unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss
-- interfaces: [spark, duckdb, pyiceberg, polars, daft]
-  journeys: [iceberg.views]
+- implementation: unityCatalogServer
+  obligations: [icebergRestSpec:createView, icebergRestSpec:loadView, icebergRestSpec:listViews]
   outcome: missing
   why: "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists."
   source: unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss
-- interfaces: [spark, duckdb, pyiceberg, polars, daft]
-  journeys: [iceberg.scan-planning]
+- implementation: unityCatalogServer
+  obligations: [icebergRestSpec:planTableScan, icebergRestSpec:fetchScanTasks]
   outcome: missing
   why: The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).
   source: unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss
-- interfaces: [spark, duckdb, pyiceberg, polars, daft]
-  journeys: [iceberg.remote-signing]
+- implementation: unityCatalogServer
+  obligations: [icebergRestSpec:signRequest]
   outcome: missing
   why: The server has no `signRequest` endpoint; it vends credentials instead.
   source: unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss
+# A limit of one operation the server does serve, so it stays a cell per client.
 - interfaces: [spark, duckdb, pyiceberg, polars, daft]
   journeys: [iceberg.rename-namespace]
   outcome: fails

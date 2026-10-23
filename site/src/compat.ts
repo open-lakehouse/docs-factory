@@ -32,6 +32,8 @@ export interface CompatEvidence {
   api: string | null;
   verified: string | null;
   note: string | null;
+  /** Set when a fact about this implementation (a server the project binds) blocks the cell. */
+  implementation?: string | null;
 }
 
 export interface CompatCell {
@@ -64,7 +66,7 @@ export interface CompatCover {
 
 /** `compat.COVERAGE_STATES` → how many of a role's obligations are in that state. */
 export type CompatCoverageCounts = Record<
-  "tested" | "documented" | "fails" | "missing" | "unknown" | "untracked",
+  "tested" | "documented" | "fails" | "missing" | "blocked" | "unknown" | "untracked",
   number
 >;
 
@@ -76,7 +78,8 @@ export interface CompatCoverage {
   obligations: {
     obligation: string;
     role: string;
-    /** A cell status, or `untracked` when no journey a table shows covers it. */
+    /** A cell status, `blocked` when a provider doesn't serve it, or `untracked`
+     * when no journey a table shows covers it. */
     status: string;
     journeys: string[];
   }[];

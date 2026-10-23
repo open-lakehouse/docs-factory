@@ -61,7 +61,7 @@ ARTIFACT_VERSION = 3
 # the engine's docs or source say so.
 OUTCOMES = ("works", "fails", "missing")
 
-_MATRIX_KEYS = {"spec", "interfaces", "tables"}
+_MATRIX_KEYS = {"spec", "interfaces", "providers", "tables"}
 _INTERFACE_KEYS = {"label", "pin", "package", "model", "via", "integrations"}
 _JOURNEY_KEYS = {"title", "summary", "request", "asset", "path", "roles", "covers"}
 _OBLIGATIONS_KEYS = {"spec", "source", "roles", "obligations"}
@@ -86,6 +86,7 @@ _EVIDENCE_KEYS = {
     "note",
     "api",
 }
+_FACT_KEYS = {"implementation", "obligations", "outcome", "why", "source"}
 _UUID_RE = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
 # `compat:<table>`, `compat:asset:<model id>` for an asset rollup, or
@@ -213,6 +214,19 @@ class Evidence:
     verified: dict[str, str]
     api: dict[str, str]
     note: str | None = None
+    # Derived from a server fact: the implementation that blocks these cells.
+    implementation: str | None = None
+
+
+@dataclasses.dataclass(frozen=True)
+class Fact:
+    """What one implementation doesn't serve of a spec, whichever client asks."""
+
+    implementation: str  # a model implementation id
+    obligations: tuple[tuple[str, str], ...]  # (spec, obligation name)
+    outcome: str  # fails | missing
+    why: str
+    source: str
 
 
 @dataclasses.dataclass
@@ -225,6 +239,7 @@ class Catalog:
     evidence: list[Evidence]
     aliases: dict[str, str]  # old journey id → current id
     obligations: dict[str, Obligations] = dataclasses.field(default_factory=dict)
+    facts: list[Fact] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass
@@ -237,8 +252,11 @@ class Matrix:
     interfaces: dict[str, Interface]  # in tab order
     journeys: dict[str, Journey]  # the tables' rows, in order of first appearance
     tables: dict[str, Table]
-    evidence: list[Evidence]  # the catalog's, where it touches this matrix
+    # The catalog's, where it touches this matrix, then what its providers' facts block.
+    evidence: list[Evidence]
     pins: dict[str, str]  # from content/<project>/release.yml
+    # Provider role → the implementation that plays it in this project's cells.
+    providers: dict[str, str] = dataclasses.field(default_factory=dict)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -566,24 +584,73 @@ def _load_journeys(
     return journeys
 
 
+def _load_fact(
+    entry: dict,
+    at: str,
+    where: str,
+    model: Model,
+    obligations: dict[str, Obligations],
+    errors: list[str],
+) -> Fact | None:
+    for extra in sorted(set(entry) - _FACT_KEYS):
+        errors.append(f"{where}: {at}: unknown key '{extra}'")
+    implementation = entry.get("implementation")
+    if not _check_element(
+        model, implementation, {"implementation"}, f"{at}.implementation", where, errors
+    ):
+        return None
+    named: list[tuple[str, str]] = []
+    for ref in _strs(entry.get("obligations")) or ():
+        spec, _, name = ref.partition(":")
+        if name not in (obligations.get(spec) or Obligations(spec, (), {})).items:
+            errors.append(f"{where}: {at}: '{ref}' is not an obligation")
+            continue
+        named.append((spec, name))
+    if not named:
+        errors.append(f"{where}: {at} needs obligations (<spec>:<obligation>)")
+    outcome = entry.get("outcome")
+    if outcome not in ("fails", "missing"):
+        errors.append(f"{where}: {at}: a server fact's outcome is fails or missing")
+    for key in ("why", "source"):
+        if not isinstance(entry.get(key), str) or not entry[key]:
+            errors.append(f"{where}: {at} needs a {key}")
+    return Fact(
+        implementation=str(implementation),
+        obligations=tuple(named),
+        outcome=str(outcome),
+        why=str(entry.get("why", "")),
+        source=str(entry.get("source", "")),
+    )
+
+
 def _load_evidence(
     raw: object,
     where: str,
     errors: list[str],
     interfaces: dict[str, Interface],
     journeys: dict[str, Journey],
-) -> list[Evidence]:
+    model: Model,
+    obligations: dict[str, Obligations],
+) -> tuple[list[Evidence], list[Fact]]:
+    """Cells no script proves, and facts about one implementation (an entry
+    with `implementation` and `obligations` instead of interfaces and journeys)."""
     if raw is None:
-        return []
+        return [], []
     if not isinstance(raw, list):
         errors.append(f"{where}: must be a list")
-        return []
+        return [], []
     entries: list[Any] = raw
     evidence: list[Evidence] = []
+    facts: list[Fact] = []
     for i, entry in enumerate(entries):
         at = f"[{i}]"
         if not isinstance(entry, dict):
             errors.append(f"{where}: {at} must be a mapping")
+            continue
+        if "implementation" in entry:
+            fact = _load_fact(entry, at, where, model, obligations, errors)
+            if fact is not None:
+                facts.append(fact)
             continue
         for extra in sorted(set(entry) - _EVIDENCE_KEYS):
             errors.append(f"{where}: {at}: unknown key '{extra}'")
@@ -627,7 +694,7 @@ def _load_evidence(
                 note=entry.get("note"),
             )
         )
-    return evidence
+    return evidence, facts
 
 
 def load_catalog(repo_root: Path, model: Model, errors: list[str]) -> Catalog:
@@ -668,7 +735,9 @@ def load_catalog(repo_root: Path, model: Model, errors: list[str]) -> Catalog:
             journeys[jid], homes[jid] = journey, path
 
     raw, where = read("evidence.yml")
-    evidence = _load_evidence(raw, where, errors, interfaces, journeys)
+    evidence, facts = _load_evidence(
+        raw, where, errors, interfaces, journeys, model, obligations
+    )
 
     raw, where = read("aliases.yml")
     aliases: dict[str, str] = {}
@@ -686,6 +755,7 @@ def load_catalog(repo_root: Path, model: Model, errors: list[str]) -> Catalog:
         evidence=evidence,
         aliases=aliases,
         obligations=obligations,
+        facts=facts,
     )
 
 
@@ -758,11 +828,21 @@ def _load_matrix(
             documented=entry.get("documented") is True,
         )
 
+    providers: dict[str, str] = {}
+    for role, impl in _mapping(
+        raw.get("providers"), f"{where}: providers", errors
+    ).items():
+        if _check_element(
+            model, impl, {"implementation"}, f"providers.{role}", where, errors
+        ):
+            providers[str(role)] = str(impl)
+
     evidence = [
         e
         for e in catalog.evidence
         if set(e.interfaces) & set(interfaces) and set(e.journeys) & set(journeys)
     ]
+    evidence += _blocked(catalog, model, providers, interfaces, journeys)
     return Matrix(
         project=path.parent.name,
         path=path,
@@ -772,7 +852,63 @@ def _load_matrix(
         tables=tables,
         evidence=evidence,
         pins=pins,
+        providers=providers,
     )
+
+
+def _reaches(model: Model, iface: Interface) -> set[str]:
+    """The open specifications the interface's model or integrations implement
+    or consume."""
+    return {
+        target
+        for kind, source, target in model.edges
+        if source in iface.speakers
+        and kind in _SPEC_EDGES
+        and model.kinds.get(target) == "openSpecification"
+    }
+
+
+def _blocked(
+    catalog: Catalog,
+    model: Model,
+    providers: dict[str, str],
+    interfaces: dict[str, Interface],
+    journeys: dict[str, Journey],
+) -> list[Evidence]:
+    """A provider's facts as evidence: a journey that covers an obligation its
+    provider doesn't serve is blocked for every interface reaching that spec.
+
+    The journey needs the obligation from the provider when the role the
+    provider plays must implement the obligation's spec."""
+    found: list[Evidence] = []
+    for fact in catalog.facts:
+        roles = [r for r, impl in providers.items() if impl == fact.implementation]
+        blocked: list[str] = []
+        ifaces: set[str] = set()
+        for spec, name in fact.obligations:
+            for journey in journeys.values():
+                needs = any(
+                    spec in journey.requires.get(role, {}).get("implements", ())
+                    for role in roles
+                )
+                covers = any(c.spec == spec and c.name == name for c in journey.covers)
+                if needs and covers and journey.id not in blocked:
+                    blocked.append(journey.id)
+            ifaces |= {k for k, i in interfaces.items() if spec in _reaches(model, i)}
+        if blocked and ifaces:
+            found.append(
+                Evidence(
+                    interfaces=tuple(k for k in interfaces if k in ifaces),
+                    journeys=tuple(blocked),
+                    outcome=fact.outcome,
+                    why=fact.why,
+                    source=fact.source,
+                    verified={},
+                    api={},
+                    implementation=fact.implementation,
+                )
+            )
+    return found
 
 
 def load_model(repo_root: Path) -> Model:
@@ -1011,7 +1147,20 @@ def resolve(repo_root: Path) -> Result:
     for jid in catalog.journeys:
         if jid not in tabled:
             errors.append(f"{CATALOG}: {jid} is on no project's table")
-    for ev in catalog.evidence:
+    blocking = {
+        e.implementation
+        for m in matrices.values()
+        for e in m.evidence
+        if e.implementation
+    }
+    for fact in catalog.facts:
+        if fact.implementation not in blocking:
+            errors.append(
+                f"{CATALOG}/evidence.yml: the facts about {fact.implementation} block "
+                "no journey: no project's `providers` binds it, or no journey there "
+                "covers the obligations"
+            )
+    for ev in [*catalog.evidence, *catalog.facts]:
         _, problem = _source_page(ev.source, content_root)
         if problem:
             errors.append(f"{CATALOG}/evidence.yml: source {ev.source}: {problem}")
@@ -1734,15 +1883,7 @@ def _versioned_label(result: Result, matrix: Matrix, iface: Interface) -> str:
 
 def _contracts(result: Result, iface: Interface) -> list[str]:
     """The open specifications the interface consumes or implements."""
-    return sorted(
-        {
-            target
-            for kind, source, target in result.model.edges
-            if source in iface.speakers
-            and kind in _SPEC_EDGES
-            and result.model.kinds.get(target) == "openSpecification"
-        }
-    )
+    return sorted(_reaches(result.model, iface))
 
 
 _SPEC_EDGES = {"consumes", "implements"}
@@ -1902,8 +2043,23 @@ def verified_edges(result: Result, matrix: Matrix) -> list[dict[str, object]]:
 
 
 # The states coverage counts, in report order: a ready answer, upstream docs,
-# a negative, no answer yet, and no journey here to answer it.
-COVERAGE_STATES = ("tested", "documented", "fails", "missing", "unknown", "untracked")
+# a negative, a provider that doesn't serve it, no answer yet, and no journey
+# here to answer it.
+COVERAGE_STATES = (
+    "tested",
+    "documented",
+    "fails",
+    "missing",
+    "blocked",
+    "unknown",
+    "untracked",
+)
+
+
+def _coverage_state(found: Cell) -> str:
+    if not found.proofs and found.evidence and found.evidence[0].implementation:
+        return "blocked"
+    return found.status
 
 
 def coverage(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
@@ -1942,10 +2098,12 @@ def coverage(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
                 for role in obligation.roles:
                     jids = covering.get((spec, obligation.name, role), [])
                     status = (
-                        _best(
-                            cell(result, matrix, iface.key, j, drafts=False)
-                            for j in jids
-                        ).status
+                        _coverage_state(
+                            _best(
+                                cell(result, matrix, iface.key, j, drafts=False)
+                                for j in jids
+                            )
+                        )
                         if jids
                         else "untracked"
                     )
@@ -1983,8 +2141,8 @@ def coverage_lines(repo_root: Path) -> list[str]:
                 lines.append(
                     f"{project} {entry['interface']} {entry['spec']} {role}: "
                     f"{answered}/{total} answered (✓ {n['tested']}, docs "
-                    f"{n['documented']}, ✗ {n['fails'] + n['missing']}, "
-                    f"— {n['unknown']}, untracked {n['untracked']})"
+                    f"{n['documented']}, ✗ {n['fails'] + n['missing']}, blocked "
+                    f"{n['blocked']}, — {n['unknown']}, untracked {n['untracked']})"
                 )
     return lines
 
@@ -2013,6 +2171,7 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                         "api": e.api.get(iface),
                         "verified": e.verified.get(iface),
                         "note": e.note,
+                        "implementation": e.implementation,
                     }
                     for e in found.evidence
                 ],

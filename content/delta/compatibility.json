@@ -1065,7 +1065,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "DeltaTable.create()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1103,7 +1104,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/create.rs",
               "api": "DeltaTable::create()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1176,7 +1178,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "CREATE TABLE … AS SELECT",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1192,7 +1195,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "df.write.format(\"delta\")",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1208,7 +1212,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/writer/writer.py",
               "api": "write_deltalake()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1224,7 +1229,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
               "api": "DeltaTable::write()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -1259,7 +1265,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "PARTITIONED BY",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1275,7 +1282,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "partitionBy()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1291,7 +1299,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "partition_by=",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1307,7 +1316,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/create.rs",
               "api": "with_partition_columns()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -1468,7 +1478,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
               "api": "with_save_mode(SaveMode::Append)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1621,7 +1632,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
               "api": "with_save_mode(SaveMode::Overwrite)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1694,7 +1706,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "REPLACE WHERE",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1710,7 +1723,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "replaceWhere",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1726,7 +1740,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "mode=\"overwrite\", predicate=",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1742,7 +1757,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
               "api": "with_replace_where()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1758,7 +1774,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -1809,7 +1826,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "partitionOverwriteMode=dynamic",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1825,7 +1843,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1841,7 +1860,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -1920,7 +1940,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -1955,7 +1976,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "txnAppId",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1971,7 +1993,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -1987,7 +2010,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/transaction.py",
               "api": "CommitProperties(app_transactions=…)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2003,7 +2027,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/mod.rs",
               "api": "with_application_transaction()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2019,7 +2044,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": "delta_set_transaction_version()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -2054,7 +2080,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "commitInfo.userMetadata",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2070,7 +2097,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "userMetadata",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2086,7 +2114,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "CommitProperties(custom_metadata=…)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2102,7 +2131,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/mod.rs",
               "api": "with_metadata()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -2174,7 +2204,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx",
               "api": "DeltaTable.update()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2190,7 +2221,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "DeltaTable.update()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2206,7 +2238,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/update.rs",
               "api": "DeltaTable::update()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2300,7 +2333,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "DeltaTable.delete()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2316,7 +2350,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "DeltaTable.delete()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2332,7 +2367,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/delete.rs",
               "api": "DeltaTable::delete()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2389,7 +2425,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx",
               "api": "MERGE INTO",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2405,7 +2442,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "merge()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2421,7 +2459,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "merge()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2437,7 +2476,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs",
               "api": "DeltaTable::merge()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2453,7 +2493,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -2488,7 +2529,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2504,7 +2546,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-update.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2520,7 +2563,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "when_not_matched_by_source_*",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2536,7 +2580,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs",
               "api": "when_not_matched_by_source_*()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2552,7 +2597,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -2587,7 +2633,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "schema.autoMerge.enabled",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2603,7 +2650,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "withSchemaEvolution()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2619,7 +2667,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "merge(merge_schema=True)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2635,7 +2684,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/merge/mod.rs",
               "api": "with_merge_schema()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2651,7 +2701,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -2956,7 +3007,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/optimizations-oss/index.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2976,7 +3028,8 @@
               "source": "delta:how-to/read-a-delta-table",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -2996,7 +3049,8 @@
               "source": "delta:how-to/read-a-delta-table",
               "api": "to_pyarrow_dataset()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3012,7 +3066,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/delta_datafusion/table_provider.rs",
               "api": "table_provider()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3028,7 +3083,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -3189,7 +3245,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs",
               "api": "load_version()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3334,7 +3391,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs",
               "api": "load_with_datetime()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3417,7 +3475,8 @@
               "source": "delta:how-to/query-a-table-as-of-version",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3667,7 +3726,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs",
               "api": "history()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3683,7 +3743,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -3740,7 +3801,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "detail()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3756,7 +3818,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "metadata()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3772,7 +3835,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/table/mod.rs",
               "api": "snapshot()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3788,7 +3852,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": "delta_list_files()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -3839,7 +3904,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
               "api": "RESTORE TABLE",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3855,7 +3921,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "restoreToVersion()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3871,7 +3938,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "restore()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3887,7 +3955,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/restore.rs",
               "api": "DeltaTable::restore()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3903,7 +3972,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -3938,7 +4008,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
               "api": "SHALLOW CLONE",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3954,7 +4025,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "clone(isShallow=True)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3970,7 +4042,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -3986,7 +4059,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4002,7 +4076,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4037,7 +4112,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "autoMerge",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4053,7 +4129,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "mergeSchema",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4069,7 +4146,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "schema_mode=\"merge\"",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4085,7 +4163,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
               "api": "with_schema_mode(SchemaMode::Merge)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4101,7 +4180,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4152,7 +4232,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "CREATE OR REPLACE TABLE",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4168,7 +4249,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "overwriteSchema",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4184,7 +4266,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "schema_mode=\"overwrite\"",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4200,7 +4283,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/mod.rs",
               "api": "with_schema_mode(SchemaMode::Overwrite)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4216,7 +4300,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4267,7 +4352,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "ALTER TABLE ADD COLUMNS",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4283,7 +4369,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "spark.sql(...)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4315,7 +4402,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "alter.add_columns()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4331,7 +4419,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/add_column.rs",
               "api": "add_columns()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4347,7 +4436,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4398,7 +4488,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
               "api": "RENAME",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4414,7 +4505,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
               "api": "spark.sql(...)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4430,7 +4522,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-column-mapping.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4446,7 +4539,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4462,7 +4556,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4513,7 +4608,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
               "api": "ALTER COLUMN … TYPE",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4529,7 +4625,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
               "api": "spark.sql(...)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4545,7 +4642,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4561,7 +4659,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4577,7 +4676,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4612,7 +4712,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
               "api": "ADD CONSTRAINT … CHECK",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4628,7 +4729,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
               "api": "spark.sql(...)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4644,7 +4746,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "alter.add_constraint()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4660,7 +4763,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/constraints.rs",
               "api": "add_constraint()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4695,7 +4799,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
               "api": "NOT NULL",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4711,7 +4816,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4727,7 +4833,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "alter.drop_column_not_null()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4743,7 +4850,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/drop_column_not_null.rs",
               "api": "drop_column_not_null()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4778,7 +4886,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "GENERATED ALWAYS AS",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4794,7 +4903,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "generatedAlwaysAs",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4810,7 +4920,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4826,7 +4937,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/write/generated_columns.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4861,7 +4973,8 @@
               "source": "https://github.com/delta-io/delta/releases/tag/v4.4.0",
               "api": "GENERATED … AS IDENTITY",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4877,7 +4990,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "IdentityGenerator",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4893,7 +5007,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4909,7 +5024,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/protocol.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4944,7 +5060,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx",
               "api": "DEFAULT",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -4960,7 +5077,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx",
               "api": "spark.sql(...)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -4995,7 +5113,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-change-data-feed.mdx",
               "api": "table_changes()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5011,7 +5130,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "readChangeFeed",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5027,7 +5147,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "load_cdf()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5043,7 +5164,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/load_cdf.rs",
               "api": "scan_cdf()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5059,7 +5181,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5094,7 +5217,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5110,7 +5234,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
               "api": "readStream",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5126,7 +5251,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5142,7 +5268,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5158,7 +5285,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5193,7 +5321,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5209,7 +5338,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
               "api": "foreachBatch",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5225,7 +5355,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-streaming/index.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5241,7 +5372,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5257,7 +5389,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5292,7 +5425,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/optimizations-oss/index.mdx",
               "api": "OPTIMIZE",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5308,7 +5442,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "optimize().executeCompaction()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5324,7 +5459,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "optimize.compact()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5340,7 +5476,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/optimize.rs",
               "api": "optimize()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5356,7 +5493,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5391,7 +5529,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": "OPTIMIZE … ZORDER BY",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5407,7 +5546,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "executeZOrderBy()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5423,7 +5563,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "optimize.z_order()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5439,7 +5580,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/optimize.rs",
               "api": "with_type(OptimizeType::ZOrder)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5455,7 +5597,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5490,7 +5633,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx",
               "api": "CLUSTER BY",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5506,7 +5650,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "clusterBy()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5522,7 +5667,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5538,7 +5684,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5554,7 +5701,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5589,7 +5737,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
               "api": "VACUUM … DRY RUN",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5605,7 +5754,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "vacuum(hours)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5621,7 +5771,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "vacuum(dry_run=…)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5637,7 +5788,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/vacuum.rs",
               "api": "vacuum()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5653,7 +5805,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5688,7 +5841,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5704,7 +5858,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5720,7 +5875,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "create_checkpoint()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5736,7 +5892,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/protocol/checkpoints.rs",
               "api": "create_checkpoint()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5752,7 +5909,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5787,7 +5945,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4",
               "api": "REORG TABLE … APPLY (PURGE)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5803,7 +5962,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4",
               "api": "spark.sql(...)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5819,7 +5979,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5854,7 +6015,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
               "api": "GENERATE symlink_format_manifest",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5870,7 +6032,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "generate()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5886,7 +6049,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "generate()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5902,7 +6066,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/generate.rs",
               "api": "generate()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5918,7 +6083,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -5953,7 +6119,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4",
               "api": "FSCK",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5969,7 +6136,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/spark/src/main/antlr4/io/delta/sql/parser/DeltaSqlBase.g4",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -5985,7 +6153,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "repair()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6001,7 +6170,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/filesystem_check.rs",
               "api": "filesystem_check()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6017,7 +6187,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6052,7 +6223,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-utility/index.mdx",
               "api": "CONVERT TO DELTA",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6068,7 +6240,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "convertToDelta()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6084,7 +6257,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "convert_to_deltalake()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6100,7 +6274,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/convert_to_delta.rs",
               "api": "ConvertToDeltaBuilder",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6116,7 +6291,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6151,7 +6327,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/versioning.mdx",
               "api": "delta.feature.<name> = 'supported'",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6167,7 +6344,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "addFeatureSupport()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6183,7 +6361,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "alter.add_feature()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6199,7 +6378,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/add_feature.rs",
               "api": "add_feature()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6215,7 +6395,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6250,7 +6431,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
               "api": "DROP FEATURE … [TRUNCATE HISTORY]",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6266,7 +6448,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/python/delta/tables.py",
               "api": "dropFeatureSupport()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6282,7 +6465,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6298,7 +6482,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/mod.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6314,7 +6499,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6390,7 +6576,8 @@
               "source": "unitycatalog:tutorials/managed-delta-table",
               "api": "spark.sql(...)",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6422,7 +6609,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/python/deltalake/table.py",
               "api": "alter.set_table_properties()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6438,7 +6626,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/operations/set_tbl_properties.rs",
               "api": "set_tbl_properties()",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6454,7 +6643,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6489,7 +6679,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx",
               "api": "S3DynamoDBLogStore",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6505,7 +6696,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx",
               "api": "S3DynamoDBLogStore",
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6521,7 +6713,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/usage/writing/writing-to-s3-with-locking-provider.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6537,7 +6730,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/aws/src/lib.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6572,7 +6766,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6588,7 +6783,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-storage.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6604,7 +6800,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6620,7 +6817,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/azure/src/lib.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6636,7 +6834,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6734,7 +6933,8 @@
               "source": "unitycatalog:reference/features-and-limitations",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6823,7 +7023,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6890,7 +7091,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-deletion-vectors.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -6906,7 +7108,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6951,7 +7154,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -6996,7 +7200,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7077,7 +7282,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7144,7 +7350,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7189,7 +7396,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7234,7 +7442,8 @@
               "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7335,7 +7544,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/table-properties.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7351,7 +7561,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7396,7 +7607,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7412,7 +7624,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7457,7 +7670,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7473,7 +7687,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7518,7 +7733,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-change-data-feed.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7534,7 +7750,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7579,7 +7796,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7595,7 +7813,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7640,7 +7859,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7656,7 +7876,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7672,7 +7893,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/protocol.rs",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7739,7 +7961,8 @@
               "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -7806,7 +8029,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-default-columns.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7851,7 +8075,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-deletion-vectors.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -7975,7 +8200,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/versioning.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -8020,7 +8246,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -8101,7 +8328,8 @@
               "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         },
@@ -8168,7 +8396,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-uniform.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -8213,7 +8442,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-uniform.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -8258,7 +8488,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-clustering.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -8303,7 +8534,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -8399,7 +8631,8 @@
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
               "api": null,
               "verified": null,
-              "note": null
+              "note": null,
+              "implementation": null
             }
           ]
         }
@@ -8650,6 +8883,7 @@
           "documented": 4,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 4,
           "untracked": 0
         },
@@ -8658,6 +8892,7 @@
           "documented": 15,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 4,
           "untracked": 0
         }
@@ -8938,6 +9173,7 @@
           "documented": 1,
           "fails": 1,
           "missing": 0,
+          "blocked": 0,
           "unknown": 8,
           "untracked": 0
         },
@@ -8946,6 +9182,7 @@
           "documented": 6,
           "fails": 1,
           "missing": 1,
+          "blocked": 0,
           "unknown": 15,
           "untracked": 0
         }
@@ -9226,6 +9463,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 10,
           "untracked": 0
         },
@@ -9234,6 +9472,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 1,
+          "blocked": 0,
           "unknown": 22,
           "untracked": 0
         }
@@ -9514,6 +9753,7 @@
           "documented": 3,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 5,
           "untracked": 0
         },
@@ -9522,6 +9762,7 @@
           "documented": 0,
           "fails": 0,
           "missing": 0,
+          "blocked": 0,
           "unknown": 21,
           "untracked": 0
         }

@@ -62,7 +62,7 @@ _MATRIX_KEYS = {
     "tables",
     "evidence",
 }
-_INTERFACE_KEYS = {"label", "pin", "package", "model", "via"}
+_INTERFACE_KEYS = {"label", "pin", "package", "model", "via", "connectors"}
 _JOURNEY_KEYS = {
     "title",
     "summary",
@@ -117,6 +117,14 @@ class Interface:
     package: str | None = None  # every claiming script pins one version of it
     model: str | None = None  # an estate-model element id
     via: str | None = None  # the package the interface reaches tables through
+    # Model elements builtOn `model` that provide its spec support (a Spark
+    # connector, a DuckDB extension); spec edges are looked up on them first.
+    connectors: tuple[str, ...] = ()
+
+    @property
+    def speakers(self) -> tuple[str, ...]:
+        """The elements whose spec edges count for this interface."""
+        return self.connectors + ((self.model,) if self.model else ())
 
 
 # participant role → requirement edge → element ids, all of which must hold
@@ -436,6 +444,18 @@ def _load_matrix(path: Path, model: Model, errors: list[str]) -> Matrix | None:
             errors.append(f"{where}: {at}.pin '{entry['pin']}' is not in release.yml")
         if "model" in entry:
             known_model(entry["model"], f"{at}.model")
+        connectors = entry.get("connectors") or []
+        if not isinstance(connectors, list):
+            errors.append(f"{where}: {at}.connectors must be a list of model ids")
+            connectors = []
+        for i, connector in enumerate(connectors):
+            known_model(connector, f"{at}.connectors[{i}]")
+            built_on = ("builtOn", connector, entry.get("model"))
+            if model.kinds and built_on not in model.edges:
+                errors.append(
+                    f"{where}: {at}.connectors[{i}] '{connector}' is not builtOn "
+                    f"{entry.get('model')!r} in the estate model"
+                )
         interfaces[key] = Interface(
             key=key,
             label=entry["label"],
@@ -443,6 +463,7 @@ def _load_matrix(path: Path, model: Model, errors: list[str]) -> Matrix | None:
             package=entry.get("package"),
             model=entry.get("model"),
             via=entry.get("via"),
+            connectors=tuple(str(c) for c in connectors),
         )
 
     defaults = _load_family(raw.get("defaults") or {}, "defaults", where, model, errors)
@@ -1003,12 +1024,14 @@ def render_interfaces(
     for iface in matrix.interfaces.values():
         label = _versioned_label(result, matrix, iface)
         model_id = iface.model
-        implementation = (
-            f"[{result.model.titles.get(model_id, model_id)}](model:{model_id})"
-            if model_id
-            else "—"
-        )
-        contracts = _contracts(result, model_id)
+
+        def link(e: str) -> str:
+            return f"[{result.model.titles.get(e, e)}](model:{e})"
+
+        implementation = link(model_id) if model_id else "—"
+        if iface.connectors:
+            implementation += " with " + ", ".join(map(link, iface.connectors))
+        contracts = _contracts(result, iface)
         modeled_assets = sorted(
             target
             for kind, source, target in result.model.edges
@@ -1470,14 +1493,16 @@ def _versioned_label(result: Result, matrix: Matrix, iface: Interface) -> str:
     return label
 
 
-def _contracts(result: Result, model_id: str | None) -> list[str]:
-    """The open specifications the element consumes or implements."""
+def _contracts(result: Result, iface: Interface) -> list[str]:
+    """The open specifications the interface consumes or implements."""
     return sorted(
-        target
-        for kind, source, target in result.model.edges
-        if source == model_id
-        and kind in _SPEC_EDGES
-        and result.model.kinds.get(target) == "openSpecification"
+        {
+            target
+            for kind, source, target in result.model.edges
+            if source in iface.speakers
+            and kind in _SPEC_EDGES
+            and result.model.kinds.get(target) == "openSpecification"
+        }
     )
 
 
@@ -1530,7 +1555,7 @@ def diagnostics(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
         else:
             needed = (matrix.spec,) if matrix.spec else ()
         for spec in needed:
-            if not model.has(_SPEC_EDGES, entry.model, spec):
+            if not any(model.has(_SPEC_EDGES, e, spec) for e in entry.speakers):
                 missing.setdefault((iface, spec), []).append(jid)
     for iface in sorted(tested):
         if matrix.interfaces[iface].model is None:
@@ -1608,10 +1633,17 @@ def verified_edges(result: Result, matrix: Matrix) -> list[dict[str, object]]:
             "consumes", ()
         )
         for spec in consumes:
-            kind = model.has(_SPEC_EDGES, entry.model, spec)
-            if kind:
+            speaker, kind = next(
+                (
+                    (e, k)
+                    for e in entry.speakers
+                    if (k := model.has(_SPEC_EDGES, e, spec))
+                ),
+                (None, None),
+            )
+            if speaker and kind:
                 seen = edges.setdefault(
-                    (entry.model, kind, spec), {"journeys": set(), "interfaces": set()}
+                    (speaker, kind, spec), {"journeys": set(), "interfaces": set()}
                 )
                 seen["journeys"].add(jid)
                 seen["interfaces"].add(iface)
@@ -1696,6 +1728,7 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                 "package": i.package,
                 "model": i.model,
                 "via": i.via,
+                "connectors": list(i.connectors),
                 "viaVersion": _tested_version(result, matrix, i.key, via=True)
                 if i.via
                 else None,

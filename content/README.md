@@ -527,12 +527,13 @@ external.read-vended:
     storage: { implements: [s3Spec] }
 ```
 
-A journey that exercises one feature of a spec says so in `feature`: the spec
-(a model id), the feature's `name` from that spec's list in
-`content/vocab.json` `specFeatures` (Delta protocol feature names, Iceberg
-format features, Iceberg REST operationIds), and optionally the spec version
-that added it in `since`. The review app groups the compatibility plan by it,
-so "which Iceberg v3 features does DuckDB handle" is one filter:
+Each open specification lists what it asks of the clients that take part in
+it in `architecture/journeys/obligations/<spec>.yml`: Delta table features,
+Iceberg format features, and Iceberg REST operations, each with the roles it
+binds (`reader` and `writer` for a table format, `client` for an API) and the
+spec version that added it in `since`. A journey names the obligations it
+exercises in `covers`, as `<spec>:<obligation>`, adding `:<role>` when the
+obligation binds more than one role:
 
 ```yaml
 deletion-vectors.read:
@@ -540,8 +541,15 @@ deletion-vectors.read:
   summary: Read a table whose deleted rows are marked in deletion vectors, without seeing them.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: deletionVectors, since: "reader 3 · writer 7" }
+  covers: [deltaSpec:deletionVectors:reader]
 ```
+
+The review app groups the compatibility plan by a journey's first obligation
+and its `since`, so "which Iceberg v3 features does DuckDB handle" is one
+filter. `uv run docsnip compat --coverage` (and each `compatibility.json`'s
+`coverage`) counts, for every column interface, the obligations of each spec
+its model reaches: answered, unknown, or untracked when no journey a table
+shows in that column covers it. The spec, not the tables, sets the total.
 
 Claims bind an interface and a script; the script's environment supplies the
 configured participants. Express replaceable participants through the

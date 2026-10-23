@@ -709,7 +709,7 @@ updates the cells that script proves.
 3. **`delta_features:` is the R01 join key.** Constrain its values to protocol
    feature names, with a short list of non-feature topics (`time-travel`). The
    existing values `time-travel` and `table-features` need that list. Done:
-   `content/vocab.json` `specFeatures.deltaSpec` and `deltaTopics`, checked by
+   `architecture/journeys/obligations/deltaSpec.yml` and `content/vocab.json` `deltaTopics`, checked by
    `docsnip check`.
 4. **The coverage page is the support record.** Markdown tables for now, no
    generator. A later lint could check that every `tested` cell links a page

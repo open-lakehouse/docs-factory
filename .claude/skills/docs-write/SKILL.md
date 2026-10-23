@@ -76,7 +76,8 @@ uv run docsnip query environment-for <script|project/journey>
 Also read:
 
 - `architecture/journeys/journeys/`, for the journeys the page can claim, with
-  their `path` and `roles` (`paths.yml` says what each path requires), and
+  their `path` and `roles` (`paths.yml` says what each path requires) and the
+  spec obligations they `covers` (`obligations/`), and
   `content/<project>/compatibility.yml`, for the tables that show them.
 - `content/<project>/release.yml`, for the pins. Never type a version by hand.
 - `envs/environments.yml`, for the stack's registry key, title, and `guide`.

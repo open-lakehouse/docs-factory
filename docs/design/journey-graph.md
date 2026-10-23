@@ -1,7 +1,8 @@
 # One journey graph for the estate
 
-**Status:** P0 (#311) and P1 are built: the catalog in `architecture/journeys/`
-and the per-project projections (§2.2–§2.4 describe them as built). P2–P5 are
+**Status:** P0 (#311), P1 (#312), and P2 are built: the catalog in
+`architecture/journeys/`, the per-project projections, the spec obligations,
+and the coverage report (§2.1–§2.4 and §3 describe them as built). P3–P5 are
 proposals. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md).
 **Scope:** `content/*/compatibility.yml`, `content/vocab.json` `specFeatures`,
 `tools/docsnip` (`compat.py`, `scriptmeta.py`, `query.py`, `tabs.py`), the
@@ -69,7 +70,7 @@ content/<project>/compatibility.yml
 projection, and writes `content/<project>/compatibility.json` as today.
 `docsnip check` validates every id against `architecture/dist/model.json`.
 
-### 2.1 Obligations
+### 2.1 Obligations (built)
 
 ```yaml
 # architecture/journeys/obligations/deltaSpec.yml
@@ -77,20 +78,33 @@ spec: deltaSpec
 source: https://github.com/delta-io/delta/blob/master/PROTOCOL.md
 roles: [reader, writer]
 obligations:
-  deletionVectors:
-    roles: [reader, writer]
-    since: "reader 3 · writer 7"
-    level: optional
-  appendOnly:
-    roles: [writer]
-    since: "writer 2"
-    level: optional
+  appendOnly: { roles: [writer], since: "writer 2" }
+  deletionVectors: { since: "reader 3 · writer 7" }
 ```
 
-`icebergRestSpec.yml` and the UC REST spec's file come from their OpenAPI
-operationIds at the release tag, with roles `client` and `server`.
-`unityCatalogDeltaApiSpec.yml` lists the steps of `ManagedDeltaTablesSpec.md`.
-An obligation id is `<specId>:<name>`.
+P2 moved `vocab.json` `specFeatures` into three files: `deltaSpec.yml` (23
+table features), `icebergSpec.yml` (18 format features), and
+`icebergRestSpec.yml` (25 operationIds). A file's `roles` are the roles a
+client takes (`reader`/`writer` for a table format, `client` for an API), and
+an obligation binds all of them unless it lists its own: a Delta writer
+feature binds `writer`, a reader-writer feature both. `since` moved from the
+journeys onto the obligation. `delta_features:` frontmatter reads the Delta
+names from here.
+
+A journey's `covers` lists `<spec>:<name>[:<role>]`. The role is required
+where the obligation binds more than one: `deletion-vectors.read` covers
+`deltaSpec:deletionVectors:reader`, and `iceberg.v3-deletion-vectors` covers
+`icebergSpec:deletion-vectors` as writer and reader. The artifact keeps
+`feature` (the first obligation, with its `since`) for the review app's
+grouping, and adds `covers`. P2 also gave the Iceberg REST table and namespace
+journeys the operations they plainly call (`iceberg.read` covers `loadTable`,
+writes cover `updateTable`).
+
+Deferred: a `level` (required or optional) until a spec states one per
+obligation; server roles for the API specs (P3); path-level `covers`, because
+a path can't say which role a journey takes (`uc-managed` is read by
+`managed.read` and written by `managed.append`); and files for the Unity
+Catalog REST and Delta API specs.
 
 ### 2.2 Paths (built)
 
@@ -113,7 +127,7 @@ was later removed. A journey's own `roles` add a role or a contract to its
 path's, but can't remove one. A read with vended credentials adds `storage: {
 implements: [s3Spec] }`, and joining Delta and Iceberg tables adds the Unity
 Catalog side to `iceberg-rest`. The artifact's `requires` is the resolved union.
-Path-level `covers` waits for obligations (P2).
+Paths cover no obligations (§2.1).
 
 ### 2.3 Journeys (built)
 
@@ -202,25 +216,41 @@ current column narrowing. `content/open-lakehouse` gets a projection without
 owning any journey. Its format crosswalk becomes a table of the obligations
 that Delta and Iceberg rows both cover.
 
-## 3. Coverage from the graph
+## 3. Coverage from the graph (built)
 
-For an implementation `I` and a spec `S` reached through `I -[implements|consumes]-> S`
-or `I -[integrates]-> X -[implements|consumes]-> S`, the expected set is
-`S`'s obligations for `I`'s role. An API role follows from the verb (`consumes`
-makes a client, `implements` a server). A format role is `reader` and `writer`
-unless evidence narrows it. Each expected obligation is in one of three states:
+`compat.coverage()` runs per project, for each interface that is a table
+column. The interface reaches a spec through an `implements` or `consumes`
+edge of its model or of an integration. Every obligation of that spec is
+expected once per role it binds, so the spec sets the total. Each one's state
+is the best ready cell among the journeys covering it that a table shows in
+that column:
 
 | State | Meaning | Acted on by |
 | --- | --- | --- |
-| untracked | no journey covers it | add a journey (authoring) |
-| unproven | a journey covers it, but no ready claim or evidence answers it | write a script (testing) |
-| answered | ✓, ✗, or blocked, from a claim or evidence | — |
+| untracked | no journey a table shows in this column covers it | add a journey or a row (authoring) |
+| unknown | covered, but no ready claim or evidence answers it | write a script (testing) |
+| tested, documented, fails, missing | answered by a claim or evidence | — |
 
-`compat.diagnostics()` already reports model gaps against claims. This report
-works the other way, from the model's edges to the obligations they imply. Its
-results go into `compatibility.json` under `coverage`. `/plan/compat` uses them
-as the denominator of its spec-version chips. `docsnip query` answers "what
-does DuckDB owe Delta readers" from the same data.
+An interface no table shows with any journey on a spec has no entry for it.
+That leaves out Delta's Spark · Python beside the one Spark feature column,
+and UC's Spark 4.2 line. The results are `coverage` in each
+`compatibility.json`, and `uv run docsnip compat --coverage` prints one line
+per project, interface, spec, and role. At P2:
+
+| Project · interface | Spec · role | Answered |
+| --- | --- | --- |
+| Delta · Spark · SQL | Delta reader | 6 of 10 |
+| Delta · Spark · SQL | Delta writer | 19 of 23 |
+| Delta · DuckDB · SQL | Delta reader | 5 of 10 |
+| Delta · delta-rs · Rust | Delta writer | 1 of 23 |
+| UC · Spark | Iceberg REST client | 14 of 25 (7 untracked) |
+| UC · Spark | Delta writer | 1 of 23 (22 untracked: UC tracks only `catalogManaged`) |
+
+`compat.diagnostics()` reports model gaps against claims. This report works
+the other way, from the model's edges to the obligations they imply. Still
+to come: `/plan/compat` showing it as the denominator of its spec-version
+chips, `docsnip query` answering "what does DuckDB owe Delta readers", and
+"blocked by the server" in place of the Iceberg REST `missing` cells (P3).
 
 ## 4. One page, several sites
 
@@ -257,7 +287,7 @@ Each phase is its own PR, and each leaves `docsnip check` green.
 | --- | --- | --- |
 | **P0** (#311) | Exact verbs, in place. Delta `defaults` client `implements: [deltaSpec]`. UC `managed` adds `unityCatalogDeltaApiSpec` and `deltaSpec`, `iceberg` adds `icebergSpec`. `compat.py` checks each role's own verb, not the `_SPEC_EDGES` union. Fix the model gaps this surfaces (`polars` and `daft` `integrates` `pyIceberg`, a Delta edge for `daft`) through `update-architecture`. | Rendered tables are unchanged. `compatibility.json` differs only in `diagnostics` and `verifiedEdges`. |
 | **P1** (built) | `architecture/journeys/` with paths, journeys, interfaces, evidence, and aliases. The loader reads the global files plus the projections. Duplicates merge. Old ids resolve through aliases with a warning, then a one-shot script rewrites the claims. | The set of (interface, row key, outcome) triples equals the pre-migration set mapped through aliases. `bun test src/content-core` passes, and `just uc-docs` / `just delta-docs` render the same engine reports. |
-| **P2** | `obligations/*.yml` replaces `specFeatures`. `feature:` becomes `covers:` (a list). The coverage report. | `coverage` is in `compatibility.json`, and its numbers are in the PR description. |
+| **P2** (built) | `obligations/*.yml` replaces `specFeatures`. `feature:` becomes `covers:` (a list). The coverage report. | `coverage` is in `compatibility.json`, and its numbers are in the PR description. |
 | **P3** | Implementation facts and blocked cells. The six UC Iceberg REST server entries become implementation facts. | The `iceberg-catalog` table renders the same outcomes from one fact per endpoint. |
 | **P4** | `select:` rows. Delta's "with Unity Catalog" table. The open-lakehouse format crosswalk from shared `covers:`. | `catalog.unity` is gone, and the crosswalk page renders from data. |
 | **P5** | Upstream conformance suites (the Iceberg REST Compatibility Kit, Delta Acceptance Testing) as evidence for obligations. | Optional. |

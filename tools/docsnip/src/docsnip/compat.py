@@ -168,6 +168,7 @@ class Obligations:
     spec: str
     roles: tuple[str, ...]  # the roles a client takes: reader, writer, client
     items: dict[str, Obligation]
+    source: str | None = None  # the spec text the obligations are taken from
 
 
 @dataclasses.dataclass(frozen=True)
@@ -526,7 +527,13 @@ def _load_obligations(
         items[str(name)] = Obligation(
             spec=str(spec), name=str(name), roles=tuple(own or ()), since=since
         )
-    return Obligations(spec=str(spec), roles=roles, items=items)
+    source = raw.get("source")
+    return Obligations(
+        spec=str(spec),
+        roles=roles,
+        items=items,
+        source=source if isinstance(source, str) else None,
+    )
 
 
 def _load_covers(
@@ -2532,6 +2539,7 @@ def estate_artifact(result: Result) -> dict[str, object]:
             )
         specs[spec] = {
             "title": model.titles.get(spec, spec),
+            "source": known.source,
             "roles": list(known.roles),
             "obligations": items,
         }

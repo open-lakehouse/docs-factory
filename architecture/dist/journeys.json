@@ -5937,6 +5937,7 @@
   "specs": {
     "deltaSpec": {
       "title": "Delta Lake",
+      "source": "https://github.com/delta-io/delta/blob/master/PROTOCOL.md",
       "roles": [
         "reader",
         "writer"
@@ -6262,6 +6263,7 @@
     },
     "icebergRestSpec": {
       "title": "Iceberg REST Catalog",
+      "source": "https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml",
       "roles": [
         "client"
       ],
@@ -6563,6 +6565,7 @@
     },
     "icebergSpec": {
       "title": "Apache Iceberg",
+      "source": "https://iceberg.apache.org/spec/",
       "roles": [
         "reader",
         "writer"

@@ -138,6 +138,7 @@ def test_fix_renders_claims_evidence_and_unknowns(tmp_path) -> None:
     assert compat.fix(root) == [
         root / "content/proj/reference/002-matrix/index.md",
         root / "content/proj/compatibility.json",
+        root / "architecture/dist/journeys.json",
     ]
     assert _table(root) == [
         "| Operation | [Spark 4.1](model:apacheSpark) | DuckDB |",
@@ -1293,6 +1294,58 @@ def test_a_server_fact_blocks_the_journeys_that_need_it(tmp_path) -> None:
         "getTable": "untracked",
         "listTables": "blocked",
     }
+
+
+def _estate(root: Path) -> dict:
+    compat.fix(root)
+    return json.loads((root / "architecture/dist/journeys.json").read_text())
+
+
+def test_the_estate_artifact_lists_who_may_play_each_role(tmp_path) -> None:
+    root = _served(tmp_path, _SPARK_READS)
+    path = root / "architecture/dist/model.json"
+    model = json.loads(path.read_text())
+    model["elements"]["sparkUc"] = {"kind": "implementation", "title": "Connector"}
+    model["elements"]["duckdb"] = {"kind": "implementation", "title": "DuckDB"}
+    model["relations"] |= {
+        "r9": {
+            "kind": "implements",
+            "source": {"model": "ucServer"},
+            "target": {"model": "unityCatalogSpec"},
+        },
+        "r10": {
+            "kind": "integrates",
+            "source": {"model": "duckdb"},
+            "target": {"model": "sparkUc"},
+        },
+        "r11": {
+            "kind": "consumes",
+            "source": {"model": "sparkUc"},
+            "target": {"model": "unityCatalogSpec"},
+        },
+    }
+    path.write_text(json.dumps(model))
+    data = _estate(root)
+    candidates = data["paths"]["uc"]["candidates"]
+    assert {"id": "apacheSpark", "via": []} in candidates["client"]
+    assert {"id": "duckdb", "via": ["sparkUc"]} in candidates["client"]
+    assert {"id": "sparkUc", "via": []} in candidates["client"]
+    assert candidates["catalog"] == [{"id": "ucServer", "via": []}]
+
+
+def test_the_estate_artifact_joins_obligations_and_facts(tmp_path) -> None:
+    data = _estate(_served(tmp_path, _SPARK_READS))
+    spec = data["specs"]["unityCatalogSpec"]
+    assert {o["name"]: o["journeys"] for o in spec["obligations"]} == {
+        "getTable": {"client": []},
+        "listTables": {"client": ["table.write"]},
+    }
+    (fact,) = data["facts"]
+    assert fact["blocks"] == [
+        {"project": "proj", "interfaces": ["spark"], "journeys": ["table.write"]}
+    ]
+    assert data["journeys"]["table.write"]["projects"] == ["proj"]
+    assert data["interfaces"]["spark"]["projects"] == {"proj": "4.1.0"}
 
 
 def test_a_fact_no_project_binds_is_an_error(tmp_path) -> None:

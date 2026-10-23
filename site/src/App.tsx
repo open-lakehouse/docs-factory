@@ -4,8 +4,14 @@ import AgentTokens from "./pages/AgentTokens";
 import CliAuth from "./pages/CliAuth";
 import ConceptsPage from "./pages/model/ConceptsPage";
 import CoveragePage from "./pages/model/CoveragePage";
+import CrosswalkPage from "./pages/model/CrosswalkPage";
+import ImplementationPage from "./pages/model/ImplementationPage";
+import ImplementationsPage from "./pages/model/ImplementationsPage";
+import JourneyPage, { JourneysIndex } from "./pages/model/JourneyPage";
 import ModelExplorer from "./pages/model/ModelExplorer";
 import ModelLayout from "./pages/model/ModelLayout";
+import PathPage, { PathsIndex } from "./pages/model/PathPage";
+import SpecPage, { SpecsIndex } from "./pages/model/SpecPage";
 import OpenInWorkspace from "./pages/OpenInWorkspace";
 import PlanLayout from "./pages/plan/PlanLayout";
 import PlanSummary from "./pages/plan/PlanSummary";
@@ -42,6 +48,15 @@ export default function App() {
             threads on elements and views. Reviewer-only; ModelLayout guards it. */}
       <Route path="/model" element={<ModelLayout />}>
         <Route index element={<ModelExplorer />} />
+        <Route path="implementations" element={<ImplementationsPage />} />
+        <Route path="implementations/:id" element={<ImplementationPage />} />
+        <Route path="specs" element={<SpecsIndex />} />
+        <Route path="specs/:id" element={<SpecPage />} />
+        <Route path="journeys" element={<JourneysIndex />} />
+        <Route path="journeys/:id" element={<JourneyPage />} />
+        <Route path="paths" element={<PathsIndex />} />
+        <Route path="paths/:id" element={<PathPage />} />
+        <Route path="crosswalk" element={<CrosswalkPage />} />
         <Route path="concepts" element={<ConceptsPage />} />
         <Route path="coverage" element={<CoveragePage />} />
         <Route path="*" element={<Navigate replace to="/model" />} />

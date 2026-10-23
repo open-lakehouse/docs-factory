@@ -6,6 +6,7 @@
 #   - dist/model.json   the JSON model (agents + interactive docs site input)
 #   - dist/trestle-*.json  Trestle's catalog snapshot and the context artifact
 #                          joined from it (see integrations/trestle.yaml)
+#   - dist/journeys.json   the resolved journey catalog (`docsnip compat --fix`)
 # The heavy, fully-regenerable outputs (the static site under dist/static/ and
 # the ~2.5 MB self-contained web-component bundle dist/likec4-views.js) are built
 # on demand via `just arch-build` / `just arch-model` when the docs-site embed is
@@ -15,3 +16,4 @@ dist/*
 !dist/model.json
 !dist/trestle-catalog.json
 !dist/trestle-context.json
+!dist/journeys.json

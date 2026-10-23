@@ -1,10 +1,13 @@
 // The explorer's right pane: one model element or view, what the docs pipeline
 // derives from it (model-index.json), and its review threads.
 import type { ElementModel } from "likec4/model";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { matrices } from "../../compat";
+import { catalog } from "../../estate";
 import { elementSummary, getExplainElement, kindLabel, likec4model } from "../../explain";
 import { blogRef, docRef, type ModelTarget, modelSlug, refHref } from "../../lib/content-ref";
+import { implementationProfile } from "../../lib/estate-graph";
 import {
   CONCEPT_SITES,
   type ElementIndex,
@@ -13,6 +16,8 @@ import {
 } from "../../lib/model-index";
 import { useModelThreadStats } from "../../lib/model-threads";
 import { RequestExplanationButton } from "../review/ContentRequests";
+import ImplementationCard from "./graph/ImplementationCard";
+import { implHref, journeyHref, specHref } from "./graph/primitives";
 import ModelThreads from "./ModelThreads";
 
 /** How the explorer selects a target: `?el=`, `?view=`, `?scope=estate`. */
@@ -139,7 +144,7 @@ function Journeys({ journeys }: { journeys: ElementIndex["journeys"] }) {
       <ul className="model-link-list">
         {shown.map((j) => (
           <li key={`${j.project}${j.id}${j.interface ?? ""}`}>
-            {j.title}{" "}
+            <Link to={journeyHref(j.id)}>{j.title}</Link>{" "}
             <span className="muted text-xs">
               {j.project} · {j.role === "interface" ? `${j.interface}: ` : ""}
               {j.status}
@@ -154,6 +159,32 @@ function Journeys({ journeys }: { journeys: ElementIndex["journeys"] }) {
       )}
     </Section>
   );
+}
+
+/** Where the journey graph has a page for the element, a way into it. */
+function GraphCard({ id, kind }: { id: string; kind: string }) {
+  const profile = useMemo(
+    () => (kind === "implementation" ? implementationProfile(id, catalog, matrices) : null),
+    [id, kind],
+  );
+  if (profile && (profile.cells.length > 0 || profile.paths.length > 0)) {
+    return (
+      <section className="model-inspector-section">
+        <ImplementationCard profile={profile} compact />
+        <Link to={implHref(id)} className="text-xs">
+          Open the implementation page →
+        </Link>
+      </section>
+    );
+  }
+  if (kind === "openSpecification" && catalog.specs[id]) {
+    return (
+      <Link to={specHref(id)} className="text-xs">
+        Obligations and conformance ({catalog.specs[id].obligations.length}) →
+      </Link>
+    );
+  }
+  return null;
 }
 
 function ElementPanel({ id, select }: { id: string; select: Select }) {
@@ -186,6 +217,7 @@ function ElementPanel({ id, select }: { id: string; select: Select }) {
           </a>
         ))}
       </header>
+      <GraphCard id={id} kind={String(el.kind)} />
       {entry ? (
         <>
           <Published entry={entry} />

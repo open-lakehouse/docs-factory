@@ -230,7 +230,7 @@ this list; see `model-leverage.md`):
 4. **Contextual 1-hop mini-map.** A small live subgraph centered on the page's
    references, linking out to entity pages and expert sites.
 5. **Dynamic/sequence views as embedded how-to explainers.** Flow views
-   (`credentialVending`, a future `policyDecisionFlow`) rendered inside
+   (`ucCredentialVending_tableRead`, a future `policyDecisionFlow`) rendered inside
    explanation/how-to pages.
 6. **Deployment-topology toggle.** "How this capability is realized across
    topologies" — the differentiator static docs can't match.

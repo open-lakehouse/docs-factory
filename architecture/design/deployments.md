@@ -52,7 +52,7 @@ credential to an external, untrusted engine (Spark, Trino, a notebook) after a
 *coarse* authorize check; that engine then reads raw files directly. **Row
 filters and column masks are bypassed**; only coarse access is enforced. The
 non-vendable-governed-table guard (refuse to vend a raw credential for a governed
-table) is the designed mitigation. The logical `credentialVending` dynamic view
+table) is the designed mitigation. The `ucCredentialVending_tableRead` dynamic view
 shows the vending sequence itself.
 
 **Browser (WASM), prototype.** A client-side WASM query engine runs in the

@@ -121,6 +121,7 @@ sharing to exist, so it has no edge to it; an agent skill does, so
 - **`assetGovernanceBreadth`** — the hero: catalog specifications and the asset
   kinds they `govern`. Shows UC's data & AI breadth against the table-centric
   Iceberg REST catalog.
-- **`assetCapabilities`** — asset kinds and the capabilities they `dependsOn`.
+- **`assetCapabilities`** — asset kinds and the capabilities they are
+  `registeredIn`, `locatedAt`, or `dependsOn`, without the capability chain.
 - **`concernMatrix`** — the concerns and the asset kinds and capabilities they
   `appliesTo` ([ADR-0007](../adr/ADR-0007-cross-cutting-concerns.md)).

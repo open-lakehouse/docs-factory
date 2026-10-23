@@ -2792,9 +2792,9 @@ button.tag {
   border-radius: var(--radius);
 }
 
-/* --- Model links (inline model: refs + concept header + popup) ---------- */
+/* --- Model links (inline model: refs + concept header) ------------------ */
 
-/* Inline reference in prose: label + a small graph-icon that opens the popup. */
+/* Inline reference in prose: a label with a hover card. */
 .model-ref {
   white-space: nowrap;
 }
@@ -2808,82 +2808,7 @@ a.model-ref-label:hover {
 .model-ref-unknown {
   color: inherit;
 }
-.model-ref-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: -0.18em;
-  margin-left: 0.3rem;
-  padding: 0.12rem 0.22rem;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--accent) 32%, transparent);
-  border-radius: 0.3rem;
-  cursor: pointer;
-  line-height: 0;
-  transition: background 0.12s, border-color 0.12s, color 0.12s;
-}
-.model-ref-icon:hover {
-  color: var(--accent-hover, var(--accent));
-  background: color-mix(in srgb, var(--accent) 22%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
-}
-.model-ref-icon:active {
-  background: color-mix(in srgb, var(--accent) 30%, transparent);
-}
 
-/* Popup modal: shadcn Dialog + custom layout for model diagrams. */
-.model-modal {
-  display: flex;
-  flex-direction: column;
-  width: min(920px, calc(100vw - 2rem)) !important;
-  max-width: none !important;
-  max-height: calc(100vh - 2rem);
-  padding: 0 !important;
-  overflow: hidden;
-}
-.model-modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem 0.75rem;
-}
-.model-modal-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-}
-.model-modal-heading h1,
-.model-modal-heading h2 {
-  margin: 0;
-  font-size: 1.2rem;
-}
-.model-modal-link {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--accent);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.model-modal-link:hover { text-decoration: underline; }
-.model-modal-summary {
-  margin: 0;
-  padding: 0 1.25rem 0.75rem;
-  font-size: 0.9rem;
-  color: var(--body);
-  max-width: 60ch;
-}
-.model-modal-diagram {
-  flex: 1;
-  min-height: 420px;
-  border-top: 1px solid var(--border);
-  background: var(--sidebar);
-}
-.model-modal-empty {
-  padding: 1.5rem;
-}
 .review-rail-body {
   display: flex;
   flex-direction: column;

@@ -13,16 +13,15 @@ interface ModelDiagramProps {
 }
 
 /**
- * Shared LikeC4 renderer for the estate model. Used by ExplainDiagram (inline)
- * and ModelDiagramModal (popup).
+ * Shared LikeC4 renderer for the estate model, used by the Model explorer and
+ * the review workspace's model tab.
  *
  * We use the stock `ReactLikeC4` (not a custom wrapper) with its native
  * controls, search, element-details, and node navigation left on. The only
  * app-specific behaviour is `onNavigateTo`: LikeC4's native "go to this node's
- * view" action is remapped to route to the content page that explains the
- * view's subject, so the diagram doubles as a docs index. That single hook is
- * why we stay on `ReactLikeC4` — `LikeC4View` doesn't expose a navigation
- * callback (its popup browser owns navigation internally).
+ * view" action is handed to the caller, which routes it within the app. That
+ * single hook is why we stay on `ReactLikeC4` — `LikeC4View` doesn't expose a
+ * navigation callback (its popup browser owns navigation internally).
  */
 export default function ModelDiagram({
   viewId,

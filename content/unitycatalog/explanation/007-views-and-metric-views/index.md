@@ -138,11 +138,11 @@ itself, see
 When a view is created, the server checks that its dependencies exist, not
 that the creator can read them
 ([`TableRepository`](https://github.com/unitycatalog/unitycatalog/blob/2b17f3b5a1d06c0adbf22f4c11ea888c01a36415/server/src/main/java/io/unitycatalog/server/persist/TableRepository.java#L972-L1000)).
-Reading the view's entry gives the engine the definition, and the engine then
-reads each source table as the caller. So, going by the server's source, a
-view doesn't hide its source tables: a reader needs access to them as well.
-
-<!-- TODO(open question): verify reading through a view needs source-table access once an authorization-enabled environment exists -->
+Reading the view's entry gives the engine the definition. Going by the server's
+source
+([`TableService`](https://github.com/unitycatalog/unitycatalog/blob/2b17f3b5a1d06c0adbf22f4c11ea888c01a36415/server/src/main/java/io/unitycatalog/server/service/TableService.java#L99-L117)),
+the engine then reads each source table as the caller, so a view doesn't hide
+its source tables: a reader needs access to them as well.
 
 ## Related
 

@@ -12,12 +12,11 @@ references:
 status: draft
 ---
 
-A catalog-managed [Delta](model:deltaSpec) table lives where
-[Unity Catalog](model:unityCatalogServer) puts it, and a write becomes the table's
-next version only when the server accepts the commit. So every client reaches
-the table by its catalog name, never by its path; see
+For catalog-managed [Delta](model:deltaSpec) tables, the catalog brokers all
+reads and writes, enabling advanced features, better performance, and higher
+reliability. See
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md)
-for why.
+for details.
 
 :::prerequisites
 - A schema in a catalog with a storage root, such as `inventory.stock`:
@@ -76,8 +75,7 @@ Create the table in Spark:
 
 The connector creates it as a catalog-managed table and sets
 `delta.feature.catalogManaged` for you. You don't choose where it lives: the
-server allocates a path under the nearest storage root, the schema's, else the
-catalog's, else the metastore's.
+server allocates a path under the nearest storage root.
 
 DuckDB can't create tables.
 
@@ -86,12 +84,24 @@ guide *Replace or overwrite a managed Delta table*.
 
 ### Required table features
 
-The server tells the client which table features a managed table needs, and
-the client has to support them: `catalogManaged`, `deletionVectors`,
-`v2Checkpoint`, `vacuumProtocolCheck`, and `inCommitTimestamp`, which put the
-table at reader version 3 and writer version 7. Spark turns them on when it
-creates the table, along with the features the server suggests, including
-column mapping. To list a table's protocol versions and features, run:
+Before Spark writes a new table's first version, it asks the server to stage
+the table. The server's answer lists the table features and properties the
+table must have, and the ones it suggests. Spark turns on every requirement,
+and every suggestion you don't override.
+
+The [Delta protocol](https://github.com/delta-io/delta/blob/v4.3.1/PROTOCOL.md#catalog-managed-table-enablement)
+requires little of a catalog-managed table: reader version 3, writer version 7,
+and the `catalogManaged` and `inCommitTimestamp` features. Which other
+features a table needs is up to the catalog.
+
+The [Unity Catalog](model:unityCatalogServer) server requires `catalogManaged`, `deletionVectors`,
+`v2Checkpoint`, `vacuumProtocolCheck`, and `inCommitTimestamp`, and the
+properties that turn them on, such as `delta.enableDeletionVectors`. It
+suggests column mapping in `name` mode, row tracking, and domain metadata. To
+override a suggestion, set its property yourself, such as
+`'delta.columnMapping.mode' = 'none'`. A requirement can't be overridden.
+
+To list a table's protocol versions and features, run:
 
 ```python file=./snippets/managed_tables.py start=start:inspect end=end:inspect
 ```
@@ -220,8 +230,7 @@ files once `server.storage-cleanup.initial-delay` has passed, 7 days by
 default. Keep a copy of any data you need before you drop the table.
 :::
 
-The server deletes the files only if it can write to them. With the upstream
-image on Linux and a bind-mounted folder, it can't.
+The server deletes the files only if it can write to them.
 
 ## Required privileges
 

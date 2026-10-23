@@ -4,12 +4,12 @@ summary: Register Parquet, CSV, JSON, and other file-based data as external tabl
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.catalog
 status: ready
 ---
 
-[Unity Catalog](model:unityCatalogOSS) can give a folder of plain data files a
+[Unity Catalog](model:unityCatalogServer) can give a folder of plain data files a
 governed name, just as it does for a Delta table. An external table in format
 `PARQUET`, `CSV`, `JSON`, `AVRO`, `ORC`, or `TEXT` records the table's name,
 columns, format, and location. The files stay where they are.

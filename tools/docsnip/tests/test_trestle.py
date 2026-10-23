@@ -22,7 +22,7 @@ _MODEL = {
         "lakehouse.volume": {"kind": "asset", "title": "Volume"},
         "lakehouse.namespace": {"kind": "asset", "title": "Namespace"},
         "s3Spec": {"kind": "openSpecification", "title": "S3 API"},
-        "unityCatalogOSS": {
+        "unityCatalogServer": {
             "kind": "implementation",
             "title": "Unity Catalog (OSS)",
             "description": {"txt": "The reference server."},
@@ -42,7 +42,7 @@ _MODEL = {
     "relations": {
         "r1": {
             "kind": "implements",
-            "source": {"model": "unityCatalogOSS"},
+            "source": {"model": "unityCatalogServer"},
             "target": {"model": "unityCatalogSpec"},
         },
         "r2": {
@@ -83,12 +83,12 @@ _MODEL = {
         },
         "r9": {
             "kind": "operatesOn",
-            "source": {"model": "unityCatalogOSS"},
+            "source": {"model": "unityCatalogServer"},
             "target": {"model": "lakehouse.table"},
         },
         "r10": {
             "kind": "operatesOn",
-            "source": {"model": "unityCatalogOSS"},
+            "source": {"model": "unityCatalogServer"},
             "target": {"model": "lakehouse.namespace"},
         },
     },
@@ -106,7 +106,7 @@ def _module(mid: str, model: str | None, role: str | None, **extra) -> dict:
 
 
 _MODULES = [
-    _module("unity-catalog", "unityCatalogOSS", "data_catalog"),
+    _module("unity-catalog", "unityCatalogServer", "data_catalog"),
     _module("rustfs", "rustfs", "object_store"),
     _module("postgres", "postgresql", "relational_db"),
     # hosted and self-run modules may package the same implementation
@@ -205,7 +205,7 @@ def test_dangling_and_wrong_kind_refs_fail(tmp_path):
 
 def test_coverage_gaps_are_reported_not_failed(tmp_path):
     modules = [
-        _module("unity-catalog", "unityCatalogOSS", "data_catalog"),
+        _module("unity-catalog", "unityCatalogServer", "data_catalog"),
         _module("mystery", None, "notebooks"),
     ]
     report = trestle.check(_repo(tmp_path, modules=modules))
@@ -351,10 +351,10 @@ def test_context_carries_model_facts_only(tmp_path):
     assert uc == {
         "title": "Unity-Catalog",
         "role": "data_catalog",
-        "model": "unityCatalogOSS",
+        "model": "unityCatalogServer",
         "implements": ["unityCatalogSpec"],
     }
-    assert context["concepts"]["unityCatalogOSS"]["links"] == [
+    assert context["concepts"]["unityCatalogServer"]["links"] == [
         "https://unitycatalog.io"
     ]
     assert context["roles"]["relational_db"] == {"unmapped": "infrastructure"}
@@ -363,7 +363,7 @@ def test_context_carries_model_facts_only(tmp_path):
         "scope": "partial",
     }
     # what its specs govern plus what it operates on, once each, in model order
-    assert context["concepts"]["unityCatalogOSS"]["assets"] == [
+    assert context["concepts"]["unityCatalogServer"]["assets"] == [
         "lakehouse.table",
         "lakehouse.volume",
         "lakehouse.namespace",

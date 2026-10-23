@@ -4,13 +4,13 @@
   "state": "planned",
   "generator": {
     "name": "trestle",
-    "version": "0.0.12",
-    "revision": "9c535a5ddc2d8f29ad23acc124e7e8af09ebd0d8"
+    "version": "0.0.13",
+    "revision": "fa3c780cae8736d0e6083138016f24b9949d5d4c"
   },
   "catalog": {
-    "baseline": "olai-stack-topology@0.0.8",
+    "baseline": "olai-stack-topology@0.0.9",
     "manifests": [],
-    "digest": "sha256:0e9dec34fead2080124abc151621290e1ec9eb0b344317d7910670e9a01dcb3e"
+    "digest": "sha256:ad4c35d2d1b7bd4e2b32d1cd86e83e4caac2dcc6f349629fc4347dfb683e40c6"
   },
   "recipe": {
     "digest": "sha256:17e49380efcdfea543a4136c6c76ea6012bb49955fdefa0bb7df16f7bc65313f"
@@ -47,7 +47,7 @@
       },
       {
         "id": "unity-catalog",
-        "model": "unityCatalogOSS",
+        "model": "unityCatalogServer",
         "kind": "component",
         "display_name": "Unity Catalog",
         "summary": "Open-source Unity Catalog server; Databricks-shaped REST API.",

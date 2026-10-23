@@ -84,7 +84,7 @@
       },
       {
         "id": "unity-catalog",
-        "model": "unityCatalogOSS",
+        "model": "unityCatalogServer",
         "kind": "component",
         "display_name": "Unity Catalog",
         "summary": "Open-source Unity Catalog server; Databricks-shaped REST API.",
@@ -164,6 +164,13 @@
   "deploy": [
     {
       "order": 1,
+      "phase": "configure",
+      "id": "local-credentials",
+      "title": "Set the services' own credentials",
+      "instructions": "The services the stack runs use these credentials. Unless `secrets.env` sets them, they are fixed development values, the same in every environment.\n\n| Credential | Name in `secrets.env` |\n| --- | --- |\n| Postgres superuser password | `LOCAL_POSTGRES_PASSWORD` |\n| RustFS root access key | `LOCAL_RUSTFS_ACCESS_KEY` |\n| RustFS root secret key | `LOCAL_RUSTFS_SECRET_KEY` |\n\nTo replace them with random ones, add them to `secrets.env` and render again. Rendering writes each value into every file that uses it (`.env`, `modules/*/.env/`, `modules/*/secrets/`):\n\n```bash\ncat >> secrets.env <<EOF\nLOCAL_POSTGRES_PASSWORD=$(openssl rand -hex 32)\nLOCAL_RUSTFS_ACCESS_KEY=$(openssl rand -hex 10)\nLOCAL_RUSTFS_SECRET_KEY=$(openssl rand -hex 20)\nEOF\ntrestle env render .\n```\n\nDo this before the first start. Services keep the credentials they first started with in their persisted data (under the data root, `.data/` by default), so a later change also needs that data removed, or the credential changed inside the service."
+    },
+    {
+      "order": 2,
       "phase": "start",
       "id": "up",
       "title": "Start the stack",

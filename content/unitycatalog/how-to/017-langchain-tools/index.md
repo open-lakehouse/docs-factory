@@ -4,14 +4,14 @@ summary: UCFunctionToolkit turns Unity Catalog functions into LangChain tools. E
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - unityCatalogAi
   - unityCatalogLangChain
   - lakehouse.function
 status: ready
 ---
 
-Register Python functions in [Unity Catalog](model:unityCatalogOSS), build
+Register Python functions in [Unity Catalog](model:unityCatalogServer), build
 LangChain tools from them with `UCFunctionToolkit` from the
 `unitycatalog-langchain` package, hand the tools to an agent, and trace its
 calls with MLflow. The catalog stores each

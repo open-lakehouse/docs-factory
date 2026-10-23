@@ -4,7 +4,7 @@ summary: Give a catalog managed storage, then use Spark to create a Delta table 
 diataxis: tutorial
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpec
   - deltaSpark
 status: ready

@@ -4,7 +4,7 @@ summary: Change a Unity Catalog managed table's columns and properties through S
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpec
   - deltaSpark
   - deltaRs

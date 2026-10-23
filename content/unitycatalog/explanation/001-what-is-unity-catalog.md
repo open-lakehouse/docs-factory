@@ -3,7 +3,7 @@ title: What is Unity Catalog OSS?
 summary: The open catalog for all your Data and AI assets in the open lakehouse.
 diataxis: explanation
 project: unitycatalog
-explains: unityCatalogOSS
+explains: unityCatalogServer
 references:
   - lakehouse.catalog
   - unityCatalogSpec

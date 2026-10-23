@@ -4,14 +4,14 @@ summary: Replace a managed Delta table's definition and rows, all of its rows, o
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpec
   - deltaSpark
 status: ready
 ---
 
 To replace data in a catalog-managed [Delta](model:deltaSpec) table in
-[Unity Catalog](model:unityCatalogOSS), use `CREATE OR REPLACE TABLE` to change
+[Unity Catalog](model:unityCatalogServer), use `CREATE OR REPLACE TABLE` to change
 its columns and rows, `INSERT OVERWRITE` to swap all rows, and
 `INSERT INTO … REPLACE WHERE` or dynamic partition overwrite to swap some of
 them.

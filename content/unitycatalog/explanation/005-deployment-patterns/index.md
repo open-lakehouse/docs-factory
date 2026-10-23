@@ -5,14 +5,14 @@ diataxis: explanation
 project: unitycatalog
 explains: lakehouse.metadataStore
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - postgresql
   - lakehouse.objectStorage
   - lakehouse.credentialIssuer
 status: draft
 ---
 
-A [Unity Catalog](model:unityCatalogOSS) deployment has three parts: the
+A [Unity Catalog](model:unityCatalogServer) deployment has three parts: the
 server, a database that holds the catalog's metadata (its
 [metadata store](model:lakehouse.metadataStore)), and
 [object storage](model:lakehouse.objectStorage) that holds the files of its

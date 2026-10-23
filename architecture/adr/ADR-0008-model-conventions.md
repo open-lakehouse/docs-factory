@@ -21,7 +21,7 @@ vocabulary held up; how it was applied did not.
   edges that would refine it (`resolves`, `reads`, `vends`, `enforces`); only
   `reads` was ever declared, and nothing used it.
 - **`realizes` and `implements` had no rule.** `mangrove` implements the Unity
-  Catalog spec and realizes the catalog capability; `unityCatalogOSS` and
+  Catalog spec and realizes the catalog capability; `unityCatalogServer` and
   `lakekeeper` only implement a spec, so "what realizes the catalog?" needed two
   hops for some catalogs and one for others. A connector (`deltaSpark`)
   realized the query engine it plugs into.

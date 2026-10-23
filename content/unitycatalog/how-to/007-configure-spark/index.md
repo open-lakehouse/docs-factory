@@ -4,12 +4,12 @@ summary: Pick matching Spark, Delta, and Unity Catalog connector versions, regis
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpark
 status: ready
 ---
 
-Apache Spark connects to a [Unity Catalog](model:unityCatalogOSS) server
+Apache Spark connects to a [Unity Catalog](model:unityCatalogServer) server
 through the Unity Catalog Spark connector, so that Spark SQL can name
 `catalog.schema.table` and read and write the tables it holds. The
 connector registers one Unity Catalog catalog as a Spark catalog. Delta Spark

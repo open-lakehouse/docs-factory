@@ -4,7 +4,7 @@ summary: Create SQL views in Unity Catalog with Spark 4.2 or the REST API, query
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpark
   - lakehouse.sqlView
 status: draft

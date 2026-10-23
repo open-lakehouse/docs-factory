@@ -39,7 +39,7 @@ you can swap any brick without touching the others.
 ## Model hooks
 
 - Capabilities `lakehouse.catalog`, `lakehouse.objectStorage`,
-  `lakehouse.tableFormat`; implementations `unityCatalogOSS`, `rustfs`, `envoy`.
+  `lakehouse.tableFormat`; implementations `unityCatalogServer`, `rustfs`, `envoy`.
 - Role → capability mapping (`object_store` → objectStorage, `data_catalog` →
   catalog). Gateway and relational DB stay unmapped infrastructure, and that
   is deliberate.

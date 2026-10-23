@@ -4,13 +4,13 @@ summary: Run Unity Catalog on AWS under a master IAM role, register an S3 storag
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - lakehouse.objectStorage
   - s3Spec
 status: ready
 ---
 
-A [Unity Catalog](model:unityCatalogOSS) server governs access to Amazon S3
+A [Unity Catalog](model:unityCatalogServer) server governs access to Amazon S3
 through storage credentials and external locations, and it never hands out
 long-lived keys.
 When an authorized client needs data, the server assumes an IAM role through

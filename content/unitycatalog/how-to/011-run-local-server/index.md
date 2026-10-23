@@ -4,12 +4,12 @@ summary: Start one of the docs' Docker Compose environments, a single-user Unity
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
 status: ready
 ---
 
 Every example in these docs runs against a local
-[Unity Catalog](model:unityCatalogOSS) server that you start with Docker
+[Unity Catalog](model:unityCatalogServer) server that you start with Docker
 Compose. The docs ship several environments, each its own download. Each
 runs the same single-user server on `http://localhost:8080`, potentially with
 additional services like PostgreSQL or S3 enabled.

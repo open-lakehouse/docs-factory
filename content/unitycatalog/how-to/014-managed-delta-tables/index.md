@@ -4,7 +4,7 @@ summary: Create catalog-managed Delta tables in Unity Catalog, and read and writ
 diataxis: how-to
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - deltaSpec
   - deltaSpark
   - duckdb
@@ -13,7 +13,7 @@ status: draft
 ---
 
 A catalog-managed [Delta](model:deltaSpec) table lives where
-[Unity Catalog](model:unityCatalogOSS) puts it, and a write becomes the table's
+[Unity Catalog](model:unityCatalogServer) puts it, and a write becomes the table's
 next version only when the server accepts the commit. So every client reaches
 the table by its catalog name, never by its path; see
 [External tables and catalog-managed Delta tables](../../explanation/external-and-managed-tables/index.md)

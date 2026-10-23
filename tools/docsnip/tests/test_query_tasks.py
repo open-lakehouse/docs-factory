@@ -53,7 +53,7 @@ def test_explain_its_components(idx):
         "envoy": ("envoy", None),
         "postgres": ("postgresql", None),
         "rustfs": ("rustfs", "lakehouse.objectStorage"),
-        "unity-catalog": ("unityCatalogOSS", "lakehouse.catalog"),
+        "unity-catalog": ("unityCatalogServer", "lakehouse.catalog"),
     }
     assert {c["id"]: c["status"] for c in answer["concepts"]} == {
         "lakehouse.catalog": "full",
@@ -85,7 +85,7 @@ def test_explain_why_full_governance_lacks_evidence(idx):
         assert held["missing"] == ["lakehouse.governance.fineGrainedAccess"]
         assert held["partial"] == ["lakehouse.governance.authentication"]
         assert held["facets"]["lakehouse.governance.authentication"]["by"] == {
-            "unityCatalogOSS": "partial"
+            "unityCatalogServer": "partial"
         }
 
 

@@ -90,7 +90,7 @@ CI claim makes that attempt a verified fact for that scope.
 Trestle's own word "capability" (`Selection.capabilities`, `provider_of`) means a
 role string. Neither side renames.
 
-**Evidence is not architecture.** `unityCatalogOSS implements unityCatalogSpec` and
+**Evidence is not architecture.** `unityCatalogServer implements unityCatalogSpec` and
 `unityCatalogSpec governs agentSkill` don't prove that a given OSS release manages skills.
 A model edge or graph path never becomes a green compatibility cell;
 release-specific support comes from scoped claims, and unknown coverage stays
@@ -116,7 +116,7 @@ including into custom catalogs, so Trestle's own graph can say what a node is.
 A role's contribution ("`tracing` is a *partial* contribution to observability")
 interprets our concepts, so it lives with them; Trestle never carries it.
 
-Model IDs (`unityCatalogOSS`, `lakehouse.catalog`) are the stable references;
+Model IDs (`unityCatalogServer`, `lakehouse.catalog`) are the stable references;
 Trestle keeps its own module and role IDs. A LikeC4 FQN comes from nesting, not
 kind, so moving an element between kinds changes no ID.
 
@@ -126,12 +126,12 @@ kind, so moving an element between kinds changes no ID.
 
 Every module in the pinned catalog carries a `model:` ref that resolves to an
 implementation in `logical/technology-catalog.likec4`, where its edges live
-(`unityCatalogOSS implements icebergRestSpec`, `rustfs implements s3Spec`,
+(`unityCatalogServer implements icebergRestSpec`, `rustfs implements s3Spec`,
 `openPolicyAgent realizes governance.authorization #partial`, …):
 
 | Module | `model:` | Role |
 |---|---|---|
-| `unity-catalog` | `unityCatalogOSS` | `data_catalog` |
+| `unity-catalog` | `unityCatalogServer` | `data_catalog` |
 | `rustfs`, `aws-s3`, `azurite`, `azure-storage` | `rustfs`, `amazonS3`, `azurite`, `azureBlobStorage` | `object_store` |
 | `postgres`, `hosted-postgres` | `postgresql` | `relational_db` |
 | `envoy` | `envoy` | `gateway` |

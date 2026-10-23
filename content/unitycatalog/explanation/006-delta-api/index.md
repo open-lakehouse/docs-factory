@@ -4,7 +4,7 @@ summary: Unity Catalog's Delta API applies requirements and updates all or nothi
 diataxis: explanation
 project: unitycatalog
 references:
-  - unityCatalogOSS
+  - unityCatalogServer
   - unityCatalogSpec
   - deltaSpec
   - deltaSpark
@@ -14,7 +14,7 @@ status: draft
 ---
 
 The *Delta API* is a versioned REST interface that
-[Unity Catalog](model:unityCatalogOSS) serves under
+[Unity Catalog](model:unityCatalogServer) serves under
 `/api/2.1/unity-catalog/delta/v1/`, next to the Unity Catalog REST API's
 `/tables` endpoints. [Delta](model:deltaSpec) clients speak it: Spark through
 the Unity Catalog connector and [Delta Spark](model:deltaSpark), and DuckDB

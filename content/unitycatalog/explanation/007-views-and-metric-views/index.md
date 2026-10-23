@@ -8,12 +8,12 @@ references:
   - lakehouse.metricView
   - lakehouse.queryEngine
   - lakehouse.governance.authorization
-  - unityCatalogOSS
+  - unityCatalogServer
   - apacheSpark
 status: draft
 ---
 
-In [Unity Catalog](model:unityCatalogOSS), a [view](model:lakehouse.sqlView) is
+In [Unity Catalog](model:unityCatalogServer), a [view](model:lakehouse.sqlView) is
 a catalog entry with a table type and a stored definition. It has no storage
 location and holds no data. When you query it, a
 [query engine](model:lakehouse.queryEngine) reads the definition from the

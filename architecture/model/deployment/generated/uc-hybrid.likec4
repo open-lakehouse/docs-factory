@@ -24,7 +24,7 @@ deployment {
       #generated
       description "Open-source Unity Catalog server; Databricks-shaped REST API."
       metadata { trestleModule "unity-catalog" }
-      instanceOf unityCatalogOSS
+      instanceOf unityCatalogServer
     }
 
     ucHybrid.unityCatalog -[uses]-> ucHybrid.hostedPostgres "PostgreSQL" {

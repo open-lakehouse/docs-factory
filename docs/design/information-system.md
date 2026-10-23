@@ -112,7 +112,7 @@ tag unity-catalog
        ├─ -[specifies]-> lakehouse.catalog      (capability, may churn)
        │      └─ metadata.canonicalDoc → design/catalog-plane.md
        │      └─ instanceOf (inverse) → mangrove (service, sourceRepo)
-       └─ implemented by unityCatalogOSS -[implements]-> unityCatalogSpec  (implementation)
+       └─ implemented by unityCatalogServer -[implements]-> unityCatalogSpec  (implementation)
 ```
 
 From one tag the page surfaces: authoritative external docs, the capability it

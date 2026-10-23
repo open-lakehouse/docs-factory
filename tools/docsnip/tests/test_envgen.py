@@ -160,9 +160,8 @@ def test_fix_projects_nodes_edges_and_facts(tmp_path):
         in text
     )
     assert 'trestleEdge "route:envoy→unity-catalog:8080"' in text
-    # S3 is a spec-backed capability; the relational store is infrastructure
-    assert 'ucAws.unityCatalog -[consumes]-> ucAws.rustfs "S3"' in text
-    assert 'ucAws.unityCatalog -[dependsOn]-> ucAws.postgres "PostgreSQL"' in text
+    assert 'ucAws.unityCatalog -[uses]-> ucAws.rustfs "S3"' in text
+    assert 'ucAws.unityCatalog -[uses]-> ucAws.postgres "PostgreSQL"' in text
     assert "@clients" not in text and "access:" not in text
     facts = json.loads((root / envgen.FACTS).read_text())
     assert facts["environments"]["uc-aws"] == {

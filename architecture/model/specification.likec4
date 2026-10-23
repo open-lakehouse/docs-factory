@@ -1,10 +1,14 @@
 // Specification for the Open Lakehouse architecture model — the vocabulary of
 // element / deployment-node / relationship kinds and tags.
 //
+// Conventions for using this vocabulary are ADR-0008.
+//
 // METADATA CONVENTIONS (free-form key/values on elements):
-//   canonicalDoc  — path (relative to architecture/) of the NAVIGATION design
-//                   doc for this element; used by canonicals.yaml / update skill.
-//   sourceRepo    — org/repo identity of a deployment service.
+//   canonicalDoc  — path (relative to architecture/) of the design doc for this
+//                   element.
+//   sourceRepo    — org/repo of an implementation or deployment service.
+//   trestleModule / trestleEdge — written by `docsnip envs --fix` on generated
+//                   deployment nodes and edges; never by hand.
 
 specification {
 
@@ -14,14 +18,6 @@ specification {
     style {
       shape person
       color secondary
-    }
-  }
-
-  element store {
-    notation "Object storage"
-    style {
-      shape storage
-      color muted
     }
   }
 
@@ -80,21 +76,8 @@ specification {
     notation "Deployment topology"
   }
 
-  // A browser / client-side runtime.
-  deploymentNode browser {
-    notation "Browser runtime"
-    style {
-      shape browser
-      color sky
-    }
-  }
-
   // A deployed service / process (our repos manifest here).
-  deploymentNode service {
-    style {
-      icon tech:rust
-    }
-  }
+  deploymentNode service
 
   // A datastore backing a service (object storage buckets, relational store).
   deploymentNode datastore {
@@ -106,23 +89,22 @@ specification {
 
   // --- Relationship kinds --------------------------------------------------
 
-  // Generic backbone (ADR-0006): the coarse composition + dependency edges C4 /
-  // Backstage assume, so agents can reason over the graph coarsely before
-  // drilling into a specific kind.
-  //   partOf    — generic COMPOSITION. Added only where nesting does NOT already
-  //               imply it (cross-type composition, e.g. impl composed of impl);
-  //               never duplicate the containment tree. Asset "belonging" is NOT
-  //               partOf — it is carried by `dependsOn` (asset -> capability).
-  //   dependsOn — generic DEPENDENCY (fallback when no specific edge fits). The
-  //               specific edges below (resolves / reads / vends / consumes /
-  //               enforces) are REFINEMENTS of dependsOn and stay the primary
-  //               rendering; use dependsOn only when none of them apply.
-  relationship partOf                      // generic composition (cross-type)
-  relationship dependsOn { line dashed }   // generic dependency; specific edges refine it
+  // Generic backbone (ADR-0006). `dependsOn` is the fallback dependency; the
+  // specific dependency edges below refine it, so a coarse traversal takes the
+  // union of `dependsOn` and its refinements. Use `dependsOn` only when no
+  // specific edge fits: the capability chain, credential -> issuer, concern ->
+  // capability, and an optional integration between implementations (#optional).
+  relationship dependsOn { line dashed }
 
-  relationship flows                       // generic data / control flow
-  relationship realizes { line dotted }    // concrete realizes abstract capability
-  relationship reads                       // reads bytes / files (a dependsOn)
+  // Dependency refinements (ADR-0008):
+  relationship registeredIn                // asset -> catalog: the catalog records it
+  relationship locatedAt { line dashed }   // asset -> objectStorage or volume: it names a path there
+  relationship derivedFrom                 // asset -> asset, type-level: an instance can be defined over instances of the target
+  relationship builtOn                     // implementation -> implementation: the required core it can't run without
+  relationship uses                        // person -> capability; deployment node -> node
+
+  relationship flows                       // data or control flow (orchestration, routes, dynamic views)
+  relationship realizes { line dotted }    // an implementation realizes a capability or concern
 
   // Altitude edges (concept <- specification <- implementation):
   relationship specifies                   // a specification specifies a capability
@@ -138,9 +120,16 @@ specification {
   relationship appliesTo { line dotted }
 
   // --- Tags ----------------------------------------------------------------
+  // Compute posture of an implementation: runs as a service, embeds as a
+  // library, is a client of a service (CLI, SDK, agent-tool bridge), or is
+  // infrastructure the environments run on.
   tag service
   tag library
+  tag client
   tag infra
+  // On a `dependsOn` between implementations: an optional integration that
+  // adds a feature, as opposed to a `builtOn` core.
+  tag optional
   tag generated   // rendered from a Trestle plan; excluded from estate views
   // On a `realizes` edge: the implementation meets the target only together
   // with another contributor. Whether the target is fully met is a property of

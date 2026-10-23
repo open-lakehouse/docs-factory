@@ -27,10 +27,10 @@ deployment {
       instanceOf unityCatalogOSS
     }
 
-    ucLocal.unityCatalog -[dependsOn]-> ucLocal.postgres "PostgreSQL" {
+    ucLocal.unityCatalog -[uses]-> ucLocal.postgres "PostgreSQL" {
       metadata { trestleEdge "uses:unity-catalog→postgres:relational_db" }
     }
-    ucLocal.unityCatalog -[consumes]-> ucLocal.rustfs "S3" {
+    ucLocal.unityCatalog -[uses]-> ucLocal.rustfs "S3" {
       metadata { trestleEdge "uses:unity-catalog→rustfs:object_store" }
     }
   }

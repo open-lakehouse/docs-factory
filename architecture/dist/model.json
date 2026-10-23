@@ -1816,7 +1816,7 @@
   },
   "relations": {
     "130fm7d": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1827,7 +1827,7 @@
       "id": "130fm7d"
     },
     "r074if": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1838,7 +1838,7 @@
       "id": "r074if"
     },
     "18li8n4": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1849,7 +1849,7 @@
       "id": "18li8n4"
     },
     "1vs51d1": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1860,7 +1860,7 @@
       "id": "1vs51d1"
     },
     "1ymhbz4": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1871,7 +1871,7 @@
       "id": "1ymhbz4"
     },
     "v70pd1": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1882,7 +1882,7 @@
       "id": "v70pd1"
     },
     "ohrcxb": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1893,7 +1893,7 @@
       "id": "ohrcxb"
     },
     "wv3m22": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1904,7 +1904,7 @@
       "id": "wv3m22"
     },
     "1dh4b3d": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1915,7 +1915,7 @@
       "id": "1dh4b3d"
     },
     "qhekl6": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -1926,7 +1926,7 @@
       "id": "qhekl6"
     },
     "30cndv": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "icebergRestSpec"
       },
@@ -1937,7 +1937,7 @@
       "id": "30cndv"
     },
     "3rdc3h": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "icebergRestSpec"
       },
@@ -1948,7 +1948,7 @@
       "id": "3rdc3h"
     },
     "1uz5m3l": {
-      "title": "governs",
+      "title": "",
       "source": {
         "model": "icebergRestSpec"
       },
@@ -2764,7 +2764,7 @@
       "id": "egqi6d"
     },
     "1kyr5om": {
-      "title": "specifies the catalog capability",
+      "title": "",
       "source": {
         "model": "ucSpec"
       },
@@ -2775,7 +2775,7 @@
       "id": "1kyr5om"
     },
     "od9xen": {
-      "title": "specifies the catalog capability",
+      "title": "",
       "source": {
         "model": "icebergRestSpec"
       },
@@ -2786,7 +2786,7 @@
       "id": "od9xen"
     },
     "1u6tdob": {
-      "title": "specifies the sharing capability",
+      "title": "",
       "source": {
         "model": "openSharingSpec"
       },
@@ -2797,7 +2797,7 @@
       "id": "1u6tdob"
     },
     "6n5iit": {
-      "title": "specifies the file-format capability",
+      "title": "",
       "source": {
         "model": "parquetSpec"
       },
@@ -2808,7 +2808,7 @@
       "id": "6n5iit"
     },
     "1y21ww5": {
-      "title": "specifies the object-storage capability",
+      "title": "",
       "source": {
         "model": "s3Api"
       },
@@ -2852,7 +2852,7 @@
       "id": "tqmuor"
     },
     "7710m6": {
-      "title": "specifies the object-storage capability",
+      "title": "",
       "source": {
         "model": "azureBlobApi"
       },
@@ -2886,7 +2886,7 @@
     },
     "1cizaq2": {
       "line": "dotted",
-      "title": "realizes the query-engine capability",
+      "title": "",
       "source": {
         "model": "datafusion"
       },
@@ -2910,7 +2910,7 @@
     },
     "1kwn0k1": {
       "line": "dotted",
-      "title": "realizes the query-engine capability",
+      "title": "",
       "source": {
         "model": "apacheSpark"
       },
@@ -3040,7 +3040,7 @@
     },
     "hwyvha": {
       "line": "dotted",
-      "title": "implements",
+      "title": "",
       "source": {
         "model": "deltaRs"
       },
@@ -3100,7 +3100,7 @@
     },
     "1fm0joh": {
       "line": "dotted",
-      "title": "implements",
+      "title": "",
       "source": {
         "model": "deltaSpark"
       },
@@ -3147,7 +3147,7 @@
     },
     "6xo90o": {
       "line": "dotted",
-      "title": "realizes the query-engine capability",
+      "title": "",
       "source": {
         "model": "duckdb"
       },
@@ -3264,7 +3264,7 @@
     },
     "exogb": {
       "line": "dotted",
-      "title": "realizes the query-engine capability",
+      "title": "",
       "source": {
         "model": "polars"
       },
@@ -3615,7 +3615,7 @@
     },
     "1wp8ci1": {
       "line": "dotted",
-      "title": "implements",
+      "title": "",
       "source": {
         "model": "lakekeeper"
       },
@@ -3666,7 +3666,7 @@
     },
     "bcmcsa": {
       "line": "dotted",
-      "title": "implements",
+      "title": "",
       "source": {
         "model": "unityCatalogOSS"
       },
@@ -3729,7 +3729,7 @@
     },
     "vpcv84": {
       "line": "dotted",
-      "title": "implements",
+      "title": "",
       "source": {
         "model": "mangrove"
       },
@@ -3741,7 +3741,7 @@
     },
     "zgaw9o": {
       "line": "dotted",
-      "title": "realizes the catalog capability",
+      "title": "",
       "source": {
         "model": "mangrove"
       },
@@ -3753,7 +3753,7 @@
     },
     "u9id2x": {
       "line": "dotted",
-      "title": "realizes the model-tracking capability",
+      "title": "",
       "source": {
         "model": "mlflow"
       },
@@ -3765,7 +3765,7 @@
     },
     "15xpba9": {
       "line": "dotted",
-      "title": "realizes the query-engine capability",
+      "title": "",
       "source": {
         "model": "hydrofoil"
       },
@@ -3842,7 +3842,7 @@
     },
     "i9en0r": {
       "line": "dotted",
-      "title": "realizes the lineage concern",
+      "title": "",
       "source": {
         "model": "headwaters"
       },
@@ -3956,7 +3956,7 @@
     },
     "1x84fwq": {
       "line": "dotted",
-      "title": "realizes the notebook",
+      "title": "as a notebook",
       "source": {
         "model": "marimo"
       },
@@ -3968,7 +3968,7 @@
     },
     "bx08g": {
       "line": "dotted",
-      "title": "realizes the orchestration capability",
+      "title": "",
       "source": {
         "model": "rivers"
       },
@@ -3980,7 +3980,7 @@
     },
     "1g4n3xx": {
       "line": "dotted",
-      "title": "realizes the catalog metadata store",
+      "title": "",
       "source": {
         "model": "postgresql"
       },
@@ -3992,7 +3992,7 @@
     },
     "j4931n": {
       "line": "dotted",
-      "title": "implements",
+      "title": "",
       "source": {
         "model": "rustfs"
       },
@@ -4016,7 +4016,7 @@
     },
     "12ex9tu": {
       "line": "dotted",
-      "title": "implements",
+      "title": "",
       "source": {
         "model": "amazonS3"
       },
@@ -4064,7 +4064,7 @@
     },
     "xptpon": {
       "line": "dotted",
-      "title": "implements",
+      "title": "",
       "source": {
         "model": "azureBlobStorage"
       },
@@ -4198,7 +4198,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse",
-          "label": "[...]",
+          "label": null,
           "relations": [
             "130fm7d",
             "r074if",
@@ -4221,7 +4221,7 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse",
-          "label": "[...]",
+          "label": null,
           "relations": [
             "30cndv",
             "3rdc3h",
@@ -4237,7 +4237,7 @@
           "parent": null,
           "source": "openSharingSpec",
           "target": "lakehouse",
-          "label": "specifies the sharing capability",
+          "label": null,
           "relations": [
             "1u6tdob"
           ],
@@ -4251,7 +4251,7 @@
           "parent": null,
           "source": "parquetSpec",
           "target": "lakehouse",
-          "label": "specifies the file-format capability",
+          "label": null,
           "relations": [
             "6n5iit"
           ],
@@ -4265,7 +4265,7 @@
           "parent": null,
           "source": "s3Api",
           "target": "lakehouse",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "1y21ww5"
           ],
@@ -4321,7 +4321,7 @@
           "parent": null,
           "source": "azureBlobApi",
           "target": "lakehouse",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "7710m6"
           ],
@@ -4363,7 +4363,7 @@
           "parent": null,
           "source": "datafusion",
           "target": "lakehouse",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "1cizaq2"
           ],
@@ -4450,7 +4450,7 @@
           "parent": null,
           "source": "polars",
           "target": "lakehouse",
-          "label": "[...]",
+          "label": "reads and appends",
           "relations": [
             "exogb",
             "op9k2j"
@@ -4596,7 +4596,7 @@
           "parent": null,
           "source": "mangrove",
           "target": "lakehouse",
-          "label": "realizes the catalog capability",
+          "label": null,
           "relations": [
             "zgaw9o"
           ],
@@ -4610,7 +4610,7 @@
           "parent": null,
           "source": "mlflow",
           "target": "lakehouse",
-          "label": "realizes the model-tracking capability",
+          "label": null,
           "relations": [
             "u9id2x"
           ],
@@ -4643,7 +4643,7 @@
           "parent": null,
           "source": "headwaters",
           "target": "lakehouse",
-          "label": "realizes the lineage concern",
+          "label": null,
           "relations": [
             "i9en0r"
           ],
@@ -4720,7 +4720,7 @@
           "parent": null,
           "source": "marimo",
           "target": "lakehouse",
-          "label": "realizes the notebook",
+          "label": "as a notebook",
           "relations": [
             "1x84fwq"
           ],
@@ -4734,7 +4734,7 @@
           "parent": null,
           "source": "rivers",
           "target": "lakehouse",
-          "label": "realizes the orchestration capability",
+          "label": null,
           "relations": [
             "bx08g"
           ],
@@ -4748,7 +4748,7 @@
           "parent": null,
           "source": "postgresql",
           "target": "lakehouse",
-          "label": "realizes the catalog metadata store",
+          "label": null,
           "relations": [
             "1g4n3xx"
           ],
@@ -4818,7 +4818,7 @@
           "parent": null,
           "source": "deltaRs",
           "target": "deltaSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "hwyvha"
           ],
@@ -4832,7 +4832,7 @@
           "parent": null,
           "source": "deltaSpark",
           "target": "deltaSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "1fm0joh"
           ],
@@ -5028,7 +5028,7 @@
           "parent": null,
           "source": "unityCatalogOSS",
           "target": "ucSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "bcmcsa"
           ],
@@ -5042,7 +5042,7 @@
           "parent": null,
           "source": "mangrove",
           "target": "ucSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "vpcv84"
           ],
@@ -5112,7 +5112,7 @@
           "parent": null,
           "source": "lakekeeper",
           "target": "icebergRestSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "1wp8ci1"
           ],
@@ -5168,7 +5168,7 @@
           "parent": null,
           "source": "rustfs",
           "target": "s3Api",
-          "label": "implements",
+          "label": null,
           "relations": [
             "j4931n"
           ],
@@ -5182,7 +5182,7 @@
           "parent": null,
           "source": "amazonS3",
           "target": "s3Api",
-          "label": "implements",
+          "label": null,
           "relations": [
             "12ex9tu"
           ],
@@ -5252,7 +5252,7 @@
           "parent": null,
           "source": "azureBlobStorage",
           "target": "azureBlobApi",
-          "label": "implements",
+          "label": null,
           "relations": [
             "xptpon"
           ],
@@ -7233,7 +7233,7 @@
           }
         ]
       },
-      "hash": "yqUQyTUu3vml5LhwbpxTZioiJ8DXL_SMiY4OYXrh-p8"
+      "hash": "tJE324y4W1yI3Rl9ucczNVUzmzPhcm22LgphcPYxil0"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -8733,7 +8733,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.catalog",
-          "label": "specifies the catalog capability",
+          "label": null,
           "relations": [
             "1kyr5om"
           ],
@@ -8747,7 +8747,7 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse.catalog",
-          "label": "specifies the catalog capability",
+          "label": null,
           "relations": [
             "od9xen"
           ],
@@ -8789,7 +8789,7 @@
           "parent": null,
           "source": "mangrove",
           "target": "lakehouse.catalog",
-          "label": "realizes the catalog capability",
+          "label": null,
           "relations": [
             "zgaw9o"
           ],
@@ -9742,7 +9742,7 @@
           }
         ]
       },
-      "hash": "IWEPmW8rQ47Q8gelH2WQRMgx_R6tJAciclaE1g4wKqE"
+      "hash": "FtQllVuEPzbxcR1NcAk4SKmZ_Roo29sEpTKqjehPL3E"
     },
     "explain_metadataStore": {
       "_type": "element",
@@ -9763,7 +9763,7 @@
           "parent": null,
           "source": "postgresql",
           "target": "lakehouse.metadataStore",
-          "label": "realizes the catalog metadata store",
+          "label": null,
           "relations": [
             "1g4n3xx"
           ],
@@ -9896,7 +9896,7 @@
           }
         ]
       },
-      "hash": "5ebjBe1hiFbEW3v9btauwMtjZCl5fi99YktEKljXPoQ"
+      "hash": "1Z9NGGAChbvfhXFtjoykRCB2GlpKzK9Yxc9rS4OuCwY"
     },
     "explain_queryEngine": {
       "_type": "element",
@@ -9987,7 +9987,7 @@
           "parent": null,
           "source": "datafusion",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "1cizaq2"
           ],
@@ -10001,7 +10001,7 @@
           "parent": null,
           "source": "apacheSpark",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "1kwn0k1"
           ],
@@ -10015,7 +10015,7 @@
           "parent": null,
           "source": "duckdb",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "6xo90o"
           ],
@@ -10029,7 +10029,7 @@
           "parent": null,
           "source": "polars",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "exogb"
           ],
@@ -10057,7 +10057,7 @@
           "parent": null,
           "source": "hydrofoil",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "15xpba9"
           ],
@@ -10851,7 +10851,7 @@
           }
         ]
       },
-      "hash": "7LDR86a_SDeKjn7DdDrGUV65M4DyXrNphDzFvFicAZU"
+      "hash": "FxTUbX5_-wwHoXaZtflC_hzm0rb2HisbDvUWREYcKns"
     },
     "explain_orchestration": {
       "_type": "element",
@@ -10872,7 +10872,7 @@
           "parent": null,
           "source": "rivers",
           "target": "lakehouse.orchestration",
-          "label": "realizes the orchestration capability",
+          "label": null,
           "relations": [
             "bx08g"
           ],
@@ -11057,7 +11057,7 @@
           }
         ]
       },
-      "hash": "yfZQoplXRzL8XqkMcVAQzrMcp0wTuGIodSPO-M4aYFY"
+      "hash": "4fZoFR2VliB-4e9oBskJ95kHn0RO65O24YeDVuH_rQ8"
     },
     "explain_tableFormat": {
       "_type": "element",
@@ -11569,7 +11569,7 @@
           "parent": null,
           "source": "parquetSpec",
           "target": "lakehouse.fileFormat",
-          "label": "specifies the file-format capability",
+          "label": null,
           "relations": [
             "6n5iit"
           ],
@@ -11742,7 +11742,7 @@
           }
         ]
       },
-      "hash": "PHlyyOIwG501SOZFtHjBE2cGaFVP4iyNMWFwY-jEuKU"
+      "hash": "nomHRMbESqts4lURTK8E4aqDajWKltI5XfFsw7gGE5U"
     },
     "explain_objectStorage": {
       "_type": "element",
@@ -11763,7 +11763,7 @@
           "parent": null,
           "source": "s3Api",
           "target": "lakehouse.objectStorage",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "1y21ww5"
           ],
@@ -11777,7 +11777,7 @@
           "parent": null,
           "source": "azureBlobApi",
           "target": "lakehouse.objectStorage",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "7710m6"
           ],
@@ -12346,7 +12346,7 @@
           }
         ]
       },
-      "hash": "BhnC3-hK1aNqtw64A7Je2lmhp5WZrQip3YWB4jyHteA"
+      "hash": "HoTG1sGF7NnRoo6kAyZkABUCP0YZarOl62vdFScMNHw"
     },
     "explain_modelTracking": {
       "_type": "element",
@@ -12367,7 +12367,7 @@
           "parent": null,
           "source": "mlflow",
           "target": "lakehouse.modelTracking",
-          "label": "realizes the model-tracking capability",
+          "label": null,
           "relations": [
             "u9id2x"
           ],
@@ -12492,7 +12492,7 @@
           }
         ]
       },
-      "hash": "ZhxzxQF316bD5oW1CwZbifYo154yaovZUlA_RRyODwE"
+      "hash": "hXfZqMAzgMNUeEYhRcZQmcuwhXfhYsbTO-TV5jPim2I"
     },
     "explain_sharing": {
       "_type": "element",
@@ -12513,7 +12513,7 @@
           "parent": null,
           "source": "openSharingSpec",
           "target": "lakehouse.sharing",
-          "label": "specifies the sharing capability",
+          "label": null,
           "relations": [
             "1u6tdob"
           ],
@@ -12639,7 +12639,7 @@
           }
         ]
       },
-      "hash": "r3FkxR4__TsVSxDVGFGs11RCBbrK8pqUaIwixpuqUP0"
+      "hash": "-5NK2VhgTae-WODw9cEJYX-bicAZwL4LHhxyouJDe1k"
     },
     "explain_interactiveDevelopment": {
       "_type": "element",
@@ -12674,7 +12674,7 @@
           "parent": null,
           "source": "marimo",
           "target": "lakehouse.interactiveDevelopment",
-          "label": "realizes the notebook",
+          "label": "as a notebook",
           "relations": [
             "1x84fwq"
           ],
@@ -12868,7 +12868,7 @@
           }
         ]
       },
-      "hash": "OQ4nyy4wFR0HNX9klfiu1Lm39hH-Qu2Xp4R9T5bSVps"
+      "hash": "Hcz0-JwQlVx1AVdugEgS6croW9JE4Y0jlkEgrNf_ikQ"
     },
     "explain_governance": {
       "_type": "element",
@@ -13999,7 +13999,7 @@
           "parent": null,
           "source": "headwaters",
           "target": "lakehouse.lineage",
-          "label": "realizes the lineage concern",
+          "label": null,
           "relations": [
             "i9en0r"
           ],
@@ -14336,7 +14336,7 @@
           }
         ]
       },
-      "hash": "xfeb1aeJRxFn4pVcSLHc7e7n7f5qKP38lzujCrGDNJA"
+      "hash": "b87zEalP3m_1R1HogECP7e3GEvzV4h_D8_K3z6UIe7g"
     },
     "explain_observability": {
       "_type": "element",
@@ -16151,7 +16151,7 @@
           "parent": null,
           "source": "deltaRs",
           "target": "deltaSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "hwyvha"
           ],
@@ -16165,7 +16165,7 @@
           "parent": null,
           "source": "deltaSpark",
           "target": "deltaSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "1fm0joh"
           ],
@@ -16390,7 +16390,7 @@
           }
         ]
       },
-      "hash": "QHWH7FQLlvR4xjUWftcddWFh9er0Nfc-z4nMotDvAvo"
+      "hash": "IYWWWtqvzPRCsEuRi2viWcKBZmlkAsYtFXRGyXNbkUk"
     },
     "explain_icebergSpec": {
       "_type": "element",
@@ -16801,7 +16801,7 @@
           "parent": null,
           "source": "unityCatalogOSS",
           "target": "ucSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "bcmcsa"
           ],
@@ -16815,7 +16815,7 @@
           "parent": null,
           "source": "mangrove",
           "target": "ucSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "vpcv84"
           ],
@@ -16843,7 +16843,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse",
-          "label": "[...]",
+          "label": null,
           "relations": [
             "130fm7d",
             "r074if",
@@ -17354,7 +17354,7 @@
           }
         ]
       },
-      "hash": "fo530-YOfsLzibfUuN_zOfPJs9Xv9yuYid39BcSbUvs"
+      "hash": "RNSOJlFSG1VK0YZLfoho89iU7UvVvvoJboMfyamQ6OI"
     },
     "explain_icebergRestSpec": {
       "_type": "element",
@@ -17417,7 +17417,7 @@
           "parent": null,
           "source": "lakekeeper",
           "target": "icebergRestSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "1wp8ci1"
           ],
@@ -17445,7 +17445,7 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse",
-          "label": "[...]",
+          "label": null,
           "relations": [
             "30cndv",
             "3rdc3h",
@@ -17717,7 +17717,7 @@
           }
         ]
       },
-      "hash": "8ApEZZFeD5NyBsdKqJfmbCWT-MdQJ90aWrOki4pZrf4"
+      "hash": "uBHRhoqEak9uRG6o6brKnDB6_VppPYJLy0e21XR5850"
     },
     "explain_openSharingSpec": {
       "_type": "element",
@@ -17738,7 +17738,7 @@
           "parent": null,
           "source": "openSharingSpec",
           "target": "lakehouse",
-          "label": "specifies the sharing capability",
+          "label": null,
           "relations": [
             "1u6tdob"
           ],
@@ -17820,7 +17820,7 @@
           }
         ]
       },
-      "hash": "AjsNZEzRlK-rPTvloZgnZ8dmXChnqYnkL3fZ4OcUSwU"
+      "hash": "lLZWbL-422x0CcduE2vbIxmlt2kwxNaF7eyVHlM0PrI"
     },
     "explain_parquetSpec": {
       "_type": "element",
@@ -17841,7 +17841,7 @@
           "parent": null,
           "source": "parquetSpec",
           "target": "lakehouse",
-          "label": "specifies the file-format capability",
+          "label": null,
           "relations": [
             "6n5iit"
           ],
@@ -17925,7 +17925,7 @@
           }
         ]
       },
-      "hash": "GUsVy5x2DAHqH9qPKPK6fKTAsjztuQREj1JFXTr5Pro"
+      "hash": "p_qqRu87SMl8Ouyr-cqvY5UBTVvIXBJIm5Gl8fCSZgA"
     },
     "explain_s3Api": {
       "_type": "element",
@@ -17974,7 +17974,7 @@
           "parent": null,
           "source": "rustfs",
           "target": "s3Api",
-          "label": "implements",
+          "label": null,
           "relations": [
             "j4931n"
           ],
@@ -17988,7 +17988,7 @@
           "parent": null,
           "source": "amazonS3",
           "target": "s3Api",
-          "label": "implements",
+          "label": null,
           "relations": [
             "12ex9tu"
           ],
@@ -18002,7 +18002,7 @@
           "parent": null,
           "source": "s3Api",
           "target": "lakehouse",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "1y21ww5"
           ],
@@ -18226,7 +18226,7 @@
           }
         ]
       },
-      "hash": "PGX_spLRDSwKkYV0Y8MYUCA2Msyt8Af2ZG6bKsJ4ouk"
+      "hash": "RcYOMQVj0tBar32LWWHBfj20AVFq0nwO5tFON_Np-DU"
     },
     "explain_azureBlobApi": {
       "_type": "element",
@@ -18261,7 +18261,7 @@
           "parent": null,
           "source": "azureBlobStorage",
           "target": "azureBlobApi",
-          "label": "implements",
+          "label": null,
           "relations": [
             "xptpon"
           ],
@@ -18275,7 +18275,7 @@
           "parent": null,
           "source": "azureBlobApi",
           "target": "lakehouse",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "7710m6"
           ],
@@ -18430,7 +18430,7 @@
           }
         ]
       },
-      "hash": "Fjqf3d_XqtXZqAC4QWX7uKRjXMTiBMB6sCVnEEYH2PA"
+      "hash": "-PZ5tIU1w4qNpNSQDLn3U_QMHpOdVSCXNb2sk0D0A_4"
     },
     "explain_openLineageSpec": {
       "_type": "element",
@@ -20369,7 +20369,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.catalog",
-          "label": "specifies the catalog capability",
+          "label": null,
           "relations": [
             "1kyr5om"
           ],
@@ -20383,7 +20383,7 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse.catalog",
-          "label": "specifies the catalog capability",
+          "label": null,
           "relations": [
             "od9xen"
           ],
@@ -20397,7 +20397,7 @@
           "parent": null,
           "source": "openSharingSpec",
           "target": "lakehouse.sharing",
-          "label": "specifies the sharing capability",
+          "label": null,
           "relations": [
             "1u6tdob"
           ],
@@ -20411,7 +20411,7 @@
           "parent": null,
           "source": "parquetSpec",
           "target": "lakehouse.fileFormat",
-          "label": "specifies the file-format capability",
+          "label": null,
           "relations": [
             "6n5iit"
           ],
@@ -20425,7 +20425,7 @@
           "parent": null,
           "source": "s3Api",
           "target": "lakehouse.objectStorage",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "1y21ww5"
           ],
@@ -20439,7 +20439,7 @@
           "parent": null,
           "source": "azureBlobApi",
           "target": "lakehouse.objectStorage",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "7710m6"
           ],
@@ -20523,7 +20523,7 @@
           "parent": null,
           "source": "datafusion",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "1cizaq2"
           ],
@@ -20551,7 +20551,7 @@
           "parent": null,
           "source": "apacheSpark",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "1kwn0k1"
           ],
@@ -20649,7 +20649,7 @@
           "parent": null,
           "source": "deltaRs",
           "target": "deltaSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "hwyvha"
           ],
@@ -20705,7 +20705,7 @@
           "parent": null,
           "source": "deltaSpark",
           "target": "deltaSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "1fm0joh"
           ],
@@ -20719,7 +20719,7 @@
           "parent": null,
           "source": "duckdb",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "6xo90o"
           ],
@@ -20789,7 +20789,7 @@
           "parent": null,
           "source": "polars",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "exogb"
           ],
@@ -20975,7 +20975,7 @@
           "parent": null,
           "source": "lakekeeper",
           "target": "icebergRestSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "1wp8ci1"
           ],
@@ -21021,7 +21021,7 @@
           "parent": null,
           "source": "unityCatalogOSS",
           "target": "ucSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "bcmcsa"
           ],
@@ -21049,7 +21049,7 @@
           "parent": null,
           "source": "mangrove",
           "target": "lakehouse.catalog",
-          "label": "realizes the catalog capability",
+          "label": null,
           "relations": [
             "zgaw9o"
           ],
@@ -21063,7 +21063,7 @@
           "parent": null,
           "source": "mangrove",
           "target": "ucSpec",
-          "label": "implements",
+          "label": null,
           "relations": [
             "vpcv84"
           ],
@@ -21077,7 +21077,7 @@
           "parent": null,
           "source": "mlflow",
           "target": "lakehouse.modelTracking",
-          "label": "realizes the model-tracking capability",
+          "label": null,
           "relations": [
             "u9id2x"
           ],
@@ -21091,7 +21091,7 @@
           "parent": null,
           "source": "hydrofoil",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "15xpba9"
           ],
@@ -21151,7 +21151,7 @@
           "parent": null,
           "source": "headwaters",
           "target": "lakehouse.lineage",
-          "label": "realizes the lineage concern",
+          "label": null,
           "relations": [
             "i9en0r"
           ],
@@ -21270,7 +21270,7 @@
           "parent": null,
           "source": "marimo",
           "target": "lakehouse.interactiveDevelopment",
-          "label": "realizes the notebook",
+          "label": "as a notebook",
           "relations": [
             "1x84fwq"
           ],
@@ -21284,7 +21284,7 @@
           "parent": null,
           "source": "rivers",
           "target": "lakehouse.orchestration",
-          "label": "realizes the orchestration capability",
+          "label": null,
           "relations": [
             "bx08g"
           ],
@@ -21298,7 +21298,7 @@
           "parent": null,
           "source": "postgresql",
           "target": "lakehouse.metadataStore",
-          "label": "realizes the catalog metadata store",
+          "label": null,
           "relations": [
             "1g4n3xx"
           ],
@@ -21326,7 +21326,7 @@
           "parent": null,
           "source": "rustfs",
           "target": "s3Api",
-          "label": "implements",
+          "label": null,
           "relations": [
             "j4931n"
           ],
@@ -21354,7 +21354,7 @@
           "parent": null,
           "source": "amazonS3",
           "target": "s3Api",
-          "label": "implements",
+          "label": null,
           "relations": [
             "12ex9tu"
           ],
@@ -21410,7 +21410,7 @@
           "parent": null,
           "source": "azureBlobStorage",
           "target": "azureBlobApi",
-          "label": "implements",
+          "label": null,
           "relations": [
             "xptpon"
           ],
@@ -23770,7 +23770,7 @@
           }
         ]
       },
-      "hash": "5dt8PiX_s5_538HBs8cqyfbyb7x-YYqYJI3ZALUkuSg"
+      "hash": "mWYtaQzwmuwtz1jm6FMa64niRH5fvCXBrEGbtYZvTJY"
     },
     "capabilityMap": {
       "_type": "element",
@@ -23877,7 +23877,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.catalog",
-          "label": "specifies the catalog capability",
+          "label": null,
           "relations": [
             "1kyr5om"
           ],
@@ -23891,7 +23891,7 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse.catalog",
-          "label": "specifies the catalog capability",
+          "label": null,
           "relations": [
             "od9xen"
           ],
@@ -23905,7 +23905,7 @@
           "parent": null,
           "source": "openSharingSpec",
           "target": "lakehouse.sharing",
-          "label": "specifies the sharing capability",
+          "label": null,
           "relations": [
             "1u6tdob"
           ],
@@ -23919,7 +23919,7 @@
           "parent": null,
           "source": "parquetSpec",
           "target": "lakehouse.fileFormat",
-          "label": "specifies the file-format capability",
+          "label": null,
           "relations": [
             "6n5iit"
           ],
@@ -23933,7 +23933,7 @@
           "parent": null,
           "source": "s3Api",
           "target": "lakehouse.objectStorage",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "1y21ww5"
           ],
@@ -23989,7 +23989,7 @@
           "parent": null,
           "source": "azureBlobApi",
           "target": "lakehouse.objectStorage",
-          "label": "specifies the object-storage capability",
+          "label": null,
           "relations": [
             "7710m6"
           ],
@@ -24003,7 +24003,7 @@
           "parent": null,
           "source": "datafusion",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "1cizaq2"
           ],
@@ -24017,7 +24017,7 @@
           "parent": null,
           "source": "apacheSpark",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "1kwn0k1"
           ],
@@ -24073,7 +24073,7 @@
           "parent": null,
           "source": "duckdb",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "6xo90o"
           ],
@@ -24087,7 +24087,7 @@
           "parent": null,
           "source": "polars",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "exogb"
           ],
@@ -24157,7 +24157,7 @@
           "parent": null,
           "source": "mangrove",
           "target": "lakehouse.catalog",
-          "label": "realizes the catalog capability",
+          "label": null,
           "relations": [
             "zgaw9o"
           ],
@@ -24171,7 +24171,7 @@
           "parent": null,
           "source": "mlflow",
           "target": "lakehouse.modelTracking",
-          "label": "realizes the model-tracking capability",
+          "label": null,
           "relations": [
             "u9id2x"
           ],
@@ -24185,7 +24185,7 @@
           "parent": null,
           "source": "hydrofoil",
           "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "label": null,
           "relations": [
             "15xpba9"
           ],
@@ -24213,7 +24213,7 @@
           "parent": null,
           "source": "marimo",
           "target": "lakehouse.interactiveDevelopment",
-          "label": "realizes the notebook",
+          "label": "as a notebook",
           "relations": [
             "1x84fwq"
           ],
@@ -24227,7 +24227,7 @@
           "parent": null,
           "source": "rivers",
           "target": "lakehouse.orchestration",
-          "label": "realizes the orchestration capability",
+          "label": null,
           "relations": [
             "bx08g"
           ],
@@ -24241,7 +24241,7 @@
           "parent": null,
           "source": "postgresql",
           "target": "lakehouse.metadataStore",
-          "label": "realizes the catalog metadata store",
+          "label": null,
           "relations": [
             "1g4n3xx"
           ],
@@ -25997,7 +25997,7 @@
           }
         ]
       },
-      "hash": "QAF6D5ZLFSXMRguEscRUDQTHEMo5SLYolVMO8EWt4XU"
+      "hash": "ateCOxPXMtD3ZrglND4LDivrQh4v8CgDKCEvyvzU94I"
     },
     "concernMatrix": {
       "_type": "element",
@@ -27329,7 +27329,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.namespace",
-          "label": "governs",
+          "label": null,
           "relations": [
             "130fm7d"
           ],
@@ -27343,7 +27343,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.table",
-          "label": "governs",
+          "label": null,
           "relations": [
             "r074if"
           ],
@@ -27357,7 +27357,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.sqlView",
-          "label": "governs",
+          "label": null,
           "relations": [
             "ohrcxb"
           ],
@@ -27371,7 +27371,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.metricView",
-          "label": "governs",
+          "label": null,
           "relations": [
             "wv3m22"
           ],
@@ -27385,7 +27385,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.volume",
-          "label": "governs",
+          "label": null,
           "relations": [
             "18li8n4"
           ],
@@ -27399,7 +27399,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.registeredFunction",
-          "label": "governs",
+          "label": null,
           "relations": [
             "1vs51d1"
           ],
@@ -27413,7 +27413,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.mlModel",
-          "label": "governs",
+          "label": null,
           "relations": [
             "1ymhbz4"
           ],
@@ -27427,7 +27427,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.agentSkill",
-          "label": "governs",
+          "label": null,
           "relations": [
             "v70pd1"
           ],
@@ -27441,7 +27441,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.credential",
-          "label": "governs",
+          "label": null,
           "relations": [
             "1dh4b3d"
           ],
@@ -27455,7 +27455,7 @@
           "parent": null,
           "source": "ucSpec",
           "target": "lakehouse.externalLocation",
-          "label": "governs",
+          "label": null,
           "relations": [
             "qhekl6"
           ],
@@ -27469,7 +27469,7 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse.namespace",
-          "label": "governs",
+          "label": null,
           "relations": [
             "30cndv"
           ],
@@ -27483,7 +27483,7 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse.table",
-          "label": "governs",
+          "label": null,
           "relations": [
             "3rdc3h"
           ],
@@ -27497,7 +27497,7 @@
           "parent": null,
           "source": "icebergRestSpec",
           "target": "lakehouse.sqlView",
-          "label": "governs",
+          "label": null,
           "relations": [
             "1uz5m3l"
           ],
@@ -28021,7 +28021,7 @@
           }
         ]
       },
-      "hash": "HtnJGQr8mAynjSliNVAQYzk6fnOhhaP_oCiGH27rMp8"
+      "hash": "O8BwxYckCqUJkKbCYUE5gd5wHg5c7vjH7126RyGV8ls"
     },
     "assetCapabilities": {
       "_type": "element",

@@ -108,8 +108,6 @@ store; the local pattern's RustFS is another, reached through the AWS
 hostnames its stack imitates. Then the database credentials are the only
 secret the participants share:
 
-<!-- TODO(open question): which non-AWS stores with an STS AssumeRole API work as hybrid targets; these docs haven't verified one outside the local stack's emulated AWS hostnames. -->
-
 - **There is no access control between participants.** Each server runs with
   authorization disabled, and anyone with the database password can change
   the catalog directly. Share the credentials only with people you would make
@@ -117,11 +115,10 @@ secret the participants share:
 - **The server vends storage credentials, so no one shares a bucket key.**
   The bucket is registered with the catalog as a storage credential and an
   external location, and engines ask the server for a credential before they
-  read or write a table or volume. Each server signs its `AssumeRole` calls
-  with a cloud identity that may assume the storage role, picked up from the
-  default credential chain on that machine (see
+  read or write a table or volume. The server signs its `AssumeRole` calls
+  through the default credential chain, as an identity the storage role
+  trusts (see
   [Configure AWS storage credentials and external locations](../../how-to/configure-aws-storage/index.md#run-the-server-as-a-master-role)).
-  <!-- TODO(open question): whether each participant signs in with their own identity allowed to assume the storage role, or the pattern needs one shared master identity; these docs haven't run vending from more than one hybrid server. -->
 - **The `uc-hybrid` environment doesn't vend yet.** It selects a generic
   S3-compatible store and registers a bucket only when it has an IAM role for
   it, so its bucket stays unregistered. Its `secrets.env` carries a bucket
@@ -130,7 +127,6 @@ secret the participants share:
   requests for those objects fail with `FAILED_PRECONDITION`. Share a
   storage key only in a sandbox: a key that opens every file goes around the
   catalog.
-  <!-- TODO(open question): register the hybrid bucket with a storage role so the environment vends and secrets.env holds only the database credentials; this needs a recipe change. -->
 
 Choose it for a small team that trusts each other: a shared sandbox, a
 workshop, or a demo that has to survive a laptop restart. It lets you start

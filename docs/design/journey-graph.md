@@ -1,10 +1,9 @@
 # One journey graph for the estate
 
-**Status:** P0–P3 (#311–#314) and P4 are built: the catalog in
+**Status:** P0–P4 (#311–#315) and P4b are built: the catalog in
 `architecture/journeys/`, the per-project projections with selected rows and
-rollup columns, the spec obligations, the coverage report, and server facts
-(§2–§3 describe them as built). P4b (the format crosswalk) and P5 are
-proposals. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md).
+rollup columns, the spec obligations, the coverage report, server facts, and
+the format crosswalk (§2–§3 describe them as built). P5 is a proposal. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md).
 **Scope:** `content/*/compatibility.yml`, `content/vocab.json` `specFeatures`,
 `tools/docsnip` (`compat.py`, `scriptmeta.py`, `query.py`, `tabs.py`), the
 `compatibility.json` consumers in `site/` and `emit/`, and the review app's
@@ -249,9 +248,22 @@ A table lists its `rows` or `select`s them, not both. A select matches every
 key it gives (`asset`, and `paths` as any of the listed), in catalog order: the
 area files sorted by name, then file order. `<!-- compat:asset:<id> -->` keeps
 its own rollup for now. `content/open-lakehouse` can get a projection without
-owning any journey. Its format crosswalk (P4b) needs an equivalence between
-obligations of different specs, such as Delta `deletionVectors` and Iceberg
-`deletion-vectors`, that no file records yet.
+owning any journey.
+
+### 2.6 Equivalences and the crosswalk (built)
+
+`architecture/journeys/equivalences.yml` records what table formats do alike:
+each entry has a title, a side per spec, and how they differ. A side names
+the obligations it uses and adds `journeys` that cover no obligation, such as
+Delta's version reads, which are core protocol. Its `text` replaces the
+obligation names where the spec's own words say more ("v2 position deletes;
+v3 deletion vectors") or says what the spec has instead ("None").
+`<!-- compat:crosswalk -->` renders it with no project matrix: a column per
+spec, each side listing the journeys that cover its obligations, so a journey
+that gains a `covers` joins its row. The open-lakehouse crosswalk page (R01,
+`private`) is generated from it and keeps its 16 rows. Still open: engine
+support per side (which needs a project's cells) and a check for obligations
+that pair with nothing.
 
 ## 3. Coverage from the graph (built)
 
@@ -330,7 +342,7 @@ Each phase is its own PR, and each leaves `docsnip check` green.
 | **P2** (#313) | `obligations/*.yml` replaces `specFeatures`. `feature:` becomes `covers:` (a list). The coverage report. | `coverage` is in `compatibility.json`, and its numbers are in the PR description. |
 | **P3** (built) | Implementation facts and blocked cells. The six UC Iceberg REST server entries become implementation facts. | The `iceberg-catalog` table renders the same outcomes from one fact per endpoint. |
 | **P4** (built) | `select:` rows, rollup interfaces, Delta's "Delta tables in Unity Catalog" table, the core-operation claims moved off Delta's `by-path` rows. | `catalog.unity` is gone; UC's table cells are unchanged. |
-| **P4b** | Obligation equivalences across specs, and the open-lakehouse format crosswalk rendered from them. | The crosswalk page renders from data. |
+| **P4b** (built) | Obligation equivalences across specs, and the open-lakehouse format crosswalk rendered from them. | The crosswalk page renders from data. |
 | **P5** | Upstream conformance suites (the Iceberg REST Compatibility Kit, Delta Acceptance Testing) as evidence for obligations. | Optional. |
 
 ## 7. Open questions

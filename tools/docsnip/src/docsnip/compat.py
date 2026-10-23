@@ -53,6 +53,8 @@ CATALOG = Path("architecture") / "journeys"
 # The resolved matrix the review app loads (site/src/compat.ts); committed, so
 # the site builds without uv.
 ARTIFACT = "compatibility.json"
+# The catalog itself, resolved, for the review app's Model section.
+ESTATE_ARTIFACT = Path("architecture") / "dist" / "journeys.json"
 # Bumped when an artifact field is removed or changes meaning; new fields don't
 # bump it. 1 was the unversioned shape before journeys carried assets; 3 replaced
 # a journey's `family` with its `path`.
@@ -1861,6 +1863,16 @@ class _Embed:
     end: int  # index of the closing marker line
 
 
+def _side_journeys(catalog: Catalog, spec: str, side: Side) -> list[str]:
+    """The journeys covering the side's obligations, then the side's own."""
+    covering = [
+        j.id
+        for j in catalog.journeys.values()
+        if any(c.spec == spec and c.name in side.obligations for c in j.covers)
+    ]
+    return covering + [j for j in side.journeys if j not in covering]
+
+
 def render_crosswalk(result: Result) -> list[str]:
     """The equivalences as a table: a column per spec, in the order the file
     first names them, each side with the journeys that cover its obligations."""
@@ -1881,12 +1893,7 @@ def render_crosswalk(result: Result) -> list[str]:
             if side is None:
                 cells.append("—")
                 continue
-            covering = [
-                j.id
-                for j in catalog.journeys.values()
-                if any(c.spec == spec and c.name in side.obligations for c in j.covers)
-            ]
-            journeys = covering + [j for j in side.journeys if j not in covering]
+            journeys = _side_journeys(catalog, spec, side)
             shown = side.text or ", ".join(f"`{n}`" for n in side.obligations)
             if journeys:
                 shown += " (" + ", ".join(f"`{j}`" for j in journeys) + ")"
@@ -2465,8 +2472,162 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
     }
 
 
+def _requires_json(requires: Requirements) -> dict[str, dict[str, list[str]]]:
+    return {
+        role: {edge: list(ids) for edge, ids in edges.items()}
+        for role, edges in requires.items()
+    }
+
+
+def _candidates(model: Model, contracts: dict[str, tuple[str, ...]]) -> list[dict]:
+    """The implementations the model lets play a role: each contract edge held
+    by the implementation or something it integrates, which ``via`` names.
+
+    The model allowing it never makes a cell pass; claims do (ADR-0009)."""
+    integrates: dict[str, set[str]] = {}
+    for kind, source, target in model.edges:
+        if kind == "integrates":
+            integrates.setdefault(source, set()).add(target)
+    found = []
+    for impl in sorted(k for k, v in model.kinds.items() if v == "implementation"):
+        speakers = [impl, *sorted(integrates.get(impl, ()))]
+        held = [
+            next((s for s in speakers if (edge, s, target) in model.edges), None)
+            for edge, targets in contracts.items()
+            for target in targets
+        ]
+        if None not in held:
+            via = sorted({s for s in held if s and s != impl})
+            found.append({"id": impl, "via": via})
+    return found
+
+
+def estate_artifact(result: Result) -> dict[str, object]:
+    """The catalog the review app explores, with the joins only docsnip can make:
+    who the model lets play each path role, which journeys cover each
+    obligation, and the cells each server fact blocks in every project."""
+    catalog, model, matrices = result.catalog, result.model, result.matrices
+    aliased: dict[str, list[str]] = {}
+    for old, new in sorted(catalog.aliases.items()):
+        aliased.setdefault(new, []).append(old)
+    specs = {}
+    for spec, known in sorted(catalog.obligations.items()):
+        items = []
+        for o in known.items.values():
+            covering = {
+                role: [
+                    j.id
+                    for j in catalog.journeys.values()
+                    if Cover(spec, o.name, role) in j.covers
+                ]
+                for role in o.roles
+            }
+            items.append(
+                {
+                    "name": o.name,
+                    "roles": list(o.roles),
+                    "since": o.since,
+                    "journeys": covering,
+                }
+            )
+        specs[spec] = {
+            "title": model.titles.get(spec, spec),
+            "roles": list(known.roles),
+            "obligations": items,
+        }
+    facts = []
+    for fact in catalog.facts:
+        blocks = [
+            {
+                "project": m.project,
+                "interfaces": list(e.interfaces),
+                "journeys": list(e.journeys),
+            }
+            for m in matrices.values()
+            for e in m.evidence
+            if e.implementation == fact.implementation and e.why == fact.why
+        ]
+        facts.append(
+            {
+                "implementation": fact.implementation,
+                "obligations": [
+                    {"spec": spec, "name": name} for spec, name in fact.obligations
+                ],
+                "outcome": fact.outcome,
+                "why": fact.why,
+                "source": fact.source,
+                "blocks": blocks,
+            }
+        )
+    return {
+        "generated": "by `uv run docsnip compat --fix` from architecture/journeys/; "
+        "edit that, not this file",
+        "version": ARTIFACT_VERSION,
+        "paths": {
+            name: {
+                "roles": _requires_json(requires),
+                "candidates": {
+                    role: _candidates(model, contracts)
+                    for role, contracts in requires.items()
+                },
+            }
+            for name, requires in catalog.paths.items()
+        },
+        "interfaces": {
+            key: {
+                "label": i.label,
+                "package": i.package,
+                "model": i.model,
+                "via": i.via,
+                "integrations": list(i.integrations),
+                "rollup": list(i.rollup),
+                "projects": {
+                    m.project: (m.pins.get(i.pin) if i.pin else None)
+                    or _tested_version(result, m, key)
+                    for m in matrices.values()
+                    if key in m.interfaces
+                },
+            }
+            for key, i in catalog.interfaces.items()
+        },
+        "journeys": {
+            j.id: {
+                "title": j.title,
+                "summary": j.summary,
+                "request": j.request,
+                "path": j.path,
+                "asset": j.asset,
+                "covers": [dataclasses.asdict(c) for c in j.covers],
+                "requires": _requires_json(j.requires),
+                "projects": [p for p, m in matrices.items() if j.id in m.journeys],
+                "aliases": aliased.get(j.id, []),
+            }
+            for j in catalog.journeys.values()
+        },
+        "specs": specs,
+        "facts": facts,
+        "equivalences": [
+            {
+                "id": eq.id,
+                "title": eq.title,
+                "differ": " ".join(eq.differ.split()) if eq.differ else None,
+                "sides": {
+                    spec: {
+                        "obligations": list(side.obligations),
+                        "journeys": _side_journeys(catalog, spec, side),
+                        "text": side.text,
+                    }
+                    for spec, side in eq.sides.items()
+                },
+            }
+            for eq in catalog.equivalences
+        ],
+    }
+
+
 def _artifacts(repo_root: Path, result: Result) -> Iterable[tuple[Path, str, str]]:
-    """Each matrix's artifact: its path, current text, and rendered text."""
+    """Each matrix's artifact, then the estate catalog's: path, current text,
+    and rendered text."""
     content_root = repo_root / "content"
     for matrix in result.matrices.values():
         path = matrix.path.parent / ARTIFACT
@@ -2477,6 +2638,11 @@ def _artifacts(repo_root: Path, result: Result) -> Iterable[tuple[Path, str, str
             )
             + "\n"
         )
+        yield path, old, new
+    if (repo_root / CATALOG).is_dir():
+        path = repo_root / ESTATE_ARTIFACT
+        old = path.read_text() if path.is_file() else ""
+        new = json.dumps(estate_artifact(result), indent=2, ensure_ascii=False) + "\n"
         yield path, old, new
 
 
@@ -2529,6 +2695,7 @@ def fix(repo_root: Path) -> list[Path]:
     if errors:
         raise ValueError("\n".join(errors))
     for path, text in files:
+        path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(text)
     return [path for path, _ in files]
 

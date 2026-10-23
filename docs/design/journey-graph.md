@@ -68,6 +68,12 @@ content/<project>/compatibility.yml
 
 `docsnip compat` loads `architecture/journeys/` once, then each project's
 projection, and writes `content/<project>/compatibility.json` as today.
+It also writes the catalog itself, resolved, to `architecture/dist/journeys.json`
+for the review app's Model section: each path with the implementations the model
+lets play each role (and the integrations they need), each obligation with the
+journeys covering it per role, each server fact with the cells it blocks in every
+project, and the equivalences with their journeys. Like `compatibility.json` it's
+committed, so the site builds without uv, and `docsnip check` fails when it's stale.
 `docsnip check` validates every id against `architecture/dist/model.json`.
 
 ### 2.1 Obligations (built)

@@ -1,0 +1,7402 @@
+{
+  "generated": "by `uv run docsnip compat --fix` from architecture/journeys/; edit that, not this file",
+  "version": 3,
+  "paths": {
+    "by-path": {
+      "roles": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "candidates": {
+        "client": [
+          {
+            "id": "apacheSpark",
+            "via": [
+              "deltaSpark"
+            ]
+          },
+          {
+            "id": "daft",
+            "via": [
+              "deltaRs"
+            ]
+          },
+          {
+            "id": "deltaRs",
+            "via": []
+          },
+          {
+            "id": "deltaSpark",
+            "via": []
+          },
+          {
+            "id": "duckdb",
+            "via": [
+              "duckdbDelta"
+            ]
+          },
+          {
+            "id": "duckdbDelta",
+            "via": []
+          },
+          {
+            "id": "polars",
+            "via": [
+              "deltaRs"
+            ]
+          }
+        ]
+      }
+    },
+    "uc-api": {
+      "roles": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "candidates": {
+        "client": [
+          {
+            "id": "apacheSpark",
+            "via": [
+              "unityCatalogSpark"
+            ]
+          },
+          {
+            "id": "daft",
+            "via": []
+          },
+          {
+            "id": "deltaRs",
+            "via": []
+          },
+          {
+            "id": "duckdb",
+            "via": [
+              "duckdbUnityCatalog"
+            ]
+          },
+          {
+            "id": "duckdbUnityCatalog",
+            "via": []
+          },
+          {
+            "id": "hydrofoil",
+            "via": []
+          },
+          {
+            "id": "polars",
+            "via": []
+          },
+          {
+            "id": "unityCatalogAi",
+            "via": []
+          },
+          {
+            "id": "unityCatalogCli",
+            "via": []
+          },
+          {
+            "id": "unityCatalogLangChain",
+            "via": []
+          },
+          {
+            "id": "unityCatalogPythonSdk",
+            "via": []
+          },
+          {
+            "id": "unityCatalogSpark",
+            "via": []
+          }
+        ],
+        "catalog": [
+          {
+            "id": "mangrove",
+            "via": []
+          },
+          {
+            "id": "unityCatalogServer",
+            "via": []
+          }
+        ]
+      }
+    },
+    "uc-external": {
+      "roles": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "candidates": {
+        "client": [
+          {
+            "id": "apacheSpark",
+            "via": [
+              "deltaSpark",
+              "unityCatalogSpark"
+            ]
+          },
+          {
+            "id": "daft",
+            "via": [
+              "deltaRs"
+            ]
+          },
+          {
+            "id": "deltaRs",
+            "via": []
+          },
+          {
+            "id": "duckdb",
+            "via": [
+              "duckdbDelta",
+              "duckdbUnityCatalog"
+            ]
+          },
+          {
+            "id": "polars",
+            "via": [
+              "deltaRs"
+            ]
+          }
+        ],
+        "catalog": [
+          {
+            "id": "mangrove",
+            "via": []
+          },
+          {
+            "id": "unityCatalogServer",
+            "via": []
+          }
+        ]
+      }
+    },
+    "uc-managed": {
+      "roles": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "candidates": {
+        "client": [
+          {
+            "id": "apacheSpark",
+            "via": [
+              "deltaSpark",
+              "unityCatalogSpark"
+            ]
+          },
+          {
+            "id": "duckdb",
+            "via": [
+              "duckdbDelta",
+              "duckdbUnityCatalog"
+            ]
+          }
+        ],
+        "catalog": [
+          {
+            "id": "mangrove",
+            "via": []
+          },
+          {
+            "id": "unityCatalogServer",
+            "via": []
+          }
+        ]
+      }
+    },
+    "iceberg-rest-api": {
+      "roles": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "candidates": {
+        "client": [
+          {
+            "id": "apacheSpark",
+            "via": [
+              "icebergSparkRuntime"
+            ]
+          },
+          {
+            "id": "daft",
+            "via": [
+              "pyIceberg"
+            ]
+          },
+          {
+            "id": "duckdb",
+            "via": [
+              "duckdbIceberg"
+            ]
+          },
+          {
+            "id": "duckdbIceberg",
+            "via": []
+          },
+          {
+            "id": "icebergSparkRuntime",
+            "via": []
+          },
+          {
+            "id": "polars",
+            "via": [
+              "pyIceberg"
+            ]
+          },
+          {
+            "id": "pyIceberg",
+            "via": []
+          }
+        ],
+        "catalog": [
+          {
+            "id": "lakekeeper",
+            "via": []
+          },
+          {
+            "id": "unityCatalogServer",
+            "via": []
+          }
+        ]
+      }
+    },
+    "iceberg-rest": {
+      "roles": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "candidates": {
+        "client": [
+          {
+            "id": "apacheSpark",
+            "via": [
+              "icebergSparkRuntime"
+            ]
+          },
+          {
+            "id": "daft",
+            "via": [
+              "pyIceberg"
+            ]
+          },
+          {
+            "id": "duckdb",
+            "via": [
+              "duckdbIceberg"
+            ]
+          },
+          {
+            "id": "duckdbIceberg",
+            "via": []
+          },
+          {
+            "id": "icebergSparkRuntime",
+            "via": []
+          },
+          {
+            "id": "polars",
+            "via": [
+              "pyIceberg"
+            ]
+          },
+          {
+            "id": "pyIceberg",
+            "via": []
+          }
+        ],
+        "catalog": [
+          {
+            "id": "lakekeeper",
+            "via": []
+          },
+          {
+            "id": "unityCatalogServer",
+            "via": []
+          }
+        ]
+      }
+    }
+  },
+  "interfaces": {
+    "spark": {
+      "label": "Spark",
+      "package": "pyspark",
+      "model": "apacheSpark",
+      "via": null,
+      "integrations": [
+        "unityCatalogSpark",
+        "deltaSpark",
+        "icebergSparkRuntime"
+      ],
+      "rollup": [
+        "spark-sql",
+        "spark-python"
+      ],
+      "projects": {
+        "unitycatalog": "4.1.0"
+      }
+    },
+    "spark-4.2": {
+      "label": "Spark",
+      "package": "pyspark",
+      "model": "apacheSpark",
+      "via": null,
+      "integrations": [
+        "unityCatalogSpark",
+        "deltaSpark"
+      ],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "4.2.0"
+      }
+    },
+    "spark-sql": {
+      "label": "Spark · SQL",
+      "package": "pyspark",
+      "model": "apacheSpark",
+      "via": null,
+      "integrations": [
+        "unityCatalogSpark",
+        "deltaSpark",
+        "icebergSparkRuntime"
+      ],
+      "rollup": [],
+      "projects": {
+        "delta": "4.2.0",
+        "unitycatalog": "4.1.0"
+      }
+    },
+    "spark-python": {
+      "label": "Spark · Python",
+      "package": "pyspark",
+      "model": "apacheSpark",
+      "via": null,
+      "integrations": [
+        "unityCatalogSpark",
+        "deltaSpark",
+        "icebergSparkRuntime"
+      ],
+      "rollup": [],
+      "projects": {
+        "delta": "4.2.0",
+        "unitycatalog": "4.1.0"
+      }
+    },
+    "spark-scala": {
+      "label": "Spark · Scala",
+      "package": "delta-spark",
+      "model": "apacheSpark",
+      "via": null,
+      "integrations": [
+        "deltaSpark"
+      ],
+      "rollup": [],
+      "projects": {
+        "delta": "4.2.0"
+      }
+    },
+    "spark-java": {
+      "label": "Spark · Java",
+      "package": "delta-spark",
+      "model": "apacheSpark",
+      "via": null,
+      "integrations": [
+        "deltaSpark"
+      ],
+      "rollup": [],
+      "projects": {
+        "delta": "4.2.0"
+      }
+    },
+    "delta-rs-python": {
+      "label": "delta-rs · Python",
+      "package": "deltalake",
+      "model": "deltaRs",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "delta": "1.6.6",
+        "unitycatalog": "1.6.6"
+      }
+    },
+    "delta-rs-rust": {
+      "label": "delta-rs · Rust",
+      "package": "deltalake",
+      "model": "deltaRs",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "delta": "1.1.1"
+      }
+    },
+    "duckdb": {
+      "label": "DuckDB",
+      "package": "duckdb",
+      "model": "duckdb",
+      "via": null,
+      "integrations": [
+        "duckdbUnityCatalog",
+        "duckdbDelta",
+        "duckdbIceberg"
+      ],
+      "rollup": [
+        "duckdb-sql",
+        "duckdb-python"
+      ],
+      "projects": {
+        "unitycatalog": "1.5.6"
+      }
+    },
+    "duckdb-sql": {
+      "label": "DuckDB · SQL",
+      "package": "duckdb",
+      "model": "duckdb",
+      "via": null,
+      "integrations": [
+        "duckdbUnityCatalog",
+        "duckdbDelta",
+        "duckdbIceberg"
+      ],
+      "rollup": [],
+      "projects": {
+        "delta": "1.5.6"
+      }
+    },
+    "duckdb-python": {
+      "label": "DuckDB · Python",
+      "package": "duckdb",
+      "model": "duckdb",
+      "via": null,
+      "integrations": [
+        "duckdbUnityCatalog",
+        "duckdbDelta",
+        "duckdbIceberg"
+      ],
+      "rollup": [],
+      "projects": {
+        "delta": "1.5.6"
+      }
+    },
+    "polars": {
+      "label": "Polars",
+      "package": "polars",
+      "model": "polars",
+      "via": null,
+      "integrations": [
+        "deltaRs",
+        "pyIceberg"
+      ],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "1.44.2"
+      }
+    },
+    "daft": {
+      "label": "Daft",
+      "package": "daft",
+      "model": "daft",
+      "via": null,
+      "integrations": [
+        "deltaRs",
+        "pyIceberg"
+      ],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.7.25"
+      }
+    },
+    "pandas": {
+      "label": "pandas",
+      "package": "pandas",
+      "model": "deltaRs",
+      "via": "deltalake",
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "2.3.3"
+      }
+    },
+    "pyiceberg": {
+      "label": "PyIceberg",
+      "package": "pyiceberg",
+      "model": "pyIceberg",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.12.0"
+      }
+    },
+    "cli": {
+      "label": "uc CLI",
+      "package": null,
+      "model": "unityCatalogCli",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.7.0"
+      }
+    },
+    "python-sdk": {
+      "label": "Python SDK",
+      "package": "unitycatalog-client",
+      "model": "unityCatalogPythonSdk",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.7.0"
+      }
+    },
+    "unitycatalog-ai": {
+      "label": "unitycatalog-ai",
+      "package": "unitycatalog-ai",
+      "model": "unityCatalogAi",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.4.0"
+      }
+    },
+    "unitycatalog-langchain": {
+      "label": "unitycatalog-langchain",
+      "package": "unitycatalog-langchain",
+      "model": "unityCatalogLangChain",
+      "via": null,
+      "integrations": [],
+      "rollup": [],
+      "projects": {
+        "unitycatalog": "0.4.0"
+      }
+    }
+  },
+  "journeys": {
+    "function.create": {
+      "title": "Register a Python function",
+      "summary": "Register a Python function in a schema, with its signature and source code.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.create-wrapped": {
+      "title": "Register a function with its helpers",
+      "summary": "Register a Python function together with the helper functions its body calls.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.describe": {
+      "title": "View a function",
+      "summary": "Get a function's parameters, return type, and source code by its full name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.execute": {
+      "title": "Run a function by name",
+      "summary": "Run a registered function by name with typed parameters, on the caller's side.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.list": {
+      "title": "List functions",
+      "summary": "List the functions in a schema.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.get-source": {
+      "title": "Get a function's source back",
+      "summary": "Rebuild a registered function as Python source or as a callable from its stored record.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.replace": {
+      "title": "Replace a function",
+      "summary": "Replace a function's body or comments under the same name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.delete": {
+      "title": "Delete a function",
+      "summary": "Remove a function from the catalog.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.tool": {
+      "title": "Turn a function into an agent tool",
+      "summary": "Build an agent framework's tool from a registered function, with its description and typed arguments.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "function.tool-call": {
+      "title": "Let an agent call a function",
+      "summary": "Give the tools to an agent, which calls the functions by name and gets their results back.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.function",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.schema-create": {
+      "title": "Create a schema through Iceberg REST",
+      "summary": "Create a schema as an Iceberg namespace, under the catalog the client names as its warehouse.",
+      "request": null,
+      "path": "iceberg-rest-api",
+      "asset": "lakehouse.namespace",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "createNamespace",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.create": {
+      "title": "Create a managed Iceberg table",
+      "summary": "Create an Iceberg table through Iceberg REST, with storage the catalog allocates.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "createTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.append": {
+      "title": "Append to an Iceberg table",
+      "summary": "Append rows to an Iceberg table, with credentials the catalog vends for its storage.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.read": {
+      "title": "Read an Iceberg table",
+      "summary": "Read an Iceberg table by its catalog name, with credentials the catalog vends.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.update": {
+      "title": "Update rows in an Iceberg table",
+      "summary": "Change rows that match a condition in an Iceberg table, committed through the catalog.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.delete": {
+      "title": "Delete rows from an Iceberg table",
+      "summary": "Remove rows that match a condition from an Iceberg table, committed through the catalog.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.rename": {
+      "title": "Rename an Iceberg table",
+      "summary": "Give an Iceberg table a new name in its schema.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "renameTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.drop": {
+      "title": "Drop an Iceberg table",
+      "summary": "Drop an Iceberg table, and for a managed one its data.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "dropTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.join-delta": {
+      "title": "Join Delta and Iceberg tables",
+      "summary": "Query a Delta table and an Iceberg table from the same catalog together in one session.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec",
+            "unityCatalogSpec"
+          ],
+          "implements": [
+            "icebergSpec",
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec",
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.namespace-list": {
+      "title": "List schemas through Iceberg REST",
+      "summary": "List the schemas of the catalog the client names as its warehouse, as Iceberg namespaces.",
+      "request": null,
+      "path": "iceberg-rest-api",
+      "asset": "lakehouse.namespace",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "listNamespaces",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.namespace-properties": {
+      "title": "Set schema properties through Iceberg REST",
+      "summary": "Set or remove properties on a schema through Iceberg REST.",
+      "request": null,
+      "path": "iceberg-rest-api",
+      "asset": "lakehouse.namespace",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateProperties",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.namespace-drop": {
+      "title": "Drop a schema through Iceberg REST",
+      "summary": "Drop an empty schema through Iceberg REST.",
+      "request": null,
+      "path": "iceberg-rest-api",
+      "asset": "lakehouse.namespace",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "dropNamespace",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.list": {
+      "title": "List Iceberg tables",
+      "summary": "List the tables in a schema through Iceberg REST.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "listTables",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.overwrite": {
+      "title": "Overwrite an Iceberg table",
+      "summary": "Replace all of an Iceberg table's rows in one commit.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.merge": {
+      "title": "Merge into an Iceberg table",
+      "summary": "Upsert rows into an Iceberg table with MERGE, committed through the catalog.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.rename-namespace": {
+      "title": "Move an Iceberg table to another schema",
+      "summary": "Rename an Iceberg table into a different schema of the same catalog.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "renameTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.read-uniform": {
+      "title": "Read a Delta table as Iceberg",
+      "summary": "Read a Delta table with Iceberg metadata (UniForm) through Iceberg REST.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.schema-evolve": {
+      "title": "Evolve an Iceberg table's schema",
+      "summary": "Add, rename, reorder, or drop columns without rewriting data files.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "schema-evolution",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.type-promotion": {
+      "title": "Widen an Iceberg column type",
+      "summary": "Promote a column's type, such as int to long, without rewriting data files.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "type-promotion",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.hidden-partitioning": {
+      "title": "Partition an Iceberg table by a transform",
+      "summary": "Create a table partitioned by a transform such as day or bucket, which queries prune without naming it.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "hidden-partitioning",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "hidden-partitioning",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.partition-evolve": {
+      "title": "Change an Iceberg table's partitioning",
+      "summary": "Change the partition spec of a table that has data, without rewriting it.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "partition-evolution",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.sort-order": {
+      "title": "Set an Iceberg table's sort order",
+      "summary": "Set the sort order writers apply to new data files.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "sort-order",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.time-travel": {
+      "title": "Read an earlier Iceberg snapshot",
+      "summary": "Query an Iceberg table as of a snapshot id or a timestamp.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "snapshots",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.branch-tag": {
+      "title": "Branch and tag an Iceberg table",
+      "summary": "Create a branch or a tag on an Iceberg table, write to the branch, and read either.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "branching-tagging",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "branching-tagging",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.metadata-tables": {
+      "title": "Query an Iceberg table's metadata",
+      "summary": "Read a table's snapshots, history, files, or manifests as tables.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.maintain": {
+      "title": "Maintain an Iceberg table",
+      "summary": "Expire snapshots, compact data files, and remove orphan files.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.merge-on-read": {
+      "title": "Change rows with delete files",
+      "summary": "Update or delete rows by writing position delete files, merged at read time.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "position-deletes",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "position-deletes",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.copy-on-write": {
+      "title": "Change rows by rewriting files",
+      "summary": "Update or delete rows by rewriting the data files that hold them.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.equality-deletes": {
+      "title": "Write equality deletes",
+      "summary": "Delete rows by the values of key columns, recorded in equality delete files.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "equality-deletes",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.statistics": {
+      "title": "Use Iceberg column statistics",
+      "summary": "Write and read column statistics or Puffin statistics files that prune scans.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "statistics",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "statistics",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.v3-create": {
+      "title": "Create a v3 Iceberg table",
+      "summary": "Create an Iceberg table with format version 3 through the catalog.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "format-version-3",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.v3-deletion-vectors": {
+      "title": "Use deletion vectors on Iceberg",
+      "summary": "Delete rows in a v3 table with deletion vectors, and read them back.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "deletion-vectors",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "deletion-vectors",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.v3-row-lineage": {
+      "title": "Read Iceberg row lineage",
+      "summary": "Read each row's id and last-updated sequence number from a v3 table.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "row-lineage",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.v3-default-values": {
+      "title": "Use Iceberg column default values",
+      "summary": "Add a column with a default, and read it for rows written before the column existed.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "default-values",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "default-values",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.v3-variant": {
+      "title": "Use Iceberg VARIANT columns",
+      "summary": "Write and read semi-structured values in a VARIANT column.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "variant",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "variant",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.v3-geo": {
+      "title": "Use Iceberg geometry columns",
+      "summary": "Write and read geometry or geography values.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "geometry",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "geometry",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.v3-timestamp-ns": {
+      "title": "Use nanosecond timestamps",
+      "summary": "Write and read timestamps with nanosecond precision.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "timestamp-ns",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "timestamp-ns",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.v3-multi-arg-transforms": {
+      "title": "Partition by a multi-argument transform",
+      "summary": "Partition a v3 table by a transform over more than one column.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "multi-arg-transforms",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.vended-credentials": {
+      "title": "Refresh vended credentials",
+      "summary": "Get new storage credentials for a table from the catalog when the first ones expire.",
+      "request": null,
+      "path": "iceberg-rest-api",
+      "asset": "lakehouse.credential",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadCredentials",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.etag-load": {
+      "title": "Reload a table only when it changed",
+      "summary": "Reload table metadata conditionally, getting `304 Not Modified` when nothing changed.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.metrics": {
+      "title": "Report scan metrics",
+      "summary": "Report scan and commit metrics to the catalog.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "reportMetrics",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.auth-token": {
+      "title": "Authenticate with a token",
+      "summary": "Connect to the Iceberg REST API with a bearer token.",
+      "request": null,
+      "path": "iceberg-rest-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.register": {
+      "title": "Register an existing Iceberg table",
+      "summary": "Register a table from its metadata file, without copying data.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "registerTable",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.transactions": {
+      "title": "Commit to several tables at once",
+      "summary": "Commit changes to more than one table atomically.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "commitTransaction",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.views": {
+      "title": "Create and query Iceberg views",
+      "summary": "Create a view through Iceberg REST and query it.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "createView",
+          "role": "client"
+        },
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadView",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.scan-planning": {
+      "title": "Plan scans on the server",
+      "summary": "Let the catalog plan a scan and hand back the files to read.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "planTableScan",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "iceberg.remote-signing": {
+      "title": "Sign storage requests through the catalog",
+      "summary": "Have the catalog sign each storage request instead of vending credentials.",
+      "request": null,
+      "path": "iceberg-rest",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "signRequest",
+          "role": "client"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "icebergRestSpec"
+          ],
+          "implements": [
+            "icebergSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "icebergRestSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "catalog.create": {
+      "title": "Create a catalog",
+      "summary": "Create a catalog, the top level of the three-level namespace.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "catalog.list": {
+      "title": "View catalogs",
+      "summary": "List catalogs or get one by name, with its properties.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "catalog.update": {
+      "title": "Update a catalog",
+      "summary": "Change a catalog's comment, properties, or name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "catalog.delete": {
+      "title": "Delete a catalog",
+      "summary": "Delete a catalog, including everything in it when forced.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "schema.create": {
+      "title": "Create a schema",
+      "summary": "Create a schema inside a catalog.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "schema.list": {
+      "title": "View schemas",
+      "summary": "List a catalog's schemas or get one by its full name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "schema.update": {
+      "title": "Update or rename a schema",
+      "summary": "Change a schema's comment, properties, or name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "schema.delete": {
+      "title": "Delete a schema",
+      "summary": "Delete an empty schema.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "storage.managed-root": {
+      "title": "Give a catalog or schema managed storage",
+      "summary": "Set the storage root under which the catalog allocates managed tables and volumes.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.namespace",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "credential.create": {
+      "title": "Create a storage credential",
+      "summary": "Store the cloud identity the server assumes to reach a bucket.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "location.create": {
+      "title": "Create an external location",
+      "summary": "Pair a storage path with the credential that can access it.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.externalLocation",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "storage.view": {
+      "title": "View credentials and external locations",
+      "summary": "List or get the storage credentials and external locations the server holds.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.externalLocation",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "credential.update": {
+      "title": "Update a storage credential",
+      "summary": "Change a storage credential's role, comment, or name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "location.update": {
+      "title": "Update an external location",
+      "summary": "Change an external location's URL, credential, or name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.externalLocation",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "storage.delete": {
+      "title": "Delete an external location and its credential",
+      "summary": "Remove an external location, then the credential nothing else uses.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.externalLocation",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "credentials.vend-path": {
+      "title": "Get credentials for a storage path",
+      "summary": "Ask the server for short-lived credentials scoped to a path under an external location.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "credentials.vend-volume": {
+      "title": "Get credentials for a volume",
+      "summary": "Ask the server for short-lived credentials to read or write one volume's files.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.credential",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "append-only.write": {
+      "title": "Write to an append-only table",
+      "summary": "Append to a table that rejects updates and deletes, and have row changes refused.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "appendOnly",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "invariants.write": {
+      "title": "Write with column invariants",
+      "summary": "Write to a table whose columns carry invariants, and have violating rows refused.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "invariants",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "check-constraints.write": {
+      "title": "Write with CHECK constraints",
+      "summary": "Write to a table with CHECK constraints, and have violating rows refused.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "checkConstraints",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "change-data-feed.write": {
+      "title": "Write with change data feed on",
+      "summary": "Change rows in a table that records change data, so the changes can be read later.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "changeDataFeed",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "generated-columns.write": {
+      "title": "Write with generated columns",
+      "summary": "Write to a table with generated columns, with their values computed or checked.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "generatedColumns",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "identity-columns.write": {
+      "title": "Write with identity columns",
+      "summary": "Write to a table with an identity column, with unique values assigned.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "identityColumns",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "column-mapping.read": {
+      "title": "Read with column mapping",
+      "summary": "Read a table whose columns map to physical names or ids, including after renames and drops.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "columnMapping",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "column-mapping.write": {
+      "title": "Write with column mapping",
+      "summary": "Write to a table with column mapping, under its physical column names.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "columnMapping",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "column-defaults.write": {
+      "title": "Write with column defaults",
+      "summary": "Write to a table with column defaults, with omitted columns filled in.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "allowColumnDefaults",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "deletion-vectors.read": {
+      "title": "Read with deletion vectors",
+      "summary": "Read a table whose deleted rows are marked in deletion vectors, without seeing them.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "deletionVectors",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "deletion-vectors.write": {
+      "title": "Write deletion vectors",
+      "summary": "Delete or update rows by writing deletion vectors instead of rewriting files.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "deletionVectors",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "row-tracking.write": {
+      "title": "Write with row tracking",
+      "summary": "Write to a table that tracks row ids and commit versions, keeping them assigned.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "rowTracking",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "timestamp-ntz.read": {
+      "title": "Read timestamps without time zone",
+      "summary": "Read a table with TIMESTAMP_NTZ columns.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "timestampNtz",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "timestamp-ntz.write": {
+      "title": "Write timestamps without time zone",
+      "summary": "Write TIMESTAMP_NTZ values to a table.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "timestampNtz",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "domain-metadata.write": {
+      "title": "Write with domain metadata",
+      "summary": "Commit to a table that stores domain metadata, keeping it intact.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "domainMetadata",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "v2-checkpoint.read": {
+      "title": "Read v2 checkpoints",
+      "summary": "Read a table whose checkpoints use the v2 format with sidecar files.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "v2Checkpoint",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "v2-checkpoint.write": {
+      "title": "Write v2 checkpoints",
+      "summary": "Checkpoint a table in the v2 format.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "v2Checkpoint",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "iceberg-compat-v1.write": {
+      "title": "Write with IcebergCompatV1",
+      "summary": "Write to a table that keeps Iceberg metadata (UniForm, first version).",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "icebergCompatV1",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "iceberg-compat-v2.write": {
+      "title": "Write with IcebergCompatV2 (UniForm)",
+      "summary": "Write to a table that keeps Iceberg metadata, so Iceberg clients can read it.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "icebergCompatV2",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "clustering.write": {
+      "title": "Write to a clustered table",
+      "summary": "Write to a table with clustering columns, recording them for later clustering.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "clustering",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "vacuum-protocol-check.read": {
+      "title": "Read with the vacuum protocol check",
+      "summary": "Read a table that requires vacuum to check its protocol first.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "vacuumProtocolCheck",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "vacuum-protocol-check.write": {
+      "title": "Vacuum with the protocol check",
+      "summary": "Vacuum a table only after checking its protocol, as the feature requires.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "vacuumProtocolCheck",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "in-commit-timestamp.write": {
+      "title": "Write in-commit timestamps",
+      "summary": "Commit to a table that records each commit's timestamp inside the commit.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "inCommitTimestamp",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "type-widening.read": {
+      "title": "Read a widened column",
+      "summary": "Read a table whose column types were widened, from files with the older type.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "typeWidening",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "type-widening.write": {
+      "title": "Widen a column type",
+      "summary": "Widen a column's type, such as INT to BIGINT, without rewriting files.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "typeWidening",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "variant.read": {
+      "title": "Read VARIANT columns",
+      "summary": "Read a table with VARIANT columns.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "variantType",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "variant.write": {
+      "title": "Write VARIANT columns",
+      "summary": "Write semi-structured values to a VARIANT column.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "variantType",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "variant-shredding.read": {
+      "title": "Read shredded VARIANT columns",
+      "summary": "Read a table whose VARIANT columns are stored shredded.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "variantShredding",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "variant-shredding.write": {
+      "title": "Write shredded VARIANT columns",
+      "summary": "Write VARIANT columns shredded into typed fields.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "variantShredding",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "collations.read": {
+      "title": "Read collated strings",
+      "summary": "Read a table with collated STRING columns, honouring their collation.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "collations",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "collations.write": {
+      "title": "Write collated strings",
+      "summary": "Write to collated STRING columns, keeping statistics valid for their collation.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "collations",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "table.list": {
+      "title": "List tables",
+      "summary": "List the tables in a schema from the engine, by their catalog names.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "external.read": {
+      "title": "Read an external table",
+      "summary": "Read an external table by its catalog name, from files the reader can already reach.",
+      "request": null,
+      "path": "uc-external",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "external.read-vended": {
+      "title": "Read with vended S3 credentials",
+      "summary": "Read an external table on S3 with the short-lived credentials the server vends for it.",
+      "request": null,
+      "path": "uc-external",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        },
+        "storage": {
+          "implements": [
+            "s3Spec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "external.append": {
+      "title": "Append to an external table",
+      "summary": "Append rows to an external table, named through the catalog.",
+      "request": null,
+      "path": "uc-external",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.create": {
+      "title": "Create a managed table",
+      "summary": "Create a catalog-managed Delta table, with storage the catalog allocates.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.read": {
+      "title": "Read a managed table",
+      "summary": "Read a catalog-managed table through the catalog.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "catalogManaged",
+          "role": "reader"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": [
+        "catalog-managed.read"
+      ]
+    },
+    "managed.append": {
+      "title": "Append to a managed table",
+      "summary": "Append rows to a catalog-managed table, with the catalog accepting the commit.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "catalogManaged",
+          "role": "writer"
+        }
+      ],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": [
+        "catalog-managed.write"
+      ]
+    },
+    "managed.update": {
+      "title": "Update rows in a managed table",
+      "summary": "Change rows that match a condition in a catalog-managed table.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.delete": {
+      "title": "Delete rows from a managed table",
+      "summary": "Remove rows that match a condition from a catalog-managed table.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.drop": {
+      "title": "Drop a managed table",
+      "summary": "Drop a catalog-managed table and its data.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.time-travel": {
+      "title": "Read an earlier version of a managed table",
+      "summary": "Query a catalog-managed table as it was at an earlier version.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.path-write": {
+      "title": "Write to a managed table by path",
+      "summary": "Write to a catalog-managed table's storage location directly, bypassing the catalog.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.alter-schema": {
+      "title": "Change a managed table's columns",
+      "summary": "Add, comment, drop, or widen columns of a catalog-managed table, with the catalog accepting the commit.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.set-properties": {
+      "title": "Set a managed table's properties",
+      "summary": "Set and remove table properties on a catalog-managed table, with the catalog accepting the commit.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.rename": {
+      "title": "Rename a managed table or column",
+      "summary": "Rename a catalog-managed table or one of its columns.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "external.alter-schema": {
+      "title": "Change an external table's columns",
+      "summary": "Change an external table's columns in its Delta log, then bring the catalog's record in step.",
+      "request": null,
+      "path": "uc-external",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "external.set-properties": {
+      "title": "Set an external table's properties",
+      "summary": "Change an external table's properties and comments in its Delta log, then bring the catalog's record in step.",
+      "request": null,
+      "path": "uc-external",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.create-as-select": {
+      "title": "Create a managed table from a query",
+      "summary": "Create a catalog-managed Delta table from the result of a query, in one commit.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.replace": {
+      "title": "Replace a managed table",
+      "summary": "Replace a catalog-managed table's definition and rows in one commit, keeping its identity and history.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.overwrite": {
+      "title": "Overwrite a managed table",
+      "summary": "Replace all rows of a catalog-managed table and keep its schema.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.replace-where": {
+      "title": "Replace rows that match a condition",
+      "summary": "Replace only the rows of a catalog-managed table that match a predicate.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "managed.overwrite-partitions": {
+      "title": "Overwrite partitions of a managed table",
+      "summary": "Overwrite only the partitions of a catalog-managed table that the new rows write to.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta",
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "external.read-format": {
+      "title": "Read a Parquet, CSV, or JSON table",
+      "summary": "Read a non-Delta external table, using the format and location the catalog records.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "table.register-external": {
+      "title": "Register an external Delta table",
+      "summary": "Register Delta files that already exist in storage as a table, without copying them.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "table.register-format": {
+      "title": "Register a Parquet, CSV, or JSON table",
+      "summary": "Register files in another format as an external table, with its columns declared.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "table.describe": {
+      "title": "View a table",
+      "summary": "Get a table's columns, format, type, and storage location by its full name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "table.read": {
+      "title": "Read a table's rows from a client",
+      "summary": "Read rows of a registered Delta table without starting an engine.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "table.write-sample": {
+      "title": "Write sample rows",
+      "summary": "Write generated rows into a table to try things out.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "table.drop": {
+      "title": "Drop a table",
+      "summary": "Remove a table from the catalog. Data files of an external table stay in place.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "create.table": {
+      "title": "Create a table",
+      "summary": "Create a new, empty Delta table with a schema.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "create.ctas": {
+      "title": "Create from select",
+      "summary": "Create a Delta table from the result of a query, in one step.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "create.partitioned": {
+      "title": "Create partitioned table",
+      "summary": "Create a table whose files are split by the values of one or more columns.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "write.append": {
+      "title": "Append rows",
+      "summary": "Add new rows to an existing table without touching the rows already there.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "write.overwrite": {
+      "title": "Overwrite rows",
+      "summary": "Replace all of a table's rows with new data in one commit.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "write.replace-where": {
+      "title": "Replace where",
+      "summary": "Replace only the rows that match a predicate, leaving the rest in place.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "write.dynamic-partitions": {
+      "title": "Dynamic partitions",
+      "summary": "Overwrite only the partitions the new data touches.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "write.enforce-schema": {
+      "title": "Enforce schema",
+      "summary": "Have a write that doesn't match the table's schema rejected instead of applied.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "write.idempotent": {
+      "title": "Idempotent writes",
+      "summary": "Retry a write safely, so a batch that already committed isn't applied twice.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "write.commit-metadata": {
+      "title": "Commit metadata",
+      "summary": "Attach your own metadata to a commit and find it in the table's history.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "dml.update": {
+      "title": "Update rows",
+      "summary": "Change the values of rows that match a condition.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "dml.delete": {
+      "title": "Delete rows",
+      "summary": "Remove the rows that match a condition.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "merge.upsert": {
+      "title": "Merge upsert",
+      "summary": "Update matching rows and insert new ones from a source, in one operation.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "merge.not-matched-by-source": {
+      "title": "Merge not matched by source",
+      "summary": "In a merge, update or delete target rows that have no match in the source.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "merge.schema-evolution": {
+      "title": "Merge schema evolution",
+      "summary": "Let a merge add the source's new columns to the target table.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "read.scan": {
+      "title": "Scan table",
+      "summary": "Read a table's current rows into a query or DataFrame.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "read.pushdown": {
+      "title": "Filter pushdown",
+      "summary": "Filter on read so the engine skips files that can't match.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "read.version": {
+      "title": "Read version",
+      "summary": "Read the table as it was at an earlier version number.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "read.timestamp": {
+      "title": "Read timestamp",
+      "summary": "Read the table as it was at a point in time.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "read.past-retention": {
+      "title": "Read past retention",
+      "summary": "Learn what happens when you read a version whose files were already vacuumed.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "history.list": {
+      "title": "List history",
+      "summary": "List the commits that changed a table, with their operations and versions.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "history.detail": {
+      "title": "History detail",
+      "summary": "Show a table's current location, size, file count, and properties.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "history.restore": {
+      "title": "Restore version",
+      "summary": "Roll a table back to an earlier version.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "history.shallow-clone": {
+      "title": "Shallow clone",
+      "summary": "Make a new table that references another table's files without copying them.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "schema.merge-on-write": {
+      "title": "Merge on write",
+      "summary": "Add a write's new columns to the table's schema as part of the write.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "schema.overwrite": {
+      "title": "Overwrite schema",
+      "summary": "Replace a table's schema along with its data.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "schema.add-column": {
+      "title": "Add column",
+      "summary": "Add a column to an existing table's schema.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "schema.rename-drop": {
+      "title": "Rename/drop column",
+      "summary": "Rename or drop a column without rewriting the data files.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "schema.type-widening": {
+      "title": "Type widening",
+      "summary": "Change a column to a wider type, such as int to long, without rewriting the data.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "quality.check": {
+      "title": "Check constraint",
+      "summary": "Add a CHECK constraint that rejects rows that violate it.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "quality.not-null": {
+      "title": "Not null constraint",
+      "summary": "Declare a column NOT NULL so writes with nulls fail.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "columns.generated": {
+      "title": "Generated columns",
+      "summary": "Define a column whose value is computed from other columns on write.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "columns.identity": {
+      "title": "Identity columns",
+      "summary": "Give a column unique values the table assigns on insert.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "columns.default": {
+      "title": "Default columns",
+      "summary": "Give a column a default value for writes that leave it out.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "cdf.read": {
+      "title": "Read change data",
+      "summary": "Read the row-level changes (inserts, updates, deletes) between versions.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "stream.source-sink": {
+      "title": "Stream source/sink",
+      "summary": "Use a table as a streaming source or sink.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "stream.foreach-batch-merge": {
+      "title": "Stream foreach batch merge",
+      "summary": "Merge each micro-batch of a stream into a table.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "layout.compact": {
+      "title": "Compact/optimize",
+      "summary": "Rewrite many small files into fewer, larger ones.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "layout.zorder": {
+      "title": "Z-order",
+      "summary": "Co-locate related values across files so filters skip more data.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "layout.clustering": {
+      "title": "Clustering",
+      "summary": "Cluster a table by chosen columns and let maintenance keep it clustered.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "maint.vacuum": {
+      "title": "Vacuum",
+      "summary": "Delete data files that no version within the retention period still needs.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "maint.checkpoint": {
+      "title": "Checkpoint",
+      "summary": "Write a checkpoint so readers don't replay the whole commit log.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "maint.purge-dvs": {
+      "title": "Purge deletion vectors",
+      "summary": "Rewrite files to physically remove rows marked deleted by deletion vectors.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "maint.manifest": {
+      "title": "Generate manifest",
+      "summary": "Generate manifest files so engines without Delta support can read the table.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "maint.repair": {
+      "title": "Repair table",
+      "summary": "Repair a table whose log references data files that no longer exist.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "migrate.convert-parquet": {
+      "title": "Convert to Delta",
+      "summary": "Turn an existing Parquet directory into a Delta table in place.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "feature.enable": {
+      "title": "Enable feature",
+      "summary": "Turn on a table feature, which may raise the table's protocol version.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "feature.drop": {
+      "title": "Drop feature",
+      "summary": "Remove a table feature so older readers and writers can use the table again.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "feature.properties": {
+      "title": "Feature properties",
+      "summary": "Read and set a table's properties.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "storage.s3-multi-writer": {
+      "title": "S3 multi-writer",
+      "summary": "Let several writers commit to the same table on S3 safely.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "storage.azure-gcs": {
+      "title": "Azure/GCS",
+      "summary": "Read and write tables on Azure Data Lake Storage or Google Cloud Storage.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "covers": [],
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "projects": [
+        "delta"
+      ],
+      "aliases": []
+    },
+    "view.create": {
+      "title": "Create a view",
+      "summary": "Define a view as a query over tables, and store the definition in the catalog.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.sqlView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "view.list": {
+      "title": "List views",
+      "summary": "Find a schema's views by name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.sqlView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "view.describe": {
+      "title": "Inspect a view",
+      "summary": "Read a view's columns and stored definition.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.sqlView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "view.query": {
+      "title": "Query a view",
+      "summary": "Select from a view like a table; the engine expands its definition at query time.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.sqlView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "view.replace": {
+      "title": "Change a view's definition",
+      "summary": "Replace a view's definition in place, keeping its name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.sqlView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "view.rename": {
+      "title": "Rename a view",
+      "summary": "Give a view a new name in its schema.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.sqlView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "view.drop": {
+      "title": "Drop a view",
+      "summary": "Remove a view; its source tables stay.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.sqlView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "metricview.create": {
+      "title": "Create a metric view",
+      "summary": "Define dimensions and measures in YAML over a table or a query, and store the definition in the catalog.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.metricView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "metricview.list": {
+      "title": "List metric views",
+      "summary": "Find a schema's metric views by name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.metricView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "metricview.describe": {
+      "title": "Inspect a metric view",
+      "summary": "Read a metric view's dimensions, measures, and stored definition.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.metricView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "metricview.query": {
+      "title": "Query a metric view",
+      "summary": "Compute measures with `measure()`, grouped and filtered by dimensions.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.metricView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "metricview.replace": {
+      "title": "Change a metric view's definition",
+      "summary": "Replace a metric view's definition in place, keeping its name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.metricView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "metricview.rename": {
+      "title": "Rename a metric view",
+      "summary": "Give a metric view a new name in its schema.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.metricView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "metricview.drop": {
+      "title": "Drop a metric view",
+      "summary": "Remove a metric view; its source tables stay.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.metricView",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "volume.create-external": {
+      "title": "Create an external volume",
+      "summary": "Register an existing storage folder as a volume.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.volume",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "volume.create-managed": {
+      "title": "Create a managed volume",
+      "summary": "Create a volume whose storage the catalog allocates under a managed storage root.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.volume",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "volume.view": {
+      "title": "View volumes",
+      "summary": "List a schema's volumes or get one by its full name, with its storage location.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.volume",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "volume.list-files": {
+      "title": "List a volume's files",
+      "summary": "See which files a volume holds.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.volume",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "volume.update": {
+      "title": "Rename or update a volume",
+      "summary": "Change a volume's comment or name.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.volume",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "volume.delete": {
+      "title": "Delete a volume",
+      "summary": "Remove a volume from the catalog.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.volume",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "volume.read-files": {
+      "title": "Read a volume's files",
+      "summary": "Read files in a volume on object storage with credentials the server vends.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.volume",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    },
+    "volume.write-files": {
+      "title": "Write files to a volume",
+      "summary": "Write files into a managed volume on object storage with vended credentials.",
+      "request": null,
+      "path": "uc-api",
+      "asset": "lakehouse.volume",
+      "covers": [],
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec"
+          ]
+        }
+      },
+      "projects": [
+        "unitycatalog"
+      ],
+      "aliases": []
+    }
+  },
+  "specs": {
+    "deltaSpec": {
+      "title": "Delta Lake",
+      "roles": [
+        "reader",
+        "writer"
+      ],
+      "obligations": [
+        {
+          "name": "appendOnly",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 2",
+          "journeys": {
+            "writer": [
+              "append-only.write"
+            ]
+          }
+        },
+        {
+          "name": "invariants",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 2",
+          "journeys": {
+            "writer": [
+              "invariants.write"
+            ]
+          }
+        },
+        {
+          "name": "checkConstraints",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 3",
+          "journeys": {
+            "writer": [
+              "check-constraints.write"
+            ]
+          }
+        },
+        {
+          "name": "generatedColumns",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 4",
+          "journeys": {
+            "writer": [
+              "generated-columns.write"
+            ]
+          }
+        },
+        {
+          "name": "allowColumnDefaults",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 7",
+          "journeys": {
+            "writer": [
+              "column-defaults.write"
+            ]
+          }
+        },
+        {
+          "name": "changeDataFeed",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 4",
+          "journeys": {
+            "writer": [
+              "change-data-feed.write"
+            ]
+          }
+        },
+        {
+          "name": "columnMapping",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "reader 2 · writer 5",
+          "journeys": {
+            "reader": [
+              "column-mapping.read"
+            ],
+            "writer": [
+              "column-mapping.write"
+            ]
+          }
+        },
+        {
+          "name": "identityColumns",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 6",
+          "journeys": {
+            "writer": [
+              "identity-columns.write"
+            ]
+          }
+        },
+        {
+          "name": "deletionVectors",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "reader 3 · writer 7",
+          "journeys": {
+            "reader": [
+              "deletion-vectors.read"
+            ],
+            "writer": [
+              "deletion-vectors.write"
+            ]
+          }
+        },
+        {
+          "name": "rowTracking",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 7",
+          "journeys": {
+            "writer": [
+              "row-tracking.write"
+            ]
+          }
+        },
+        {
+          "name": "timestampNtz",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "reader 3 · writer 7",
+          "journeys": {
+            "reader": [
+              "timestamp-ntz.read"
+            ],
+            "writer": [
+              "timestamp-ntz.write"
+            ]
+          }
+        },
+        {
+          "name": "domainMetadata",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 7",
+          "journeys": {
+            "writer": [
+              "domain-metadata.write"
+            ]
+          }
+        },
+        {
+          "name": "v2Checkpoint",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "reader 3 · writer 7",
+          "journeys": {
+            "reader": [
+              "v2-checkpoint.read"
+            ],
+            "writer": [
+              "v2-checkpoint.write"
+            ]
+          }
+        },
+        {
+          "name": "catalogManaged",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "reader 3 · writer 7",
+          "journeys": {
+            "reader": [
+              "managed.read"
+            ],
+            "writer": [
+              "managed.append"
+            ]
+          }
+        },
+        {
+          "name": "icebergCompatV1",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 7",
+          "journeys": {
+            "writer": [
+              "iceberg-compat-v1.write"
+            ]
+          }
+        },
+        {
+          "name": "icebergCompatV2",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 7",
+          "journeys": {
+            "writer": [
+              "iceberg-compat-v2.write"
+            ]
+          }
+        },
+        {
+          "name": "clustering",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 7",
+          "journeys": {
+            "writer": [
+              "clustering.write"
+            ]
+          }
+        },
+        {
+          "name": "vacuumProtocolCheck",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "reader 3 · writer 7",
+          "journeys": {
+            "reader": [
+              "vacuum-protocol-check.read"
+            ],
+            "writer": [
+              "vacuum-protocol-check.write"
+            ]
+          }
+        },
+        {
+          "name": "inCommitTimestamp",
+          "roles": [
+            "writer"
+          ],
+          "since": "writer 7",
+          "journeys": {
+            "writer": [
+              "in-commit-timestamp.write"
+            ]
+          }
+        },
+        {
+          "name": "typeWidening",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "accepted RFC",
+          "journeys": {
+            "reader": [
+              "type-widening.read"
+            ],
+            "writer": [
+              "type-widening.write"
+            ]
+          }
+        },
+        {
+          "name": "variantType",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "reader 3 · writer 7",
+          "journeys": {
+            "reader": [
+              "variant.read"
+            ],
+            "writer": [
+              "variant.write"
+            ]
+          }
+        },
+        {
+          "name": "variantShredding",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "reader 3 · writer 7",
+          "journeys": {
+            "reader": [
+              "variant-shredding.read"
+            ],
+            "writer": [
+              "variant-shredding.write"
+            ]
+          }
+        },
+        {
+          "name": "collations",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "proposed RFC",
+          "journeys": {
+            "reader": [
+              "collations.read"
+            ],
+            "writer": [
+              "collations.write"
+            ]
+          }
+        }
+      ]
+    },
+    "icebergRestSpec": {
+      "title": "Iceberg REST Catalog",
+      "roles": [
+        "client"
+      ],
+      "obligations": [
+        {
+          "name": "getConfig",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": []
+          }
+        },
+        {
+          "name": "listNamespaces",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.namespace-list"
+            ]
+          }
+        },
+        {
+          "name": "createNamespace",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.schema-create"
+            ]
+          }
+        },
+        {
+          "name": "namespaceExists",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": []
+          }
+        },
+        {
+          "name": "loadNamespaceMetadata",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": []
+          }
+        },
+        {
+          "name": "updateProperties",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.namespace-properties"
+            ]
+          }
+        },
+        {
+          "name": "dropNamespace",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.namespace-drop"
+            ]
+          }
+        },
+        {
+          "name": "listTables",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.list"
+            ]
+          }
+        },
+        {
+          "name": "createTable",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.create"
+            ]
+          }
+        },
+        {
+          "name": "tableExists",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": []
+          }
+        },
+        {
+          "name": "loadTable",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.read",
+              "iceberg.read-uniform",
+              "iceberg.etag-load"
+            ]
+          }
+        },
+        {
+          "name": "updateTable",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.append",
+              "iceberg.update",
+              "iceberg.delete",
+              "iceberg.overwrite",
+              "iceberg.merge"
+            ]
+          }
+        },
+        {
+          "name": "dropTable",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.drop"
+            ]
+          }
+        },
+        {
+          "name": "renameTable",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.rename",
+              "iceberg.rename-namespace"
+            ]
+          }
+        },
+        {
+          "name": "registerTable",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.register"
+            ]
+          }
+        },
+        {
+          "name": "loadCredentials",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.vended-credentials"
+            ]
+          }
+        },
+        {
+          "name": "reportMetrics",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.metrics"
+            ]
+          }
+        },
+        {
+          "name": "commitTransaction",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.transactions"
+            ]
+          }
+        },
+        {
+          "name": "planTableScan",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.scan-planning"
+            ]
+          }
+        },
+        {
+          "name": "fetchScanTasks",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": []
+          }
+        },
+        {
+          "name": "signRequest",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.remote-signing"
+            ]
+          }
+        },
+        {
+          "name": "listViews",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": []
+          }
+        },
+        {
+          "name": "loadView",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.views"
+            ]
+          }
+        },
+        {
+          "name": "createView",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": [
+              "iceberg.views"
+            ]
+          }
+        },
+        {
+          "name": "getToken",
+          "roles": [
+            "client"
+          ],
+          "since": null,
+          "journeys": {
+            "client": []
+          }
+        }
+      ]
+    },
+    "icebergSpec": {
+      "title": "Apache Iceberg",
+      "roles": [
+        "reader",
+        "writer"
+      ],
+      "obligations": [
+        {
+          "name": "schema-evolution",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v1",
+          "journeys": {
+            "reader": [],
+            "writer": [
+              "iceberg.schema-evolve"
+            ]
+          }
+        },
+        {
+          "name": "type-promotion",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v1",
+          "journeys": {
+            "reader": [],
+            "writer": [
+              "iceberg.type-promotion"
+            ]
+          }
+        },
+        {
+          "name": "hidden-partitioning",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v1",
+          "journeys": {
+            "reader": [
+              "iceberg.hidden-partitioning"
+            ],
+            "writer": [
+              "iceberg.hidden-partitioning"
+            ]
+          }
+        },
+        {
+          "name": "partition-evolution",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v1",
+          "journeys": {
+            "reader": [],
+            "writer": [
+              "iceberg.partition-evolve"
+            ]
+          }
+        },
+        {
+          "name": "sort-order",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v1",
+          "journeys": {
+            "reader": [],
+            "writer": [
+              "iceberg.sort-order"
+            ]
+          }
+        },
+        {
+          "name": "snapshots",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v1",
+          "journeys": {
+            "reader": [
+              "iceberg.time-travel"
+            ],
+            "writer": []
+          }
+        },
+        {
+          "name": "branching-tagging",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v2",
+          "journeys": {
+            "reader": [
+              "iceberg.branch-tag"
+            ],
+            "writer": [
+              "iceberg.branch-tag"
+            ]
+          }
+        },
+        {
+          "name": "position-deletes",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v2",
+          "journeys": {
+            "reader": [
+              "iceberg.merge-on-read"
+            ],
+            "writer": [
+              "iceberg.merge-on-read"
+            ]
+          }
+        },
+        {
+          "name": "equality-deletes",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v2",
+          "journeys": {
+            "reader": [],
+            "writer": [
+              "iceberg.equality-deletes"
+            ]
+          }
+        },
+        {
+          "name": "statistics",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v1",
+          "journeys": {
+            "reader": [
+              "iceberg.statistics"
+            ],
+            "writer": [
+              "iceberg.statistics"
+            ]
+          }
+        },
+        {
+          "name": "format-version-3",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v3",
+          "journeys": {
+            "reader": [],
+            "writer": [
+              "iceberg.v3-create"
+            ]
+          }
+        },
+        {
+          "name": "deletion-vectors",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v3",
+          "journeys": {
+            "reader": [
+              "iceberg.v3-deletion-vectors"
+            ],
+            "writer": [
+              "iceberg.v3-deletion-vectors"
+            ]
+          }
+        },
+        {
+          "name": "row-lineage",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v3",
+          "journeys": {
+            "reader": [
+              "iceberg.v3-row-lineage"
+            ],
+            "writer": []
+          }
+        },
+        {
+          "name": "default-values",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v3",
+          "journeys": {
+            "reader": [
+              "iceberg.v3-default-values"
+            ],
+            "writer": [
+              "iceberg.v3-default-values"
+            ]
+          }
+        },
+        {
+          "name": "variant",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v3",
+          "journeys": {
+            "reader": [
+              "iceberg.v3-variant"
+            ],
+            "writer": [
+              "iceberg.v3-variant"
+            ]
+          }
+        },
+        {
+          "name": "geometry",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v3",
+          "journeys": {
+            "reader": [
+              "iceberg.v3-geo"
+            ],
+            "writer": [
+              "iceberg.v3-geo"
+            ]
+          }
+        },
+        {
+          "name": "timestamp-ns",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v3",
+          "journeys": {
+            "reader": [
+              "iceberg.v3-timestamp-ns"
+            ],
+            "writer": [
+              "iceberg.v3-timestamp-ns"
+            ]
+          }
+        },
+        {
+          "name": "multi-arg-transforms",
+          "roles": [
+            "reader",
+            "writer"
+          ],
+          "since": "v3",
+          "journeys": {
+            "reader": [],
+            "writer": [
+              "iceberg.v3-multi-arg-transforms"
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "facts": [
+    {
+      "implementation": "unityCatalogServer",
+      "obligations": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "registerTable"
+        }
+      ],
+      "outcome": "missing",
+      "why": "The server has no `registerTable` endpoint.",
+      "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+      "blocks": [
+        {
+          "project": "unitycatalog",
+          "interfaces": [
+            "spark",
+            "spark-sql",
+            "spark-python",
+            "duckdb",
+            "polars",
+            "daft",
+            "pyiceberg"
+          ],
+          "journeys": [
+            "iceberg.register"
+          ]
+        }
+      ]
+    },
+    {
+      "implementation": "unityCatalogServer",
+      "obligations": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "commitTransaction"
+        }
+      ],
+      "outcome": "missing",
+      "why": "The server has no `commitTransaction` endpoint.",
+      "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+      "blocks": [
+        {
+          "project": "unitycatalog",
+          "interfaces": [
+            "spark",
+            "spark-sql",
+            "spark-python",
+            "duckdb",
+            "polars",
+            "daft",
+            "pyiceberg"
+          ],
+          "journeys": [
+            "iceberg.transactions"
+          ]
+        }
+      ]
+    },
+    {
+      "implementation": "unityCatalogServer",
+      "obligations": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "createView"
+        },
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadView"
+        },
+        {
+          "spec": "icebergRestSpec",
+          "name": "listViews"
+        }
+      ],
+      "outcome": "missing",
+      "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+      "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+      "blocks": [
+        {
+          "project": "unitycatalog",
+          "interfaces": [
+            "spark",
+            "spark-sql",
+            "spark-python",
+            "duckdb",
+            "polars",
+            "daft",
+            "pyiceberg"
+          ],
+          "journeys": [
+            "iceberg.views"
+          ]
+        }
+      ]
+    },
+    {
+      "implementation": "unityCatalogServer",
+      "obligations": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "planTableScan"
+        },
+        {
+          "spec": "icebergRestSpec",
+          "name": "fetchScanTasks"
+        }
+      ],
+      "outcome": "missing",
+      "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+      "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+      "blocks": [
+        {
+          "project": "unitycatalog",
+          "interfaces": [
+            "spark",
+            "spark-sql",
+            "spark-python",
+            "duckdb",
+            "polars",
+            "daft",
+            "pyiceberg"
+          ],
+          "journeys": [
+            "iceberg.scan-planning"
+          ]
+        }
+      ]
+    },
+    {
+      "implementation": "unityCatalogServer",
+      "obligations": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "signRequest"
+        }
+      ],
+      "outcome": "missing",
+      "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+      "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+      "blocks": [
+        {
+          "project": "unitycatalog",
+          "interfaces": [
+            "spark",
+            "spark-sql",
+            "spark-python",
+            "duckdb",
+            "polars",
+            "daft",
+            "pyiceberg"
+          ],
+          "journeys": [
+            "iceberg.remote-signing"
+          ]
+        }
+      ]
+    }
+  ],
+  "equivalences": [
+    {
+      "id": "deletes-without-rewrite",
+      "title": "Delete rows without rewriting files",
+      "differ": "v3 writers must use deletion vectors instead of position delete files. Iceberg also has equality deletes (`iceberg.equality-deletes`), which Delta has no counterpart for.",
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "deletionVectors"
+          ],
+          "journeys": [
+            "deletion-vectors.read",
+            "deletion-vectors.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [
+            "position-deletes",
+            "deletion-vectors"
+          ],
+          "journeys": [
+            "iceberg.merge-on-read",
+            "iceberg.v3-deletion-vectors"
+          ],
+          "text": "v2 position deletes; v3 deletion vectors"
+        }
+      }
+    },
+    {
+      "id": "column-identity",
+      "title": "Keep a column's identity across renames and drops",
+      "differ": "Delta opts in per table, by name or id; Iceberg always resolves columns by field id.",
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "columnMapping"
+          ],
+          "journeys": [
+            "column-mapping.read",
+            "column-mapping.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [],
+          "journeys": [
+            "iceberg.schema-evolve"
+          ],
+          "text": "Field ids, in every format version"
+        }
+      }
+    },
+    {
+      "id": "row-ids",
+      "title": "Give each row a stable id",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "rowTracking"
+          ],
+          "journeys": [
+            "row-tracking.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [
+            "row-lineage"
+          ],
+          "journeys": [
+            "iceberg.v3-row-lineage"
+          ],
+          "text": "v3 row lineage"
+        }
+      }
+    },
+    {
+      "id": "type-change",
+      "title": "Change a column's type without rewriting",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "typeWidening"
+          ],
+          "journeys": [
+            "type-widening.read",
+            "type-widening.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [
+            "type-promotion"
+          ],
+          "journeys": [
+            "iceberg.type-promotion"
+          ],
+          "text": "Type promotion"
+        }
+      }
+    },
+    {
+      "id": "semi-structured",
+      "title": "Store semi-structured values",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "variantType",
+            "variantShredding"
+          ],
+          "journeys": [
+            "variant.read",
+            "variant.write",
+            "variant-shredding.read",
+            "variant-shredding.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [
+            "variant"
+          ],
+          "journeys": [
+            "iceberg.v3-variant"
+          ],
+          "text": "v3 `variant`"
+        }
+      }
+    },
+    {
+      "id": "timestamps",
+      "title": "Store timestamps without a time zone",
+      "differ": "Delta timestamps are microsecond only.",
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "timestampNtz"
+          ],
+          "journeys": [
+            "timestamp-ntz.read",
+            "timestamp-ntz.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [
+            "timestamp-ns"
+          ],
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ],
+          "text": "`timestamp` (every version); v3 `timestamp_ns`"
+        }
+      }
+    },
+    {
+      "id": "defaults",
+      "title": "Fill omitted columns with a default",
+      "differ": "Iceberg also fills a default for rows written before the column existed.",
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "allowColumnDefaults"
+          ],
+          "journeys": [
+            "column-defaults.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [
+            "default-values"
+          ],
+          "journeys": [
+            "iceberg.v3-default-values"
+          ],
+          "text": "v3 default values"
+        }
+      }
+    },
+    {
+      "id": "layout",
+      "title": "Lay data out for pruning",
+      "differ": "Delta partitions by column value; Iceberg partitions by a transform and can change it later.",
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "clustering"
+          ],
+          "journeys": [
+            "clustering.write"
+          ],
+          "text": "`clustering`, partition columns"
+        },
+        "icebergSpec": {
+          "obligations": [
+            "hidden-partitioning",
+            "partition-evolution",
+            "sort-order"
+          ],
+          "journeys": [
+            "iceberg.hidden-partitioning",
+            "iceberg.partition-evolve",
+            "iceberg.sort-order"
+          ],
+          "text": "Hidden partitioning, partition evolution, sort order"
+        }
+      }
+    },
+    {
+      "id": "catalog-commits",
+      "title": "Commit through the catalog",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "catalogManaged"
+          ],
+          "journeys": [
+            "managed.read",
+            "managed.append"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [],
+          "journeys": [
+            "iceberg.append"
+          ],
+          "text": "Every commit through an Iceberg REST catalog"
+        }
+      }
+    },
+    {
+      "id": "row-changes",
+      "title": "Read row changes",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "changeDataFeed"
+          ],
+          "journeys": [
+            "change-data-feed.write",
+            "cdf.read"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [],
+          "journeys": [],
+          "text": "No change files in the spec; engines derive changes from snapshots"
+        }
+      }
+    },
+    {
+      "id": "constraints",
+      "title": "Reject invalid rows",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "checkConstraints",
+            "invariants"
+          ],
+          "journeys": [
+            "invariants.write",
+            "check-constraints.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [],
+          "journeys": [],
+          "text": "Required fields only"
+        }
+      }
+    },
+    {
+      "id": "generated-values",
+      "title": "Generate values",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "generatedColumns",
+            "identityColumns"
+          ],
+          "journeys": [
+            "generated-columns.write",
+            "identity-columns.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [],
+          "journeys": [],
+          "text": "None"
+        }
+      }
+    },
+    {
+      "id": "earlier-state",
+      "title": "Read an earlier state",
+      "differ": "Delta has no branches; a shallow clone is the nearest equivalent.",
+      "sides": {
+        "deltaSpec": {
+          "obligations": [],
+          "journeys": [
+            "read.version",
+            "read.timestamp"
+          ],
+          "text": "Versions and timestamps"
+        },
+        "icebergSpec": {
+          "obligations": [
+            "snapshots",
+            "branching-tagging"
+          ],
+          "journeys": [
+            "iceberg.time-travel",
+            "iceberg.branch-tag"
+          ],
+          "text": "Snapshots, branches and tags"
+        }
+      }
+    },
+    {
+      "id": "commit-time",
+      "title": "Record commit time",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "inCommitTimestamp"
+          ],
+          "journeys": [
+            "in-commit-timestamp.write"
+          ],
+          "text": null
+        },
+        "icebergSpec": {
+          "obligations": [],
+          "journeys": [],
+          "text": "Each snapshot's `timestamp-ms`"
+        }
+      }
+    },
+    {
+      "id": "geospatial",
+      "title": "Store geospatial values",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [],
+          "journeys": [],
+          "text": "None"
+        },
+        "icebergSpec": {
+          "obligations": [
+            "geometry"
+          ],
+          "journeys": [
+            "iceberg.v3-geo"
+          ],
+          "text": "v3 geometry and geography"
+        }
+      }
+    },
+    {
+      "id": "cross-format",
+      "title": "Read one format as the other",
+      "differ": null,
+      "sides": {
+        "deltaSpec": {
+          "obligations": [
+            "icebergCompatV1",
+            "icebergCompatV2"
+          ],
+          "journeys": [
+            "iceberg-compat-v1.write",
+            "iceberg-compat-v2.write"
+          ],
+          "text": "UniForm: `icebergCompatV1`, `icebergCompatV2`"
+        },
+        "icebergSpec": {
+          "obligations": [],
+          "journeys": [
+            "iceberg.read-uniform"
+          ],
+          "text": "Delta tables read through Iceberg REST"
+        }
+      }
+    }
+  ]
+}

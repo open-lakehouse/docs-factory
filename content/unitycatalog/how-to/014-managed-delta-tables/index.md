@@ -100,7 +100,6 @@ properties that turn them on, such as `delta.enableDeletionVectors`. It
 suggests column mapping in `name` mode, row tracking, and domain metadata. To
 override a suggestion, set its property yourself, such as
 `'delta.columnMapping.mode' = 'none'`. A requirement can't be overridden.
-<!-- TODO(open question): should the page mention server.managed-table.uniform-iceberg-v2.allow-missing-dv, which drops the deletionVectors requirement for UniForm (icebergCompatV2) tables? -->
 
 To list a table's protocol versions and features, run:
 

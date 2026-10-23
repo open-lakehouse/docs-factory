@@ -179,10 +179,11 @@ server.registerTool(
       "Requests for new content filed in the review app. An `accepted` request is work. A " +
       "`page` request: add a `planned:` slot (a fresh backlog id, the request's title, and " +
       "`request: <id>`) under the named section of `content/<project>/nav.yml`, or to " +
-      "`blogs/IDEAS.md` for blogs. A `journey` request: add a `journeys:` entry (a " +
-      "`family.task` id, the title, a one-sentence summary, and `request: <id>`) to " +
-      "`content/<project>/compatibility.yml` and its id to the named table's rows, then run " +
-      "`uv run docsnip compat --fix`. Open a PR, then call complete_content_request.",
+      "`blogs/IDEAS.md` for blogs. A `journey` request: add a journey (an `<area>.<task>` " +
+      "id, the title, a one-sentence summary, its `asset` and `path`, and `request: <id>`) " +
+      "to `architecture/journeys/journeys/<area>.yml`, and its id to the rows of the named " +
+      "table in `content/<project>/compatibility.yml`, then run `uv run docsnip compat " +
+      "--fix`. Open a PR, then call complete_content_request.",
     inputSchema: {
       filter: z.enum(["accepted", "open", "all"]).optional().describe("Default `accepted`."),
       kind: z.enum(["page", "journey"]).optional().describe("Default: both."),

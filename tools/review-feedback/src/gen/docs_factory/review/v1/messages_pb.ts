@@ -1448,7 +1448,7 @@ export const ContentEventSchema: GenMessage<ContentEvent> = /*@__PURE__*/
  * should live: a docs project's nav section, or (for blogs) a tag or series.
  * The accepted backlog stays git's: accepting a request means a `planned:`
  * slot carrying `request: <id>` gets written into nav.yml (or blogs/IDEAS.md),
- * or, for a JOURNEY, a journey carrying it into compatibility.yml.
+ * or, for a JOURNEY, a journey carrying it into architecture/journeys/.
  *
  * @generated from message docs_factory.review.v1.ContentRequest
  */
@@ -1507,8 +1507,9 @@ export type ContentRequest = Message<"docs_factory.review.v1.ContentRequest"> & 
   requestedByLogin: string;
 
   /**
-   * Set on DONE: the backlog id of the planned slot (a JOURNEY's journey id),
-   * and the PR that added it.
+   * Set on DONE: the backlog id of the planned slot (a JOURNEY's journey id,
+   * which architecture/journeys/aliases.yml resolves after a rename), and the
+   * PR that added it.
    *
    * @generated from field: optional string planned_id = 10;
    */
@@ -2069,7 +2070,8 @@ export const ContentRequestStatusSchema: GenEnum<ContentRequestStatus> = /*@__PU
 /**
  * What a content request asks for. A PAGE lands as a `planned:` nav slot; a
  * JOURNEY asks to track one more thing readers do across engines and clients,
- * and lands as a `journeys:` entry in content/<project>/compatibility.yml.
+ * and lands as a journey in architecture/journeys/ and a row of the named
+ * table in content/<project>/compatibility.yml.
  *
  * @generated from enum docs_factory.review.v1.ContentRequestKind
  */

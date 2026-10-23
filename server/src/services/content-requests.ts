@@ -2,7 +2,7 @@
 // UpdateContentRequest): reviewers ask for content that doesn't exist yet,
 // placed where it should live. The accepted backlog stays git's — DONE means a
 // `planned:` slot carrying `request: <id>` landed in nav.yml (or blogs/IDEAS.md),
-// or for a journey, a `journeys:` entry carrying it in compatibility.yml.
+// or for a journey, a journey carrying it in architecture/journeys/.
 import { create } from "@bufbuild/protobuf";
 import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 import { Code, ConnectError, type HandlerContext } from "@connectrpc/connect";

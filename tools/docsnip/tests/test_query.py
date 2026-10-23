@@ -97,7 +97,7 @@ def _artifact(ready: bool) -> dict:
         "works": True,
     }
     return {
-        "version": 2,
+        "version": 3,
         "project": "p",
         "interfaces": [{"key": "sdk", "model": None}],
         "journeys": [

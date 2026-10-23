@@ -33,7 +33,7 @@ tables, read through its Iceberg REST API. The journey ids name those rows.
 | Store timestamps without a time zone | `timestampNtz` (`timestamp-ntz.*`) | `timestamp` (every version); v3 `timestamp_ns` (`iceberg.v3-timestamp-ns`) | Delta timestamps are microsecond only. |
 | Fill omitted columns with a default | `allowColumnDefaults` (`column-defaults.write`) | v3 default values (`iceberg.v3-default-values`) | Iceberg also fills a default for rows written before the column existed. |
 | Lay data out for pruning | `clustering`, partition columns (`clustering.write`) | Hidden partitioning, partition evolution, sort order (`iceberg.hidden-partitioning`, `iceberg.partition-evolve`, `iceberg.sort-order`) | Delta partitions by column value; Iceberg partitions by a transform and can change it later. |
-| Commit through the catalog | `catalogManaged` (`catalog-managed.*`) | Every commit through an Iceberg REST catalog (`iceberg.append`) | |
+| Commit through the catalog | `catalogManaged` (`managed.*`) | Every commit through an Iceberg REST catalog (`iceberg.append`) | |
 | Read row changes | `changeDataFeed` (`change-data-feed.write`, `cdf.read`) | No change files in the spec; engines derive changes from snapshots | |
 | Reject invalid rows | `checkConstraints`, `invariants` (`check-constraints.write`, `invariants.write`) | Required fields only | |
 | Generate values | `generatedColumns`, `identityColumns` (`generated-columns.write`, `identity-columns.write`) | None | |

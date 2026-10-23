@@ -339,25 +339,29 @@ def test_ident_escapes_deterministically(value, expected):
 
 # --- environment fit ------------------------------------------------------------
 
+_PATHS = """\
+uc-s3:
+  roles:
+    client: { consumes: [unityCatalogSpec] }
+    catalog: { implements: [unityCatalogSpec] }
+    storage: { implements: [s3Spec] }
+iceberg-rest:
+  roles:
+    client: { consumes: [icebergRestSpec] }
+    catalog: { implements: [icebergRestSpec] }
+"""
+
+_JOURNEYS = """\
+table.read: {title: Read, summary: Read rows, asset: lakehouse.table, path: uc-s3}
+iceberg.read:
+  title: Read Iceberg
+  summary: Read an Iceberg table
+  asset: lakehouse.table
+  path: iceberg-rest
+"""
+
 _MATRIX = """\
-interfaces:
-  spark: {label: Spark}
-journeys:
-  table.read:
-    title: Read
-    summary: Read rows
-    asset: lakehouse.table
-    requires:
-      client: { consumes: [unityCatalogSpec] }
-      catalog: { implements: [unityCatalogSpec] }
-      storage: { implements: [s3Spec] }
-  iceberg.read:
-    title: Read Iceberg
-    summary: Read an Iceberg table
-    asset: lakehouse.table
-    requires:
-      client: { consumes: [icebergRestSpec] }
-      catalog: { implements: [icebergRestSpec] }
+interfaces: [spark]
 tables:
   ops:
     columns: [spark]
@@ -402,6 +406,11 @@ def _with_claims(
         _SCRIPT.format(compose=compose, claims=lines)
     )
     (root / "content" / "proj" / "compatibility.yml").write_text(_MATRIX)
+    catalog = root / "architecture" / "journeys"
+    (catalog / "journeys").mkdir(parents=True, exist_ok=True)
+    (catalog / "paths.yml").write_text(_PATHS)
+    (catalog / "interfaces.yml").write_text("spark: {label: Spark}\n")
+    (catalog / "journeys" / "table.yml").write_text(_JOURNEYS)
     return root
 
 

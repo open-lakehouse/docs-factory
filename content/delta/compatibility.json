@@ -1,6 +1,6 @@
 {
-  "generated": "by `uv run docsnip compat --fix`; edit compatibility.yml and script claims, not this file",
-  "version": 2,
+  "generated": "by `uv run docsnip compat --fix`; edit architecture/journeys/, compatibility.yml, and script claims, not this file",
+  "version": 3,
   "project": "delta",
   "spec": "deltaSpec",
   "interfaces": [
@@ -9,9 +9,12 @@
       "label": "Spark · SQL",
       "version": "4.2.0",
       "package": "pyspark",
-      "model": "deltaSpark",
+      "model": "apacheSpark",
       "via": null,
-      "integrations": [],
+      "integrations": [
+        "unityCatalogSpark",
+        "deltaSpark"
+      ],
       "viaVersion": null
     },
     {
@@ -19,9 +22,12 @@
       "label": "Spark · Python",
       "version": "4.2.0",
       "package": "pyspark",
-      "model": "deltaSpark",
+      "model": "apacheSpark",
       "via": null,
-      "integrations": [],
+      "integrations": [
+        "unityCatalogSpark",
+        "deltaSpark"
+      ],
       "viaVersion": null
     },
     {
@@ -29,9 +35,11 @@
       "label": "Spark · Scala",
       "version": "4.2.0",
       "package": "delta-spark",
-      "model": "deltaSpark",
+      "model": "apacheSpark",
       "via": null,
-      "integrations": [],
+      "integrations": [
+        "deltaSpark"
+      ],
       "viaVersion": null
     },
     {
@@ -39,9 +47,11 @@
       "label": "Spark · Java",
       "version": "4.2.0",
       "package": "delta-spark",
-      "model": "deltaSpark",
+      "model": "apacheSpark",
       "via": null,
-      "integrations": [],
+      "integrations": [
+        "deltaSpark"
+      ],
       "viaVersion": null
     },
     {
@@ -261,7 +271,7 @@
         "deletion-vectors.read",
         "timestamp-ntz.read",
         "v2-checkpoint.read",
-        "catalog-managed.read",
+        "managed.read",
         "vacuum-protocol-check.read",
         "type-widening.read",
         "variant.read",
@@ -292,7 +302,7 @@
         "timestamp-ntz.write",
         "domain-metadata.write",
         "v2-checkpoint.write",
-        "catalog-managed.write",
+        "managed.append",
         "iceberg-compat-v1.write",
         "iceberg-compat-v2.write",
         "clustering.write",
@@ -369,46 +379,46 @@
         "storage.s3-multi-writer",
         "storage.azure-gcs",
         "catalog.unity",
+        "column-mapping.read",
+        "deletion-vectors.read",
+        "timestamp-ntz.read",
+        "v2-checkpoint.read",
+        "managed.read",
+        "vacuum-protocol-check.read",
+        "type-widening.read",
+        "variant.read",
+        "variant-shredding.read",
+        "collations.read",
         "append-only.write",
         "invariants.write",
         "check-constraints.write",
         "change-data-feed.write",
         "generated-columns.write",
         "identity-columns.write",
-        "column-mapping.read",
         "column-mapping.write",
         "column-defaults.write",
-        "deletion-vectors.read",
         "deletion-vectors.write",
         "row-tracking.write",
-        "timestamp-ntz.read",
         "timestamp-ntz.write",
         "domain-metadata.write",
-        "v2-checkpoint.read",
         "v2-checkpoint.write",
-        "catalog-managed.read",
-        "catalog-managed.write",
+        "managed.append",
         "iceberg-compat-v1.write",
         "iceberg-compat-v2.write",
         "clustering.write",
-        "vacuum-protocol-check.read",
         "vacuum-protocol-check.write",
         "in-commit-timestamp.write",
-        "type-widening.read",
         "type-widening.write",
-        "variant.read",
         "variant.write",
-        "variant-shredding.read",
         "variant-shredding.write",
-        "collations.read",
         "collations.write"
       ]
     }
   ],
   "engines": [
     {
-      "id": "deltaSpark",
-      "title": "Delta Spark",
+      "id": "apacheSpark",
+      "title": "Apache Spark",
       "interfaces": [
         "spark-sql",
         "spark-python",
@@ -557,7 +567,7 @@
             "deletion-vectors.read",
             "timestamp-ntz.read",
             "v2-checkpoint.read",
-            "catalog-managed.read",
+            "managed.read",
             "vacuum-protocol-check.read",
             "type-widening.read",
             "variant.read",
@@ -584,7 +594,7 @@
             "timestamp-ntz.write",
             "domain-metadata.write",
             "v2-checkpoint.write",
-            "catalog-managed.write",
+            "managed.append",
             "iceberg-compat-v1.write",
             "iceberg-compat-v2.write",
             "clustering.write",
@@ -748,7 +758,7 @@
             "deletion-vectors.read",
             "timestamp-ntz.read",
             "v2-checkpoint.read",
-            "catalog-managed.read",
+            "managed.read",
             "vacuum-protocol-check.read",
             "type-widening.read",
             "variant.read",
@@ -776,7 +786,7 @@
             "timestamp-ntz.write",
             "domain-metadata.write",
             "v2-checkpoint.write",
-            "catalog-managed.write",
+            "managed.append",
             "iceberg-compat-v1.write",
             "iceberg-compat-v2.write",
             "clustering.write",
@@ -931,7 +941,7 @@
             "deletion-vectors.read",
             "timestamp-ntz.read",
             "v2-checkpoint.read",
-            "catalog-managed.read",
+            "managed.read",
             "vacuum-protocol-check.read",
             "type-widening.read",
             "variant.read",
@@ -958,7 +968,7 @@
             "timestamp-ntz.write",
             "domain-metadata.write",
             "v2-checkpoint.write",
-            "catalog-managed.write",
+            "managed.append",
             "iceberg-compat-v1.write",
             "iceberg-compat-v2.write",
             "clustering.write",
@@ -979,7 +989,7 @@
       "title": "Create a table",
       "summary": "Create a new, empty Delta table with a schema.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -1125,7 +1135,7 @@
       "title": "Create from select",
       "summary": "Create a Delta table from the result of a query, in one step.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -1223,7 +1233,7 @@
       "title": "Create partitioned table",
       "summary": "Create a table whose files are split by the values of one or more columns.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -1305,7 +1315,7 @@
       "title": "Append rows",
       "summary": "Add new rows to an existing table without touching the rows already there.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -1502,7 +1512,7 @@
       "title": "Overwrite rows",
       "summary": "Replace all of a table's rows with new data in one commit.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -1639,7 +1649,7 @@
       "title": "Replace where",
       "summary": "Replace only the rows that match a predicate, leaving the rest in place.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -1753,7 +1763,7 @@
       "title": "Dynamic partitions",
       "summary": "Overwrite only the partitions the new data touches.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -1835,7 +1845,7 @@
       "title": "Enforce schema",
       "summary": "Have a write that doesn't match the table's schema rejected instead of applied.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -1913,7 +1923,7 @@
       "title": "Idempotent writes",
       "summary": "Retry a write safely, so a batch that already committed isn't applied twice.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2011,7 +2021,7 @@
       "title": "Commit metadata",
       "summary": "Attach your own metadata to a commit and find it in the table's history.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2093,7 +2103,7 @@
       "title": "Update rows",
       "summary": "Change the values of rows that match a condition.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2218,7 +2228,7 @@
       "title": "Delete rows",
       "summary": "Remove the rows that match a condition.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2343,7 +2353,7 @@
       "title": "Merge upsert",
       "summary": "Update matching rows and insert new ones from a source, in one operation.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2441,7 +2451,7 @@
       "title": "Merge not matched by source",
       "summary": "In a merge, update or delete target rows that have no match in the source.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2539,7 +2549,7 @@
       "title": "Merge schema evolution",
       "summary": "Let a merge add the source's new columns to the target table.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2637,7 +2647,7 @@
       "title": "Scan table",
       "summary": "Read a table's current rows into a query or DataFrame.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2906,7 +2916,7 @@
       "title": "Filter pushdown",
       "summary": "Filter on read so the engine skips files that can't match.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -2946,7 +2956,7 @@
                 "slug": "read-a-delta-table"
               },
               "why": "filters `tested` (H01)",
-              "source": "how-to/read-a-delta-table",
+              "source": "delta:how-to/read-a-delta-table",
               "api": null,
               "verified": null,
               "note": null
@@ -2966,7 +2976,7 @@
                 "slug": "read-a-delta-table"
               },
               "why": "`to_pyarrow_dataset`; `to_pandas(filters=…)` `tested` (H01)",
-              "source": "how-to/read-a-delta-table",
+              "source": "delta:how-to/read-a-delta-table",
               "api": "to_pyarrow_dataset()",
               "verified": null,
               "note": null
@@ -3012,7 +3022,7 @@
       "title": "Read version",
       "summary": "Read the table as it was at an earlier version number.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -3216,7 +3226,7 @@
       "title": "Read timestamp",
       "summary": "Read the table as it was at a point in time.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -3338,7 +3348,7 @@
       "title": "Read past retention",
       "summary": "Learn what happens when you read a version whose files were already vacuumed.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -3384,7 +3394,7 @@
                 "slug": "query-a-table-as-of-version"
               },
               "why": "same check",
-              "source": "how-to/query-a-table-as-of-version",
+              "source": "delta:how-to/query-a-table-as-of-version",
               "api": null,
               "verified": null,
               "note": null
@@ -3442,7 +3452,7 @@
       "title": "List history",
       "summary": "List the commits that changed a table, with their operations and versions.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -3663,7 +3673,7 @@
       "title": "History detail",
       "summary": "Show a table's current location, size, file count, and properties.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -3767,7 +3777,7 @@
       "title": "Restore version",
       "summary": "Roll a table back to an earlier version.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -3881,7 +3891,7 @@
       "title": "Shallow clone",
       "summary": "Make a new table that references another table's files without copying them.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -3979,7 +3989,7 @@
       "title": "Merge on write",
       "summary": "Add a write's new columns to the table's schema as part of the write.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4077,7 +4087,7 @@
       "title": "Overwrite schema",
       "summary": "Replace a table's schema along with its data.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4191,7 +4201,7 @@
       "title": "Add column",
       "summary": "Add a column to an existing table's schema.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4321,7 +4331,7 @@
       "title": "Rename/drop column",
       "summary": "Rename or drop a column without rewriting the data files.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4435,7 +4445,7 @@
       "title": "Type widening",
       "summary": "Change a column to a wider type, such as int to long, without rewriting the data.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4549,7 +4559,7 @@
       "title": "Check constraint",
       "summary": "Add a CHECK constraint that rejects rows that violate it.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4631,7 +4641,7 @@
       "title": "Not null constraint",
       "summary": "Declare a column NOT NULL so writes with nulls fail.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4713,7 +4723,7 @@
       "title": "Generated columns",
       "summary": "Define a column whose value is computed from other columns on write.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4795,7 +4805,7 @@
       "title": "Identity columns",
       "summary": "Give a column unique values the table assigns on insert.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4877,7 +4887,7 @@
       "title": "Default columns",
       "summary": "Give a column a default value for writes that leave it out.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -4927,7 +4937,7 @@
       "title": "Read change data",
       "summary": "Read the row-level changes (inserts, updates, deletes) between versions.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5025,7 +5035,7 @@
       "title": "Stream source/sink",
       "summary": "Use a table as a streaming source or sink.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5123,7 +5133,7 @@
       "title": "Stream foreach batch merge",
       "summary": "Merge each micro-batch of a stream into a table.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5221,7 +5231,7 @@
       "title": "Compact/optimize",
       "summary": "Rewrite many small files into fewer, larger ones.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5319,7 +5329,7 @@
       "title": "Z-order",
       "summary": "Co-locate related values across files so filters skip more data.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5417,7 +5427,7 @@
       "title": "Clustering",
       "summary": "Cluster a table by chosen columns and let maintenance keep it clustered.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5515,7 +5525,7 @@
       "title": "Vacuum",
       "summary": "Delete data files that no version within the retention period still needs.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5613,7 +5623,7 @@
       "title": "Checkpoint",
       "summary": "Write a checkpoint so readers don't replay the whole commit log.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5711,7 +5721,7 @@
       "title": "Purge deletion vectors",
       "summary": "Rewrite files to physically remove rows marked deleted by deletion vectors.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5777,7 +5787,7 @@
       "title": "Generate manifest",
       "summary": "Generate manifest files so engines without Delta support can read the table.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5875,7 +5885,7 @@
       "title": "Repair table",
       "summary": "Repair a table whose log references data files that no longer exist.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -5973,7 +5983,7 @@
       "title": "Convert to Delta",
       "summary": "Turn an existing Parquet directory into a Delta table in place.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -6071,7 +6081,7 @@
       "title": "Enable feature",
       "summary": "Turn on a table feature, which may raise the table's protocol version.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -6169,7 +6179,7 @@
       "title": "Drop feature",
       "summary": "Remove a table feature so older readers and writers can use the table again.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -6267,7 +6277,7 @@
       "title": "Feature properties",
       "summary": "Read and set a table's properties.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -6406,7 +6416,7 @@
       "title": "S3 multi-writer",
       "summary": "Let several writers commit to the same table on S3 safely.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -6488,7 +6498,7 @@
       "title": "Azure/GCS",
       "summary": "Read and write tables on Azure Data Lake Storage or Google Cloud Storage.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -6586,7 +6596,7 @@
       "title": "Unity Catalog",
       "summary": "Create, read, and write tables through Unity Catalog instead of by path.",
       "request": null,
-      "family": null,
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
       "requires": {
@@ -6701,351 +6711,11 @@
       }
     },
     {
-      "id": "append-only.write",
-      "title": "Write to an append-only table",
-      "summary": "Append to a table that rejects updates and deletes, and have row changes refused.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "appendOnly",
-        "since": "writer 2"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark enforces `delta.appendOnly`.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/table-properties.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "delta-rs-python": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "delta-rs lists the feature as supported for writers.",
-              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "invariants.write",
-      "title": "Write with column invariants",
-      "summary": "Write to a table whose columns carry invariants, and have violating rows refused.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "invariants",
-        "since": "writer 2"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark checks constraints on every write.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "delta-rs-python": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "delta-rs lists the feature as supported for writers.",
-              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "check-constraints.write",
-      "title": "Write with CHECK constraints",
-      "summary": "Write to a table with CHECK constraints, and have violating rows refused.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "checkConstraints",
-        "since": "writer 3"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark checks constraints on every write.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "delta-rs-python": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "delta-rs lists the feature as supported for writers.",
-              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "change-data-feed.write",
-      "title": "Write with change data feed on",
-      "summary": "Change rows in a table that records change data, so the changes can be read later.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "changeDataFeed",
-        "since": "writer 4"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark writes change data files for row changes.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-change-data-feed.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "delta-rs-python": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "delta-rs lists the feature as supported for writers.",
-              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "generated-columns.write",
-      "title": "Write with generated columns",
-      "summary": "Write to a table with generated columns, with their values computed or checked.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "generatedColumns",
-        "since": "writer 4"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark computes `GENERATED ALWAYS AS` columns on write.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "delta-rs-python": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "delta-rs lists the feature as supported for writers.",
-              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "identity-columns.write",
-      "title": "Write with identity columns",
-      "summary": "Write to a table with an identity column, with unique values assigned.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "identityColumns",
-        "since": "writer 6"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark assigns `GENERATED … AS IDENTITY` values.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "delta-rs-python": {
-          "status": "missing",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "missing",
-              "page": null,
-              "why": "delta-rs lists identity columns as unsupported.",
-              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "delta-rs-rust": {
-          "status": "missing",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "missing",
-              "page": null,
-              "why": "delta-rs doesn't support identity columns.",
-              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/protocol.rs",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
       "id": "column-mapping.read",
       "title": "Read with column mapping",
       "summary": "Read a table whose columns map to physical names or ids, including after renames and drops.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7123,11 +6793,733 @@
       }
     },
     {
+      "id": "deletion-vectors.read",
+      "title": "Read with deletion vectors",
+      "summary": "Read a table whose deleted rows are marked in deletion vectors, without seeing them.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "deletionVectors",
+        "since": "reader 3 · writer 7"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark reads deletion vectors and writes them for DELETE, UPDATE, and MERGE.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-deletion-vectors.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "The `delta` extension reads deletion vectors.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "timestamp-ntz.read",
+      "title": "Read timestamps without time zone",
+      "summary": "Read a table with TIMESTAMP_NTZ columns.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "timestampNtz",
+        "since": "reader 3 · writer 7"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "duckdb-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "The `delta` extension maps TIMESTAMP_NTZ to its primitive types.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "v2-checkpoint.read",
+      "title": "Read v2 checkpoints",
+      "summary": "Read a table whose checkpoints use the v2 format with sidecar files.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "v2Checkpoint",
+        "since": "reader 3 · writer 7"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark supports the feature and can drop it.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "managed.read",
+      "title": "Read a managed table",
+      "summary": "Read a catalog-managed table through the catalog.",
+      "request": null,
+      "path": "uc-managed",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "catalogManaged",
+        "since": "reader 3 · writer 7"
+      },
+      "requires": {
+        "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
+          "implements": [
+            "deltaSpec"
+          ]
+        },
+        "catalog": {
+          "implements": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "write-some-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        },
+        "delta-rs-python": {
+          "status": "fails",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "fails",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "Max catalog version is required when loading a catalog-managed table",
+              "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "duckdb-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "duckdb"
+              },
+              "anchor": "query-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "1.5.6",
+              "api": null,
+              "note": "through Unity Catalog"
+            }
+          ],
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "vacuum-protocol-check.read",
+      "title": "Read with the vacuum protocol check",
+      "summary": "Read a table that requires vacuum to check its protocol first.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "vacuumProtocolCheck",
+        "since": "reader 3 · writer 7"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark supports the feature and can drop it.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "type-widening.read",
+      "title": "Read a widened column",
+      "summary": "Read a table whose column types were widened, from files with the older type.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "typeWidening",
+        "since": "accepted RFC"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark widens types with `ALTER COLUMN … TYPE` and reads widened columns.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "variant.read",
+      "title": "Read VARIANT columns",
+      "summary": "Read a table with VARIANT columns.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "variantType",
+        "since": "reader 3 · writer 7"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "duckdb-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "The `delta` extension reads VARIANT columns.",
+              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "variant-shredding.read",
+      "title": "Read shredded VARIANT columns",
+      "summary": "Read a table whose VARIANT columns are stored shredded.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "variantShredding",
+        "since": "reader 3 · writer 7"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "collations.read",
+      "title": "Read collated strings",
+      "summary": "Read a table with collated STRING columns, honouring their collation.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "collations",
+        "since": "proposed RFC"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {}
+    },
+    {
+      "id": "append-only.write",
+      "title": "Write to an append-only table",
+      "summary": "Append to a table that rejects updates and deletes, and have row changes refused.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "appendOnly",
+        "since": "writer 2"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark enforces `delta.appendOnly`.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/table-properties.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-python": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "delta-rs lists the feature as supported for writers.",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "invariants.write",
+      "title": "Write with column invariants",
+      "summary": "Write to a table whose columns carry invariants, and have violating rows refused.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "invariants",
+        "since": "writer 2"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark checks constraints on every write.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-python": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "delta-rs lists the feature as supported for writers.",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "check-constraints.write",
+      "title": "Write with CHECK constraints",
+      "summary": "Write to a table with CHECK constraints, and have violating rows refused.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "checkConstraints",
+        "since": "writer 3"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark checks constraints on every write.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-constraints.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-python": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "delta-rs lists the feature as supported for writers.",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "change-data-feed.write",
+      "title": "Write with change data feed on",
+      "summary": "Change rows in a table that records change data, so the changes can be read later.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "changeDataFeed",
+        "since": "writer 4"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark writes change data files for row changes.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-change-data-feed.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-python": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "delta-rs lists the feature as supported for writers.",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "generated-columns.write",
+      "title": "Write with generated columns",
+      "summary": "Write to a table with generated columns, with their values computed or checked.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "generatedColumns",
+        "since": "writer 4"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark computes `GENERATED ALWAYS AS` columns on write.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-python": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "delta-rs lists the feature as supported for writers.",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "identity-columns.write",
+      "title": "Write with identity columns",
+      "summary": "Write to a table with an identity column, with unique values assigned.",
+      "request": null,
+      "path": "by-path",
+      "asset": "lakehouse.table",
+      "feature": {
+        "spec": "deltaSpec",
+        "name": "identityColumns",
+        "since": "writer 6"
+      },
+      "requires": {
+        "client": {
+          "implements": [
+            "deltaSpec"
+          ]
+        }
+      },
+      "cells": {
+        "spark-sql": {
+          "status": "documented",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "works",
+              "page": null,
+              "why": "Delta Spark assigns `GENERATED … AS IDENTITY` values.",
+              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-batch.mdx",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-python": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "delta-rs lists identity columns as unsupported.",
+              "source": "https://github.com/delta-io/delta-rs/blob/python-v1.6.6/docs/feature-table.md",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        },
+        "delta-rs-rust": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": null,
+              "why": "delta-rs doesn't support identity columns.",
+              "source": "https://github.com/delta-io/delta-rs/blob/rust-v1.1.1/crates/core/src/kernel/transaction/protocol.rs",
+              "api": null,
+              "verified": null,
+              "note": null
+            }
+          ]
+        }
+      }
+    },
+    {
       "id": "column-mapping.write",
       "title": "Write with column mapping",
       "summary": "Write to a table with column mapping, under its physical column names.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7209,7 +7601,7 @@
       "title": "Write with column defaults",
       "summary": "Write to a table with column defaults, with omitted columns filled in.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7243,65 +7635,11 @@
       }
     },
     {
-      "id": "deletion-vectors.read",
-      "title": "Read with deletion vectors",
-      "summary": "Read a table whose deleted rows are marked in deletion vectors, without seeing them.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "deletionVectors",
-        "since": "reader 3 · writer 7"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark reads deletion vectors and writes them for DELETE, UPDATE, and MERGE.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-deletion-vectors.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "duckdb-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "The `delta` extension reads deletion vectors.",
-              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
       "id": "deletion-vectors.write",
       "title": "Write deletion vectors",
       "summary": "Delete or update rows by writing deletion vectors instead of rewriting files.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7339,7 +7677,7 @@
       "title": "Write with row tracking",
       "summary": "Write to a table that tracks row ids and commit versions, keeping them assigned.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7379,49 +7717,11 @@
       }
     },
     {
-      "id": "timestamp-ntz.read",
-      "title": "Read timestamps without time zone",
-      "summary": "Read a table with TIMESTAMP_NTZ columns.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "timestampNtz",
-        "since": "reader 3 · writer 7"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "duckdb-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "The `delta` extension maps TIMESTAMP_NTZ to its primitive types.",
-              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
       "id": "timestamp-ntz.write",
       "title": "Write timestamps without time zone",
       "summary": "Write TIMESTAMP_NTZ values to a table.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7442,7 +7742,7 @@
       "title": "Write with domain metadata",
       "summary": "Commit to a table that stores domain metadata, keeping it intact.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7476,49 +7776,11 @@
       }
     },
     {
-      "id": "v2-checkpoint.read",
-      "title": "Read v2 checkpoints",
-      "summary": "Read a table whose checkpoints use the v2 format with sidecar files.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "v2Checkpoint",
-        "since": "reader 3 · writer 7"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark supports the feature and can drop it.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
       "id": "v2-checkpoint.write",
       "title": "Write v2 checkpoints",
       "summary": "Checkpoint a table in the v2 format.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7552,11 +7814,11 @@
       }
     },
     {
-      "id": "catalog-managed.read",
-      "title": "Read a catalog-managed table",
-      "summary": "Read a table whose catalog is the source of truth for its commits.",
+      "id": "managed.append",
+      "title": "Append to a managed table",
+      "summary": "Append rows to a catalog-managed table, with the catalog accepting the commit.",
       "request": null,
-      "family": "feature",
+      "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7565,94 +7827,18 @@
       },
       "requires": {
         "client": {
+          "consumes": [
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
+          ],
           "implements": [
             "deltaSpec"
           ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "tested",
-          "draft": false,
-          "proofs": [
-            {
-              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
-              "page": {
-                "project": "unitycatalog",
-                "bucket": "tutorials",
-                "slug": "managed-delta-table"
-              },
-              "anchor": "write-some-rows",
-              "ready": true,
-              "works": true,
-              "fails": null,
-              "version": "4.1.0",
-              "api": null,
-              "note": "through Unity Catalog"
-            }
-          ],
-          "evidence": []
         },
-        "delta-rs-python": {
-          "status": "fails",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "fails",
-              "page": {
-                "project": "unitycatalog",
-                "bucket": "reference",
-                "slug": "features-and-limitations"
-              },
-              "why": "Max catalog version is required when loading a catalog-managed table",
-              "source": "unitycatalog:reference/features-and-limitations#clients-and-engines",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        },
-        "duckdb-sql": {
-          "status": "tested",
-          "draft": false,
-          "proofs": [
-            {
-              "script": "content/unitycatalog/how-to/008-duckdb/snippets/duckdb_tables.py",
-              "page": {
-                "project": "unitycatalog",
-                "bucket": "how-to",
-                "slug": "duckdb"
-              },
-              "anchor": "query-a-table",
-              "ready": true,
-              "works": true,
-              "fails": null,
-              "version": "1.5.6",
-              "api": null,
-              "note": "through Unity Catalog"
-            }
-          ],
-          "evidence": []
-        }
-      }
-    },
-    {
-      "id": "catalog-managed.write",
-      "title": "Write a catalog-managed table",
-      "summary": "Commit to a table through the catalog that manages it.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "catalogManaged",
-        "since": "reader 3 · writer 7"
-      },
-      "requires": {
-        "client": {
+        "catalog": {
           "implements": [
-            "deltaSpec"
+            "unityCatalogSpec",
+            "unityCatalogDeltaApiSpec"
           ]
         }
       },
@@ -7728,7 +7914,7 @@
       "title": "Write with IcebergCompatV1",
       "summary": "Write to a table that keeps Iceberg metadata (UniForm, first version).",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7766,7 +7952,7 @@
       "title": "Write with IcebergCompatV2 (UniForm)",
       "summary": "Write to a table that keeps Iceberg metadata, so Iceberg clients can read it.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7804,7 +7990,7 @@
       "title": "Write to a clustered table",
       "summary": "Write to a table with clustering columns, recording them for later clustering.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7838,49 +8024,11 @@
       }
     },
     {
-      "id": "vacuum-protocol-check.read",
-      "title": "Read with the vacuum protocol check",
-      "summary": "Read a table that requires vacuum to check its protocol first.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "vacuumProtocolCheck",
-        "since": "reader 3 · writer 7"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark supports the feature and can drop it.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-drop-feature.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
       "id": "vacuum-protocol-check.write",
       "title": "Vacuum with the protocol check",
       "summary": "Vacuum a table only after checking its protocol, as the feature requires.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7918,7 +8066,7 @@
       "title": "Write in-commit timestamps",
       "summary": "Commit to a table that records each commit's timestamp inside the commit.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -7958,49 +8106,11 @@
       }
     },
     {
-      "id": "type-widening.read",
-      "title": "Read a widened column",
-      "summary": "Read a table whose column types were widened, from files with the older type.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "typeWidening",
-        "since": "accepted RFC"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "spark-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "Delta Spark widens types with `ALTER COLUMN … TYPE` and reads widened columns.",
-              "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
       "id": "type-widening.write",
       "title": "Widen a column type",
       "summary": "Widen a column's type, such as INT to BIGINT, without rewriting files.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -8025,44 +8135,6 @@
               "page": null,
               "why": "Delta Spark widens types with `ALTER COLUMN … TYPE` and reads widened columns.",
               "source": "https://github.com/delta-io/delta/blob/v4.4.0/docs/src/content/docs/delta-type-widening.mdx",
-              "api": null,
-              "verified": null,
-              "note": null
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "variant.read",
-      "title": "Read VARIANT columns",
-      "summary": "Read a table with VARIANT columns.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "variantType",
-        "since": "reader 3 · writer 7"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {
-        "duckdb-sql": {
-          "status": "documented",
-          "draft": false,
-          "proofs": [],
-          "evidence": [
-            {
-              "outcome": "works",
-              "page": null,
-              "why": "The `delta` extension reads VARIANT columns.",
-              "source": "https://duckdb.org/docs/current/core_extensions/delta.html",
               "api": null,
               "verified": null,
               "note": null
@@ -8076,32 +8148,11 @@
       "title": "Write VARIANT columns",
       "summary": "Write semi-structured values to a VARIANT column.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
         "name": "variantType",
-        "since": "reader 3 · writer 7"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {}
-    },
-    {
-      "id": "variant-shredding.read",
-      "title": "Read shredded VARIANT columns",
-      "summary": "Read a table whose VARIANT columns are stored shredded.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "variantShredding",
         "since": "reader 3 · writer 7"
       },
       "requires": {
@@ -8118,7 +8169,7 @@
       "title": "Write shredded VARIANT columns",
       "summary": "Write VARIANT columns shredded into typed fields.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -8135,32 +8186,11 @@
       "cells": {}
     },
     {
-      "id": "collations.read",
-      "title": "Read collated strings",
-      "summary": "Read a table with collated STRING columns, honouring their collation.",
-      "request": null,
-      "family": "feature",
-      "asset": "lakehouse.table",
-      "feature": {
-        "spec": "deltaSpec",
-        "name": "collations",
-        "since": "proposed RFC"
-      },
-      "requires": {
-        "client": {
-          "implements": [
-            "deltaSpec"
-          ]
-        }
-      },
-      "cells": {}
-    },
-    {
       "id": "collations.write",
       "title": "Write collated strings",
       "summary": "Write to collated STRING columns, keeping statistics valid for their collation.",
       "request": null,
-      "family": "feature",
+      "path": "by-path",
       "asset": "lakehouse.table",
       "feature": {
         "spec": "deltaSpec",
@@ -8179,16 +8209,14 @@
   ],
   "verifiedEdges": [
     {
-      "source": "deltaSpark",
-      "kind": "implements",
-      "target": "deltaSpec",
+      "source": "apacheSpark",
+      "kind": "operatesOn",
+      "target": "lakehouse.table",
       "interfaces": [
         "spark-python",
         "spark-sql"
       ],
       "journeys": [
-        "catalog-managed.read",
-        "catalog-managed.write",
         "catalog.unity",
         "column-mapping.read",
         "column-mapping.write",
@@ -8201,6 +8229,8 @@
         "history.list",
         "history.restore",
         "in-commit-timestamp.write",
+        "managed.append",
+        "managed.read",
         "read.scan",
         "read.version",
         "row-tracking.write",
@@ -8213,15 +8243,13 @@
     },
     {
       "source": "deltaSpark",
-      "kind": "operatesOn",
-      "target": "lakehouse.table",
+      "kind": "implements",
+      "target": "deltaSpec",
       "interfaces": [
         "spark-python",
         "spark-sql"
       ],
       "journeys": [
-        "catalog-managed.read",
-        "catalog-managed.write",
         "catalog.unity",
         "column-mapping.read",
         "column-mapping.write",
@@ -8234,6 +8262,8 @@
         "history.list",
         "history.restore",
         "in-commit-timestamp.write",
+        "managed.append",
+        "managed.read",
         "read.scan",
         "read.version",
         "row-tracking.write",
@@ -8252,11 +8282,11 @@
         "duckdb-sql"
       ],
       "journeys": [
-        "catalog-managed.read",
-        "catalog-managed.write",
         "catalog.unity",
         "column-mapping.read",
         "column-mapping.write",
+        "managed.append",
+        "managed.read",
         "read.scan",
         "write.append"
       ]
@@ -8269,13 +8299,61 @@
         "duckdb-sql"
       ],
       "journeys": [
-        "catalog-managed.read",
-        "catalog-managed.write",
         "catalog.unity",
         "column-mapping.read",
         "column-mapping.write",
+        "managed.append",
+        "managed.read",
         "read.scan",
         "write.append"
+      ]
+    },
+    {
+      "source": "duckdbUnityCatalog",
+      "kind": "consumes",
+      "target": "unityCatalogDeltaApiSpec",
+      "interfaces": [
+        "duckdb-sql"
+      ],
+      "journeys": [
+        "managed.append",
+        "managed.read"
+      ]
+    },
+    {
+      "source": "duckdbUnityCatalog",
+      "kind": "consumes",
+      "target": "unityCatalogSpec",
+      "interfaces": [
+        "duckdb-sql"
+      ],
+      "journeys": [
+        "managed.append",
+        "managed.read"
+      ]
+    },
+    {
+      "source": "unityCatalogSpark",
+      "kind": "consumes",
+      "target": "unityCatalogDeltaApiSpec",
+      "interfaces": [
+        "spark-sql"
+      ],
+      "journeys": [
+        "managed.append",
+        "managed.read"
+      ]
+    },
+    {
+      "source": "unityCatalogSpark",
+      "kind": "consumes",
+      "target": "unityCatalogSpec",
+      "interfaces": [
+        "spark-sql"
+      ],
+      "journeys": [
+        "managed.append",
+        "managed.read"
       ]
     }
   ],

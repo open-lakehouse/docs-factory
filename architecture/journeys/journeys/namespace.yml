@@ -1,0 +1,48 @@
+# Journeys on catalogs and schemas, through the Unity Catalog API.
+# See architecture/journeys/README.md.
+
+catalog.create:
+  title: Create a catalog
+  summary: "Create a catalog, the top level of the three-level namespace."
+  asset: lakehouse.namespace
+  path: uc-api
+catalog.list:
+  title: View catalogs
+  summary: "List catalogs or get one by name, with its properties."
+  asset: lakehouse.namespace
+  path: uc-api
+catalog.update:
+  title: Update a catalog
+  summary: "Change a catalog's comment, properties, or name."
+  asset: lakehouse.namespace
+  path: uc-api
+catalog.delete:
+  title: Delete a catalog
+  summary: "Delete a catalog, including everything in it when forced."
+  asset: lakehouse.namespace
+  path: uc-api
+schema.create:
+  title: Create a schema
+  summary: Create a schema inside a catalog.
+  asset: lakehouse.namespace
+  path: uc-api
+schema.list:
+  title: View schemas
+  summary: "List a catalog's schemas or get one by its full name."
+  asset: lakehouse.namespace
+  path: uc-api
+schema.update:
+  title: Update or rename a schema
+  summary: "Change a schema's comment, properties, or name."
+  asset: lakehouse.namespace
+  path: uc-api
+schema.delete:
+  title: Delete a schema
+  summary: Delete an empty schema.
+  asset: lakehouse.namespace
+  path: uc-api
+storage.managed-root:
+  title: Give a catalog or schema managed storage
+  summary: Set the storage root under which the catalog allocates managed tables and volumes.
+  asset: lakehouse.namespace
+  path: uc-api

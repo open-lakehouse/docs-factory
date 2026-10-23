@@ -1,10 +1,17 @@
 """Compatibility matrices: which journeys each engine or client can do, proven by CI.
 
-``content/<project>/compatibility.yml`` declares a project's matrix: its
-interfaces (the columns), its journeys (what a reader sets out to do, however
-many calls it takes), the tables pages embed (rows of journeys), and evidence
-for cells no script here proves. Scripts claim cells through
-``[tool.docs-factory].claims`` (see :class:`docsnip.scriptmeta.Claim`).
+The journeys are estate-wide (ADR-0009). ``architecture/journeys/`` defines
+them once: the named ``paths`` (what each participant role must implement,
+consume, or realize), the ``interfaces`` (one engine through one language
+binding), the ``journeys`` (what a reader sets out to do, however many calls it
+takes, on one asset kind through one path), the ``evidence`` for cells no
+script here proves, and ``aliases`` for renamed journeys. Scripts claim cells
+through ``[tool.docs-factory].claims`` (see :class:`docsnip.scriptmeta.Claim`).
+
+``content/<project>/compatibility.yml`` is a project's projection of that
+catalog: its interfaces in tab order and the tables its pages embed (rows of
+journeys). A project's matrix is the journeys its tables show, and a claim
+counts in every matrix that lists its interface and journey.
 
 A cell is tested or failing from a claim only when the claiming script's page
 is ``status: ready``, because only those scripts gate CI (content/conftest.py).
@@ -14,12 +21,10 @@ renders each table between its markers in the page that embeds it; ``check``
 reports what's inconsistent or stale, including page tabs that disagree with
 the interface labels (:mod:`docsnip.tabs`). See docs/design/model-leverage.md §3.1.
 
-Each journey also names the estate-model ``asset`` it acts on and what its
-participants must ``requires`` (a client ``consumes`` a spec, a provider
-``implements`` one or ``realizes`` a capability or concern), inherited from its
-``family`` or the matrix ``defaults`` and overridable per journey. This module
-is the only resolver of those: the artifact carries the resolved form, and JS
-never re-resolves it. See docs/design/trestle-integration.md §5.
+This module is the only resolver of a journey's ``asset`` and ``requires`` (its
+path's roles plus its own): the artifact carries the resolved form, and JS
+never re-resolves it. See docs/design/trestle-integration.md §5 and
+docs/design/journey-graph.md.
 """
 
 from __future__ import annotations
@@ -43,37 +48,24 @@ from .scriptmeta import Claim, ScriptMeta, discover, without_metadata
 from .snippetcheck import iter_fences
 
 FILE = "compatibility.yml"
+# The estate-wide journey catalog, relative to the repo root.
+CATALOG = Path("architecture") / "journeys"
 # The resolved matrix the review app loads (site/src/compat.ts); committed, so
 # the site builds without uv.
 ARTIFACT = "compatibility.json"
 # Bumped when an artifact field is removed or changes meaning; new fields don't
-# bump it. 1 was the unversioned shape before journeys carried assets.
-ARTIFACT_VERSION = 2
+# bump it. 1 was the unversioned shape before journeys carried assets; 3 replaced
+# a journey's `family` with its `path`.
+ARTIFACT_VERSION = 3
 # `works` is evidence that a journey works without a script here to prove it:
 # the engine's docs or source say so.
 OUTCOMES = ("works", "fails", "missing")
 
-_MATRIX_KEYS = {
-    "spec",
-    "defaults",
-    "families",
-    "interfaces",
-    "journeys",
-    "tables",
-    "evidence",
-}
+_MATRIX_KEYS = {"spec", "interfaces", "tables"}
 _INTERFACE_KEYS = {"label", "pin", "package", "model", "via", "integrations"}
-_JOURNEY_KEYS = {
-    "title",
-    "summary",
-    "request",
-    "family",
-    "asset",
-    "requires",
-    "feature",
-}
+_JOURNEY_KEYS = {"title", "summary", "request", "asset", "path", "roles", "feature"}
 _FEATURE_KEYS = {"spec", "name", "since"}
-_FAMILY_KEYS = {"asset", "requires"}
+_PATH_KEYS = {"roles"}
 # A requirement edge → the element kinds it may name.
 _REQUIRE_EDGES = {
     "consumes": {"openSpecification"},
@@ -149,16 +141,10 @@ class Journey:
     title: str  # the row label: what the reader sets out to do
     summary: str  # one sentence the review app shows under the title
     request: str | None = None  # uuid of the review-app request that asked for it
-    family: str | None = None
-    asset: str | None = None  # resolved: journey, else family, else defaults
-    requires: Requirements = dataclasses.field(default_factory=dict)  # resolved
+    path: str | None = None  # a paths.yml name
+    asset: str | None = None
+    requires: Requirements = dataclasses.field(default_factory=dict)  # path + roles
     feature: Feature | None = None
-
-
-@dataclasses.dataclass(frozen=True)
-class Family:
-    asset: str | None
-    requires: Requirements | None  # None: not set, so the defaults apply
 
 
 @dataclasses.dataclass(frozen=True)
@@ -198,14 +184,27 @@ class Evidence:
 
 
 @dataclasses.dataclass
+class Catalog:
+    """The estate-wide definitions in architecture/journeys/."""
+
+    paths: dict[str, Requirements]
+    interfaces: dict[str, Interface]
+    journeys: dict[str, Journey]
+    evidence: list[Evidence]
+    aliases: dict[str, str]  # old journey id → current id
+
+
+@dataclasses.dataclass
 class Matrix:
+    """A project's projection of the catalog."""
+
     project: str
     path: Path
     spec: str | None
-    interfaces: dict[str, Interface]
-    journeys: dict[str, Journey]
+    interfaces: dict[str, Interface]  # in tab order
+    journeys: dict[str, Journey]  # the tables' rows, in order of first appearance
     tables: dict[str, Table]
-    evidence: list[Evidence]
+    evidence: list[Evidence]  # the catalog's, where it touches this matrix
     pins: dict[str, str]  # from content/<project>/release.yml
 
 
@@ -225,6 +224,7 @@ class Proof:
 
 @dataclasses.dataclass
 class Result:
+    catalog: Catalog
     matrices: dict[str, Matrix]
     model: Model
     # (project, interface, journey) → every resolved claim, ready or not
@@ -305,26 +305,92 @@ def _load_requires(
     return requires
 
 
-def _load_family(
-    entry: object, at: str, where: str, model: Model, errors: list[str]
-) -> Family:
-    if not isinstance(entry, dict):
-        errors.append(f"{where}: {at} must be a mapping")
-        return Family(asset=None, requires=None)
-    for extra in sorted(set(entry) - _FAMILY_KEYS):
-        errors.append(f"{where}: {at}: unknown key '{extra}'")
-    asset = entry.get("asset")
-    if asset is not None and not _check_element(
-        model, asset, {"asset"}, f"{at}.asset", where, errors
-    ):
-        asset = None
-    raw_requires = entry.get("requires")
-    requires = (
-        _load_requires(raw_requires, f"{at}.requires", where, model, errors)
-        if raw_requires is not None
-        else None
-    )
-    return Family(asset=asset if isinstance(asset, str) else None, requires=requires)
+def _merged(base: Requirements, extra: Requirements) -> Requirements:
+    """``base`` with ``extra``'s ids added, role by role and edge by edge."""
+    merged = {role: dict(edges) for role, edges in base.items()}
+    for role, edges in extra.items():
+        mine = merged.setdefault(role, {})
+        for edge, ids in edges.items():
+            have = mine.get(edge, ())
+            mine[edge] = have + tuple(i for i in ids if i not in have)
+    return merged
+
+
+def _load_yaml(path: Path, errors: list[str]) -> object:
+    try:
+        return yaml.safe_load(path.read_text())
+    except yaml.YAMLError as exc:
+        errors.append(f"{path}: {exc}")
+        return None
+
+
+def _mapping(raw: object, where: str, errors: list[str]) -> dict:
+    if raw is None:
+        return {}
+    if not isinstance(raw, dict):
+        errors.append(f"{where}: must be a mapping")
+        return {}
+    return raw
+
+
+def _load_paths(
+    raw: dict, where: str, model: Model, errors: list[str]
+) -> dict[str, Requirements]:
+    paths: dict[str, Requirements] = {}
+    for name, entry in raw.items():
+        at = str(name)
+        if not isinstance(entry, dict) or "roles" not in entry:
+            errors.append(f"{where}: {at} needs roles")
+            continue
+        for extra in sorted(set(entry) - _PATH_KEYS):
+            errors.append(f"{where}: {at}: unknown key '{extra}'")
+        roles = _load_requires(entry["roles"], f"{at}.roles", where, model, errors)
+        if roles is not None:
+            paths[at] = roles
+    return paths
+
+
+def _load_interfaces(
+    raw: dict, where: str, model: Model, errors: list[str]
+) -> dict[str, Interface]:
+    def known_model(value: object, at: str) -> None:
+        if not isinstance(value, str):
+            errors.append(f"{where}: {at} must be a model element id")
+        elif model.kinds and value not in model.kinds:
+            errors.append(f"{where}: {at} '{value}' is not in the estate model")
+
+    interfaces: dict[str, Interface] = {}
+    for key, entry in raw.items():
+        at = str(key)
+        if not isinstance(entry, dict) or not isinstance(entry.get("label"), str):
+            errors.append(f"{where}: {at} needs a label")
+            continue
+        for extra in sorted(set(entry) - _INTERFACE_KEYS):
+            errors.append(f"{where}: {at}: unknown key '{extra}'")
+        if "model" in entry:
+            known_model(entry["model"], f"{at}.model")
+        integrations = entry.get("integrations") or []
+        if not isinstance(integrations, list):
+            errors.append(f"{where}: {at}.integrations must be a list of model ids")
+            integrations = []
+        for i, integration in enumerate(integrations):
+            known_model(integration, f"{at}.integrations[{i}]")
+            edge = ("integrates", entry.get("model"), integration)
+            if model.kinds and edge not in model.edges:
+                errors.append(
+                    f"{where}: {at}.integrations[{i}]: {entry.get('model')!r} "
+                    f"doesn't integrate '{integration}' in the estate model"
+                )
+        interfaces[at] = Interface(
+            key=at,
+            label=entry["label"],
+            pin=entry.get("pin"),
+            package=entry.get("package"),
+            model=entry.get("model"),
+            via=entry.get("via"),
+            integrations=tuple(str(c) for c in integrations),
+        )
+    return interfaces
 
 
 def _load_feature(
@@ -360,12 +426,11 @@ def _load_journeys(
     where: str,
     errors: list[str],
     model: Model,
-    families: dict[str, Family],
-    defaults: Family,
+    paths: dict[str, Requirements],
 ) -> dict[str, Journey]:
     journeys: dict[str, Journey] = {}
     for key, entry in raw.items():
-        at = f"journeys.{key}"
+        at = str(key)
         if not isinstance(entry, dict) or not all(
             isinstance(entry.get(k), str) for k in ("title", "summary")
         ):
@@ -376,139 +441,55 @@ def _load_journeys(
         request = entry.get("request")
         if request is not None and not _UUID_RE.match(str(request)):
             errors.append(f"{where}: {at}.request must be a request uuid")
-        family_key = entry.get("family")
-        family = defaults
-        if family_key is not None:
-            if family_key not in families:
-                errors.append(f"{where}: {at}.family '{family_key}' is not a family")
-            else:
-                family = families[family_key]
-        own = _load_family(
-            {k: entry[k] for k in _FAMILY_KEYS if k in entry}, at, where, model, errors
+        path = entry.get("path")
+        if path is None:
+            errors.append(f"{where}: {at} needs a path")
+        elif path not in paths:
+            errors.append(f"{where}: {at}.path '{path}' is not in paths.yml")
+        asset = entry.get("asset")
+        if asset is None:
+            errors.append(f"{where}: {at} needs an asset")
+        elif not _check_element(model, asset, {"asset"}, f"{at}.asset", where, errors):
+            asset = None
+        roles = (
+            _load_requires(entry["roles"], f"{at}.roles", where, model, errors)
+            if "roles" in entry
+            else None
         )
-        requires = own.requires
-        if requires is None:
-            requires = (
-                family.requires if family.requires is not None else defaults.requires
-            )
         feature = (
             _load_feature(entry["feature"], f"{at}.feature", where, model, errors)
             if "feature" in entry
             else None
         )
-        journeys[str(key)] = Journey(
-            id=str(key),
+        journeys[at] = Journey(
+            id=at,
             title=entry["title"],
             summary=entry["summary"],
             request=str(request) if request is not None else None,
-            family=str(family_key) if family_key is not None else None,
-            asset=own.asset or family.asset or defaults.asset,
-            requires=requires or {},
+            path=str(path) if path in paths else None,
+            asset=asset if isinstance(asset, str) else None,
+            requires=_merged(paths.get(str(path), {}), roles or {}),
             feature=feature,
         )
     return journeys
 
 
-def _load_matrix(path: Path, model: Model, errors: list[str]) -> Matrix | None:
-    try:
-        raw = yaml.safe_load(path.read_text()) or {}
-    except yaml.YAMLError as exc:
-        errors.append(f"{path}: {exc}")
-        return None
-    where = str(path)
-    if not isinstance(raw, dict):
-        errors.append(f"{where}: must be a mapping")
-        return None
-    for key in sorted(set(raw) - _MATRIX_KEYS):
-        errors.append(f"{where}: unknown key '{key}'")
-    pins = _release_pins(path.parent)
-
-    def known_model(value: object, at: str) -> None:
-        if not isinstance(value, str):
-            errors.append(f"{where}: {at} must be a model element id")
-        elif model.kinds and value not in model.kinds:
-            errors.append(f"{where}: {at} '{value}' is not in the estate model")
-
-    spec = raw.get("spec")
-    if spec is not None:
-        known_model(spec, "spec")
-
-    interfaces: dict[str, Interface] = {}
-    for key, entry in (raw.get("interfaces") or {}).items():
-        at = f"interfaces.{key}"
-        if not isinstance(entry, dict) or not isinstance(entry.get("label"), str):
-            errors.append(f"{where}: {at} needs a label")
-            continue
-        for extra in sorted(set(entry) - _INTERFACE_KEYS):
-            errors.append(f"{where}: {at}: unknown key '{extra}'")
-        if "pin" in entry and entry["pin"] not in pins:
-            errors.append(f"{where}: {at}.pin '{entry['pin']}' is not in release.yml")
-        if "model" in entry:
-            known_model(entry["model"], f"{at}.model")
-        integrations = entry.get("integrations") or []
-        if not isinstance(integrations, list):
-            errors.append(f"{where}: {at}.integrations must be a list of model ids")
-            integrations = []
-        for i, integration in enumerate(integrations):
-            known_model(integration, f"{at}.integrations[{i}]")
-            edge = ("integrates", entry.get("model"), integration)
-            if model.kinds and edge not in model.edges:
-                errors.append(
-                    f"{where}: {at}.integrations[{i}]: {entry.get('model')!r} "
-                    f"doesn't integrate '{integration}' in the estate model"
-                )
-        interfaces[key] = Interface(
-            key=key,
-            label=entry["label"],
-            pin=entry.get("pin"),
-            package=entry.get("package"),
-            model=entry.get("model"),
-            via=entry.get("via"),
-            integrations=tuple(str(c) for c in integrations),
-        )
-
-    defaults = _load_family(raw.get("defaults") or {}, "defaults", where, model, errors)
-    families = {
-        str(name): _load_family(entry, f"families.{name}", where, model, errors)
-        for name, entry in (raw.get("families") or {}).items()
-    }
-    journeys = _load_journeys(
-        raw.get("journeys") or {}, where, errors, model, families, defaults
-    )
-
-    tables: dict[str, Table] = {}
-    for tid, entry in (raw.get("tables") or {}).items():
-        at = f"tables.{tid}"
-        if not isinstance(entry, dict):
-            errors.append(f"{where}: {at} must be a mapping")
-            continue
-        for extra in sorted(set(entry) - _TABLE_KEYS):
-            errors.append(f"{where}: {at}: unknown key '{extra}'")
-        columns = _strs(entry.get("columns")) or ()
-        for col in columns:
-            if col not in interfaces:
-                errors.append(f"{where}: {at}: column '{col}' is not an interface")
-        rows = _strs(entry.get("rows")) or ()
-        for row in rows:
-            if row not in journeys:
-                errors.append(f"{where}: {at}: row '{row}' is not a journey")
-        if not columns or not rows:
-            errors.append(f"{where}: {at} needs columns and rows of journey ids")
-        tables[str(tid)] = Table(
-            id=str(tid),
-            title=str(entry.get("title") or tid),
-            columns=columns,
-            rows=tuple(r for r in rows if r in journeys),
-            documented=entry.get("documented") is True,
-        )
-    tabled = {row for table in tables.values() for row in table.rows}
-    for key in journeys:
-        if key not in tabled:
-            errors.append(f"{where}: journeys.{key} is on no table")
-
+def _load_evidence(
+    raw: object,
+    where: str,
+    errors: list[str],
+    interfaces: dict[str, Interface],
+    journeys: dict[str, Journey],
+) -> list[Evidence]:
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        errors.append(f"{where}: must be a list")
+        return []
+    entries: list[Any] = raw
     evidence: list[Evidence] = []
-    for i, entry in enumerate(raw.get("evidence") or []):
-        at = f"evidence[{i}]"
+    for i, entry in enumerate(entries):
+        at = f"[{i}]"
         if not isinstance(entry, dict):
             errors.append(f"{where}: {at} must be a mapping")
             continue
@@ -554,7 +535,128 @@ def _load_matrix(path: Path, model: Model, errors: list[str]) -> Matrix | None:
                 note=entry.get("note"),
             )
         )
+    return evidence
 
+
+def load_catalog(repo_root: Path, model: Model, errors: list[str]) -> Catalog:
+    """The estate-wide journey catalog; empty where a file doesn't exist."""
+    root = repo_root / CATALOG
+
+    def read(name: str) -> tuple[object, str]:
+        path = root / name
+        return (_load_yaml(path, errors) if path.is_file() else None), str(path)
+
+    raw, where = read("paths.yml")
+    paths = _load_paths(_mapping(raw, where, errors), where, model, errors)
+    raw, where = read("interfaces.yml")
+    interfaces = _load_interfaces(_mapping(raw, where, errors), where, model, errors)
+
+    journeys: dict[str, Journey] = {}
+    homes: dict[str, Path] = {}
+    for path in sorted((root / "journeys").glob("*.yml")):
+        where = str(path)
+        raw = _mapping(_load_yaml(path, errors), where, errors)
+        for jid, journey in _load_journeys(raw, where, errors, model, paths).items():
+            if jid in journeys:
+                errors.append(f"{where}: {jid} is already a journey in {homes[jid]}")
+                continue
+            journeys[jid], homes[jid] = journey, path
+
+    raw, where = read("evidence.yml")
+    evidence = _load_evidence(raw, where, errors, interfaces, journeys)
+
+    raw, where = read("aliases.yml")
+    aliases: dict[str, str] = {}
+    for old, new in _mapping(raw, where, errors).items():
+        if old in journeys:
+            errors.append(f"{where}: {old} is still a journey")
+        elif new not in journeys:
+            errors.append(f"{where}: {old} → '{new}', which is not a journey")
+        else:
+            aliases[str(old)] = str(new)
+    return Catalog(
+        paths=paths,
+        interfaces=interfaces,
+        journeys=journeys,
+        evidence=evidence,
+        aliases=aliases,
+    )
+
+
+def _load_matrix(
+    path: Path, catalog: Catalog, model: Model, errors: list[str]
+) -> Matrix | None:
+    raw = _load_yaml(path, errors)
+    if raw is None:
+        return None
+    where = str(path)
+    if not isinstance(raw, dict):
+        errors.append(f"{where}: must be a mapping")
+        return None
+    for key in sorted(set(raw) - _MATRIX_KEYS):
+        errors.append(f"{where}: unknown key '{key}'")
+    pins = _release_pins(path.parent)
+
+    spec = raw.get("spec")
+    if spec is not None and not isinstance(spec, str):
+        errors.append(f"{where}: spec must be a model element id")
+    elif spec is not None and model.kinds and spec not in model.kinds:
+        errors.append(f"{where}: spec '{spec}' is not in the estate model")
+
+    keys = _strs(raw.get("interfaces"))
+    if keys is None:
+        errors.append(f"{where}: interfaces lists interface keys, in tab order")
+        keys = ()
+    interfaces: dict[str, Interface] = {}
+    for key in keys:
+        iface = catalog.interfaces.get(key)
+        if iface is None:
+            errors.append(
+                f"{where}: interface '{key}' is not in {CATALOG}/interfaces.yml"
+            )
+            continue
+        if iface.pin and iface.pin not in pins:
+            errors.append(f"{where}: {key}.pin '{iface.pin}' is not in release.yml")
+        interfaces[key] = iface
+
+    tables: dict[str, Table] = {}
+    journeys: dict[str, Journey] = {}
+    for tid, entry in _mapping(raw.get("tables"), f"{where}: tables", errors).items():
+        at = f"tables.{tid}"
+        if not isinstance(entry, dict):
+            errors.append(f"{where}: {at} must be a mapping")
+            continue
+        for extra in sorted(set(entry) - _TABLE_KEYS):
+            errors.append(f"{where}: {at}: unknown key '{extra}'")
+        columns = _strs(entry.get("columns")) or ()
+        for col in columns:
+            if col not in interfaces:
+                errors.append(f"{where}: {at}: column '{col}' is not an interface")
+        rows = _strs(entry.get("rows")) or ()
+        for row in rows:
+            if row in catalog.journeys:
+                journeys.setdefault(row, catalog.journeys[row])
+            elif row in catalog.aliases:
+                errors.append(
+                    f"{where}: {at}: row '{row}' is now '{catalog.aliases[row]}'"
+                )
+            else:
+                errors.append(f"{where}: {at}: row '{row}' is not a journey")
+        if not columns or not rows:
+            errors.append(f"{where}: {at} needs columns and rows of journey ids")
+        tables[str(tid)] = Table(
+            id=str(tid),
+            title=str(entry.get("title") or tid),
+            columns=columns,
+            rows=tuple(r for r in rows if r in catalog.journeys),
+            documented=entry.get("documented") is True,
+        )
+
+    evidence = [
+        e
+        for e in catalog.evidence
+        if set(e.interfaces) & set(interfaces) and set(e.journeys) & set(journeys)
+    ]
     return Matrix(
         project=path.parent.name,
         path=path,
@@ -679,26 +781,41 @@ def _regions(path: Path) -> dict[str, str]:
 def _resolve(
     meta: ScriptMeta,
     claim: Claim,
+    catalog: Catalog,
     matrices: dict[str, Matrix],
     repo_root: Path,
     errors: list[str],
-) -> tuple[str, Proof] | None:
+    warnings: list[str],
+) -> tuple[list[str], Proof] | None:
+    """The claim's proof and the projects whose matrices show its cell."""
     content_root = repo_root / "content"
     rel = meta.path.resolve().relative_to(repo_root.resolve()).as_posix()
     where = f"{rel}: claims.{claim.interface}: {claim.journey}"
     own = _project_of(meta.path, content_root) or ""
-    project, _, iface = claim.interface.rpartition(":")
-    project = project or own
-    matrix = matrices.get(project)
-    if matrix is None:
-        errors.append(f"{where}: no content/{project}/{FILE}")
-        return None
-    if iface not in matrix.interfaces:
-        errors.append(f"{where}: '{iface}' is not an interface in {matrix.path.name}")
-        return None
-    if claim.journey not in matrix.journeys:
+    iface, journey = claim.interface, claim.journey
+    if ":" in iface:
         errors.append(
-            f"{where}: '{claim.journey}' is not a journey in {matrix.path.name}"
+            f"{where}: interfaces are estate-wide; claim "
+            f"'{iface.rpartition(':')[2]}' without a project"
+        )
+        return None
+    if iface not in catalog.interfaces:
+        errors.append(f"{where}: '{iface}' is not an interface in {CATALOG}")
+        return None
+    if journey in catalog.aliases:
+        journey = catalog.aliases[journey]
+        warnings.append(f"{where}: renamed to '{journey}'")
+    if journey not in catalog.journeys:
+        errors.append(f"{where}: '{journey}' is not a journey in {CATALOG}")
+        return None
+    projects = [
+        project
+        for project, matrix in sorted(matrices.items())
+        if iface in matrix.interfaces and journey in matrix.journeys
+    ]
+    if not projects:
+        errors.append(
+            f"{where}: no project lists '{iface}' and shows '{journey}' on a table"
         )
         return None
     page = meta.owning_page()
@@ -731,31 +848,32 @@ def _resolve(
         errors.append(f"{where}: the script doesn't assert '{claim.fails}'")
         return None
 
-    package = matrix.interfaces[iface].package
-    via = matrix.interfaces[iface].via
+    package = catalog.interfaces[iface].package
+    via = catalog.interfaces[iface].via
     proof = Proof(
         script=rel,
         project=own,
         page=page,
-        claim=dataclasses.replace(claim, interface=iface),
+        claim=dataclasses.replace(claim, interface=iface, journey=journey),
         anchor=anchor,
         ready=page_status(page) == "ready",
         version=_package_pins(meta).get(package.lower()) if package else None,
         via_version=_package_pins(meta).get(via.lower()) if via else None,
     )
-    return project, proof
+    return projects, proof
 
 
-def _source_page(source: str, project_dir: Path) -> tuple[Path | None, str | None]:
-    """The page of a ``[<project>:]<bucket>/<slug>[#anchor]`` source, the page
+def _source_page(source: str, content_root: Path) -> tuple[Path | None, str | None]:
+    """The page of a ``<project>:<bucket>/<slug>[#anchor]`` source, the page
     identity nav.yml uses, and why it doesn't resolve (None when it does).
     A URL resolves to no page and no problem."""
     if not source or re.match(r"^https?://", source):
         return None, None
     path, _, anchor = source.partition("#")
     project, _, path = path.rpartition(":")
-    if project:
-        project_dir = project_dir.parent / project
+    if not project:
+        return None, "names no project (`<project>:<bucket>/<slug>`)"
+    project_dir = content_root / project
     bucket, _, slug = path.partition("/")
     pages = [
         page
@@ -776,17 +894,21 @@ def resolve(repo_root: Path) -> Result:
     errors: list[str] = []
     warnings: list[str] = []
     model = load_model(repo_root)
+    catalog = load_catalog(repo_root, model, errors)
     matrices: dict[str, Matrix] = {}
     for path in sorted(content_root.glob(f"*/{FILE}")):
-        matrix = _load_matrix(path, model, errors)
+        matrix = _load_matrix(path, catalog, model, errors)
         if matrix is not None:
             matrices[matrix.project] = matrix
 
-    for matrix in matrices.values():
-        for ev in matrix.evidence:
-            _, problem = _source_page(ev.source, content_root / matrix.project)
-            if problem:
-                errors.append(f"{matrix.path}: evidence source {ev.source}: {problem}")
+    tabled = {jid for matrix in matrices.values() for jid in matrix.journeys}
+    for jid in catalog.journeys:
+        if jid not in tabled:
+            errors.append(f"{CATALOG}: {jid} is on no project's table")
+    for ev in catalog.evidence:
+        _, problem = _source_page(ev.source, content_root)
+        if problem:
+            errors.append(f"{CATALOG}/evidence.yml: source {ev.source}: {problem}")
 
     proofs: dict[tuple[str, str, str], list[Proof]] = {}
     # (script project, matrix project, interface) → version → scripts. A UC
@@ -794,22 +916,26 @@ def resolve(repo_root: Path) -> Result:
     versions: dict[tuple[str, str, str], dict[str, list[str]]] = {}
     for meta in discover(content_root):
         for claim in meta.docs_factory.claims:
-            resolved = _resolve(meta, claim, matrices, repo_root, errors)
+            resolved = _resolve(
+                meta, claim, catalog, matrices, repo_root, errors, warnings
+            )
             if resolved is None:
                 continue
-            project, proof = resolved
+            projects, proof = resolved
             iface = proof.claim.interface
-            if proof.version:
-                seen = versions.setdefault((proof.project, project, iface), {})
-                seen.setdefault(proof.version, [])
-                if proof.script not in seen[proof.version]:
-                    seen[proof.version].append(proof.script)
             if not proof.ready:
                 warnings.append(
                     f"{proof.script}: {iface} {proof.claim.journey} "
                     f"renders once {proof.page.parent.name} is ready"
                 )
-            proofs.setdefault((project, iface, proof.claim.journey), []).append(proof)
+            for project in projects:
+                if proof.version:
+                    seen = versions.setdefault((proof.project, project, iface), {})
+                    seen.setdefault(proof.version, [])
+                    if proof.script not in seen[proof.version]:
+                        seen[proof.version].append(proof.script)
+                key = (project, iface, proof.claim.journey)
+                proofs.setdefault(key, []).append(proof)
 
     for (own, project, iface), seen in sorted(versions.items()):
         matrix = matrices[project]
@@ -824,7 +950,7 @@ def resolve(repo_root: Path) -> Result:
             verified = ev.verified.get(iface)
             if tested and verified and verified != tested:
                 warnings.append(
-                    f"{matrix.path.name}: {iface} {', '.join(ev.journeys)} was "
+                    f"evidence.yml: {iface} {', '.join(ev.journeys)} was "
                     f"verified with {verified}, scripts now pin {tested}; re-verify"
                 )
 
@@ -850,16 +976,22 @@ def resolve(repo_root: Path) -> Result:
                     proven = ready[0]
                     if proven.claim.works == (ev.outcome == "works"):
                         warnings.append(
-                            f"{matrix.path.name}: evidence for {iface} {journey} "
+                            f"evidence.yml: evidence for {iface} {journey} "
                             f"is redundant; {proven.script} proves it"
                         )
                     else:
                         errors.append(
-                            f"{matrix.path.name}: evidence says {iface} {journey} "
+                            f"evidence.yml: evidence says {iface} {journey} "
                             f"{ev.outcome}, but {proven.script} proves otherwise"
                         )
+    # A catalog fact checked from each matrix that shows it is reported once.
     return Result(
-        matrices=matrices, model=model, proofs=proofs, errors=errors, warnings=warnings
+        catalog=catalog,
+        matrices=matrices,
+        model=model,
+        proofs=proofs,
+        errors=list(dict.fromkeys(errors)),
+        warnings=list(dict.fromkeys(warnings)),
     )
 
 
@@ -925,7 +1057,7 @@ def _header(iface: Interface, matrix: Matrix) -> str:
 def _evidence_link(
     ev: Evidence, matrix: Matrix, embed: Path, content_root: Path
 ) -> str | None:
-    page, _ = _source_page(ev.source, content_root / matrix.project)
+    page, _ = _source_page(ev.source, content_root)
     if page is None:
         return ev.source
     # A private page never ships, so only another private page may link it.
@@ -1448,7 +1580,7 @@ def _page_ref(page: Path, content_root: Path) -> dict[str, str]:
 def _evidence_ref(
     ev: Evidence, matrix: Matrix, content_root: Path
 ) -> dict[str, str] | None:
-    page, _ = _source_page(ev.source, content_root / matrix.project)
+    page, _ = _source_page(ev.source, content_root)
     return _page_ref(page, content_root) if page else None
 
 
@@ -1532,9 +1664,7 @@ def diagnostics(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
     - ``unmodeled``: a CI-tested interface with no model element.
     - ``missing-edge``: an interface verifies journeys whose client
       ``consumes`` or ``implements`` a spec, but has no edge of that kind to
-      it (``edge``). Journeys without requirements fall back to the matrix
-      ``spec``, which either kind satisfies.
-    - ``unmigrated``: journeys with no asset or no requirements.
+      it (``edge``).
     - ``unverified-asset``: the matrix spec ``governs`` an asset no verified
       journey acts on.
     - ``missing-asset-edge``: an interface verifies a journey on an asset, but
@@ -1562,14 +1692,10 @@ def diagnostics(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
                 missing_assets.setdefault(
                     (iface, entry.model, journey.asset), []
                 ).append(jid)
-        if journey.requires:
-            if not _verified(proofs):
-                continue
-            needed = [({kind}, kind, spec) for kind, spec in _client_edges(journey)]
-        else:
-            needed = [(_SPEC_EDGES, "consumes", matrix.spec)] if matrix.spec else []
-        for kinds, kind, spec in needed:
-            if not any(model.has(kinds, e, spec) for e in entry.speakers):
+        if not _verified(proofs):
+            continue
+        for kind, spec in _client_edges(journey):
+            if not any(model.has({kind}, e, spec) for e in entry.speakers):
                 missing.setdefault((iface, kind, spec), []).append(jid)
     for iface in sorted(tested):
         if matrix.interfaces[iface].model is None:
@@ -1595,11 +1721,6 @@ def diagnostics(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
                 "journeys": journeys,
             }
         )
-    unmigrated = [
-        j.id for j in matrix.journeys.values() if not (j.asset and j.requires)
-    ]
-    if unmigrated:
-        found.append({"kind": "unmigrated", "journeys": unmigrated})
     if matrix.spec and model.kinds:
         journey_assets = {
             matrix.journeys[jid].asset
@@ -1708,7 +1829,7 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                 "title": journey.title,
                 "summary": journey.summary,
                 "request": journey.request,
-                "family": journey.family,
+                "path": journey.path,
                 "asset": journey.asset,
                 "feature": dataclasses.asdict(journey.feature)
                 if journey.feature
@@ -1721,8 +1842,8 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
             }
         )
     return {
-        "generated": "by `uv run docsnip compat --fix`; edit compatibility.yml "
-        "and script claims, not this file",
+        "generated": "by `uv run docsnip compat --fix`; edit architecture/journeys/, "
+        "compatibility.yml, and script claims, not this file",
         "version": ARTIFACT_VERSION,
         "project": matrix.project,
         "spec": matrix.spec,
@@ -1880,12 +2001,6 @@ def model_gaps(repo_root: Path) -> list[str]:
                     f"  - {project} {d['interface']}: proves {_listed(journeys)} "
                     f"against {d['target']}, but {d['source']} has no "
                     f"{d['edge']} edge to it"
-                )
-            elif kind == "unmigrated":
-                journeys = list(d["journeys"])
-                gaps.append(
-                    f"  - {project}: {len(journeys)} journey(s) with no asset or "
-                    f"requirements ({_listed(journeys)})"
                 )
             elif kind == "unverified-asset":
                 gaps.append(

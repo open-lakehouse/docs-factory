@@ -21,8 +21,6 @@
 #   { journey = "managed.rename", fails = "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet", anchor = "rename-a-table-or-column" },
 #   { journey = "external.alter-schema", region = "external-alter", api = "ALTER TABLE … ADD COLUMNS", note = "sync through the Delta API" },
 #   { journey = "external.set-properties", region = "external-alter", api = "SET TBLPROPERTIES, COMMENT ON TABLE", note = "sync through the Delta API" },
-# ]
-# claims."delta:spark-sql" = [
 #   { journey = "schema.add-column", region = "add-columns", api = "ALTER TABLE ADD COLUMNS", note = "through Unity Catalog" },
 #   { journey = "schema.rename-drop", region = "drop-column", api = "DROP COLUMN", note = "through Unity Catalog; RENAME COLUMN is rejected" },
 #   { journey = "schema.type-widening", region = "widen-type", api = "ALTER COLUMN … TYPE", note = "through Unity Catalog" },

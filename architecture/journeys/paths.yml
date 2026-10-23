@@ -1,0 +1,44 @@
+# Paths: how a journey's participants reach the asset, as the contract each
+# role needs (ADR-0009). A client implements the table format it reads or
+# writes and consumes the API it calls (ADR-0008); a provider such as a
+# catalog implements the spec it serves. A role names a contract, never an
+# implementation (ADR-0004), so a script's environment can supply any catalog
+# that implements it. A journey's own `roles` add to its path's.
+
+# A Delta table by its storage path, with no catalog or server taking part.
+by-path:
+  roles:
+    client: { implements: [deltaSpec] }
+
+# A catalog object through the Unity Catalog REST API, with no table data read.
+uc-api:
+  roles:
+    client: { consumes: [unityCatalogSpec] }
+    catalog: { implements: [unityCatalogSpec] }
+
+# An external Delta table, named through the catalog, its log and files in
+# storage the client reaches.
+uc-external:
+  roles:
+    client: { consumes: [unityCatalogSpec], implements: [deltaSpec] }
+    catalog: { implements: [unityCatalogSpec] }
+
+# A catalog-managed Delta table: commits go through the Unity Catalog Delta API.
+uc-managed:
+  roles:
+    client:
+      consumes: [unityCatalogSpec, unityCatalogDeltaApiSpec]
+      implements: [deltaSpec]
+    catalog: { implements: [unityCatalogSpec, unityCatalogDeltaApiSpec] }
+
+# A namespace, credential, or token through an Iceberg REST catalog.
+iceberg-rest-api:
+  roles:
+    client: { consumes: [icebergRestSpec] }
+    catalog: { implements: [icebergRestSpec] }
+
+# An Iceberg table through an Iceberg REST catalog.
+iceberg-rest:
+  roles:
+    client: { consumes: [icebergRestSpec], implements: [icebergSpec] }
+    catalog: { implements: [icebergRestSpec] }

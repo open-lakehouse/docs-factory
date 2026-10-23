@@ -147,31 +147,31 @@ What each client can do with a table, as tested in CI:
 | Read with vended S3 credentials | — | — | [✓](../../how-to/python-dataframes/index.md#read-a-table) | — | [✓](../../how-to/python-dataframes/index.md#read-a-table) | — | — | — |
 | Append to an external table | — | — | [✓](../../how-to/python-dataframes/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#append-rows) on local storage | [✓](../../how-to/python-dataframes/index.md#append-rows) | — | — | — |
 | Create a managed table | [✓](../../tutorials/managed-delta-table/index.md#create-the-table) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — |
+| Create a managed table from a query | [✓](../../how-to/replace-and-overwrite-tables/index.md#create-a-table-from-a-query) | ✗ | — | — | — | — | — | — |
 | Read a managed table | [✓](../../tutorials/managed-delta-table/index.md#write-some-rows) | [✓](../../how-to/duckdb/index.md#query-a-table) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | — | — | — |
 | Append to a managed table | [✓](../../tutorials/managed-delta-table/index.md#write-some-rows) | [✓](../../how-to/duckdb/index.md#append-rows) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | [✗](../../how-to/python-dataframes/index.md#other-table-operations) on local storage | [✗](../../how-to/python-dataframes/index.md#other-table-operations) | — | — | — |
 | Update rows in a managed table | [✓](../../tutorials/managed-delta-table/index.md#change-rows) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — |
 | Delete rows from a managed table | [✓](../../tutorials/managed-delta-table/index.md#change-rows) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — |
-| Drop a managed table | [✓](../../tutorials/managed-delta-table/index.md#clean-up) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — |
-| Read an earlier version of a managed table | [✓](../../tutorials/managed-delta-table/index.md#read-an-earlier-version) | — | — | — | — | — | — | — |
-| Write to a managed table by path | — | — | ✗ | ✗ | ✗ | — | — | — |
 | Change a managed table's columns | — | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
 | Set a managed table's properties | — | — | ✗ | ✗ | ✗ | — | ✗ | ✗ |
-| Create a managed table from a query | [✓](../../how-to/replace-and-overwrite-tables/index.md#create-a-table-from-a-query) | ✗ | — | — | — | — | — | — |
 | Replace a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#replace-a-tables-definition-and-rows) | — | — | — | — | — | — | — |
 | Overwrite a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#overwrite-all-rows) | — | — | — | — | — | — | — |
 | Replace rows that match a condition | [✓](../../how-to/replace-and-overwrite-tables/index.md#replace-the-rows-that-match-a-condition) | — | — | — | — | — | — | — |
 | Overwrite partitions of a managed table | [✓](../../how-to/replace-and-overwrite-tables/index.md#overwrite-the-partitions-the-new-rows-write-to) | — | — | — | — | — | — | — |
+| Drop a managed table | [✓](../../tutorials/managed-delta-table/index.md#clean-up) | [✗](../../how-to/duckdb/index.md#create-change-and-drop-tables) | — | — | — | — | — | — |
+| Read an earlier version of a managed table | [✓](../../tutorials/managed-delta-table/index.md#read-an-earlier-version) | — | — | — | — | — | — | — |
+| Write to a managed table by path | — | — | ✗ | ✗ | ✗ | — | — | — |
 | Read a Parquet, CSV, or JSON table | — | [✓](../../how-to/table-storage-formats/index.md#read-the-data) by path from the table's location | [✓](../../how-to/table-storage-formats/index.md#read-the-data) by path from the table's location | — | — | — | — | — |
 | Create a managed Iceberg table | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#create-a-table) | — | — |
 | Append to an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — |
 | Read an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#write-and-read-rows) | — | — |
 | Update rows in an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | — | — |
 | Delete rows from an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | — | — |
+| Merge into an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | — | — | — | — | — | — | — |
 | Rename an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — |
+| Move an Iceberg table to another schema | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
 | Drop an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — | — | [✓](../../how-to/iceberg-rest/index.md#rename-and-drop-a-table) | — | — |
 | Join Delta and Iceberg tables | [✓](../../how-to/iceberg-rest/index.md#join-delta-and-iceberg-tables-in-spark) UC connector and Iceberg REST catalogs in one session | — | — | — | — | — | — | — |
-| Merge into an Iceberg table | [✓](../../how-to/iceberg-rest/index.md#update-and-delete-rows) | — | — | — | — | — | — | — |
-| Move an Iceberg table to another schema | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
 | Read a Delta table as Iceberg | ✗ | ✗ | — | — | — | ✗ | — | — |
 | Register an existing Iceberg table | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |
 | Commit to several tables at once | ✗ | ✗ | ✗ | ✗ | — | ✗ | — | — |

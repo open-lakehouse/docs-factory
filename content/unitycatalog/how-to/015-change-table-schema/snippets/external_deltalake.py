@@ -17,14 +17,12 @@
 #   { journey = "managed.alter-schema", fails = "Max catalog version is required when loading a catalog-managed table", anchor = "choose-a-client" },
 #   { journey = "managed.set-properties", fails = "Max catalog version is required when loading a catalog-managed table", anchor = "choose-a-client" },
 #   { journey = "managed.rename", fails = "Max catalog version is required when loading a catalog-managed table", anchor = "choose-a-client" },
+#   { journey = "schema.add-column", region = "alter-deltalake", api = "TableAlterer.add_columns", note = "on an external Unity Catalog table" },
+#   { journey = "feature.properties", region = "alter-deltalake", api = "TableAlterer.set_table_properties", note = "on an external Unity Catalog table" },
 # ]
 # claims.duckdb = [
 #   { journey = "external.alter-schema", fails = "UCTableSet::AlterTable", anchor = "choose-a-client" },
 #   { journey = "external.set-properties", fails = "Only altering tables is supported for now", anchor = "choose-a-client" },
-# ]
-# claims."delta:delta-rs-python" = [
-#   { journey = "schema.add-column", region = "alter-deltalake", api = "TableAlterer.add_columns", note = "on an external Unity Catalog table" },
-#   { journey = "feature.properties", region = "alter-deltalake", api = "TableAlterer.set_table_properties", note = "on an external Unity Catalog table" },
 # ]
 # ///
 """Change an external Delta table's columns, comment, and properties with

@@ -14,7 +14,7 @@
 #   { journey = "managed.drop", region = "clean-up" },
 #   { journey = "managed.time-travel", region = "time-travel", api = "VERSION AS OF" },
 # ]
-# claims."delta:spark-sql" = [
+# claims.spark-sql = [
 #   { journey = "create.table", region = "create-table", api = "CREATE TABLE", note = "through Unity Catalog" },
 #   { journey = "write.append", region = "write-rows", api = "INSERT INTO", note = "through Unity Catalog" },
 #   { journey = "read.scan", region = "write-rows", api = "spark.table()", note = "through Unity Catalog" },
@@ -25,14 +25,14 @@
 #   { journey = "history.list", region = "change-rows", api = "DESCRIBE HISTORY", note = "through Unity Catalog" },
 #   { journey = "read.version", region = "time-travel", api = "VERSION AS OF", note = "through Unity Catalog" },
 #   { journey = "catalog.unity", region = "create-table", note = "catalog-managed" },
-#   { journey = "catalog-managed.read", region = "write-rows", note = "through Unity Catalog" },
-#   { journey = "catalog-managed.write", region = "write-rows", note = "through Unity Catalog" },
+#   { journey = "managed.read", region = "write-rows", note = "through Unity Catalog" },
+#   { journey = "managed.append", region = "write-rows", note = "through Unity Catalog" },
 #   { journey = "row-tracking.write", region = "write-rows", note = "through Unity Catalog" },
 #   { journey = "in-commit-timestamp.write", region = "write-rows", note = "through Unity Catalog" },
 #   { journey = "column-mapping.read", region = "write-rows", note = "through Unity Catalog" },
 #   { journey = "column-mapping.write", region = "write-rows", note = "through Unity Catalog" },
 # ]
-# claims."delta:spark-python" = [
+# claims.spark-python = [
 #   { journey = "catalog.unity", region = "session", note = "session config" },
 # ]
 # ///

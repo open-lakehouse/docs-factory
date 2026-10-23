@@ -5,17 +5,18 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
+# # The page shows no Spark 4.1 code, so only the failures are claims: a claim
+# # that a journey works names a region the page shows. The reads and the
+# # SHOW TABLES listing are asserted below and pinned by R01's Spark 4.1 row.
 # claims.spark-sql = [
-#   { journey = "view.query", region = "query", api = "SELECT" },
-#   { journey = "view.list", region = "list", api = "SHOW TABLES" },
-#   { journey = "view.create", anchor = "read-views-from-spark-41", fails = "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views." },
-#   { journey = "view.replace", anchor = "read-views-from-spark-41", fails = "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views." },
-#   { journey = "view.rename", anchor = "read-views-from-spark-41", fails = "Cannot rename a table with ALTER VIEW. Please use ALTER TABLE instead." },
-#   { journey = "view.drop", anchor = "read-views-from-spark-41", fails = "[UNSUPPORTED_FEATURE.CATALOG_OPERATION] The feature is not supported: Catalog `samples` does not support views." },
+#   { journey = "view.create", anchor = "create-a-view", fails = "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views." },
+#   { journey = "view.replace", anchor = "change-or-rename-a-view", fails = "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views." },
+#   { journey = "view.rename", anchor = "change-or-rename-a-view", fails = "Cannot rename a table with ALTER VIEW. Please use ALTER TABLE instead." },
+#   { journey = "view.drop", anchor = "drop-a-view", fails = "[UNSUPPORTED_FEATURE.CATALOG_OPERATION] The feature is not supported: Catalog `samples` does not support views." },
 # ]
 # ///
-"""Query Unity Catalog views from Spark 4.1, which reads views but can't
-create, change, or drop them.
+"""Compatibility evidence: Spark 4.1 reads Unity Catalog views but can't
+create, change, or drop them. The page shows no code from this script.
 
 Start the docs' local server from `uc-docs-env/unitycatalog`, and seed the
 TPC-H sample into it (`samples.tpch`):
@@ -108,7 +109,6 @@ subprocess.run(
     check=True,
 )
 
-# --8<-- [start:session]
 from pyspark.sql import SparkSession
 
 spark = (
@@ -129,12 +129,9 @@ spark = (
     .config("spark.sql.catalog.samples.auth.token", "not-used")
     .getOrCreate()
 )
-# --8<-- [end:session]
 spark.sparkContext.setLogLevel("ERROR")
 
-# --8<-- [start:query]
 spark.sql("SELECT * FROM samples.tpch.orders_by_status ORDER BY o_orderstatus").show()
-# --8<-- [end:query]
 got = spark.sql("SELECT * FROM samples.tpch.orders_by_status ORDER BY 1").collect()
 want = spark.sql("""
     SELECT o_orderstatus, COUNT(*), SUM(o_totalprice) FROM samples.tpch.orders
@@ -165,9 +162,7 @@ assert len(segments) == 25 and [tuple(r) for r in segments] == [
     tuple(r) for r in want_segments
 ], (segments, want_segments)
 
-# --8<-- [start:list]
 spark.sql("SHOW TABLES IN samples.tpch").show()
-# --8<-- [end:list]
 tables = {r.tableName for r in spark.sql("SHOW TABLES IN samples.tpch").collect()}
 assert {"orders_by_status", "customer_orders", "orders"} <= tables, tables
 

@@ -178,64 +178,6 @@ dependencies=[Dependency(table=TableDependency(table_full_name='samples.tpch.ord
 
 Spark 4.2 queries and lists a registered view like one it created.
 
-## Read views from Spark 4.1
-
-Spark 4.1 reads views that Spark 4.2 or the REST API created. Start Python with
-Spark 4.1:
-
-```bash
-uv run --with pyspark==4.1.0 python
-```
-
-Then create a session with the connector built for Spark 4.1:
-
-```python file=./snippets/sql_views_spark41.py start=start:session end=end:session
-```
-
-Query a view as you would on Spark 4.2. Here, `orders_by_status` counts the
-orders in each status and sums their revenue. It's the view you registered
-through the REST API:
-
-```python file=./snippets/sql_views_spark41.py start=start:query end=end:query
-```
-
-```text
-+-------------+------+-------------+
-|o_orderstatus|orders|      revenue|
-+-------------+------+-------------+
-|            F|  7304|1035681023.49|
-|            O|  7333|1028376331.21|
-|            P|   363|  63339475.32|
-+-------------+------+-------------+
-```
-
-Views that Spark 4.2 created, such as `customer_orders`, read the same way.
-To list views, use `SHOW TABLES`, which returns them with the schema's tables.
-`SHOW VIEWS` fails on Spark 4.1:
-
-```python file=./snippets/sql_views_spark41.py start=start:list end=end:list
-```
-
-```text
-+---------+----------------+-----------+
-|namespace|       tableName|isTemporary|
-+---------+----------------+-----------+
-|     tpch|        customer|      false|
-|     tpch| customer_orders|      false|
-|     tpch|        lineitem|      false|
-|     tpch|          nation|      false|
-|     tpch|          orders|      false|
-|     tpch|orders_by_status|      false|
-|     tpch|            part|      false|
-|     tpch|        partsupp|      false|
-|     tpch|          region|      false|
-|     tpch|        supplier|      false|
-+---------+----------------+-----------+
-```
-
-Spark 4.1 can't create, change, or drop a view. Use Spark 4.2 or the REST API
-for those.
-
 ## Drop a view
 
 Drop a view with `DROP VIEW` from Spark 4.2:

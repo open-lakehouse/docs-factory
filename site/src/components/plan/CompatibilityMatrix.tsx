@@ -1,27 +1,22 @@
 // Which engines and clients can do which journeys, per project, from the
 // committed compatibility.json artifacts. Draft pages' claims show here (marked)
 // although public tables wait for `ready`.
-import type { ReactNode } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import {
   type CellStatus,
   type CompatCell,
-  type CompatEvidence,
   type CompatInterface,
   type CompatJourney,
   type CompatMatrix,
-  type CompatProof,
   cellOf,
   isGap,
   matrices,
-  type PageRef,
 } from "../../compat";
 import { PROJECT_LABELS } from "../../doc-nav";
 import { ContentRequestKind } from "../../gen/docs_factory/review/v1/messages_pb";
 import { useAuth } from "../../lib/auth-context";
-import { docRef, refHref } from "../../lib/content-ref";
 import {
   answeredShare,
   columnCounts,
@@ -37,6 +32,7 @@ import {
   TrackJourneyButton,
   useOpenContentRequests,
 } from "../review/ContentRequests";
+import { EvidenceItem, ProofItem } from "./CompatEvidence";
 
 const SYMBOL: Record<CellStatus, string> = {
   tested: "✓",
@@ -525,88 +521,5 @@ function CellDetail({
         </ul>
       )}
     </div>
-  );
-}
-
-function PageLink({
-  page,
-  anchor,
-  children,
-}: {
-  page: PageRef;
-  anchor: string | null;
-  children: ReactNode;
-}) {
-  return (
-    <Link
-      className="compat-link"
-      to={refHref(docRef(page.project, page.bucket, page.slug), anchor ?? undefined)}
-    >
-      {children}
-    </Link>
-  );
-}
-
-function ProofItem({ proof }: { proof: CompatProof }) {
-  return (
-    <li>
-      <span className={proof.works ? "compat-tested" : "compat-fails"}>
-        {proof.works ? "works" : "fails"}
-      </span>{" "}
-      <PageLink page={proof.page} anchor={proof.anchor}>
-        {proof.page.project}/{proof.page.bucket}/{proof.page.slug}
-        {proof.anchor && `#${proof.anchor}`}
-      </PageLink>
-      {!proof.ready && <span className="compat-draft">draft</span>}
-      <div className="muted">
-        <code>{proof.script}</code>
-        {proof.version && ` · ${proof.version}`}
-      </div>
-      {proof.api && (
-        <div>
-          API: <code>{proof.api}</code>
-        </div>
-      )}
-      {proof.fails && (
-        <div>
-          Asserts: <code>{proof.fails}</code>
-        </div>
-      )}
-      {proof.note && <div className="muted">{proof.note}</div>}
-    </li>
-  );
-}
-
-function EvidenceItem({ evidence }: { evidence: CompatEvidence }) {
-  return (
-    <li>
-      <span className={`compat-${evidence.outcome === "works" ? "documented" : "fails"}`}>
-        {evidence.outcome}
-      </span>{" "}
-      {evidence.implementation && (
-        <>
-          blocked by <ModelRef id={evidence.implementation} />:{" "}
-        </>
-      )}
-      {evidence.why}
-      <div className="muted">
-        {evidence.page ? (
-          <PageLink page={evidence.page} anchor={evidence.source.split("#")[1] ?? null}>
-            {evidence.source}
-          </PageLink>
-        ) : (
-          <a href={evidence.source} target="_blank" rel="noreferrer">
-            {evidence.source}
-          </a>
-        )}
-        {evidence.verified && ` · verified with ${evidence.verified}`}
-      </div>
-      {evidence.api && (
-        <div>
-          API: <code>{evidence.api}</code>
-        </div>
-      )}
-      {evidence.note && <div className="muted">{evidence.note}</div>}
-    </li>
   );
 }

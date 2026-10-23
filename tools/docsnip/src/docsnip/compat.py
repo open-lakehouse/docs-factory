@@ -1510,6 +1510,18 @@ def _contracts(result: Result, iface: Interface) -> list[str]:
 _SPEC_EDGES = {"consumes", "implements"}
 
 
+def _client_edges(journey: Journey) -> list[tuple[str, str]]:
+    """The (edge kind, spec) pairs the journey's client must have, verb as written.
+
+    ADR-0008: a client implements the formats it reads or writes and consumes
+    the APIs it calls, so neither verb stands in for the other.
+    """
+    client = journey.requires.get("client") or {}
+    return [
+        (kind, spec) for kind in sorted(_SPEC_EDGES) for spec in client.get(kind, ())
+    ]
+
+
 def _verified(proofs: list[Proof]) -> bool:
     return any(p.ready and p.claim.works for p in proofs)
 
@@ -1519,8 +1531,9 @@ def diagnostics(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
 
     - ``unmodeled``: a CI-tested interface with no model element.
     - ``missing-edge``: an interface verifies journeys whose client
-      ``consumes`` a spec, but has no ``consumes``/``implements`` edge to it.
-      Journeys without requirements fall back to the matrix ``spec``.
+      ``consumes`` or ``implements`` a spec, but has no edge of that kind to
+      it (``edge``). Journeys without requirements fall back to the matrix
+      ``spec``, which either kind satisfies.
     - ``unmigrated``: journeys with no asset or no requirements.
     - ``unverified-asset``: the matrix spec ``governs`` an asset no verified
       journey acts on.
@@ -1532,7 +1545,7 @@ def diagnostics(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
     model = result.model
     found: list[dict[str, Any]] = []
     tested: set[str] = set()
-    missing: dict[tuple[str, str], list[str]] = {}
+    missing: dict[tuple[str, str, str], list[str]] = {}
     missing_assets: dict[tuple[str, str, str], list[str]] = {}
     verified_assets: set[tuple[str, str]] = set()
     for (project, iface, jid), proofs in sorted(result.proofs.items()):
@@ -1552,21 +1565,22 @@ def diagnostics(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
         if journey.requires:
             if not _verified(proofs):
                 continue
-            needed = (journey.requires.get("client") or {}).get("consumes", ())
+            needed = [({kind}, kind, spec) for kind, spec in _client_edges(journey)]
         else:
-            needed = (matrix.spec,) if matrix.spec else ()
-        for spec in needed:
-            if not any(model.has(_SPEC_EDGES, e, spec) for e in entry.speakers):
-                missing.setdefault((iface, spec), []).append(jid)
+            needed = [(_SPEC_EDGES, "consumes", matrix.spec)] if matrix.spec else []
+        for kinds, kind, spec in needed:
+            if not any(model.has(kinds, e, spec) for e in entry.speakers):
+                missing.setdefault((iface, kind, spec), []).append(jid)
     for iface in sorted(tested):
         if matrix.interfaces[iface].model is None:
             found.append({"kind": "unmodeled", "interface": iface})
-    for (iface, spec), journeys in sorted(missing.items()):
+    for (iface, edge, spec), journeys in sorted(missing.items()):
         found.append(
             {
                 "kind": "missing-edge",
                 "interface": iface,
                 "source": matrix.interfaces[iface].model,
+                "edge": edge,
                 "target": spec,
                 "journeys": journeys,
             }
@@ -1630,19 +1644,11 @@ def verified_edges(result: Result, matrix: Matrix) -> list[dict[str, object]]:
             continue
         if not _verified(proofs):
             continue
-        consumes = (matrix.journeys[jid].requires.get("client") or {}).get(
-            "consumes", ()
-        )
-        for spec in consumes:
-            speaker, kind = next(
-                (
-                    (e, k)
-                    for e in entry.speakers
-                    if (k := model.has(_SPEC_EDGES, e, spec))
-                ),
-                (None, None),
+        for kind, spec in _client_edges(matrix.journeys[jid]):
+            speaker = next(
+                (e for e in entry.speakers if model.has({kind}, e, spec)), None
             )
-            if speaker and kind:
+            if speaker:
                 seen = edges.setdefault(
                     (speaker, kind, spec), {"journeys": set(), "interfaces": set()}
                 )
@@ -1873,7 +1879,7 @@ def model_gaps(repo_root: Path) -> list[str]:
                 gaps.append(
                     f"  - {project} {d['interface']}: proves {_listed(journeys)} "
                     f"against {d['target']}, but {d['source']} has no "
-                    "consumes/implements edge to it"
+                    f"{d['edge']} edge to it"
                 )
             elif kind == "unmigrated":
                 journeys = list(d["journeys"])

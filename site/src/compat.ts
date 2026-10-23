@@ -105,6 +105,8 @@ export interface CompatDiagnostic {
     | "unverified-asset-edge";
   interface?: string;
   source?: string;
+  /** On `missing-edge`: the kind the journey's client needs, `consumes` or `implements`. */
+  edge?: string;
   target?: string;
   asset?: string;
   journeys?: string[];

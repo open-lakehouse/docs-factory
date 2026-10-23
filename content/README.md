@@ -486,9 +486,10 @@ is a journey, and the script that runs it claims the cell. A script claims cells
 
 A journey also names the estate-model `asset` it acts on and what its
 participants must support, under `requires`, keyed by participant role. A
-`client` lists the specs it `consumes`; a provider such as `catalog` or
-`storage` lists the specs it `implements` (or the capability or concern it
-`realizes`). Lists are conjunctions. A journey's `family` supplies both, and
+`client` lists the table formats it `implements` and the APIs it `consumes`
+(ADR-0008); a provider such as `catalog` or `storage` lists the specs it
+`implements` (or the capability or concern it `realizes`). Lists are
+conjunctions. A journey's `family` supplies both, and
 the matrix's `defaults` cover journeys with no family. A journey can override
 either:
 
@@ -527,8 +528,8 @@ configured participants. Express replaceable participants through the
 contracts they require, and keep implementation and version detail on the
 interface `pin`. A reference that doesn't resolve, or names the wrong kind of
 element, fails `docsnip check`. An interface that proves a journey but has no
-model edge to a spec its client consumes is reported separately from the
-outcome. A ready working claim also checks that the interface's implementation
+model edge of the named kind to a spec its client implements or consumes is
+reported separately from the outcome. A ready working claim also checks that the interface's implementation
 has an `operatesOn` edge to the journey's asset. Both are model gaps, not cell
 failures: the test evidence stands, and no graph path alone establishes
 support. Conversely, an `operatesOn` edge with no ready proof is reported as

@@ -15,7 +15,7 @@ model {
       icon https://raw.githubusercontent.com/lfai/artwork/22ca59a23e3badad811a138fd6a3e651ab19a41b/projects/DeltaLake/icon/DeltaLake-icon-color.svg
     }
   }
-  deltaSpec -[specifies]-> lakehouse.tableFormat {}
+  deltaSpec -[specifies]-> lakehouse.tableFormat
 
   icebergSpec = openSpecification "Apache Iceberg" {
     #public
@@ -30,7 +30,7 @@ model {
       icon https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png
     }
   }
-  icebergSpec -[specifies]-> lakehouse.tableFormat {}
+  icebergSpec -[specifies]-> lakehouse.tableFormat
 
   ucSpec = openSpecification "Unity Catalog" {
     #public
@@ -45,7 +45,7 @@ model {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }
   }
-  ucSpec -[specifies]-> lakehouse.catalog "specifies the catalog capability"
+  ucSpec -[specifies]-> lakehouse.catalog
 
   icebergRestSpec = openSpecification "Iceberg REST Catalog" {
     #public
@@ -55,13 +55,13 @@ model {
 
     link https://iceberg.apache.org/concepts/catalog/
   }
-  icebergRestSpec -[specifies]-> lakehouse.catalog "specifies the catalog capability"
+  icebergRestSpec -[specifies]-> lakehouse.catalog
 
   openSharingSpec = openSpecification "Open Sharing" {
     description "Open profile of the Delta Sharing protocol."
     link https://delta.io/sharing/
   }
-  openSharingSpec -[specifies]-> lakehouse.sharing "specifies the sharing capability"
+  openSharingSpec -[specifies]-> lakehouse.sharing
 
   parquetSpec = openSpecification "Apache Parquet" {
     #public
@@ -72,14 +72,14 @@ model {
 
     link https://parquet.apache.org
   }
-  parquetSpec -[specifies]-> lakehouse.fileFormat "specifies the file-format capability"
+  parquetSpec -[specifies]-> lakehouse.fileFormat
 
   s3Api = openSpecification "S3 API" {
     #public
     description "The de-facto object-storage interface. Not a formal standard, but the contract most stores implement."
     link https://docs.aws.amazon.com/AmazonS3/latest/API/Welcome.html
   }
-  s3Api -[specifies]-> lakehouse.objectStorage "specifies the object-storage capability"
+  s3Api -[specifies]-> lakehouse.objectStorage
 
   // Query APIs: how a client reaches a served engine (a "warehouse" is a
   // query engine behind one of these). Only protocols something here implements.
@@ -105,7 +105,7 @@ model {
     description "The REST interface to Azure Blob Storage, also served by local emulators."
     link https://learn.microsoft.com/en-us/rest/api/storageservices/blob-service-rest-api
   }
-  azureBlobApi -[specifies]-> lakehouse.objectStorage "specifies the object-storage capability"
+  azureBlobApi -[specifies]-> lakehouse.objectStorage
 
   openLineageSpec = openSpecification "OpenLineage" {
     description "Open standard for lineage events: jobs, runs, and the datasets they read and write, down to the column."
@@ -129,7 +129,7 @@ model {
       icon https://raw.githubusercontent.com/apache/datafusion/1b924ff2aa0543b48a4bb472f7e86b109a1c0eac/docs/logos/standalone_logo/logo_original.svg
     }
   }
-  datafusion -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  datafusion -[realizes]-> lakehouse.queryEngine
   datafusion -[consumes]-> s3Api "reads data files via"
 
   apacheSpark = implementation "Apache Spark" {
@@ -143,7 +143,7 @@ model {
       icon https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png
     }
   }
-  apacheSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  apacheSpark -[realizes]-> lakehouse.queryEngine
   apacheSpark -[implements]-> sparkConnectSpec "serves"
   apacheSpark -[operatesOn]-> lakehouse.namespace "creates and lists"
   apacheSpark -[operatesOn]-> lakehouse.table "queries and changes"
@@ -188,7 +188,7 @@ model {
 
     link https://delta-io.github.io/delta-rs/
   }
-  deltaRs -[implements]-> deltaSpec "implements"
+  deltaRs -[implements]-> deltaSpec
   deltaRs -[realizes]-> lakehouse.tableFormat
   deltaRs -[consumes]-> ucSpec "resolves tables via"
   deltaRs -[consumes]-> s3Api "reads/writes data files via"
@@ -201,7 +201,7 @@ model {
 
     link https://docs.delta.io
   }
-  deltaSpark -[implements]-> deltaSpec "implements"
+  deltaSpark -[implements]-> deltaSpec
   deltaSpark -[builtOn]-> apacheSpark
   deltaSpark -[realizes]-> lakehouse.tableFormat
   deltaSpark -[operatesOn]-> lakehouse.table "queries and changes"
@@ -213,7 +213,7 @@ model {
 
     link https://duckdb.org
   }
-  duckdb -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  duckdb -[realizes]-> lakehouse.queryEngine
   duckdb -[operatesOn]-> lakehouse.namespace "creates and lists"
   duckdb -[operatesOn]-> lakehouse.table "queries and changes"
 
@@ -273,7 +273,7 @@ model {
       icon https://avatars.githubusercontent.com/u/83768144?s=200&v=4
     }
   }
-  polars -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  polars -[realizes]-> lakehouse.queryEngine
   // impl -> impl is a DEPENDENCY, not spec-consumption (`consumes` is impl -> spec). See ADR-0006.
   polars -[dependsOn]-> deltaRs "reads/writes Delta via" {
     #optional
@@ -360,7 +360,7 @@ model {
       icon https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg
     }
   }
-  lakekeeper -[implements]-> icebergRestSpec "implements"
+  lakekeeper -[implements]-> icebergRestSpec
   lakekeeper -[realizes]-> lakehouse.catalog
   lakekeeper -[realizes]-> lakehouse.governance.authorization "table-level permissions via OpenFGA"
   lakekeeper -[realizes]-> lakehouse.governance.authentication "validates OIDC tokens" {
@@ -378,7 +378,7 @@ model {
       icon https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg
     }
   }
-  unityCatalogOSS -[implements]-> ucSpec "implements"
+  unityCatalogOSS -[implements]-> ucSpec
   unityCatalogOSS -[implements]-> icebergRestSpec "serves Iceberg tables through"
   unityCatalogOSS -[realizes]-> lakehouse.catalog
   unityCatalogOSS -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
@@ -396,8 +396,8 @@ model {
     description "Pluggable framework for Unity Catalog APIs: governs securables, serves resource facts, and vends short-lived scoped credentials after an authorize check."
     link https://github.com/open-lakehouse/mangrove
   }
-  mangrove -[implements]-> ucSpec "implements"
-  mangrove -[realizes]-> lakehouse.catalog "realizes the catalog capability"
+  mangrove -[implements]-> ucSpec
+  mangrove -[realizes]-> lakehouse.catalog
 
   // Model-tracking implementation --------------------------------------------
   mlflow = implementation "MLflow" {
@@ -411,7 +411,7 @@ model {
       icon https://raw.githubusercontent.com/mlflow/mlflow/352aff6bcb3e4eabcc29d8ea3a8b7059e7084862/assets/icon.svg
     }
   }
-  mlflow -[realizes]-> lakehouse.modelTracking "realizes the model-tracking capability"
+  mlflow -[realizes]-> lakehouse.modelTracking
 
   // First-party query engine ------------------------------------------------
   // trustedCompute's hydrofoil is an instance of this. Fine-grained access is
@@ -423,7 +423,7 @@ model {
     description "Catalog-native query engine on DataFusion, served over Arrow Flight SQL, that enforces Cedar policy in the query plan and captures lineage at planning time."
     link https://github.com/open-lakehouse/hydrofoil
   }
-  hydrofoil -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  hydrofoil -[realizes]-> lakehouse.queryEngine
   hydrofoil -[implements]-> flightSqlSpec "serves"
   hydrofoil -[consumes]-> ucSpec "resolves tables via"
   hydrofoil -[builtOn]-> datafusion
@@ -443,7 +443,7 @@ model {
     description "Captures column-level lineage from DataFusion plans at planning time and ingests OpenLineage events into a queryable store."
     link https://github.com/open-lakehouse/headwaters
   }
-  headwaters -[realizes]-> lakehouse.lineage "realizes the lineage concern"
+  headwaters -[realizes]-> lakehouse.lineage
   headwaters -[implements]-> openLineageSpec "emits + ingests"
 
   authelia = implementation "Authelia" {
@@ -492,7 +492,7 @@ model {
     description "Reactive Python notebook, stored as plain Python files."
     link https://marimo.io
   }
-  marimo -[realizes]-> lakehouse.interactiveDevelopment "realizes the notebook"
+  marimo -[realizes]-> lakehouse.interactiveDevelopment "as a notebook"
 
   // Orchestration implementation -------------------------------------------
   rivers = implementation "Rivers" {
@@ -501,7 +501,7 @@ model {
     description "Asset-based orchestrator for Python pipelines, with a run UI."
     link https://orchestrator.rs
   }
-  rivers -[realizes]-> lakehouse.orchestration "realizes the orchestration capability"
+  rivers -[realizes]-> lakehouse.orchestration
 
   // Infrastructure the docs environments run on ----------------------------
   envoy = implementation "Envoy" {
@@ -518,7 +518,7 @@ model {
     link https://www.postgresql.org
   }
 
-  postgresql -[realizes]-> lakehouse.metadataStore "realizes the catalog metadata store"
+  postgresql -[realizes]-> lakehouse.metadataStore
 
   rustfs = implementation "RustFS" {
     #infra #public
@@ -526,7 +526,7 @@ model {
     description "S3-compatible object storage server written in Rust."
     link https://rustfs.com
   }
-  rustfs -[implements]-> s3Api "implements"
+  rustfs -[implements]-> s3Api
   rustfs -[realizes]-> lakehouse.objectStorage
 
   amazonS3 = implementation "Amazon S3" {
@@ -535,7 +535,7 @@ model {
     description "AWS's managed object storage service; the origin of the S3 API."
     link https://aws.amazon.com/s3/
   }
-  amazonS3 -[implements]-> s3Api "implements"
+  amazonS3 -[implements]-> s3Api
   amazonS3 -[realizes]-> lakehouse.objectStorage
 
   azurite = implementation "Azurite" {
@@ -553,7 +553,7 @@ model {
     description "Azure's managed object storage service."
     link https://azure.microsoft.com/products/storage/blobs
   }
-  azureBlobStorage -[implements]-> azureBlobApi "implements"
+  azureBlobStorage -[implements]-> azureBlobApi
   azureBlobStorage -[realizes]-> lakehouse.objectStorage
 
   // Omnigent — Databricks' Apache-2.0 AI-agent meta-harness. Deliberately has NO

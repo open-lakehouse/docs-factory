@@ -143,18 +143,18 @@ model {
     externalLocation -[dependsOn]-> credential "reached with"
   }
 
-  ucSpec -[governs]-> lakehouse.namespace "governs"
-  ucSpec -[governs]-> lakehouse.table "governs"
-  ucSpec -[governs]-> lakehouse.volume "governs"
-  ucSpec -[governs]-> lakehouse.registeredFunction "governs"
-  ucSpec -[governs]-> lakehouse.mlModel "governs"
-  ucSpec -[governs]-> lakehouse.agentSkill "governs"
-  ucSpec -[governs]-> lakehouse.sqlView "governs"
-  ucSpec -[governs]-> lakehouse.metricView "governs"
-  ucSpec -[governs]-> lakehouse.credential "governs"
-  ucSpec -[governs]-> lakehouse.externalLocation "governs"
+  ucSpec -[governs]-> lakehouse.namespace
+  ucSpec -[governs]-> lakehouse.table
+  ucSpec -[governs]-> lakehouse.volume
+  ucSpec -[governs]-> lakehouse.registeredFunction
+  ucSpec -[governs]-> lakehouse.mlModel
+  ucSpec -[governs]-> lakehouse.agentSkill
+  ucSpec -[governs]-> lakehouse.sqlView
+  ucSpec -[governs]-> lakehouse.metricView
+  ucSpec -[governs]-> lakehouse.credential
+  ucSpec -[governs]-> lakehouse.externalLocation
 
-  icebergRestSpec -[governs]-> lakehouse.namespace "governs"
-  icebergRestSpec -[governs]-> lakehouse.table "governs"
-  icebergRestSpec -[governs]-> lakehouse.sqlView "governs"
+  icebergRestSpec -[governs]-> lakehouse.namespace
+  icebergRestSpec -[governs]-> lakehouse.table
+  icebergRestSpec -[governs]-> lakehouse.sqlView
 }

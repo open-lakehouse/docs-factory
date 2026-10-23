@@ -34,13 +34,13 @@ managed.read:
   summary: Read a catalog-managed table through the catalog.
   asset: lakehouse.table
   path: uc-managed
-  feature: { spec: deltaSpec, name: catalogManaged, since: reader 3 · writer 7 }
+  covers: [deltaSpec:catalogManaged:reader]
 managed.append:
   title: Append to a managed table
   summary: "Append rows to a catalog-managed table, with the catalog accepting the commit."
   asset: lakehouse.table
   path: uc-managed
-  feature: { spec: deltaSpec, name: catalogManaged, since: reader 3 · writer 7 }
+  covers: [deltaSpec:catalogManaged:writer]
 managed.update:
   title: Update rows in a managed table
   summary: Change rows that match a condition in a catalog-managed table.

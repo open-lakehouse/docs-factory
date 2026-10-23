@@ -52,8 +52,10 @@ claims"); nothing new renders support on its own.
   operationIds (from the Iceberg 1.11.0 spec UC's server builds against).
   `delta_features:` frontmatter now takes the same Delta names (closing the
   Delta plan's §12.3).
-  [`journey-graph.md`](./journey-graph.md) proposes replacing these lists
-  with per-spec obligations that carry a role, a version, and a level.
+  Since ADR-0009 P2 these lists are per-spec obligations in
+  `architecture/journeys/obligations/`, with roles and versions, and a
+  journey's `feature:` is its `covers:` list
+  ([`journey-graph.md`](./journey-graph.md) §2.1).
 - **The review app groups by it.** `/plan/compat` shows a chip per spec version
   (Delta `reader 3 · writer 7`, Iceberg `v3`, Iceberg REST, …) with its
   answered share, and filters the matrix to it (`?since=`). This is

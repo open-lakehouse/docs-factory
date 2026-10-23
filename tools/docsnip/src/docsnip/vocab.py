@@ -14,6 +14,8 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
+import yaml
+
 
 def _vocab_path() -> Path:
     # tools/docsnip/src/docsnip/vocab.py -> repo root -> content/vocab.json
@@ -50,9 +52,15 @@ def page_worthy_kinds() -> set[str]:
     return set(_load()["pageWorthyKinds"])
 
 
+@lru_cache(maxsize=1)
 def spec_features() -> dict[str, set[str]]:
-    """Open-specification model id → the feature names a journey may cite."""
-    return {spec: set(names) for spec, names in _load()["specFeatures"].items()}
+    """Obligation names per spec, from architecture/journeys/obligations/."""
+    root = _vocab_path().parents[1] / "architecture" / "journeys" / "obligations"
+    found: dict[str, set[str]] = {}
+    for path in sorted(root.glob("*.yml")):
+        raw = yaml.safe_load(path.read_text()) or {}
+        found[str(raw.get("spec"))] = set(raw.get("obligations") or {})
+    return found
 
 
 def delta_topics() -> set[str]:

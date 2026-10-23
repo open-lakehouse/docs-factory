@@ -350,13 +350,14 @@ def validate(page: Page, model_ids: set[str] | None = None) -> PageValidation:
         )
 
     # ``delta_features:`` joins a page to R01's rows, so it takes protocol feature
-    # names (the journeys' `feature:` vocabulary) or a non-feature topic.
+    # names (the deltaSpec obligations journeys cover) or a non-feature topic.
     allowed = vocab.spec_features()["deltaSpec"] | vocab.delta_topics()
     for name in _as_str_list(m.get("delta_features")):
         if name not in allowed:
             errors.append(
                 f"delta_features '{name}' is not a Delta protocol feature or topic "
-                "in content/vocab.json"
+                "(architecture/journeys/obligations/deltaSpec.yml, or "
+                "content/vocab.json deltaTopics)"
             )
 
     if model_ids:

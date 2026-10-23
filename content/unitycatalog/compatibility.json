@@ -1584,6 +1584,7 @@
       "path": "uc-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -1737,6 +1738,7 @@
       "path": "uc-external",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -1881,6 +1883,7 @@
       "path": "uc-external",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -1956,6 +1959,7 @@
       "path": "uc-external",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -2048,6 +2052,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -2150,6 +2155,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -2224,6 +2230,13 @@
         "name": "catalogManaged",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "catalogManaged",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -2438,6 +2451,13 @@
         "name": "catalogManaged",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "catalogManaged",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -2648,6 +2668,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -2735,6 +2756,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -2822,6 +2844,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3060,6 +3083,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3276,6 +3300,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3392,6 +3417,7 @@
       "path": "uc-external",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3528,6 +3554,7 @@
       "path": "uc-external",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3664,6 +3691,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3714,6 +3742,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3764,6 +3793,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3814,6 +3844,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3864,6 +3895,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -3951,6 +3983,7 @@
       "path": "uc-managed",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -4016,6 +4049,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4122,6 +4156,7 @@
       "path": "uc-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -4193,6 +4228,13 @@
         "name": "listNamespaces",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "listNamespaces",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4281,7 +4323,18 @@
       "request": null,
       "path": "iceberg-rest-api",
       "asset": "lakehouse.namespace",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "createNamespace",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "createNamespace",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4375,6 +4428,13 @@
         "name": "updateProperties",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateProperties",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4401,6 +4461,13 @@
         "name": "dropNamespace",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "dropNamespace",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4494,6 +4561,13 @@
         "name": "listTables",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "listTables",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4518,7 +4592,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "createTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "createTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4610,7 +4695,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "updateTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4702,7 +4798,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "updateTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4727,7 +4834,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "loadTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4819,7 +4937,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "updateTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -4911,7 +5040,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "updateTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5003,7 +5143,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "updateTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "updateTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5051,7 +5202,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "renameTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "renameTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5148,6 +5310,13 @@
         "name": "renameTable",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "renameTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5273,7 +5442,18 @@
       "request": null,
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
-      "feature": null,
+      "feature": {
+        "spec": "icebergRestSpec",
+        "name": "dropTable",
+        "since": null
+      },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "dropTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5366,6 +5546,7 @@
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -5421,6 +5602,13 @@
         "name": "loadTable",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5511,6 +5699,13 @@
         "name": "schema-evolution",
         "since": "v1"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "schema-evolution",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5540,6 +5735,13 @@
         "name": "type-promotion",
         "since": "v1"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "type-promotion",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5569,6 +5771,18 @@
         "name": "hidden-partitioning",
         "since": "v1"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "hidden-partitioning",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "hidden-partitioning",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5598,6 +5812,13 @@
         "name": "partition-evolution",
         "since": "v1"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "partition-evolution",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5627,6 +5848,13 @@
         "name": "sort-order",
         "since": "v1"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "sort-order",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5656,6 +5884,13 @@
         "name": "snapshots",
         "since": "v1"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "snapshots",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5685,6 +5920,18 @@
         "name": "branching-tagging",
         "since": "v2"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "branching-tagging",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "branching-tagging",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5710,6 +5957,7 @@
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -5739,6 +5987,18 @@
         "name": "position-deletes",
         "since": "v2"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "position-deletes",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "position-deletes",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5764,6 +6024,7 @@
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -5793,6 +6054,13 @@
         "name": "equality-deletes",
         "since": "v2"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "equality-deletes",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5822,6 +6090,18 @@
         "name": "statistics",
         "since": "v1"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "statistics",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "statistics",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5847,6 +6127,7 @@
       "path": "iceberg-rest",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -5876,6 +6157,13 @@
         "name": "format-version-3",
         "since": "v3"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "format-version-3",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5905,6 +6193,18 @@
         "name": "deletion-vectors",
         "since": "v3"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "deletion-vectors",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "deletion-vectors",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5934,6 +6234,13 @@
         "name": "row-lineage",
         "since": "v3"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "row-lineage",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5963,6 +6270,18 @@
         "name": "default-values",
         "since": "v3"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "default-values",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "default-values",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -5992,6 +6311,18 @@
         "name": "variant",
         "since": "v3"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "variant",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "variant",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6021,6 +6352,18 @@
         "name": "geometry",
         "since": "v3"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "geometry",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "geometry",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6050,6 +6393,18 @@
         "name": "timestamp-ns",
         "since": "v3"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "timestamp-ns",
+          "role": "writer"
+        },
+        {
+          "spec": "icebergSpec",
+          "name": "timestamp-ns",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6079,6 +6434,13 @@
         "name": "multi-arg-transforms",
         "since": "v3"
       },
+      "covers": [
+        {
+          "spec": "icebergSpec",
+          "name": "multi-arg-transforms",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6104,6 +6466,7 @@
       "path": "iceberg-rest-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -6130,6 +6493,13 @@
         "name": "loadCredentials",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadCredentials",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6156,6 +6526,13 @@
         "name": "loadTable",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6185,6 +6562,13 @@
         "name": "reportMetrics",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "reportMetrics",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6214,6 +6598,13 @@
         "name": "registerTable",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "registerTable",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6344,6 +6735,13 @@
         "name": "commitTransaction",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "commitTransaction",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6474,6 +6872,18 @@
         "name": "createView",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "createView",
+          "role": "client"
+        },
+        {
+          "spec": "icebergRestSpec",
+          "name": "loadView",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6604,6 +7014,13 @@
         "name": "planTableScan",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "planTableScan",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6734,6 +7151,13 @@
         "name": "signRequest",
         "since": null
       },
+      "covers": [
+        {
+          "spec": "icebergRestSpec",
+          "name": "signRequest",
+          "role": "client"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -6860,6 +7284,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -6927,6 +7352,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -6994,6 +7420,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7061,6 +7488,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7128,6 +7556,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7195,6 +7624,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7262,6 +7692,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7329,6 +7760,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7396,6 +7828,7 @@
       "path": "uc-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7493,6 +7926,7 @@
       "path": "uc-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7560,6 +7994,7 @@
       "path": "uc-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7672,6 +8107,7 @@
       "path": "uc-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7754,6 +8190,7 @@
       "path": "uc-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7799,6 +8236,7 @@
       "path": "uc-api",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7911,6 +8349,7 @@
       "path": "uc-api",
       "asset": "lakehouse.volume",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -7993,6 +8432,7 @@
       "path": "uc-api",
       "asset": "lakehouse.volume",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8090,6 +8530,7 @@
       "path": "uc-api",
       "asset": "lakehouse.volume",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8172,6 +8613,7 @@
       "path": "uc-api",
       "asset": "lakehouse.volume",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8239,6 +8681,7 @@
       "path": "uc-api",
       "asset": "lakehouse.volume",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8306,6 +8749,7 @@
       "path": "uc-api",
       "asset": "lakehouse.volume",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8373,6 +8817,7 @@
       "path": "uc-api",
       "asset": "lakehouse.credential",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8440,6 +8885,7 @@
       "path": "uc-api",
       "asset": "lakehouse.credential",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8507,6 +8953,7 @@
       "path": "uc-api",
       "asset": "lakehouse.externalLocation",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8574,6 +9021,7 @@
       "path": "uc-api",
       "asset": "lakehouse.externalLocation",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8641,6 +9089,7 @@
       "path": "uc-api",
       "asset": "lakehouse.externalLocation",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8708,6 +9157,7 @@
       "path": "uc-api",
       "asset": "lakehouse.externalLocation",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8775,6 +9225,7 @@
       "path": "uc-api",
       "asset": "lakehouse.namespace",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8842,6 +9293,7 @@
       "path": "uc-api",
       "asset": "lakehouse.credential",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8907,6 +9359,7 @@
       "path": "uc-api",
       "asset": "lakehouse.credential",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -8967,6 +9420,7 @@
       "path": "uc-api",
       "asset": "lakehouse.volume",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9012,6 +9466,7 @@
       "path": "uc-api",
       "asset": "lakehouse.volume",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9057,6 +9512,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9117,6 +9573,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9162,6 +9619,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9222,6 +9680,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9267,6 +9726,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9327,6 +9787,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9372,6 +9833,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9417,6 +9879,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9477,6 +9940,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9522,6 +9986,7 @@
       "path": "uc-api",
       "asset": "lakehouse.function",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9567,6 +10032,7 @@
       "path": "uc-api",
       "asset": "lakehouse.sqlView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9656,6 +10122,7 @@
       "path": "uc-api",
       "asset": "lakehouse.sqlView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9745,6 +10212,7 @@
       "path": "uc-api",
       "asset": "lakehouse.sqlView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9812,6 +10280,7 @@
       "path": "uc-api",
       "asset": "lakehouse.sqlView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9899,6 +10368,7 @@
       "path": "uc-api",
       "asset": "lakehouse.sqlView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -9986,6 +10456,7 @@
       "path": "uc-api",
       "asset": "lakehouse.sqlView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -10073,6 +10544,7 @@
       "path": "uc-api",
       "asset": "lakehouse.sqlView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -10162,6 +10634,7 @@
       "path": "uc-api",
       "asset": "lakehouse.metricView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -10244,6 +10717,7 @@
       "path": "uc-api",
       "asset": "lakehouse.metricView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -10311,6 +10785,7 @@
       "path": "uc-api",
       "asset": "lakehouse.metricView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -10393,6 +10868,7 @@
       "path": "uc-api",
       "asset": "lakehouse.metricView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -10473,6 +10949,7 @@
       "path": "uc-api",
       "asset": "lakehouse.metricView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -10536,6 +11013,7 @@
       "path": "uc-api",
       "asset": "lakehouse.metricView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -10599,6 +11077,7 @@
       "path": "uc-api",
       "asset": "lakehouse.metricView",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "consumes": [
@@ -11435,6 +11914,3653 @@
         "metricview.list",
         "metricview.query",
         "table.list"
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "interface": "spark",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 1,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 9
+        },
+        "writer": {
+          "tested": 1,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 22
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "tested",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "tested",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "spark",
+      "spec": "icebergRestSpec",
+      "roles": {
+        "client": {
+          "tested": 8,
+          "documented": 0,
+          "fails": 0,
+          "missing": 6,
+          "unknown": 4,
+          "untracked": 7
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "getConfig",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "listNamespaces",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.namespace-list"
+          ]
+        },
+        {
+          "obligation": "createNamespace",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.schema-create"
+          ]
+        },
+        {
+          "obligation": "namespaceExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadNamespaceMetadata",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "updateProperties",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-properties"
+          ]
+        },
+        {
+          "obligation": "dropNamespace",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.namespace-drop"
+          ]
+        },
+        {
+          "obligation": "listTables",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.list"
+          ]
+        },
+        {
+          "obligation": "createTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.create"
+          ]
+        },
+        {
+          "obligation": "tableExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.read",
+            "iceberg.read-uniform",
+            "iceberg.etag-load"
+          ]
+        },
+        {
+          "obligation": "updateTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge"
+          ]
+        },
+        {
+          "obligation": "dropTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.drop"
+          ]
+        },
+        {
+          "obligation": "renameTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.rename",
+            "iceberg.rename-namespace"
+          ]
+        },
+        {
+          "obligation": "registerTable",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.register"
+          ]
+        },
+        {
+          "obligation": "loadCredentials",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.vended-credentials"
+          ]
+        },
+        {
+          "obligation": "reportMetrics",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.metrics"
+          ]
+        },
+        {
+          "obligation": "commitTransaction",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.transactions"
+          ]
+        },
+        {
+          "obligation": "planTableScan",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.scan-planning"
+          ]
+        },
+        {
+          "obligation": "fetchScanTasks",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "signRequest",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.remote-signing"
+          ]
+        },
+        {
+          "obligation": "listViews",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "createView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "getToken",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "spark",
+      "spec": "icebergSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 11,
+          "untracked": 7
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 16,
+          "untracked": 2
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "schema-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "schema-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.schema-evolve"
+          ]
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.type-promotion"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.partition-evolve"
+          ]
+        },
+        {
+          "obligation": "sort-order",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "sort-order",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.sort-order"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.time-travel"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.equality-deletes"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-create"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-row-lineage"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "default-values",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "default-values",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        }
+      ]
+    },
+    {
+      "interface": "duckdb",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 1,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 9
+        },
+        "writer": {
+          "tested": 1,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 22
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "tested",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "tested",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "duckdb",
+      "spec": "icebergRestSpec",
+      "roles": {
+        "client": {
+          "tested": 8,
+          "documented": 0,
+          "fails": 0,
+          "missing": 6,
+          "unknown": 4,
+          "untracked": 7
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "getConfig",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "listNamespaces",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.namespace-list"
+          ]
+        },
+        {
+          "obligation": "createNamespace",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.schema-create"
+          ]
+        },
+        {
+          "obligation": "namespaceExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadNamespaceMetadata",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "updateProperties",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-properties"
+          ]
+        },
+        {
+          "obligation": "dropNamespace",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.namespace-drop"
+          ]
+        },
+        {
+          "obligation": "listTables",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.list"
+          ]
+        },
+        {
+          "obligation": "createTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.create"
+          ]
+        },
+        {
+          "obligation": "tableExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.read",
+            "iceberg.read-uniform",
+            "iceberg.etag-load"
+          ]
+        },
+        {
+          "obligation": "updateTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge"
+          ]
+        },
+        {
+          "obligation": "dropTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.drop"
+          ]
+        },
+        {
+          "obligation": "renameTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.rename",
+            "iceberg.rename-namespace"
+          ]
+        },
+        {
+          "obligation": "registerTable",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.register"
+          ]
+        },
+        {
+          "obligation": "loadCredentials",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.vended-credentials"
+          ]
+        },
+        {
+          "obligation": "reportMetrics",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.metrics"
+          ]
+        },
+        {
+          "obligation": "commitTransaction",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.transactions"
+          ]
+        },
+        {
+          "obligation": "planTableScan",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.scan-planning"
+          ]
+        },
+        {
+          "obligation": "fetchScanTasks",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "signRequest",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.remote-signing"
+          ]
+        },
+        {
+          "obligation": "listViews",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "createView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "getToken",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "duckdb",
+      "spec": "icebergSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 11,
+          "untracked": 7
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 16,
+          "untracked": 2
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "schema-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "schema-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.schema-evolve"
+          ]
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.type-promotion"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.partition-evolve"
+          ]
+        },
+        {
+          "obligation": "sort-order",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "sort-order",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.sort-order"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.time-travel"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.equality-deletes"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-create"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-row-lineage"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "default-values",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "default-values",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        }
+      ]
+    },
+    {
+      "interface": "polars",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 1,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 9
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 1,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 22
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "fails",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "fails",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "polars",
+      "spec": "icebergRestSpec",
+      "roles": {
+        "client": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 1,
+          "missing": 6,
+          "unknown": 11,
+          "untracked": 7
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "getConfig",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "listNamespaces",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-list"
+          ]
+        },
+        {
+          "obligation": "createNamespace",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.schema-create"
+          ]
+        },
+        {
+          "obligation": "namespaceExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadNamespaceMetadata",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "updateProperties",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-properties"
+          ]
+        },
+        {
+          "obligation": "dropNamespace",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-drop"
+          ]
+        },
+        {
+          "obligation": "listTables",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.list"
+          ]
+        },
+        {
+          "obligation": "createTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.create"
+          ]
+        },
+        {
+          "obligation": "tableExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.read",
+            "iceberg.read-uniform",
+            "iceberg.etag-load"
+          ]
+        },
+        {
+          "obligation": "updateTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge"
+          ]
+        },
+        {
+          "obligation": "dropTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.drop"
+          ]
+        },
+        {
+          "obligation": "renameTable",
+          "role": "client",
+          "status": "fails",
+          "journeys": [
+            "iceberg.rename",
+            "iceberg.rename-namespace"
+          ]
+        },
+        {
+          "obligation": "registerTable",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.register"
+          ]
+        },
+        {
+          "obligation": "loadCredentials",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.vended-credentials"
+          ]
+        },
+        {
+          "obligation": "reportMetrics",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.metrics"
+          ]
+        },
+        {
+          "obligation": "commitTransaction",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.transactions"
+          ]
+        },
+        {
+          "obligation": "planTableScan",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.scan-planning"
+          ]
+        },
+        {
+          "obligation": "fetchScanTasks",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "signRequest",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.remote-signing"
+          ]
+        },
+        {
+          "obligation": "listViews",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "createView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "getToken",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "polars",
+      "spec": "icebergSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 11,
+          "untracked": 7
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 16,
+          "untracked": 2
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "schema-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "schema-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.schema-evolve"
+          ]
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.type-promotion"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.partition-evolve"
+          ]
+        },
+        {
+          "obligation": "sort-order",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "sort-order",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.sort-order"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.time-travel"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.equality-deletes"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-create"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-row-lineage"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "default-values",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "default-values",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        }
+      ]
+    },
+    {
+      "interface": "daft",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 1,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 9
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 1,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 22
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "fails",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "fails",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "daft",
+      "spec": "icebergRestSpec",
+      "roles": {
+        "client": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 1,
+          "missing": 6,
+          "unknown": 11,
+          "untracked": 7
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "getConfig",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "listNamespaces",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-list"
+          ]
+        },
+        {
+          "obligation": "createNamespace",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.schema-create"
+          ]
+        },
+        {
+          "obligation": "namespaceExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadNamespaceMetadata",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "updateProperties",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-properties"
+          ]
+        },
+        {
+          "obligation": "dropNamespace",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-drop"
+          ]
+        },
+        {
+          "obligation": "listTables",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.list"
+          ]
+        },
+        {
+          "obligation": "createTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.create"
+          ]
+        },
+        {
+          "obligation": "tableExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.read",
+            "iceberg.read-uniform",
+            "iceberg.etag-load"
+          ]
+        },
+        {
+          "obligation": "updateTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge"
+          ]
+        },
+        {
+          "obligation": "dropTable",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.drop"
+          ]
+        },
+        {
+          "obligation": "renameTable",
+          "role": "client",
+          "status": "fails",
+          "journeys": [
+            "iceberg.rename",
+            "iceberg.rename-namespace"
+          ]
+        },
+        {
+          "obligation": "registerTable",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.register"
+          ]
+        },
+        {
+          "obligation": "loadCredentials",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.vended-credentials"
+          ]
+        },
+        {
+          "obligation": "reportMetrics",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.metrics"
+          ]
+        },
+        {
+          "obligation": "commitTransaction",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.transactions"
+          ]
+        },
+        {
+          "obligation": "planTableScan",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.scan-planning"
+          ]
+        },
+        {
+          "obligation": "fetchScanTasks",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "signRequest",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.remote-signing"
+          ]
+        },
+        {
+          "obligation": "listViews",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "createView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "getToken",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "daft",
+      "spec": "icebergSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 11,
+          "untracked": 7
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 16,
+          "untracked": 2
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "schema-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "schema-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.schema-evolve"
+          ]
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.type-promotion"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.partition-evolve"
+          ]
+        },
+        {
+          "obligation": "sort-order",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "sort-order",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.sort-order"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.time-travel"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.equality-deletes"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-create"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-row-lineage"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "default-values",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "default-values",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        }
+      ]
+    },
+    {
+      "interface": "pandas",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 1,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 9
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 1,
+          "missing": 0,
+          "unknown": 0,
+          "untracked": 22
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "fails",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "fails",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "pyiceberg",
+      "spec": "icebergRestSpec",
+      "roles": {
+        "client": {
+          "tested": 8,
+          "documented": 0,
+          "fails": 0,
+          "missing": 6,
+          "unknown": 4,
+          "untracked": 7
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "getConfig",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "listNamespaces",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.namespace-list"
+          ]
+        },
+        {
+          "obligation": "createNamespace",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.schema-create"
+          ]
+        },
+        {
+          "obligation": "namespaceExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadNamespaceMetadata",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "updateProperties",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.namespace-properties"
+          ]
+        },
+        {
+          "obligation": "dropNamespace",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.namespace-drop"
+          ]
+        },
+        {
+          "obligation": "listTables",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.list"
+          ]
+        },
+        {
+          "obligation": "createTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.create"
+          ]
+        },
+        {
+          "obligation": "tableExists",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.read",
+            "iceberg.read-uniform",
+            "iceberg.etag-load"
+          ]
+        },
+        {
+          "obligation": "updateTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.append",
+            "iceberg.overwrite",
+            "iceberg.update",
+            "iceberg.delete",
+            "iceberg.merge"
+          ]
+        },
+        {
+          "obligation": "dropTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.drop"
+          ]
+        },
+        {
+          "obligation": "renameTable",
+          "role": "client",
+          "status": "tested",
+          "journeys": [
+            "iceberg.rename",
+            "iceberg.rename-namespace"
+          ]
+        },
+        {
+          "obligation": "registerTable",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.register"
+          ]
+        },
+        {
+          "obligation": "loadCredentials",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.vended-credentials"
+          ]
+        },
+        {
+          "obligation": "reportMetrics",
+          "role": "client",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.metrics"
+          ]
+        },
+        {
+          "obligation": "commitTransaction",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.transactions"
+          ]
+        },
+        {
+          "obligation": "planTableScan",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.scan-planning"
+          ]
+        },
+        {
+          "obligation": "fetchScanTasks",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "signRequest",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.remote-signing"
+          ]
+        },
+        {
+          "obligation": "listViews",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "loadView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "createView",
+          "role": "client",
+          "status": "missing",
+          "journeys": [
+            "iceberg.views"
+          ]
+        },
+        {
+          "obligation": "getToken",
+          "role": "client",
+          "status": "untracked",
+          "journeys": []
+        }
+      ]
+    },
+    {
+      "interface": "pyiceberg",
+      "spec": "icebergSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 11,
+          "untracked": 7
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 16,
+          "untracked": 2
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "schema-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "schema-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.schema-evolve"
+          ]
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "type-promotion",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.type-promotion"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "hidden-partitioning",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.hidden-partitioning"
+          ]
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "partition-evolution",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.partition-evolve"
+          ]
+        },
+        {
+          "obligation": "sort-order",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "sort-order",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.sort-order"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.time-travel"
+          ]
+        },
+        {
+          "obligation": "snapshots",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "branching-tagging",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.branch-tag"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "position-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.merge-on-read"
+          ]
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "equality-deletes",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.equality-deletes"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "statistics",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.statistics"
+          ]
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "format-version-3",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-create"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "deletion-vectors",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-deletion-vectors"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-row-lineage"
+          ]
+        },
+        {
+          "obligation": "row-lineage",
+          "role": "writer",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "default-values",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "default-values",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-default-values"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "variant",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-variant"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "geometry",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-geo"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "timestamp-ns",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-timestamp-ns"
+          ]
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "reader",
+          "status": "untracked",
+          "journeys": []
+        },
+        {
+          "obligation": "multi-arg-transforms",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg.v3-multi-arg-transforms"
+          ]
+        }
       ]
     }
   ],

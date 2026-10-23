@@ -105,8 +105,9 @@ Follow `AGENTS.md`:
   `architecture/journeys/journeys/` for one that already covers the task on
   the same path, and reuse it. Otherwise add it to the area's file there with
   an `<area>.<task>` id, the request's title, a one-sentence `summary`, its
-  `asset` and `path` (`architecture/journeys/paths.yml`), and `request:
-  <request id>`. Append the id to the `rows` of the table its placement names
+  `asset` and `path` (`architecture/journeys/paths.yml`), the spec
+  obligations it exercises in `covers` when it exercises any
+  (`architecture/journeys/obligations/`), and `request: <request id>`. Append the id to the `rows` of the table its placement names
   in `content/<project>/compatibility.yml`, and run `uv run docsnip compat
   --fix`. Its cells start unknown. Add `evidence` (to
   `architecture/journeys/evidence.yml`) only from a source you can cite, and

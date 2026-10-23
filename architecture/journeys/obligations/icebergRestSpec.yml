@@ -1,0 +1,32 @@
+# What the Iceberg REST Catalog spec offers a client: its OpenAPI operationIds.
+# A client takes the `client` role. Which operations a catalog server serves
+# isn't recorded here.
+spec: icebergRestSpec
+source: https://github.com/apache/iceberg/blob/main/open-api/rest-catalog-open-api.yaml
+roles: [client]
+obligations:
+  getConfig: {}
+  listNamespaces: {}
+  createNamespace: {}
+  namespaceExists: {}
+  loadNamespaceMetadata: {}
+  updateProperties: {}
+  dropNamespace: {}
+  listTables: {}
+  createTable: {}
+  tableExists: {}
+  loadTable: {}
+  updateTable: {}
+  dropTable: {}
+  renameTable: {}
+  registerTable: {}
+  loadCredentials: {}
+  reportMetrics: {}
+  commitTransaction: {}
+  planTableScan: {}
+  fetchScanTasks: {}
+  signRequest: {}
+  listViews: {}
+  loadView: {}
+  createView: {}
+  getToken: {}

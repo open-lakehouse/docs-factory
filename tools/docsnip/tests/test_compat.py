@@ -644,39 +644,143 @@ def test_bad_journey_references_are_errors(
     assert any(message in e for e in errors), errors
 
 
-def test_a_journey_names_the_spec_feature_it_exercises(tmp_path) -> None:
-    root = _modeled(
-        _repo(tmp_path, _SPARK_READS),
-        _read("feature: {spec: icebergRestSpec, name: loadTable, since: v1}"),
+_OBLIGATIONS = """\
+spec: icebergRestSpec
+source: https://example.com/spec
+roles: [reader, writer]
+obligations:
+  loadTable: { roles: [reader], since: v1 }
+  commitTable: {}
+"""
+
+
+def _obligations(
+    root: Path, text: str = _OBLIGATIONS, spec: str = "icebergRestSpec"
+) -> Path:
+    path = root / _CATALOG / "obligations" / f"{spec}.yml"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text)
+    return root
+
+
+def test_a_journey_names_the_obligations_it_covers(tmp_path) -> None:
+    root = _obligations(
+        _modeled(
+            _repo(tmp_path, _SPARK_READS),
+            _read(
+                "covers: [icebergRestSpec:loadTable, icebergRestSpec:commitTable:writer]"
+            ),
+        )
     )
     read, write = _artifact(root)["journeys"]
+    assert read["covers"] == [
+        {"spec": "icebergRestSpec", "name": "loadTable", "role": "reader"},
+        {"spec": "icebergRestSpec", "name": "commitTable", "role": "writer"},
+    ]
+    # The review app groups rows by the first obligation and its spec version.
     assert read["feature"] == {
         "spec": "icebergRestSpec",
         "name": "loadTable",
         "since": "v1",
     }
-    assert write["feature"] is None
+    assert (write["covers"], write["feature"]) == ([], None)
 
 
 @pytest.mark.parametrize(
-    ("feature", "message"),
+    ("covers", "message"),
     [
-        ("{spec: icebergRestSpec, name: nope}", "is not a icebergRestSpec feature"),
-        ("{spec: apacheSpark, name: loadTable}", "expected openSpecification"),
-        ("{spec: unityCatalogSpec, name: loadTable}", "has no specFeatures"),
+        ("[icebergRestSpec:nope]", "'nope' is not a icebergRestSpec obligation"),
+        ("[unityCatalogSpec:getTable]", "'unityCatalogSpec' has no obligations file"),
+        ("[icebergRestSpec:commitTable]", "binds reader, writer; name the role"),
+        ("[icebergRestSpec:loadTable:writer]", "doesn't bind the writer role"),
+        ("icebergRestSpec:loadTable", "lists <spec>:<obligation>[:<role>] entries"),
+    ],
+)
+def test_bad_covers_are_errors(tmp_path, covers: str, message: str) -> None:
+    root = _obligations(_modeled(_repo(tmp_path, ""), _read(f"covers: {covers}")))
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors
+
+
+@pytest.mark.parametrize(
+    ("text", "message"),
+    [
         (
-            "{spec: icebergRestSpec, name: loadTable, version: 3}",
-            "unknown key 'version'",
+            _OBLIGATIONS.replace("roles: [reader, writer]\n", ""),
+            "roles lists the roles",
+        ),
+        (
+            _OBLIGATIONS.replace(
+                "{ roles: [reader], since: v1 }", "{ roles: [server] }"
+            ),
+            "role 'server' is not one of",
+        ),
+        (
+            _OBLIGATIONS.replace("spec: icebergRestSpec", "spec: apacheSpark"),
+            "expected openSpecification",
+        ),
+        (
+            _OBLIGATIONS.replace("commitTable: {}", "commitTable: { level: required }"),
+            "unknown key 'level'",
         ),
     ],
 )
-def test_bad_journey_features_are_errors(tmp_path, feature: str, message: str) -> None:
-    root = _modeled(
-        _repo(tmp_path, ""),
-        _read(f"feature: {feature}"),
-    )
+def test_bad_obligation_files_are_errors(tmp_path, text: str, message: str) -> None:
+    root = _obligations(_modeled(_repo(tmp_path, "")), text)
     errors, _ = compat.check(root)
     assert any(message in e for e in errors), errors
+
+
+def test_an_obligations_file_is_named_after_its_spec(tmp_path) -> None:
+    root = _obligations(_modeled(_repo(tmp_path, "")), spec="iceberg")
+    errors, _ = compat.check(root)
+    assert any(
+        "name the file after its spec (icebergRestSpec.yml)" in e for e in errors
+    )
+
+
+def test_coverage_counts_a_specs_obligations_per_role(tmp_path) -> None:
+    root = _obligations(
+        _modeled(_repo(tmp_path, _SPARK_READS), _read("covers: [ucApi:getTable]")),
+        "spec: unityCatalogSpec\nsource: https://example.com/uc\nroles: [client]\n"
+        "obligations:\n  getTable: {}\n  listTables: {}\n  listVolumes: {}\n",
+        spec="unityCatalogSpec",
+    )
+    _edit(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        "covers: [ucApi:getTable]",
+        "covers: [unityCatalogSpec:getTable]",
+    )
+    _edit(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        "summary: Append rows, asset: lakehouse.table, path: uc",
+        "summary: Append rows, asset: lakehouse.table, path: uc,"
+        " covers: [unityCatalogSpec:listTables]",
+    )
+    data = _artifact(root)
+    # Spark consumes unityCatalogSpec; DuckDB has no model element, so no entry.
+    (entry,) = data["coverage"]
+    assert (entry["interface"], entry["spec"]) == ("spark", "unityCatalogSpec")
+    assert entry["roles"]["client"] == {
+        "tested": 1,
+        "documented": 0,
+        "fails": 0,
+        "missing": 0,
+        "unknown": 1,
+        "untracked": 1,
+    }
+    assert entry["obligations"][0] == {
+        "obligation": "getTable",
+        "role": "client",
+        "status": "tested",
+        "journeys": ["table.read"],
+    }
+    assert compat.coverage_lines(root) == [
+        "proj spark unityCatalogSpec client: 1/3 answered "
+        "(✓ 1, docs 0, ✗ 0, — 1, untracked 1)"
+    ]
 
 
 def test_a_verified_journey_records_the_edge_it_exercises(tmp_path) -> None:

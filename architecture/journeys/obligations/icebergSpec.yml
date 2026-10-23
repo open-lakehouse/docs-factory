@@ -1,0 +1,25 @@
+# What the Apache Iceberg table spec asks of the engines that read or write a
+# table: its format features in kebab-case, after the spec's sections. `since`
+# is the format version that added it.
+spec: icebergSpec
+source: https://iceberg.apache.org/spec/
+roles: [reader, writer]
+obligations:
+  schema-evolution: { since: v1 }
+  type-promotion: { since: v1 }
+  hidden-partitioning: { since: v1 }
+  partition-evolution: { since: v1 }
+  sort-order: { since: v1 }
+  snapshots: { since: v1 }
+  branching-tagging: { since: v2 }
+  position-deletes: { since: v2 }
+  equality-deletes: { since: v2 }
+  statistics: { since: v1 }
+  format-version-3: { since: v3 }
+  deletion-vectors: { since: v3 }
+  row-lineage: { since: v3 }
+  default-values: { since: v3 }
+  variant: { since: v3 }
+  geometry: { since: v3 }
+  timestamp-ns: { since: v3 }
+  multi-arg-transforms: { since: v3 }

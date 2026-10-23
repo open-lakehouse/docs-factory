@@ -11,6 +11,7 @@ authoring contract is `content/README.md`, "Compatibility claims"; the design
 is [`docs/design/journey-graph.md`](../../docs/design/journey-graph.md).
 
 ```
+obligations/      what each spec asks of the roles that take part in it
 paths.yml         how participants reach the asset: the contract each role needs
 interfaces.yml    one engine or client through one language binding (the columns)
 journeys/*.yml    the journeys, one file per area; an id is unique across files
@@ -28,6 +29,9 @@ aliases.yml       renamed journey ids → current ids
 | `iceberg-rest` | `iceberg-rest-api`, and a client that implements Apache Iceberg |
 
 A journey's own `roles` add a participant or a contract to its path's: a read
-with vended S3 credentials adds a `storage` role. Before adding a journey,
+with vended S3 credentials adds a `storage` role. Its `covers` names the spec
+obligations it exercises (`deltaSpec:deletionVectors:reader`), which is how
+`docsnip compat --coverage` measures an engine against a spec rather than
+against the rows someone wrote. Before adding a journey,
 look for one that covers the task on the same path in any file here. The
 model checks the paths; it never creates a journey or a passing cell.

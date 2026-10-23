@@ -40,7 +40,7 @@ from typing import Any
 
 import yaml
 
-from . import shellregions, sqlregions, tabs, vocab
+from . import shellregions, sqlregions, tabs
 from .anchors import Heading, headings
 from .frontmatter import iter_content_files, page_status
 from .frontmatter import parse as parse_page
@@ -63,7 +63,9 @@ OUTCOMES = ("works", "fails", "missing")
 
 _MATRIX_KEYS = {"spec", "interfaces", "tables"}
 _INTERFACE_KEYS = {"label", "pin", "package", "model", "via", "integrations"}
-_JOURNEY_KEYS = {"title", "summary", "request", "asset", "path", "roles", "feature"}
+_JOURNEY_KEYS = {"title", "summary", "request", "asset", "path", "roles", "covers"}
+_OBLIGATIONS_KEYS = {"spec", "source", "roles", "obligations"}
+_OBLIGATION_KEYS = {"roles", "since"}
 _FEATURE_KEYS = {"spec", "name", "since"}
 _PATH_KEYS = {"roles"}
 # A requirement edge → the element kinds it may name.
@@ -129,10 +131,38 @@ class Feature:
     """The spec feature a journey exercises, so tables can group by spec version."""
 
     spec: str  # an openSpecification model id
-    name: str  # in content/vocab.json `specFeatures[spec]`
+    name: str  # an obligation in architecture/journeys/obligations/<spec>.yml
     since: str | None = (
         None  # the spec version that added it: "v3", "reader 3 · writer 7"
     )
+
+
+@dataclasses.dataclass(frozen=True)
+class Obligation:
+    """One thing a spec asks of the roles that take part in it."""
+
+    spec: str
+    name: str
+    roles: tuple[str, ...]  # of the spec's client-side roles
+    since: str | None = None
+
+
+@dataclasses.dataclass(frozen=True)
+class Obligations:
+    """architecture/journeys/obligations/<spec>.yml."""
+
+    spec: str
+    roles: tuple[str, ...]  # the roles a client takes: reader, writer, client
+    items: dict[str, Obligation]
+
+
+@dataclasses.dataclass(frozen=True)
+class Cover:
+    """An obligation a journey exercises, in the role its client takes."""
+
+    spec: str
+    name: str
+    role: str
 
 
 @dataclasses.dataclass(frozen=True)
@@ -144,6 +174,8 @@ class Journey:
     path: str | None = None  # a paths.yml name
     asset: str | None = None
     requires: Requirements = dataclasses.field(default_factory=dict)  # path + roles
+    covers: tuple[Cover, ...] = ()
+    # The first obligation it covers, which the review app groups rows by.
     feature: Feature | None = None
 
 
@@ -192,6 +224,7 @@ class Catalog:
     journeys: dict[str, Journey]
     evidence: list[Evidence]
     aliases: dict[str, str]  # old journey id → current id
+    obligations: dict[str, Obligations] = dataclasses.field(default_factory=dict)
 
 
 @dataclasses.dataclass
@@ -393,32 +426,79 @@ def _load_interfaces(
     return interfaces
 
 
-def _load_feature(
-    value: object, at: str, where: str, model: Model, errors: list[str]
-) -> Feature | None:
-    if not isinstance(value, dict):
-        errors.append(f"{where}: {at} maps spec, name, and since")
+def _load_obligations(
+    raw: dict, where: str, model: Model, errors: list[str]
+) -> Obligations | None:
+    for extra in sorted(set(raw) - _OBLIGATIONS_KEYS):
+        errors.append(f"{where}: unknown key '{extra}'")
+    spec = raw.get("spec")
+    if not _check_element(model, spec, {"openSpecification"}, "spec", where, errors):
         return None
-    for extra in sorted(set(value) - _FEATURE_KEYS):
-        errors.append(f"{where}: {at}: unknown key '{extra}'")
-    spec, name, since = value.get("spec"), value.get("name"), value.get("since")
-    if not _check_element(
-        model, spec, {"openSpecification"}, f"{at}.spec", where, errors
-    ):
+    roles = _strs(raw.get("roles"))
+    if not roles:
+        errors.append(f"{where}: roles lists the roles a client takes")
         return None
-    known = vocab.spec_features().get(str(spec))
-    if known is None:
-        errors.append(f"{where}: {at}.spec '{spec}' has no specFeatures in vocab.json")
-        return None
-    if name not in known:
-        errors.append(
-            f"{where}: {at}.name '{name}' is not a {spec} feature in vocab.json"
+    if not isinstance(raw.get("source"), str):
+        errors.append(f"{where}: needs a source")
+    items: dict[str, Obligation] = {}
+    for name, entry in _mapping(raw.get("obligations"), where, errors).items():
+        at = f"obligations.{name}"
+        if not isinstance(entry, dict):
+            errors.append(f"{where}: {at} must be a mapping")
+            continue
+        for extra in sorted(set(entry) - _OBLIGATION_KEYS):
+            errors.append(f"{where}: {at}: unknown key '{extra}'")
+        own = _strs(entry["roles"]) if "roles" in entry else roles
+        for role in set(own or ()) - set(roles):
+            errors.append(f"{where}: {at}: role '{role}' is not one of {list(roles)}")
+        since = entry.get("since")
+        if since is not None and not isinstance(since, str):
+            errors.append(f"{where}: {at}.since must be a string")
+            since = None
+        items[str(name)] = Obligation(
+            spec=str(spec), name=str(name), roles=tuple(own or ()), since=since
         )
-        return None
-    if since is not None and not isinstance(since, str):
-        errors.append(f"{where}: {at}.since must be a string")
-        return None
-    return Feature(spec=str(spec), name=str(name), since=since)
+    return Obligations(spec=str(spec), roles=roles, items=items)
+
+
+def _load_covers(
+    value: object,
+    at: str,
+    where: str,
+    obligations: dict[str, Obligations],
+    errors: list[str],
+) -> tuple[Cover, ...]:
+    """``<spec>:<name>[:<role>]`` entries; the role may be left out only where
+    the obligation binds one role."""
+    entries = _strs(value)
+    if entries is None:
+        errors.append(f"{where}: {at} lists <spec>:<obligation>[:<role>] entries")
+        return ()
+    covers: list[Cover] = []
+    for entry in entries:
+        spec, _, rest = entry.partition(":")
+        name, _, role = rest.partition(":")
+        known = obligations.get(spec)
+        if known is None:
+            errors.append(f"{where}: {at}: '{spec}' has no obligations file")
+            continue
+        obligation = known.items.get(name)
+        if obligation is None:
+            errors.append(f"{where}: {at}: '{name}' is not a {spec} obligation")
+            continue
+        if not role:
+            if len(obligation.roles) != 1:
+                errors.append(
+                    f"{where}: {at}: {spec}:{name} binds {', '.join(obligation.roles)}; "
+                    "name the role the journey's client takes"
+                )
+                continue
+            role = obligation.roles[0]
+        elif role not in obligation.roles:
+            errors.append(f"{where}: {at}: {spec}:{name} doesn't bind the {role} role")
+            continue
+        covers.append(Cover(spec=spec, name=name, role=role))
+    return tuple(dict.fromkeys(covers))
 
 
 def _load_journeys(
@@ -427,6 +507,7 @@ def _load_journeys(
     errors: list[str],
     model: Model,
     paths: dict[str, Requirements],
+    obligations: dict[str, Obligations],
 ) -> dict[str, Journey]:
     journeys: dict[str, Journey] = {}
     for key, entry in raw.items():
@@ -456,9 +537,19 @@ def _load_journeys(
             if "roles" in entry
             else None
         )
+        covers = (
+            _load_covers(entry["covers"], f"{at}.covers", where, obligations, errors)
+            if "covers" in entry
+            else ()
+        )
+        first = covers[0] if covers else None
         feature = (
-            _load_feature(entry["feature"], f"{at}.feature", where, model, errors)
-            if "feature" in entry
+            Feature(
+                spec=first.spec,
+                name=first.name,
+                since=obligations[first.spec].items[first.name].since,
+            )
+            if first
             else None
         )
         journeys[at] = Journey(
@@ -469,6 +560,7 @@ def _load_journeys(
             path=str(path) if path in paths else None,
             asset=asset if isinstance(asset, str) else None,
             requires=_merged(paths.get(str(path), {}), roles or {}),
+            covers=covers,
             feature=feature,
         )
     return journeys
@@ -551,12 +643,25 @@ def load_catalog(repo_root: Path, model: Model, errors: list[str]) -> Catalog:
     raw, where = read("interfaces.yml")
     interfaces = _load_interfaces(_mapping(raw, where, errors), where, model, errors)
 
+    obligations: dict[str, Obligations] = {}
+    for path in sorted((root / "obligations").glob("*.yml")):
+        where = str(path)
+        found = _load_obligations(
+            _mapping(_load_yaml(path, errors), where, errors), where, model, errors
+        )
+        if found is None:
+            continue
+        if path.stem != found.spec:
+            errors.append(f"{where}: name the file after its spec ({found.spec}.yml)")
+        obligations[found.spec] = found
+
     journeys: dict[str, Journey] = {}
     homes: dict[str, Path] = {}
     for path in sorted((root / "journeys").glob("*.yml")):
         where = str(path)
         raw = _mapping(_load_yaml(path, errors), where, errors)
-        for jid, journey in _load_journeys(raw, where, errors, model, paths).items():
+        loaded = _load_journeys(raw, where, errors, model, paths, obligations)
+        for jid, journey in loaded.items():
             if jid in journeys:
                 errors.append(f"{where}: {jid} is already a journey in {homes[jid]}")
                 continue
@@ -580,6 +685,7 @@ def load_catalog(repo_root: Path, model: Model, errors: list[str]) -> Catalog:
         journeys=journeys,
         evidence=evidence,
         aliases=aliases,
+        obligations=obligations,
     )
 
 
@@ -1795,6 +1901,94 @@ def verified_edges(result: Result, matrix: Matrix) -> list[dict[str, object]]:
     ]
 
 
+# The states coverage counts, in report order: a ready answer, upstream docs,
+# a negative, no answer yet, and no journey here to answer it.
+COVERAGE_STATES = ("tested", "documented", "fails", "missing", "unknown", "untracked")
+
+
+def coverage(result: Result, matrix: Matrix) -> list[dict[str, Any]]:
+    """What each column interface answers of the specs its model reaches.
+
+    An interface reaches a spec through an ``implements`` or ``consumes`` edge
+    of its model or an integration. Every obligation the spec binds a role to
+    is expected, once per role; its state is the best ready cell among the
+    journeys covering it that a table shows in the interface's column, or
+    ``untracked`` when none does. So the denominator comes from the spec, not
+    from the rows someone chose. An interface no table shows with any journey
+    on a spec (Delta's Spark · Python, beside the one Spark feature column)
+    has no entry for it.
+    """
+    shown = {
+        (column, row)
+        for table in matrix.tables.values()
+        for column in table.columns
+        for row in table.rows
+    }
+    found: list[dict[str, Any]] = []
+    for iface in matrix.interfaces.values():
+        covering: dict[tuple[str, str, str], list[str]] = {}
+        for journey in matrix.journeys.values():
+            if (iface.key, journey.id) in shown:
+                for c in journey.covers:
+                    key = (c.spec, c.name, c.role)
+                    covering.setdefault(key, []).append(journey.id)
+        for spec in _contracts(result, iface):
+            known = result.catalog.obligations.get(spec)
+            if known is None or not any(k[0] == spec for k in covering):
+                continue
+            counts = {role: dict.fromkeys(COVERAGE_STATES, 0) for role in known.roles}
+            items = []
+            for obligation in known.items.values():
+                for role in obligation.roles:
+                    jids = covering.get((spec, obligation.name, role), [])
+                    status = (
+                        _best(
+                            cell(result, matrix, iface.key, j, drafts=False)
+                            for j in jids
+                        ).status
+                        if jids
+                        else "untracked"
+                    )
+                    counts[role][status] += 1
+                    items.append(
+                        {
+                            "obligation": obligation.name,
+                            "role": role,
+                            "status": status,
+                            "journeys": jids,
+                        }
+                    )
+            found.append(
+                {
+                    "interface": iface.key,
+                    "spec": spec,
+                    "roles": counts,
+                    "obligations": items,
+                }
+            )
+    return found
+
+
+def coverage_lines(repo_root: Path) -> list[str]:
+    """One line per project, interface, spec, and role, for ``compat --coverage``."""
+    result = resolve(repo_root)
+    lines = []
+    for project, matrix in sorted(result.matrices.items()):
+        for entry in coverage(result, matrix):
+            for role, n in entry["roles"].items():
+                total = sum(n.values())
+                if not total:
+                    continue
+                answered = total - n["unknown"] - n["untracked"]
+                lines.append(
+                    f"{project} {entry['interface']} {entry['spec']} {role}: "
+                    f"{answered}/{total} answered (✓ {n['tested']}, docs "
+                    f"{n['documented']}, ✗ {n['fails'] + n['missing']}, "
+                    f"— {n['unknown']}, untracked {n['untracked']})"
+                )
+    return lines
+
+
 def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, object]:
     """The matrix with every cell resolved, draft claims included and flagged."""
     engine_pages = _engine_pages(content_root)
@@ -1834,6 +2028,7 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                 "feature": dataclasses.asdict(journey.feature)
                 if journey.feature
                 else None,
+                "covers": [dataclasses.asdict(c) for c in journey.covers],
                 "requires": {
                     role: {edge: list(ids) for edge, ids in edges.items()}
                     for role, edges in journey.requires.items()
@@ -1899,6 +2094,7 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
         ],
         "journeys": journeys,
         "verifiedEdges": verified_edges(result, matrix),
+        "coverage": coverage(result, matrix),
         "diagnostics": diagnostics(result, matrix),
     }
 

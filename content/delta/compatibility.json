@@ -992,6 +992,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -1138,6 +1139,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -1236,6 +1238,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -1318,6 +1321,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -1515,6 +1519,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -1652,6 +1657,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -1766,6 +1772,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -1848,6 +1855,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -1926,6 +1934,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -2024,6 +2033,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -2106,6 +2116,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -2231,6 +2242,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -2356,6 +2368,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -2454,6 +2467,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -2552,6 +2566,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -2650,6 +2665,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -2919,6 +2935,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -3025,6 +3042,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -3229,6 +3247,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -3351,6 +3370,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -3455,6 +3475,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -3676,6 +3697,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -3780,6 +3802,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -3894,6 +3917,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -3992,6 +4016,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4090,6 +4115,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4204,6 +4230,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4334,6 +4361,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4448,6 +4476,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4562,6 +4591,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4644,6 +4674,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4726,6 +4757,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4808,6 +4840,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4890,6 +4923,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -4940,6 +4974,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5038,6 +5073,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5136,6 +5172,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5234,6 +5271,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5332,6 +5370,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5430,6 +5469,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5528,6 +5568,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5626,6 +5667,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5724,6 +5766,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5790,6 +5833,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5888,6 +5932,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -5986,6 +6031,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -6084,6 +6130,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -6182,6 +6229,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -6280,6 +6328,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -6419,6 +6468,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -6501,6 +6551,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -6599,6 +6650,7 @@
       "path": "by-path",
       "asset": "lakehouse.table",
       "feature": null,
+      "covers": [],
       "requires": {
         "client": {
           "implements": [
@@ -6722,6 +6774,13 @@
         "name": "columnMapping",
         "since": "reader 2 · writer 5"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "columnMapping",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -6804,6 +6863,13 @@
         "name": "deletionVectors",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "deletionVectors",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -6858,6 +6924,13 @@
         "name": "timestampNtz",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "timestampNtz",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -6896,6 +6969,13 @@
         "name": "v2Checkpoint",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "v2Checkpoint",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -6934,6 +7014,13 @@
         "name": "catalogManaged",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "catalogManaged",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -7030,6 +7117,13 @@
         "name": "vacuumProtocolCheck",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "vacuumProtocolCheck",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7068,6 +7162,13 @@
         "name": "typeWidening",
         "since": "accepted RFC"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "typeWidening",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7106,6 +7207,13 @@
         "name": "variantType",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "variantType",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7144,6 +7252,13 @@
         "name": "variantShredding",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "variantShredding",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7165,6 +7280,13 @@
         "name": "collations",
         "since": "proposed RFC"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "collations",
+          "role": "reader"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7186,6 +7308,13 @@
         "name": "appendOnly",
         "since": "writer 2"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "appendOnly",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7240,6 +7369,13 @@
         "name": "invariants",
         "since": "writer 2"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "invariants",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7294,6 +7430,13 @@
         "name": "checkConstraints",
         "since": "writer 3"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "checkConstraints",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7348,6 +7491,13 @@
         "name": "changeDataFeed",
         "since": "writer 4"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "changeDataFeed",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7402,6 +7552,13 @@
         "name": "generatedColumns",
         "since": "writer 4"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "generatedColumns",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7456,6 +7613,13 @@
         "name": "identityColumns",
         "since": "writer 6"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "identityColumns",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7526,6 +7690,13 @@
         "name": "columnMapping",
         "since": "reader 2 · writer 5"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "columnMapping",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7608,6 +7779,13 @@
         "name": "allowColumnDefaults",
         "since": "writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "allowColumnDefaults",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7646,6 +7824,13 @@
         "name": "deletionVectors",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "deletionVectors",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7684,6 +7869,13 @@
         "name": "rowTracking",
         "since": "writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "rowTracking",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7728,6 +7920,13 @@
         "name": "timestampNtz",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "timestampNtz",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7749,6 +7948,13 @@
         "name": "domainMetadata",
         "since": "writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "domainMetadata",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7787,6 +7993,13 @@
         "name": "v2Checkpoint",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "v2Checkpoint",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7825,6 +8038,13 @@
         "name": "catalogManaged",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "catalogManaged",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "consumes": [
@@ -7921,6 +8141,13 @@
         "name": "icebergCompatV1",
         "since": "writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "icebergCompatV1",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7959,6 +8186,13 @@
         "name": "icebergCompatV2",
         "since": "writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "icebergCompatV2",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -7997,6 +8231,13 @@
         "name": "clustering",
         "since": "writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "clustering",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -8035,6 +8276,13 @@
         "name": "vacuumProtocolCheck",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "vacuumProtocolCheck",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -8073,6 +8321,13 @@
         "name": "inCommitTimestamp",
         "since": "writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "inCommitTimestamp",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -8117,6 +8372,13 @@
         "name": "typeWidening",
         "since": "accepted RFC"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "typeWidening",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -8155,6 +8417,13 @@
         "name": "variantType",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "variantType",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -8176,6 +8445,13 @@
         "name": "variantShredding",
         "since": "reader 3 · writer 7"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "variantShredding",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -8197,6 +8473,13 @@
         "name": "collations",
         "since": "proposed RFC"
       },
+      "covers": [
+        {
+          "spec": "deltaSpec",
+          "name": "collations",
+          "role": "writer"
+        }
+      ],
       "requires": {
         "client": {
           "implements": [
@@ -8354,6 +8637,1160 @@
       "journeys": [
         "managed.append",
         "managed.read"
+      ]
+    }
+  ],
+  "coverage": [
+    {
+      "interface": "spark-sql",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 2,
+          "documented": 4,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 4,
+          "untracked": 0
+        },
+        "writer": {
+          "tested": 4,
+          "documented": 15,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 4,
+          "untracked": 0
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "append-only.write"
+          ]
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "invariants.write"
+          ]
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "check-constraints.write"
+          ]
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "generated-columns.write"
+          ]
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "column-defaults.write"
+          ]
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "change-data-feed.write"
+          ]
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "tested",
+          "journeys": [
+            "column-mapping.read"
+          ]
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "tested",
+          "journeys": [
+            "column-mapping.write"
+          ]
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "identity-columns.write"
+          ]
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "documented",
+          "journeys": [
+            "deletion-vectors.read"
+          ]
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "deletion-vectors.write"
+          ]
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "tested",
+          "journeys": [
+            "row-tracking.write"
+          ]
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "timestamp-ntz.read"
+          ]
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "timestamp-ntz.write"
+          ]
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "domain-metadata.write"
+          ]
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "documented",
+          "journeys": [
+            "v2-checkpoint.read"
+          ]
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "v2-checkpoint.write"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "tested",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "tested",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "iceberg-compat-v1.write"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "iceberg-compat-v2.write"
+          ]
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "clustering.write"
+          ]
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "documented",
+          "journeys": [
+            "vacuum-protocol-check.read"
+          ]
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "vacuum-protocol-check.write"
+          ]
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "tested",
+          "journeys": [
+            "in-commit-timestamp.write"
+          ]
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "documented",
+          "journeys": [
+            "type-widening.read"
+          ]
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "type-widening.write"
+          ]
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "variant.read"
+          ]
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "variant.write"
+          ]
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "variant-shredding.read"
+          ]
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "variant-shredding.write"
+          ]
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "collations.read"
+          ]
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "collations.write"
+          ]
+        }
+      ]
+    },
+    {
+      "interface": "delta-rs-python",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 1,
+          "fails": 1,
+          "missing": 0,
+          "unknown": 8,
+          "untracked": 0
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 6,
+          "fails": 1,
+          "missing": 1,
+          "unknown": 15,
+          "untracked": 0
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "append-only.write"
+          ]
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "invariants.write"
+          ]
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "check-constraints.write"
+          ]
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "generated-columns.write"
+          ]
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "column-defaults.write"
+          ]
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "change-data-feed.write"
+          ]
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "documented",
+          "journeys": [
+            "column-mapping.read"
+          ]
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "documented",
+          "journeys": [
+            "column-mapping.write"
+          ]
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "missing",
+          "journeys": [
+            "identity-columns.write"
+          ]
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "deletion-vectors.read"
+          ]
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "deletion-vectors.write"
+          ]
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "row-tracking.write"
+          ]
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "timestamp-ntz.read"
+          ]
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "timestamp-ntz.write"
+          ]
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "domain-metadata.write"
+          ]
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "v2-checkpoint.read"
+          ]
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "v2-checkpoint.write"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "fails",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "fails",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg-compat-v1.write"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg-compat-v2.write"
+          ]
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "clustering.write"
+          ]
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "vacuum-protocol-check.read"
+          ]
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "vacuum-protocol-check.write"
+          ]
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "in-commit-timestamp.write"
+          ]
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "type-widening.read"
+          ]
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "type-widening.write"
+          ]
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "variant.read"
+          ]
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "variant.write"
+          ]
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "variant-shredding.read"
+          ]
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "variant-shredding.write"
+          ]
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "collations.read"
+          ]
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "collations.write"
+          ]
+        }
+      ]
+    },
+    {
+      "interface": "delta-rs-rust",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 10,
+          "untracked": 0
+        },
+        "writer": {
+          "tested": 0,
+          "documented": 0,
+          "fails": 0,
+          "missing": 1,
+          "unknown": 22,
+          "untracked": 0
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "append-only.write"
+          ]
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "invariants.write"
+          ]
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "check-constraints.write"
+          ]
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "generated-columns.write"
+          ]
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "column-defaults.write"
+          ]
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "change-data-feed.write"
+          ]
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "column-mapping.read"
+          ]
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "column-mapping.write"
+          ]
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "missing",
+          "journeys": [
+            "identity-columns.write"
+          ]
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "deletion-vectors.read"
+          ]
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "deletion-vectors.write"
+          ]
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "row-tracking.write"
+          ]
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "timestamp-ntz.read"
+          ]
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "timestamp-ntz.write"
+          ]
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "domain-metadata.write"
+          ]
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "v2-checkpoint.read"
+          ]
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "v2-checkpoint.write"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg-compat-v1.write"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg-compat-v2.write"
+          ]
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "clustering.write"
+          ]
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "vacuum-protocol-check.read"
+          ]
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "vacuum-protocol-check.write"
+          ]
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "in-commit-timestamp.write"
+          ]
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "type-widening.read"
+          ]
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "type-widening.write"
+          ]
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "variant.read"
+          ]
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "variant.write"
+          ]
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "variant-shredding.read"
+          ]
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "variant-shredding.write"
+          ]
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "collations.read"
+          ]
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "collations.write"
+          ]
+        }
+      ]
+    },
+    {
+      "interface": "duckdb-sql",
+      "spec": "deltaSpec",
+      "roles": {
+        "reader": {
+          "tested": 2,
+          "documented": 3,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 5,
+          "untracked": 0
+        },
+        "writer": {
+          "tested": 2,
+          "documented": 0,
+          "fails": 0,
+          "missing": 0,
+          "unknown": 21,
+          "untracked": 0
+        }
+      },
+      "obligations": [
+        {
+          "obligation": "appendOnly",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "append-only.write"
+          ]
+        },
+        {
+          "obligation": "invariants",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "invariants.write"
+          ]
+        },
+        {
+          "obligation": "checkConstraints",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "check-constraints.write"
+          ]
+        },
+        {
+          "obligation": "generatedColumns",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "generated-columns.write"
+          ]
+        },
+        {
+          "obligation": "allowColumnDefaults",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "column-defaults.write"
+          ]
+        },
+        {
+          "obligation": "changeDataFeed",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "change-data-feed.write"
+          ]
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "reader",
+          "status": "tested",
+          "journeys": [
+            "column-mapping.read"
+          ]
+        },
+        {
+          "obligation": "columnMapping",
+          "role": "writer",
+          "status": "tested",
+          "journeys": [
+            "column-mapping.write"
+          ]
+        },
+        {
+          "obligation": "identityColumns",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "identity-columns.write"
+          ]
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "reader",
+          "status": "documented",
+          "journeys": [
+            "deletion-vectors.read"
+          ]
+        },
+        {
+          "obligation": "deletionVectors",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "deletion-vectors.write"
+          ]
+        },
+        {
+          "obligation": "rowTracking",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "row-tracking.write"
+          ]
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "reader",
+          "status": "documented",
+          "journeys": [
+            "timestamp-ntz.read"
+          ]
+        },
+        {
+          "obligation": "timestampNtz",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "timestamp-ntz.write"
+          ]
+        },
+        {
+          "obligation": "domainMetadata",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "domain-metadata.write"
+          ]
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "v2-checkpoint.read"
+          ]
+        },
+        {
+          "obligation": "v2Checkpoint",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "v2-checkpoint.write"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "reader",
+          "status": "tested",
+          "journeys": [
+            "managed.read"
+          ]
+        },
+        {
+          "obligation": "catalogManaged",
+          "role": "writer",
+          "status": "tested",
+          "journeys": [
+            "managed.append"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV1",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg-compat-v1.write"
+          ]
+        },
+        {
+          "obligation": "icebergCompatV2",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "iceberg-compat-v2.write"
+          ]
+        },
+        {
+          "obligation": "clustering",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "clustering.write"
+          ]
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "vacuum-protocol-check.read"
+          ]
+        },
+        {
+          "obligation": "vacuumProtocolCheck",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "vacuum-protocol-check.write"
+          ]
+        },
+        {
+          "obligation": "inCommitTimestamp",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "in-commit-timestamp.write"
+          ]
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "type-widening.read"
+          ]
+        },
+        {
+          "obligation": "typeWidening",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "type-widening.write"
+          ]
+        },
+        {
+          "obligation": "variantType",
+          "role": "reader",
+          "status": "documented",
+          "journeys": [
+            "variant.read"
+          ]
+        },
+        {
+          "obligation": "variantType",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "variant.write"
+          ]
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "variant-shredding.read"
+          ]
+        },
+        {
+          "obligation": "variantShredding",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "variant-shredding.write"
+          ]
+        },
+        {
+          "obligation": "collations",
+          "role": "reader",
+          "status": "unknown",
+          "journeys": [
+            "collations.read"
+          ]
+        },
+        {
+          "obligation": "collations",
+          "role": "writer",
+          "status": "unknown",
+          "journeys": [
+            "collations.write"
+          ]
+        }
       ]
     }
   ],

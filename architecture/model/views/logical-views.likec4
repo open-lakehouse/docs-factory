@@ -1,12 +1,13 @@
 // LOGICAL views — the abstract reference lakehouse.
-// Deployment (concrete) views live in deployment-views.likec4; flows in flows.likec4.
+// Deployment (concrete) views live in deployment-views.likec4; sequence views in
+// docs-views.likec4 and blog-views.likec4.
 
 views {
 
   // --- The reference lakehouse in context ----------------------------------
   view referenceContext {
     title "Reference Open Lakehouse — context"
-    description "The abstract, technology-agnostic lakehouse: its capabilities and the people who use it. Specifications specify a capability and implementations realize one (see the technology catalog view for the full mapping). The concerns that span them have their own view, concernMatrix."
+    description "The abstract, technology-agnostic lakehouse: the people who use it and its capabilities, along the chain query engine -> catalog -> table format -> file format -> object storage. Specifications and implementations are in technologyCatalog, asset kinds in assetGovernanceBreadth and assetCapabilities, and the concerns that span them in concernMatrix."
 
     include
       practitioner,
@@ -54,21 +55,6 @@ views {
     autoLayout LeftRight
   }
 
-  // --- Capability map: inside the lakehouse --------------------------------
-  view capabilityMap of lakehouse {
-    title "Reference Open Lakehouse — capabilities"
-    description "The capability chain: query engine -> catalog -> table format -> file format -> object storage. Governance, lineage, and observability are concerns that attach at planning time; concernMatrix shows them. Delta & Iceberg are peer specifications of the table-format capability."
-
-    include *
-
-    // asset kinds and concerns have their own views
-    exclude
-      element.kind == asset,
-      element.kind == concern,
-      element.tag == #generated
-    autoLayout LeftRight
-  }
-
   // --- Concerns: what governance, lineage, and observability span ---------
   view concernMatrix {
     title "Cross-cutting concerns"
@@ -88,26 +74,38 @@ views {
   // --- Governed asset kinds: catalog breadth (the hero view) ---------------
   view assetGovernanceBreadth {
     title "Governed asset kinds — catalog breadth"
-    description "Which asset kinds (UC 'securables') each catalog specification governs. Unity Catalog governs the full data & AI set (tables, volumes, functions, models, agent skills); the Iceberg REST catalog is table-centric (namespaces + tables). The breadth gap is a structural property of the model, not prose."
+    description "Which asset kinds (UC 'securables') each catalog specification governs. Unity Catalog governs the full data & AI set (tables, views, volumes, functions, models, agent skills); the Iceberg REST catalog is table-centric (namespaces, tables, views). The breadth gap is a structural property of the model, not prose."
 
     include
       ucSpec,
       icebergRestSpec,
-      lakehouse,
       element.kind == asset
+
+    // asset-to-asset edges belong to assetCapabilities
+    exclude
+      element.kind == asset -> element.kind == asset
     autoLayout LeftRight
   }
 
-  // --- Governed asset kinds: capabilities required to manage them -----------
+  // --- Governed asset kinds: what each sits on ------------------------------
   view assetCapabilities {
-    title "Governed asset kinds — capabilities required"
-    description "The capabilities each asset kind is materialized on: a table on a table format, object storage, and the catalog that coordinates its commits; a volume and a model on object storage."
+    title "Governed asset kinds — capabilities they sit on"
+    description "Every asset kind is registered in the catalog. A table is laid out in a table format, the kinds that name a storage path are located in object storage, views are defined over tables, and models and agent skills depend on model tracking and sharing."
 
     include
-      lakehouse,
-      lakehouse.*,
-      element.kind == asset
+      element.kind == asset,
+    // only the capabilities an asset kind sits on
+      lakehouse.catalog,
+      lakehouse.queryEngine,
+      lakehouse.tableFormat,
+      lakehouse.objectStorage,
+      lakehouse.credentialIssuer,
+      lakehouse.modelTracking,
+      lakehouse.sharing
 
+    // the capability chain is referenceContext's; here it only crowds the assets
+    exclude
+      * -> * where source.kind is capability and target.kind is capability
     autoLayout LeftRight
   }
 }

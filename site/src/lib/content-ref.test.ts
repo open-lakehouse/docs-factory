@@ -5,7 +5,7 @@ import { modelOf, modelRef, refFromParam, refHref, refToParam } from "./content-
 test("a model ref round-trips through the workspace tab token", () => {
   for (const target of [
     { kind: "element", id: "lakehouse.table" },
-    { kind: "view", id: "capabilityMap" },
+    { kind: "view", id: "referenceContext" },
     { kind: "estate" },
   ] as const) {
     const ref = modelRef(target);

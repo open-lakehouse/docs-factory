@@ -157,7 +157,7 @@ From a Python session with the Unity Catalog client, with no
 `samples.tpch.orders_by_status` in the catalog yet:
 
 ```bash
-uv run --with unitycatalog-client==0.7.0 python
+uv run --with unitycatalog-client==0.7.0 python -m asyncio
 ```
 
 ```python file=./snippets/register_view.py start=start:register end=end:register

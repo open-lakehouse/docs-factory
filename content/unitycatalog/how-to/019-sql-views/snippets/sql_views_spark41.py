@@ -36,10 +36,12 @@ PYSPARK_SUBMIT_ARGS="--repositories <mirror-url> pyspark-shell" first.
 # ruff: noqa: E402
 # The regions import what they use, after the hidden setup above them.
 
+import ast
 import asyncio
 import os
 import re
 import subprocess
+import textwrap
 from pathlib import Path
 
 from unitycatalog.client import ApiClient, Configuration, TablesApi
@@ -64,7 +66,21 @@ def region(script: str, name: str) -> str:
         rf"# --8<-- \[start:{name}\]\n(.*?)# --8<-- \[end:{name}\]", text, re.S
     )
     assert found, (script, name)
-    return found.group(1)
+    return textwrap.dedent(found.group(1))
+
+
+async def _register() -> None:
+    """Run the page's REST registration step as the reader enters it in
+    `python -m asyncio`, with top-level await."""
+    scope: dict = {}
+    code = compile(
+        region("register_view.py", "register"),
+        "register_view.py",
+        "exec",
+        flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT,
+    )
+    await eval(code, scope)
+    await scope["api"].close()
 
 
 async def _delete() -> None:
@@ -80,7 +96,7 @@ asyncio.run(_delete())
 
 # The page registers this view in "Register a view through the REST API" before
 # this section, so run exactly that step.
-exec(region("register_view.py", "register"), {})
+asyncio.run(_register())
 
 # The view the page's Spark 4.2 sections leave behind: created, then changed
 # by dropping and creating it again. Run those steps with Spark 4.2.

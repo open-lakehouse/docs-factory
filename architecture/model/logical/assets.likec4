@@ -27,6 +27,7 @@ model {
     table -[dependsOn]-> catalog "commit coordination"
 
     sqlView = asset "View" {
+      #public
       summary "A named query over tables, resolved and run by the query engine."
       description "
         A view is a stored query: it has a schema like a table but no data of
@@ -146,4 +147,3 @@ model {
   icebergRestSpec -[governs]-> lakehouse.table "governs"
   icebergRestSpec -[governs]-> lakehouse.sqlView "governs"
 }
-

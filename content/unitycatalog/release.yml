@@ -21,7 +21,7 @@ pins:
   # The newest delta-spark the release's Spark connector is tested with.
   delta-spark: 4.3.1
   pyspark: 4.1.0
-  # Metric views need Spark 4.2: its pages pin this line, and the
+  # SQL views and metric views need Spark 4.2: their pages pin this line, and the
   # `pyspark==4.2…` and `delta-spark_4.2_…` pins in content follow these keys.
   pyspark-4.2: 4.2.0
   delta-spark-4.2: 4.4.1

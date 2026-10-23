@@ -25,6 +25,7 @@ families:
     requires:
       client: { consumes: [icebergRestSpec] }
       catalog: { implements: [icebergRestSpec] }
+  view: { asset: lakehouse.sqlView, requires: *uc }
   metricview: { asset: lakehouse.metricView, requires: *uc }
   catalog: { asset: lakehouse.namespace, requires: *uc }
   schema: { asset: lakehouse.namespace, requires: *uc }
@@ -39,7 +40,7 @@ interfaces:
     pin: pyspark
     package: pyspark
     model: apacheSpark
-  # Metric views need Spark 4.2; the `spark` column is the default 4.1 line.
+  # SQL views and metric views need Spark 4.2; the `spark` column is the default 4.1 line.
   spark-4.2:
     label: Spark
     pin: pyspark-4.2
@@ -429,6 +430,34 @@ journeys:
     title: Sign storage requests through the catalog
     summary: Have the catalog sign each storage request instead of vending credentials.
     feature: { spec: icebergRestSpec, name: signRequest }
+  view.create:
+    family: view
+    title: Create a view
+    summary: Define a view as a query over tables, and store the definition in the catalog.
+  view.list:
+    family: view
+    title: List views
+    summary: Find a schema's views by name.
+  view.describe:
+    family: view
+    title: Inspect a view
+    summary: Read a view's columns and stored definition.
+  view.query:
+    family: view
+    title: Query a view
+    summary: Select from a view like a table; the engine expands its definition at query time.
+  view.replace:
+    family: view
+    title: Change a view's definition
+    summary: Replace a view's definition in place, keeping its name.
+  view.rename:
+    family: view
+    title: Rename a view
+    summary: Give a view a new name in its schema.
+  view.drop:
+    family: view
+    title: Drop a view
+    summary: Remove a view; its source tables stay.
   metricview.create:
     family: metricview
     title: Create a metric view
@@ -772,6 +801,17 @@ tables:
     rows:
       - function.tool
       - function.tool-call
+  views:
+    title: SQL views
+    columns: [spark-4.2, python-sdk]
+    rows:
+      - view.create
+      - view.list
+      - view.describe
+      - view.query
+      - view.replace
+      - view.rename
+      - view.drop
   metric-views:
     title: Metric views
     columns: [spark-4.2, python-sdk]

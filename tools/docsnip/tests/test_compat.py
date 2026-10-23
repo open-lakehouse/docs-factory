@@ -469,7 +469,10 @@ def test_a_journey_inherits_its_family_and_can_override_it(tmp_path) -> None:
             "{title: R, summary: S, requires: {client: {consumes: [lakehouse.catalog]}}}",
             "expected openSpecification",
         ),
-        ("{title: R, summary: S, requires: {client: {uses: [unityCatalogSpec]}}}", "unknown"),
+        (
+            "{title: R, summary: S, requires: {client: {uses: [unityCatalogSpec]}}}",
+            "unknown",
+        ),
         ("{title: R, summary: S, asset: lakehouse.nope}", "not in the estate model"),
     ],
 )
@@ -699,7 +702,9 @@ def test_an_unannotated_journey_falls_back_to_the_matrix_spec(tmp_path) -> None:
     root_matrix = root / "content/proj/compatibility.yml"
     root_matrix.write_text(root_matrix.read_text().replace(", family: table", ""))
     gaps = compat.model_gaps(root)
-    assert any("spark: proves table.read against unityCatalogSpec" in g for g in gaps), gaps
+    assert any(
+        "spark: proves table.read against unityCatalogSpec" in g for g in gaps
+    ), gaps
     assert any("2 journey(s) with no asset" in g for g in gaps), gaps
 
 

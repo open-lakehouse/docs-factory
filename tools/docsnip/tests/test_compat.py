@@ -1342,3 +1342,142 @@ def test_bad_server_facts_are_errors(
     _edit(root, f"{_CATALOG}/evidence.yml", old, new)
     errors, _ = compat.check(root)
     assert any(message in e for e in errors), errors
+
+
+# --- rollup interfaces and selected rows -----------------------------------------
+
+
+def _rolled(tmp_path: Path, claims: str) -> Path:
+    """`spark` rolls up Spark's SQL and Python interfaces."""
+    root = _repo(tmp_path, claims)
+    _edit(
+        root,
+        f"{_CATALOG}/interfaces.yml",
+        "model: apacheSpark}",
+        "model: apacheSpark, rollup: [spark-sql, spark-python]}",
+    )
+    _append(
+        root,
+        f"{_CATALOG}/interfaces.yml",
+        "spark-sql: {label: Spark · SQL, pin: pyspark, package: pyspark, model: apacheSpark}\n"
+        "spark-python: {label: Spark · Python, pin: pyspark, package: pyspark,"
+        " model: apacheSpark}\n",
+    )
+    return root
+
+
+def test_a_rollup_column_shows_its_languages_claims(tmp_path) -> None:
+    root = _rolled(
+        tmp_path,
+        _claims('claims.spark-sql = [{ journey = "table.read", region = "read" }]'),
+    )
+    compat.fix(root)
+    assert compat.check(root)[0] == []
+    assert _table(root)[2] == "| Read | [✓](../../how-to/engine/index.md#read-it) | — |"
+
+
+def test_a_rollup_shows_the_best_of_its_languages(tmp_path) -> None:
+    root = _rolled(
+        tmp_path,
+        _claims(
+            'claims.spark-sql = [{ journey = "table.read", region = "read" }]',
+            'claims.spark-python = [{ journey = "table.read", fails = true }]',
+        ),
+    )
+    # Python failing where SQL works is no disagreement for the Spark column.
+    compat.fix(root)
+    assert compat.check(root)[0] == []
+    assert _table(root)[2] == "| Read | [✓](../../how-to/engine/index.md#read-it) | — |"
+
+
+def test_a_rollup_interface_takes_no_claims(tmp_path) -> None:
+    root = _rolled(
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
+    )
+    errors, _ = compat.check(root)
+    assert any(
+        "claim the interface the page shows (spark-sql or spark-python)" in e
+        for e in errors
+    ), errors
+
+
+@pytest.mark.parametrize(
+    ("rollup", "message"),
+    [
+        ("[spark-sql, trino]", "'trino' is not an interface"),
+        ("[spark-sql, duckdb]", "'duckdb' is bound to None, not apacheSpark"),
+    ],
+)
+def test_bad_rollups_are_errors(tmp_path, rollup: str, message: str) -> None:
+    root = _rolled(tmp_path, "")
+    _edit(root, f"{_CATALOG}/interfaces.yml", "[spark-sql, spark-python]", rollup)
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors
+
+
+def test_a_table_can_select_its_rows(tmp_path) -> None:
+    root = _repo(
+        tmp_path,
+        _claims('claims.spark = [{ journey = "table.read", region = "read" }]'),
+    )
+    _append(
+        root,
+        f"{_CATALOG}/paths.yml",
+        "local:\n  roles:\n    client: { consumes: [unityCatalogSpec] }\n",
+    )
+    _append(
+        root,
+        f"{_CATALOG}/journeys/table.yml",
+        "table.local: {title: Local, summary: Locally, asset: lakehouse.table,"
+        " path: local}\n",
+    )
+    _edit(
+        root,
+        "content/proj/compatibility.yml",
+        "    rows: [table.read, table.write]\n",
+        "    rows: [table.read, table.write]\n"
+        "  by-catalog:\n"
+        "    columns: [spark]\n"
+        "    select: { asset: lakehouse.table, paths: [uc] }\n"
+        "  local:\n"
+        "    columns: [spark]\n"
+        "    select: { paths: [local] }\n",
+    )
+    data = _artifact(root)
+    tables = {t["id"]: t["rows"] for t in data["tables"]}
+    assert tables["by-catalog"] == ["table.read", "table.write"]
+    assert tables["local"] == ["table.local"]
+
+
+@pytest.mark.parametrize(
+    ("select", "message"),
+    [
+        ("{ paths: [nope] }", "'nope' is not in paths.yml"),
+        ("{ asset: lakehouse.volume }", "matches no journey"),
+        ("{ asset: lakehouse.table, owner: me }", "unknown key 'owner'"),
+    ],
+)
+def test_bad_selects_are_errors(tmp_path, select: str, message: str) -> None:
+    root = _repo(tmp_path, "")
+    _edit(
+        root,
+        "content/proj/compatibility.yml",
+        "    rows: [table.read, table.write]\n",
+        f"    rows: [table.read, table.write]\n  more:\n    columns: [spark]\n"
+        f"    select: {select}\n",
+    )
+    errors, _ = compat.check(root)
+    assert any(message in e for e in errors), errors
+
+
+def test_a_table_lists_or_selects_its_rows_not_both(tmp_path) -> None:
+    root = _repo(tmp_path, "")
+    _edit(
+        root,
+        "content/proj/compatibility.yml",
+        "    rows: [table.read, table.write]\n",
+        "    rows: [table.read, table.write]\n    select: { paths: [uc] }\n",
+    )
+    errors, _ = compat.check(root)
+    assert any("lists rows or selects them, not both" in e for e in errors), errors

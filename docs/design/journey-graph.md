@@ -1,9 +1,10 @@
 # One journey graph for the estate
 
-**Status:** P0 (#311), P1 (#312), P2 (#313), and P3 are built: the catalog in
-`architecture/journeys/`, the per-project projections, the spec obligations,
-the coverage report, and server facts (§2.1–§2.4 and §3 describe them as
-built). P4 and P5 are proposals. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md).
+**Status:** P0–P3 (#311–#314) and P4 are built: the catalog in
+`architecture/journeys/`, the per-project projections with selected rows and
+rollup columns, the spec obligations, the coverage report, and server facts
+(§2–§3 describe them as built). P4b (the format crosswalk) and P5 are
+proposals. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md).
 **Scope:** `content/*/compatibility.yml`, `content/vocab.json` `specFeatures`,
 `tools/docsnip` (`compat.py`, `scriptmeta.py`, `query.py`, `tabs.py`), the
 `compatibility.json` consumers in `site/` and `emit/`, and the review app's
@@ -150,11 +151,20 @@ are files (`table`, `table-features`, `iceberg`, `namespace`, `volume`,
 P1 merged the two journeys that are the same task on the same path:
 `catalog-managed.read` became `managed.read`, and `catalog-managed.write`
 became `managed.append`, carrying Delta's `catalogManaged` feature.
-`aliases.yml` keeps the old ids. The Delta rows that UC scripts prove "through
-Unity Catalog" (`read.version`, `dml.update`, `write.append`, …) are a
-different case: the claim proves a `uc-*` path on a `by-path` row. They move to
-the `uc-*` journeys when Delta gets its Unity Catalog table (P4), because moving
-them now would empty Delta cells that nothing else proves yet.
+`aliases.yml` keeps the old ids.
+
+P4 settled the Delta rows that UC scripts proved "through Unity Catalog". A
+commit through a catalog-managed table goes through the catalog, not the
+filesystem, so it doesn't prove the `by-path` task. The core operations moved
+to the matching `managed.*` journeys: create, CTAS, append, overwrite,
+replace-where, dynamic partitions, read, time travel, update, and delete.
+Delta's "Delta tables in Unity Catalog" table shows them. The Delta `by-path`
+cells that only UC proved fell back to Delta's own draft proofs, upstream
+docs, or unknown. Claims on the table-feature journeys stayed, because a
+feature is a format obligation whatever the path. So did claims on operations
+with no Unity Catalog journey (history, detail, restore, schema overwrite,
+column changes, properties), which keep their "through Unity Catalog" note.
+`catalog.unity` dissolved into the new table.
 
 ### 2.4 Interfaces, claims, evidence (built)
 
@@ -163,9 +173,17 @@ them now would empty Delta cells that nothing else proves yet.
 `release.yml`, so one interface shows each project's version: UC's Spark
 columns read 4.1 and Delta's read 4.2. Delta's Spark interfaces are now
 `apacheSpark` with the `deltaSpark` integration, like UC's, so Delta's engine
-report is `compat:engine:apacheSpark`. `duckdb` (UC) and `duckdb-sql` (Delta)
-are still two keys for one engine and language, and merging them waits for a
-tab-label change on UC pages.
+report is `compat:engine:apacheSpark`.
+
+UC's columns are engine-level (`spark`, `duckdb`) and Delta's are engine ·
+language (`spark-sql`, `duckdb-sql`). Since P4, an engine-level interface is a
+`rollup` of its language interfaces, and its cell is the best ready cell among
+them: SQL working beats Python failing. Scripts claim the language their page
+shows, so one claim fills both UC's Spark column and Delta's Spark · SQL
+column. A claim on a rollup is an error. Every UC `spark` and `duckdb` claim
+showed SQL, so they became `spark-sql` and `duckdb-sql`. The Spark and DuckDB
+language interfaces carry their engine's integrations, Iceberg included.
+`spark-4.2` stays its own interface: it's a version line, not a language.
 
 A claim names an interface and a journey, with no project:
 
@@ -210,7 +228,7 @@ entry, because the server serves `renameTable` and only rejects that one use.
 Binding providers from the environment registry instead of the projection, so
 a project with several servers gets a cell per server, is left open.
 
-### 2.5 Projections
+### 2.5 Projections (built)
 
 ```yaml
 # content/delta/compatibility.yml
@@ -221,17 +239,19 @@ tables:
     title: Create and write
     columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows: [create.table, write.append, …]
-  with-unity-catalog:
+  unity-catalog:
     title: Delta tables in Unity Catalog
-    columns: [spark-sql, delta-rs-python, duckdb-sql]
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     select: { asset: lakehouse.table, paths: [uc-external, uc-managed] }
 ```
 
-A `select:` row set is ordered by the catalog's file order and by path order.
-`<!-- compat:asset:<id> -->` becomes `select: { asset: <id> }` with the
-current column narrowing. `content/open-lakehouse` gets a projection without
-owning any journey. Its format crosswalk becomes a table of the obligations
-that Delta and Iceberg rows both cover.
+A table lists its `rows` or `select`s them, not both. A select matches every
+key it gives (`asset`, and `paths` as any of the listed), in catalog order: the
+area files sorted by name, then file order. `<!-- compat:asset:<id> -->` keeps
+its own rollup for now. `content/open-lakehouse` can get a projection without
+owning any journey. Its format crosswalk (P4b) needs an equivalence between
+obligations of different specs, such as Delta `deletionVectors` and Iceberg
+`deletion-vectors`, that no file records yet.
 
 ## 3. Coverage from the graph (built)
 
@@ -309,14 +329,16 @@ Each phase is its own PR, and each leaves `docsnip check` green.
 | **P1** (built) | `architecture/journeys/` with paths, journeys, interfaces, evidence, and aliases. The loader reads the global files plus the projections. Duplicates merge. Old ids resolve through aliases with a warning, then a one-shot script rewrites the claims. | The set of (interface, row key, outcome) triples equals the pre-migration set mapped through aliases. `bun test src/content-core` passes, and `just uc-docs` / `just delta-docs` render the same engine reports. |
 | **P2** (#313) | `obligations/*.yml` replaces `specFeatures`. `feature:` becomes `covers:` (a list). The coverage report. | `coverage` is in `compatibility.json`, and its numbers are in the PR description. |
 | **P3** (built) | Implementation facts and blocked cells. The six UC Iceberg REST server entries become implementation facts. | The `iceberg-catalog` table renders the same outcomes from one fact per endpoint. |
-| **P4** | `select:` rows. Delta's "with Unity Catalog" table. The open-lakehouse format crosswalk from shared `covers:`. | `catalog.unity` is gone, and the crosswalk page renders from data. |
+| **P4** (built) | `select:` rows, rollup interfaces, Delta's "Delta tables in Unity Catalog" table, the core-operation claims moved off Delta's `by-path` rows. | `catalog.unity` is gone; UC's table cells are unchanged. |
+| **P4b** | Obligation equivalences across specs, and the open-lakehouse format crosswalk rendered from them. | The crosswalk page renders from data. |
 | **P5** | Upstream conformance suites (the Iceberg REST Compatibility Kit, Delta Acceptance Testing) as evidence for obligations. | Optional. |
 
 ## 7. Open questions
 
 - **Row-key syntax.** P1 kept dotted ids with `path` as a field (§2.3).
   `table.append@uc-managed` would link a task's paths in the id, at the price
-  of renaming every id; revisit when P4 needs to group a task's paths.
+  of renaming every id. P4 grouped a task's paths by `select:` instead, so
+  the question stays open until a view needs one row per task.
 - **Narrowing format roles.** `duckdbDelta`'s title says it "reads Delta tables
   and appends to them". Evidence could mark the writer obligations it doesn't
   attempt, or the model could carry reader and writer as two edges or a tag.

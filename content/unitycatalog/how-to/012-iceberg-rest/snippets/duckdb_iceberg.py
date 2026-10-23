@@ -5,7 +5,7 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "iceberg.schema-create", region = "schema", api = "CREATE SCHEMA" },
 #   { journey = "iceberg.namespace-list", region = "schema", api = "duckdb_schemas()" },
 #   { journey = "iceberg.namespace-drop", region = "drop", api = "DROP SCHEMA" },

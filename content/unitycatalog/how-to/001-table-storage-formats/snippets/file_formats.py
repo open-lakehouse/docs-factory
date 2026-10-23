@@ -19,7 +19,7 @@
 # claims.polars = [
 #   { journey = "external.read-format", region = "polars", note = "by path from the table's location" },
 # ]
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "external.read-format", region = "duckdb", note = "by path from the table's location" },
 # ]
 # ///

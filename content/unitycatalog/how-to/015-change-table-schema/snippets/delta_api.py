@@ -5,7 +5,7 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
-# claims.spark = [
+# claims.spark-sql = [
 #   { journey = "external.alter-schema", region = "external-alter", api = "ALTER TABLE … ADD COLUMNS", note = "sync through the Delta API" },
 #   { journey = "external.set-properties", region = "external-alter", api = "SET TBLPROPERTIES, COMMENT ON TABLE", note = "sync through the Delta API" },
 # ]

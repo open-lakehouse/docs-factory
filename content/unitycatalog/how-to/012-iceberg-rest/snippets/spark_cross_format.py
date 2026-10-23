@@ -5,7 +5,7 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
-# claims.spark = [
+# claims.spark-sql = [
 #   { journey = "iceberg.join-delta", region = "join", note = "UC connector and Iceberg REST catalogs in one session" },
 # ]
 # ///

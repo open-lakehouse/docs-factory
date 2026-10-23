@@ -62,7 +62,7 @@ ARTIFACT_VERSION = 3
 OUTCOMES = ("works", "fails", "missing")
 
 _MATRIX_KEYS = {"spec", "interfaces", "providers", "tables"}
-_INTERFACE_KEYS = {"label", "pin", "package", "model", "via", "integrations"}
+_INTERFACE_KEYS = {"label", "pin", "package", "model", "via", "integrations", "rollup"}
 _JOURNEY_KEYS = {"title", "summary", "request", "asset", "path", "roles", "covers"}
 _OBLIGATIONS_KEYS = {"spec", "source", "roles", "obligations"}
 _OBLIGATION_KEYS = {"roles", "since"}
@@ -75,7 +75,8 @@ _REQUIRE_EDGES = {
     "realizes": {"capability", "concern"},
 }
 _ROLE_RE = re.compile(r"^[a-z][a-z_]*$")
-_TABLE_KEYS = {"title", "columns", "rows", "documented"}
+_TABLE_KEYS = {"title", "columns", "rows", "select", "documented"}
+_SELECT_KEYS = {"asset", "paths"}
 _EVIDENCE_KEYS = {
     "interfaces",
     "journeys",
@@ -116,6 +117,9 @@ class Interface:
     # extension, a format library). A spec edge the model has itself wins, so an
     # integration is credited only with what the engine lacks.
     integrations: tuple[str, ...] = ()
+    # An engine-level column: the language interfaces whose claims it shows,
+    # best cell first. Scripts claim the language they show, never this.
+    rollup: tuple[str, ...] = ()
 
     @property
     def speakers(self) -> tuple[str, ...]:
@@ -440,7 +444,24 @@ def _load_interfaces(
             model=entry.get("model"),
             via=entry.get("via"),
             integrations=tuple(str(c) for c in integrations),
+            rollup=tuple(str(m) for m in entry.get("rollup") or ()),
         )
+    for iface in interfaces.values():
+        for member in iface.rollup:
+            other = interfaces.get(member)
+            if other is None:
+                errors.append(
+                    f"{where}: {iface.key}.rollup: '{member}' is not an interface"
+                )
+            elif other.rollup:
+                errors.append(
+                    f"{where}: {iface.key}.rollup: '{member}' is a rollup itself"
+                )
+            elif other.model != iface.model:
+                errors.append(
+                    f"{where}: {iface.key}.rollup: '{member}' is bound to "
+                    f"{other.model}, not {iface.model}"
+                )
     return interfaces
 
 
@@ -809,6 +830,10 @@ def _load_matrix(
             if col not in interfaces:
                 errors.append(f"{where}: {at}: column '{col}' is not an interface")
         rows = _strs(entry.get("rows")) or ()
+        if "select" in entry:
+            if rows:
+                errors.append(f"{where}: {at} lists rows or selects them, not both")
+            rows = _selected(entry["select"], f"{where}: {at}.select", catalog, errors)
         for row in rows:
             if row in catalog.journeys:
                 journeys.setdefault(row, catalog.journeys[row])
@@ -854,6 +879,33 @@ def _load_matrix(
         pins=pins,
         providers=providers,
     )
+
+
+def _selected(
+    value: object, where: str, catalog: Catalog, errors: list[str]
+) -> tuple[str, ...]:
+    """The catalog's journeys a ``select:`` matches, in catalog order: every
+    key given must match (``asset`` a model id, ``paths`` any of the listed)."""
+    if not isinstance(value, dict) or not value:
+        errors.append(f"{where} maps asset and paths to what rows must match")
+        return ()
+    for extra in sorted(set(value) - _SELECT_KEYS):
+        errors.append(f"{where}: unknown key '{extra}'")
+    asset = value.get("asset")
+    paths = _strs(value.get("paths")) if "paths" in value else None
+    if "paths" in value and not paths:
+        errors.append(f"{where}.paths must be a list of paths.yml names")
+    for path in paths or ():
+        if path not in catalog.paths:
+            errors.append(f"{where}.paths: '{path}' is not in paths.yml")
+    rows = tuple(
+        j.id
+        for j in catalog.journeys.values()
+        if (asset is None or j.asset == asset) and (paths is None or j.path in paths)
+    )
+    if not rows:
+        errors.append(f"{where} matches no journey")
+    return rows
 
 
 def _reaches(model: Model, iface: Interface) -> set[str]:
@@ -1028,8 +1080,10 @@ def _resolve(
     repo_root: Path,
     errors: list[str],
     warnings: list[str],
-) -> tuple[list[str], Proof] | None:
-    """The claim's proof and the projects whose matrices show its cell."""
+) -> tuple[list[tuple[str, str]], Proof] | None:
+    """The claim's proof, and each (project, interface) whose cell it fills:
+    the claimed interface and every rollup of it, where a project lists that
+    interface and shows the journey."""
     content_root = repo_root / "content"
     rel = meta.path.resolve().relative_to(repo_root.resolve()).as_posix()
     where = f"{rel}: claims.{claim.interface}: {claim.journey}"
@@ -1044,16 +1098,22 @@ def _resolve(
     if iface not in catalog.interfaces:
         errors.append(f"{where}: '{iface}' is not an interface in {CATALOG}")
         return None
+    if catalog.interfaces[iface].rollup:
+        members = " or ".join(catalog.interfaces[iface].rollup)
+        errors.append(f"{where}: claim the interface the page shows ({members})")
+        return None
     if journey in catalog.aliases:
         journey = catalog.aliases[journey]
         warnings.append(f"{where}: renamed to '{journey}'")
     if journey not in catalog.journeys:
         errors.append(f"{where}: '{journey}' is not a journey in {CATALOG}")
         return None
+    keys = [iface] + [k for k, i in catalog.interfaces.items() if iface in i.rollup]
     projects = [
-        project
+        (project, key)
         for project, matrix in sorted(matrices.items())
-        if iface in matrix.interfaces and journey in matrix.journeys
+        for key in keys
+        if key in matrix.interfaces and journey in matrix.journeys
     ]
     if not projects:
         errors.append(
@@ -1183,7 +1243,7 @@ def resolve(repo_root: Path) -> Result:
                     f"{proof.script}: {iface} {proof.claim.journey} "
                     f"renders once {proof.page.parent.name} is ready"
                 )
-            for project in projects:
+            for project, iface in projects:
                 if proof.version:
                     seen = versions.setdefault((proof.project, project, iface), {})
                     seen.setdefault(proof.version, [])
@@ -1211,9 +1271,13 @@ def resolve(repo_root: Path) -> Result:
 
     for key, cell in proofs.items():
         # The matrix's own project first, so its proof is the one a cell shows.
-        cell.sort(key=lambda p: (p.project != key[0], p.script))
+        # A rollup shows its best member: the SQL working beats Python failing.
+        rollup = bool(catalog.interfaces[key[1]].rollup)
+        cell.sort(
+            key=lambda p: (rollup and not p.claim.works, p.project != key[0], p.script)
+        )
         ready = [p for p in cell if p.ready]
-        if len({p.claim.works for p in ready}) > 1:
+        if not rollup and len({p.claim.works for p in ready}) > 1:
             project, iface, journey = key
             errors.append(
                 f"{project} {iface} {journey}: scripts disagree whether it works "
@@ -2211,6 +2275,7 @@ def artifact(result: Result, matrix: Matrix, content_root: Path) -> dict[str, ob
                 "model": i.model,
                 "via": i.via,
                 "integrations": list(i.integrations),
+                "rollup": list(i.rollup),
                 "viaVersion": _tested_version(result, matrix, i.key, via=True)
                 if i.via
                 else None,

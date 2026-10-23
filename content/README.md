@@ -475,7 +475,7 @@ is a journey, and the script that runs it claims the cell. A script claims cells
 `[tool.docs-factory]` table, one array per interface:
 
 ```python
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "table.list", region = "list" },        # works, as region "list" shows
 #   { journey = "managed.create", fails = true, anchor = "create-change-and-drop-tables" },
 # ]
@@ -491,9 +491,16 @@ is a journey, and the script that runs it claims the cell. A script claims cells
   the script's code). Assert the failure, so CI flags the cell when the engine
   adds support.
 - Name the interface the reader picks, never one inferred from the language or
-  the dependencies. A claim counts in every project that lists the interface
+  the dependencies: the language the page shows (`spark-sql`, `duckdb-sql`).
+  An engine-level column such as Unity Catalog's `spark` or `duckdb` is a
+  `rollup` of those, showing the best of them, and takes no claims of its own.
+  A claim counts in every project that lists the interface (or a rollup of it)
   and shows the journey on a table, and its package pin is checked against the
   claiming project's scripts.
+- Claim the journey on the path the script takes. A script that writes through
+  Unity Catalog claims `managed.append`, not Delta's `write.append`: a commit
+  through the catalog doesn't prove one by path. Table-feature journeys are
+  the exception, because a feature is a format obligation whatever the path.
 - A claim counts once its page is `ready`. Cells nothing proves come from
   `architecture/journeys/evidence.yml`, whose `source` names a page as
   `<project>:<bucket>/<slug>[#anchor]` or is a URL: `outcome: fails` or
@@ -572,8 +579,10 @@ failures: the test evidence stands, and no graph path alone establishes
 support. Conversely, an `operatesOn` edge with no ready proof is reported as
 modeled, unverified breadth.
 
-A page embeds a table between `<!-- compat:<table> -->` and
-`<!-- /compat:<table> -->`; `<!-- compat:asset:<model id> -->` embeds every
+A table lists its `rows`, or `select`s them from the catalog by `asset` and
+`paths` (Delta's `unity-catalog` table is every table journey on
+`uc-external` or `uc-managed`). A page embeds a table between
+`<!-- compat:<table> -->` and `<!-- /compat:<table> -->`; `<!-- compat:asset:<model id> -->` embeds every
 journey on that asset instead, on the page that `explains:` it, dropping
 columns that say nothing there. `<!-- compat:interfaces -->` renders a summary
 of each interface's model binding, contracts, modeled asset breadth, and ready

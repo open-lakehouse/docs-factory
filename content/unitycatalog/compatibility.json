@@ -16,6 +16,10 @@
         "deltaSpark",
         "icebergSparkRuntime"
       ],
+      "rollup": [
+        "spark-sql",
+        "spark-python"
+      ],
       "viaVersion": null
     },
     {
@@ -29,6 +33,7 @@
         "unityCatalogSpark",
         "deltaSpark"
       ],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -40,8 +45,10 @@
       "via": null,
       "integrations": [
         "unityCatalogSpark",
-        "deltaSpark"
+        "deltaSpark",
+        "icebergSparkRuntime"
       ],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -53,8 +60,10 @@
       "via": null,
       "integrations": [
         "unityCatalogSpark",
-        "deltaSpark"
+        "deltaSpark",
+        "icebergSparkRuntime"
       ],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -65,6 +74,7 @@
       "model": "deltaRs",
       "via": null,
       "integrations": [],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -79,6 +89,10 @@
         "duckdbDelta",
         "duckdbIceberg"
       ],
+      "rollup": [
+        "duckdb-sql",
+        "duckdb-python"
+      ],
       "viaVersion": null
     },
     {
@@ -92,6 +106,7 @@
         "deltaRs",
         "pyIceberg"
       ],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -105,6 +120,7 @@
         "deltaRs",
         "pyIceberg"
       ],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -115,6 +131,7 @@
       "model": "deltaRs",
       "via": "deltalake",
       "integrations": [],
+      "rollup": [],
       "viaVersion": "1.6.6"
     },
     {
@@ -125,6 +142,7 @@
       "model": "pyIceberg",
       "via": null,
       "integrations": [],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -135,6 +153,7 @@
       "model": "unityCatalogCli",
       "via": null,
       "integrations": [],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -145,6 +164,7 @@
       "model": "unityCatalogPythonSdk",
       "via": null,
       "integrations": [],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -155,6 +175,7 @@
       "model": "unityCatalogAi",
       "via": null,
       "integrations": [],
+      "rollup": [],
       "viaVersion": null
     },
     {
@@ -165,6 +186,7 @@
       "model": "unityCatalogLangChain",
       "via": null,
       "integrations": [],
+      "rollup": [],
       "viaVersion": null
     }
   ],
@@ -1620,6 +1642,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/007-configure-spark/snippets/spark_session.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "configure-spark"
+              },
+              "anchor": "check-the-connection",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SHOW TABLES",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "duckdb": {
           "status": "tested",
           "draft": false,
@@ -2088,7 +2132,7 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "CREATE TABLE",
               "note": null
             },
             {
@@ -2103,7 +2147,44 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "CREATE TABLE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "create-a-managed-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "create-the-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE",
               "note": null
             }
           ],
@@ -2176,6 +2257,28 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "create-a-table-from-a-query",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE … AS SELECT",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -2288,7 +2391,7 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "spark.table()",
               "note": null
             }
           ],
@@ -2298,6 +2401,21 @@
           "status": "tested",
           "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "read-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
             {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
@@ -2310,8 +2428,8 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
-              "note": "through Unity Catalog"
+              "api": "spark.table()",
+              "note": null
             }
           ],
           "evidence": []
@@ -2495,7 +2613,7 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "INSERT INTO",
               "note": null
             },
             {
@@ -2510,7 +2628,7 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "INSERT INTO",
               "note": null
             }
           ],
@@ -2520,6 +2638,21 @@
           "status": "tested",
           "draft": false,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT INTO",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
               "page": {
@@ -2532,8 +2665,8 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
-              "note": "through Unity Catalog"
+              "api": "INSERT INTO",
+              "note": null
             }
           ],
           "evidence": []
@@ -2575,7 +2708,7 @@
               "works": true,
               "fails": null,
               "version": "1.5.6",
-              "api": null,
+              "api": "INSERT INTO",
               "note": null
             },
             {
@@ -2707,7 +2840,7 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "UPDATE",
               "note": null
             },
             {
@@ -2722,7 +2855,44 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "UPDATE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "UPDATE",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "change-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "UPDATE",
               "note": null
             }
           ],
@@ -2795,7 +2965,7 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "DELETE FROM",
               "note": null
             },
             {
@@ -2810,7 +2980,44 @@
               "works": true,
               "fails": null,
               "version": "4.1.0",
-              "api": null,
+              "api": "DELETE FROM",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "write-to-the-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DELETE FROM",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "change-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DELETE FROM",
               "note": null
             }
           ],
@@ -2885,6 +3092,36 @@
               "version": "4.1.0",
               "api": "ALTER TABLE … ADD COLUMNS",
               "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "add-columns-and-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "add-columns-and-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": null
             }
           ],
           "evidence": []
@@ -2893,6 +3130,21 @@
           "status": "tested",
           "draft": true,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "add-columns-and-comments",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
               "page": {
@@ -3129,6 +3381,36 @@
               "version": "4.1.0",
               "api": "SET TBLPROPERTIES",
               "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "set-and-remove-table-properties",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SET TBLPROPERTIES",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "set-and-remove-table-properties",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "SET TBLPROPERTIES",
+              "note": null
             }
           ],
           "evidence": []
@@ -3137,6 +3419,21 @@
           "status": "tested",
           "draft": true,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "set-and-remove-table-properties",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SET TBLPROPERTIES",
+              "note": null
+            },
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
               "page": {
@@ -3351,6 +3648,36 @@
               "version": "4.1.0",
               "api": null,
               "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "rename-a-table-or-column",
+              "ready": false,
+              "works": false,
+              "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "rename-a-table-or-column",
+              "ready": false,
+              "works": false,
+              "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
+              "version": null,
+              "api": null,
+              "note": null
             }
           ],
           "evidence": []
@@ -3359,6 +3686,21 @@
           "status": "fails",
           "draft": true,
           "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "rename-a-table-or-column",
+              "ready": false,
+              "works": false,
+              "fails": "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
             {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
               "page": {
@@ -3453,6 +3795,36 @@
           "draft": true,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": "sync through the Delta API"
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": "sync through the Delta API"
+            },
+            {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
               "page": {
                 "project": "unitycatalog",
@@ -3486,6 +3858,21 @@
               "works": true,
               "fails": null,
               "version": null,
+              "api": "ALTER TABLE … ADD COLUMNS",
+              "note": "sync through the Delta API"
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
               "api": "ALTER TABLE … ADD COLUMNS",
               "note": "sync through the Delta API"
             }
@@ -3590,6 +3977,36 @@
           "draft": true,
           "proofs": [
             {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/change_schema_sql_cli.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": null,
+              "api": "SET TBLPROPERTIES, COMMENT ON TABLE",
+              "note": "sync through the Delta API"
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SET TBLPROPERTIES, COMMENT ON TABLE",
+              "note": "sync through the Delta API"
+            },
+            {
               "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
               "page": {
                 "project": "unitycatalog",
@@ -3623,6 +4040,21 @@
               "works": true,
               "fails": null,
               "version": null,
+              "api": "SET TBLPROPERTIES, COMMENT ON TABLE",
+              "note": "sync through the Delta API"
+            },
+            {
+              "script": "content/unitycatalog/how-to/015-change-table-schema/snippets/delta_api.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "change-table-schema"
+              },
+              "anchor": "change-the-delta-log",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
               "api": "SET TBLPROPERTIES, COMMENT ON TABLE",
               "note": "sync through the Delta API"
             }
@@ -3745,6 +4177,28 @@
             }
           ],
           "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "replace-a-tables-definition-and-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE OR REPLACE TABLE … AS SELECT",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -3776,6 +4230,28 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "overwrite-all-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT OVERWRITE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -3847,6 +4323,28 @@
             }
           ],
           "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "replace-the-rows-that-match-a-condition",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT INTO … REPLACE WHERE",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -3898,6 +4396,28 @@
             }
           ],
           "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/016-replace-and-overwrite-tables/snippets/replace_overwrite.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "replace-and-overwrite-tables"
+              },
+              "anchor": "overwrite-the-partitions-the-new-rows-write-to",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "partitionOverwriteMode=dynamic",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -3929,6 +4449,43 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "drop-a-managed-table",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "clean-up",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -4052,6 +4609,43 @@
             }
           ],
           "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "read-an-earlier-version",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "VERSION AS OF",
+              "note": null
+            },
+            {
+              "script": "content/unitycatalog/tutorials/007-managed-delta-table/snippets/managed_table.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "tutorials",
+                "slug": "managed-delta-table"
+              },
+              "anchor": "read-an-earlier-version",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "VERSION AS OF",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -4079,6 +4673,28 @@
       },
       "cells": {
         "spark": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/014-managed-delta-tables/snippets/managed_tables.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "managed-delta-tables"
+              },
+              "anchor": "dont-write-to-the-tables-path",
+              "ready": false,
+              "works": false,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "fails",
           "draft": true,
           "proofs": [
@@ -4287,6 +4903,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SHOW NAMESPACES",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "duckdb": {
           "status": "tested",
           "draft": false,
@@ -4366,6 +5004,28 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-schema",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE NAMESPACE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -4499,6 +5159,28 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DROP NAMESPACE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -4659,6 +5341,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "create-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "CREATE TABLE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "duckdb": {
           "status": "tested",
           "draft": false,
@@ -4741,6 +5445,28 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "INSERT INTO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -4901,6 +5627,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "write-and-read-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "duckdb": {
           "status": "tested",
           "draft": false,
@@ -4983,6 +5731,28 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "UPDATE, MERGE INTO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -5107,6 +5877,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DELETE FROM",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "duckdb": {
           "status": "tested",
           "draft": false,
@@ -5209,6 +6001,28 @@
             }
           ],
           "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "update-and-delete-rows",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "MERGE INTO",
+              "note": null
+            }
+          ],
+          "evidence": []
         }
       }
     },
@@ -5248,6 +6062,28 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "ALTER TABLE … RENAME TO",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -5514,6 +6350,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_iceberg.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "rename-and-drop-a-table",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "DROP TABLE",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "duckdb": {
           "status": "tested",
           "draft": false,
@@ -5589,6 +6447,28 @@
       },
       "cells": {
         "spark": {
+          "status": "tested",
+          "draft": false,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/012-iceberg-rest/snippets/spark_cross_format.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "iceberg-rest"
+              },
+              "anchor": "join-delta-and-iceberg-tables-in-spark",
+              "ready": true,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": null,
+              "note": "UC connector and Iceberg REST catalogs in one session"
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
           "status": "tested",
           "draft": false,
           "proofs": [
@@ -6667,6 +7547,48 @@
             }
           ]
         },
+        "spark-sql": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `registerTable` endpoint.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "spark-python": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `registerTable` endpoint.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
         "duckdb": {
           "status": "missing",
           "draft": false,
@@ -6789,6 +7711,48 @@
       },
       "cells": {
         "spark": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `commitTransaction` endpoint.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "spark-sql": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `commitTransaction` endpoint.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "spark-python": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -6956,6 +7920,48 @@
             }
           ]
         },
+        "spark-sql": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "spark-python": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "`loadView` always answers 404 so clients fall back to tables, and no other view endpoint exists.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
         "duckdb": {
           "status": "missing",
           "draft": false,
@@ -7098,6 +8104,48 @@
             }
           ]
         },
+        "spark-sql": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "spark-python": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no scan-planning endpoints (`planTableScan`, `fetchScanTasks`).",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
         "duckdb": {
           "status": "missing",
           "draft": false,
@@ -7220,6 +8268,48 @@
       },
       "cells": {
         "spark": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "spark-sql": {
+          "status": "missing",
+          "draft": false,
+          "proofs": [],
+          "evidence": [
+            {
+              "outcome": "missing",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "reference",
+                "slug": "features-and-limitations"
+              },
+              "why": "The server has no `signRequest` endpoint; it vends credentials instead.",
+              "source": "unitycatalog:reference/features-and-limitations#not-in-unity-catalog-oss",
+              "api": null,
+              "verified": null,
+              "note": null,
+              "implementation": "unityCatalogServer"
+            }
+          ]
+        },
+        "spark-python": {
           "status": "missing",
           "draft": false,
           "proofs": [],
@@ -10141,6 +11231,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": false,
+              "fails": "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views.",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "python-sdk": {
           "status": "tested",
           "draft": true,
@@ -10226,6 +11338,28 @@
               "fails": null,
               "version": "4.2.0",
               "api": "SHOW VIEWS",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SHOW TABLES",
               "note": null
             }
           ],
@@ -10389,6 +11523,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "tested",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": true,
+              "fails": null,
+              "version": "4.1.0",
+              "api": "SELECT",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "python-sdk": {
           "status": "missing",
           "draft": false,
@@ -10472,6 +11628,28 @@
               "works": false,
               "fails": "Replacing a view is not supported yet",
               "version": "4.2.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": false,
+              "fails": "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views.",
+              "version": "4.1.0",
               "api": null,
               "note": null
             }
@@ -10567,6 +11745,28 @@
           ],
           "evidence": []
         },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": false,
+              "fails": "Cannot rename a table with ALTER VIEW. Please use ALTER TABLE instead.",
+              "version": "4.1.0",
+              "api": null,
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
         "python-sdk": {
           "status": "missing",
           "draft": false,
@@ -10651,6 +11851,28 @@
               "fails": null,
               "version": "4.2.0",
               "api": "DROP VIEW",
+              "note": null
+            }
+          ],
+          "evidence": []
+        },
+        "spark-sql": {
+          "status": "fails",
+          "draft": true,
+          "proofs": [
+            {
+              "script": "content/unitycatalog/how-to/019-sql-views/snippets/sql_views_spark41.py",
+              "page": {
+                "project": "unitycatalog",
+                "bucket": "how-to",
+                "slug": "sql-views"
+              },
+              "anchor": "read-views-from-spark-41",
+              "ready": false,
+              "works": false,
+              "fails": "[UNSUPPORTED_FEATURE.CATALOG_OPERATION] The feature is not supported: Catalog `samples` does not support views.",
+              "version": "4.1.0",
+              "api": null,
               "note": null
             }
           ],
@@ -11233,7 +12455,8 @@
       "kind": "operatesOn",
       "target": "lakehouse.namespace",
       "interfaces": [
-        "spark"
+        "spark",
+        "spark-sql"
       ],
       "journeys": [
         "iceberg.namespace-drop",
@@ -11480,7 +12703,8 @@
       "kind": "consumes",
       "target": "icebergRestSpec",
       "interfaces": [
-        "spark"
+        "spark",
+        "spark-sql"
       ],
       "journeys": [
         "iceberg.append",
@@ -11502,7 +12726,8 @@
       "kind": "implements",
       "target": "icebergSpec",
       "interfaces": [
-        "spark"
+        "spark",
+        "spark-sql"
       ],
       "journeys": [
         "iceberg.append",

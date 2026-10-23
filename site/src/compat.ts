@@ -109,6 +109,8 @@ export interface CompatInterface {
   version: string | null;
   package: string | null;
   model: string | null;
+  /** An engine-level column's language interfaces, whose best claim it shows. */
+  rollup?: string[];
 }
 
 export interface CompatTable {

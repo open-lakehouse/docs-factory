@@ -18,22 +18,16 @@ interface ViewEntry {
   title: string;
 }
 
-/** The model's views in four groups, the way the model files are organized. */
+/** The model's views in three groups, the way the model files are organized. */
 function viewGroups(): { label: string; views: ViewEntry[] }[] {
   const groups = new Map<string, ViewEntry[]>([
     ["Landscape", []],
     ["Flows", []],
     ["Deployment", []],
-    ["Explain", []],
   ]);
   for (const v of likec4model.views()) {
-    const label = v.id.startsWith("explain_")
-      ? "Explain"
-      : v._type === "dynamic"
-        ? "Flows"
-        : v._type === "deployment"
-          ? "Deployment"
-          : "Landscape";
+    const label =
+      v._type === "dynamic" ? "Flows" : v._type === "deployment" ? "Deployment" : "Landscape";
     groups.get(label)?.push({ id: v.id, title: v.titleOrId });
   }
   return [...groups].map(([label, views]) => ({ label, views }));

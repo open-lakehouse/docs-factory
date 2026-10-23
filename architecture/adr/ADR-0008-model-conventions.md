@@ -105,6 +105,10 @@ facets, its scope is the union of its facets' edges.
 software, never of a capability. The capability is reached through the
 implementation's `realizes`.
 
+**Dynamic views put explanation first.** A sequence view exists to explain a
+mechanism, such as credential vending, so it may mix capabilities and
+implementations when that explains the mechanism better than one layer would.
+
 **Titles add information or are omitted.** A title that restates the kind is
 dropped. Otherwise it is a short lowercase verb phrase that completes "source …
 target" (`operatesOn "creates and lists"`).

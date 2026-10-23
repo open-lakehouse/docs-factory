@@ -9,9 +9,9 @@ deployment {
   environment ucHosted "Fully hosted Unity Catalog" {
 
     workstation = environment "Your machine" {
+      // Many implementations, so an instance of none of them.
       clients = service "Clients" {
         description "Engines, SDKs, and the CLI. They reach the catalog over its REST API and read and write Amazon S3 with the credentials it vends."
-        instanceOf lakehouse.queryEngine
       }
     }
 
@@ -28,13 +28,13 @@ deployment {
 
       storage = datastore "Amazon S3" {
         description "Amazon S3 buckets with an IAM role the server assumes to vend credentials: the tables' and volumes' files."
-        instanceOf lakehouse.objectStorage
+        instanceOf amazonS3
       }
     }
 
-    ucHosted.workstation.clients -> ucHosted.cloud.unityCatalog "REST API over HTTPS"
-    ucHosted.workstation.clients -> ucHosted.cloud.storage "reads and writes files with vended credentials"
-    ucHosted.cloud.unityCatalog -[dependsOn]-> ucHosted.cloud.metastore "PostgreSQL"
-    ucHosted.cloud.unityCatalog -[consumes]-> ucHosted.cloud.storage "S3"
+    ucHosted.workstation.clients -[uses]-> ucHosted.cloud.unityCatalog "REST API over HTTPS"
+    ucHosted.workstation.clients -[uses]-> ucHosted.cloud.storage "reads and writes files with vended credentials"
+    ucHosted.cloud.unityCatalog -[uses]-> ucHosted.cloud.metastore "PostgreSQL"
+    ucHosted.cloud.unityCatalog -[uses]-> ucHosted.cloud.storage "S3"
   }
 }

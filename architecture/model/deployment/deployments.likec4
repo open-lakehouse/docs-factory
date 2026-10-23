@@ -31,15 +31,16 @@ deployment {
       instanceOf headwaters
     }
 
-    // Object storage + relational store backing the stack.
+    // Object storage + relational store backing the stack. Which S3-compatible
+    // store it runs isn't recorded, so objstore is an instance of nothing.
     objstore = datastore "Object storage" {
       description "S3-compatible object storage where table files are written."
-
-      instanceOf lakehouse.objectStorage
     }
 
     postgres = datastore "Postgres" {
       description "Relational store backing the catalog and lineage services."
+
+      instanceOf postgresql
     }
   }
 }

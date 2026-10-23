@@ -8457,7 +8457,7 @@
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "uses"
         },
         {
           "id": "1j4qvl5",
@@ -8471,7 +8471,7 @@
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "consumes"
+          "kind": "uses"
         },
         {
           "id": "10lijqo",
@@ -8484,7 +8484,8 @@
           ],
           "color": "gray",
           "line": "dashed",
-          "head": "normal"
+          "head": "normal",
+          "kind": "uses"
         },
         {
           "id": "ns7id",
@@ -8497,7 +8498,8 @@
           ],
           "color": "gray",
           "line": "dashed",
-          "head": "normal"
+          "head": "normal",
+          "kind": "uses"
         }
       ],
       "nodes": [
@@ -8519,14 +8521,12 @@
           "notation": "Deployment topology",
           "color": "primary",
           "shape": "rectangle",
-          "modelRef": "lakehouse.queryEngine",
           "tags": [],
           "style": {
             "opacity": 15,
             "size": "md"
           },
-          "depth": 1,
-          "navigateTo": "explain_queryEngine"
+          "depth": 1
         },
         {
           "id": "ucHosted.workstation.clients",
@@ -8543,19 +8543,14 @@
           "kind": "service",
           "color": "primary",
           "shape": "rectangle",
-          "modelRef": "lakehouse.queryEngine",
           "description": {
             "txt": "Engines, SDKs, and the CLI. They reach the catalog over its REST API and read and write Amazon S3 with the credentials it vends."
           },
-          "tags": [
-            "public"
-          ],
+          "tags": [],
           "style": {
             "opacity": 15,
             "size": "md"
-          },
-          "technology": null,
-          "navigateTo": "explain_queryEngine"
+          }
         },
         {
           "id": "ucHosted.cloud",
@@ -8672,19 +8667,23 @@
           "kind": "datastore",
           "color": "muted",
           "shape": "storage",
-          "modelRef": "lakehouse.objectStorage",
+          "modelRef": "amazonS3",
           "description": {
             "txt": "Amazon S3 buckets with an IAM role the server assumes to vend credentials: the tables' and volumes' files."
           },
           "tags": [
-            "public"
+            "infra"
           ],
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "technology": null,
-          "navigateTo": "explain_objectStorage"
+          "links": [
+            {
+              "url": "https://aws.amazon.com/s3/"
+            }
+          ]
         }
       ],
       "notation": {
@@ -29753,11 +29752,6 @@
         "title": "Amazon S3",
         "id": "ucHosted.cloud.storage"
       },
-      "ucHosted.workstation.clients.queryEngine": {
-        "id": "ucHosted.workstation.clients.queryEngine",
-        "element": "lakehouse.queryEngine",
-        "style": {}
-      },
       "ucHosted.cloud.unityCatalog.unityCatalogOSS": {
         "id": "ucHosted.cloud.unityCatalog.unityCatalogOSS",
         "element": "unityCatalogOSS",
@@ -29768,9 +29762,9 @@
         "element": "postgresql",
         "style": {}
       },
-      "ucHosted.cloud.storage.objectStorage": {
-        "id": "ucHosted.cloud.storage.objectStorage",
-        "element": "lakehouse.objectStorage",
+      "ucHosted.cloud.storage.amazonS3": {
+        "id": "ucHosted.cloud.storage.amazonS3",
+        "element": "amazonS3",
         "style": {}
       },
       "trustedCompute": {
@@ -29870,9 +29864,9 @@
         "element": "headwaters",
         "style": {}
       },
-      "trustedCompute.objstore.objectStorage": {
-        "id": "trustedCompute.objstore.objectStorage",
-        "element": "lakehouse.objectStorage",
+      "trustedCompute.postgres.postgresql": {
+        "id": "trustedCompute.postgres.postgresql",
+        "element": "postgresql",
         "style": {}
       },
       "ucAws": {
@@ -30163,6 +30157,7 @@
         "target": {
           "deployment": "ucHosted.cloud.unityCatalog"
         },
+        "kind": "uses",
         "id": "1hb1qtt"
       },
       "8dm745": {
@@ -30173,10 +30168,10 @@
         "target": {
           "deployment": "ucHosted.cloud.storage"
         },
+        "kind": "uses",
         "id": "8dm745"
       },
       "37ktdh": {
-        "line": "dashed",
         "title": "PostgreSQL",
         "source": {
           "deployment": "ucHosted.cloud.unityCatalog"
@@ -30184,11 +30179,10 @@
         "target": {
           "deployment": "ucHosted.cloud.metastore"
         },
-        "kind": "dependsOn",
+        "kind": "uses",
         "id": "37ktdh"
       },
       "d74xtb": {
-        "line": "dashed",
         "title": "S3",
         "source": {
           "deployment": "ucHosted.cloud.unityCatalog"
@@ -30196,7 +30190,7 @@
         "target": {
           "deployment": "ucHosted.cloud.storage"
         },
-        "kind": "consumes",
+        "kind": "uses",
         "id": "d74xtb"
       },
       "1ncbx8t": {

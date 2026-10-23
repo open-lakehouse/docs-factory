@@ -37,6 +37,7 @@ from . import (
     diagrams,
     envgen,
     environments,
+    model_rules,
     prose,
     published,
     query,
@@ -157,6 +158,7 @@ def cmd_validate(p) -> int:
             )
             print("\n".join(f"  - {u}" for u in uncovered), file=sys.stderr)
 
+    errors.extend(model_rules.check(p["arch_model"]))
     joined = trestle.check(p["root"])
     errors.extend(joined.errors)
     errors.extend(envgen.check(p["root"]))

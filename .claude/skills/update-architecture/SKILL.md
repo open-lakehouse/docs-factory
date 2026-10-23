@@ -154,7 +154,12 @@ After approval:
      (e.g. `lakehouse.governance`).
    - Deployment relationships connect deployment nodes/instances — you can't use a
      logical actor (a `person`) as an endpoint there.
-3. Surface the final diff (sources **and** regenerated `dist/`). Remind the human
+3. Run `uv run docsnip check`: it fails on any ADR-0008 rule the edit breaks
+   (wrong endpoint kinds, a missing `realizes`, a title that restates its kind,
+   an implementation or spec in no `tech*` area view). Add a new
+   implementation or spec to the right `tech*` view in
+   `views/logical-views.likec4`.
+4. Surface the final diff (sources **and** regenerated `dist/`). Remind the human
    to commit them together.
 
 ## Validation quick-reference

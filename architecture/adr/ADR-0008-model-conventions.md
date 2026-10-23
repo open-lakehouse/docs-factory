@@ -131,7 +131,11 @@ agent-tool bridges), or `#infra`.
   parsing titles.
 - "What realizes X?" and "what does this deployment run?" are one hop
   everywhere.
-- The rules are mechanical, so `docsnip check` can hold the model to them.
+- The rules are mechanical, so `docsnip check` holds the model to them
+  (`tools/docsnip/src/docsnip/model_rules.py`): edge endpoints per kind, the
+  realize rule, facet-only concern scope, `instanceOf` to implementations,
+  titles that restate their kind, the `Spec` id suffix, no unused declared
+  vocabulary, and every implementation and specification in a `tech*` view.
 
 ### Negative / Trade-offs
 - More relationship kinds for authors and consumers to know; a coarse

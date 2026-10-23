@@ -131,7 +131,7 @@ just uc-docs                           # emit UC docs (with drafts), build + pre
 just delta-docs                        # the same for the Delta Lake docs site, at :4323
 uv run pytest                          # docsnip tests + colocated tutorial scripts
 cd site && bun test src/content-core   # content-core parsing-contract drift tests
-uv run docsnip check                   # frontmatter + snippets + pins + compat tables + prose
+uv run docsnip check                   # frontmatter + model rules + snippets + pins + compat tables + prose
 uv run docsnip prose --json            # mechanical prose rules (names from the model, terms, hedges, secrets)
 uv run docsnip compat --fix            # re-render compatibility tables from script claims
 uv run docsnip query <kind> <id>       # agent queries + impact over committed artifacts (skill docs-query)

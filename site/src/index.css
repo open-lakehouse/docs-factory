@@ -630,6 +630,125 @@ body {
 .model-table th { text-align: left; font-weight: 500; color: var(--muted-foreground); border-bottom: 1px solid var(--border); padding: 0.35rem 0.5rem; }
 .model-table td { vertical-align: top; border-bottom: 1px solid var(--border); padding: 0.4rem 0.5rem; }
 .model-table td p { margin: 0.15rem 0 0; }
+/* Journey graph pages (/model/implementations, specs, journeys, paths, crosswalk) */
+.graph-link { color: var(--link, var(--accent)); }
+.graph-link:hover { text-decoration: underline; }
+.graph-path {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 0.25rem;
+  padding: 0 0.35rem;
+  color: var(--foreground);
+}
+a.graph-path:hover { border-color: var(--muted-foreground); }
+.graph-section { margin-top: 1.75rem; }
+.graph-section > h2 { margin: 0 0 0.4rem; font-size: 1rem; font-weight: 600; color: var(--heading); }
+.graph-section > p { margin: 0 0 0.6rem; max-width: 46rem; }
+.graph-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; font-size: 0.85rem; margin: 0 0 0.5rem; }
+.graph-scroll { overflow-x: auto; }
+.graph-grid thead th { position: static; white-space: nowrap; padding: 0.35rem 0.6rem; vertical-align: bottom; }
+.graph-grid thead th:first-child { text-align: left; }
+.graph-grid th[scope="row"] { text-align: left; }
+.graph-grid thead .compat-version { font-size: 0.68rem; font-weight: 400; color: var(--muted-foreground); }
+.graph-grid thead th { font-size: 0.8rem; text-transform: none; letter-spacing: 0; }
+.graph-grid td { text-align: center; }
+.graph-sep:not(:last-child)::after { content: ", "; color: var(--muted-foreground); }
+.graph-group-row th { text-align: left; padding-top: 0.75rem; }
+.graph-heatmap td { padding: 0.15rem 0.3rem; }
+.graph-chips { display: flex; flex-wrap: wrap; gap: 0.25rem 0.6rem; font-size: 0.8rem; text-align: left !important; }
+.graph-chip-gap { margin-right: 0.5rem; }
+.graph-facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.6rem; font-size: 0.85rem; }
+.graph-facts p { margin: 0; }
+.graph-facts .graph-link { margin-right: 0.5rem; }
+.graph-cells td { vertical-align: top; }
+.compat-blocked { color: #a16207; }
+.compat-untracked { color: var(--border); }
+.graph-bar-wrap { display: inline-flex; align-items: center; gap: 0.5rem; width: 100%; }
+.graph-bar {
+  display: flex;
+  flex: 1;
+  min-width: 6rem;
+  height: 0.45rem;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.graph-bar > span { min-width: 2px; }
+.graph-bar-tested { background: #4f9c5a; }
+.graph-bar-draft { background: color-mix(in srgb, #4f9c5a 45%, transparent); }
+.graph-bar-documented { background: #64748b; }
+.graph-bar-fails,
+.graph-bar-missing { background: #c2410c; }
+.graph-bar-blocked { background: #a16207; }
+.graph-bar-unknown { background: var(--border); }
+.graph-bar-legend { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted-foreground); white-space: nowrap; }
+.graph-ring { display: inline-flex; align-items: center; gap: 0.4rem; }
+.graph-ring svg { width: 2.25rem; height: 2.25rem; flex-shrink: 0; }
+.graph-ring-track { fill: none; stroke: var(--surface); stroke-width: 4; }
+.graph-ring-value { fill: none; stroke: #4f9c5a; stroke-width: 4; stroke-linecap: round; }
+.graph-ring-text { display: grid; line-height: 1.15; font-size: 0.72rem; color: var(--muted-foreground); }
+.graph-ring-text strong { font-family: var(--font-mono); font-size: 0.8rem; color: var(--foreground); font-weight: 600; }
+.graph-ring-link:hover .graph-ring-text span { text-decoration: underline; }
+.impl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+.impl-card {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+}
+.impl-card.is-compact { padding: 0.65rem 0.75rem; }
+.impl-identity { display: flex; align-items: center; gap: 0.6rem; }
+.impl-icon { width: 2rem; height: 2rem; object-fit: contain; flex-shrink: 0; }
+.impl-icon-blank {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 0.375rem;
+  background: var(--surface);
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+.impl-title { margin: 0; font-weight: 600; color: var(--heading); }
+.impl-facts { display: flex; flex-wrap: wrap; gap: 0.15rem 0.5rem; margin: 0.1rem 0 0; font-size: 0.72rem; color: var(--muted-foreground); }
+.impl-facts a:hover { text-decoration: underline; }
+.impl-summary { margin: 0; font-size: 0.85rem; color: var(--muted-foreground); }
+.impl-rings { display: flex; flex-wrap: wrap; gap: 0.6rem 1.1rem; }
+.impl-paths { display: flex; flex-wrap: wrap; gap: 0.3rem 0.6rem; margin: 0; }
+.impl-facts-line { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 0; font-size: 0.78rem; }
+.impl-page-head { display: grid; gap: 0.75rem; max-width: 40rem; }
+.impl-others { display: flex; flex-wrap: wrap; gap: 0.3rem 0.9rem; font-size: 0.85rem; }
+.role-diagram { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.5rem; list-style: none; margin: 0; padding: 0; }
+.role-card {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  min-width: 13rem;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  font-size: 0.85rem;
+}
+.role-card + .role-card::before {
+  content: "↔";
+  position: absolute;
+  left: -0.45rem;
+  top: 1rem;
+  transform: translateX(-50%);
+  color: var(--muted-foreground);
+}
+.role-name { margin: 0; font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted-foreground); }
+.role-contracts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+.role-candidates { display: grid; gap: 0.15rem; border-top: 1px dashed var(--border); padding-top: 0.4rem; }
+.role-candidates p { margin: 0; }
+.crosswalk td { min-width: 14rem; }
+.crosswalk td p { margin: 0 0 0.3rem; }
+.crosswalk-support { font-size: 0.72rem; border: 1px solid currentColor; border-radius: 0.25rem; padding: 0 0.3rem; }
+
 .model-tab-diagram {
   height: 420px;
   margin-bottom: 1.5rem;

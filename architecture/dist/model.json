@@ -2544,37 +2544,59 @@
       "id": "18ybun9"
     },
     "lvw6u7": {
-      "title": "queries + governs data",
+      "title": "queries and governs data through",
       "source": {
         "model": "practitioner"
       },
       "target": {
         "model": "lakehouse.queryEngine"
       },
-      "kind": "flows",
+      "kind": "uses",
       "id": "lvw6u7"
     },
     "anf0f7": {
-      "title": "explores data + builds logic in",
+      "title": "explores data and builds logic in",
       "source": {
         "model": "practitioner"
       },
       "target": {
         "model": "lakehouse.interactiveDevelopment"
       },
-      "kind": "flows",
+      "kind": "uses",
       "id": "anf0f7"
     },
-    "csdzd3": {
-      "title": "builds + operates",
+    "sko982": {
+      "title": "queries data through",
+      "source": {
+        "model": "agent"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "uses",
+      "id": "sko982"
+    },
+    "g12rr6": {
+      "title": "discovers assets and reads their metadata in",
+      "source": {
+        "model": "agent"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "uses",
+      "id": "g12rr6"
+    },
+    "f8p88x": {
+      "title": "builds and operates",
       "source": {
         "model": "platformEngineer"
       },
       "target": {
         "model": "lakehouse"
       },
-      "kind": "flows",
-      "id": "csdzd3"
+      "kind": "uses",
+      "id": "f8p88x"
     },
     "1e5zza7": {
       "line": "dashed",
@@ -2682,16 +2704,17 @@
       "kind": "dependsOn",
       "id": "4t1lw3"
     },
-    "1dnwlt9": {
-      "title": "issues credentials honored by",
+    "1s4lxn1": {
+      "line": "dashed",
+      "title": "honors credentials minted by",
       "source": {
-        "model": "lakehouse.credentialIssuer"
-      },
-      "target": {
         "model": "lakehouse.objectStorage"
       },
-      "kind": "flows",
-      "id": "1dnwlt9"
+      "target": {
+        "model": "lakehouse.credentialIssuer"
+      },
+      "kind": "dependsOn",
+      "id": "1s4lxn1"
     },
     "10prjb6": {
       "title": "",
@@ -3862,21 +3885,36 @@
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
         },
         {
           "id": "12g2j4b",
           "parent": null,
           "source": "platformEngineer",
           "target": "lakehouse",
-          "label": "builds + operates",
+          "label": "builds and operates",
           "relations": [
-            "csdzd3"
+            "f8p88x"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
+        },
+        {
+          "id": "11of8s4",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse",
+          "label": "[...]",
+          "relations": [
+            "sko982",
+            "g12rr6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "uses"
         },
         {
           "id": "1pfr91s",
@@ -4970,7 +5008,9 @@
           "level": 0,
           "children": [],
           "inEdges": [],
-          "outEdges": [],
+          "outEdges": [
+            "11of8s4"
+          ],
           "title": "AI agent",
           "modelRef": "agent",
           "shape": "person",
@@ -6424,6 +6464,7 @@
           "inEdges": [
             "ttcejf",
             "12g2j4b",
+            "11of8s4",
             "1pfr91s",
             "1n3wkt1",
             "1qvv3jy",
@@ -6535,7 +6576,7 @@
           }
         ]
       },
-      "hash": "OvNrhhp-5YUIImZOl7mxLy_HHNd3h23ANG6Uc4kC9_Q"
+      "hash": "0GbiSfnaToTgLQwqVQgeWu2O7BFF9I94veb2_AEYc9Q"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -8018,6 +8059,20 @@
       },
       "edges": [
         {
+          "id": "jmwf0p",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse.catalog",
+          "label": "discovers assets and reads their metadata in",
+          "relations": [
+            "g12rr6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "uses"
+        },
+        {
           "id": "cp7myr",
           "parent": null,
           "source": "ucSpec",
@@ -8285,6 +8340,29 @@
         }
       ],
       "nodes": [
+        {
+          "id": "agent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "jmwf0p"
+          ],
+          "title": "AI agent",
+          "modelRef": "agent",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
+          },
+          "tags": [],
+          "kind": "person"
+        },
         {
           "id": "ucSpec",
           "parent": null,
@@ -8756,6 +8834,7 @@
           "level": 0,
           "children": [],
           "inEdges": [
+            "jmwf0p",
             "cp7myr",
             "dton7c",
             "9wcsu3",
@@ -8909,7 +8988,7 @@
           }
         ]
       },
-      "hash": "KPmlC00PnEIdOi96OjE325RgW8p2pq8pz59K-S4uAaM"
+      "hash": "5N4f4fRWmUYYXo-0dJ_0HLxmc5rC3t7qY2crM1ATIXc"
     },
     "explain_metadataStore": {
       "_type": "element",
@@ -9084,14 +9163,28 @@
           "parent": null,
           "source": "practitioner",
           "target": "lakehouse.queryEngine",
-          "label": "queries + governs data",
+          "label": "queries and governs data through",
           "relations": [
             "lvw6u7"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
+        },
+        {
+          "id": "18mtm4e",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse.queryEngine",
+          "label": "queries data through",
+          "relations": [
+            "sko982"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "uses"
         },
         {
           "id": "fkkefb",
@@ -9366,6 +9459,29 @@
           },
           "description": {
             "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
+          },
+          "tags": [],
+          "kind": "person"
+        },
+        {
+          "id": "agent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "18mtm4e"
+          ],
+          "title": "AI agent",
+          "modelRef": "agent",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
           },
           "tags": [],
           "kind": "person"
@@ -9885,6 +10001,7 @@
           "children": [],
           "inEdges": [
             "7v3snl",
+            "18mtm4e",
             "fkkefb",
             "1d5mogk",
             "2u2en7",
@@ -9980,7 +10097,7 @@
           }
         ]
       },
-      "hash": "9hOytZX1My_PXbwM0CWOMD_NlKecqIhmm5wcoXw7xsc"
+      "hash": "NqE8abjaMVgHZOaTkQBAJZVrA_1QY5BsSWxm2ddo3Xk"
     },
     "explain_orchestration": {
       "_type": "element",
@@ -10786,18 +10903,18 @@
           "kind": "dependsOn"
         },
         {
-          "id": "mzhgx2",
+          "id": "gcom4m",
           "parent": null,
-          "source": "lakehouse.credentialIssuer",
-          "target": "lakehouse.objectStorage",
-          "label": "issues credentials honored by",
+          "source": "lakehouse.objectStorage",
+          "target": "lakehouse.credentialIssuer",
+          "label": "honors credentials minted by",
           "relations": [
-            "1dnwlt9"
+            "1s4lxn1"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "dependsOn"
         }
       ],
       "nodes": [
@@ -11006,34 +11123,6 @@
           "navigateTo": "explain_fileFormat"
         },
         {
-          "id": "lakehouse.credentialIssuer",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "mzhgx2"
-          ],
-          "title": "Storage credential issuer",
-          "modelRef": "lakehouse.credentialIssuer",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
-          },
-          "tags": [
-            "public"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability"
-        },
-        {
           "id": "lakehouse.objectStorage",
           "parent": null,
           "level": 0,
@@ -11045,10 +11134,11 @@
             "1q3ub9q",
             "wo4v60",
             "oesati",
-            "1u0v1f",
-            "mzhgx2"
+            "1u0v1f"
           ],
-          "outEdges": [],
+          "outEdges": [
+            "gcom4m"
+          ],
           "title": "Object storage",
           "modelRef": "lakehouse.objectStorage",
           "shape": "rectangle",
@@ -11067,6 +11157,34 @@
             "canonicalDoc": "design/reference-architecture.md"
           },
           "kind": "capability"
+        },
+        {
+          "id": "lakehouse.credentialIssuer",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "gcom4m"
+          ],
+          "outEdges": [],
+          "title": "Storage credential issuer",
+          "modelRef": "lakehouse.credentialIssuer",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability"
         }
       ],
       "notation": {
@@ -11081,7 +11199,7 @@
           }
         ]
       },
-      "hash": "TMa8jCsrVpKiuKRM_kyJ2z6_awnV1uV7ZTkcuYG7YTs"
+      "hash": "Cd34fSxsUTugpdz-utXRMWwZ3fwm-iYzjwMVsoll_3E"
     },
     "explain_modelTracking": {
       "_type": "element",
@@ -11395,14 +11513,14 @@
           "parent": null,
           "source": "practitioner",
           "target": "lakehouse.interactiveDevelopment",
-          "label": "explores data + builds logic in",
+          "label": "explores data and builds logic in",
           "relations": [
             "anf0f7"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
         },
         {
           "id": "1mw2f1p",
@@ -11603,7 +11721,7 @@
           }
         ]
       },
-      "hash": "tRrLc8q66OpJ8O90Meh6jWpT8jrzo6ZaSvNyjFVhpdg"
+      "hash": "OQ4nyy4wFR0HNX9klfiu1Lm39hH-Qu2Xp4R9T5bSVps"
     },
     "explain_governance": {
       "_type": "element",
@@ -17894,7 +18012,7 @@
           "line": "dashed",
           "head": "normal",
           "tags": [],
-          "kind": "flows",
+          "kind": "uses",
           "astPath": "/steps@0",
           "notes": {
             "txt": "A query is issued by a client to the query engine.\nThe caller identity travels with the request."
@@ -17983,28 +18101,56 @@
           "parent": null,
           "source": "practitioner",
           "target": "lakehouse.queryEngine",
-          "label": "queries + governs data",
+          "label": "queries and governs data through",
           "relations": [
             "lvw6u7"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
         },
         {
           "id": "1nmcwoe",
           "parent": null,
           "source": "practitioner",
           "target": "lakehouse.interactiveDevelopment",
-          "label": "explores data + builds logic in",
+          "label": "explores data and builds logic in",
           "relations": [
             "anf0f7"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
+        },
+        {
+          "id": "jmwf0p",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse.catalog",
+          "label": "discovers assets and reads their metadata in",
+          "relations": [
+            "g12rr6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "uses"
+        },
+        {
+          "id": "18mtm4e",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse.queryEngine",
+          "label": "queries data through",
+          "relations": [
+            "sko982"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "uses"
         },
         {
           "id": "1x57f4b",
@@ -18119,32 +18265,32 @@
           "kind": "dependsOn"
         },
         {
-          "id": "mzhgx2",
+          "id": "gcom4m",
           "parent": "lakehouse",
-          "source": "lakehouse.credentialIssuer",
-          "target": "lakehouse.objectStorage",
-          "label": "issues credentials honored by",
+          "source": "lakehouse.objectStorage",
+          "target": "lakehouse.credentialIssuer",
+          "label": "honors credentials minted by",
           "relations": [
-            "1dnwlt9"
+            "1s4lxn1"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "dependsOn"
         },
         {
           "id": "12g2j4b",
           "parent": null,
           "source": "platformEngineer",
           "target": "lakehouse",
-          "label": "builds + operates",
+          "label": "builds and operates",
           "relations": [
-            "csdzd3"
+            "f8p88x"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
         }
       ],
       "nodes": [
@@ -18173,6 +18319,30 @@
           "kind": "person"
         },
         {
+          "id": "agent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "jmwf0p",
+            "18mtm4e"
+          ],
+          "title": "AI agent",
+          "modelRef": "agent",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
+          },
+          "tags": [],
+          "kind": "person"
+        },
+        {
           "id": "platformEngineer",
           "parent": null,
           "level": 0,
@@ -18196,27 +18366,6 @@
           "kind": "person"
         },
         {
-          "id": "agent",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [],
-          "title": "AI agent",
-          "modelRef": "agent",
-          "shape": "person",
-          "color": "secondary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
-          },
-          "tags": [],
-          "kind": "person"
-        },
-        {
           "id": "lakehouse",
           "parent": null,
           "level": 0,
@@ -18227,16 +18376,18 @@
             "lakehouse.catalog",
             "lakehouse.metadataStore",
             "lakehouse.tableFormat",
-            "lakehouse.credentialIssuer",
             "lakehouse.fileFormat",
             "lakehouse.objectStorage",
+            "lakehouse.credentialIssuer",
             "lakehouse.modelTracking",
             "lakehouse.sharing"
           ],
           "inEdges": [
             "12g2j4b",
             "7v3snl",
-            "1nmcwoe"
+            "1nmcwoe",
+            "jmwf0p",
+            "18mtm4e"
           ],
           "outEdges": [],
           "title": "Open Lakehouse",
@@ -18323,6 +18474,7 @@
           "children": [],
           "inEdges": [
             "7v3snl",
+            "18mtm4e",
             "r98ad1",
             "gx91at"
           ],
@@ -18355,6 +18507,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
+            "jmwf0p",
             "1tnkhx9"
           ],
           "outEdges": [
@@ -18448,36 +18601,6 @@
           "navigateTo": "explain_tableFormat"
         },
         {
-          "id": "lakehouse.credentialIssuer",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "16v5tyx"
-          ],
-          "outEdges": [
-            "mzhgx2"
-          ],
-          "title": "Storage credential issuer",
-          "modelRef": "lakehouse.credentialIssuer",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
-          },
-          "tags": [
-            "public"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability"
-        },
-        {
           "id": "lakehouse.fileFormat",
           "parent": "lakehouse",
           "level": 1,
@@ -18514,10 +18637,11 @@
           "level": 1,
           "children": [],
           "inEdges": [
-            "1u0v1f",
-            "mzhgx2"
+            "1u0v1f"
           ],
-          "outEdges": [],
+          "outEdges": [
+            "gcom4m"
+          ],
           "title": "Object storage",
           "modelRef": "lakehouse.objectStorage",
           "shape": "rectangle",
@@ -18537,6 +18661,35 @@
           },
           "kind": "capability",
           "navigateTo": "explain_objectStorage"
+        },
+        {
+          "id": "lakehouse.credentialIssuer",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "16v5tyx",
+            "gcom4m"
+          ],
+          "outEdges": [],
+          "title": "Storage credential issuer",
+          "modelRef": "lakehouse.credentialIssuer",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability"
         },
         {
           "id": "lakehouse.modelTracking",
@@ -18589,7 +18742,7 @@
           "navigateTo": "explain_sharing"
         }
       ],
-      "hash": "dW8fnchK1N2LQj-tulCzX2pjPU1x3zPwfUT2cPMojE8"
+      "hash": "6OKqM7XsmfeuCy8E5YPV42Xp7gy0ztoVbzcYbSV_C20"
     },
     "technologyCatalog": {
       "_type": "element",
@@ -18803,18 +18956,18 @@
           "kind": "dependsOn"
         },
         {
-          "id": "mzhgx2",
+          "id": "gcom4m",
           "parent": "lakehouse",
-          "source": "lakehouse.credentialIssuer",
-          "target": "lakehouse.objectStorage",
-          "label": "issues credentials honored by",
+          "source": "lakehouse.objectStorage",
+          "target": "lakehouse.credentialIssuer",
+          "label": "honors credentials minted by",
           "relations": [
-            "1dnwlt9"
+            "1s4lxn1"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "dependsOn"
         },
         {
           "id": "1qkmdr7",
@@ -21188,9 +21341,9 @@
             "lakehouse.catalog",
             "lakehouse.metadataStore",
             "lakehouse.tableFormat",
-            "lakehouse.credentialIssuer",
             "lakehouse.fileFormat",
-            "lakehouse.objectStorage"
+            "lakehouse.objectStorage",
+            "lakehouse.credentialIssuer"
           ],
           "inEdges": [
             "1qkmdr7",
@@ -21610,36 +21763,6 @@
           "navigateTo": "explain_tableFormat"
         },
         {
-          "id": "lakehouse.credentialIssuer",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "16v5tyx"
-          ],
-          "outEdges": [
-            "mzhgx2"
-          ],
-          "title": "Storage credential issuer",
-          "modelRef": "lakehouse.credentialIssuer",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
-          },
-          "tags": [
-            "public"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability"
-        },
-        {
           "id": "lakehouse.fileFormat",
           "parent": "lakehouse",
           "level": 1,
@@ -21678,11 +21801,12 @@
           "children": [],
           "inEdges": [
             "1u0v1f",
-            "mzhgx2",
             "1ol3q9j",
             "13jsrzh"
           ],
-          "outEdges": [],
+          "outEdges": [
+            "gcom4m"
+          ],
           "title": "Object storage",
           "modelRef": "lakehouse.objectStorage",
           "shape": "rectangle",
@@ -21702,6 +21826,35 @@
           },
           "kind": "capability",
           "navigateTo": "explain_objectStorage"
+        },
+        {
+          "id": "lakehouse.credentialIssuer",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "16v5tyx",
+            "gcom4m"
+          ],
+          "outEdges": [],
+          "title": "Storage credential issuer",
+          "modelRef": "lakehouse.credentialIssuer",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability"
         },
         {
           "id": "omnigent",
@@ -21754,7 +21907,7 @@
           }
         ]
       },
-      "hash": "SYRnllolENxq7LqD0VFJkHzgDaNon8NoZgSAHcIcMBc"
+      "hash": "j2QITBUQ7RFDN4y7vxx9ZNCu_TDPI4i5dgdfRlaOtGc"
     },
     "capabilityMap": {
       "_type": "element",
@@ -21777,28 +21930,56 @@
           "parent": null,
           "source": "practitioner",
           "target": "lakehouse.queryEngine",
-          "label": "queries + governs data",
+          "label": "queries and governs data through",
           "relations": [
             "lvw6u7"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
         },
         {
           "id": "1nmcwoe",
           "parent": null,
           "source": "practitioner",
           "target": "lakehouse.interactiveDevelopment",
-          "label": "explores data + builds logic in",
+          "label": "explores data and builds logic in",
           "relations": [
             "anf0f7"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "uses"
+        },
+        {
+          "id": "jmwf0p",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse.catalog",
+          "label": "discovers assets and reads their metadata in",
+          "relations": [
+            "g12rr6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "uses"
+        },
+        {
+          "id": "18mtm4e",
+          "parent": null,
+          "source": "agent",
+          "target": "lakehouse.queryEngine",
+          "label": "queries data through",
+          "relations": [
+            "sko982"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "uses"
         },
         {
           "id": "1qkmdr7",
@@ -22235,18 +22416,18 @@
           "kind": "dependsOn"
         },
         {
-          "id": "mzhgx2",
+          "id": "gcom4m",
           "parent": "lakehouse",
-          "source": "lakehouse.credentialIssuer",
-          "target": "lakehouse.objectStorage",
-          "label": "issues credentials honored by",
+          "source": "lakehouse.objectStorage",
+          "target": "lakehouse.credentialIssuer",
+          "label": "honors credentials minted by",
           "relations": [
-            "1dnwlt9"
+            "1s4lxn1"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "dependsOn"
         }
       ],
       "nodes": [
@@ -22270,6 +22451,30 @@
           },
           "description": {
             "txt": "Queries and governs data over open table formats — the human consumer of the lakehouse."
+          },
+          "tags": [],
+          "kind": "person"
+        },
+        {
+          "id": "agent",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "jmwf0p",
+            "18mtm4e"
+          ],
+          "title": "AI agent",
+          "modelRef": "agent",
+          "shape": "person",
+          "color": "secondary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Consumes the lakehouse through agent-optimized CLIs and MCP surfaces."
           },
           "tags": [],
           "kind": "person"
@@ -23013,13 +23218,15 @@
             "lakehouse.catalog",
             "lakehouse.metadataStore",
             "lakehouse.tableFormat",
-            "lakehouse.credentialIssuer",
             "lakehouse.fileFormat",
-            "lakehouse.objectStorage"
+            "lakehouse.objectStorage",
+            "lakehouse.credentialIssuer"
           ],
           "inEdges": [
             "7v3snl",
             "1nmcwoe",
+            "jmwf0p",
+            "18mtm4e",
             "1qkmdr7",
             "67455y",
             "cp7myr",
@@ -23185,6 +23392,7 @@
           "children": [],
           "inEdges": [
             "7v3snl",
+            "18mtm4e",
             "fkkefb",
             "1d5mogk",
             "2u2en7",
@@ -23227,6 +23435,7 @@
           "level": 1,
           "children": [],
           "inEdges": [
+            "jmwf0p",
             "cp7myr",
             "dton7c",
             "9wcsu3",
@@ -23326,36 +23535,6 @@
           "navigateTo": "explain_tableFormat"
         },
         {
-          "id": "lakehouse.credentialIssuer",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "16v5tyx"
-          ],
-          "outEdges": [
-            "mzhgx2"
-          ],
-          "title": "Storage credential issuer",
-          "modelRef": "lakehouse.credentialIssuer",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
-          },
-          "tags": [
-            "public"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability"
-        },
-        {
           "id": "lakehouse.fileFormat",
           "parent": "lakehouse",
           "level": 1,
@@ -23395,10 +23574,11 @@
           "inEdges": [
             "1ol3q9j",
             "13jsrzh",
-            "1u0v1f",
-            "mzhgx2"
+            "1u0v1f"
           ],
-          "outEdges": [],
+          "outEdges": [
+            "gcom4m"
+          ],
           "title": "Object storage",
           "modelRef": "lakehouse.objectStorage",
           "shape": "rectangle",
@@ -23418,6 +23598,35 @@
           },
           "kind": "capability",
           "navigateTo": "explain_objectStorage"
+        },
+        {
+          "id": "lakehouse.credentialIssuer",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "16v5tyx",
+            "gcom4m"
+          ],
+          "outEdges": [],
+          "title": "Storage credential issuer",
+          "modelRef": "lakehouse.credentialIssuer",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability"
         }
       ],
       "notation": {
@@ -23440,7 +23649,7 @@
           }
         ]
       },
-      "hash": "8V__qfC_nuVgtNTU4NRaNC9Dc6vr_AgnVUFjFISjp70"
+      "hash": "qmfgq_n9L1bz82_ibsxEMHpJGc7bCrSN_7l0722imto"
     },
     "concernMatrix": {
       "_type": "element",
@@ -26249,18 +26458,18 @@
           "kind": "dependsOn"
         },
         {
-          "id": "mzhgx2",
+          "id": "gcom4m",
           "parent": "lakehouse",
-          "source": "lakehouse.credentialIssuer",
-          "target": "lakehouse.objectStorage",
-          "label": "issues credentials honored by",
+          "source": "lakehouse.objectStorage",
+          "target": "lakehouse.credentialIssuer",
+          "label": "honors credentials minted by",
           "relations": [
-            "1dnwlt9"
+            "1s4lxn1"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "flows"
+          "kind": "dependsOn"
         }
       ],
       "nodes": [
@@ -26290,9 +26499,9 @@
             "lakehouse.catalog",
             "lakehouse.metadataStore",
             "lakehouse.tableFormat",
-            "lakehouse.credentialIssuer",
             "lakehouse.fileFormat",
-            "lakehouse.objectStorage"
+            "lakehouse.objectStorage",
+            "lakehouse.credentialIssuer"
           ],
           "inEdges": [],
           "outEdges": [],
@@ -27009,37 +27218,6 @@
           "navigateTo": "explain_tableFormat"
         },
         {
-          "id": "lakehouse.credentialIssuer",
-          "parent": "lakehouse",
-          "level": 1,
-          "children": [],
-          "inEdges": [
-            "1i4vp1d",
-            "16v5tyx"
-          ],
-          "outEdges": [
-            "mzhgx2"
-          ],
-          "title": "Storage credential issuer",
-          "modelRef": "lakehouse.credentialIssuer",
-          "shape": "rectangle",
-          "color": "primary",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
-          },
-          "tags": [
-            "public"
-          ],
-          "metadata": {
-            "canonicalDoc": "design/governance.md"
-          },
-          "kind": "capability"
-        },
-        {
           "id": "lakehouse.fileFormat",
           "parent": "lakehouse",
           "level": 1,
@@ -27080,10 +27258,11 @@
             "1q3ub9q",
             "wo4v60",
             "oesati",
-            "1u0v1f",
-            "mzhgx2"
+            "1u0v1f"
           ],
-          "outEdges": [],
+          "outEdges": [
+            "gcom4m"
+          ],
           "title": "Object storage",
           "modelRef": "lakehouse.objectStorage",
           "shape": "rectangle",
@@ -27103,9 +27282,39 @@
           },
           "kind": "capability",
           "navigateTo": "explain_objectStorage"
+        },
+        {
+          "id": "lakehouse.credentialIssuer",
+          "parent": "lakehouse",
+          "level": 1,
+          "children": [],
+          "inEdges": [
+            "1i4vp1d",
+            "16v5tyx",
+            "gcom4m"
+          ],
+          "outEdges": [],
+          "title": "Storage credential issuer",
+          "modelRef": "lakehouse.credentialIssuer",
+          "shape": "rectangle",
+          "color": "primary",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The storage provider's identity plane that mints short-lived credentials narrowed to a path and operation."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/governance.md"
+          },
+          "kind": "capability"
         }
       ],
-      "hash": "JcI9LHyVIG8v8JZk056TLpdP9VKwcyAGC9U_t1FZLtw"
+      "hash": "O0BJDb_QJ5kvAfUq2DrKSl2PXRaLny-UQ34xlLk6da8"
     }
   },
   "deployments": {

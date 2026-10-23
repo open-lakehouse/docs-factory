@@ -15,7 +15,7 @@
 # services = ["unitycatalog"]
 # claims.polars = [{ journey = "external.read", region = "polars" }]
 # claims.daft = [{ journey = "external.read", region = "daft" }]
-# claims.duckdb = [{ journey = "external.read", region = "duckdb" }]
+# claims.duckdb-sql = [{ journey = "external.read", region = "duckdb" }]
 # ///
 """Read the registered external table by name from Polars, Daft, and DuckDB.
 

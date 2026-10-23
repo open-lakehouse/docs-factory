@@ -105,13 +105,18 @@ tables:
       - feature.properties
     documented: true
   storage-and-catalogs:
-    title: Storage and catalogs
+    title: Storage
     columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
     rows:
       - storage.s3-multi-writer
       - storage.azure-gcs
-      - catalog.unity
     documented: true
+  # Delta tables reached by name through Unity Catalog: the `uc-external` and
+  # `uc-managed` journeys, which the Unity Catalog docs' scripts prove.
+  unity-catalog:
+    title: Delta tables in Unity Catalog
+    columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
+    select: { asset: lakehouse.table, paths: [uc-external, uc-managed] }
   # One Spark column: SQL and Python share the engine that reads the table.
   features-read:
     title: Read a table with a feature

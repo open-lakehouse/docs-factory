@@ -20,7 +20,7 @@
 #   { journey = "schema.add-column", region = "alter-deltalake", api = "TableAlterer.add_columns", note = "on an external Unity Catalog table" },
 #   { journey = "feature.properties", region = "alter-deltalake", api = "TableAlterer.set_table_properties", note = "on an external Unity Catalog table" },
 # ]
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "external.alter-schema", fails = "UCTableSet::AlterTable", anchor = "choose-a-client" },
 #   { journey = "external.set-properties", fails = "Only altering tables is supported for now", anchor = "choose-a-client" },
 # ]

@@ -5,7 +5,7 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
-# claims.spark = [
+# claims.spark-sql = [
 #   { journey = "view.query", region = "query", api = "SELECT" },
 #   { journey = "view.list", region = "list", api = "SHOW TABLES" },
 #   { journey = "view.create", anchor = "read-views-from-spark-41", fails = "[MISSING_CATALOG_ABILITY.VIEWS] Catalog samples does not support views." },

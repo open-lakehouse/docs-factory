@@ -1369,13 +1369,6 @@
   outcome: works
   why: secrets (extension)
   source: https://duckdb.org/docs/current/core_extensions/delta.html
-- interfaces:
-  - delta-rs-python
-  journeys:
-  - catalog.unity
-  outcome: fails
-  why: for catalog-managed tables (UC known issues)
-  source: unitycatalog:reference/features-and-limitations
 # The deltalake crate, from its own source at the release the docs pin.
 - interfaces:
   - delta-rs-rust

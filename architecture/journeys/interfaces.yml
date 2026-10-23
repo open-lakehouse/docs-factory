@@ -7,13 +7,16 @@
 # A project lists its interfaces, in tab order, in content/<project>/compatibility.yml.
 
 # Spark reaches catalogs and table formats through what it integrates (a
-# connector, a runtime); those integrations carry the spec edges.
+# connector, a runtime); those integrations carry the spec edges. `spark` is an
+# engine-level column: it shows the best of Spark's SQL and Python claims, so
+# a script claims the language its page shows and both columns fill.
 spark:
   label: Spark
   pin: pyspark
   package: pyspark
   model: apacheSpark
   integrations: [unityCatalogSpark, deltaSpark, icebergSparkRuntime]
+  rollup: [spark-sql, spark-python]
 # SQL views and metric views need Spark 4.2; `spark` is the default 4.1 line.
 spark-4.2:
   label: Spark
@@ -26,13 +29,13 @@ spark-sql:
   pin: pyspark
   package: pyspark
   model: apacheSpark
-  integrations: [unityCatalogSpark, deltaSpark]
+  integrations: [unityCatalogSpark, deltaSpark, icebergSparkRuntime]
 spark-python:
   label: Spark · Python
   pin: pyspark
   package: pyspark
   model: apacheSpark
-  integrations: [unityCatalogSpark, deltaSpark]
+  integrations: [unityCatalogSpark, deltaSpark, icebergSparkRuntime]
 # Scala and Java reach the same Delta Spark API PySpark wraps, so tables give
 # them no column of their own; they label tabs and hold their scripts' claims.
 spark-scala:
@@ -59,25 +62,25 @@ delta-rs-rust:
   pin: deltalake-rs
   package: deltalake
   model: deltaRs
+# Like `spark`, an engine-level column over DuckDB's SQL and Python claims.
 duckdb:
   label: DuckDB
   package: duckdb
   model: duckdb
   integrations: [duckdbUnityCatalog, duckdbDelta, duckdbIceberg]
-# `duckdb` and `duckdb-sql` are the same engine and SQL, labelled for each
-# project's tabs.
+  rollup: [duckdb-sql, duckdb-python]
 duckdb-sql:
   label: DuckDB · SQL
   package: duckdb
   model: duckdb
-  integrations: [duckdbDelta, duckdbUnityCatalog]
+  integrations: [duckdbUnityCatalog, duckdbDelta, duckdbIceberg]
 # The same engine and SQL as duckdb-sql, driven from Python; it labels the tab
 # and holds the claims of scripts that do.
 duckdb-python:
   label: DuckDB · Python
   package: duckdb
   model: duckdb
-  integrations: [duckdbDelta]
+  integrations: [duckdbUnityCatalog, duckdbDelta, duckdbIceberg]
 polars:
   label: Polars
   package: polars

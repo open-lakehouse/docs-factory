@@ -5,7 +5,7 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
-# claims.spark = [
+# claims.spark-sql = [
 #   { journey = "managed.alter-schema", region = "add-columns", api = "ALTER TABLE … ADD COLUMNS" },
 #   { journey = "managed.set-properties", region = "properties", api = "SET TBLPROPERTIES" },
 #   { journey = "managed.rename", fails = "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet", anchor = "rename-a-table-or-column" },
@@ -15,7 +15,7 @@
 #   { journey = "managed.set-properties", region = "properties", api = "SET TBLPROPERTIES" },
 #   { journey = "managed.rename", fails = "ALTER TABLE RENAME COLUMN is not supported for Unity Catalog tables yet", anchor = "rename-a-table-or-column" },
 # ]
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "managed.alter-schema", fails = "UCTableSet::AlterTable", anchor = "choose-a-client" },
 # ]
 # claims."python-sdk" = [

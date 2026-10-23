@@ -5,19 +5,13 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
-# claims.spark = [
+# claims.spark-sql = [
 #   { journey = "managed.create-as-select", region = "ctas", api = "CREATE TABLE … AS SELECT" },
 #   { journey = "managed.replace", region = "replace-table", api = "CREATE OR REPLACE TABLE … AS SELECT" },
 #   { journey = "managed.overwrite", region = "overwrite", api = "INSERT OVERWRITE" },
 #   { journey = "managed.replace-where", region = "replace-where", api = "INSERT INTO … REPLACE WHERE" },
 #   { journey = "managed.overwrite-partitions", region = "dynamic-partitions", api = "partitionOverwriteMode=dynamic" },
-# ]
-# claims.spark-sql = [
-#   { journey = "create.ctas", region = "ctas", api = "CREATE TABLE … AS SELECT", note = "through Unity Catalog" },
 #   { journey = "schema.overwrite", region = "replace-table", api = "CREATE OR REPLACE TABLE … AS SELECT", note = "through Unity Catalog" },
-#   { journey = "write.overwrite", region = "overwrite", api = "INSERT OVERWRITE", note = "through Unity Catalog" },
-#   { journey = "write.replace-where", region = "replace-where", api = "INSERT INTO … REPLACE WHERE", note = "through Unity Catalog" },
-#   { journey = "write.dynamic-partitions", region = "dynamic-partitions", api = "partitionOverwriteMode=dynamic", note = "through Unity Catalog" },
 #   { journey = "history.restore", region = "restore", api = "RESTORE TABLE", note = "through Unity Catalog" },
 # ]
 # ///

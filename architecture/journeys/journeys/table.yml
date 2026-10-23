@@ -408,8 +408,3 @@ storage.azure-gcs:
   summary: Read and write tables on Azure Data Lake Storage or Google Cloud Storage.
   asset: lakehouse.table
   path: by-path
-catalog.unity:
-  title: Unity Catalog
-  summary: "Create, read, and write tables through Unity Catalog instead of by path."
-  asset: lakehouse.table
-  path: by-path

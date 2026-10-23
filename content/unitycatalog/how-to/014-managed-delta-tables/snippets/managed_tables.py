@@ -5,28 +5,20 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
-# claims.spark = [
-#   { journey = "managed.create", region = "create-table" },
+# claims.spark-sql = [
+#   { journey = "managed.create", region = "create-table", api = "CREATE TABLE" },
 #   { journey = "managed.read", region = "spark-read" },
-#   { journey = "managed.append", region = "spark-append" },
-#   { journey = "managed.update", region = "change-rows" },
-#   { journey = "managed.delete", region = "change-rows" },
+#   { journey = "managed.append", region = "spark-append", api = "INSERT INTO" },
+#   { journey = "managed.update", region = "change-rows", api = "UPDATE" },
+#   { journey = "managed.delete", region = "change-rows", api = "DELETE FROM" },
 #   { journey = "managed.time-travel", region = "time-travel", api = "VERSION AS OF" },
 #   { journey = "managed.drop", region = "drop" },
 #   { journey = "managed.path-write", fails = true, anchor = "dont-write-to-the-tables-path" },
 # ]
-# claims.duckdb = [
+# claims.duckdb-sql = [
 #   { journey = "managed.read", region = "duckdb-read" },
 #   { journey = "managed.append", region = "duckdb-append" },
 #   { journey = "managed.create", fails = true, anchor = "create-a-managed-table" },
-# ]
-# claims.spark-sql = [
-#   { journey = "catalog.unity", region = "create-table", note = "through Unity Catalog" },
-#   { journey = "create.table", region = "create-table", api = "CREATE TABLE", note = "through Unity Catalog" },
-#   { journey = "write.append", region = "spark-append", api = "INSERT INTO", note = "through Unity Catalog" },
-#   { journey = "dml.update", region = "change-rows", api = "UPDATE", note = "through Unity Catalog" },
-#   { journey = "dml.delete", region = "change-rows", api = "DELETE FROM", note = "through Unity Catalog" },
-#   { journey = "read.version", region = "time-travel", api = "VERSION AS OF", note = "through Unity Catalog" },
 # ]
 # ///
 """Create, write, read, and drop a catalog-managed Delta table with Spark and DuckDB.

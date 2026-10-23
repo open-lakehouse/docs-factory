@@ -5,7 +5,7 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/uc-aws/compose.yaml"
 # services = ["unitycatalog"]
-# claims.spark = [
+# claims.spark-sql = [
 #   { journey = "iceberg.schema-create", region = "schema", api = "CREATE NAMESPACE" },
 #   { journey = "iceberg.namespace-list", region = "schema", api = "SHOW NAMESPACES" },
 #   { journey = "iceberg.namespace-drop", region = "drop", api = "DROP NAMESPACE" },

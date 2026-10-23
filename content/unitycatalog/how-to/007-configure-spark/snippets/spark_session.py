@@ -5,7 +5,7 @@
 # [tool.docs-factory]
 # compose = "../../../../../envs/unitycatalog/compose.yaml"
 # services = ["unitycatalog"]
-# claims.spark = [
+# claims.spark-sql = [
 #   { journey = "table.list", region = "check", api = "SHOW TABLES" },
 # ]
 # ///

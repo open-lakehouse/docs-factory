@@ -7,7 +7,7 @@ views {
     "
 
     // --- Discovery ---------------------------------------------------------
-    lakehouse.queryEngine -> ucSpec "GET /delta/v1/config (negotiate endpoints + protocol-version)" {
+    lakehouse.queryEngine -> unityCatalogSpec "GET /delta/v1/config (negotiate endpoints + protocol-version)" {
       notes "
         **Handshake.** Before touching any table, the client asks the catalog
         two things: *'which API endpoints do you support?'* and *'which
@@ -19,7 +19,7 @@ views {
     }
 
     // --- CREATE ------------------------------------------------------------
-    lakehouse.queryEngine -> ucSpec "POST .../staging-tables { name }" {
+    lakehouse.queryEngine -> unityCatalogSpec "POST .../staging-tables { name }" {
       notes "
         **Reserve a spot.** The client asks the catalog to set aside a place
         for a brand-new table, passing just the name. Nothing is committed
@@ -27,7 +27,7 @@ views {
       "
     }
 
-    ucSpec -> lakehouse.queryEngine "table-id, location, READ_WRITE credential, required-protocol" {
+    unityCatalogSpec -> lakehouse.queryEngine "table-id, location, READ_WRITE credential, required-protocol" {
       notes "
         **The starter kit.** The catalog hands back everything the client
         needs to build the table: a unique **table-id**, the **location** in
@@ -47,7 +47,7 @@ views {
       "
     }
 
-    lakehouse.queryEngine -> ucSpec "POST .../tables (promote: columns, protocol, properties)" {
+    lakehouse.queryEngine -> unityCatalogSpec "POST .../tables (promote: columns, protocol, properties)" {
       notes "
         **Make it official.** The client tells the catalog *'I've written
         version 0 — please promote this staging table into a real, managed
@@ -56,7 +56,7 @@ views {
       "
     }
 
-    ucSpec -> lakehouse.queryEngine "loadTable response (table-uuid, etag, version 0)" {
+    unityCatalogSpec -> lakehouse.queryEngine "loadTable response (table-uuid, etag, version 0)" {
       notes "
         **Table is live.** The catalog confirms the table now exists and
         returns its current state: the **table-uuid**, an **etag** (a version
@@ -66,7 +66,7 @@ views {
     }
 
     // --- COMMIT (INSERT) ---------------------------------------------------
-    lakehouse.queryEngine -> ucSpec "GET .../tables/{table} (loadTable: current etag + uuid)" {
+    lakehouse.queryEngine -> unityCatalogSpec "GET .../tables/{table} (loadTable: current etag + uuid)" {
       notes "
         **Check the current state.** To append data, the client first reads
         the table to learn where it stands — the latest **etag** and
@@ -84,7 +84,7 @@ views {
       "
     }
 
-    lakehouse.queryEngine -> ucSpec "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }" {
+    lakehouse.queryEngine -> unityCatalogSpec "POST .../tables/{table} { requirements: [assert-table-uuid, assert-etag], updates: [add-commit] }" {
       notes "
         **Ask for a ratify.** The client asks the catalog to accept the staged
         commit. The **requirements** are safety guards — *'only if the table
@@ -94,7 +94,7 @@ views {
       "
     }
 
-    ucSpec -> lakehouse.queryEngine "ratified — loadTable with the new commit" {
+    unityCatalogSpec -> lakehouse.queryEngine "ratified — loadTable with the new commit" {
       notes "
         **Accepted.** The catalog ratified the commit: it's now the official
         version, even though the file still lives in `_staged_commits`. The

@@ -80,9 +80,9 @@ at four altitudes, and the confusion comes from collapsing them:
 
 - **Concept** — `capability objectStorage` (kept; it is a real layer of the
   reference chain `tableFormat → fileFormat → objectStorage`).
-- **Interface** — `openSpecification s3Api` `specifies → objectStorage`. The S3
+- **Interface** — `openSpecification s3Spec` `specifies → objectStorage`. The S3
   API is the de-facto contract; this is the "interface to infrastructure."
-- **Implementation** — `implementation` (MinIO, AWS S3, …) `implements → s3Api`,
+- **Implementation** — `implementation` (MinIO, AWS S3, …) `implements → s3Spec`,
   tagged `#infra`.
 - **Instance** — a provisioned bucket is a deployment `datastore` node (Backstage
   "Resource"), where trust posture lives.
@@ -91,7 +91,7 @@ General rule: **concept = capability, contract = specification, provider =
 implementation, provisioned thing = deployment resource/datastore.** Where the
 contract is a real standard (S3 API, JDBC, SQL) you get a specification node;
 where it is not, the implementation realizes the capability directly. A dependency
-like "the catalog requires an object store" is `consumes → s3Api` at the contract
+like "the catalog requires an object store" is `consumes → s3Spec` at the contract
 altitude and `service → datastore` at the runtime altitude.
 
 ## Consequences

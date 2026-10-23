@@ -6,7 +6,7 @@ project: unitycatalog
 references:
   - unityCatalogOSS
   - lakehouse.objectStorage
-  - s3Api
+  - s3Spec
 status: ready
 ---
 

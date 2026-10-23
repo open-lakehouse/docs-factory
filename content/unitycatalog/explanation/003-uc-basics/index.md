@@ -8,7 +8,7 @@ references:
   - lakehouse.namespace
   - lakehouse.table
   - lakehouse.volume
-  - lakehouse.registeredFunction
+  - lakehouse.function
   - lakehouse.mlModel
   - lakehouse.governance
   - lakehouse.credentialIssuer

@@ -2,7 +2,7 @@
   "generated": "by `uv run docsnip compat --fix`; edit compatibility.yml and script claims, not this file",
   "version": 2,
   "project": "unitycatalog",
-  "spec": "ucSpec",
+  "spec": "unityCatalogSpec",
   "interfaces": [
     {
       "key": "spark",
@@ -128,7 +128,7 @@
       "label": "uc CLI",
       "version": "0.7.0",
       "package": null,
-      "model": "ucCli",
+      "model": "unityCatalogCli",
       "via": null,
       "integrations": [],
       "viaVersion": null
@@ -148,7 +148,7 @@
       "label": "unitycatalog-ai",
       "version": "0.4.0",
       "package": "unitycatalog-ai",
-      "model": "unityCatalogAI",
+      "model": "unityCatalogAi",
       "via": null,
       "integrations": [],
       "viaVersion": null
@@ -622,7 +622,7 @@
       ]
     },
     {
-      "id": "lakehouse.registeredFunction",
+      "id": "lakehouse.function",
       "title": "Function",
       "columns": [
         "cli",
@@ -1327,7 +1327,7 @@
       ]
     },
     {
-      "id": "ucCli",
+      "id": "unityCatalogCli",
       "title": "Unity Catalog CLI",
       "interfaces": [
         "cli"
@@ -1517,7 +1517,7 @@
       ]
     },
     {
-      "id": "unityCatalogAI",
+      "id": "unityCatalogAi",
       "title": "unitycatalog-ai",
       "interfaces": [
         "unitycatalog-ai"
@@ -1583,12 +1583,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -1736,12 +1736,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -1877,17 +1877,17 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "storage": {
           "implements": [
-            "s3Api"
+            "s3Spec"
           ]
         }
       },
@@ -1949,12 +1949,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2038,12 +2038,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2135,12 +2135,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2298,12 +2298,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2461,12 +2461,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2543,12 +2543,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2625,12 +2625,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2707,12 +2707,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2767,12 +2767,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -2872,12 +2872,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3105,12 +3105,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3316,12 +3316,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3427,12 +3427,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3560,12 +3560,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3693,12 +3693,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3758,12 +3758,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3803,12 +3803,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3848,12 +3848,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3893,12 +3893,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -3938,12 +3938,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -4718,13 +4718,13 @@
         "client": {
           "consumes": [
             "icebergRestSpec",
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
             "icebergRestSpec",
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -6552,12 +6552,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -6641,12 +6641,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -6730,12 +6730,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -6797,12 +6797,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -6884,12 +6884,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -6971,12 +6971,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7058,12 +7058,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7147,12 +7147,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7229,12 +7229,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7296,12 +7296,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7378,12 +7378,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7458,12 +7458,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7521,12 +7521,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7584,12 +7584,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7666,12 +7666,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7733,12 +7733,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7800,12 +7800,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7867,12 +7867,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -7934,12 +7934,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8001,12 +8001,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8068,12 +8068,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8135,12 +8135,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8202,12 +8202,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8299,12 +8299,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8366,12 +8366,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8478,12 +8478,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8560,12 +8560,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8605,12 +8605,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8717,12 +8717,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8799,12 +8799,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8896,12 +8896,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -8978,12 +8978,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9045,12 +9045,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9112,12 +9112,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9179,12 +9179,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9246,12 +9246,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9313,12 +9313,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9380,12 +9380,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9447,12 +9447,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9514,12 +9514,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9581,12 +9581,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9648,12 +9648,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9713,12 +9713,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9773,12 +9773,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9818,12 +9818,12 @@
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9858,17 +9858,17 @@
       "summary": "Register a Python function in a schema, with its signature and source code.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9918,17 +9918,17 @@
       "summary": "Register a Python function together with the helper functions its body calls.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -9963,17 +9963,17 @@
       "summary": "Get a function's parameters, return type, and source code by its full name.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -10023,17 +10023,17 @@
       "summary": "Run a registered function by name with typed parameters, on the caller's side.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -10068,17 +10068,17 @@
       "summary": "List the functions in a schema.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -10128,17 +10128,17 @@
       "summary": "Rebuild a registered function as Python source or as a callable from its stored record.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -10173,17 +10173,17 @@
       "summary": "Replace a function's body or comments under the same name.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -10218,17 +10218,17 @@
       "summary": "Remove a function from the catalog.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -10278,17 +10278,17 @@
       "summary": "Build an agent framework's tool from a registered function, with its description and typed arguments.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -10323,17 +10323,17 @@
       "summary": "Give the tools to an agent, which calls the functions by name and gets their results back.",
       "request": null,
       "family": "function",
-      "asset": "lakehouse.registeredFunction",
+      "asset": "lakehouse.function",
       "feature": null,
       "requires": {
         "client": {
           "consumes": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         },
         "catalog": {
           "implements": [
-            "ucSpec"
+            "unityCatalogSpec"
           ]
         }
       },
@@ -10427,7 +10427,7 @@
     {
       "source": "daft",
       "kind": "consumes",
-      "target": "ucSpec",
+      "target": "unityCatalogSpec",
       "interfaces": [
         "daft"
       ],
@@ -10451,7 +10451,7 @@
     {
       "source": "deltaRs",
       "kind": "consumes",
-      "target": "ucSpec",
+      "target": "unityCatalogSpec",
       "interfaces": [
         "pandas"
       ],
@@ -10532,7 +10532,7 @@
     {
       "source": "duckdbUnityCatalog",
       "kind": "consumes",
-      "target": "ucSpec",
+      "target": "unityCatalogSpec",
       "interfaces": [
         "duckdb"
       ],
@@ -10569,7 +10569,7 @@
     {
       "source": "polars",
       "kind": "consumes",
-      "target": "ucSpec",
+      "target": "unityCatalogSpec",
       "interfaces": [
         "polars"
       ],
@@ -10647,9 +10647,39 @@
       ]
     },
     {
-      "source": "ucCli",
+      "source": "unityCatalogAi",
       "kind": "consumes",
-      "target": "ucSpec",
+      "target": "unityCatalogSpec",
+      "interfaces": [
+        "unitycatalog-ai"
+      ],
+      "journeys": [
+        "function.create",
+        "function.delete",
+        "function.describe",
+        "function.execute",
+        "function.list"
+      ]
+    },
+    {
+      "source": "unityCatalogAi",
+      "kind": "operatesOn",
+      "target": "lakehouse.function",
+      "interfaces": [
+        "unitycatalog-ai"
+      ],
+      "journeys": [
+        "function.create",
+        "function.delete",
+        "function.describe",
+        "function.execute",
+        "function.list"
+      ]
+    },
+    {
+      "source": "unityCatalogCli",
+      "kind": "consumes",
+      "target": "unityCatalogSpec",
       "interfaces": [
         "cli"
       ],
@@ -10685,7 +10715,7 @@
       ]
     },
     {
-      "source": "ucCli",
+      "source": "unityCatalogCli",
       "kind": "operatesOn",
       "target": "lakehouse.credential",
       "interfaces": [
@@ -10697,7 +10727,7 @@
       ]
     },
     {
-      "source": "ucCli",
+      "source": "unityCatalogCli",
       "kind": "operatesOn",
       "target": "lakehouse.externalLocation",
       "interfaces": [
@@ -10711,7 +10741,7 @@
       ]
     },
     {
-      "source": "ucCli",
+      "source": "unityCatalogCli",
       "kind": "operatesOn",
       "target": "lakehouse.namespace",
       "interfaces": [
@@ -10730,7 +10760,7 @@
       ]
     },
     {
-      "source": "ucCli",
+      "source": "unityCatalogCli",
       "kind": "operatesOn",
       "target": "lakehouse.table",
       "interfaces": [
@@ -10747,7 +10777,7 @@
       ]
     },
     {
-      "source": "ucCli",
+      "source": "unityCatalogCli",
       "kind": "operatesOn",
       "target": "lakehouse.volume",
       "interfaces": [
@@ -10763,39 +10793,9 @@
       ]
     },
     {
-      "source": "unityCatalogAI",
-      "kind": "consumes",
-      "target": "ucSpec",
-      "interfaces": [
-        "unitycatalog-ai"
-      ],
-      "journeys": [
-        "function.create",
-        "function.delete",
-        "function.describe",
-        "function.execute",
-        "function.list"
-      ]
-    },
-    {
-      "source": "unityCatalogAI",
-      "kind": "operatesOn",
-      "target": "lakehouse.registeredFunction",
-      "interfaces": [
-        "unitycatalog-ai"
-      ],
-      "journeys": [
-        "function.create",
-        "function.delete",
-        "function.describe",
-        "function.execute",
-        "function.list"
-      ]
-    },
-    {
       "source": "unityCatalogLangChain",
       "kind": "consumes",
-      "target": "ucSpec",
+      "target": "unityCatalogSpec",
       "interfaces": [
         "unitycatalog-langchain"
       ],
@@ -10807,7 +10807,7 @@
     {
       "source": "unityCatalogLangChain",
       "kind": "operatesOn",
-      "target": "lakehouse.registeredFunction",
+      "target": "lakehouse.function",
       "interfaces": [
         "unitycatalog-langchain"
       ],
@@ -10819,7 +10819,7 @@
     {
       "source": "unityCatalogPythonSdk",
       "kind": "consumes",
-      "target": "ucSpec",
+      "target": "unityCatalogSpec",
       "interfaces": [
         "python-sdk"
       ],
@@ -10957,7 +10957,7 @@
     {
       "source": "unityCatalogSpark",
       "kind": "consumes",
-      "target": "ucSpec",
+      "target": "unityCatalogSpec",
       "interfaces": [
         "spark",
         "spark-4.2"

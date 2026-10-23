@@ -146,7 +146,7 @@ Optionally, a tag entry may also carry a model anchor and curated external links
 ```yaml
 unity-catalog:
   description: "Unity Catalog / data governance"
-  element: ucSpec                # optional: LikeC4 element id for hover cards
+  element: unityCatalogSpec                # optional: LikeC4 element id for hover cards
   externalRefs:                  # optional: curated expert links
     - { role: upstream, url: "https://www.unitycatalog.io" }
 ```

@@ -17,11 +17,11 @@ _MODEL = {
         "lakehouse.governance": {"kind": "concern", "title": "Governance"},
         "lakehouse.governance.authorization": {"kind": "concern", "title": "Authz"},
         "lakehouse.observability": {"kind": "concern", "title": "Observability"},
-        "ucSpec": {"kind": "openSpecification", "title": "Unity Catalog API"},
+        "unityCatalogSpec": {"kind": "openSpecification", "title": "Unity Catalog API"},
         "lakehouse.table": {"kind": "asset", "title": "Table"},
         "lakehouse.volume": {"kind": "asset", "title": "Volume"},
         "lakehouse.namespace": {"kind": "asset", "title": "Namespace"},
-        "s3Api": {"kind": "openSpecification", "title": "S3 API"},
+        "s3Spec": {"kind": "openSpecification", "title": "S3 API"},
         "unityCatalogOSS": {
             "kind": "implementation",
             "title": "Unity Catalog (OSS)",
@@ -43,21 +43,21 @@ _MODEL = {
         "r1": {
             "kind": "implements",
             "source": {"model": "unityCatalogOSS"},
-            "target": {"model": "ucSpec"},
+            "target": {"model": "unityCatalogSpec"},
         },
         "r2": {
             "kind": "specifies",
-            "source": {"model": "ucSpec"},
+            "source": {"model": "unityCatalogSpec"},
             "target": {"model": "lakehouse.catalog"},
         },
         "r3": {
             "kind": "implements",
             "source": {"model": "rustfs"},
-            "target": {"model": "s3Api"},
+            "target": {"model": "s3Spec"},
         },
         "r4": {
             "kind": "specifies",
-            "source": {"model": "s3Api"},
+            "source": {"model": "s3Spec"},
             "target": {"model": "lakehouse.objectStorage"},
         },
         "r5": {
@@ -73,12 +73,12 @@ _MODEL = {
         },
         "r7": {
             "kind": "governs",
-            "source": {"model": "ucSpec"},
+            "source": {"model": "unityCatalogSpec"},
             "target": {"model": "lakehouse.table"},
         },
         "r8": {
             "kind": "governs",
-            "source": {"model": "ucSpec"},
+            "source": {"model": "unityCatalogSpec"},
             "target": {"model": "lakehouse.volume"},
         },
         "r9": {
@@ -188,7 +188,7 @@ def test_dangling_and_wrong_kind_refs_fail(tmp_path):
         _module("rustfs", "lakehouse.objectStorage", "object_store"),
     ]
     role_map = _MAP.replace("lakehouse.catalog", "lakehouse.katalog").replace(
-        "target: lakehouse.objectStorage", "target: s3Api"
+        "target: lakehouse.objectStorage", "target: s3Spec"
     )
     report = trestle.check(
         _repo(tmp_path, modules=modules, role_map=role_map, fixed=False)
@@ -200,7 +200,7 @@ def test_dangling_and_wrong_kind_refs_fail(tmp_path):
         in text
     )
     assert "target 'lakehouse.katalog' is not in the estate model" in text
-    assert "target 's3Api' is of kind openSpecification" in text
+    assert "target 's3Spec' is of kind openSpecification" in text
 
 
 def test_coverage_gaps_are_reported_not_failed(tmp_path):
@@ -352,7 +352,7 @@ def test_context_carries_model_facts_only(tmp_path):
         "title": "Unity-Catalog",
         "role": "data_catalog",
         "model": "unityCatalogOSS",
-        "implements": ["ucSpec"],
+        "implements": ["unityCatalogSpec"],
     }
     assert context["concepts"]["unityCatalogOSS"]["links"] == [
         "https://unitycatalog.io"

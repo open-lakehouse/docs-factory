@@ -344,9 +344,9 @@ journeys:
     summary: Read rows
     asset: lakehouse.table
     requires:
-      client: { consumes: [ucSpec] }
-      catalog: { implements: [ucSpec] }
-      storage: { implements: [s3Api] }
+      client: { consumes: [unityCatalogSpec] }
+      catalog: { implements: [unityCatalogSpec] }
+      storage: { implements: [s3Spec] }
   iceberg.read:
     title: Read Iceberg
     summary: Read an Iceberg table
@@ -412,7 +412,7 @@ def test_fit_holds_when_the_environment_runs_every_provider(tmp_path):
 
 
 def test_fit_fails_when_no_implementation_provides_a_requirement(tmp_path):
-    # the environment's catalog implements ucSpec but not Iceberg REST
+    # the environment's catalog implements unityCatalogSpec but not Iceberg REST
     fit = envgen.fit(_with_claims(_fixed(tmp_path), _ICEBERG))
     assert len(fit.errors) == 1
     assert (
@@ -435,7 +435,7 @@ def test_several_candidates_are_reported_not_failed(tmp_path):
     model["relations"]["r9"] = {
         "kind": "implements",
         "source": {"model": "otherCatalog"},
-        "target": {"model": "ucSpec"},
+        "target": {"model": "unityCatalogSpec"},
     }
     root = _repo(tmp_path, plan=plan)
     (root / "architecture" / "dist" / "model.json").write_text(json.dumps(model))
@@ -444,7 +444,7 @@ def test_several_candidates_are_reported_not_failed(tmp_path):
     assert fit.errors == []
     assert len(fit.reports) == 1
     assert (
-        "catalog implements ucSpec is ambiguous (otherCatalog, unityCatalogOSS)"
+        "catalog implements unityCatalogSpec is ambiguous (otherCatalog, unityCatalogOSS)"
         in fit.reports[0]
     )
 

@@ -22,7 +22,7 @@ model {
     governance.authorization -[appliesTo]-> sqlView "grants access to"
     governance.authorization -[appliesTo]-> metricView "grants access to"
     governance.authorization -[appliesTo]-> volume "grants access to"
-    governance.authorization -[appliesTo]-> registeredFunction "grants access to"
+    governance.authorization -[appliesTo]-> function "grants access to"
     governance.authorization -[appliesTo]-> mlModel "grants access to"
     governance.authorization -[appliesTo]-> agentSkill "grants access to"
     governance.authorization -[appliesTo]-> credential "grants access to"

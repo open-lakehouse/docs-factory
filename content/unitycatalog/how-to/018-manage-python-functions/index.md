@@ -5,17 +5,17 @@ diataxis: how-to
 project: unitycatalog
 references:
   - unityCatalogOSS
-  - lakehouse.registeredFunction
-  - unityCatalogAI
+  - lakehouse.function
+  - unityCatalogAi
 status: draft
 ---
 
-A [registered function](model:lakehouse.registeredFunction) in
+A [registered function](model:lakehouse.function) in
 [Unity Catalog](model:unityCatalogOSS) is metadata plus source text: a
 three-part name, typed parameters, a return type, comments from the docstring,
 and the function's body. The server doesn't run it. A caller fetches the
 function by name and runs the body on its own machine. This page uses
-[`unitycatalog-ai`](model:unityCatalogAI), the client library for catalog
+[`unitycatalog-ai`](model:unityCatalogAi), the client library for catalog
 functions, to register, view, replace, and delete them.
 
 :::prerequisites

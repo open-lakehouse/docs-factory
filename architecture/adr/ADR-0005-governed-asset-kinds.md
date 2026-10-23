@@ -31,7 +31,7 @@ answer.
 - **Leave asset kinds implicit** — keep them as prose on the catalog capability.
   Zero new vocabulary, but the breadth differentiator stays unmodeled and the
   capability-coverage question is unanswerable structurally.
-- **Encode coverage as tags on the catalog specs** — e.g. tag `ucSpec`
+- **Encode coverage as tags on the catalog specs** — e.g. tag `unityCatalogSpec`
   `#governs-models`. Cheap, but tags can't carry relationships, per-kind
   descriptions, or the `requires` edges to capabilities; it does not scale.
 - **Model asset instances** — represent actual tables/models. Rejected: instances
@@ -58,7 +58,7 @@ model, agent skill. Two relationship kinds originally connected the axis:
   materialize each kind (table → table format + query engine; volume → object
   storage; model → model tracking).
 - **`governs`** (catalog specification → asset) — which kinds a concrete catalog
-  contract covers. `ucSpec` governs the full set; `icebergRestSpec` governs
+  contract covers. `unityCatalogSpec` governs the full set; `icebergRestSpec` governs
   namespaces + tables. The breadth gap is now visible in the graph.
 
 Instances remain out of scope (deployment/runtime, per ADR-0003). Maturity is

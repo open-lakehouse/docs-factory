@@ -34,7 +34,7 @@ The pieces the question needs are already in place:
 2. **A scope predicate already exists.** `site/src/scope.ts` defines a `SCOPES`
    registry (`delta`, `unitycatalog`) and `inScope(page, scopeId)`. A page is in
    scope if its `project` frontmatter matches **or** its effective LikeC4 model
-   references intersect the scope's anchors (`deltaSpec` / `ucSpec`), expanded
+   references intersect the scope's anchors (`deltaSpec` / `unityCatalogSpec`), expanded
    one hop over the stable altitude edges (`specifies` / `realizes` /
    `implements` / `consumes`). So `delta` catches delta-rs / Delta Spark pages
    even when they only reference an *implementation* of the Delta spec, not the
@@ -47,7 +47,7 @@ The pieces the question needs are already in place:
    plumbed-through concept — not a bolt-on.
 
 4. **The model already anchors the three.** In the LikeC4 model, Delta and Unity
-   Catalog are `openSpecification` elements (`deltaSpec`, `ucSpec`) with
+   Catalog are `openSpecification` elements (`deltaSpec`, `unityCatalogSpec`) with
    `link`s to `https://delta.io` / `https://www.unitycatalog.io`, and
    `open-lakehouse` is the estate boundary that contains everything
    (`architecture/adr/ADR-0006`).
@@ -142,7 +142,7 @@ concern, not an architecture concern.
 |---|---|---|
 | `docs.openlakehouse.io` | `open-lakehouse` (all) | every page, all projects — the superset |
 | `docs.delta.io` | `delta` | pages whose `project=delta` **or** whose model refs touch `deltaSpec` (+1 hop: delta-rs, Delta Spark, Open Sharing…) |
-| `docs.unitycatalog.io` | `unitycatalog` | pages whose `project=unitycatalog` **or** whose model refs touch `ucSpec` (+1 hop) |
+| `docs.unitycatalog.io` | `unitycatalog` | pages whose `project=unitycatalog` **or** whose model refs touch `unityCatalogSpec` (+1 hop) |
 
 Per-domain accent (`data-accent`) already follows the scope, so each domain
 gets its project's visual identity for free.

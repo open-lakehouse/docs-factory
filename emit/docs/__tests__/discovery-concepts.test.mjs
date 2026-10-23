@@ -15,7 +15,7 @@ const projection = publicProjection({
   model: {
     elements: {
       "lakehouse.table": { kind: "asset", title: "Table", tags: ["public"] },
-      ucSpec: { kind: "openSpecification", title: "UC", tags: ["public"] },
+      unityCatalogSpec: { kind: "openSpecification", title: "UC", tags: ["public"] },
       unityCatalogOSS: {
         kind: "implementation",
         title: "UC OSS",
@@ -25,7 +25,11 @@ const projection = publicProjection({
       rustfs: { kind: "implementation", title: "RustFS", tags: ["public"] },
     },
     relations: {
-      a: { kind: "implements", source: { model: "unityCatalogOSS" }, target: { model: "ucSpec" } },
+      a: {
+        kind: "implements",
+        source: { model: "unityCatalogOSS" },
+        target: { model: "unityCatalogSpec" },
+      },
       b: {
         kind: "operatesOn",
         source: { model: "unityCatalogOSS" },
@@ -64,7 +68,7 @@ const projection = publicProjection({
       {
         source: "unityCatalogOSS",
         kind: "implements",
-        target: "ucSpec",
+        target: "unityCatalogSpec",
         interfaces: ["spark"],
         journeys: ["table.list"],
       },
@@ -101,10 +105,10 @@ test("concepts, edges, environments, and journeys", () => {
   expect(out.concepts.map((c) => c.id)).toEqual([
     "lakehouse.table",
     "rustfs",
-    "ucSpec",
     "unityCatalogOSS",
+    "unityCatalogSpec",
   ]);
-  expect(out.concepts[3]).toEqual({
+  expect(out.concepts[2]).toEqual({
     id: "unityCatalogOSS",
     kind: "implementation",
     title: "UC OSS",
@@ -117,7 +121,7 @@ test("concepts, edges, environments, and journeys", () => {
       source: "unityCatalogOSS",
       kind: "implements",
       title: null,
-      target: "ucSpec",
+      target: "unityCatalogSpec",
       partial: false,
       verified: true,
       journeys: [{ id: "table.list", interface: "spark", page: `${ORIGIN}/how-to/list#a` }],

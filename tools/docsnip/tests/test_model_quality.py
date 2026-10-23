@@ -38,7 +38,7 @@ def test_reports_missing_description_link_and_anchor_edge(tmp_path):
     ]
 
 
-def test_concern_needs_an_applies_to_edge_but_no_link(tmp_path):
+def test_concern_needs_an_applies_to_edge_of_its_own_or_a_facets(tmp_path):
     model = tmp_path / "model.json"
     model.write_text(
         json.dumps(
@@ -49,9 +49,15 @@ def test_concern_needs_an_applies_to_edge_but_no_link(tmp_path):
                         "kind": "concern",
                         "description": {"txt": "Spans nothing."},
                     },
+                    "parent": {"kind": "concern", "description": {"txt": "Facets."}},
+                    "parent.facet": {
+                        "kind": "concern",
+                        "description": {"txt": "Spans."},
+                    },
                 },
                 "relations": {
                     "r1": {"kind": "appliesTo", "source": {"model": "spanning"}},
+                    "r2": {"kind": "appliesTo", "source": {"model": "parent.facet"}},
                 },
             }
         )

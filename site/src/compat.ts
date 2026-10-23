@@ -49,10 +49,37 @@ export type CompatRequirements = Record<string, Record<string, string[]>>;
 export interface CompatFeature {
   /** An openSpecification model id. */
   spec: string;
-  /** From content/vocab.json `specFeatures[spec]`. */
+  /** An obligation in architecture/journeys/obligations/<spec>.yml. */
   name: string;
   /** The spec version that added it, e.g. "v3" or "reader 3 · writer 7". */
   since: string | null;
+}
+
+/** An obligation a journey exercises, in the role its client takes (reader, writer, client). */
+export interface CompatCover {
+  spec: string;
+  name: string;
+  role: string;
+}
+
+/** `compat.COVERAGE_STATES` → how many of a role's obligations are in that state. */
+export type CompatCoverageCounts = Record<
+  "tested" | "documented" | "fails" | "missing" | "unknown" | "untracked",
+  number
+>;
+
+/** What one column interface answers of a spec it reaches through the model. */
+export interface CompatCoverage {
+  interface: string;
+  spec: string;
+  roles: Record<string, CompatCoverageCounts>;
+  obligations: {
+    obligation: string;
+    role: string;
+    /** A cell status, or `untracked` when no journey a table shows covers it. */
+    status: string;
+    journeys: string[];
+  }[];
 }
 
 export interface CompatJourney {
@@ -65,8 +92,10 @@ export interface CompatJourney {
   /** The model asset kind it acts on. */
   asset: string | null;
   requires: CompatRequirements;
-  /** The spec feature it exercises; absent in artifacts written before the field. */
+  /** The first obligation it covers, with its spec version; absent in older artifacts. */
   feature?: CompatFeature | null;
+  /** Every obligation it covers; absent in artifacts written before obligations. */
+  covers?: CompatCover[];
   /** Keyed by interface; an interface nothing says anything about is absent. */
   cells: Record<string, CompatCell>;
 }
@@ -138,6 +167,8 @@ export interface CompatMatrix {
   journeys: CompatJourney[];
   verifiedEdges: CompatVerifiedEdge[];
   diagnostics: CompatDiagnostic[];
+  /** Absent in artifacts written before obligations. */
+  coverage?: CompatCoverage[];
 }
 
 const modules = import.meta.glob<CompatMatrix>("../../content/*/compatibility.json", {

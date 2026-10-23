@@ -8,184 +8,184 @@ append-only.write:
   summary: "Append to a table that rejects updates and deletes, and have row changes refused."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: appendOnly, since: writer 2 }
+  covers: [deltaSpec:appendOnly]
 invariants.write:
   title: Write with column invariants
   summary: "Write to a table whose columns carry invariants, and have violating rows refused."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: invariants, since: writer 2 }
+  covers: [deltaSpec:invariants]
 check-constraints.write:
   title: Write with CHECK constraints
   summary: "Write to a table with CHECK constraints, and have violating rows refused."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: checkConstraints, since: writer 3 }
+  covers: [deltaSpec:checkConstraints]
 change-data-feed.write:
   title: Write with change data feed on
   summary: "Change rows in a table that records change data, so the changes can be read later."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: changeDataFeed, since: writer 4 }
+  covers: [deltaSpec:changeDataFeed]
 generated-columns.write:
   title: Write with generated columns
   summary: "Write to a table with generated columns, with their values computed or checked."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: generatedColumns, since: writer 4 }
+  covers: [deltaSpec:generatedColumns]
 identity-columns.write:
   title: Write with identity columns
   summary: "Write to a table with an identity column, with unique values assigned."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: identityColumns, since: writer 6 }
+  covers: [deltaSpec:identityColumns]
 column-mapping.read:
   title: Read with column mapping
   summary: "Read a table whose columns map to physical names or ids, including after renames and drops."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: columnMapping, since: reader 2 · writer 5 }
+  covers: [deltaSpec:columnMapping:reader]
 column-mapping.write:
   title: Write with column mapping
   summary: "Write to a table with column mapping, under its physical column names."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: columnMapping, since: reader 2 · writer 5 }
+  covers: [deltaSpec:columnMapping:writer]
 column-defaults.write:
   title: Write with column defaults
   summary: "Write to a table with column defaults, with omitted columns filled in."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: allowColumnDefaults, since: writer 7 }
+  covers: [deltaSpec:allowColumnDefaults]
 deletion-vectors.read:
   title: Read with deletion vectors
   summary: "Read a table whose deleted rows are marked in deletion vectors, without seeing them."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: deletionVectors, since: reader 3 · writer 7 }
+  covers: [deltaSpec:deletionVectors:reader]
 deletion-vectors.write:
   title: Write deletion vectors
   summary: Delete or update rows by writing deletion vectors instead of rewriting files.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: deletionVectors, since: reader 3 · writer 7 }
+  covers: [deltaSpec:deletionVectors:writer]
 row-tracking.write:
   title: Write with row tracking
   summary: "Write to a table that tracks row ids and commit versions, keeping them assigned."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: rowTracking, since: writer 7 }
+  covers: [deltaSpec:rowTracking]
 timestamp-ntz.read:
   title: Read timestamps without time zone
   summary: Read a table with TIMESTAMP_NTZ columns.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: timestampNtz, since: reader 3 · writer 7 }
+  covers: [deltaSpec:timestampNtz:reader]
 timestamp-ntz.write:
   title: Write timestamps without time zone
   summary: Write TIMESTAMP_NTZ values to a table.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: timestampNtz, since: reader 3 · writer 7 }
+  covers: [deltaSpec:timestampNtz:writer]
 domain-metadata.write:
   title: Write with domain metadata
   summary: "Commit to a table that stores domain metadata, keeping it intact."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: domainMetadata, since: writer 7 }
+  covers: [deltaSpec:domainMetadata]
 v2-checkpoint.read:
   title: Read v2 checkpoints
   summary: Read a table whose checkpoints use the v2 format with sidecar files.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: v2Checkpoint, since: reader 3 · writer 7 }
+  covers: [deltaSpec:v2Checkpoint:reader]
 v2-checkpoint.write:
   title: Write v2 checkpoints
   summary: Checkpoint a table in the v2 format.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: v2Checkpoint, since: reader 3 · writer 7 }
+  covers: [deltaSpec:v2Checkpoint:writer]
 iceberg-compat-v1.write:
   title: Write with IcebergCompatV1
   summary: "Write to a table that keeps Iceberg metadata (UniForm, first version)."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: icebergCompatV1, since: writer 7 }
+  covers: [deltaSpec:icebergCompatV1]
 iceberg-compat-v2.write:
   title: Write with IcebergCompatV2 (UniForm)
   summary: "Write to a table that keeps Iceberg metadata, so Iceberg clients can read it."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: icebergCompatV2, since: writer 7 }
+  covers: [deltaSpec:icebergCompatV2]
 clustering.write:
   title: Write to a clustered table
   summary: "Write to a table with clustering columns, recording them for later clustering."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: clustering, since: writer 7 }
+  covers: [deltaSpec:clustering]
 vacuum-protocol-check.read:
   title: Read with the vacuum protocol check
   summary: Read a table that requires vacuum to check its protocol first.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: vacuumProtocolCheck, since: reader 3 · writer 7 }
+  covers: [deltaSpec:vacuumProtocolCheck:reader]
 vacuum-protocol-check.write:
   title: Vacuum with the protocol check
   summary: "Vacuum a table only after checking its protocol, as the feature requires."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: vacuumProtocolCheck, since: reader 3 · writer 7 }
+  covers: [deltaSpec:vacuumProtocolCheck:writer]
 in-commit-timestamp.write:
   title: Write in-commit timestamps
   summary: "Commit to a table that records each commit's timestamp inside the commit."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: inCommitTimestamp, since: writer 7 }
+  covers: [deltaSpec:inCommitTimestamp]
 type-widening.read:
   title: Read a widened column
   summary: "Read a table whose column types were widened, from files with the older type."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: typeWidening, since: accepted RFC }
+  covers: [deltaSpec:typeWidening:reader]
 type-widening.write:
   title: Widen a column type
   summary: "Widen a column's type, such as INT to BIGINT, without rewriting files."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: typeWidening, since: accepted RFC }
+  covers: [deltaSpec:typeWidening:writer]
 variant.read:
   title: Read VARIANT columns
   summary: Read a table with VARIANT columns.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: variantType, since: reader 3 · writer 7 }
+  covers: [deltaSpec:variantType:reader]
 variant.write:
   title: Write VARIANT columns
   summary: Write semi-structured values to a VARIANT column.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: variantType, since: reader 3 · writer 7 }
+  covers: [deltaSpec:variantType:writer]
 variant-shredding.read:
   title: Read shredded VARIANT columns
   summary: Read a table whose VARIANT columns are stored shredded.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: variantShredding, since: reader 3 · writer 7 }
+  covers: [deltaSpec:variantShredding:reader]
 variant-shredding.write:
   title: Write shredded VARIANT columns
   summary: Write VARIANT columns shredded into typed fields.
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: variantShredding, since: reader 3 · writer 7 }
+  covers: [deltaSpec:variantShredding:writer]
 collations.read:
   title: Read collated strings
   summary: "Read a table with collated STRING columns, honouring their collation."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: collations, since: proposed RFC }
+  covers: [deltaSpec:collations:reader]
 collations.write:
   title: Write collated strings
   summary: "Write to collated STRING columns, keeping statistics valid for their collation."
   asset: lakehouse.table
   path: by-path
-  feature: { spec: deltaSpec, name: collations, since: proposed RFC }
+  covers: [deltaSpec:collations:writer]

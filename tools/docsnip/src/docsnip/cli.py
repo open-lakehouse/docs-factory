@@ -6,7 +6,8 @@ Subcommands:
   versions      — pins against each content/<project>/release.yml (--fix rewrites)
   bump-uc       — move the docs to a new UC release and rewrite every pin
   bump-delta    — move the Delta docs to a new Delta release and rewrite every pin
-  compat        — compatibility tables from script claims (--fix rewrites)
+  compat        — compatibility tables from script claims (--fix rewrites,
+                  --coverage reports spec obligations answered)
   trestle       — Trestle catalog ↔ model coverage (--fix rewrites the context artifact)
   envs          — generated environments' plan.json → model fragments + registry facts (--fix rewrites)
   diagrams      — Trestle diagram embeds and their PNGs (--list: the snapshots to render)
@@ -334,7 +335,11 @@ def cmd_bump(p, release: str, project: versions.Project) -> int:
     return cmd_versions(p) or cmd_compat(p, fix=True)
 
 
-def cmd_compat(p, fix: bool = False) -> int:
+def cmd_compat(p, fix: bool = False, coverage: bool = False) -> int:
+    if coverage:
+        for line in compat.coverage_lines(p["root"]):
+            print(line)
+        return 0
     if fix:
         try:
             changed = compat.fix(p["root"])
@@ -531,6 +536,11 @@ def main(argv: list[str] | None = None) -> int:
     sp_compat.add_argument(
         "--fix", action="store_true", help="rewrite the embedded tables first"
     )
+    sp_compat.add_argument(
+        "--coverage",
+        action="store_true",
+        help="print what each interface answers of its specs' obligations",
+    )
     sp_trestle = sub.add_parser("trestle")
     sp_trestle.add_argument(
         "--fix", action="store_true", help="rewrite the context artifact first"
@@ -594,7 +604,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.cmd == "versions":
         return cmd_versions(p, fix=args.fix)
     if args.cmd == "compat":
-        return cmd_compat(p, fix=args.fix)
+        return cmd_compat(p, fix=args.fix, coverage=args.coverage)
     if args.cmd == "trestle":
         return cmd_trestle(p, fix=args.fix, pin=args.pin)
     if args.cmd == "envs":

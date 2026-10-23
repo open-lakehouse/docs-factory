@@ -1,0 +1,32 @@
+# What the Delta Lake protocol asks of the engines that read or write a table:
+# its table features, by the names PROTOCOL.md's table gives them, then the
+# features its RFCs specify. A writer feature binds writers only; a
+# reader-writer feature binds both. `since` is the protocol version that
+# added it.
+spec: deltaSpec
+source: https://github.com/delta-io/delta/blob/master/PROTOCOL.md
+roles: [reader, writer]
+obligations:
+  appendOnly: { roles: [writer], since: "writer 2" }
+  invariants: { roles: [writer], since: "writer 2" }
+  checkConstraints: { roles: [writer], since: "writer 3" }
+  generatedColumns: { roles: [writer], since: "writer 4" }
+  allowColumnDefaults: { roles: [writer], since: "writer 7" }
+  changeDataFeed: { roles: [writer], since: "writer 4" }
+  columnMapping: { since: "reader 2 · writer 5" }
+  identityColumns: { roles: [writer], since: "writer 6" }
+  deletionVectors: { since: "reader 3 · writer 7" }
+  rowTracking: { roles: [writer], since: "writer 7" }
+  timestampNtz: { since: "reader 3 · writer 7" }
+  domainMetadata: { roles: [writer], since: "writer 7" }
+  v2Checkpoint: { since: "reader 3 · writer 7" }
+  catalogManaged: { since: "reader 3 · writer 7" }
+  icebergCompatV1: { roles: [writer], since: "writer 7" }
+  icebergCompatV2: { roles: [writer], since: "writer 7" }
+  clustering: { roles: [writer], since: "writer 7" }
+  vacuumProtocolCheck: { since: "reader 3 · writer 7" }
+  inCommitTimestamp: { roles: [writer], since: "writer 7" }
+  typeWidening: { since: "accepted RFC" }
+  variantType: { since: "reader 3 · writer 7" }
+  variantShredding: { since: "reader 3 · writer 7" }
+  collations: { since: "proposed RFC" }

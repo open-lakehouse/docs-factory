@@ -75,8 +75,9 @@ uv run docsnip query environment-for <script|project/journey>
 
 Also read:
 
-- `content/<project>/compatibility.yml`, for the journeys the page can claim
-  and their `requires`.
+- `architecture/journeys/journeys/`, for the journeys the page can claim, with
+  their `path` and `roles` (`paths.yml` says what each path requires), and
+  `content/<project>/compatibility.yml`, for the tables that show them.
 - `content/<project>/release.yml`, for the pins. Never type a version by hand.
 - `envs/environments.yml`, for the stack's registry key, title, and `guide`.
 - R01 (`content/unitycatalog/reference/001-features-and-limitations`), the

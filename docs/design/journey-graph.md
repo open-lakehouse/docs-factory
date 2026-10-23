@@ -1,7 +1,8 @@
 # One journey graph for the estate
 
-**Status:** proposal. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md)
-in phases (§6); nothing below is built yet.
+**Status:** P0 (#311) and P1 are built: the catalog in `architecture/journeys/`
+and the per-project projections (§2.2–§2.4 describe them as built). P2–P5 are
+proposals. Implements [ADR-0009](../../architecture/adr/ADR-0009-journeys-as-path-patterns.md).
 **Scope:** `content/*/compatibility.yml`, `content/vocab.json` `specFeatures`,
 `tools/docsnip` (`compat.py`, `scriptmeta.py`, `query.py`, `tabs.py`), the
 `compatibility.json` consumers in `site/` and `emit/`, and the review app's
@@ -14,7 +15,7 @@ ADR-0009 decides what a journey is and where its facts live. This document
 covers how the factory gets there: the files, their schemas, the coverage
 report, and the migration.
 
-## 1. Where it stands
+## 1. Where it stood (before P0)
 
 | | UC | Delta |
 | --- | --- | --- |
@@ -50,18 +51,18 @@ Other gaps, by file:
 - UC `evidence`: six entries list all five Iceberg REST clients as `missing`
   for endpoints the server doesn't have.
 
-## 2. Target layout
+## 2. Layout
 
 ```
 architecture/journeys/
-  obligations/<specId>.yml      what each spec asks of each role
+  obligations/<specId>.yml      what each spec asks of each role (P2)
   paths.yml                     named role → contract patterns
   journeys/<area>.yml           the journeys, one file per area (table, iceberg, namespace, volume, function, view, …)
   interfaces.yml                engine · language bindings
   evidence.yml                  cells no script proves; facts about one implementation
   aliases.yml                   old project-local ids → new ids
 content/<project>/compatibility.yml
-  spec, tabs, tables            the project's projection
+  spec, interfaces, tables      the project's projection: interfaces in tab order, tables
 ```
 
 `docsnip compat` loads `architecture/journeys/` once, then each project's
@@ -91,72 +92,82 @@ operationIds at the release tag, with roles `client` and `server`.
 `unityCatalogDeltaApiSpec.yml` lists the steps of `ManagedDeltaTablesSpec.md`.
 An obligation id is `<specId>:<name>`.
 
-### 2.2 Paths
+### 2.2 Paths (built)
+
+`architecture/journeys/paths.yml` names six paths: `by-path`, `uc-api`,
+`uc-external`, `uc-managed`, `iceberg-rest-api` (namespaces, credentials, and
+tokens through Iceberg REST, with no table format), and `iceberg-rest`. Each
+role uses the exact ADR-0008 verb:
 
 ```yaml
-# architecture/journeys/paths.yml
-by-path:
-  roles:
-    client: { implements: [deltaSpec] }
-uc-api:
-  roles:
-    client: { consumes: [unityCatalogSpec] }
-    catalog: { implements: [unityCatalogSpec] }
-uc-external:
-  roles:
-    client: { consumes: [unityCatalogSpec], implements: [deltaSpec] }
-    catalog: { implements: [unityCatalogSpec] }
 uc-managed:
   roles:
-    client: { consumes: [unityCatalogSpec, unityCatalogDeltaApiSpec], implements: [deltaSpec] }
+    client:
+      consumes: [unityCatalogSpec, unityCatalogDeltaApiSpec]
+      implements: [deltaSpec]
     catalog: { implements: [unityCatalogSpec, unityCatalogDeltaApiSpec] }
-  covers: [deltaSpec:catalogManaged]
-iceberg-rest:
-  roles:
-    client: { consumes: [icebergRestSpec], implements: [icebergSpec] }
-    catalog: { implements: [icebergRestSpec] }
 ```
 
 `roles` replaces `requires`. ADR-0005 used `requires` for an edge kind that
-was later removed. A journey can add a role, such as `storage: { implements:
-[s3Spec] }` for vended credentials, but it can't replace the path's roles.
+was later removed. A journey's own `roles` add a role or a contract to its
+path's, but can't remove one. A read with vended credentials adds `storage: {
+implements: [s3Spec] }`, and joining Delta and Iceberg tables adds the Unity
+Catalog side to `iceberg-rest`. The artifact's `requires` is the resolved union.
+Path-level `covers` waits for obligations (P2).
 
-### 2.3 Journeys
+### 2.3 Journeys (built)
 
 ```yaml
 # architecture/journeys/journeys/table.yml
-table.append:
-  task: append
+managed.append:
+  title: Append to a managed table
+  summary: Append rows to a catalog-managed table, with the catalog accepting the commit.
   asset: lakehouse.table
-  title: Append rows
-  summary: Add rows to a table without touching the rows already there.
-  paths:
-    by-path: {}
-    uc-external: { title: Append to an external table }
-    uc-managed: { title: Append to a managed table }
+  path: uc-managed
+  feature: { spec: deltaSpec, name: catalogManaged, since: "reader 3 · writer 7" }
 ```
 
-A journey and a path together make a cell's row key, written
-`table.append@uc-managed`. Declaring the paths inside one journey keeps a
-task's wording in one place, and per-path `title` and `summary` overrides keep
-today's row labels. `covers` sits on the journey or on one path entry.
+A journey is flat: one id, one `path`, one `asset`, all explicit. The id stays
+the row key, so the existing `<area>.<task>` ids, claims, and review-app
+request ids keep working, and §7's row-key question is settled for now. Areas
+are files (`table`, `table-features`, `iceberg`, `namespace`, `volume`,
+`storage`, `function`, `view`), and an id is unique across them.
 
-### 2.4 Interfaces, claims, evidence
+P1 merged the two journeys that are the same task on the same path:
+`catalog-managed.read` became `managed.read`, and `catalog-managed.write`
+became `managed.append`, carrying Delta's `catalogManaged` feature.
+`aliases.yml` keeps the old ids. The Delta rows that UC scripts prove "through
+Unity Catalog" (`read.version`, `dml.update`, `write.append`, …) are a
+different case: the claim proves a `uc-*` path on a `by-path` row. They move to
+the `uc-*` journeys when Delta gets its Unity Catalog table (P4), because moving
+them now would empty Delta cells that nothing else proves yet.
 
-`interfaces.yml` holds today's interface entries (`label`, `package`, `model`,
-`integrations`, `via`) without `pin`. A projection's `pins:` maps an interface
-to its release-manifest key, and a claim resolves its pin through the claiming
-script's project. A claim names a global interface and a row key:
+### 2.4 Interfaces, claims, evidence (built)
+
+`interfaces.yml` holds each interface once (`label`, `pin`, `package`,
+`model`, `integrations`, `via`). `pin` is a key in each project's
+`release.yml`, so one interface shows each project's version: UC's Spark
+columns read 4.1 and Delta's read 4.2. Delta's Spark interfaces are now
+`apacheSpark` with the `deltaSpark` integration, like UC's, so Delta's engine
+report is `compat:engine:apacheSpark`. `duckdb` (UC) and `duckdb-sql` (Delta)
+are still two keys for one engine and language, and merging them waits for a
+tab-label change on UC pages.
+
+A claim names an interface and a journey, with no project:
 
 ```python
 # claims.spark-sql = [
-#   { journey = "table.append@uc-managed", region = "write-rows", api = "INSERT INTO" },
+#   { journey = "managed.append", region = "write-rows", api = "INSERT INTO" },
 # ]
 ```
 
-The `"delta:spark-sql"` form and the "through Unity Catalog" notes go away.
-Evidence keeps its shape, keyed by row keys. One new form records a fact about
-one implementation:
+It counts in every project that lists the interface and shows the journey on
+a table, and its package pin is checked against the claiming project's scripts.
+`claims."delta:spark-sql"` is an error. Evidence keeps its shape in
+`evidence.yml`, and a `source` names its project
+(`unitycatalog:reference/features-and-limitations#…`) or is a URL.
+
+P3 adds a form that records a fact about one implementation:
 
 ```yaml
 - implementation: unityCatalogServer
@@ -173,13 +184,12 @@ that implementation render as blocked, with the server fact as the reason.
 ```yaml
 # content/delta/compatibility.yml
 spec: deltaSpec
-tabs: [spark-sql, spark-python, spark-scala, spark-java, delta-rs-python, delta-rs-rust, duckdb-sql, duckdb-python]
-pins: { spark-sql: pyspark, delta-rs-python: deltalake, delta-rs-rust: deltalake-rs }
+interfaces: [spark-sql, spark-python, spark-scala, spark-java, delta-rs-python, delta-rs-rust, duckdb-sql, duckdb-python]
 tables:
   create-and-write:
     title: Create and write
     columns: [spark-sql, spark-python, delta-rs-python, delta-rs-rust, duckdb-sql]
-    rows: [table.create@by-path, table.append@by-path, …]
+    rows: [create.table, write.append, …]
   with-unity-catalog:
     title: Delta tables in Unity Catalog
     columns: [spark-sql, delta-rs-python, duckdb-sql]
@@ -227,17 +237,17 @@ rule from [`multi-domain-single-deployment.md`](./multi-domain-single-deployment
 - **The review DB stores journey ids.** A JOURNEY content request stores a
   table id and, when done, a journey id
   (`proto/docs_factory/review/v1/messages.proto`, `CONTENT_REQUEST_KIND_JOURNEY`).
-  `aliases.yml` resolves the stored ids. The DB isn't released, so nothing else
-  migrates. The proto comment that says a journey lands in
-  `content/<project>/compatibility.yml` changes with P1.
+  `aliases.yml` resolves the stored ids. The DB isn't released and no journey
+  carried a `request:` when P1 renamed two, so nothing else migrated. P1
+  updated the proto comments.
 - **Tab order is per project.** `tabs.py` checks page tab groups against the
-  interface order, so each projection keeps `tabs:`.
-- **Skills write journeys.** `review-feedback`, `docs-write`, and `docs-query`
-  name `content/<project>/compatibility.yml` as the place to add or find a
-  journey, and P1 updates them.
-- **`compatibility.json` keeps its version-2 shape through P1.** New fields
-  (`path`, `task`, `covers`, `coverage`) are additive. A journey's JSON `id` is
-  its row key.
+  interface order, so each projection's `interfaces:` list is in tab order.
+- **Skills write journeys.** P1 pointed `review-feedback`, `docs-write`, and
+  `docs-review` at `architecture/journeys/`, and the review-feedback MCP's
+  request instructions with them.
+- **`compatibility.json` is version 3.** P1 replaced a journey's `family` with
+  its `path`. Other new fields (`covers`, `coverage`) are additive. A journey's
+  JSON `id` is its row key.
 
 ## 6. Phases
 
@@ -245,8 +255,8 @@ Each phase is its own PR, and each leaves `docsnip check` green.
 
 | Phase | Change | Done when |
 | --- | --- | --- |
-| **P0** | Exact verbs, in place. Delta `defaults` client `implements: [deltaSpec]`. UC `managed` adds `unityCatalogDeltaApiSpec` and `deltaSpec`, `iceberg` adds `icebergSpec`. `compat.py` checks each role's own verb, not the `_SPEC_EDGES` union. Fix the model gaps this surfaces (`polars` and `daft` `integrates` `pyIceberg`, a Delta edge for `daft`) through `update-architecture`. | Rendered tables are unchanged. `compatibility.json` differs only in `diagnostics` and `verifiedEdges`. |
-| **P1** | `architecture/journeys/` with paths, journeys, interfaces, evidence, and aliases. The loader reads the global files plus the projections. Duplicates merge. Old ids resolve through aliases with a warning, then a one-shot script rewrites the claims. | The set of (interface, row key, outcome) triples equals the pre-migration set mapped through aliases. `bun test src/content-core` passes, and `just uc-docs` / `just delta-docs` render the same engine reports. |
+| **P0** (#311) | Exact verbs, in place. Delta `defaults` client `implements: [deltaSpec]`. UC `managed` adds `unityCatalogDeltaApiSpec` and `deltaSpec`, `iceberg` adds `icebergSpec`. `compat.py` checks each role's own verb, not the `_SPEC_EDGES` union. Fix the model gaps this surfaces (`polars` and `daft` `integrates` `pyIceberg`, a Delta edge for `daft`) through `update-architecture`. | Rendered tables are unchanged. `compatibility.json` differs only in `diagnostics` and `verifiedEdges`. |
+| **P1** (built) | `architecture/journeys/` with paths, journeys, interfaces, evidence, and aliases. The loader reads the global files plus the projections. Duplicates merge. Old ids resolve through aliases with a warning, then a one-shot script rewrites the claims. | The set of (interface, row key, outcome) triples equals the pre-migration set mapped through aliases. `bun test src/content-core` passes, and `just uc-docs` / `just delta-docs` render the same engine reports. |
 | **P2** | `obligations/*.yml` replaces `specFeatures`. `feature:` becomes `covers:` (a list). The coverage report. | `coverage` is in `compatibility.json`, and its numbers are in the PR description. |
 | **P3** | Implementation facts and blocked cells. The six UC Iceberg REST server entries become implementation facts. | The `iceberg-catalog` table renders the same outcomes from one fact per endpoint. |
 | **P4** | `select:` rows. Delta's "with Unity Catalog" table. The open-lakehouse format crosswalk from shared `covers:`. | `catalog.unity` is gone, and the crosswalk page renders from data. |
@@ -254,9 +264,9 @@ Each phase is its own PR, and each leaves `docsnip check` green.
 
 ## 7. Open questions
 
-- **Row-key syntax.** `table.append@uc-managed` reads well in claims. The
-  alternative keeps dotted ids per path (`managed.append`) with `path` as a
-  field, which means fewer renames but loses the task-to-path link in the id.
+- **Row-key syntax.** P1 kept dotted ids with `path` as a field (§2.3).
+  `table.append@uc-managed` would link a task's paths in the id, at the price
+  of renaming every id; revisit when P4 needs to group a task's paths.
 - **Narrowing format roles.** `duckdbDelta`'s title says it "reads Delta tables
   and appends to them". Evidence could mark the writer obligations it doesn't
   attempt, or the model could carry reader and writer as two edges or a tag.

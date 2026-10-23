@@ -118,7 +118,7 @@ group. There is no wrapper directive.
 - Groups sync by label. Choosing "CLI" switches every group on the page that has
   a "CLI" tab, and the site remembers the choice. Use the same labels, in the
   same order, throughout a page.
-- A project whose `compatibility.yml` labels its interfaces
+- A project whose interfaces (listed in its `compatibility.yml`) are labelled
   `<Engine> · <Language>` (Delta Lake: `Spark · SQL`, `Spark · Python`,
   `delta-rs · Python`, `DuckDB · SQL`, `DuckDB · Python`) uses those labels as its
   tabs. The site then shows an engine row and that engine's languages, and it
@@ -433,25 +433,42 @@ declared `compose` file exists.
 ### Compatibility claims
 
 A script can also say what it proves about an engine or client, so a
-compatibility table can cite it. `content/<project>/compatibility.yml` declares
-the project's interfaces (the columns), its journeys, the
-tables pages embed (rows of journeys), and evidence for cells no script here
-proves. An interface's `model` names its engine or client in the estate model.
+compatibility table can cite it. Journeys are estate-wide
+([ADR-0009](../architecture/adr/ADR-0009-journeys-as-path-patterns.md)), so
+one task is one journey whichever project's pages show it.
+[`architecture/journeys/`](../architecture/journeys/README.md) defines them
+once, with the interfaces (the columns), the paths, and evidence for cells no
+script here proves. `content/<project>/compatibility.yml` is the project's
+projection: the interfaces its pages show, in tab order, and the tables they
+embed (rows of journeys).
+
+An interface's `model` names its engine or client in the estate model.
 When it reaches a catalog or table format through an integration, such as
 Spark's Unity Catalog connector or a DuckDB extension, list those elements under
 `integrations`. The interface's `model` must `integrates` each one, and a spec
-edge a journey requires counts on an integration when the model lacks it. A journey is what a reader sets out to do, such as "append to a managed
+edge a journey requires counts on an integration when the model lacks it. Its
+`pin` is a key in each project's `release.yml`, so a column header shows the
+version that project pins.
+
+A journey is what a reader sets out to do, such as "append to a managed
 table", however many calls the client makes along the way: if a script can do
-the journey, the client does what it needs to. Each journey has a `family.task`
-key, a `title` (the row label), and a one-sentence `summary` from the reader's
-side, which the review app shows under the title:
+the journey, the client does what it needs to. Each journey has an
+`<area>.<task>` key, a `title` (the row label), a one-sentence `summary` from
+the reader's side, which the review app shows under the title, the `asset` it
+acts on, and the `path` its participants take to it:
 
 ```yaml
-journeys:
-  managed.append:
-    title: Append to a managed table
-    summary: Append rows to a catalog-managed table, with the catalog accepting the commit.
+# architecture/journeys/journeys/table.yml
+managed.append:
+  title: Append to a managed table
+  summary: Append rows to a catalog-managed table, with the catalog accepting the commit.
+  asset: lakehouse.table
+  path: uc-managed
 ```
+
+Before adding a journey, look for one that already covers the task on the same
+path, in any area file: the Delta and Unity Catalog docs share
+`managed.append`. A renamed journey keeps its old id in `aliases.yml`.
 
 The journeys are exhaustive: every task a page shows an engine or client doing
 is a journey, and the script that runs it claims the cell. A script claims cells in its
@@ -474,37 +491,40 @@ is a journey, and the script that runs it claims the cell. A script claims cells
   the script's code). Assert the failure, so CI flags the cell when the engine
   adds support.
 - Name the interface the reader picks, never one inferred from the language or
-  the dependencies. `<project>:<interface>` claims a cell in another project's
-  matrix; its package pin is checked against the claiming project's scripts.
+  the dependencies. A claim counts in every project that lists the interface
+  and shows the journey on a table, and its package pin is checked against the
+  claiming project's scripts.
 - A claim counts once its page is `ready`. Cells nothing proves come from
-  `evidence`: `outcome: fails` or `missing` renders an unlinked ✗, and
+  `architecture/journeys/evidence.yml`, whose `source` names a page as
+  `<project>:<bucket>/<slug>[#anchor]` or is a URL: `outcome: fails` or
+  `missing` renders an unlinked ✗, and
   `outcome: works` (the engine's own docs or source say so, with `why` and a
   `source`) renders as `docs` on tables that set `documented: true`.
 - A table embedded on a `private` page also shows draft pages' claims, marked
   "(draft)", with each cell's `api` and links to its evidence. Private pages are
   never emitted, so nothing unreviewed reaches readers.
 
-A journey also names the estate-model `asset` it acts on and what its
-participants must support, under `requires`, keyed by participant role. A
-`client` lists the table formats it `implements` and the APIs it `consumes`
-(ADR-0008); a provider such as `catalog` or `storage` lists the specs it
-`implements` (or the capability or concern it `realizes`). Lists are
-conjunctions. A journey's `family` supplies both, and
-the matrix's `defaults` cover journeys with no family. A journey can override
-either:
+A path (`architecture/journeys/paths.yml`) says what a journey's participants
+must support, keyed by participant role. A `client` lists the table formats it
+`implements` and the APIs it `consumes` (ADR-0008); a provider such as
+`catalog` or `storage` lists the specs it `implements` (or the capability or
+concern it `realizes`). Lists are conjunctions. A journey's own `roles` add to
+its path's, never replace them:
 
 ```yaml
-families:
-  iceberg:
-    asset: lakehouse.table
-    requires:
-      client: { consumes: [icebergRestSpec] }
-      catalog: { implements: [icebergRestSpec] }
-journeys:
-  iceberg.read:
-    family: iceberg
-    title: Read an Iceberg table
-    summary: Read an Iceberg table by its catalog name, with credentials the catalog vends.
+# architecture/journeys/paths.yml
+uc-external:
+  roles:
+    client: { consumes: [unityCatalogSpec], implements: [deltaSpec] }
+    catalog: { implements: [unityCatalogSpec] }
+# architecture/journeys/journeys/table.yml
+external.read-vended:
+  title: Read with vended S3 credentials
+  summary: Read an external table on S3 with the short-lived credentials the server vends for it.
+  asset: lakehouse.table
+  path: uc-external
+  roles:
+    storage: { implements: [s3Spec] }
 ```
 
 A journey that exercises one feature of a spec says so in `feature`: the spec
@@ -515,12 +535,12 @@ that added it in `since`. The review app groups the compatibility plan by it,
 so "which Iceberg v3 features does DuckDB handle" is one filter:
 
 ```yaml
-journeys:
-  deletion-vectors.read:
-    family: feature
-    title: Read a table with deletion vectors
-    summary: Read a table whose deletes are recorded in deletion vectors.
-    feature: { spec: deltaSpec, name: deletionVectors, since: "reader 3 · writer 7" }
+deletion-vectors.read:
+  title: Read with deletion vectors
+  summary: Read a table whose deleted rows are marked in deletion vectors, without seeing them.
+  asset: lakehouse.table
+  path: by-path
+  feature: { spec: deltaSpec, name: deletionVectors, since: "reader 3 · writer 7" }
 ```
 
 Claims bind an interface and a script; the script's environment supplies the
@@ -556,8 +576,7 @@ interactive report: a bar per table, expandable to each journey's example and
 script (`remark-engine-coverage.mjs`, counted by `content-core/coverage.mjs`).
 The `.md` twins keep the table.
 
-Keep journey families, participant requirements, and `tables.*` rows/columns
-authored. They are reader-task and editorial choices. The model supplies
+Keep journeys, paths, and `tables.*` rows/columns authored. They are reader-task and editorial choices. The model supplies
 validation and breadth; it never creates a journey or a green cell.
 
 ## Environment diagrams

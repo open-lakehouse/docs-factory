@@ -12,7 +12,8 @@ $ docsnip check          # CI: all of the above
 ```
 
 `docsnip compat --fix` is the one command that writes content: it renders each
-compatibility table (`content/<project>/compatibility.yml` plus the
+compatibility table (the journey catalog in `architecture/journeys/`, the
+project's `content/<project>/compatibility.yml` tables, and the
 `[tool.docs-factory] claims` of scripts on ready pages) between its markers.
 See `content/README.md` "Compatibility claims".
 

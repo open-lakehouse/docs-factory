@@ -90,6 +90,7 @@ architecture/
   glossary.md                  # canonical terminology
   conflicts.md                 # open-questions register
   integrations/trestle.yaml     # Trestle role -> capability/concern contribution (full|partial)
+  journeys/                     # estate-wide compatibility journeys, paths, interfaces, evidence (ADR-0009)
   dist/                         # generated: model.json, trestle-catalog.json, trestle-context.json
 ```
 

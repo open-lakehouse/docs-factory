@@ -33,7 +33,7 @@ skill doesn't touch the page or its status.
 - **Nothing:** `git status --short content/` plus `git diff --name-only main...HEAD -- content/`.
 
 In scope: pages (`content/**/*.md` except README), their `snippets/` (as
-evidence, not style), `nav.yml`, `compatibility.yml`, and `release.yml`
+evidence, not style), `nav.yml`, `architecture/journeys/`, `compatibility.yml`, and `release.yml`
 changes. A renamed page is reviewed at its new path. Record the old path,
 because `nav.yml` and inbound links must follow it.
 

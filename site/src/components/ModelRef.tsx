@@ -1,18 +1,14 @@
-import { Network } from "lucide-react";
-import { lazy, type ReactNode, Suspense, useState } from "react";
+import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { findModelElement, modelHref, resolveRef } from "../model-refs";
 import EntityCard from "./EntityCard";
-
-const ModelDiagramModal = lazy(() => import("./ModelDiagramModal"));
 
 /**
  * Inline reference to a model element, produced from `[label](model:<id>)` by
  * remark-model-links.
  */
 export function ModelRef({ id, children }: { id: string; children?: ReactNode }) {
-  const [open, setOpen] = useState(false);
   const el = findModelElement(id);
   const info = resolveRef(id);
   const href = modelHref(id);
@@ -55,20 +51,6 @@ export function ModelRef({ id, children }: { id: string; children?: ReactNode })
           <EntityCard data={card} />
         </HoverCardContent>
       </HoverCard>
-      <button
-        type="button"
-        className="model-ref-icon"
-        onClick={() => setOpen(true)}
-        aria-label={`Show ${el.title} in the model`}
-        title={`Show ${el.title} in the model`}
-      >
-        <Network size={14} aria-hidden="true" />
-      </button>
-      {open && (
-        <Suspense fallback={null}>
-          <ModelDiagramModal id={id} onClose={() => setOpen(false)} />
-        </Suspense>
-      )}
     </span>
   );
 }

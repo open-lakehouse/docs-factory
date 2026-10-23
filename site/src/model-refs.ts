@@ -57,14 +57,3 @@ export function resolveRef(id: string): ModelRefInfo | null {
     externalUrl: el.links[0]?.url ?? null,
   };
 }
-
-/**
- * The element's own scoped view (`view of <element>`), never a whole-estate
- * fallback: the inline popup stays centered on the clicked node. Null when the
- * model authors none for the element.
- */
-export function focusedViewId(id: string): string | null {
-  const el = findModelElement(id);
-  const scoped = el?.defaultView;
-  return scoped ? String(scoped.id) : null;
-}

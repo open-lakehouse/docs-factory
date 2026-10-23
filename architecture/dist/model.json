@@ -151,6 +151,7 @@
       }
     },
     "metadataKeys": [
+      "aliases",
       "canonicalDoc",
       "sourceRepo",
       "trestleEdge",
@@ -232,7 +233,7 @@
         "txt": "A named query over tables, resolved and run by the query engine."
       },
       "description": {
-        "txt": "A view is a stored query: it has a schema like a table but no data of\nits own. The catalog records its definition, and the query engine\nexpands it against the tables it reads at query time."
+        "txt": "A view is a stored query: it has a schema like a table but no data of\nits own. The catalog records its definition, and the query engine\nexpands it at query time against the tables and other views it\nselects from."
       },
       "title": "View",
       "kind": "asset",
@@ -261,7 +262,8 @@
     },
     "lakehouse.volume": {
       "metadata": {
-        "canonicalDoc": "design/asset-kinds.md"
+        "canonicalDoc": "design/asset-kinds.md",
+        "aliases": "directory"
       },
       "style": {
         "shape": "rectangle",
@@ -271,10 +273,10 @@
         "public"
       ],
       "summary": {
-        "txt": "A governed storage location with usually non-tabular files."
+        "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
       },
       "description": {
-        "txt": "A governed location of arbitrary files (images, PDFs, checkpoints) in object storage,\ncatalogued and access-controlled."
+        "txt": "A volume names a directory of arbitrary files (images, PDFs,\ncheckpoints) in object storage so the catalog can govern access to it.\nIt is metadata only: the volume stores nothing itself, and its files\nstay at the path it names."
       },
       "title": "Volume",
       "kind": "asset",
@@ -1824,20 +1826,30 @@
       "id": "1uz5m3l"
     },
     "57bvil": {
-      "line": "dashed",
-      "title": "tracked via",
+      "title": "",
       "source": {
         "model": "lakehouse.namespace"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
-      "kind": "dependsOn",
+      "kind": "registeredIn",
       "id": "57bvil"
     },
-    "167npp8": {
+    "5dhwb6": {
+      "title": "registered in, and commits coordinated by",
+      "source": {
+        "model": "lakehouse.table"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "registeredIn",
+      "id": "5dhwb6"
+    },
+    "1ur8p5n": {
       "line": "dashed",
-      "title": "data layout on disk",
+      "title": "laid out in",
       "source": {
         "model": "lakehouse.table"
       },
@@ -1845,34 +1857,32 @@
         "model": "lakehouse.tableFormat"
       },
       "kind": "dependsOn",
-      "id": "167npp8"
+      "id": "1ur8p5n"
     },
-    "264lvu": {
+    "10ja5mz": {
       "line": "dashed",
-      "title": "data stored at rest",
+      "title": "",
       "source": {
         "model": "lakehouse.table"
       },
       "target": {
         "model": "lakehouse.objectStorage"
       },
-      "kind": "dependsOn",
-      "id": "264lvu"
+      "kind": "locatedAt",
+      "id": "10ja5mz"
     },
-    "1a916j8": {
-      "line": "dashed",
-      "title": "commit coordination",
+    "1ll6buz": {
+      "title": "",
       "source": {
-        "model": "lakehouse.table"
+        "model": "lakehouse.sqlView"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
-      "kind": "dependsOn",
-      "id": "1a916j8"
+      "kind": "registeredIn",
+      "id": "1ll6buz"
     },
-    "1x6nyti": {
-      "line": "dashed",
+    "59pg5l": {
       "title": "selects from",
       "source": {
         "model": "lakehouse.sqlView"
@@ -1880,10 +1890,10 @@
       "target": {
         "model": "lakehouse.table"
       },
-      "kind": "dependsOn",
-      "id": "1x6nyti"
+      "kind": "derivedFrom",
+      "id": "59pg5l"
     },
-    "fwotwz": {
+    "d1sf5e": {
       "line": "dashed",
       "title": "expanded and run by",
       "source": {
@@ -1893,21 +1903,42 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "dependsOn",
-      "id": "fwotwz"
+      "id": "d1sf5e"
     },
-    "lti1hj": {
-      "line": "dashed",
-      "title": "defined over",
+    "123sc6": {
+      "title": "",
+      "source": {
+        "model": "lakehouse.metricView"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "registeredIn",
+      "id": "123sc6"
+    },
+    "hsbwyg": {
+      "title": "defines measures over",
+      "source": {
+        "model": "lakehouse.metricView"
+      },
+      "target": {
+        "model": "lakehouse.table"
+      },
+      "kind": "derivedFrom",
+      "id": "hsbwyg"
+    },
+    "8owauc": {
+      "title": "defines measures over",
       "source": {
         "model": "lakehouse.metricView"
       },
       "target": {
         "model": "lakehouse.sqlView"
       },
-      "kind": "dependsOn",
-      "id": "lti1hj"
+      "kind": "derivedFrom",
+      "id": "8owauc"
     },
-    "4jt2dd": {
+    "kzfqas": {
       "line": "dashed",
       "title": "computed by",
       "source": {
@@ -1917,33 +1948,43 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "dependsOn",
-      "id": "4jt2dd"
+      "id": "kzfqas"
     },
-    "1r4mwui": {
-      "line": "dashed",
-      "title": "materialized as files in",
-      "source": {
-        "model": "lakehouse.volume"
-      },
-      "target": {
-        "model": "lakehouse.objectStorage"
-      },
-      "kind": "dependsOn",
-      "id": "1r4mwui"
-    },
-    "gv8gtu": {
-      "line": "dashed",
-      "title": "registered in",
+    "rje1dc": {
+      "title": "",
       "source": {
         "model": "lakehouse.volume"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
-      "kind": "dependsOn",
-      "id": "gv8gtu"
+      "kind": "registeredIn",
+      "id": "rje1dc"
     },
-    "j3z9id": {
+    "jkl5ce": {
+      "line": "dashed",
+      "title": "",
+      "source": {
+        "model": "lakehouse.volume"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "locatedAt",
+      "id": "jkl5ce"
+    },
+    "1vej2d9": {
+      "title": "",
+      "source": {
+        "model": "lakehouse.registeredFunction"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "registeredIn",
+      "id": "1vej2d9"
+    },
+    "r2u3mo": {
       "line": "dashed",
       "title": "resolved and run by",
       "source": {
@@ -1953,33 +1994,32 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "dependsOn",
-      "id": "j3z9id"
+      "id": "r2u3mo"
     },
-    "jqmo6r": {
-      "line": "dashed",
-      "title": "registered in",
+    "1da6qi9": {
+      "title": "",
       "source": {
-        "model": "lakehouse.registeredFunction"
+        "model": "lakehouse.mlModel"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
-      "kind": "dependsOn",
-      "id": "jqmo6r"
+      "kind": "registeredIn",
+      "id": "1da6qi9"
     },
-    "1tzx3t2": {
+    "1w7gr5b": {
       "line": "dashed",
-      "title": "data stored at rest",
+      "title": "",
       "source": {
         "model": "lakehouse.mlModel"
       },
       "target": {
         "model": "lakehouse.objectStorage"
       },
-      "kind": "dependsOn",
-      "id": "1tzx3t2"
+      "kind": "locatedAt",
+      "id": "1w7gr5b"
     },
-    "jreheo": {
+    "9fh5es": {
       "line": "dashed",
       "title": "versioned and promoted through",
       "source": {
@@ -1989,33 +2029,32 @@
         "model": "lakehouse.modelTracking"
       },
       "kind": "dependsOn",
-      "id": "jreheo"
+      "id": "9fh5es"
     },
-    "3c2qya": {
-      "line": "dashed",
-      "title": "registered in",
+    "1g4q4wj": {
+      "title": "",
       "source": {
-        "model": "lakehouse.mlModel"
+        "model": "lakehouse.agentSkill"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
-      "kind": "dependsOn",
-      "id": "3c2qya"
+      "kind": "registeredIn",
+      "id": "1g4q4wj"
     },
-    "bnomct": {
+    "13eufqh": {
       "line": "dashed",
-      "title": "files stored at rest",
+      "title": "keeps its files in",
       "source": {
         "model": "lakehouse.agentSkill"
       },
       "target": {
         "model": "lakehouse.volume"
       },
-      "kind": "dependsOn",
-      "id": "bnomct"
+      "kind": "locatedAt",
+      "id": "13eufqh"
     },
-    "1v8tdii": {
+    "lopo2u": {
       "line": "dashed",
       "title": "distributed through",
       "source": {
@@ -2025,21 +2064,20 @@
         "model": "lakehouse.sharing"
       },
       "kind": "dependsOn",
-      "id": "1v8tdii"
+      "id": "lopo2u"
     },
-    "je3zw0": {
-      "line": "dashed",
-      "title": "registered in",
+    "1qexc2f": {
+      "title": "",
       "source": {
-        "model": "lakehouse.agentSkill"
+        "model": "lakehouse.credential"
       },
       "target": {
         "model": "lakehouse.catalog"
       },
-      "kind": "dependsOn",
-      "id": "je3zw0"
+      "kind": "registeredIn",
+      "id": "1qexc2f"
     },
-    "1n5gbfm": {
+    "18l4wat": {
       "line": "dashed",
       "title": "exchanged for scoped credentials through",
       "source": {
@@ -2049,21 +2087,32 @@
         "model": "lakehouse.credentialIssuer"
       },
       "kind": "dependsOn",
-      "id": "1n5gbfm"
+      "id": "18l4wat"
     },
-    "1u6aruz": {
+    "1wnx2cf": {
+      "title": "",
+      "source": {
+        "model": "lakehouse.externalLocation"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "registeredIn",
+      "id": "1wnx2cf"
+    },
+    "1rrdk87": {
       "line": "dashed",
-      "title": "a path in",
+      "title": "",
       "source": {
         "model": "lakehouse.externalLocation"
       },
       "target": {
         "model": "lakehouse.objectStorage"
       },
-      "kind": "dependsOn",
-      "id": "1u6aruz"
+      "kind": "locatedAt",
+      "id": "1rrdk87"
     },
-    "1rjq5ms": {
+    "11k52yp": {
       "line": "dashed",
       "title": "reached with",
       "source": {
@@ -2073,7 +2122,7 @@
         "model": "lakehouse.credential"
       },
       "kind": "dependsOn",
-      "id": "1rjq5ms"
+      "id": "11k52yp"
     },
     "1kvtvt3": {
       "line": "dotted",
@@ -8015,84 +8064,140 @@
           "parent": null,
           "source": "lakehouse.namespace",
           "target": "lakehouse.catalog",
-          "label": "tracked via",
+          "label": null,
           "relations": [
             "57bvil"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "kurvyf",
           "parent": null,
           "source": "lakehouse.table",
           "target": "lakehouse.catalog",
-          "label": "commit coordination",
+          "label": "registered in, and commits coordinated by",
           "relations": [
-            "1a916j8"
+            "5dhwb6"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
+        },
+        {
+          "id": "1uzm9cq",
+          "parent": null,
+          "source": "lakehouse.sqlView",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1ll6buz"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
+        },
+        {
+          "id": "w6w3ao",
+          "parent": null,
+          "source": "lakehouse.metricView",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "123sc6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
         },
         {
           "id": "1mjqvbl",
           "parent": null,
           "source": "lakehouse.volume",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "gv8gtu"
+            "rje1dc"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "10gn1rn",
           "parent": null,
           "source": "lakehouse.registeredFunction",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "jqmo6r"
+            "1vej2d9"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "1cz1lcn",
           "parent": null,
           "source": "lakehouse.mlModel",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "3c2qya"
+            "1da6qi9"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "1v6wcxd",
           "parent": null,
           "source": "lakehouse.agentSkill",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "je3zw0"
+            "1g4q4wj"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
+        },
+        {
+          "id": "3gvuuq",
+          "parent": null,
+          "source": "lakehouse.credential",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1qexc2f"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
+        },
+        {
+          "id": "1088bq1",
+          "parent": null,
+          "source": "lakehouse.externalLocation",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1wnx2cf"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
         },
         {
           "id": "1tnkhx9",
@@ -8333,6 +8438,62 @@
           "kind": "asset"
         },
         {
+          "id": "lakehouse.sqlView",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1uzm9cq"
+          ],
+          "title": "View",
+          "modelRef": "lakehouse.sqlView",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A named query over tables, resolved and run by the query engine."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.metricView",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "w6w3ao"
+          ],
+          "title": "Metric view",
+          "modelRef": "lakehouse.metricView",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A view that declares measures and dimensions, so every engine computes a metric the same way."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
           "id": "lakehouse.volume",
           "parent": null,
           "level": 0,
@@ -8350,13 +8511,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -8445,6 +8607,62 @@
               "url": "https://agentskills.io"
             }
           ],
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.credential",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "3gvuuq"
+          ],
+          "title": "Credential",
+          "modelRef": "lakehouse.credential",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A catalogued cloud identity the catalog uses to mint scoped storage credentials."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
+          "kind": "asset"
+        },
+        {
+          "id": "lakehouse.externalLocation",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1088bq1"
+          ],
+          "title": "External location",
+          "modelRef": "lakehouse.externalLocation",
+          "shape": "rectangle",
+          "color": "green",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "A governed object-storage path, paired with the credential that can reach it."
+          },
+          "tags": [
+            "public"
+          ],
+          "metadata": {
+            "canonicalDoc": "design/asset-kinds.md"
+          },
           "kind": "asset"
         },
         {
@@ -8543,10 +8761,14 @@
             "9wcsu3",
             "3jpgka",
             "kurvyf",
+            "1uzm9cq",
+            "w6w3ao",
             "1mjqvbl",
             "10gn1rn",
             "1cz1lcn",
             "1v6wcxd",
+            "3gvuuq",
+            "1088bq1",
             "1tnkhx9",
             "zvpyvr",
             "1078ltw"
@@ -8687,7 +8909,7 @@
           }
         ]
       },
-      "hash": "hNxEhPYuMGhES-HiQSbyI2TkRiBKF5GQi9DBfw7bhpk"
+      "hash": "KPmlC00PnEIdOi96OjE325RgW8p2pq8pz59K-S4uAaM"
     },
     "explain_metadataStore": {
       "_type": "element",
@@ -9018,7 +9240,7 @@
           "target": "lakehouse.queryEngine",
           "label": "expanded and run by",
           "relations": [
-            "fwotwz"
+            "d1sf5e"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9032,7 +9254,7 @@
           "target": "lakehouse.queryEngine",
           "label": "computed by",
           "relations": [
-            "4jt2dd"
+            "kzfqas"
           ],
           "color": "gray",
           "line": "dashed",
@@ -9046,7 +9268,7 @@
           "target": "lakehouse.queryEngine",
           "label": "resolved and run by",
           "relations": [
-            "j3z9id"
+            "r2u3mo"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10013,9 +10235,9 @@
           "parent": null,
           "source": "lakehouse.table",
           "target": "lakehouse.tableFormat",
-          "label": "data layout on disk",
+          "label": "laid out in",
           "relations": [
-            "167npp8"
+            "1ur8p5n"
           ],
           "color": "gray",
           "line": "dashed",
@@ -10255,7 +10477,7 @@
           }
         ]
       },
-      "hash": "UxpjgjUhkCRE74tyked53q15Io3NUW0INeunhlH1O6Y"
+      "hash": "Dx9Py4PSeShDnZDWaY1ZJSbJXqB9ap1MG4JbOdXb1tY"
     },
     "explain_fileFormat": {
       "_type": "element",
@@ -10498,56 +10720,56 @@
           "parent": null,
           "source": "lakehouse.table",
           "target": "lakehouse.objectStorage",
-          "label": "data stored at rest",
+          "label": null,
           "relations": [
-            "264lvu"
+            "10ja5mz"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "1q3ub9q",
           "parent": null,
           "source": "lakehouse.volume",
           "target": "lakehouse.objectStorage",
-          "label": "materialized as files in",
+          "label": null,
           "relations": [
-            "1r4mwui"
+            "jkl5ce"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "wo4v60",
           "parent": null,
           "source": "lakehouse.mlModel",
           "target": "lakehouse.objectStorage",
-          "label": "data stored at rest",
+          "label": null,
           "relations": [
-            "1tzx3t2"
+            "1w7gr5b"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "oesati",
           "parent": null,
           "source": "lakehouse.externalLocation",
           "target": "lakehouse.objectStorage",
-          "label": "a path in",
+          "label": null,
           "relations": [
-            "1u6aruz"
+            "1rrdk87"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "1u0v1f",
@@ -10687,13 +10909,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -10858,7 +11081,7 @@
           }
         ]
       },
-      "hash": "THCqjglvVTnOKY3IxGmDy4AZEyUEgz9FmmqaPk1qgvg"
+      "hash": "TMa8jCsrVpKiuKRM_kyJ2z6_awnV1uV7ZTkcuYG7YTs"
     },
     "explain_modelTracking": {
       "_type": "element",
@@ -10895,7 +11118,7 @@
           "target": "lakehouse.modelTracking",
           "label": "versioned and promoted through",
           "relations": [
-            "jreheo"
+            "9fh5es"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11041,7 +11264,7 @@
           "target": "lakehouse.sharing",
           "label": "distributed through",
           "relations": [
-            "1v8tdii"
+            "lopo2u"
           ],
           "color": "gray",
           "line": "dashed",
@@ -11327,13 +11550,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -11379,7 +11603,7 @@
           }
         ]
       },
-      "hash": "Rwif9j3TlD5M_7QhFLq4h4cN5yMd2XWNwDFD260Ow4A"
+      "hash": "tRrLc8q66OpJ8O90Meh6jWpT8jrzo6ZaSvNyjFVhpdg"
     },
     "explain_governance": {
       "_type": "element",
@@ -12156,13 +12380,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -12474,7 +12699,7 @@
           }
         ]
       },
-      "hash": "4fMYLmrGLWYc9D8jkIpuusBTt8b0NUCWjL077DngUeY"
+      "hash": "l1GRaQkf3TqpaWZqVbgKth3Xh3Ofgb4EM9MyiK1hoDI"
     },
     "explain_lineage": {
       "_type": "element",
@@ -12743,13 +12968,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -12802,7 +13028,7 @@
           }
         ]
       },
-      "hash": "af4LDSODwp8Jfk4ZD9Cj1dfVByklfTlTmTrn_EORN5A"
+      "hash": "yz4TIc5AOmk78mSq7Y2O9FMVtBKJgDiamUJYqX8swtY"
     },
     "explain_observability": {
       "_type": "element",
@@ -14063,13 +14289,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -14229,7 +14456,7 @@
           }
         ]
       },
-      "hash": "zgPL0sPr3DgUc315bX4-0x-7oambFq8rVF4We0GUFv8"
+      "hash": "8qckD5nyq1e1ysajStuWmyIheApUCSZ_kVXPfYHwPho"
     },
     "explain_fineGrainedAccess": {
       "_type": "element",
@@ -23475,40 +23702,54 @@
           "target": "lakehouse.table",
           "label": "selects from",
           "relations": [
-            "1x6nyti"
+            "59pg5l"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "derivedFrom"
+        },
+        {
+          "id": "geozst",
+          "parent": null,
+          "source": "lakehouse.metricView",
+          "target": "lakehouse.table",
+          "label": "defines measures over",
+          "relations": [
+            "hsbwyg"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "derivedFrom"
         },
         {
           "id": "893eao",
           "parent": null,
           "source": "lakehouse.metricView",
           "target": "lakehouse.sqlView",
-          "label": "defined over",
+          "label": "defines measures over",
           "relations": [
-            "lti1hj"
+            "8owauc"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "derivedFrom"
         },
         {
           "id": "1c0oiiy",
           "parent": null,
           "source": "lakehouse.agentSkill",
           "target": "lakehouse.volume",
-          "label": "files stored at rest",
+          "label": "keeps its files in",
           "relations": [
-            "bnomct"
+            "13eufqh"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "6qs0ch",
@@ -23517,7 +23758,7 @@
           "target": "lakehouse.credential",
           "label": "reached with",
           "relations": [
-            "1rjq5ms"
+            "11k52yp"
           ],
           "color": "gray",
           "line": "dashed",
@@ -23573,7 +23814,7 @@
           "target": "lakehouse.queryEngine",
           "label": "expanded and run by",
           "relations": [
-            "fwotwz"
+            "d1sf5e"
           ],
           "color": "gray",
           "line": "dashed",
@@ -23587,7 +23828,7 @@
           "target": "lakehouse.queryEngine",
           "label": "computed by",
           "relations": [
-            "4jt2dd"
+            "kzfqas"
           ],
           "color": "gray",
           "line": "dashed",
@@ -23601,7 +23842,7 @@
           "target": "lakehouse.queryEngine",
           "label": "resolved and run by",
           "relations": [
-            "j3z9id"
+            "r2u3mo"
           ],
           "color": "gray",
           "line": "dashed",
@@ -23655,84 +23896,140 @@
           "parent": null,
           "source": "lakehouse.namespace",
           "target": "lakehouse.catalog",
-          "label": "tracked via",
+          "label": null,
           "relations": [
             "57bvil"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "kurvyf",
           "parent": null,
           "source": "lakehouse.table",
           "target": "lakehouse.catalog",
-          "label": "commit coordination",
+          "label": "registered in, and commits coordinated by",
           "relations": [
-            "1a916j8"
+            "5dhwb6"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
+        },
+        {
+          "id": "1uzm9cq",
+          "parent": null,
+          "source": "lakehouse.sqlView",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1ll6buz"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
+        },
+        {
+          "id": "w6w3ao",
+          "parent": null,
+          "source": "lakehouse.metricView",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "123sc6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
         },
         {
           "id": "1mjqvbl",
           "parent": null,
           "source": "lakehouse.volume",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "gv8gtu"
+            "rje1dc"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "10gn1rn",
           "parent": null,
           "source": "lakehouse.registeredFunction",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "jqmo6r"
+            "1vej2d9"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "1cz1lcn",
           "parent": null,
           "source": "lakehouse.mlModel",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "3c2qya"
+            "1da6qi9"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "1v6wcxd",
           "parent": null,
           "source": "lakehouse.agentSkill",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "je3zw0"
+            "1g4q4wj"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
+        },
+        {
+          "id": "3gvuuq",
+          "parent": null,
+          "source": "lakehouse.credential",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1qexc2f"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
+        },
+        {
+          "id": "1088bq1",
+          "parent": null,
+          "source": "lakehouse.externalLocation",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1wnx2cf"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
         },
         {
           "id": "1tnkhx9",
@@ -24163,7 +24460,8 @@
             "pa5wnl"
           ],
           "outEdges": [
-            "6qs0ch"
+            "6qs0ch",
+            "1088bq1"
           ],
           "title": "External location",
           "modelRef": "lakehouse.externalLocation",
@@ -24194,8 +24492,10 @@
             "1c4t229"
           ],
           "outEdges": [
+            "geozst",
             "893eao",
-            "fpqd3b"
+            "fpqd3b",
+            "w6w3ao"
           ],
           "title": "Metric view",
           "modelRef": "lakehouse.metricView",
@@ -24238,13 +24538,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -24257,7 +24558,9 @@
             "11igw56",
             "6qs0ch"
           ],
-          "outEdges": [],
+          "outEdges": [
+            "3gvuuq"
+          ],
           "title": "Credential",
           "modelRef": "lakehouse.credential",
           "shape": "rectangle",
@@ -24290,7 +24593,8 @@
           ],
           "outEdges": [
             "d6wzpz",
-            "se6qb1"
+            "se6qb1",
+            "1uzm9cq"
           ],
           "title": "View",
           "modelRef": "lakehouse.sqlView",
@@ -24320,7 +24624,8 @@
             "1mzyvvd",
             "ggmxfz",
             "3b3mp2",
-            "d6wzpz"
+            "d6wzpz",
+            "geozst"
           ],
           "outEdges": [
             "kurvyf"
@@ -24392,10 +24697,14 @@
             "1mt9s8b",
             "3jpgka",
             "kurvyf",
+            "1uzm9cq",
+            "w6w3ao",
             "1mjqvbl",
             "10gn1rn",
             "1cz1lcn",
             "1v6wcxd",
+            "3gvuuq",
+            "1088bq1",
             "1tnkhx9"
           ],
           "outEdges": [],
@@ -24425,7 +24734,7 @@
           "navigateTo": "explain_catalog"
         }
       ],
-      "hash": "vCWzFiznoy_SiyIAtxgCH8c8vB0_qHAM5Jodxs0IVO4"
+      "hash": "55Vdeo7K_kXJoC7l0uv3jrTrw1sKuMGX1DOmWcf3Gfo"
     },
     "assetGovernanceBreadth": {
       "_type": "element",
@@ -24631,40 +24940,54 @@
           "target": "lakehouse.table",
           "label": "selects from",
           "relations": [
-            "1x6nyti"
+            "59pg5l"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "derivedFrom"
+        },
+        {
+          "id": "geozst",
+          "parent": "lakehouse",
+          "source": "lakehouse.metricView",
+          "target": "lakehouse.table",
+          "label": "defines measures over",
+          "relations": [
+            "hsbwyg"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "derivedFrom"
         },
         {
           "id": "893eao",
           "parent": "lakehouse",
           "source": "lakehouse.metricView",
           "target": "lakehouse.sqlView",
-          "label": "defined over",
+          "label": "defines measures over",
           "relations": [
-            "lti1hj"
+            "8owauc"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "derivedFrom"
         },
         {
           "id": "1c0oiiy",
           "parent": "lakehouse",
           "source": "lakehouse.agentSkill",
           "target": "lakehouse.volume",
-          "label": "files stored at rest",
+          "label": "keeps its files in",
           "relations": [
-            "bnomct"
+            "13eufqh"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "6qs0ch",
@@ -24673,7 +24996,7 @@
           "target": "lakehouse.credential",
           "label": "reached with",
           "relations": [
-            "1rjq5ms"
+            "11k52yp"
           ],
           "color": "gray",
           "line": "dashed",
@@ -24849,6 +25172,7 @@
             "11b4zkp"
           ],
           "outEdges": [
+            "geozst",
             "893eao"
           ],
           "title": "Metric view",
@@ -25040,13 +25364,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -25087,7 +25412,8 @@
           "inEdges": [
             "1xgx7ym",
             "91p14l",
-            "d6wzpz"
+            "d6wzpz",
+            "geozst"
           ],
           "outEdges": [],
           "title": "Table",
@@ -25122,7 +25448,7 @@
           }
         ]
       },
-      "hash": "eJZh2aMU1jlxOiYhc4xfpYVx7jWvYsDTU2GEuQHSjY8"
+      "hash": "HtnJGQr8mAynjSliNVAQYzk6fnOhhaP_oCiGH27rMp8"
     },
     "assetCapabilities": {
       "_type": "element",
@@ -25144,14 +25470,14 @@
           "parent": "lakehouse",
           "source": "lakehouse.namespace",
           "target": "lakehouse.catalog",
-          "label": "tracked via",
+          "label": null,
           "relations": [
             "57bvil"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "1onsglj",
@@ -25173,23 +25499,23 @@
           "parent": "lakehouse",
           "source": "lakehouse.table",
           "target": "lakehouse.catalog",
-          "label": "commit coordination",
+          "label": "registered in, and commits coordinated by",
           "relations": [
-            "1a916j8"
+            "5dhwb6"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "115nb49",
           "parent": "lakehouse",
           "source": "lakehouse.table",
           "target": "lakehouse.tableFormat",
-          "label": "data layout on disk",
+          "label": "laid out in",
           "relations": [
-            "167npp8"
+            "1ur8p5n"
           ],
           "color": "gray",
           "line": "dashed",
@@ -25201,14 +25527,14 @@
           "parent": "lakehouse",
           "source": "lakehouse.table",
           "target": "lakehouse.objectStorage",
-          "label": "data stored at rest",
+          "label": null,
           "relations": [
-            "264lvu"
+            "10ja5mz"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "d6wzpz",
@@ -25217,12 +25543,26 @@
           "target": "lakehouse.table",
           "label": "selects from",
           "relations": [
-            "1x6nyti"
+            "59pg5l"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "derivedFrom"
+        },
+        {
+          "id": "geozst",
+          "parent": "lakehouse",
+          "source": "lakehouse.metricView",
+          "target": "lakehouse.table",
+          "label": "defines measures over",
+          "relations": [
+            "hsbwyg"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "derivedFrom"
         },
         {
           "id": "1mzyvvd",
@@ -25255,13 +25595,27 @@
           "kind": "appliesTo"
         },
         {
+          "id": "1uzm9cq",
+          "parent": "lakehouse",
+          "source": "lakehouse.sqlView",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1ll6buz"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
+        },
+        {
           "id": "se6qb1",
           "parent": "lakehouse",
           "source": "lakehouse.sqlView",
           "target": "lakehouse.queryEngine",
           "label": "expanded and run by",
           "relations": [
-            "fwotwz"
+            "d1sf5e"
           ],
           "color": "gray",
           "line": "dashed",
@@ -25273,14 +25627,14 @@
           "parent": "lakehouse",
           "source": "lakehouse.metricView",
           "target": "lakehouse.sqlView",
-          "label": "defined over",
+          "label": "defines measures over",
           "relations": [
-            "lti1hj"
+            "8owauc"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "derivedFrom"
         },
         {
           "id": "6o12f8",
@@ -25313,13 +25667,27 @@
           "kind": "appliesTo"
         },
         {
+          "id": "w6w3ao",
+          "parent": "lakehouse",
+          "source": "lakehouse.metricView",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "123sc6"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
+        },
+        {
           "id": "fpqd3b",
           "parent": "lakehouse",
           "source": "lakehouse.metricView",
           "target": "lakehouse.queryEngine",
           "label": "computed by",
           "relations": [
-            "4jt2dd"
+            "kzfqas"
           ],
           "color": "gray",
           "line": "dashed",
@@ -25347,42 +25715,42 @@
           "parent": "lakehouse",
           "source": "lakehouse.volume",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "gv8gtu"
+            "rje1dc"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "1q3ub9q",
           "parent": "lakehouse",
           "source": "lakehouse.volume",
           "target": "lakehouse.objectStorage",
-          "label": "materialized as files in",
+          "label": null,
           "relations": [
-            "1r4mwui"
+            "jkl5ce"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "1c0oiiy",
           "parent": "lakehouse",
           "source": "lakehouse.agentSkill",
           "target": "lakehouse.volume",
-          "label": "files stored at rest",
+          "label": "keeps its files in",
           "relations": [
-            "bnomct"
+            "13eufqh"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "cdu1uh",
@@ -25432,14 +25800,14 @@
           "parent": "lakehouse",
           "source": "lakehouse.registeredFunction",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "jqmo6r"
+            "1vej2d9"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "evzpms",
@@ -25448,7 +25816,7 @@
           "target": "lakehouse.queryEngine",
           "label": "resolved and run by",
           "relations": [
-            "j3z9id"
+            "r2u3mo"
           ],
           "color": "gray",
           "line": "dashed",
@@ -25475,28 +25843,28 @@
           "parent": "lakehouse",
           "source": "lakehouse.mlModel",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "3c2qya"
+            "1da6qi9"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "wo4v60",
           "parent": "lakehouse",
           "source": "lakehouse.mlModel",
           "target": "lakehouse.objectStorage",
-          "label": "data stored at rest",
+          "label": null,
           "relations": [
-            "1tzx3t2"
+            "1w7gr5b"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "locatedAt"
         },
         {
           "id": "1ojjwck",
@@ -25505,7 +25873,7 @@
           "target": "lakehouse.modelTracking",
           "label": "versioned and promoted through",
           "relations": [
-            "jreheo"
+            "9fh5es"
           ],
           "color": "gray",
           "line": "dashed",
@@ -25546,14 +25914,14 @@
           "parent": "lakehouse",
           "source": "lakehouse.agentSkill",
           "target": "lakehouse.catalog",
-          "label": "registered in",
+          "label": null,
           "relations": [
-            "je3zw0"
+            "1g4q4wj"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
         },
         {
           "id": "1lyniiy",
@@ -25562,7 +25930,7 @@
           "target": "lakehouse.sharing",
           "label": "distributed through",
           "relations": [
-            "1v8tdii"
+            "lopo2u"
           ],
           "color": "gray",
           "line": "dashed",
@@ -25585,13 +25953,27 @@
           "kind": "appliesTo"
         },
         {
+          "id": "3gvuuq",
+          "parent": "lakehouse",
+          "source": "lakehouse.credential",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1qexc2f"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "registeredIn"
+        },
+        {
           "id": "1i4vp1d",
           "parent": "lakehouse",
           "source": "lakehouse.credential",
           "target": "lakehouse.credentialIssuer",
           "label": "exchanged for scoped credentials through",
           "relations": [
-            "1n5gbfm"
+            "18l4wat"
           ],
           "color": "gray",
           "line": "dashed",
@@ -25605,7 +25987,7 @@
           "target": "lakehouse.credential",
           "label": "reached with",
           "relations": [
-            "1rjq5ms"
+            "11k52yp"
           ],
           "color": "gray",
           "line": "dashed",
@@ -25628,18 +26010,32 @@
           "kind": "appliesTo"
         },
         {
-          "id": "oesati",
+          "id": "1088bq1",
           "parent": "lakehouse",
           "source": "lakehouse.externalLocation",
-          "target": "lakehouse.objectStorage",
-          "label": "a path in",
+          "target": "lakehouse.catalog",
+          "label": null,
           "relations": [
-            "1u6aruz"
+            "1wnx2cf"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "registeredIn"
+        },
+        {
+          "id": "oesati",
+          "parent": "lakehouse",
+          "source": "lakehouse.externalLocation",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "1rrdk87"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "locatedAt"
         },
         {
           "id": "q1ehno",
@@ -26088,7 +26484,9 @@
             "1oqrob1"
           ],
           "outEdges": [
+            "geozst",
             "893eao",
+            "w6w3ao",
             "fpqd3b"
           ],
           "title": "Metric view",
@@ -26186,6 +26584,7 @@
           ],
           "outEdges": [
             "6qs0ch",
+            "1088bq1",
             "oesati"
           ],
           "title": "External location",
@@ -26283,6 +26682,7 @@
           ],
           "outEdges": [
             "d6wzpz",
+            "1uzm9cq",
             "se6qb1"
           ],
           "title": "View",
@@ -26328,13 +26728,14 @@
             "size": "md"
           },
           "description": {
-            "txt": "A governed storage location with usually non-tabular files."
+            "txt": "A governed directory: a catalog name for a storage path that holds files, usually non-tabular."
           },
           "tags": [
             "public"
           ],
           "metadata": {
-            "canonicalDoc": "design/asset-kinds.md"
+            "canonicalDoc": "design/asset-kinds.md",
+            "aliases": "directory"
           },
           "kind": "asset"
         },
@@ -26375,6 +26776,7 @@
             "14iy0wf"
           ],
           "outEdges": [
+            "3gvuuq",
             "1i4vp1d"
           ],
           "title": "Credential",
@@ -26430,6 +26832,7 @@
           "children": [],
           "inEdges": [
             "d6wzpz",
+            "geozst",
             "1mzyvvd",
             "1fu0di2"
           ],
@@ -26502,10 +26905,14 @@
           "inEdges": [
             "3jpgka",
             "kurvyf",
+            "1uzm9cq",
+            "w6w3ao",
             "1mjqvbl",
             "10gn1rn",
             "1cz1lcn",
             "1v6wcxd",
+            "3gvuuq",
+            "1088bq1",
             "1tnkhx9",
             "zvpyvr",
             "1078ltw"
@@ -26698,7 +27105,7 @@
           "navigateTo": "explain_objectStorage"
         }
       ],
-      "hash": "bBCsR7eeXSnGyD9tPFevlY4CHEylq8lnazEXHsA8nAc"
+      "hash": "JcI9LHyVIG8v8JZk056TLpdP9VKwcyAGC9U_t1FZLtw"
     }
   },
   "deployments": {

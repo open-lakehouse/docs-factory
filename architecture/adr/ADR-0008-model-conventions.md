@@ -54,7 +54,7 @@ takes their union with `dependsOn`.
 |---|---|---|
 | `registeredIn` | asset → catalog | The catalog records the asset. Every asset kind has one. |
 | `locatedAt` | asset → objectStorage or volume | The asset names a path there. |
-| `derivedFrom` | asset → asset | Type-level: an instance can be defined over instances of the target. One edge per allowed source kind. |
+| `derivedFrom` | asset → asset | Type-level: an instance can be defined over instances of the target. One edge per allowed source kind. LikeC4 allows no self-edge, so a kind that can derive from itself (a view over views) says so in its description. |
 | `builtOn` | implementation → implementation | The required core the implementation can't run without. |
 | `uses` | person → capability; deployment node → node | A caller and what it calls. |
 

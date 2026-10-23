@@ -29,7 +29,7 @@ machine.
 | Pattern | Server | Metadata and data | Who shares the catalog |
 | --- | --- | --- | --- |
 | [Local](#local-everything-on-one-machine) | your machine | your machine's disk | you |
-| [Hybrid](#hybrid-a-local-server-with-hosted-state) | each person's machine | a hosted database and bucket | everyone with the database and bucket credentials |
+| [Hybrid](#hybrid-a-local-server-with-hosted-state) | each person's machine | a hosted database and bucket | everyone with the database credentials |
 | [Fully hosted](#fully-hosted-only-clients-on-your-machine) | the cloud | the cloud | every client the server authenticates |
 
 The local and hybrid patterns are environments these docs generate with
@@ -79,14 +79,14 @@ with their own access, or when the catalog has to outlive your machine.
 The hybrid pattern moves the two stores to hosted services and keeps the
 server on your machine. Compared with the local pattern, only the stores
 change: [PostgreSQL](model:postgresql) becomes a Neon project, and RustFS
-becomes a bucket on an S3-compatible service such as Cloudflare R2 or Tigris.
-Unity Catalog still runs in a container on your machine.
+becomes a bucket on hosted object storage. Unity Catalog still runs in a
+container on your machine.
 
 ![Clients on the host reach Unity Catalog on port 8080; Unity Catalog keeps its metadata in a hosted PostgreSQL database on Neon and its files in a bucket on an external S3-compatible store](../../../../envs/uc-hybrid/diagram.png "trestle=uc-hybrid")
 
 Because the catalog lives in the database, this is already a shared
-deployment. Each person runs the same environment with the same database and
-bucket credentials, and every server reads and writes the same catalog. A
+deployment. Each person runs the same environment with the same database
+credentials, and every server reads and writes the same catalog. A
 catalog one server creates is listed by the others, and both servers still
 list it after a restart. This page's script, `shared_database.py`, checks that
 with two servers on the local pattern's database. These docs haven't yet run
@@ -99,33 +99,43 @@ renders the stack again, and starts it. The
 [environment's archive](/env/uc-hybrid.tar.gz) holds those steps in its
 `README.md`.
 
-The pattern's limits come from the same fact that makes it work. Every
-participant holds the database password and the bucket key:
+Run the pattern on object storage the server can vend credentials for:
+storage with an STS-style role-assumption API, where the server calls
+`AssumeRole` on a storage role and hands clients a credential scoped to one
+table or volume that expires after an hour (see
+[Credential vending](../credential-vending/index.md)). Amazon S3 is one such
+store; the local pattern's RustFS is another, reached through the AWS
+hostnames its stack imitates. Then the database credentials are the only
+secret the participants share:
 
 - **There is no access control between participants.** Each server runs with
   authorization disabled, and anyone with the database password can change
   the catalog directly. Share the credentials only with people you would make
   administrators.
-- **Clients bring their own storage keys.** On S3, the server vends
-  credentials by assuming an IAM role for the bucket. The environment
-  registers a bucket only when that role exists, as on Amazon S3, so a bucket
-  on R2 or Tigris stays unregistered, and engines read and write it with the
-  key in `secrets.env`. (The local pattern's RustFS gets vended credentials
-  only because its stack imitates AWS.) Clients that rely on vended
-  credentials don't work, and neither does managed storage: credential
-  requests for those objects fail with `FAILED_PRECONDITION`.
-- **Every machine holds the secrets.** Each participant's `secrets.env` holds
-  the database host, user, and password and the bucket's endpoint and key.
+- **The server vends storage credentials, so no one shares a bucket key.**
+  The bucket is registered with the catalog as a storage credential and an
+  external location, and engines ask the server for a credential before they
+  read or write a table or volume. Each server signs its `AssumeRole` calls
+  with a cloud identity that may assume the storage role, picked up from the
+  default credential chain on that machine (see
+  [Configure AWS storage credentials and external locations](../../how-to/configure-aws-storage/index.md#run-the-server-as-a-master-role)).
+  <!-- TODO(open question): whether each participant signs in with their own identity allowed to assume the storage role, or the pattern needs one shared master identity; these docs haven't run vending from more than one hybrid server. -->
+- **The `uc-hybrid` environment doesn't vend yet.** It selects a generic
+  S3-compatible store and registers a bucket only when it has an IAM role for
+  it, so its bucket stays unregistered. Its `secrets.env` carries a bucket
+  key, and engines read and write the bucket with it. Clients that rely on
+  vended credentials don't work, and neither does managed storage: credential
+  requests for those objects fail with `FAILED_PRECONDITION`. Share a
+  storage key only in a sandbox: a key that opens every file goes around the
+  catalog.
+  <!-- TODO(open question): register the hybrid bucket with a storage role so the environment vends and secrets.env holds only the database credentials; this needs a recipe change. -->
 
 Choose it for a small team that trusts each other: a shared sandbox, a
 workshop, or a demo that has to survive a laptop restart. It lets you start
 growing a lakehouse alongside the business with people you'd hand the keys to
-anyway, because that's what it does: it hands them the keys. A catalog governs
-access only while it holds the store credentials and clients have to ask it
-for theirs. Here each participant's `secrets.env` holds the database login and
-a bucket key that reads and writes every file, so anyone can go around the
-catalog to the metadata and the data. When the catalog has to decide who may
-read or change what, move to the
+anyway, because each participant holds the database login and can change the
+metadata without asking the catalog, and each server vends to any caller.
+When the catalog has to decide who may read or change what, move to the
 [fully hosted](#fully-hosted-only-clients-on-your-machine) pattern, where the
 server keeps those credentials.
 
@@ -143,9 +153,8 @@ their own token and the short-lived credentials the server vends. The example
 here uses Amazon S3, where the server vends by assuming an IAM role. The server
 also vends for Azure Data Lake Storage and Google Cloud Storage; see
 [How the server mints a credential](../credential-vending/index.md#how-the-server-mints-a-credential).
-Moving the hybrid pattern's server into the cloud doesn't by itself take the
-bucket keys off clients: the server still has no IAM role to assume for a
-bucket on R2 or Tigris.
+Compared with the hybrid pattern, the database password and the server's
+cloud identity leave the participants' machines.
 
 With clients on the other side of a network, the catalog sits at the trust
 boundary that [Credential vending](../credential-vending/index.md)

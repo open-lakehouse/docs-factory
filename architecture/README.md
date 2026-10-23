@@ -81,7 +81,6 @@ architecture/
       logical-views.likec4      # logical views
       deployment-views.likec4   # one view per deployment environment
       flows.likec4              # dynamic/sequence views
-      explain-views.likec4      # per-element neighborhoods; seed element.defaultView on explanation pages
       blog-views.likec4         # blog-specific preview views (not the reference model)
   design/                       # architecture-focused prose (canonicalDoc targets)
   adr/                          # architecture decision records

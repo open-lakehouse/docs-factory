@@ -137,7 +137,6 @@ From the live model plus content frontmatter the app derives:
   `description`);
 - typed neighbours (`specifies` / `implements` / `consumes` / `realizes` /
   `governs` / `dependsOn` / …);
-- focused diagrams from `element.defaultView` (the `explain_*` views);
 - inline `model:` links as `ModelRef` (label + neighborhood modal);
 - the review app's Model section (`/model`): every view, an inspector for what
   the pipeline derives from each element (from `model-index.json`, built by

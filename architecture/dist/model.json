@@ -1083,7 +1083,7 @@
         }
       ],
       "tags": [
-        "service",
+        "library",
         "public"
       ],
       "description": {
@@ -1194,7 +1194,7 @@
         }
       ],
       "tags": [
-        "library",
+        "client",
         "public"
       ],
       "description": {
@@ -1216,7 +1216,7 @@
         }
       ],
       "tags": [
-        "library",
+        "client",
         "public"
       ],
       "description": {
@@ -1238,7 +1238,7 @@
         }
       ],
       "tags": [
-        "library",
+        "client",
         "public"
       ],
       "description": {
@@ -1260,7 +1260,7 @@
         }
       ],
       "tags": [
-        "library",
+        "client",
         "public"
       ],
       "description": {
@@ -2979,7 +2979,19 @@
       "kind": "implements",
       "id": "vbly45"
     },
-    "19anrwa": {
+    "9dvw65": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "deltaRs"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
+      },
+      "kind": "realizes",
+      "id": "9dvw65"
+    },
+    "lu9ck4": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -2989,9 +3001,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "19anrwa"
+      "id": "lu9ck4"
     },
-    "1igqpsv": {
+    "1jndwim": {
       "line": "dashed",
       "title": "reads/writes data files via",
       "source": {
@@ -3001,9 +3013,9 @@
         "model": "s3Api"
       },
       "kind": "consumes",
-      "id": "1igqpsv"
+      "id": "1jndwim"
     },
-    "4seei9": {
+    "1s40kvm": {
       "line": "dashed",
       "title": "reads and changes",
       "source": {
@@ -3013,9 +3025,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "4seei9"
+      "id": "1s40kvm"
     },
-    "1b6jnpf": {
+    "zov8x0": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -3025,21 +3037,32 @@
         "model": "deltaSpec"
       },
       "kind": "implements",
-      "id": "1b6jnpf"
+      "id": "zov8x0"
     },
-    "3cs56c": {
-      "line": "dotted",
-      "title": "realizes the query-engine capability",
+    "1ouat9": {
+      "title": "",
       "source": {
         "model": "deltaSpark"
       },
       "target": {
-        "model": "lakehouse.queryEngine"
+        "model": "apacheSpark"
+      },
+      "kind": "builtOn",
+      "id": "1ouat9"
+    },
+    "zp345r": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "deltaSpark"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
       },
       "kind": "realizes",
-      "id": "3cs56c"
+      "id": "zp345r"
     },
-    "z7uq0f": {
+    "rrcrcd": {
       "line": "dashed",
       "title": "queries and changes",
       "source": {
@@ -3049,9 +3072,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "z7uq0f"
+      "id": "rrcrcd"
     },
-    "r49623": {
+    "sik7mt": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -3061,9 +3084,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "r49623"
+      "id": "sik7mt"
     },
-    "1hp9n8": {
+    "1ap0gd9": {
       "line": "dashed",
       "title": "reads Delta tables via",
       "source": {
@@ -3073,9 +3096,9 @@
         "model": "deltaSpec"
       },
       "kind": "consumes",
-      "id": "1hp9n8"
+      "id": "1ap0gd9"
     },
-    "hwo4ww": {
+    "1hk4xyh": {
       "line": "dashed",
       "title": "reads Iceberg tables via",
       "source": {
@@ -3085,9 +3108,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "consumes",
-      "id": "hwo4ww"
+      "id": "1hk4xyh"
     },
-    "15o6twz": {
+    "mm57jl": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3097,9 +3120,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "15o6twz"
+      "id": "mm57jl"
     },
-    "1jawmdn": {
+    "1k5d3bd": {
       "line": "dashed",
       "title": "creates and lists",
       "source": {
@@ -3109,9 +3132,9 @@
         "model": "lakehouse.namespace"
       },
       "kind": "operatesOn",
-      "id": "1jawmdn"
+      "id": "1k5d3bd"
     },
-    "1g0tkl": {
+    "196cbub": {
       "line": "dashed",
       "title": "queries and changes",
       "source": {
@@ -3121,9 +3144,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "1g0tkl"
+      "id": "196cbub"
     },
-    "1pmmnol": {
+    "1itqw4n": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -3133,11 +3156,14 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "1pmmnol"
+      "id": "1itqw4n"
     },
-    "18r4pao": {
+    "1709etu": {
       "line": "dashed",
       "title": "reads/writes Delta via",
+      "tags": [
+        "optional"
+      ],
       "source": {
         "model": "polars"
       },
@@ -3145,9 +3171,9 @@
         "model": "deltaRs"
       },
       "kind": "dependsOn",
-      "id": "18r4pao"
+      "id": "1709etu"
     },
-    "10xpva1": {
+    "l51b13": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3157,9 +3183,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "10xpva1"
+      "id": "l51b13"
     },
-    "1dv1oos": {
+    "1ncbecy": {
       "line": "dashed",
       "title": "reads and appends",
       "source": {
@@ -3169,9 +3195,21 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "1dv1oos"
+      "id": "1ncbecy"
     },
-    "1ly8pci": {
+    "natrev": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "daft"
+      },
+      "target": {
+        "model": "lakehouse.queryEngine"
+      },
+      "kind": "realizes",
+      "id": "natrev"
+    },
+    "1kctmka": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3181,9 +3219,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "1ly8pci"
+      "id": "1kctmka"
     },
-    "5j2jx8": {
+    "ro4nr3": {
       "line": "dashed",
       "title": "lists and reads",
       "source": {
@@ -3193,9 +3231,33 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "5j2jx8"
+      "id": "ro4nr3"
     },
-    "qz77aa": {
+    "xlewvp": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "pyIceberg"
+      },
+      "target": {
+        "model": "icebergSpec"
+      },
+      "kind": "implements",
+      "id": "xlewvp"
+    },
+    "x11q8q": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "pyIceberg"
+      },
+      "target": {
+        "model": "lakehouse.tableFormat"
+      },
+      "kind": "realizes",
+      "id": "x11q8q"
+    },
+    "54mnc7": {
       "line": "dashed",
       "title": "uses the REST catalog",
       "source": {
@@ -3205,9 +3267,9 @@
         "model": "icebergRestSpec"
       },
       "kind": "consumes",
-      "id": "qz77aa"
+      "id": "54mnc7"
     },
-    "x3liip": {
+    "tfl64q": {
       "line": "dashed",
       "title": "creates and lists",
       "source": {
@@ -3217,9 +3279,9 @@
         "model": "lakehouse.namespace"
       },
       "kind": "operatesOn",
-      "id": "x3liip"
+      "id": "tfl64q"
     },
-    "1mev5p7": {
+    "4hxbo6": {
       "line": "dashed",
       "title": "creates and changes",
       "source": {
@@ -3229,9 +3291,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "1mev5p7"
+      "id": "4hxbo6"
     },
-    "1gsw1tl": {
+    "1pf023j": {
       "line": "dashed",
       "title": "calls",
       "source": {
@@ -3241,9 +3303,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "1gsw1tl"
+      "id": "1pf023j"
     },
-    "1fnpcx": {
+    "1r75mpx": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3253,9 +3315,9 @@
         "model": "lakehouse.namespace"
       },
       "kind": "operatesOn",
-      "id": "1fnpcx"
+      "id": "1r75mpx"
     },
-    "1q18l4j": {
+    "5f8zyx": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3265,9 +3327,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "1q18l4j"
+      "id": "5f8zyx"
     },
-    "tfg0ec": {
+    "gavvjc": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3277,9 +3339,9 @@
         "model": "lakehouse.volume"
       },
       "kind": "operatesOn",
-      "id": "tfg0ec"
+      "id": "gavvjc"
     },
-    "1wgdxan": {
+    "1nqqktm": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3289,9 +3351,9 @@
         "model": "lakehouse.credential"
       },
       "kind": "operatesOn",
-      "id": "1wgdxan"
+      "id": "1nqqktm"
     },
-    "10gr3ut": {
+    "184u3tu": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3301,9 +3363,9 @@
         "model": "lakehouse.externalLocation"
       },
       "kind": "operatesOn",
-      "id": "10gr3ut"
+      "id": "184u3tu"
     },
-    "1tjaqq1": {
+    "27o5r6": {
       "line": "dashed",
       "title": "calls",
       "source": {
@@ -3313,9 +3375,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "1tjaqq1"
+      "id": "27o5r6"
     },
-    "o885uf": {
+    "1jv4gyi": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3325,9 +3387,9 @@
         "model": "lakehouse.namespace"
       },
       "kind": "operatesOn",
-      "id": "o885uf"
+      "id": "1jv4gyi"
     },
-    "wkim17": {
+    "1xwg941": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3337,9 +3399,9 @@
         "model": "lakehouse.table"
       },
       "kind": "operatesOn",
-      "id": "wkim17"
+      "id": "1xwg941"
     },
-    "hgidj2": {
+    "1g73m52": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3349,9 +3411,9 @@
         "model": "lakehouse.volume"
       },
       "kind": "operatesOn",
-      "id": "hgidj2"
+      "id": "1g73m52"
     },
-    "1052r3y": {
+    "1qyqoes": {
       "line": "dashed",
       "title": "stores definitions for",
       "source": {
@@ -3361,9 +3423,9 @@
         "model": "lakehouse.metricView"
       },
       "kind": "operatesOn",
-      "id": "1052r3y"
+      "id": "1qyqoes"
     },
-    "1q8ul8z": {
+    "181d853": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3373,9 +3435,9 @@
         "model": "lakehouse.credential"
       },
       "kind": "operatesOn",
-      "id": "1q8ul8z"
+      "id": "181d853"
     },
-    "1j84dax": {
+    "1dm50or": {
       "line": "dashed",
       "title": "manages",
       "source": {
@@ -3385,9 +3447,9 @@
         "model": "lakehouse.externalLocation"
       },
       "kind": "operatesOn",
-      "id": "1j84dax"
+      "id": "1dm50or"
     },
-    "1mwx3ic": {
+    "u0olkz": {
       "line": "dashed",
       "title": "calls",
       "source": {
@@ -3397,9 +3459,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "1mwx3ic"
+      "id": "u0olkz"
     },
-    "3f896f": {
+    "vpim42": {
       "line": "dashed",
       "title": "registers and executes",
       "source": {
@@ -3409,9 +3471,9 @@
         "model": "lakehouse.registeredFunction"
       },
       "kind": "operatesOn",
-      "id": "3f896f"
+      "id": "vpim42"
     },
-    "imecao": {
+    "hrhv71": {
       "line": "dashed",
       "title": "calls",
       "source": {
@@ -3421,9 +3483,9 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "imecao"
+      "id": "hrhv71"
     },
-    "r2anyp": {
+    "1hcya9h": {
       "line": "dashed",
       "title": "exposes as agent tools",
       "source": {
@@ -3433,9 +3495,9 @@
         "model": "lakehouse.registeredFunction"
       },
       "kind": "operatesOn",
-      "id": "r2anyp"
+      "id": "1hcya9h"
     },
-    "1buj32q": {
+    "12yv0qe": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -3445,9 +3507,21 @@
         "model": "icebergRestSpec"
       },
       "kind": "implements",
-      "id": "1buj32q"
+      "id": "12yv0qe"
     },
-    "1b53huv": {
+    "p3qsdh": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "lakekeeper"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "realizes",
+      "id": "p3qsdh"
+    },
+    "q0i2tm": {
       "line": "dotted",
       "title": "table-level permissions via OpenFGA",
       "source": {
@@ -3457,9 +3531,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "1b53huv"
+      "id": "q0i2tm"
     },
-    "n6mr25": {
+    "1ra26pc": {
       "line": "dotted",
       "title": "validates OIDC tokens",
       "tags": [
@@ -3472,9 +3546,9 @@
         "model": "lakehouse.governance.authentication"
       },
       "kind": "realizes",
-      "id": "n6mr25"
+      "id": "1ra26pc"
     },
-    "1pgsv42": {
+    "1dnviv8": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -3484,9 +3558,9 @@
         "model": "ucSpec"
       },
       "kind": "implements",
-      "id": "1pgsv42"
+      "id": "1dnviv8"
     },
-    "1v2o0d6": {
+    "1nvkgk0": {
       "line": "dotted",
       "title": "serves Iceberg tables through",
       "source": {
@@ -3496,9 +3570,21 @@
         "model": "icebergRestSpec"
       },
       "kind": "implements",
-      "id": "1v2o0d6"
+      "id": "1nvkgk0"
     },
-    "1n7qjcx": {
+    "1xs731f": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "unityCatalogOSS"
+      },
+      "target": {
+        "model": "lakehouse.catalog"
+      },
+      "kind": "realizes",
+      "id": "1xs731f"
+    },
+    "s4wlh6": {
       "line": "dotted",
       "title": "grants + privileges on securables",
       "source": {
@@ -3508,9 +3594,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "1n7qjcx"
+      "id": "s4wlh6"
     },
-    "bph0al": {
+    "ginzts": {
       "line": "dotted",
       "title": "validates access tokens",
       "tags": [
@@ -3523,9 +3609,9 @@
         "model": "lakehouse.governance.authentication"
       },
       "kind": "realizes",
-      "id": "bph0al"
+      "id": "ginzts"
     },
-    "19si019": {
+    "s13gs0": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -3535,9 +3621,9 @@
         "model": "ucSpec"
       },
       "kind": "implements",
-      "id": "19si019"
+      "id": "s13gs0"
     },
-    "ygnimd": {
+    "3mdltq": {
       "line": "dotted",
       "title": "realizes the catalog capability",
       "source": {
@@ -3547,9 +3633,9 @@
         "model": "lakehouse.catalog"
       },
       "kind": "realizes",
-      "id": "ygnimd"
+      "id": "3mdltq"
     },
-    "1egc2ow": {
+    "16jvoif": {
       "line": "dotted",
       "title": "realizes the model-tracking capability",
       "source": {
@@ -3559,9 +3645,9 @@
         "model": "lakehouse.modelTracking"
       },
       "kind": "realizes",
-      "id": "1egc2ow"
+      "id": "16jvoif"
     },
-    "1q1k42r": {
+    "yrowx6": {
       "line": "dotted",
       "title": "realizes the query-engine capability",
       "source": {
@@ -3571,9 +3657,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "1q1k42r"
+      "id": "yrowx6"
     },
-    "1rpbe2m": {
+    "hc4nn9": {
       "line": "dotted",
       "title": "serves",
       "source": {
@@ -3583,9 +3669,9 @@
         "model": "flightSqlSpec"
       },
       "kind": "implements",
-      "id": "1rpbe2m"
+      "id": "hc4nn9"
     },
-    "1v6y3xb": {
+    "1yjjtbx": {
       "line": "dashed",
       "title": "resolves tables via",
       "source": {
@@ -3595,21 +3681,20 @@
         "model": "ucSpec"
       },
       "kind": "consumes",
-      "id": "1v6y3xb"
+      "id": "1yjjtbx"
     },
-    "1cksktv": {
-      "line": "dashed",
-      "title": "built on",
+    "10ragd3": {
+      "title": "",
       "source": {
         "model": "hydrofoil"
       },
       "target": {
         "model": "datafusion"
       },
-      "kind": "dependsOn",
-      "id": "1cksktv"
+      "kind": "builtOn",
+      "id": "10ragd3"
     },
-    "14tq6w": {
+    "1ka1pmm": {
       "line": "dotted",
       "title": "coarse allow/deny gate before planning",
       "tags": [
@@ -3622,9 +3707,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "14tq6w"
+      "id": "1ka1pmm"
     },
-    "ghci6q": {
+    "rqg1h2": {
       "line": "dotted",
       "title": "rewrites plans with row filters + column masks",
       "tags": [
@@ -3637,9 +3722,9 @@
         "model": "lakehouse.governance.fineGrainedAccess"
       },
       "kind": "realizes",
-      "id": "ghci6q"
+      "id": "rqg1h2"
     },
-    "m4p2q1": {
+    "bhwacl": {
       "line": "dotted",
       "title": "realizes the lineage concern",
       "source": {
@@ -3649,9 +3734,9 @@
         "model": "lakehouse.lineage"
       },
       "kind": "realizes",
-      "id": "m4p2q1"
+      "id": "bhwacl"
     },
-    "164s7xs": {
+    "fhjdge": {
       "line": "dotted",
       "title": "emits + ingests",
       "source": {
@@ -3661,9 +3746,9 @@
         "model": "openLineageSpec"
       },
       "kind": "implements",
-      "id": "164s7xs"
+      "id": "fhjdge"
     },
-    "50rv0r": {
+    "1g03baa": {
       "line": "dotted",
       "title": "single sign-on at the gateway",
       "source": {
@@ -3673,9 +3758,9 @@
         "model": "lakehouse.governance.authentication"
       },
       "kind": "realizes",
-      "id": "50rv0r"
+      "id": "1g03baa"
     },
-    "p0wa8j": {
+    "sda6ag": {
       "line": "dotted",
       "title": "access rules at the gateway",
       "tags": [
@@ -3688,9 +3773,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "p0wa8j"
+      "id": "sda6ag"
     },
-    "jhzbbl": {
+    "12jsqlz": {
       "line": "dotted",
       "title": "decides access policy",
       "tags": [
@@ -3703,9 +3788,9 @@
         "model": "lakehouse.governance.authorization"
       },
       "kind": "realizes",
-      "id": "jhzbbl"
+      "id": "12jsqlz"
     },
-    "cx2yti": {
+    "12sxae8": {
       "line": "dotted",
       "title": "realizes tracing",
       "source": {
@@ -3715,9 +3800,9 @@
         "model": "lakehouse.observability"
       },
       "kind": "realizes",
-      "id": "cx2yti"
+      "id": "12sxae8"
     },
-    "u5w89d": {
+    "19dbjch": {
       "line": "dashed",
       "title": "receives traces via",
       "source": {
@@ -3727,9 +3812,9 @@
         "model": "otlpSpec"
       },
       "kind": "consumes",
-      "id": "u5w89d"
+      "id": "19dbjch"
     },
-    "e8n326": {
+    "1whwguq": {
       "line": "dotted",
       "title": "realizes graph queries over tables",
       "source": {
@@ -3739,9 +3824,9 @@
         "model": "lakehouse.queryEngine"
       },
       "kind": "realizes",
-      "id": "e8n326"
+      "id": "1whwguq"
     },
-    "r11za5": {
+    "mnydju": {
       "line": "dotted",
       "title": "serves",
       "source": {
@@ -3751,9 +3836,9 @@
         "model": "openCypherSpec"
       },
       "kind": "implements",
-      "id": "r11za5"
+      "id": "mnydju"
     },
-    "w4euks": {
+    "adhz9j": {
       "line": "dotted",
       "title": "realizes the notebook",
       "source": {
@@ -3763,9 +3848,9 @@
         "model": "lakehouse.interactiveDevelopment"
       },
       "kind": "realizes",
-      "id": "w4euks"
+      "id": "adhz9j"
     },
-    "zc6cmu": {
+    "10rj8eq": {
       "line": "dotted",
       "title": "realizes the orchestration capability",
       "source": {
@@ -3775,9 +3860,9 @@
         "model": "lakehouse.orchestration"
       },
       "kind": "realizes",
-      "id": "zc6cmu"
+      "id": "10rj8eq"
     },
-    "1hyv8kz": {
+    "1f00u4x": {
       "line": "dotted",
       "title": "realizes the catalog metadata store",
       "source": {
@@ -3787,9 +3872,9 @@
         "model": "lakehouse.metadataStore"
       },
       "kind": "realizes",
-      "id": "1hyv8kz"
+      "id": "1f00u4x"
     },
-    "bzjbfx": {
+    "1e9vs03": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -3799,9 +3884,21 @@
         "model": "s3Api"
       },
       "kind": "implements",
-      "id": "bzjbfx"
+      "id": "1e9vs03"
     },
-    "1s5r4tj": {
+    "af4jmn": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "rustfs"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "realizes",
+      "id": "af4jmn"
+    },
+    "1l79cmn": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -3811,9 +3908,21 @@
         "model": "s3Api"
       },
       "kind": "implements",
-      "id": "1s5r4tj"
+      "id": "1l79cmn"
     },
-    "1w7a6zx": {
+    "iw54jg": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "amazonS3"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "realizes",
+      "id": "iw54jg"
+    },
+    "bgf7yj": {
       "line": "dotted",
       "title": "emulates",
       "source": {
@@ -3823,9 +3932,21 @@
         "model": "azureBlobApi"
       },
       "kind": "implements",
-      "id": "1w7a6zx"
+      "id": "bgf7yj"
     },
-    "pjx98s": {
+    "1ggcxe5": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "azurite"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "realizes",
+      "id": "1ggcxe5"
+    },
+    "1qlnesr": {
       "line": "dotted",
       "title": "implements",
       "source": {
@@ -3835,7 +3956,19 @@
         "model": "azureBlobApi"
       },
       "kind": "implements",
-      "id": "pjx98s"
+      "id": "1qlnesr"
+    },
+    "q57w27": {
+      "line": "dotted",
+      "title": "",
+      "source": {
+        "model": "azureBlobStorage"
+      },
+      "target": {
+        "model": "lakehouse.objectStorage"
+      },
+      "kind": "realizes",
+      "id": "q57w27"
     }
   },
   "globals": {
@@ -4146,22 +4279,22 @@
           "target": "lakehouse",
           "label": "reads and changes",
           "relations": [
-            "4seei9"
+            "9dvw65",
+            "1s40kvm"
           ],
           "color": "gray",
           "line": "dashed",
-          "head": "normal",
-          "kind": "operatesOn"
+          "head": "normal"
         },
         {
           "id": "fwwh2m",
           "parent": null,
           "source": "deltaSpark",
           "target": "lakehouse",
-          "label": "[...]",
+          "label": "queries and changes",
           "relations": [
-            "3cs56c",
-            "z7uq0f"
+            "zp345r",
+            "rrcrcd"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4174,9 +4307,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "r49623",
-            "1jawmdn",
-            "1g0tkl"
+            "sik7mt",
+            "1k5d3bd",
+            "196cbub"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4189,8 +4322,8 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "1pmmnol",
-            "1dv1oos"
+            "1itqw4n",
+            "1ncbecy"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4203,12 +4336,12 @@
           "target": "lakehouse",
           "label": "lists and reads",
           "relations": [
-            "5j2jx8"
+            "natrev",
+            "ro4nr3"
           ],
           "color": "gray",
           "line": "dashed",
-          "head": "normal",
-          "kind": "operatesOn"
+          "head": "normal"
         },
         {
           "id": "103slfd",
@@ -4217,13 +4350,13 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "x3liip",
-            "1mev5p7"
+            "x11q8q",
+            "tfl64q",
+            "4hxbo6"
           ],
           "color": "gray",
           "line": "dashed",
-          "head": "normal",
-          "kind": "operatesOn"
+          "head": "normal"
         },
         {
           "id": "q72mhp",
@@ -4232,11 +4365,11 @@
           "target": "lakehouse",
           "label": "manages",
           "relations": [
-            "1fnpcx",
-            "1q18l4j",
-            "tfg0ec",
-            "1wgdxan",
-            "10gr3ut"
+            "1r75mpx",
+            "5f8zyx",
+            "gavvjc",
+            "1nqqktm",
+            "184u3tu"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4250,12 +4383,12 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "o885uf",
-            "wkim17",
-            "hgidj2",
-            "1052r3y",
-            "1q8ul8z",
-            "1j84dax"
+            "1jv4gyi",
+            "1xwg941",
+            "1g73m52",
+            "1qyqoes",
+            "181d853",
+            "1dm50or"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4269,7 +4402,7 @@
           "target": "lakehouse",
           "label": "registers and executes",
           "relations": [
-            "3f896f"
+            "vpim42"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4283,7 +4416,7 @@
           "target": "lakehouse",
           "label": "exposes as agent tools",
           "relations": [
-            "r2anyp"
+            "1hcya9h"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4297,8 +4430,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "1b53huv",
-            "n6mr25"
+            "p3qsdh",
+            "q0i2tm",
+            "1ra26pc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4315,8 +4449,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "1n7qjcx",
-            "bph0al"
+            "1xs731f",
+            "s4wlh6",
+            "ginzts"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4333,7 +4468,7 @@
           "target": "lakehouse",
           "label": "realizes the catalog capability",
           "relations": [
-            "ygnimd"
+            "3mdltq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4347,7 +4482,7 @@
           "target": "lakehouse",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "1egc2ow"
+            "16jvoif"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4361,9 +4496,9 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "1q1k42r",
-            "14tq6w",
-            "ghci6q"
+            "yrowx6",
+            "1ka1pmm",
+            "rqg1h2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4380,7 +4515,7 @@
           "target": "lakehouse",
           "label": "realizes the lineage concern",
           "relations": [
-            "m4p2q1"
+            "bhwacl"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4394,8 +4529,8 @@
           "target": "lakehouse",
           "label": "[...]",
           "relations": [
-            "50rv0r",
-            "p0wa8j"
+            "1g03baa",
+            "sda6ag"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4412,7 +4547,7 @@
           "target": "lakehouse",
           "label": "decides access policy",
           "relations": [
-            "jhzbbl"
+            "12jsqlz"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4429,7 +4564,7 @@
           "target": "lakehouse",
           "label": "realizes tracing",
           "relations": [
-            "cx2yti"
+            "12sxae8"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4443,7 +4578,7 @@
           "target": "lakehouse",
           "label": "realizes graph queries over tables",
           "relations": [
-            "e8n326"
+            "1whwguq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4457,7 +4592,7 @@
           "target": "lakehouse",
           "label": "realizes the notebook",
           "relations": [
-            "w4euks"
+            "adhz9j"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4471,7 +4606,7 @@
           "target": "lakehouse",
           "label": "realizes the orchestration capability",
           "relations": [
-            "zc6cmu"
+            "10rj8eq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4485,7 +4620,63 @@
           "target": "lakehouse",
           "label": "realizes the catalog metadata store",
           "relations": [
-            "1hyv8kz"
+            "1f00u4x"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "sn5k2g",
+          "parent": null,
+          "source": "rustfs",
+          "target": "lakehouse",
+          "label": null,
+          "relations": [
+            "af4jmn"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "zpgt5n",
+          "parent": null,
+          "source": "amazonS3",
+          "target": "lakehouse",
+          "label": null,
+          "relations": [
+            "iw54jg"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "98b8qx",
+          "parent": null,
+          "source": "azurite",
+          "target": "lakehouse",
+          "label": null,
+          "relations": [
+            "1ggcxe5"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1aexgha",
+          "parent": null,
+          "source": "azureBlobStorage",
+          "target": "lakehouse",
+          "label": null,
+          "relations": [
+            "q57w27"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4513,7 +4704,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "1b6jnpf"
+            "zov8x0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4527,12 +4718,26 @@
           "target": "deltaSpec",
           "label": "reads Delta tables via",
           "relations": [
-            "1hp9n8"
+            "1ap0gd9"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "z7z97q",
+          "parent": null,
+          "source": "pyIceberg",
+          "target": "icebergSpec",
+          "label": null,
+          "relations": [
+            "xlewvp"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
         },
         {
           "id": "1jquji4",
@@ -4555,7 +4760,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "19anrwa"
+            "lu9ck4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4569,7 +4774,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "15o6twz"
+            "mm57jl"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4583,7 +4788,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "10xpva1"
+            "l51b13"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4597,7 +4802,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1ly8pci"
+            "1kctmka"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4611,7 +4816,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1gsw1tl"
+            "1pf023j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4625,7 +4830,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1tjaqq1"
+            "27o5r6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4639,7 +4844,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1mwx3ic"
+            "u0olkz"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4653,7 +4858,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "imecao"
+            "hrhv71"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4667,7 +4872,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "1pgsv42"
+            "1dnviv8"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4681,7 +4886,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "19si019"
+            "s13gs0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4695,7 +4900,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1v6y3xb"
+            "1yjjtbx"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4723,7 +4928,7 @@
           "target": "icebergRestSpec",
           "label": "reads Iceberg tables via",
           "relations": [
-            "hwo4ww"
+            "1hk4xyh"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4737,7 +4942,7 @@
           "target": "icebergRestSpec",
           "label": "uses the REST catalog",
           "relations": [
-            "qz77aa"
+            "54mnc7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4751,7 +4956,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "1buj32q"
+            "12yv0qe"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4765,7 +4970,7 @@
           "target": "icebergRestSpec",
           "label": "serves Iceberg tables through",
           "relations": [
-            "1v2o0d6"
+            "1nvkgk0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4793,7 +4998,7 @@
           "target": "s3Api",
           "label": "reads/writes data files via",
           "relations": [
-            "1igqpsv"
+            "1jndwim"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4807,7 +5012,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "bzjbfx"
+            "1e9vs03"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4821,7 +5026,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1s5r4tj"
+            "1l79cmn"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4849,7 +5054,7 @@
           "target": "flightSqlSpec",
           "label": "serves",
           "relations": [
-            "1rpbe2m"
+            "hc4nn9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4863,7 +5068,7 @@
           "target": "openCypherSpec",
           "label": "serves",
           "relations": [
-            "r11za5"
+            "mnydju"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4877,7 +5082,7 @@
           "target": "azureBlobApi",
           "label": "emulates",
           "relations": [
-            "1w7a6zx"
+            "bgf7yj"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4891,7 +5096,7 @@
           "target": "azureBlobApi",
           "label": "implements",
           "relations": [
-            "pjx98s"
+            "1qlnesr"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4905,7 +5110,7 @@
           "target": "openLineageSpec",
           "label": "emits + ingests",
           "relations": [
-            "164s7xs"
+            "fhjdge"
           ],
           "color": "gray",
           "line": "dotted",
@@ -4919,7 +5124,7 @@
           "target": "otlpSpec",
           "label": "receives traces via",
           "relations": [
-            "u5w89d"
+            "19dbjch"
           ],
           "color": "gray",
           "line": "dashed",
@@ -4931,14 +5136,28 @@
           "parent": null,
           "source": "hydrofoil",
           "target": "datafusion",
-          "label": "built on",
+          "label": null,
           "relations": [
-            "1cksktv"
+            "10ragd3"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "builtOn"
+        },
+        {
+          "id": "gj4sb0",
+          "parent": null,
+          "source": "deltaSpark",
+          "target": "apacheSpark",
+          "label": null,
+          "relations": [
+            "1ouat9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "builtOn"
         },
         {
           "id": "viecbk",
@@ -4947,12 +5166,15 @@
           "target": "deltaRs",
           "label": "reads/writes Delta via",
           "relations": [
-            "18r4pao"
+            "1709etu"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "dependsOn",
+          "tags": [
+            "optional"
+          ]
         }
       ],
       "nodes": [
@@ -5026,39 +5248,6 @@
           "kind": "person"
         },
         {
-          "id": "icebergSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "1n3wkt1"
-          ],
-          "title": "Apache Iceberg",
-          "modelRef": "icebergSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open table-format specification for huge analytic datasets,\nwith hidden partitioning and snapshot isolation."
-          },
-          "tags": [
-            "public"
-          ],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://iceberg.apache.org"
-            }
-          ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_icebergSpec"
-        },
-        {
           "id": "openSharingSpec",
           "parent": null,
           "level": 0,
@@ -5121,42 +5310,6 @@
           "navigateTo": "explain_parquetSpec"
         },
         {
-          "id": "apacheSpark",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "bd1jqg",
-            "1jquji4",
-            "rqwp5z",
-            "1ha3mmn"
-          ],
-          "title": "Apache Spark",
-          "modelRef": "apacheSpark",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Unified analytics engine for large-scale data processing."
-          },
-          "tags": [
-            "service",
-            "public"
-          ],
-          "notation": "Implementation (software / service)",
-          "links": [
-            {
-              "url": "https://spark.apache.org"
-            }
-          ],
-          "kind": "implementation"
-        },
-        {
           "id": "deltaSpark",
           "parent": null,
           "level": 0,
@@ -5164,7 +5317,8 @@
           "inEdges": [],
           "outEdges": [
             "fwwh2m",
-            "139665w"
+            "139665w",
+            "gj4sb0"
           ],
           "title": "Delta Spark",
           "modelRef": "deltaSpark",
@@ -5178,7 +5332,7 @@
             "txt": "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
           },
           "tags": [
-            "service",
+            "library",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -5300,6 +5454,7 @@
           "inEdges": [],
           "outEdges": [
             "103slfd",
+            "z7z97q",
             "156ihx2"
           ],
           "title": "PyIceberg",
@@ -5347,7 +5502,7 @@
             "txt": "Command-line client for managing Unity Catalog objects and storage access."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -5380,7 +5535,7 @@
             "txt": "Generated asynchronous Python client for Unity Catalog REST APIs."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -5413,7 +5568,7 @@
             "txt": "Python client library for registering and executing functions through Unity Catalog."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -5446,7 +5601,7 @@
             "txt": "LangChain integration that turns Unity Catalog functions into tools an agent can call."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -5915,6 +6070,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "sn5k2g",
             "dou7t3"
           ],
           "title": "RustFS",
@@ -5947,6 +6103,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "zpgt5n",
             "1pupksk"
           ],
           "title": "Amazon S3",
@@ -5978,6 +6135,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "98b8qx",
             "1knq7v0"
           ],
           "title": "Azurite",
@@ -6009,6 +6167,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "1aexgha",
             "qjh4az"
           ],
           "title": "Azure Blob Storage",
@@ -6034,36 +6193,42 @@
           "kind": "implementation"
         },
         {
-          "id": "sparkConnectSpec",
+          "id": "apacheSpark",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "1ha3mmn"
+            "gj4sb0"
           ],
           "outEdges": [
-            "17fnd8t"
+            "bd1jqg",
+            "1jquji4",
+            "rqwp5z",
+            "1ha3mmn"
           ],
-          "title": "Spark Connect",
-          "modelRef": "sparkConnectSpec",
-          "shape": "rectangle",
-          "color": "sky",
+          "title": "Apache Spark",
+          "modelRef": "apacheSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "Client-server protocol for Apache Spark: thin clients send unresolved plans over gRPC to a remote Spark server."
+            "txt": "Unified analytics engine for large-scale data processing."
           },
-          "tags": [],
-          "notation": "Specification / open standard",
+          "tags": [
+            "service",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://spark.apache.org/docs/latest/spark-connect-overview.html"
+              "url": "https://spark.apache.org"
             }
           ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_sparkConnectSpec"
+          "kind": "implementation"
         },
         {
           "id": "deltaRs",
@@ -6103,30 +6268,27 @@
           "kind": "implementation"
         },
         {
-          "id": "icebergRestSpec",
+          "id": "icebergSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "rqwp5z",
-            "1ixkizh",
-            "156ihx2",
-            "wv3hil",
-            "okzuqp"
+            "z7z97q"
           ],
           "outEdges": [
-            "lv7f45"
+            "1n3wkt1"
           ],
-          "title": "Iceberg REST Catalog",
-          "modelRef": "icebergRestSpec",
+          "title": "Apache Iceberg",
+          "modelRef": "icebergSpec",
           "shape": "rectangle",
           "color": "sky",
+          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "Specification for a REST based Iceberg catalog"
+            "txt": "Open table-format specification for huge analytic datasets,\nwith hidden partitioning and snapshot isolation."
           },
           "tags": [
             "public"
@@ -6134,11 +6296,11 @@
           "notation": "Specification / open standard",
           "links": [
             {
-              "url": "https://iceberg.apache.org/concepts/catalog/"
+              "url": "https://iceberg.apache.org"
             }
           ],
           "kind": "openSpecification",
-          "navigateTo": "explain_icebergRestSpec"
+          "navigateTo": "explain_icebergSpec"
         },
         {
           "id": "flightSqlSpec",
@@ -6337,6 +6499,76 @@
           "navigateTo": "explain_azureBlobApi"
         },
         {
+          "id": "icebergRestSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "rqwp5z",
+            "1ixkizh",
+            "156ihx2",
+            "wv3hil",
+            "okzuqp"
+          ],
+          "outEdges": [
+            "lv7f45"
+          ],
+          "title": "Iceberg REST Catalog",
+          "modelRef": "icebergRestSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Specification for a REST based Iceberg catalog"
+          },
+          "tags": [
+            "public"
+          ],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org/concepts/catalog/"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_icebergRestSpec"
+        },
+        {
+          "id": "sparkConnectSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1ha3mmn"
+          ],
+          "outEdges": [
+            "17fnd8t"
+          ],
+          "title": "Spark Connect",
+          "modelRef": "sparkConnectSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Client-server protocol for Apache Spark: thin clients send unresolved plans over gRPC to a remote Spark server."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://spark.apache.org/docs/latest/spark-connect-overview.html"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_sparkConnectSpec"
+        },
+        {
           "id": "deltaSpec",
           "parent": null,
           "level": 0,
@@ -6502,7 +6734,11 @@
             "1i9l0il",
             "1hldd14",
             "1aocmg4",
-            "29leej"
+            "29leej",
+            "sn5k2g",
+            "zpgt5n",
+            "98b8qx",
+            "1aexgha"
           ],
           "outEdges": [],
           "title": "Open Lakehouse",
@@ -6576,7 +6812,7 @@
           }
         ]
       },
-      "hash": "0GbiSfnaToTgLQwqVQgeWu2O7BFF9I94veb2_AEYc9Q"
+      "hash": "0nj5Dv1RQGU08ZkTg8d5lNHz7wnHEHjPdZUWmSyP1R4"
     },
     "ucAwsDeploy": {
       "_type": "deployment",
@@ -8101,13 +8337,41 @@
           "kind": "specifies"
         },
         {
+          "id": "1ylu6cf",
+          "parent": null,
+          "source": "lakekeeper",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "p3qsdh"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "r7p7df",
+          "parent": null,
+          "source": "unityCatalogOSS",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1xs731f"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
           "id": "9wcsu3",
           "parent": null,
           "source": "mangrove",
           "target": "lakehouse.catalog",
           "label": "realizes the catalog capability",
           "relations": [
-            "ygnimd"
+            "3mdltq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -8427,6 +8691,74 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_icebergRestSpec"
+        },
+        {
+          "id": "lakekeeper",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ylu6cf"
+          ],
+          "title": "Lakekeeper",
+          "modelRef": "lakekeeper",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Apache-licensed, Rust-native catalog server implementing the Iceberg REST Catalog specification."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://lakekeeper.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogOSS",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "r7p7df"
+          ],
+          "title": "Unity Catalog (OSS)",
+          "modelRef": "unityCatalogOSS",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The open-source reference server implementing the Unity Catalog specification."
+          },
+          "tags": [
+            "service",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog"
+            },
+            {
+              "url": "https://unitycatalog.io"
+            }
+          ],
+          "kind": "implementation"
         },
         {
           "id": "mangrove",
@@ -8837,6 +9169,8 @@
             "jmwf0p",
             "cp7myr",
             "dton7c",
+            "1ylu6cf",
+            "r7p7df",
             "9wcsu3",
             "3jpgka",
             "kurvyf",
@@ -8988,7 +9322,7 @@
           }
         ]
       },
-      "hash": "5N4f4fRWmUYYXo-0dJ_0HLxmc5rC3t7qY2crM1ATIXc"
+      "hash": "IWEPmW8rQ47Q8gelH2WQRMgx_R6tJAciclaE1g4wKqE"
     },
     "explain_metadataStore": {
       "_type": "element",
@@ -9011,7 +9345,7 @@
           "target": "lakehouse.metadataStore",
           "label": "realizes the catalog metadata store",
           "relations": [
-            "1hyv8kz"
+            "1f00u4x"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9257,27 +9591,13 @@
           "kind": "realizes"
         },
         {
-          "id": "8x2yjo",
-          "parent": null,
-          "source": "deltaSpark",
-          "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
-          "relations": [
-            "3cs56c"
-          ],
-          "color": "gray",
-          "line": "dotted",
-          "head": "normal",
-          "kind": "realizes"
-        },
-        {
           "id": "16lmeqg",
           "parent": null,
           "source": "duckdb",
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "r49623"
+            "sik7mt"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9291,7 +9611,21 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1pmmnol"
+            "1itqw4n"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1fg1fao",
+          "parent": null,
+          "source": "daft",
+          "target": "lakehouse.queryEngine",
+          "label": null,
+          "relations": [
+            "natrev"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9305,7 +9639,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1q1k42r"
+            "yrowx6"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9319,7 +9653,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes graph queries over tables",
           "relations": [
-            "e8n326"
+            "1whwguq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -9642,38 +9976,6 @@
           "kind": "implementation"
         },
         {
-          "id": "deltaSpark",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "8x2yjo"
-          ],
-          "title": "Delta Spark",
-          "modelRef": "deltaSpark",
-          "shape": "cylinder",
-          "color": "muted",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
-          },
-          "tags": [
-            "service",
-            "public"
-          ],
-          "notation": "Implementation (software / service)",
-          "links": [
-            {
-              "url": "https://docs.delta.io"
-            }
-          ],
-          "kind": "implementation"
-        },
-        {
           "id": "duckdb",
           "parent": null,
           "level": 0,
@@ -9734,6 +10036,38 @@
           "links": [
             {
               "url": "https://pola.rs"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "daft",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1fg1fao"
+          ],
+          "title": "Daft",
+          "modelRef": "daft",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Distributed Python DataFrame library with a Unity Catalog integration."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://docs.daft.ai/en/stable/connectors/unity_catalog/"
             }
           ],
           "kind": "implementation"
@@ -10007,9 +10341,9 @@
             "2u2en7",
             "ipwqn",
             "zt1zxe",
-            "8x2yjo",
             "16lmeqg",
             "1dpuyes",
+            "1fg1fao",
             "1d2b803",
             "1ra0b9z",
             "se6qb1",
@@ -10097,7 +10431,7 @@
           }
         ]
       },
-      "hash": "NqE8abjaMVgHZOaTkQBAJZVrA_1QY5BsSWxm2ddo3Xk"
+      "hash": "7LDR86a_SDeKjn7DdDrGUV65M4DyXrNphDzFvFicAZU"
     },
     "explain_orchestration": {
       "_type": "element",
@@ -10120,7 +10454,7 @@
           "target": "lakehouse.orchestration",
           "label": "realizes the orchestration capability",
           "relations": [
-            "zc6cmu"
+            "10rj8eq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -10348,6 +10682,48 @@
           "kind": "specifies"
         },
         {
+          "id": "1cchpk7",
+          "parent": null,
+          "source": "deltaRs",
+          "target": "lakehouse.tableFormat",
+          "label": null,
+          "relations": [
+            "9dvw65"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1x0w5p9",
+          "parent": null,
+          "source": "deltaSpark",
+          "target": "lakehouse.tableFormat",
+          "label": null,
+          "relations": [
+            "zp345r"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1snzgy2",
+          "parent": null,
+          "source": "pyIceberg",
+          "target": "lakehouse.tableFormat",
+          "label": null,
+          "relations": [
+            "x11q8q"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
           "id": "115nb49",
           "parent": null,
           "source": "lakehouse.table",
@@ -10458,6 +10834,102 @@
           "navigateTo": "explain_icebergSpec"
         },
         {
+          "id": "deltaRs",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1cchpk7"
+          ],
+          "title": "delta-rs",
+          "modelRef": "deltaRs",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Native Rust implementation of the Delta protocol with Python bindings."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://delta-io.github.io/delta-rs/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "deltaSpark",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1x0w5p9"
+          ],
+          "title": "Delta Spark",
+          "modelRef": "deltaSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://docs.delta.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "pyIceberg",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1snzgy2"
+          ],
+          "title": "PyIceberg",
+          "modelRef": "pyIceberg",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Python implementation of Apache Iceberg with REST catalog and table APIs."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://py.iceberg.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "lakehouse.table",
           "parent": null,
           "level": 0,
@@ -10527,6 +10999,9 @@
           "inEdges": [
             "1qkmdr7",
             "67455y",
+            "1cchpk7",
+            "1x0w5p9",
+            "1snzgy2",
             "115nb49",
             "1ko3ux0"
           ],
@@ -10585,6 +11060,14 @@
       "notation": {
         "nodes": [
           {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
             "title": "Specification / open standard",
             "shape": "rectangle",
             "color": "sky",
@@ -10594,7 +11077,7 @@
           }
         ]
       },
-      "hash": "Dx9Py4PSeShDnZDWaY1ZJSbJXqB9ap1MG4JbOdXb1tY"
+      "hash": "0ex_YvVcP4xWlIO6Y6ycVsJBoj3DN_lIR1C6eE3rzoM"
     },
     "explain_fileFormat": {
       "_type": "element",
@@ -10833,6 +11316,62 @@
           "kind": "specifies"
         },
         {
+          "id": "170rwje",
+          "parent": null,
+          "source": "rustfs",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "af4jmn"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "kwgd2x",
+          "parent": null,
+          "source": "amazonS3",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "iw54jg"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1qxey3v",
+          "parent": null,
+          "source": "azurite",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "1ggcxe5"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1oezqmk",
+          "parent": null,
+          "source": "azureBlobStorage",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "q57w27"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
           "id": "tuvbx4",
           "parent": null,
           "source": "lakehouse.table",
@@ -10979,6 +11518,131 @@
           ],
           "kind": "openSpecification",
           "navigateTo": "explain_azureBlobApi"
+        },
+        {
+          "id": "rustfs",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "170rwje"
+          ],
+          "title": "RustFS",
+          "modelRef": "rustfs",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "S3-compatible object storage server written in Rust."
+          },
+          "tags": [
+            "infra",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://rustfs.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "amazonS3",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "kwgd2x"
+          ],
+          "title": "Amazon S3",
+          "modelRef": "amazonS3",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "AWS's managed object storage service; the origin of the S3 API."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://aws.amazon.com/s3/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azurite",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1qxey3v"
+          ],
+          "title": "Azurite",
+          "modelRef": "azurite",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Local emulator for Azure Storage, including the Blob service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/Azure/Azurite"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azureBlobStorage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1oezqmk"
+          ],
+          "title": "Azure Blob Storage",
+          "modelRef": "azureBlobStorage",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Azure's managed object storage service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://azure.microsoft.com/products/storage/blobs"
+            }
+          ],
+          "kind": "implementation"
         },
         {
           "id": "lakehouse.table",
@@ -11130,6 +11794,10 @@
           "inEdges": [
             "1ol3q9j",
             "13jsrzh",
+            "170rwje",
+            "kwgd2x",
+            "1qxey3v",
+            "1oezqmk",
             "tuvbx4",
             "1q3ub9q",
             "wo4v60",
@@ -11190,6 +11858,14 @@
       "notation": {
         "nodes": [
           {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
             "title": "Specification / open standard",
             "shape": "rectangle",
             "color": "sky",
@@ -11199,7 +11875,7 @@
           }
         ]
       },
-      "hash": "Cd34fSxsUTugpdz-utXRMWwZ3fwm-iYzjwMVsoll_3E"
+      "hash": "BhnC3-hK1aNqtw64A7Je2lmhp5WZrQip3YWB4jyHteA"
     },
     "explain_modelTracking": {
       "_type": "element",
@@ -11222,7 +11898,7 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "1egc2ow"
+            "16jvoif"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11529,7 +12205,7 @@
           "target": "lakehouse.interactiveDevelopment",
           "label": "realizes the notebook",
           "relations": [
-            "w4euks"
+            "adhz9j"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11744,7 +12420,7 @@
           "target": "lakehouse.governance.authentication",
           "label": "validates OIDC tokens",
           "relations": [
-            "n6mr25"
+            "1ra26pc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11761,7 +12437,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "table-level permissions via OpenFGA",
           "relations": [
-            "1b53huv"
+            "q0i2tm"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11775,7 +12451,7 @@
           "target": "lakehouse.governance.authentication",
           "label": "validates access tokens",
           "relations": [
-            "bph0al"
+            "ginzts"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11792,7 +12468,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "grants + privileges on securables",
           "relations": [
-            "1n7qjcx"
+            "s4wlh6"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11806,7 +12482,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "coarse allow/deny gate before planning",
           "relations": [
-            "14tq6w"
+            "1ka1pmm"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11823,7 +12499,7 @@
           "target": "lakehouse.governance.fineGrainedAccess",
           "label": "rewrites plans with row filters + column masks",
           "relations": [
-            "ghci6q"
+            "rqg1h2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11840,7 +12516,7 @@
           "target": "lakehouse.governance.authentication",
           "label": "single sign-on at the gateway",
           "relations": [
-            "50rv0r"
+            "1g03baa"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11854,7 +12530,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "access rules at the gateway",
           "relations": [
-            "p0wa8j"
+            "sda6ag"
           ],
           "color": "gray",
           "line": "dotted",
@@ -11871,7 +12547,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "decides access policy",
           "relations": [
-            "jhzbbl"
+            "12jsqlz"
           ],
           "color": "gray",
           "line": "dotted",
@@ -12854,7 +13530,7 @@
           "target": "lakehouse.lineage",
           "label": "realizes the lineage concern",
           "relations": [
-            "m4p2q1"
+            "bhwacl"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13183,7 +13859,7 @@
           "target": "lakehouse.observability",
           "label": "realizes tracing",
           "relations": [
-            "cx2yti"
+            "12sxae8"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13477,7 +14153,7 @@
           "target": "lakehouse.governance.authentication",
           "label": "validates OIDC tokens",
           "relations": [
-            "n6mr25"
+            "1ra26pc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13494,7 +14170,7 @@
           "target": "lakehouse.governance.authentication",
           "label": "validates access tokens",
           "relations": [
-            "bph0al"
+            "ginzts"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13511,7 +14187,7 @@
           "target": "lakehouse.governance.authentication",
           "label": "single sign-on at the gateway",
           "relations": [
-            "50rv0r"
+            "1g03baa"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13814,7 +14490,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "table-level permissions via OpenFGA",
           "relations": [
-            "1b53huv"
+            "q0i2tm"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13828,7 +14504,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "grants + privileges on securables",
           "relations": [
-            "1n7qjcx"
+            "s4wlh6"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13842,7 +14518,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "coarse allow/deny gate before planning",
           "relations": [
-            "14tq6w"
+            "1ka1pmm"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13859,7 +14535,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "access rules at the gateway",
           "relations": [
-            "p0wa8j"
+            "sda6ag"
           ],
           "color": "gray",
           "line": "dotted",
@@ -13876,7 +14552,7 @@
           "target": "lakehouse.governance.authorization",
           "label": "decides access policy",
           "relations": [
-            "jhzbbl"
+            "12jsqlz"
           ],
           "color": "gray",
           "line": "dotted",
@@ -14597,7 +15273,7 @@
           "target": "lakehouse.governance.fineGrainedAccess",
           "label": "rewrites plans with row filters + column masks",
           "relations": [
-            "ghci6q"
+            "rqg1h2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -14977,7 +15653,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "1b6jnpf"
+            "zov8x0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -14991,7 +15667,7 @@
           "target": "deltaSpec",
           "label": "reads Delta tables via",
           "relations": [
-            "1hp9n8"
+            "1ap0gd9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15067,7 +15743,7 @@
             "txt": "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
           },
           "tags": [
-            "service",
+            "library",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -15213,6 +15889,20 @@
       },
       "edges": [
         {
+          "id": "z7z97q",
+          "parent": null,
+          "source": "pyIceberg",
+          "target": "icebergSpec",
+          "label": null,
+          "relations": [
+            "xlewvp"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
+        },
+        {
           "id": "1n3wkt1",
           "parent": null,
           "source": "icebergSpec",
@@ -15229,11 +15919,45 @@
       ],
       "nodes": [
         {
-          "id": "icebergSpec",
+          "id": "pyIceberg",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
+          "outEdges": [
+            "z7z97q"
+          ],
+          "title": "PyIceberg",
+          "modelRef": "pyIceberg",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Python implementation of Apache Iceberg with REST catalog and table APIs."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://py.iceberg.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "icebergSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "z7z97q"
+          ],
           "outEdges": [
             "1n3wkt1"
           ],
@@ -15293,6 +16017,14 @@
       "notation": {
         "nodes": [
           {
+            "title": "Implementation (software / service)",
+            "shape": "cylinder",
+            "color": "muted",
+            "kinds": [
+              "implementation"
+            ]
+          },
+          {
             "title": "Specification / open standard",
             "shape": "rectangle",
             "color": "sky",
@@ -15302,7 +16034,7 @@
           }
         ]
       },
-      "hash": "nTuJ_-DNBy5PXxD9sQ7t0NCSs0QrFsTEiS7VPftqlA0"
+      "hash": "bLrw-ZsxyY3MaQN08RFcjfQRETZaot76WRBWRxrmWFU"
     },
     "explain_ucSpec": {
       "_type": "element",
@@ -15339,7 +16071,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "19anrwa"
+            "lu9ck4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15353,7 +16085,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "15o6twz"
+            "mm57jl"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15367,7 +16099,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "10xpva1"
+            "l51b13"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15381,7 +16113,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1ly8pci"
+            "1kctmka"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15395,7 +16127,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1gsw1tl"
+            "1pf023j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15409,7 +16141,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1tjaqq1"
+            "27o5r6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15423,7 +16155,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1mwx3ic"
+            "u0olkz"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15437,7 +16169,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "imecao"
+            "hrhv71"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15451,7 +16183,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "1pgsv42"
+            "1dnviv8"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15465,7 +16197,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "19si019"
+            "s13gs0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -15479,7 +16211,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1v6y3xb"
+            "1yjjtbx"
           ],
           "color": "gray",
           "line": "dashed",
@@ -15694,7 +16426,7 @@
             "txt": "Command-line client for managing Unity Catalog objects and storage access."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -15726,7 +16458,7 @@
             "txt": "Generated asynchronous Python client for Unity Catalog REST APIs."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -15758,7 +16490,7 @@
             "txt": "Python client library for registering and executing functions through Unity Catalog."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -15790,7 +16522,7 @@
             "txt": "LangChain integration that turns Unity Catalog functions into tools an agent can call."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -16031,7 +16763,7 @@
           "target": "icebergRestSpec",
           "label": "reads Iceberg tables via",
           "relations": [
-            "hwo4ww"
+            "1hk4xyh"
           ],
           "color": "gray",
           "line": "dashed",
@@ -16045,7 +16777,7 @@
           "target": "icebergRestSpec",
           "label": "uses the REST catalog",
           "relations": [
-            "qz77aa"
+            "54mnc7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -16059,7 +16791,7 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "1buj32q"
+            "12yv0qe"
           ],
           "color": "gray",
           "line": "dotted",
@@ -16073,7 +16805,7 @@
           "target": "icebergRestSpec",
           "label": "serves Iceberg tables through",
           "relations": [
-            "1v2o0d6"
+            "1nvkgk0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -16595,7 +17327,7 @@
           "target": "s3Api",
           "label": "reads/writes data files via",
           "relations": [
-            "1igqpsv"
+            "1jndwim"
           ],
           "color": "gray",
           "line": "dashed",
@@ -16609,7 +17341,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "bzjbfx"
+            "1e9vs03"
           ],
           "color": "gray",
           "line": "dotted",
@@ -16623,7 +17355,7 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1s5r4tj"
+            "1l79cmn"
           ],
           "color": "gray",
           "line": "dotted",
@@ -16882,7 +17614,7 @@
           "target": "azureBlobApi",
           "label": "emulates",
           "relations": [
-            "1w7a6zx"
+            "bgf7yj"
           ],
           "color": "gray",
           "line": "dotted",
@@ -16896,7 +17628,7 @@
           "target": "azureBlobApi",
           "label": "implements",
           "relations": [
-            "pjx98s"
+            "1qlnesr"
           ],
           "color": "gray",
           "line": "dotted",
@@ -17086,7 +17818,7 @@
           "target": "openLineageSpec",
           "label": "emits + ingests",
           "relations": [
-            "164s7xs"
+            "fhjdge"
           ],
           "color": "gray",
           "line": "dotted",
@@ -17244,7 +17976,7 @@
           "target": "otlpSpec",
           "label": "receives traces via",
           "relations": [
-            "u5w89d"
+            "19dbjch"
           ],
           "color": "gray",
           "line": "dashed",
@@ -17562,7 +18294,7 @@
           "target": "flightSqlSpec",
           "label": "serves",
           "relations": [
-            "1rpbe2m"
+            "hc4nn9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -17720,7 +18452,7 @@
           "target": "openCypherSpec",
           "label": "serves",
           "relations": [
-            "r11za5"
+            "mnydju"
           ],
           "color": "gray",
           "line": "dotted",
@@ -18751,7 +19483,7 @@
       "_stage": "computed",
       "sourcePath": "views/logical-views.likec4",
       "description": {
-        "txt": "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #infra) is intrinsic; running instances live in the deployment views."
+        "txt": "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #client / #infra) is intrinsic; running instances live in the deployment views."
       },
       "title": "Technology catalog — capabilities, specifications, implementations",
       "id": "technologyCatalog",
@@ -19236,6 +19968,20 @@
           "kind": "implements"
         },
         {
+          "id": "1cchpk7",
+          "parent": null,
+          "source": "deltaRs",
+          "target": "lakehouse.tableFormat",
+          "label": null,
+          "relations": [
+            "9dvw65"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
           "id": "1ym8qa6",
           "parent": null,
           "source": "deltaRs",
@@ -19256,7 +20002,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "19anrwa"
+            "lu9ck4"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19270,7 +20016,7 @@
           "target": "s3Api",
           "label": "reads/writes data files via",
           "relations": [
-            "1igqpsv"
+            "1jndwim"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19278,13 +20024,13 @@
           "kind": "consumes"
         },
         {
-          "id": "8x2yjo",
+          "id": "1x0w5p9",
           "parent": null,
           "source": "deltaSpark",
-          "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "target": "lakehouse.tableFormat",
+          "label": null,
           "relations": [
-            "3cs56c"
+            "zp345r"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19298,7 +20044,7 @@
           "target": "deltaSpec",
           "label": "implements",
           "relations": [
-            "1b6jnpf"
+            "zov8x0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19312,7 +20058,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "r49623"
+            "sik7mt"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19326,7 +20072,7 @@
           "target": "deltaSpec",
           "label": "reads Delta tables via",
           "relations": [
-            "1hp9n8"
+            "1ap0gd9"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19340,7 +20086,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "15o6twz"
+            "mm57jl"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19354,7 +20100,7 @@
           "target": "icebergRestSpec",
           "label": "reads Iceberg tables via",
           "relations": [
-            "hwo4ww"
+            "1hk4xyh"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19368,7 +20114,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1pmmnol"
+            "1itqw4n"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19382,12 +20128,26 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "10xpva1"
+            "l51b13"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "1fg1fao",
+          "parent": null,
+          "source": "daft",
+          "target": "lakehouse.queryEngine",
+          "label": null,
+          "relations": [
+            "natrev"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "f38oha",
@@ -19396,12 +20156,40 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1ly8pci"
+            "1kctmka"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "1snzgy2",
+          "parent": null,
+          "source": "pyIceberg",
+          "target": "lakehouse.tableFormat",
+          "label": null,
+          "relations": [
+            "x11q8q"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "z7z97q",
+          "parent": null,
+          "source": "pyIceberg",
+          "target": "icebergSpec",
+          "label": null,
+          "relations": [
+            "xlewvp"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "implements"
         },
         {
           "id": "156ihx2",
@@ -19410,7 +20198,7 @@
           "target": "icebergRestSpec",
           "label": "uses the REST catalog",
           "relations": [
-            "qz77aa"
+            "54mnc7"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19424,7 +20212,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1gsw1tl"
+            "1pf023j"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19438,7 +20226,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1tjaqq1"
+            "27o5r6"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19452,7 +20240,7 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "1mwx3ic"
+            "u0olkz"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19466,12 +20254,26 @@
           "target": "ucSpec",
           "label": "calls",
           "relations": [
-            "imecao"
+            "hrhv71"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
           "kind": "consumes"
+        },
+        {
+          "id": "1ylu6cf",
+          "parent": null,
+          "source": "lakekeeper",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "p3qsdh"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "14s78i",
@@ -19480,8 +20282,8 @@
           "target": "lakehouse.governance",
           "label": "[...]",
           "relations": [
-            "1b53huv",
-            "n6mr25"
+            "q0i2tm",
+            "1ra26pc"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19498,12 +20300,26 @@
           "target": "icebergRestSpec",
           "label": "implements",
           "relations": [
-            "1buj32q"
+            "12yv0qe"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "implements"
+        },
+        {
+          "id": "r7p7df",
+          "parent": null,
+          "source": "unityCatalogOSS",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1xs731f"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "trju3y",
@@ -19512,8 +20328,8 @@
           "target": "lakehouse.governance",
           "label": "[...]",
           "relations": [
-            "1n7qjcx",
-            "bph0al"
+            "s4wlh6",
+            "ginzts"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19530,7 +20346,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "1pgsv42"
+            "1dnviv8"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19544,7 +20360,7 @@
           "target": "icebergRestSpec",
           "label": "serves Iceberg tables through",
           "relations": [
-            "1v2o0d6"
+            "1nvkgk0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19558,7 +20374,7 @@
           "target": "lakehouse.catalog",
           "label": "realizes the catalog capability",
           "relations": [
-            "ygnimd"
+            "3mdltq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19572,7 +20388,7 @@
           "target": "ucSpec",
           "label": "implements",
           "relations": [
-            "19si019"
+            "s13gs0"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19586,7 +20402,7 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "1egc2ow"
+            "16jvoif"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19600,7 +20416,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1q1k42r"
+            "yrowx6"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19614,8 +20430,8 @@
           "target": "lakehouse.governance",
           "label": "[...]",
           "relations": [
-            "14tq6w",
-            "ghci6q"
+            "1ka1pmm",
+            "rqg1h2"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19632,7 +20448,7 @@
           "target": "ucSpec",
           "label": "resolves tables via",
           "relations": [
-            "1v6y3xb"
+            "1yjjtbx"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19646,7 +20462,7 @@
           "target": "flightSqlSpec",
           "label": "serves",
           "relations": [
-            "1rpbe2m"
+            "hc4nn9"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19660,7 +20476,7 @@
           "target": "lakehouse.lineage",
           "label": "realizes the lineage concern",
           "relations": [
-            "m4p2q1"
+            "bhwacl"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19674,7 +20490,7 @@
           "target": "openLineageSpec",
           "label": "emits + ingests",
           "relations": [
-            "164s7xs"
+            "fhjdge"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19688,8 +20504,8 @@
           "target": "lakehouse.governance",
           "label": "[...]",
           "relations": [
-            "50rv0r",
-            "p0wa8j"
+            "1g03baa",
+            "sda6ag"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19706,7 +20522,7 @@
           "target": "lakehouse.governance",
           "label": "decides access policy",
           "relations": [
-            "jhzbbl"
+            "12jsqlz"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19723,7 +20539,7 @@
           "target": "lakehouse.observability",
           "label": "realizes tracing",
           "relations": [
-            "cx2yti"
+            "12sxae8"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19737,7 +20553,7 @@
           "target": "otlpSpec",
           "label": "receives traces via",
           "relations": [
-            "u5w89d"
+            "19dbjch"
           ],
           "color": "gray",
           "line": "dashed",
@@ -19751,7 +20567,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes graph queries over tables",
           "relations": [
-            "e8n326"
+            "1whwguq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19765,7 +20581,7 @@
           "target": "openCypherSpec",
           "label": "serves",
           "relations": [
-            "r11za5"
+            "mnydju"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19779,7 +20595,7 @@
           "target": "lakehouse.interactiveDevelopment",
           "label": "realizes the notebook",
           "relations": [
-            "w4euks"
+            "adhz9j"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19793,7 +20609,7 @@
           "target": "lakehouse.orchestration",
           "label": "realizes the orchestration capability",
           "relations": [
-            "zc6cmu"
+            "10rj8eq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19807,7 +20623,21 @@
           "target": "lakehouse.metadataStore",
           "label": "realizes the catalog metadata store",
           "relations": [
-            "1hyv8kz"
+            "1f00u4x"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "170rwje",
+          "parent": null,
+          "source": "rustfs",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "af4jmn"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19821,12 +20651,26 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "bzjbfx"
+            "1e9vs03"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "implements"
+        },
+        {
+          "id": "kwgd2x",
+          "parent": null,
+          "source": "amazonS3",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "iw54jg"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "1pupksk",
@@ -19835,12 +20679,26 @@
           "target": "s3Api",
           "label": "implements",
           "relations": [
-            "1s5r4tj"
+            "1l79cmn"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "implements"
+        },
+        {
+          "id": "1qxey3v",
+          "parent": null,
+          "source": "azurite",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "1ggcxe5"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "1knq7v0",
@@ -19849,12 +20707,26 @@
           "target": "azureBlobApi",
           "label": "emulates",
           "relations": [
-            "1w7a6zx"
+            "bgf7yj"
           ],
           "color": "gray",
           "line": "dotted",
           "head": "normal",
           "kind": "implements"
+        },
+        {
+          "id": "1oezqmk",
+          "parent": null,
+          "source": "azureBlobStorage",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "q57w27"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
         },
         {
           "id": "qjh4az",
@@ -19863,7 +20735,7 @@
           "target": "azureBlobApi",
           "label": "implements",
           "relations": [
-            "pjx98s"
+            "1qlnesr"
           ],
           "color": "gray",
           "line": "dotted",
@@ -19875,14 +20747,28 @@
           "parent": null,
           "source": "hydrofoil",
           "target": "datafusion",
-          "label": "built on",
+          "label": null,
           "relations": [
-            "1cksktv"
+            "10ragd3"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "builtOn"
+        },
+        {
+          "id": "gj4sb0",
+          "parent": null,
+          "source": "deltaSpark",
+          "target": "apacheSpark",
+          "label": null,
+          "relations": [
+            "1ouat9"
+          ],
+          "color": "gray",
+          "line": "dashed",
+          "head": "normal",
+          "kind": "builtOn"
         },
         {
           "id": "viecbk",
@@ -19891,48 +20777,18 @@
           "target": "deltaRs",
           "label": "reads/writes Delta via",
           "relations": [
-            "18r4pao"
+            "1709etu"
           ],
           "color": "gray",
           "line": "dashed",
           "head": "normal",
-          "kind": "dependsOn"
+          "kind": "dependsOn",
+          "tags": [
+            "optional"
+          ]
         }
       ],
       "nodes": [
-        {
-          "id": "icebergSpec",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "67455y"
-          ],
-          "title": "Apache Iceberg",
-          "modelRef": "icebergSpec",
-          "shape": "rectangle",
-          "color": "sky",
-          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Open table-format specification for huge analytic datasets,\nwith hidden partitioning and snapshot isolation."
-          },
-          "tags": [
-            "public"
-          ],
-          "notation": "Specification / open standard",
-          "links": [
-            {
-              "url": "https://iceberg.apache.org"
-            }
-          ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_icebergSpec"
-        },
         {
           "id": "openSharingSpec",
           "parent": null,
@@ -19996,50 +20852,15 @@
           "navigateTo": "explain_parquetSpec"
         },
         {
-          "id": "apacheSpark",
-          "parent": null,
-          "level": 0,
-          "children": [],
-          "inEdges": [],
-          "outEdges": [
-            "zt1zxe",
-            "1jquji4",
-            "rqwp5z",
-            "1ha3mmn"
-          ],
-          "title": "Apache Spark",
-          "modelRef": "apacheSpark",
-          "shape": "cylinder",
-          "color": "muted",
-          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
-          "style": {
-            "opacity": 15,
-            "size": "md"
-          },
-          "description": {
-            "txt": "Unified analytics engine for large-scale data processing."
-          },
-          "tags": [
-            "service",
-            "public"
-          ],
-          "notation": "Implementation (software / service)",
-          "links": [
-            {
-              "url": "https://spark.apache.org"
-            }
-          ],
-          "kind": "implementation"
-        },
-        {
           "id": "deltaSpark",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "8x2yjo",
-            "139665w"
+            "1x0w5p9",
+            "139665w",
+            "gj4sb0"
           ],
           "title": "Delta Spark",
           "modelRef": "deltaSpark",
@@ -20053,7 +20874,7 @@
             "txt": "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
           },
           "tags": [
-            "service",
+            "library",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -20141,6 +20962,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "1fg1fao",
             "f38oha"
           ],
           "title": "Daft",
@@ -20173,6 +20995,8 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "1snzgy2",
+            "z7z97q",
             "156ihx2"
           ],
           "title": "PyIceberg",
@@ -20219,7 +21043,7 @@
             "txt": "Command-line client for managing Unity Catalog objects and storage access."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -20251,7 +21075,7 @@
             "txt": "Generated asynchronous Python client for Unity Catalog REST APIs."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -20283,7 +21107,7 @@
             "txt": "Python client library for registering and executing functions through Unity Catalog."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -20315,7 +21139,7 @@
             "txt": "LangChain integration that turns Unity Catalog functions into tools an agent can call."
           },
           "tags": [
-            "library",
+            "client",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -20333,6 +21157,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "1ylu6cf",
             "14s78i",
             "wv3hil"
           ],
@@ -20366,6 +21191,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "r7p7df",
             "trju3y",
             "1pglyt6",
             "okzuqp"
@@ -20785,6 +21611,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "170rwje",
             "dou7t3"
           ],
           "title": "RustFS",
@@ -20817,6 +21644,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "kwgd2x",
             "1pupksk"
           ],
           "title": "Amazon S3",
@@ -20848,6 +21676,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "1qxey3v",
             "1knq7v0"
           ],
           "title": "Azurite",
@@ -20879,6 +21708,7 @@
           "children": [],
           "inEdges": [],
           "outEdges": [
+            "1oezqmk",
             "qjh4az"
           ],
           "title": "Azure Blob Storage",
@@ -20904,36 +21734,42 @@
           "kind": "implementation"
         },
         {
-          "id": "sparkConnectSpec",
+          "id": "apacheSpark",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "1ha3mmn"
+            "gj4sb0"
           ],
           "outEdges": [
-            "fkkefb"
+            "zt1zxe",
+            "1jquji4",
+            "rqwp5z",
+            "1ha3mmn"
           ],
-          "title": "Spark Connect",
-          "modelRef": "sparkConnectSpec",
-          "shape": "rectangle",
-          "color": "sky",
+          "title": "Apache Spark",
+          "modelRef": "apacheSpark",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/apache/spark-website/8eb764260f5308960c69c212c642cd19ededf3ed/images/spark-logo.png",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "Client-server protocol for Apache Spark: thin clients send unresolved plans over gRPC to a remote Spark server."
+            "txt": "Unified analytics engine for large-scale data processing."
           },
-          "tags": [],
-          "notation": "Specification / open standard",
+          "tags": [
+            "service",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
           "links": [
             {
-              "url": "https://spark.apache.org/docs/latest/spark-connect-overview.html"
+              "url": "https://spark.apache.org"
             }
           ],
-          "kind": "openSpecification",
-          "navigateTo": "explain_sparkConnectSpec"
+          "kind": "implementation"
         },
         {
           "id": "deltaRs",
@@ -20944,6 +21780,7 @@
             "viecbk"
           ],
           "outEdges": [
+            "1cchpk7",
             "1ym8qa6",
             "1y4cfeo",
             "ycgcej"
@@ -20972,30 +21809,27 @@
           "kind": "implementation"
         },
         {
-          "id": "icebergRestSpec",
+          "id": "icebergSpec",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [
-            "rqwp5z",
-            "1ixkizh",
-            "156ihx2",
-            "wv3hil",
-            "okzuqp"
+            "z7z97q"
           ],
           "outEdges": [
-            "dton7c"
+            "67455y"
           ],
-          "title": "Iceberg REST Catalog",
-          "modelRef": "icebergRestSpec",
+          "title": "Apache Iceberg",
+          "modelRef": "icebergSpec",
           "shape": "rectangle",
           "color": "sky",
+          "icon": "https://raw.githubusercontent.com/apache/iceberg/e2b56daf35724700a9b57dbeee5fe23f99c592c4/site/docs/assets/images/iceberg-logo-icon.png",
           "style": {
             "opacity": 15,
             "size": "md"
           },
           "description": {
-            "txt": "Specification for a REST based Iceberg catalog"
+            "txt": "Open table-format specification for huge analytic datasets,\nwith hidden partitioning and snapshot isolation."
           },
           "tags": [
             "public"
@@ -21003,11 +21837,11 @@
           "notation": "Specification / open standard",
           "links": [
             {
-              "url": "https://iceberg.apache.org/concepts/catalog/"
+              "url": "https://iceberg.apache.org"
             }
           ],
           "kind": "openSpecification",
-          "navigateTo": "explain_icebergRestSpec"
+          "navigateTo": "explain_icebergSpec"
         },
         {
           "id": "flightSqlSpec",
@@ -21206,6 +22040,76 @@
           "navigateTo": "explain_azureBlobApi"
         },
         {
+          "id": "icebergRestSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "rqwp5z",
+            "1ixkizh",
+            "156ihx2",
+            "wv3hil",
+            "okzuqp"
+          ],
+          "outEdges": [
+            "dton7c"
+          ],
+          "title": "Iceberg REST Catalog",
+          "modelRef": "icebergRestSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Specification for a REST based Iceberg catalog"
+          },
+          "tags": [
+            "public"
+          ],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://iceberg.apache.org/concepts/catalog/"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_icebergRestSpec"
+        },
+        {
+          "id": "sparkConnectSpec",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [
+            "1ha3mmn"
+          ],
+          "outEdges": [
+            "fkkefb"
+          ],
+          "title": "Spark Connect",
+          "modelRef": "sparkConnectSpec",
+          "shape": "rectangle",
+          "color": "sky",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Client-server protocol for Apache Spark: thin clients send unresolved plans over gRPC to a remote Spark server."
+          },
+          "tags": [],
+          "notation": "Specification / open standard",
+          "links": [
+            {
+              "url": "https://spark.apache.org/docs/latest/spark-connect-overview.html"
+            }
+          ],
+          "kind": "openSpecification",
+          "navigateTo": "explain_sparkConnectSpec"
+        },
+        {
           "id": "deltaSpec",
           "parent": null,
           "level": 0,
@@ -21361,10 +22265,15 @@
             "2u2en7",
             "ipwqn",
             "zt1zxe",
-            "8x2yjo",
+            "1cchpk7",
+            "1x0w5p9",
             "16lmeqg",
             "1dpuyes",
+            "1fg1fao",
+            "1snzgy2",
+            "1ylu6cf",
             "14s78i",
+            "r7p7df",
             "trju3y",
             "9wcsu3",
             "1t5h2fk",
@@ -21377,7 +22286,11 @@
             "1ra0b9z",
             "1mw2f1p",
             "2w26cx",
-            "r5oic7"
+            "r5oic7",
+            "170rwje",
+            "kwgd2x",
+            "1qxey3v",
+            "1oezqmk"
           ],
           "outEdges": [],
           "title": "Open Lakehouse",
@@ -21627,9 +22540,9 @@
             "2u2en7",
             "ipwqn",
             "zt1zxe",
-            "8x2yjo",
             "16lmeqg",
             "1dpuyes",
+            "1fg1fao",
             "1d2b803",
             "1ra0b9z"
           ],
@@ -21667,6 +22580,8 @@
             "1078ltw",
             "cp7myr",
             "dton7c",
+            "1ylu6cf",
+            "r7p7df",
             "9wcsu3"
           ],
           "outEdges": [
@@ -21737,7 +22652,10 @@
           "inEdges": [
             "1ko3ux0",
             "1qkmdr7",
-            "67455y"
+            "67455y",
+            "1cchpk7",
+            "1x0w5p9",
+            "1snzgy2"
           ],
           "outEdges": [
             "1nn750y"
@@ -21802,7 +22720,11 @@
           "inEdges": [
             "1u0v1f",
             "1ol3q9j",
-            "13jsrzh"
+            "13jsrzh",
+            "170rwje",
+            "kwgd2x",
+            "1qxey3v",
+            "1oezqmk"
           ],
           "outEdges": [
             "gcom4m"
@@ -21907,7 +22829,7 @@
           }
         ]
       },
-      "hash": "j2QITBUQ7RFDN4y7vxx9ZNCu_TDPI4i5dgdfRlaOtGc"
+      "hash": "CocqXGjMnlazLLGkj0xn_IJ8b0sz9z4NZz0o3PfvnTc"
     },
     "capabilityMap": {
       "_type": "element",
@@ -22164,13 +23086,27 @@
           "kind": "realizes"
         },
         {
-          "id": "8x2yjo",
+          "id": "1cchpk7",
+          "parent": null,
+          "source": "deltaRs",
+          "target": "lakehouse.tableFormat",
+          "label": null,
+          "relations": [
+            "9dvw65"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1x0w5p9",
           "parent": null,
           "source": "deltaSpark",
-          "target": "lakehouse.queryEngine",
-          "label": "realizes the query-engine capability",
+          "target": "lakehouse.tableFormat",
+          "label": null,
           "relations": [
-            "3cs56c"
+            "zp345r"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22184,7 +23120,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "r49623"
+            "sik7mt"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22198,7 +23134,63 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1pmmnol"
+            "1itqw4n"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1fg1fao",
+          "parent": null,
+          "source": "daft",
+          "target": "lakehouse.queryEngine",
+          "label": null,
+          "relations": [
+            "natrev"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1snzgy2",
+          "parent": null,
+          "source": "pyIceberg",
+          "target": "lakehouse.tableFormat",
+          "label": null,
+          "relations": [
+            "x11q8q"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1ylu6cf",
+          "parent": null,
+          "source": "lakekeeper",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "p3qsdh"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "r7p7df",
+          "parent": null,
+          "source": "unityCatalogOSS",
+          "target": "lakehouse.catalog",
+          "label": null,
+          "relations": [
+            "1xs731f"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22212,7 +23204,7 @@
           "target": "lakehouse.catalog",
           "label": "realizes the catalog capability",
           "relations": [
-            "ygnimd"
+            "3mdltq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22226,7 +23218,7 @@
           "target": "lakehouse.modelTracking",
           "label": "realizes the model-tracking capability",
           "relations": [
-            "1egc2ow"
+            "16jvoif"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22240,7 +23232,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes the query-engine capability",
           "relations": [
-            "1q1k42r"
+            "yrowx6"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22254,7 +23246,7 @@
           "target": "lakehouse.queryEngine",
           "label": "realizes graph queries over tables",
           "relations": [
-            "e8n326"
+            "1whwguq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22268,7 +23260,7 @@
           "target": "lakehouse.interactiveDevelopment",
           "label": "realizes the notebook",
           "relations": [
-            "w4euks"
+            "adhz9j"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22282,7 +23274,7 @@
           "target": "lakehouse.orchestration",
           "label": "realizes the orchestration capability",
           "relations": [
-            "zc6cmu"
+            "10rj8eq"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22296,7 +23288,63 @@
           "target": "lakehouse.metadataStore",
           "label": "realizes the catalog metadata store",
           "relations": [
-            "1hyv8kz"
+            "1f00u4x"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "170rwje",
+          "parent": null,
+          "source": "rustfs",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "af4jmn"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "kwgd2x",
+          "parent": null,
+          "source": "amazonS3",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "iw54jg"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1qxey3v",
+          "parent": null,
+          "source": "azurite",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "1ggcxe5"
+          ],
+          "color": "gray",
+          "line": "dotted",
+          "head": "normal",
+          "kind": "realizes"
+        },
+        {
+          "id": "1oezqmk",
+          "parent": null,
+          "source": "azureBlobStorage",
+          "target": "lakehouse.objectStorage",
+          "label": null,
+          "relations": [
+            "q57w27"
           ],
           "color": "gray",
           "line": "dotted",
@@ -22890,13 +23938,45 @@
           "kind": "implementation"
         },
         {
+          "id": "deltaRs",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1cchpk7"
+          ],
+          "title": "delta-rs",
+          "modelRef": "deltaRs",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Native Rust implementation of the Delta protocol with Python bindings."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://delta-io.github.io/delta-rs/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "deltaSpark",
           "parent": null,
           "level": 0,
           "children": [],
           "inEdges": [],
           "outEdges": [
-            "8x2yjo"
+            "1x0w5p9"
           ],
           "title": "Delta Spark",
           "modelRef": "deltaSpark",
@@ -22910,7 +23990,7 @@
             "txt": "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
           },
           "tags": [
-            "service",
+            "library",
             "public"
           ],
           "notation": "Implementation (software / service)",
@@ -22982,6 +24062,138 @@
           "links": [
             {
               "url": "https://pola.rs"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "daft",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1fg1fao"
+          ],
+          "title": "Daft",
+          "modelRef": "daft",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Distributed Python DataFrame library with a Unity Catalog integration."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://docs.daft.ai/en/stable/connectors/unity_catalog/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "pyIceberg",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1snzgy2"
+          ],
+          "title": "PyIceberg",
+          "modelRef": "pyIceberg",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Python implementation of Apache Iceberg with REST catalog and table APIs."
+          },
+          "tags": [
+            "library",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://py.iceberg.apache.org"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "lakekeeper",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1ylu6cf"
+          ],
+          "title": "Lakekeeper",
+          "modelRef": "lakekeeper",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lakekeeper/lakekeeper/22ad0ba6994131bc3943d7778436127203fdba82/site/docs/assets/logos/LAKEKEEPER_IMAGE.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Apache-licensed, Rust-native catalog server implementing the Iceberg REST Catalog specification."
+          },
+          "tags": [
+            "service"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://lakekeeper.io"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "unityCatalogOSS",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "r7p7df"
+          ],
+          "title": "Unity Catalog (OSS)",
+          "modelRef": "unityCatalogOSS",
+          "shape": "cylinder",
+          "color": "muted",
+          "icon": "https://raw.githubusercontent.com/lfai/artwork/13457311161fab6c20b76af3f20d37db4b7526ef/projects/unity_catalog/icon/color/SVG/uc_icon_color.svg",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "The open-source reference server implementing the Unity Catalog specification."
+          },
+          "tags": [
+            "service",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/unitycatalog/unitycatalog"
+            },
+            {
+              "url": "https://unitycatalog.io"
             }
           ],
           "kind": "implementation"
@@ -23206,6 +24418,131 @@
           "kind": "implementation"
         },
         {
+          "id": "rustfs",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "170rwje"
+          ],
+          "title": "RustFS",
+          "modelRef": "rustfs",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "S3-compatible object storage server written in Rust."
+          },
+          "tags": [
+            "infra",
+            "public"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://rustfs.com"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "amazonS3",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "kwgd2x"
+          ],
+          "title": "Amazon S3",
+          "modelRef": "amazonS3",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "AWS's managed object storage service; the origin of the S3 API."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://aws.amazon.com/s3/"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azurite",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1qxey3v"
+          ],
+          "title": "Azurite",
+          "modelRef": "azurite",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Local emulator for Azure Storage, including the Blob service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://github.com/Azure/Azurite"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
+          "id": "azureBlobStorage",
+          "parent": null,
+          "level": 0,
+          "children": [],
+          "inEdges": [],
+          "outEdges": [
+            "1oezqmk"
+          ],
+          "title": "Azure Blob Storage",
+          "modelRef": "azureBlobStorage",
+          "shape": "cylinder",
+          "color": "muted",
+          "style": {
+            "opacity": 15,
+            "size": "md"
+          },
+          "description": {
+            "txt": "Azure's managed object storage service."
+          },
+          "tags": [
+            "infra"
+          ],
+          "notation": "Implementation (software / service)",
+          "links": [
+            {
+              "url": "https://azure.microsoft.com/products/storage/blobs"
+            }
+          ],
+          "kind": "implementation"
+        },
+        {
           "id": "lakehouse",
           "parent": null,
           "level": 0,
@@ -23240,16 +24577,25 @@
             "13jsrzh",
             "ipwqn",
             "zt1zxe",
-            "8x2yjo",
+            "1cchpk7",
+            "1x0w5p9",
             "16lmeqg",
             "1dpuyes",
+            "1fg1fao",
+            "1snzgy2",
+            "1ylu6cf",
+            "r7p7df",
             "9wcsu3",
             "1t5h2fk",
             "1d2b803",
             "1ra0b9z",
             "1mw2f1p",
             "2w26cx",
-            "r5oic7"
+            "r5oic7",
+            "170rwje",
+            "kwgd2x",
+            "1qxey3v",
+            "1oezqmk"
           ],
           "outEdges": [],
           "title": "Open Lakehouse",
@@ -23398,9 +24744,9 @@
             "2u2en7",
             "ipwqn",
             "zt1zxe",
-            "8x2yjo",
             "16lmeqg",
             "1dpuyes",
+            "1fg1fao",
             "1d2b803",
             "1ra0b9z",
             "r98ad1",
@@ -23438,6 +24784,8 @@
             "jmwf0p",
             "cp7myr",
             "dton7c",
+            "1ylu6cf",
+            "r7p7df",
             "9wcsu3",
             "1tnkhx9"
           ],
@@ -23509,6 +24857,9 @@
           "inEdges": [
             "1qkmdr7",
             "67455y",
+            "1cchpk7",
+            "1x0w5p9",
+            "1snzgy2",
             "1ko3ux0"
           ],
           "outEdges": [
@@ -23574,6 +24925,10 @@
           "inEdges": [
             "1ol3q9j",
             "13jsrzh",
+            "170rwje",
+            "kwgd2x",
+            "1qxey3v",
+            "1oezqmk",
             "1u0v1f"
           ],
           "outEdges": [
@@ -23649,7 +25004,7 @@
           }
         ]
       },
-      "hash": "qmfgq_n9L1bz82_ibsxEMHpJGc7bCrSN_7l0722imto"
+      "hash": "ZxIsnm-4o0zsH7mHQaTw0XR5hbm_HSF0H6a6OGVLxAw"
     },
     "concernMatrix": {
       "_type": "element",

@@ -159,19 +159,21 @@ model {
     link https://delta-io.github.io/delta-rs/
   }
   deltaRs -[implements]-> deltaSpec "implements"
+  deltaRs -[realizes]-> lakehouse.tableFormat
   deltaRs -[consumes]-> ucSpec "resolves tables via"
   deltaRs -[consumes]-> s3Api "reads/writes data files via"
   deltaRs -[operatesOn]-> lakehouse.table "reads and changes"
 
   deltaSpark = implementation "Delta Spark" {
-    #service #public
+    #library #public
 
     description "The reference Delta connector for Apache Spark (`io.delta:delta-spark`)."
 
     link https://docs.delta.io
   }
   deltaSpark -[implements]-> deltaSpec "implements"
-  deltaSpark -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
+  deltaSpark -[builtOn]-> apacheSpark
+  deltaSpark -[realizes]-> lakehouse.tableFormat
   deltaSpark -[operatesOn]-> lakehouse.table "queries and changes"
 
   duckdb = implementation "DuckDB" {
@@ -201,7 +203,9 @@ model {
   }
   polars -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
   // impl -> impl is a DEPENDENCY, not spec-consumption (`consumes` is impl -> spec). See ADR-0006.
-  polars -[dependsOn]-> deltaRs "reads/writes Delta via"
+  polars -[dependsOn]-> deltaRs "reads/writes Delta via" {
+    #optional
+  }
   polars -[consumes]-> ucSpec "resolves tables via"
   polars -[operatesOn]-> lakehouse.table "reads and appends"
 
@@ -211,6 +215,7 @@ model {
     description "Distributed Python DataFrame library with a Unity Catalog integration."
     link https://docs.daft.ai/en/stable/connectors/unity_catalog/
   }
+  daft -[realizes]-> lakehouse.queryEngine
   daft -[consumes]-> ucSpec "resolves tables via"
   daft -[operatesOn]-> lakehouse.table "lists and reads"
 
@@ -220,6 +225,8 @@ model {
     description "Python implementation of Apache Iceberg with REST catalog and table APIs."
     link https://py.iceberg.apache.org
   }
+  pyIceberg -[implements]-> icebergSpec
+  pyIceberg -[realizes]-> lakehouse.tableFormat
   pyIceberg -[consumes]-> icebergRestSpec "uses the REST catalog"
   pyIceberg -[operatesOn]-> lakehouse.namespace "creates and lists"
   pyIceberg -[operatesOn]-> lakehouse.table "creates and changes"
@@ -227,7 +234,7 @@ model {
   // Unity Catalog's local clients are separate interfaces even though they
   // ship from the same upstream repository and release.
   ucCli = implementation "Unity Catalog CLI" {
-    #library #public
+    #client #public
 
     description "Command-line client for managing Unity Catalog objects and storage access."
     link https://docs.unitycatalog.io/usage/cli/
@@ -240,7 +247,7 @@ model {
   ucCli -[operatesOn]-> lakehouse.externalLocation "manages"
 
   unityCatalogPythonSdk = implementation "Unity Catalog Python SDK" {
-    #library #public
+    #client #public
 
     description "Generated asynchronous Python client for Unity Catalog REST APIs."
     link https://pypi.org/project/unitycatalog-client/
@@ -254,7 +261,7 @@ model {
   unityCatalogPythonSdk -[operatesOn]-> lakehouse.externalLocation "manages"
 
   unityCatalogAI = implementation "unitycatalog-ai" {
-    #library #public
+    #client #public
 
     description "Python client library for registering and executing functions through Unity Catalog."
     link https://github.com/unitycatalog/unitycatalog/tree/main/ai
@@ -263,7 +270,7 @@ model {
   unityCatalogAI -[operatesOn]-> lakehouse.registeredFunction "registers and executes"
 
   unityCatalogLangChain = implementation "unitycatalog-langchain" {
-    #library #public
+    #client #public
     description "LangChain integration that turns Unity Catalog functions into tools an agent can call."
     link https://pypi.org/project/unitycatalog-langchain/
   }
@@ -282,6 +289,7 @@ model {
     }
   }
   lakekeeper -[implements]-> icebergRestSpec "implements"
+  lakekeeper -[realizes]-> lakehouse.catalog
   lakekeeper -[realizes]-> lakehouse.governance.authorization "table-level permissions via OpenFGA"
   lakekeeper -[realizes]-> lakehouse.governance.authentication "validates OIDC tokens" {
     #partial
@@ -300,6 +308,7 @@ model {
   }
   unityCatalogOSS -[implements]-> ucSpec "implements"
   unityCatalogOSS -[implements]-> icebergRestSpec "serves Iceberg tables through"
+  unityCatalogOSS -[realizes]-> lakehouse.catalog
   unityCatalogOSS -[realizes]-> lakehouse.governance.authorization "grants + privileges on securables"
   unityCatalogOSS -[realizes]-> lakehouse.governance.authentication "validates access tokens" {
     #partial
@@ -345,7 +354,7 @@ model {
   hydrofoil -[realizes]-> lakehouse.queryEngine "realizes the query-engine capability"
   hydrofoil -[implements]-> flightSqlSpec "serves"
   hydrofoil -[consumes]-> ucSpec "resolves tables via"
-  hydrofoil -[dependsOn]-> datafusion "built on"
+  hydrofoil -[builtOn]-> datafusion
   hydrofoil -[realizes]-> lakehouse.governance.authorization "coarse allow/deny gate before planning" {
     #partial
   }
@@ -446,6 +455,7 @@ model {
     link https://rustfs.com
   }
   rustfs -[implements]-> s3Api "implements"
+  rustfs -[realizes]-> lakehouse.objectStorage
 
   amazonS3 = implementation "Amazon S3" {
     #infra
@@ -454,6 +464,7 @@ model {
     link https://aws.amazon.com/s3/
   }
   amazonS3 -[implements]-> s3Api "implements"
+  amazonS3 -[realizes]-> lakehouse.objectStorage
 
   azurite = implementation "Azurite" {
     #infra
@@ -462,6 +473,7 @@ model {
     link https://github.com/Azure/Azurite
   }
   azurite -[implements]-> azureBlobApi "emulates"
+  azurite -[realizes]-> lakehouse.objectStorage
 
   azureBlobStorage = implementation "Azure Blob Storage" {
     #infra
@@ -470,6 +482,7 @@ model {
     link https://azure.microsoft.com/products/storage/blobs
   }
   azureBlobStorage -[implements]-> azureBlobApi "implements"
+  azureBlobStorage -[realizes]-> lakehouse.objectStorage
 
   // Omnigent — Databricks' Apache-2.0 AI-agent meta-harness. Deliberately has NO
   // capability edge: it is agent tooling, not a lakehouse capability.

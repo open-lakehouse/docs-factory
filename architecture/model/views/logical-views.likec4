@@ -27,7 +27,7 @@ views {
   // --- Technology catalog: capabilities <- specifications <- implementations
   view technologyCatalog {
     title "Technology catalog — capabilities, specifications, implementations"
-    description "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #infra) is intrinsic; running instances live in the deployment views."
+    description "How concrete technology maps onto the reference architecture: a specification `specifies` the capability it defines; an implementation `implements` a specification or `realizes` a capability directly (query engines have no shared spec). Compute posture (#service / #library / #client / #infra) is intrinsic; running instances live in the deployment views."
 
     include
       lakehouse.*,

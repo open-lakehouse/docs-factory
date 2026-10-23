@@ -78,8 +78,9 @@ capability or concern has a `realizes` edge to it, whether or not it also
 implements a specification. When it `implements` a spec that `specifies` a
 capability, it also `realizes` that capability, so the question "what realizes
 X?" is always one hop. A connector or extension is `builtOn` its host and does
-not realize the host's capability. Clients (`#client`) and infrastructure
-(`#infra`) are exempt: they consume specs and act on assets.
+not realize the host's capability. Clients (`#client`) are exempt: they
+consume specs and act on assets. So is software that provides no capability in
+the model, such as a gateway or agent tooling.
 
 **A parent concern carries no `appliesTo` of its own.** When a concern has
 facets, its scope is the union of its facets' edges.

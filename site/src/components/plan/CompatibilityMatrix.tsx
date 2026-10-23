@@ -392,7 +392,8 @@ function ModelCoverageGaps({ matrix }: { matrix: CompatMatrix }) {
             {gap.kind === "missing-edge" && (
               <>
                 <code>{gap.interface}</code> proves {gap.journeys?.join(", ")} but{" "}
-                {gap.source && <ModelRef id={gap.source} />} has no contract edge to{" "}
+                {gap.source && <ModelRef id={gap.source} />} has no{" "}
+                <code>{gap.edge ?? "contract"}</code> edge to{" "}
                 {gap.target && <ModelRef id={gap.target} />}.
               </>
             )}

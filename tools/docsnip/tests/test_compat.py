@@ -951,3 +951,48 @@ def test_a_hub_links_reports_on_its_own_page_by_heading(tmp_path) -> None:
     assert data["engines"][0]["anchor"] == "apache-spark"
     assert data["engines"][0]["heading"] == "Apache Spark"
     assert compat.check(root)[0] == []
+
+
+def test_a_client_edge_must_have_the_verb_the_journey_names(tmp_path) -> None:
+    # Spark consumes unityCatalogSpec; implementing it is a different claim.
+    root = _modeled(
+        _repo(tmp_path, _SPARK_READS),
+        "  table.read: {title: Read, summary: Read rows, family: table,"
+        " requires: {client: {implements: [unityCatalogSpec]}}}",
+    )
+    data = _artifact(root)
+    assert {
+        "kind": "missing-edge",
+        "interface": "spark",
+        "source": "apacheSpark",
+        "edge": "implements",
+        "target": "unityCatalogSpec",
+        "journeys": ["table.read"],
+    } in data["diagnostics"]
+    assert ("apacheSpark", "consumes", "unityCatalogSpec") not in {
+        (e["source"], e["kind"], e["target"]) for e in data["verifiedEdges"]
+    }
+    gaps = compat.model_gaps(root)
+    assert any("apacheSpark has no implements edge" in g for g in gaps), gaps
+
+
+def test_a_client_can_implement_a_format_and_consume_an_api(tmp_path) -> None:
+    root = _modeled(
+        _repo(tmp_path, _SPARK_READS),
+        "  table.read: {title: Read, summary: Read rows, family: table,"
+        " requires: {client: {consumes: [unityCatalogSpec],"
+        " implements: [icebergRestSpec]}}}",
+    )
+    path = root / "architecture/dist/model.json"
+    model = json.loads(path.read_text())
+    model["relations"]["r8"] = {
+        "kind": "implements",
+        "source": {"model": "apacheSpark"},
+        "target": {"model": "icebergRestSpec"},
+    }
+    path.write_text(json.dumps(model))
+    data = _artifact(root)
+    edges = {(e["source"], e["kind"], e["target"]) for e in data["verifiedEdges"]}
+    assert ("apacheSpark", "consumes", "unityCatalogSpec") in edges
+    assert ("apacheSpark", "implements", "icebergRestSpec") in edges
+    assert "missing-edge" not in [d["kind"] for d in data["diagnostics"]]

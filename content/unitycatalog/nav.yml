@@ -237,8 +237,8 @@ nav:
             title: Where catalog functions execute
           - planned: E08
             title: How Unity Catalog and MLflow divide responsibilities
-          - planned: E09
-            title: SQL views and metric views as catalog objects
+          - page: explanation/views-and-metric-views
+            id: E09
 
   - section: Reference
     items:
